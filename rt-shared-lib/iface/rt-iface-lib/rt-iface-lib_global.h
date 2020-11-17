@@ -1,0 +1,12 @@
+#ifndef RTIFACELIB_GLOBAL_H
+#define RTIFACELIB_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(RTIFACELIB_LIBRARY)
+#  define RTIFACELIB_EXPORT Q_DECL_EXPORT
+#else
+#  define RTIFACELIB_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // RTIFACELIB_GLOBAL_H

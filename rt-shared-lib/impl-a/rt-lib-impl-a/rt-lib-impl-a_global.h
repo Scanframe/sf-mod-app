@@ -1,0 +1,12 @@
+#ifndef RTLIBIMPLA_GLOBAL_H
+#define RTLIBIMPLA_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(RTLIBIMPLA_LIBRARY)
+#  define RTLIBIMPLA_EXPORT Q_DECL_EXPORT
+#else
+#  define RTLIBIMPLA_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // RTLIBIMPLA_GLOBAL_H
