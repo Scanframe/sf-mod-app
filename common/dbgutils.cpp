@@ -1,11 +1,5 @@
 /*
-
-Copyright (c) ScanFrame 2020
-All Rights Reserved.
-
-Contains debuging macro's that are defined when define DEBUG_LEVEL is
-defined as non-zero.
-
+Contains debuging macro's that are defined when define DEBUG_LEVEL is non zero.
 */
 
 // Import defines to get the right target
@@ -45,12 +39,12 @@ void DebugBreak(void)
 	if (-1 == dbg_attached)
 	{
 		dbg_attached = 1;
+		// Call lambda function to handle.
 		signal(SIGTRAP, [](int)
 		{
 			dbg_attached = 0;
 			signal(SIGTRAP, SIG_DFL);
 		});
-//		signal(SIGTRAP, _sigtrap_handler);
 		raise(SIGTRAP);
 	}
 #endif
@@ -110,7 +104,7 @@ int debug_ostream::overflow(int c)
 	if (c != EOF)
 	{
 		char tc[2];
-		tc[0] = (char)c;
+		tc[0] = static_cast<char>(c);
 		tc[1] = 0;
 		if (c != END_OF_MSG)
 			do_sputn(tc, 1);
@@ -134,31 +128,20 @@ void UserOutputDebugString(int type, const char* s)
 	{
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
-	char tmp[64] = "";
-	clock_t tm = clock();
-	sprintf
-	(
-		tmp, "%02lu:%02lu:%02lu.%02lu",
-		static_cast<unsigned long>(tm / (3600 * CLOCKS_PER_SEC)),
-		static_cast<unsigned long>((tm / (60 * CLOCKS_PER_SEC)) % 60),
-		static_cast<unsigned long>((tm / CLOCKS_PER_SEC) % 60),
-		static_cast<unsigned long>((tm % CLOCKS_PER_SEC) / 10)
-	);
+	auto tm = double(clock()) / (CLOCKS_PER_SEC / 100);
 	// If the log bit is enabled write the line as is.
 	if (type & dotCLOG)
-		std::clog << tmp << s << '\n';
+		std::clog << tm << ' ' << s << '\n';
 	// Find the file sepearator character '\x1C'.
 	char* sep = strchr(const_cast<char*>(s), '\x1C');
 	// make it a newline character when found.
 	if (sep)
 		*sep = '\n';
 	// Execute functions according the bits.
-	if (type & dotCOUT)
-		std::cout << &tmp[3] << s << '\n';
-	//
 	if (type & dotCERR)
-		std::cerr << tmp << s << '\n';
-	//
+		std::cerr << tm << ' ' << s << '\n';
+	if (type & dotCOUT)
+		std::cout << tm << ' ' << s << '\n';
 	if (type & dotMSGBOX || type & dotTHROW)
 	{
 		const char* caption = "Notification";

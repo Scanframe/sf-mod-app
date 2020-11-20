@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include <QDate>
 
-
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -22,12 +21,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionLoad_A_triggered()
 {
-	//UserOutputDebugString(DO_MSGBOX, "Hello world...");
-//	_RTTI_NOTIFY(DO_COUT, "out: Hello world...")
-	_RTTI_NOTIFY(DO_CLOG, "Hello world... CLOCKS_PER_SEC: " << CLOCKS_PER_SEC)
+	_RTTI_NOTIFY(DO_COUT, "out: Hello world...")
+	_RTTI_NOTIFY(DO_CLOG, "Hello world...")
 	_RTTI_NOTIFY(DO_MSGBOX|DO_DBGBRK, "A debug break?")
-
 	qDebug() << "Date:" << QDate::currentDate();
-
 }
 
