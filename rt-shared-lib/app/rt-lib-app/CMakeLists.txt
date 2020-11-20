@@ -7,14 +7,20 @@ find_package(BuildCheck CONFIG REQUIRED)
 # Set the project name.
 project(rt-lib-app LANGUAGES CXX)
 
+add_definitions(-DDEBUG_LEVEL=1)
+#add_definitions(-DREPORT_TARGET)
+
+add_definitions(-DTARGET_QT)
+#add_definitions(-D_TARGET_SHARED)
+
 # Write a message.
 message("CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
 message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 message("CMAKE_LIBRARY_OUTPUT_DIRECTORY: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/library)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/binairy)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
@@ -29,6 +35,10 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
 set(TS_FILES rt-lib-app_en_US.ts)
 set(SOURCES
+	common/defs.h
+	common/target.h
+	common/dbgutils.cpp
+	common/dbgutils.h
 	main.cpp
 	mainwindow.cpp
 	mainwindow.h
