@@ -16,6 +16,14 @@ Defines:
 	#define IS_GNU 0
 #endif
 
+// Check when the GNU compiler is active for a Windows target.
+#if IS_GNU && defined(WIN32)
+	#define IS_WIN 1
+#else
+	#define IS_WIN 0
+#endif
+
+
 // Determine if the build is for a dynamic shared library.
 #if defined(TARGET_SHARED)
 	#define IS_DL_TARGET 1
@@ -35,6 +43,9 @@ Defines:
 	// Report when GNU GCC is used.
 	#if IS_GNU
 		#pragma message ("GNU compiler")
+	#endif
+	#if IS_WIN
+		#pragma message ("Windows build")
 	#endif
 	// Report the QT is linked.
 	#ifdef IS_QT_TARGET

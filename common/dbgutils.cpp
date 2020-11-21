@@ -21,6 +21,10 @@ Contains debuging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <QMessageBox>
 #endif
 
+#if IS_WIN
+#include <debugapi.h>
+#endif
+
 //#define __DBG_MT_SAVEGUARD
 
 #ifdef __DBG_MT_SAVEGUARD
@@ -31,10 +35,15 @@ static misc::TCriticalSection CriticalSection;
 
 namespace misc {
 
-// Rais signal SIGTRAP when debugger present otherwise the process crashes in Linux.
+// Rais signal SIGTRAP when debugger present otherwise the process crashes.
 void DebugBreak(void)
 {
-#if IS_GNU
+#if IS_WIN
+	 if (IsDebuggerPresent())
+	 {
+		::DebugBreak();
+	 }
+#else
 	static int dbg_attached = -1;
 	if (-1 == dbg_attached)
 	{

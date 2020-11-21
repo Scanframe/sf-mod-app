@@ -9,7 +9,6 @@ project(rt-lib-app LANGUAGES CXX)
 
 add_definitions(-DDEBUG_LEVEL=1)
 #add_definitions(-DREPORT_TARGET)
-
 add_definitions(-DTARGET_QT)
 #add_definitions(-D_TARGET_SHARED)
 
