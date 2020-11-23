@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>359</height>
+    <width>607</width>
+    <height>355</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -76,7 +76,11 @@
      <widget class="QLineEdit" name="lineEditFunction"/>
     </item>
     <item row="3" column="0" colspan="2">
-     <widget class="QListWidget" name="listWidget"/>
+     <widget class="QTreeView" name="treeView">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -85,7 +89,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>592</width>
+     <width>607</width>
      <height>22</height>
     </rect>
    </property>

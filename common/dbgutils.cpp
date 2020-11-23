@@ -54,8 +54,9 @@ void DebugBreak(void)
 			dbg_attached = 0;
 			signal(SIGTRAP, SIG_DFL);
 		});
-		raise(SIGTRAP);
 	}
+	if (dbg_attached > 0)
+		raise(SIGTRAP);
 #endif
 }
 

@@ -33,12 +33,12 @@ bool Application::notify(QObject* obj, QEvent* evt)
 
 int main(int argc, char *argv[])
 {
-		Application app(argc, argv);
+	Application app(argc, argv);
 		MainWindow w;
 		try
 		{
 			w.show();
-			return app.exec();
+			return Application::exec();
 		}
 		catch (...)
 		{

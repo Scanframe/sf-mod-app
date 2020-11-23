@@ -32,13 +32,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
-set(TS_FILES rt-lib-app_en_US.ts)
+#set(TS_FILES rt-lib-app_en_US.ts)
+
 set(SOURCES
 	common/defs.h
 	common/target.h
 	common/dbgutils.cpp
 	common/dbgutils.h
 	main.cpp
+	messagelist.h
+	messagelist.cpp
 	mainwindow.cpp
 	mainwindow.h
 	mainwindow.ui
