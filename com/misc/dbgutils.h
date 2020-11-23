@@ -68,52 +68,50 @@ class debug_ostream;
 // Equals end of page character 12.
 #define END_OF_MSG ('\f')
 
-
-namespace misc {
-
-//
-enum EDebugOutputType
+namespace misc
 {
-	dotTHROW =   1<<0,  // throw and exception.
-	dotMSGBOX =  1<<1,  // Notify through a message box.
-	dotCLOG =    1<<2,  // Notify through the clog output stream.
-	dotCOUT =    1<<3,  // Notify through the cout output stream.
-	dotCERR =    1<<4,  // Notify through the cerr output stream.
-	dotDBGSTR =  1<<5,  // Notify through function OutputDebugString.
-	dotDBGBRK =  1<<6,  // Call dbug break function.
-	dotDEFAULT = 1<<7   // Call dbug break function.
-};
+//
+	enum EDebugOutputType
+	{
+		dotTHROW = 1U << 0U,  // throw and exception.
+		dotMSGBOX = 1U << 1U,  // Notify through a message box.
+		dotCLOG = 1U << 2U,  // Notify through the clog output stream.
+		dotCOUT = 1U << 3U,  // Notify through the cout output stream.
+		dotCERR = 1U << 4U,  // Notify through the cerr output stream.
+		dotDBGSTR = 1U << 5U,  // Notify through function OutputDebugString.
+		dotDBGBRK = 1U << 6U,  // Call debug break function.
+		dotDEFAULT = 1U << 7U   // Use default set notify output type.
+	};
 
 // Allows the passed string to be presented in various ways.
-_MISC_FUNC void _MISC_CALL UserOutputDebugString(int type, const char* s);
+	_MISC_FUNC void _MISC_CALL UserOutputDebugString(unsigned int type, const char* s);
 // Set and get function for the type of output when DO_DEFAULT is passed.
-_MISC_FUNC void _MISC_CALL SetDefaultDebugOutput(int type);
-_MISC_FUNC int _MISC_CALL GetDefaultDebugOutput();
+	_MISC_FUNC void _MISC_CALL SetDefaultDebugOutput(unsigned int type);
+	_MISC_FUNC int _MISC_CALL GetDefaultDebugOutput();
 // Returns true if debuging is passed at the command line.
-_MISC_FUNC bool _MISC_CALL IsDebug();
-_MISC_FUNC std::string _MISC_CALL Demangle(const char* name);
+	_MISC_FUNC bool _MISC_CALL IsDebug();
+	_MISC_FUNC std::string _MISC_CALL Demangle(const char* name);
 
+	class debug_ostream
+		: public std::ostream
+			, protected std::streambuf
+	{
+		public:
+			// Constructor
+			explicit debug_ostream(int type);
+			// Destructor.
+			~debug_ostream() override;
+			// Executes what is streamed and set.
+			void execute();
 
-class debug_ostream
-	: public std::ostream
-	, protected std::streambuf
-{
-	public:
-		// Constructor
-		debug_ostream(int type);
-		// Destructor.
-		~debug_ostream();
-		// Executes what is streamed and set.
-		void execute();
-
-	private:
-		std::string msg;
-		int Type;
-		//
-		virtual int overflow(int c=EOF);
+		private:
+			std::string msg;
+			int Type;
+			//
+			int overflow(int c) override;
 //		std::streamsize xsputn(const char *s, streamsize count);
-		std::size_t do_sputn(const char *s, std::size_t count);
-};
+			std::size_t do_sputn(const char* s, std::size_t count);
+	};
 
 } // namespace misc
 

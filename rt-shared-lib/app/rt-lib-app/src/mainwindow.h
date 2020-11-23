@@ -5,17 +5,17 @@
 #include <QTextStream>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui{class MainWindow;}
 QT_END_NAMESPACE
 
 #include "messagelist.h"
 
 class MainWindow : public QMainWindow
 {
-		Q_OBJECT
+	Q_OBJECT
 
 	public:
-		explicit MainWindow(QWidget *parent = nullptr);
+		explicit MainWindow(QWidget* parent = nullptr);
 		~MainWindow() override;
 
 	private slots:
@@ -23,9 +23,10 @@ class MainWindow : public QMainWindow
 		void on_actionLoad_B_triggered();
 
 	private:
-		Ui::MainWindow *ui;
+		Ui::MainWindow* ui;
 		//
 		MessageListModal listModal;
 
 };
+
 #endif // MAINWINDOW_H

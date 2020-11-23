@@ -2,8 +2,8 @@
 Making it easier to build libararies for the various targets and platforms.
 Defines:
 	* IS_GCC > GNU compiler detected.
-	* IS_QT > QT comile targtet is detected.
-
+	* IS_QT > QT compile target is detected.
+	* IS_WIN > Windows compile target is detected.
 */
 
 #ifndef MISC_TARGET_H
@@ -23,7 +23,6 @@ Defines:
 	#define IS_WIN 0
 #endif
 
-
 // Determine if the build is for a dynamic shared library.
 #if defined(TARGET_SHARED)
 	#define IS_DL_TARGET 1
@@ -38,23 +37,23 @@ Defines:
 	#define IS_QT_TARGET 0
 #endif
 
-// Report current targetted result.
+// Report current targeted result.
 #if defined(REPORT_TARGET)
-	// Report when GNU GCC is used.
+// Report when GNU GCC is used.
 	#if IS_GNU
 		#pragma message ("GNU compiler")
 	#endif
 	#if IS_WIN
 		#pragma message ("Windows build")
 	#endif
-	// Report the QT is linked.
+// Report the QT is linked.
 	#ifdef IS_QT_TARGET
 		#pragma message ("Target QT")
 	#endif
 // Report the QT is linked.
-#ifdef IS_SL_TARGET
-	#pragma message ("Target Shared Library")
-#endif
+	#ifdef IS_SL_TARGET
+		#pragma message ("Target Shared Library")
+	#endif
 #endif // REPORT_TARGET
 
 #endif // MISC_TARGET_H

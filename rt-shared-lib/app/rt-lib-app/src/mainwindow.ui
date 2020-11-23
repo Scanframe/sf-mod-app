@@ -90,7 +90,7 @@
      <x>0</x>
      <y>0</y>
      <width>607</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLibrary">
@@ -122,13 +122,17 @@
   <action name="actionLoad_A">
    <property name="icon">
     <iconset resource="main.qrc">
-     <normaloff>:/images/logo.png</normaloff>:/images/logo.png</iconset>
+     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
    </property>
    <property name="text">
     <string>Load A</string>
    </property>
   </action>
   <action name="actionLoad_B">
+   <property name="icon">
+    <iconset resource="main.qrc">
+     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+   </property>
    <property name="text">
     <string>Load B</string>
    </property>

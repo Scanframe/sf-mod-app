@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Set the project name.
+project(rt-lib-app LANGUAGES CXX)
+
 # Make sure builds do not wind up in the source directory.
 set(BuildCheck_DIR "../../../cmake-mods")
 find_package(BuildCheck CONFIG REQUIRED)
-
-# Set the project name.
-project(rt-lib-app LANGUAGES CXX)
 
 add_definitions(-DDEBUG_LEVEL=1)
 #add_definitions(-DREPORT_TARGET)
@@ -35,19 +35,19 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 #set(TS_FILES rt-lib-app_en_US.ts)
 
 set(SOURCES
-	common/defs.h
-	common/target.h
-	common/dbgutils.cpp
-	common/dbgutils.h
-	main.cpp
-	messagelist.h
-	messagelist.cpp
-	mainwindow.cpp
-	mainwindow.h
-	mainwindow.ui
+	com/misc/defs.h
+	com/misc/target.h
+	com/misc/dbgutils.cpp
+	com/misc/dbgutils.h
+	src/main.cpp
+	src/messagelist.h
+	src/messagelist.cpp
+	src/mainwindow.cpp
+	src/mainwindow.h
+	src/mainwindow.ui
 )
 
-qt5_add_resources(SOURCES main.qrc)
+qt5_add_resources(SOURCES src/main.qrc)
 
 add_executable(rt-lib-app
 	${SOURCES}
@@ -55,6 +55,12 @@ add_executable(rt-lib-app
 )
 
 target_link_libraries(rt-lib-app PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+set_target_properties(
+	rt-lib-app
+	PROPERTIES
+	OUTPUT_NAME "rt-lib-app"
+	SUFFIX ".bin"
+)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 

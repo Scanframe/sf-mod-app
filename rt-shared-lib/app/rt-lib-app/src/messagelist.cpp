@@ -2,7 +2,6 @@
 
 #include <QByteArray>
 
-
 Message::Message()
 //	:QObject(nullptr)
 {
@@ -11,9 +10,9 @@ Message::Message()
 
 Message::Message(const QString& identifier, const QString& title, const QString& message)
 //	:QObject(nullptr)
-	:_identifier(identifier)
-	,_title(title)
-	,_message(message)
+	: _identifier(identifier)
+	, _title(title)
+	, _message(message)
 {
 }
 
@@ -32,8 +31,7 @@ const QString& Message::message() const
 	return _message;
 }
 
-
-MessageListModal::MessageListModal() :QAbstractListModel(nullptr)
+MessageListModal::MessageListModal() : QAbstractListModel(nullptr)
 {
 }
 
@@ -58,17 +56,16 @@ QVariant MessageListModal::data(const QModelIndex& index, int role) const
 	{
 		return QVariant();
 	}
-	switch(role)
+	switch (role)
 	{
 		case IdentifierRole:
 			return list.at(index.row())->identifier();
-			break;
+
 		case TitleRole:
 			return list.at(index.row())->title();
-			break;
 		case MessageRole:
 			return list.at(index.row())->message();
-			break;
+
 		default:
 			return QVariant();
 	}
@@ -77,10 +74,10 @@ QVariant MessageListModal::data(const QModelIndex& index, int role) const
 bool MessageListModal::insert(const QList<Message>& messages, int position)
 {
 	beginInsertRows(QModelIndex(), position, position + messages.size() - 1);
-	for(int row = 0; row < messages.size(); ++row)
+	for (int row = 0; row < messages.size(); ++row)
 	{
 		IndexMap::const_iterator indexMapItr(indexMap.constFind(messages.at(row).identifier()));
-		if(indexMapItr == indexMap.constEnd())
+		if (indexMapItr == indexMap.constEnd())
 		{
 			MessagePointer newMessage(new Message(messages.at(row)));
 			list.insert(position, newMessage);
@@ -104,7 +101,8 @@ QVariantMap MessageListModal::get(const QString& identifier) const
 {
 	QVariantMap result;
 	IndexMap::const_iterator indexMapItr(indexMap.constFind(identifier));
-	if(indexMapItr != indexMap.constEnd()) {
+	if (indexMapItr != indexMap.constEnd())
+	{
 		result["identifier"] = QVariant(indexMapItr->data()->identifier());
 		result["title"] = QVariant(indexMapItr->data()->title());
 		result["message"] = QVariant(indexMapItr->data()->message());
