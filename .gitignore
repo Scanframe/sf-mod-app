@@ -1,3 +1,5 @@
+**/.idea
 */*/bin
 **/*.user
 **/build-*
+**/cmake-build-*
