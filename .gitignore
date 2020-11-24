@@ -1,5 +1,5 @@
-**/.idea
-*/*/bin
-**/*.user
-**/build-*
+*/*/.idea
+*/bin
+*/*/*.user
 **/cmake-build-*
+**/CMakeLists.txt.user
