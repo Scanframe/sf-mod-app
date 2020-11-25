@@ -1,56 +1,48 @@
 /*
-
-Copyright (c) ScanFrame 20.
-All Rights Reserved.
-
 This include file determines the the way the classes and functions in the
-basics library are exported when they are used as a DLL with an import library.
-When using the basics DLL in an other DLL or EXE then
-_MISCDLL should be defined to prevend errors.
+library are exported when they are used as a dynamic or as application and static library.
+When using this Dynamic Library then _MISC_PK (package) should be defined.
 
-Usage of the type modifiers:
+List of the declaration modifiers for types:
+	classes:        _MISC_CLASS
+	Function calls: _MISC_FUNC _MISC_CALL
+	Data:           _MISC_DATA
 
-	classes:   _MISC_CLASS
-	functions: _MISC_FUNC
-	data:      _MISC_DATA
-
+Add compiler definition flag:
+	* _MISC_PKG when using as dynamic library (package)
+	* _MISC_ARC when including in a compile or using it as an archive.
 */
 
 #ifndef MISC_DEFS_H
 #define MISC_DEFS_H
 
-// Import of IS_xxx_TARGET defines.
+// Import of defines for this target.
 #include "target.h"
 
-// When compiling a dynamic shared library and not using the misc shared lib it is build.
-#if IS_DL_TARGET && !defined(_MISC_DL) && !defined(_MISC_LIB)
-	#if IS_GNU
-		#define _MISC_CLASS __declspec(dllexport)
-		#define _MISC_FUNC __declspec(dllexport)
-		#define _MISC_CALL
-		#define _MISC_DATA __declspec(dllexport)
-		#define _MISC_MEM
-	#else
-		#define _MISC_CLASS
-		#define _MISC_FUNC
-		#define _MISC_CALL
-		#define _MISC_DATA
-		#define _MISC_MEM
-	#endif
+//#if IS_QT
+//#include <QtCore/qglobal.h>
+//#endif
+
+// When DL target and the misc PKG is not used the misc DL is being build
+#if IS_DL_TARGET && !defined(_MISC_PKG) && !defined(_MISC_ARC)
+	#define _MISC_DATA TARGET_EXPORT
+	#define _MISC_CALL TARGET_EXPORT
+	#define _MISC_CLASS TARGET_EXPORT
+	#define _MISC_FUNC
+
+// Is used dynamically and importing is required.
+#elif defined(_MISC_PKG)
+	#define _MISC_DATA TARGET_IMPORT
+	#define _MISC_CALL TARGET_IMPORT
+	#define _MISC_CLASS TARGET_IMPORT
+	#define _MISC_FUNC
+
+// When used statically.
 #else
-	#ifdef _MISCDLL
-		#define _MISC_CLASS __import
-		#define _MISC_FUNC
-		#define _MISC_CALL __import
-		#define _MISC_DATA __import
-		#define _MISC_MEM __import
-	#else
-		#define _MISC_CLASS
-		#define _MISC_FUNC
-		#define _MISC_CALL
-		#define _MISC_DATA
-		#define _MISC_MEM
-	#endif
+	#define _MISC_DATA
+	#define _MISC_CALL
+	#define _MISC_CLASS
+	#define _MISC_FUNC
 #endif
 
 #endif // MISC_DEFS_H
