@@ -9,8 +9,8 @@ else ()
 endif ()
 
 # Make sure builds do not wind up in the source directory.
-set(BuildCheck_DIR "../../cmake-mods")
-find_package(BuildCheck CONFIG REQUIRED)
+list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
 
 # Do not export all by default.
 add_definitions("-fvisibility=hidden")
@@ -28,9 +28,9 @@ add_definitions(-DDEBUG_LEVEL=1)
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #add_definitions(-DREPORT_TARGET)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
 
 # Write a message.
 message("Project name: ${CMAKE_PROJECT_NAME}")

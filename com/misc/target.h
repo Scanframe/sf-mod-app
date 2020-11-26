@@ -8,7 +8,6 @@ Defines these defines with true (1) or false (0):
  * IS_AB_TARGET > An application binary is the current target.
  * IS_DL_TARGET > A dynamic library is the current target.
  * IS_SL_TARGET > A static library is the current target.
-
 */
 
 #ifndef MISC_TARGET_H

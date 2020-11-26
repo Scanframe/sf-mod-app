@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project(rt-lib-app LANGUAGES CXX)
+project("rt-lib-app" LANGUAGES CXX)
 
 if (WIN32)
 	message("Platform: Windows")
@@ -9,23 +9,13 @@ else ()
 endif ()
 
 # Make sure builds do not wind up in the source directory.
-set(BuildCheck_DIR "../../cmake-mods")
-find_package(BuildCheck CONFIG REQUIRED)
+#set(BuildCheck_DIR "../../cmake-mods")
+list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
 
-add_definitions(-DDEBUG_LEVEL=1)
-#add_definitions(-DREPORT_TARGET)
-# Explicitly tell the compiled code the QT libraries are included.
-add_definitions(-DTARGET_QT)
-# Tell the code the 'misc' library is used as dynamic library. (So imports needed)
-#add_definitions(-D_MISC_PKG)
-# The 'DDEBUG_LEVEL' controls the debug output macro's.
-add_definitions(-DDEBUG_LEVEL=1)
-# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
-#add_definitions(-DREPORT_TARGET)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
 
 # Write a message.
 message("Project name: ${CMAKE_PROJECT_NAME}")
@@ -48,13 +38,11 @@ find_package(Qt5Widgets REQUIRED)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
-#set(TS_FILES rt-lib-app_en_US.ts)
+include_directories(AFTER "./../../")
+
+#set(TS_FILES ${CMAKE_PROJECT_NAME}_en_US.ts)
 
 set(SOURCES
-	com/misc/defs.h
-	com/misc/target.h
-	com/misc/dbgutils.h
-	com/misc/dbgutils.cpp
 	src/main.cpp
 	src/messagelist.h
 	src/messagelist.cpp
@@ -66,14 +54,31 @@ set(SOURCES
 #add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
 qt5_add_resources(SOURCES src/main.qrc)
 
-add_executable(rt-lib-app ${SOURCES} ${TS_FILES})
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${TS_FILES})
 
-target_link_libraries(rt-lib-app PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+# Explicitly tell the compiled code the QT libraries are included.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE TARGET_QT)
+
+# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE REPORT_TARGET)
+
+# The 'DEBUG_LEVEL' controls the debug output macro's.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
+
+link_directories(${CMAKE_BINARY_DIR}/../bin)
+
+add_library(rt-iface SHARED IMPORTED)
+set_property(TARGET rt-iface PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/librt-iface.so")
+
+add_library(sf-misc SHARED IMPORTED)
+set_property(TARGET sf-misc PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libsf-misc.so")
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets rt-iface sf-misc)
 
 if (WIN32)
-	set_target_properties(rt-iface PROPERTIES OUTPUT_NAME "rt-lib-app" SUFFIX ".exe")
+	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME "${CMAKE_PROJECT_NAME}" SUFFIX ".exe")
 else ()
-	set_target_properties(rt-lib-app PROPERTIES OUTPUT_NAME "rt-lib-app" SUFFIX ".bin")
+	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME "${CMAKE_PROJECT_NAME}" SUFFIX ".bin")
 endif ()
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

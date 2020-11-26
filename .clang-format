@@ -1,4 +1,4 @@
-﻿# Generated from CLion C/C++ Code Style settings
+# Generated from CLion C/C++ Code Style settings
 BasedOnStyle: LLVM
 AccessModifierOffset: 0
 AlignAfterOpenBracket: Align
@@ -41,7 +41,7 @@ IndentPPDirectives: BeforeHash
 IndentWidth: 2
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
+NamespaceIndentation: None
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PointerAlignment: Left

@@ -71,47 +71,56 @@ class debug_ostream;
 namespace misc
 {
 //
-	enum EDebugOutputType
-	{
-		dotTHROW = 1U << 0U,  // throw and exception.
-		dotMSGBOX = 1U << 1U,  // Notify through a message box.
-		dotCLOG = 1U << 2U,  // Notify through the clog output stream.
-		dotCOUT = 1U << 3U,  // Notify through the cout output stream.
-		dotCERR = 1U << 4U,  // Notify through the cerr output stream.
-		dotDBGSTR = 1U << 5U,  // Notify through function OutputDebugString.
-		dotDBGBRK = 1U << 6U,  // Call debug break function.
-		dotDEFAULT = 1U << 7U   // Use default set notify output type.
-	};
+enum EDebugOutputType
+{
+	dotTHROW = 1U << 0U,  // throw and exception.
+	dotMSGBOX = 1U << 1U,  // Notify through a message box.
+	dotCLOG = 1U << 2U,  // Notify through the clog output stream.
+	dotCOUT = 1U << 3U,  // Notify through the cout output stream.
+	dotCERR = 1U << 4U,  // Notify through the cerr output stream.
+	dotDBGSTR = 1U << 5U,  // Notify through function OutputDebugString.
+	dotDBGBRK = 1U << 6U,  // Call debug break function.
+	dotDEFAULT = 1U << 7U   // Use default set notify output type.
+};
 
 // Allows the passed string to be presented in various ways.
-	_MISC_FUNC void _MISC_CALL UserOutputDebugString(unsigned int type, const char* s);
+void _MISC_CALL UserOutputDebugString(unsigned int type, const char *s);
+
 // Set and get function for the type of output when DO_DEFAULT is passed.
-	_MISC_FUNC void _MISC_CALL SetDefaultDebugOutput(unsigned int type);
-	_MISC_FUNC int _MISC_CALL GetDefaultDebugOutput();
-// Returns true if debuging is passed at the command line.
-	_MISC_FUNC bool _MISC_CALL IsDebug();
-	_MISC_FUNC std::string _MISC_CALL Demangle(const char* name);
+void _MISC_CALL SetDefaultDebugOutput(unsigned int type);
 
-	class debug_ostream
-		: public std::ostream
-			, protected std::streambuf
-	{
-		public:
-			// Constructor
-			explicit debug_ostream(int type);
-			// Destructor.
-			~debug_ostream() override;
-			// Executes what is streamed and set.
-			void execute();
+// Returns the combination of EDebugOutputType which is the default output.
+int _MISC_CALL GetDefaultDebugOutput();
 
-		private:
-			std::string msg;
-			int Type;
-			//
-			int overflow(int c) override;
+// Returns true if debugging is passed at the command line.
+bool _MISC_CALL IsDebug();
+
+// Demangle the passed rtti type name.
+std::string _MISC_CALL Demangle(const char *name);
+
+// Output stream used as
+class _MISC_CLASS debug_ostream
+	:public std::ostream, protected std::streambuf
+{
+	public:
+		// Constructor
+		explicit debug_ostream(int type);
+
+		// Destructor.
+		~debug_ostream() override;
+
+		// Executes what is streamed and set.
+		void execute();
+
+	private:
+		std::string msg;
+		int Type;
+
+		int overflow(int c) override;
+
 //		std::streamsize xsputn(const char *s, streamsize count);
-			std::size_t do_sputn(const char* s, std::size_t count);
-	};
+		std::size_t do_sputn(const char *s, std::size_t count);
+};
 
 } // namespace misc
 

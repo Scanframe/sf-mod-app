@@ -1,5 +1,5 @@
 /*
-Contains debuging macro's that are defined when define DEBUG_LEVEL is non zero.
+Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 */
 
 // Import defines to get the right target
@@ -25,9 +25,9 @@ Contains debuging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <debugapi.h>
 #endif
 
-//#define __DBG_MT_SAVEGUARD
+//#define __DBG_MT_SAFEGUARD
 
-#ifdef __DBG_MT_SAVEGUARD
+#ifdef __DBG_MT_SAFEGUARD
 namespace {
 static misc::TCriticalSection CriticalSection;
 }
@@ -35,7 +35,7 @@ static misc::TCriticalSection CriticalSection;
 
 namespace misc
 {
-// Rais signal SIGTRAP when debugger present otherwise the process crashes.
+// Raise signal SIGTRAP when debugger present otherwise the process crashes.
 void DebugBreak()
 {
 #if IS_WIN
@@ -64,11 +64,11 @@ void DebugBreak()
 
 static unsigned int DefaultDebugOutputType = dotCLOG;
 
-class notify_exception : public std::exception
+class notify_exception :public std::exception
 {
 	public:
 
-		explicit notify_exception(const char *s) : msg(s) {}
+		explicit notify_exception(const char *s) :msg(s) {}
 
 		const char *what() const noexcept override;
 
@@ -83,9 +83,9 @@ const char *notify_exception::what() const noexcept
 
 // Debug output stream for easy streaming of information.
 debug_ostream::debug_ostream(int type)
-	: std::ostream(std::cout.rdbuf())
-		, std::streambuf()
-		, Type(type)
+	:std::ostream(std::cout.rdbuf())
+	 , std::streambuf()
+	 , Type(type)
 {
 	// Assign the buffer again because some times it is not enough
 	this->rdbuf(this);
@@ -93,7 +93,7 @@ debug_ostream::debug_ostream(int type)
 
 debug_ostream::~debug_ostream()
 {
-	// When the message was not ouputed yet do it now.
+	// When the message was not output yet do it now.
 	if (msg.length())
 	{
 		UserOutputDebugString(Type, msg.c_str());
@@ -187,14 +187,14 @@ void UserOutputDebugString(unsigned int type, const char *s)
 		}
 		else
 		{
-			// if no seperator was found all buffer text is message text
+			// if no separator was found all buffer text is message text
 			text = const_cast<char *>(s);
 		}
 		//
 		if (type & dotMSGBOX)
 		{
 			static bool sentry = false;
-			// Prevent rentry so message boxes are not created in the background.
+			// Prevent reentry so message boxes are not created in the background.
 			if (!sentry)
 			{
 				sentry = true;
@@ -202,7 +202,7 @@ void UserOutputDebugString(unsigned int type, const char *s)
 #ifdef __DBG_MT_SAVEGUARD
 				lock.Release();
 #endif
-#if IS_QT_TARGET
+#if IS_QT
 				QMessageBox(QMessageBox::Warning, caption, text).exec();
 #endif
 				sentry = false;
@@ -223,8 +223,8 @@ void UserOutputDebugString(unsigned int type, const char *s)
 
 void SetDefaultDebugOutput(unsigned int type)
 {
-	// Prevent trhow from being set.
-	DefaultDebugOutputType = type & ~dotTHROW;
+	// Prevent throw from being set.
+	DefaultDebugOutputType = type & unsigned(~dotTHROW);
 }
 
 unsigned int getDefaultDebugOutput()
@@ -253,9 +253,9 @@ std::string Demangle(const char *name)
 #if IS_GNU
 	int status;
 	char *nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
-	std::string retval(nm);
+	std::string rv(nm);
 	free(nm);
-	return retval;
+	return rv;
 #else
 	return name;
 #endif

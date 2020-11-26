@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 
 #include "com/misc/dbgutils.h"
+#include "../../iface/src/rt-iface.h"
 
 #include <QAbstractItemView>
 #include <QDate>
@@ -49,9 +50,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionLoad_A_triggered()
 {
 	_RTTI_NOTIFY(DO_COUT, "out: Hello world...")
-	_RTTI_NOTIFY(DO_CLOG, "Hello world...")
+	_RTTI_NOTIFY(DO_CLOG, "log: Hello world...")
 	_RTTI_NOTIFY(DO_MSGBOX | DO_DBGBRK, "A debug break?")
-	qDebug() << "Date:" << QDate::currentDate();
+	qDebug() << "Date:" << QDate::currentDate() << ' ' << RuntimeIface::GetGlobalString();
 	//ui->listView->model()->isWidgetType() << "Date:" << QDate::currentDate();
 }
 

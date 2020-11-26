@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project(rt-iface LANGUAGES CXX)
+project("rt-iface" LANGUAGES CXX)
 
 if (WIN32)
 	message("Platform: Windows")
@@ -9,28 +9,15 @@ else ()
 endif ()
 
 # Make sure builds do not wind up in the source directory.
-set(BuildCheck_DIR "../../cmake-mods")
-find_package(BuildCheck CONFIG REQUIRED)
+list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
 
 # Do not export all by default.
 add_definitions("-fvisibility=hidden")
 
-# Explicitly tell the compiled code the QT libraries are included.
-add_definitions(-DTARGET_QT)
-# Tell the compiled code a dynamic library (DL) is being build.
-add_definitions(-DTARGET_DYNAMIC_LIB)
-# Tell the code the 'misc' library is used as an archive. (So no imports or exports)
-add_definitions(-D_MISC_ARC)
-# Tell the code the 'misc' library is used as dynamic library. (So imports needed)
-#add_definitions(-D_MISC_PKG)
-# The 'DDEBUG_LEVEL' controls the debug output macro's.
-add_definitions(-DDEBUG_LEVEL=1)
-# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
-#add_definitions(-DREPORT_TARGET)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../../bin)
 
 # Write a message.
 message("Project name: ${CMAKE_PROJECT_NAME}")
@@ -50,23 +37,33 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core LinguistTools REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-#set(TS_FILES rt-iface_en_US.ts)
+include_directories(AFTER "./../../")
 
-add_library(rt-iface SHARED
-	com/misc/defs.h
-	com/misc/target.h
-	com/misc/dbgutils.h
-	com/misc/dbgutils.cpp
+add_library(${CMAKE_PROJECT_NAME} SHARED
 	src/rt-iface_global.h
 	src/rt-iface.h
 	src/rt-iface.cpp
-	${TS_FILES}
 	)
 
-target_link_libraries(rt-iface PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+# Link the Qt widgets library.
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+# Explicitly tell the compiled code the QT libraries are included.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE TARGET_QT)
+
+# Tell the compiled code a dynamic library (DL) is being build.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
+
+# The 'DEBUG_LEVEL' controls the debug output macro's.
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
+
+# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE REPORT_TARGET)
+
+target_compile_definitions(rt-iface PRIVATE RTIFACELIB_LIBRARY)
 
 if (WIN32)
 	set_target_properties(rt-iface PROPERTIES OUTPUT_NAME "rt-iface" SUFFIX ".dll")
@@ -74,6 +71,3 @@ else ()
 	set_target_properties(rt-iface PROPERTIES OUTPUT_NAME "rt-iface" SUFFIX ".so")
 endif ()
 
-target_compile_definitions(rt-iface PRIVATE RTIFACELIB_LIBRARY)
-
-qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

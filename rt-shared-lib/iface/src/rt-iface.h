@@ -7,6 +7,8 @@ class RTIFACELIB_EXPORT RuntimeIface
 {
 	public:
 		explicit RuntimeIface();
+
+		static const char* GetGlobalString();
 };
 
 #endif // RUNTIMEIFACE_H
