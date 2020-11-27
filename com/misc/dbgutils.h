@@ -47,7 +47,7 @@
 #ifndef MISC_DBGUTILS_H
 #define MISC_DBGUTILS_H
 
-#include "defs.h"
+#include "global.h"
 // Include for cout, cerr ,clog and ostream.
 #include <iostream>
 
@@ -84,19 +84,19 @@ enum EDebugOutputType
 };
 
 // Allows the passed string to be presented in various ways.
-void _MISC_CALL UserOutputDebugString(unsigned int type, const char *s);
+void _MISC_FUNC UserOutputDebugString(unsigned int type, const char *s);
 
 // Set and get function for the type of output when DO_DEFAULT is passed.
-void _MISC_CALL SetDefaultDebugOutput(unsigned int type);
+void _MISC_FUNC SetDefaultDebugOutput(unsigned int type);
 
 // Returns the combination of EDebugOutputType which is the default output.
-int _MISC_CALL GetDefaultDebugOutput();
+int _MISC_FUNC GetDefaultDebugOutput();
 
 // Returns true if debugging is passed at the command line.
-bool _MISC_CALL IsDebug();
+bool _MISC_FUNC IsDebug();
 
 // Demangle the passed rtti type name.
-std::string _MISC_CALL Demangle(const char *name);
+std::string _MISC_FUNC Demangle(const char *name);
 
 // Output stream used as
 class _MISC_CLASS debug_ostream

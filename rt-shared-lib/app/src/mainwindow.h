@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTextStream>
+#include "../../iface/src/rt-iface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui{class MainWindow;}
@@ -26,7 +27,8 @@ class MainWindow : public QMainWindow
 		Ui::MainWindow* ui;
 		//
 		MessageListModal listModal;
-
+		//
+		RuntimeIface* FRuntimeIface;
 };
 
 #endif // MAINWINDOW_H

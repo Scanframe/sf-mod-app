@@ -1,14 +1,26 @@
-#ifndef RUNTIMEIFACE_H
-#define RUNTIMEIFACE_H
+#ifndef RT_IFACE_H
+#define RT_IFACE_H
 
-#include "rt-iface_global.h"
+#include "global.h"
+#include "com/misc/regobj.h"
 
-class RTIFACELIB_EXPORT RuntimeIface
+class _IFACE_CLASS RuntimeIface
 {
 	public:
-		explicit RuntimeIface();
+		struct Parameters
+		{
+			explicit Parameters(int h) : Handle(h) {}
 
-		static const char* GetGlobalString();
+			int Handle;
+		};
+
+		// Required type of constructor passing a parameters structure.
+		explicit RuntimeIface(Parameters& params);
+
+		// Method needed to implemented in the implementation of a derived class.
+		virtual const char* getString() = 0;
+
+	DECLARE_REGISTER_BASE(RuntimeIface);
 };
 
-#endif // RUNTIMEIFACE_H
+#endif // RT_IFACE_H

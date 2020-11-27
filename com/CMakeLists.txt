@@ -1,10 +1,11 @@
+# Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
-
 # Set the project name.
 project("sf-misc" LANGUAGES CXX)
-# Include common settings.
+# Include common configuration.
 include("cmake/SfCommonInc.cmake")
 
+# Finde the needed packages.
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -12,10 +13,14 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
-	misc/defs.h
+	misc/global.h
 	misc/target.h
 	misc/dbgutils.h
 	misc/dbgutils.cpp
+	misc/genutils.h
+	misc/genutils.cpp
+	misc/exception.h
+	misc/exception.cpp
 	)
 
 # Link the Qt widgets library.

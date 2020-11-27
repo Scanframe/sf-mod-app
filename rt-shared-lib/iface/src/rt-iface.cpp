@@ -1,13 +1,9 @@
 #include "rt-iface.h"
 #include "com/misc/dbgutils.h"
 
-RuntimeIface::RuntimeIface()
-{
-	_RTTI_NOTIFY(DO_DEFAULT, "Constructed");
-}
+IMPLEMENT_REGISTERBASE(RuntimeIface)
 
-const char* RuntimeIface::GetGlobalString()
+RuntimeIface::RuntimeIface(RuntimeIface::Parameters& params)
 {
-	_NORM_NOTIFY(DO_DEFAULT, "Debug string from within a dynamic library")
-	return "My global string";
+	_RTTI_NOTIFY(DO_DEFAULT, "Constructed: " << params.Handle);
 }
