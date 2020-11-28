@@ -8,4 +8,4 @@ macro(macro_ensure_out_of_source_build MSG)
 endmacro()
 
 # Ensures that we do an out of source build
-macro_ensure_out_of_source_build("${CMAKE_PROJECT_NAME} requires an out of source build.")
+macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source build.")

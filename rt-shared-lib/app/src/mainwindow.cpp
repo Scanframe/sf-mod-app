@@ -52,7 +52,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionLoad_A_triggered()
 {
 	_RTTI_NOTIFY(DO_COUT, "out: Hello world...")
-	_RTTI_NOTIFY(DO_CLOG, "log: Hello world..." << misc::demangle("_ZN12RuntimeIface17ClassRegistrationE"))
+	_RTTI_NOTIFY(DO_CLOG, "log: Hello world...")
+	_RTTI_NOTIFY(DO_CERR, "err: Hello world...")
 	_RTTI_NOTIFY(DO_MSGBOX | DO_DBGBRK, "A debug break?")
 	//ui->listView->model()->isWidgetType() << "Date:" << QDate::currentDate();
 }
@@ -63,16 +64,16 @@ void MainWindow::on_actionLoad_B_triggered()
 	auto cnt = QString::asprintf("%d", counter++);
 	listModal.insert(QList<Message>{Message(cnt, "" + cnt, "This is a sample text message " + cnt)},
 		listModal.rowCount(QModelIndex()));
-
 	if (!FRuntimeIface)
 	{
-		QString file = QDir::currentPath() + QDir::separator() + "librt-impl-a.so";
+		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a.so";
 		if (!QFile::exists(file))
 		{
 			qDebug() << "File (" << file << ") does not exist";
 		}
 		else
 		{
+			_NORM_NOTIFY(DO_DEFAULT, "Loading: " << file.toStdString())
 			QLibrary lib(file);
 			if (!lib.load())
 			{
