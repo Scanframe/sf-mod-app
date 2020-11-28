@@ -24,3 +24,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+# Generate an error on undefined (imported) symbols on dyn libs
+# because the error appears only at load-time.
+add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
