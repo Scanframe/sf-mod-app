@@ -29,3 +29,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Generate an error on undefined (imported) symbols on dyn libs
+# because the error appears only at load-time.
+add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
+
+

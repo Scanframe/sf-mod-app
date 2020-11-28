@@ -148,7 +148,7 @@ void UserOutputDebugString(unsigned int type, const char *s)
 	{
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
-	auto tm = double(clock()) / (CLOCKS_PER_SEC / 100);
+	auto tm = double(clock()) / (CLOCKS_PER_SEC / 10);
 	// If the log bit is enabled write the line as is.
 	if (type & dotCLOG)
 	{

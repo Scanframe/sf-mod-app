@@ -3,8 +3,7 @@
 
 IMPLEMENT_REGISTER_BASE(RuntimeIface)
 
-typename misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::ClassRegistration;
-
+typename misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::ClassRegistration; // NOLINT(cert-err58-cpp)
 
 RuntimeIface::RuntimeIface(const RuntimeIface::Parameters& params)
 {
