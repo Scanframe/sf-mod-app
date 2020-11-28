@@ -16,6 +16,7 @@ make C++ programming easier.
 // Import of std::string type.
 #include <string>
 #include <iostream>
+#include <memory>
 // Import of template class mcvector.
 #include "mcvector.h"
 // Import of shared library export defines.
@@ -569,29 +570,43 @@ bool TBitSet<Size>::IsClear()
 /**
 * creates a formatted string and returns it in a string class instance.
 */
-std::string _MISC_FUNC stringf(const char* fmt, ...);
+_MISC_FUNC std::string stringf(const char* fmt, ...);
+
+/**
+ * Better implementation of 'stringf' ?
+ */
+template<typename ... Args>
+std::string string_format(const std::string& format, Args ... args)
+{
+	// Extra space for '\0'
+	size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1;
+	std::unique_ptr<char[]> buf( new char[ size ] );
+	snprintf( buf.get(), size, format.c_str(), args ... );
+	// We don't want the '\0' inside
+	return std::string( buf.get(), buf.get() + size - 1 );
+}
 
 // converts a integer value to bit string '0' and '1' characters
 // where the first character is the first bit
-std::string _MISC_FUNC bittostring(unsigned long wrd, size_t count);
+_MISC_FUNC std::string bittostring(unsigned long wrd, size_t count);
 
 // Returns numeric the value of the passed hexadecimal character
-char _MISC_FUNC hexcharvalue(char ch);
+_MISC_FUNC char hexcharvalue(char ch);
 
 // Converts a hexadeciamal string to a block of data
-size_t _MISC_FUNC stringhex(const char* hexstr, void* buffer, size_t sz);
+_MISC_FUNC size_t stringhex(const char* hexstr, void* buffer, size_t sz);
 
 // Converts a block of data to a hexadecimal string
-std::string _MISC_FUNC hexstring(const void* buffer, size_t sz);
+_MISC_FUNC std::string hexstring(const void* buffer, size_t sz);
 
 /**
 * Checks if a keyboard key pas pressed.
 */
-bool _MISC_FUNC kbhit();
+_MISC_FUNC bool kbhit();
 /**
  * Add missing gettid() system call.
  */
-pid_t _MISC_FUNC gettid() noexcept;
+_MISC_FUNC pid_t gettid() noexcept;
 
 namespace misc
 {
@@ -607,12 +622,12 @@ typedef mciterator<string> strings_iter;
 /**
  * Implodes a string list into a single string.
  */
-string _MISC_FUNC implode(strings strs, string glue, bool skip_empty = false);
+_MISC_FUNC string implode(strings strs, string glue, bool skip_empty = false);
 /**
  * Explodes the passed string into a strings using the separator.
  * When skip_empty is true empty strings are ignored.
  */
-strings _MISC_FUNC explode(string str, string separator, bool skip_empty = false);
+_MISC_FUNC strings explode(string str, string separator, bool skip_empty = false);
 /**
  * Type for storing an MD5 hash.
  */

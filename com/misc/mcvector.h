@@ -4,12 +4,15 @@
 #	include <vector>
 #include <limits.h>
 
-//
+/**
+ * Counted vector.
+ * @tparam T
+ */
 template <class T>
 class mcvector : public std::vector<T>
 {
 	public:
-		// Base type for this temnplate.
+		// Base type for this template.
 		typedef std::vector<T> base_t;
 
 		// Default constructor.
@@ -100,6 +103,7 @@ class mcvector : public std::vector<T>
 			return &(*base_t::begin());
 		}
 
+		/*
 		// Array operators for easy access.
 		T& operator[](size_t i)
 		{
@@ -110,6 +114,7 @@ class mcvector : public std::vector<T>
 		{
 			return base_t::at(i);
 		}
+		*/
 
 		// Get function when the vector is passed as a pointer.
 		T& Get(unsigned i)

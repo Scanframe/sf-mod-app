@@ -52,7 +52,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionLoad_A_triggered()
 {
 	_RTTI_NOTIFY(DO_COUT, "out: Hello world...")
-	_RTTI_NOTIFY(DO_CLOG, "log: Hello world...")
+	_RTTI_NOTIFY(DO_CLOG, "log: Hello world..." << misc::demangle("_ZN12RuntimeIface17ClassRegistrationE"))
 	_RTTI_NOTIFY(DO_MSGBOX | DO_DBGBRK, "A debug break?")
 	//ui->listView->model()->isWidgetType() << "Date:" << QDate::currentDate();
 }
@@ -80,7 +80,7 @@ void MainWindow::on_actionLoad_B_triggered()
 			}
 			else
 			{
-				FRuntimeIface = RuntimeIface::NewRegisterObject("RuntimeLibImplementationA2", RuntimeIface::Parameters(100));
+				FRuntimeIface = RuntimeIface::NewRegisterObject("Implementation_Alias", RuntimeIface::Parameters(100));
 			}
 		}
 	}

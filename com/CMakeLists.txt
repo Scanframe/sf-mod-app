@@ -12,6 +12,8 @@ find_package(Qt5Widgets REQUIRED)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
+include_directories(AFTER "./../../" "./../")
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
 	misc/global.h
 	misc/target.h
