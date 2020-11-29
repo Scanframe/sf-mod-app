@@ -1,6 +1,15 @@
 # Qt Concepts
 
-Concepts for proofing for me needed concepts using the Qt framework.
+C++ concepts for proofing for me needed concepts using the Qt framework.
+
+## General Building (Compiling/Linking) 
+
+Use the `build.sh` to call the `cmake` command having the needed options. 
+All projects are configured to drop the result into the **`./bin`** directory.
+
+Usage is `./build.sh <directory>`.<br>
+Where the directory is any with a CMakelists.txt project file in it.
+
 
 ## Concept 1: Shared Library Loading at Runtime
 
@@ -15,24 +24,25 @@ This consists of 3 builds:
 The interface shared library implements a C++ virtual base class with some static member functions 
 for registering implementation classes and retrieving information loaded implemention libraries.
 
-### Implmentation Shared Library
+### Implementation Shared Library
 
 The implementation library is derived from the virtual base class in the interface library 
 implementing all virtual member functions.
 
-### Building This Concept
+### Building
 
-Use the `build.sh` to call the `cmake` command having the needed options.
-Usage is `./build.sh <sub-dir>`.
+To build this concept 2 steps are needed.
 
-The script builds projects  
-```bash
-# Builds bin/libsf-misc.so
-./build.sh com
-# Builds bin/librt-iface.so,  bin/librt-impl-a.so and bin/librt-lib-app 
-./build.sh rt-shared-lib
-```
+#### Step 1 
+First build the common miscellaneous dependent dynamic 
+library '**libsf-misc**' with `./build.sh com` from the root.
+
+#### Step 2 
+Second to build are the three sub projects '**iface**', '**app**' and '**impl-a**' by building 
+the overarching project directory '**rt-shared-lib**' with `./build.sh rt-shared-lib`.      
+
 
 ## Concept 2: Serializing UI Forms at Runtime
 
-This proof of concept that UI elements on a form can be serialized to a file and recreated by reading the same file.
+This proof of concept that UI elements on a form can be serialized to a file and 
+recreated by reading the same file.

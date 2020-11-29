@@ -11,6 +11,7 @@ add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
 
 # Set output directories only when the current cmake project is also the main project.
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
+	message("Setting Output Dir for Project '${PROJECT_NAME}'")
 	# Set the directories relative to this included file.
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../bin")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../bin")

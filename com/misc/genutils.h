@@ -653,67 +653,67 @@ bool operator==(const md5hash_t& h1, const md5hash_t& h2);
 /**
  * Returns the MD5 hash of the passed string.
  */
-md5hash_t _MISC_FUNC md5(const char* s);
+_MISC_FUNC md5hash_t md5(const char* s);
 /**
  * Returns the MD5 hash of the passed string.
  */
-md5hash_t _MISC_FUNC md5(string s);
+_MISC_FUNC md5hash_t md5(string s);
 /**
  * Returns the md5 hexadecimal string of the passed string.
  */
-string _MISC_FUNC md5str(string s);
+_MISC_FUNC string md5str(string s);
 /**
  * Returns the string md5 hexadecimal representation string of the hash.
  */
-string _MISC_FUNC md5hexstr(const md5hash_t& hash);
+_MISC_FUNC string md5hexstr(const md5hash_t& hash);
 
 #endif // WIN32
 
 /**
 * Return a line from the input stream.
 */
-string _MISC_FUNC getline(istream& is);
+_MISC_FUNC string getline(istream& is);
 /**
 * Converts the passed string into a lower case one and returns it.
 */
-string _MISC_FUNC getcwdstr();
+_MISC_FUNC string getcwdstr();
 /**
 * Returns the timespec as function return value as clock_gettime().
 */
-timespec _MISC_FUNC gettime();
+_MISC_FUNC timespec gettime();
 /**
 * Returns the unmagled function name returned by type ID.
 */
-string _MISC_FUNC demangle(const char* name);
+_MISC_FUNC string demangle(const char* name);
 /**
 * Compares the 2 times.
 * Returns -1, 0, 1 respectively for smaller, equal en larger.
 */
-int _MISC_FUNC timespeccmp(const timespec& ts1, const timespec& ts2);
+_MISC_FUNC int timespeccmp(const timespec& ts1, const timespec& ts2);
 /**
 * Converts the passed string into a lower case one and returns it.
 */
-string _MISC_FUNC tolower(string s);
+_MISC_FUNC string tolower(string s);
 /**
 * Converts the passed string into a upper case one and returns it.
 */
-string _MISC_FUNC toupper(string s);
+_MISC_FUNC string toupper(string s);
 /**
 * Trims a passed string at both sides and returns it.
 */
-string _MISC_FUNC trim(string s, const string& t = " ");
+_MISC_FUNC string trim(string s, const string& t = " ");
 /**
 * Trims a passed string left and returns it.
 */
-string _MISC_FUNC trim_left(string s, const string& t = " ");
+_MISC_FUNC string trim_left(string s, const string& t = " ");
 /**
 * Trims a passed string right and returns it.
 */
-string _MISC_FUNC trim_right(string s, const string& t = " ");
+_MISC_FUNC string trim_right(string s, const string& t = " ");
 /**
 * Returns the same string but now uses a new buffer making the string thread save.
 */
-string _MISC_FUNC unique(const string& s);
+_MISC_FUNC string unique(const string& s);
 /**
 * Returns the same string but now uses a new buffer making the string thread save.
 
@@ -753,7 +753,7 @@ _MISC_FUNC const char* strnstr(const char* s, const char* find, size_t n);
 /**
 * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
 */
-int _MISC_FUNC wildcmp(const char* wild, const char* str, bool case_s);
+_MISC_FUNC int wildcmp(const char* wild, const char* str, bool case_s);
 
 inline
 int wildcmp(const string& wild, const string& str, bool case_s)
@@ -762,13 +762,13 @@ int wildcmp(const string& wild, const string& str, bool case_s)
 }
 
 // Returns all the files from the passed directory using a wildcard.
-bool _MISC_FUNC getfiles(strings& files, string directory, string wildcard);
+_MISC_FUNC bool getfiles(strings& files, string directory, string wildcard);
 //
 } /* namespace misc */
 /**
  * Checks if the passed path exists (by doing a access() using F_OK).
  */
-bool _MISC_FUNC file_exists(const char* path);
+_MISC_FUNC bool file_exists(const char* path);
 
 inline
 bool file_exists(const std::string& path) {return file_exists(path.c_str());}
@@ -778,7 +778,7 @@ bool file_exists(const std::string& path) {return file_exists(path.c_str());}
 /**
  * Makes all directories recursively in the path.
  */
-bool _MISC_FUNC file_mkdir(const char* path, __mode_t mode = 0755);
+_MISC_FUNC bool file_mkdir(const char* path, __mode_t mode = 0755);
 
 inline
 bool file_mkdir(const std::string& path, __mode_t mode = 0755) {return file_mkdir(path.c_str(), mode);}
@@ -789,7 +789,7 @@ bool file_mkdir(const std::string& path, __mode_t mode = 0755) {return file_mkdi
 /**
  * Writes a buffer to a file.
  */
-bool _MISC_FUNC file_write(const char* path, const void* buf, size_t sz, bool append = false);
+_MISC_FUNC bool file_write(const char* path, const void* buf, size_t sz, bool append = false);
 
 inline
 bool file_write(const std::string& path, const void* buf, size_t sz, bool append = false)
@@ -806,19 +806,19 @@ bool file_write(const std::string& path, const std::string& s, bool append = fal
 /**
  * Same as basename() but using an std::string.
  */
-std::string _MISC_FUNC file_basename(const std::string& path);
+_MISC_FUNC std::string file_basename(const std::string& path);
 /**
  * Same as dirname() but using an std::string.
  */
-std::string _MISC_FUNC file_dirname(const std::string& path);
+_MISC_FUNC std::string file_dirname(const std::string& path);
 /**
  * Same as unlink() but using an std::string.
  */
-bool _MISC_FUNC file_unlink(const std::string& path);
+_MISC_FUNC bool file_unlink(const std::string& path);
 /**
  * Same as rename() but using an std::string.
  */
-bool _MISC_FUNC file_rename(const std::string& oldpath, const std::string& newpath);
+_MISC_FUNC bool file_rename(const std::string& oldpath, const std::string& newpath);
 /**
  * Easier typename.
  */
@@ -826,31 +826,31 @@ typedef struct stat stat_t;
 /**
  * Same as stat() but using an std::string.
  */
-bool _MISC_FUNC file_stat(const std::string& path, stat_t& _stat);
+_MISC_FUNC bool file_stat(const std::string& path, stat_t& _stat);
 /**
  * Finds the files using the passed wildcard.
  */
-bool _MISC_FUNC file_find(misc::strings& files, const std::string& wildcard);
+_MISC_FUNC bool file_find(misc::strings& files, const std::string& wildcard);
 /**
  * Formats the time to a the given format.
  * When the format is NULL the XML format is used.
  * When the timeinfo is NULL the current local time is used.
  */
-std::string _MISC_FUNC time_format(const struct tm* timeinfo, const char* format = nullptr);
+_MISC_FUNC std::string time_format(const struct tm* timeinfo, const char* format = nullptr);
 /**
  * When time -1 the current time is used.
  */
-std::string _MISC_FUNC time_format(time_t time = -1, const char* format = nullptr, bool gmtime = false);
+_MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullptr, bool gmtime = false);
 /**
  * Returns the unix time from the passed string in the passed format.
  * When the format is NULL the XML format is used.
  * When gmtime is true GMT is used otherwise the local time.
  */
-time_t _MISC_FUNC time_str2time(std::string str, const char* format = nullptr, bool gmtime = false);
+_MISC_FUNC time_t time_str2time(std::string str, const char* format = nullptr, bool gmtime = false);
 /**
  * Same as mktime() only GMT is the result value not the localtime when gmtime is true.
  */
-time_t _MISC_FUNC time_mktime(struct tm* tm, bool gmtime = false);
+_MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
 /**
  * Intermediate type to beable to create passwd_t struct/class.
  */
