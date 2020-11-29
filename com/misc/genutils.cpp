@@ -11,11 +11,14 @@
 #include <fcntl.h>
 #include <ctime>
 #include <sys/types.h>
+#include <sys/stat.h>
+
+#ifndef WIN32
 #include <sys/select.h>
 #include <sys/fsuid.h>
-#include <sys/stat.h>
 // Import of SYS_xxx
 #include <sys/syscall.h>
+#endif
 
 // Import of TExceptionSystemCall.
 #include "exception.h"
@@ -105,6 +108,8 @@ size_t stringhex(const char* hexstr, void* buffer, size_t size)
 	return chars / 2;
 }
 
+#ifndef WIN32
+
 pid_t gettid() noexcept
 {
 	return ::syscall(SYS_gettid);
@@ -140,7 +145,7 @@ bool kbhit()
 	}      /* An error occured	*/
 	/* read_fd now holds a bitmap of files that are
 	* readable. We test the entry for the standard
-	* input (file 0).
+	* input (file 0).	
 	*/
 	if (FD_ISSET(0, &read_fd))
 	{
@@ -150,6 +155,8 @@ bool kbhit()
 	/* no characters were pending */
 	return false;
 }
+
+#endif // WIN32
 
 namespace misc
 {
@@ -199,8 +206,8 @@ strings explode(string str, string separator, bool skip_empty)
 	return result;
 }
 
-#ifdef _USE_CRYPT
-//
+#if defined(_USE_CRYPT) && !defined(WIN32)
+
 bool operator==(const md5hash_t& h1, const md5hash_t& h2)
 {
 	// Use the unions fast compare integers.
@@ -586,6 +593,8 @@ bool file_stat(const std::string& path, stat_t& st)
 	return true;
 }
 
+#ifndef WIN32
+
 bool file_mkdir(const char* path, __mode_t mode)
 {
 	std::string dir(path);
@@ -633,7 +642,8 @@ bool file_mkdir(const char* path, __mode_t mode)
 	return file_exists(dir.c_str());
 }
 
-//
+#endif // WIN32
+
 bool file_find(misc::strings& files,
 	const std::string& path
 )
@@ -643,7 +653,6 @@ bool file_find(misc::strings& files,
 		);
 }
 
-//
 bool file_write(const char* path, const void* buf, size_t sz, bool append)
 {
 	// Set mode to 644
@@ -661,7 +670,7 @@ bool file_write(const char* path, const void* buf, size_t sz, bool append)
 	return true;
 }
 
-//
+
 std::string time_format(time_t time, const char* format, bool gmtime)
 {
 	struct tm ti;
@@ -681,7 +690,7 @@ std::string time_format(time_t time, const char* format, bool gmtime)
 	}
 }
 
-//
+
 std::string time_format(const struct tm* timeinfo, const char* format)
 {
 	struct tm ti;
@@ -705,7 +714,8 @@ std::string time_format(const struct tm* timeinfo, const char* format)
 	return buffer;
 }
 
-//
+#ifndef WIN32
+
 time_t time_mktime(struct tm* tm, bool gmtime)
 {
 	// When it is local time it's easy.
@@ -736,7 +746,6 @@ time_t time_mktime(struct tm* tm, bool gmtime)
 	return ret;
 }
 
-//
 time_t time_str2time(std::string str, const char* format, bool gmtime)
 {
 	// When not format has been passed format the XML date.
@@ -776,7 +785,6 @@ time_t time_str2time(std::string str, const char* format, bool gmtime)
 	return time_mktime(&timeinfo, gmtime);
 }
 
-//
 void proc_setuid(uid_t uid)
 {
 	if (setuid(uid))
@@ -785,7 +793,6 @@ void proc_setuid(uid_t uid)
 	}
 }
 
-//
 void proc_seteuid(uid_t uid)
 {
 	if (seteuid(uid))
@@ -794,7 +801,6 @@ void proc_seteuid(uid_t uid)
 	}
 }
 
-//
 void proc_setgid(gid_t gid)
 {
 	if (setgid(gid))
@@ -803,7 +809,6 @@ void proc_setgid(gid_t gid)
 	}
 }
 
-//
 void proc_setegid(gid_t gid)
 {
 	if (setegid(gid))
@@ -812,7 +817,6 @@ void proc_setegid(gid_t gid)
 	}
 }
 
-//
 void proc_setfsuid(uid_t uid)
 {
 	int cuid = setfsuid(uid);
@@ -822,7 +826,6 @@ void proc_setfsuid(uid_t uid)
 	}
 }
 
-//
 void proc_setfsgid(gid_t gid)
 {
 	int cgid = setfsgid(gid);
@@ -864,7 +867,6 @@ void passwd_t::reset()
 	memset(this, 0, sizeof(passwd_type));
 }
 
-//
 bool proc_getpwnam(std::string name, passwd_t& pwd)
 {
 	passwd_type* __pwd;
@@ -970,3 +972,6 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 	// Signal success or failure.
 	return grp.valid = (__grp != NULL);
 }
+
+#endif
+

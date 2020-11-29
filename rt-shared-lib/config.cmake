@@ -1,9 +1,3 @@
-if (WIN32)
-	message("Platform: Windows")
-else ()
-	message("Platform: Linux ${CMAKE_SYSTEM_VERSION}")
-endif ()
-
 # Make sure builds do not wind up in the source directory.
 list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)

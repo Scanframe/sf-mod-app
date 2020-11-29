@@ -3,20 +3,23 @@ General functions, defines, type definitions and templates to
 make C++ programming easier.
 */
 
-#ifndef GENUTILS_H
-#define GENUTILS_H
+#ifndef MISC_GENUTILS_H
+#define MISC_GENUTILS_H
 
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>
-#include <pwd.h>
-#include <grp.h>
-#include <openssl/md5.h>
-// Import of std::string type.
 #include <string>
 #include <iostream>
 #include <memory>
+
+#ifndef WIN32
+#include <pwd.h>
+#include <grp.h>
+#include <openssl/md5.h>
+#endif
+
 // Import of template class mcvector.
 #include "mcvector.h"
 // Import of shared library export defines.
@@ -628,6 +631,8 @@ _MISC_FUNC string implode(strings strs, string glue, bool skip_empty = false);
  * When skip_empty is true empty strings are ignored.
  */
 _MISC_FUNC strings explode(string str, string separator, bool skip_empty = false);
+
+#ifndef WIN32
 /**
  * Type for storing an MD5 hash.
  */
@@ -661,6 +666,9 @@ string _MISC_FUNC md5str(string s);
  * Returns the string md5 hexadecimal representation string of the hash.
  */
 string _MISC_FUNC md5hexstr(const md5hash_t& hash);
+
+#endif // WIN32
+
 /**
 * Return a line from the input stream.
 */
@@ -765,6 +773,8 @@ bool _MISC_FUNC file_exists(const char* path);
 inline
 bool file_exists(const std::string& path) {return file_exists(path.c_str());}
 
+#ifndef WIN32
+
 /**
  * Makes all directories recursively in the path.
  */
@@ -772,6 +782,9 @@ bool _MISC_FUNC file_mkdir(const char* path, __mode_t mode = 0755);
 
 inline
 bool file_mkdir(const std::string& path, __mode_t mode = 0755) {return file_mkdir(path.c_str(), mode);}
+
+#endif
+
 
 /**
  * Writes a buffer to a file.
@@ -841,6 +854,9 @@ time_t _MISC_FUNC time_mktime(struct tm* tm, bool gmtime = false);
 /**
  * Intermediate type to beable to create passwd_t struct/class.
  */
+ 
+#ifndef WIN32
+ 
 typedef struct passwd passwd_type;
 
 /**
@@ -962,4 +978,6 @@ void proc_setfsuid(uid_t uid);
  */
 void proc_setfsgid(gid_t gid);
 
-#endif // GENUTILS_H
+#endif // WIN32
+
+#endif // MISC_GENUTILS_H

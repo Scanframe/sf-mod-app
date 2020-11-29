@@ -46,8 +46,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE REPORT_TARGET)
 
-if (WIN32)
+if(WIN32)
 	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME} SUFFIX ".dll")
-else ()
+else()
 	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME} SUFFIX ".so")
-endif ()
+endif()
