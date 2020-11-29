@@ -1,6 +1,7 @@
 # Make sure builds do not wind up in the source directory.
 list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)
+find_package(SfMacros CONFIG REQUIRED)
 
 # Do not export all by default.
 add_definitions("-fvisibility=hidden")

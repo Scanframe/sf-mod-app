@@ -1,20 +1,13 @@
-# When the target does not exists add it.
-if (NOT TARGET "sf-misc")
-	add_library("sf-misc" SHARED IMPORTED)
-	set_property(TARGET sf-misc PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libsf-misc.so")
-endif()
+# Import libraries when not added yet depending .
+_add_shared_library("sf-misc")
+_add_shared_library("rt-iface")
 
-# When the target does not exists add it.
-if (NOT TARGET "rt-iface")
-	add_library("rt-iface" SHARED IMPORTED)
-	set_property(TARGET rt-iface PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/librt-iface.so")
-endif()
-
+# TODO: Include files should depending on the library which is included.
 # Set target additional include directories.
 target_include_directories(${PROJECT_NAME}
-	# For lib misc headers.
+	# For lib 'sf-misc' headers.
 	PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
-	# For lib iface headers.
+	# For lib 'iface' headers.
 	PUBLIC "${CMAKE_CURRENT_LIST_DIR}"
 	)
 

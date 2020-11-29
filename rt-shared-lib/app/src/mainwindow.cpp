@@ -66,23 +66,17 @@ void MainWindow::on_actionLoad_B_triggered()
 		listModal.rowCount(QModelIndex()));
 	if (!FRuntimeIface)
 	{
-		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a.so";
-		if (!QFile::exists(file))
+		// Do not specify the extension because this is different in Windows then it is in Linux and QLibrary takes care of it.
+		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a";
+		_NORM_NOTIFY(DO_DEFAULT, "Loading: " << file.toStdString())
+		QLibrary lib(file);
+		if (!lib.load())
 		{
-			qDebug() << "File (" << file << ") does not exist";
+			qDebug() << "QLibrary(" << file << ")" << lib.errorString();
 		}
 		else
 		{
-			_NORM_NOTIFY(DO_DEFAULT, "Loading: " << file.toStdString())
-			QLibrary lib(file);
-			if (!lib.load())
-			{
-				qDebug() << "QLibrary(" << file << ")" << lib.errorString();
-			}
-			else
-			{
-				FRuntimeIface = RuntimeIface::NewRegisterObject("Implementation_Alias", RuntimeIface::Parameters(100));
-			}
+			FRuntimeIface = RuntimeIface::NewRegisterObject("Implementation_Alias", RuntimeIface::Parameters(100));
 		}
 	}
 	else
