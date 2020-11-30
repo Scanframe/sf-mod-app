@@ -1,11 +1,11 @@
 #include "rt-iface.h"
-#include "com/misc/dbgutils.h"
+#include "misc/dbgutils.h"
 
-IMPLEMENT_REGISTER_BASE(RuntimeIface)
-
-typename misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::ClassRegistration; // NOLINT(cert-err58-cpp)
+SF_IMPL_IFACE(RuntimeIface, RuntimeIface::Parameters, Interface)
 
 RuntimeIface::RuntimeIface(const RuntimeIface::Parameters& params)
 {
 	_RTTI_NOTIFY(DO_DEFAULT, "Constructed: " << params.Handle);
 }
+
+

@@ -17,6 +17,7 @@ add_library(${PROJECT_NAME} SHARED
 	src/global.h
 	src/rt-impl-a.h
 	src/rt-impl-a.cpp
+	src/alias.cpp
 )
 
 # Include library configuration.

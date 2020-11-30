@@ -1,45 +1,22 @@
 #include "rt-impl-a.h"
-#include "com/misc/dbgutils.h"
+#include "misc/dbgutils.h"
+#include "misc/genutils.h"
 
-/*
-Implementation defines:
-	IMPLEMENT_REGISTER_OBJECT(T, name, data)
-	IMPLEMENT_REREGISTER_OBJECT(T, name, data)
-	IMPLEMENT_REGISTERBASE(T)
-	IMPLEMENT_REGISTERBASE_AND_OBJECT(T, name, data)
-*/
-
-IMPLEMENT_REGISTER_OBJECT(RuntimeLibImplementationA, "Implementation_A", nullptr)
-// Register this class also under a different name.
-IMPLEMENT_REREGISTER_OBJECT(RuntimeLibImplementationA, 2, "Implementation_Alias", nullptr)
-
-
-__attribute__((constructor)) void register_on_load()
-{
-	_NORM_NOTIFY(DO_DEFAULT, "Constructing the new way")
-	RuntimeIface::ClassRegistration.Register
-		(
-			"Implementation_A",
-			"A description of the class.",
-			misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters>::callback_t
-			(
-				[](const RuntimeIface::Parameters& params)->RuntimeIface*
-				{
-					return new RuntimeLibImplementationA(params);
-				}
-			)
-		);
-}
+// Register this derived class.
+SF_REG_CLASS
+(
+	RuntimeIface, RuntimeIface::Parameters, Interface,
+	RuntimeLibImplementationA, "Class-A", "Actual name of the class."
+)
 
 RuntimeLibImplementationA::RuntimeLibImplementationA(const RuntimeIface::Parameters& params)
 	: RuntimeIface(params)
 {
-	FMessage = stringf("Handle(%d)", params.Handle);
-	_RTTI_NOTIFY(DO_DEFAULT, "Constructed: " << FMessage)
+	_RTTI_NOTIFY(DO_DEFAULT, "Constructed: " << string_format("Handle(%d)", params.Handle))
 }
 
 const char* RuntimeLibImplementationA::getString()
 {
-	FMessage = stringf("Register Name (%s)", GetRegisterName());
+	FMessage = string_format("Register Name (%s)", _RTTI_TYPENAME.c_str());
 	return FMessage.c_str();
 }

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include "com/misc/dbgutils.h"
+#include "misc/dbgutils.h"
 
 #include <QAbstractItemView>
 #include <QDate>
@@ -12,6 +12,7 @@
 #include <iostream>
 #include <QtCore/QDir>
 #include <QtCore/QLibrary>
+#include <QtCore/QCoreApplication>
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -68,20 +69,28 @@ void MainWindow::on_actionLoad_B_triggered()
 	{
 		// Do not specify the extension because this is different in Windows then it is in Linux and QLibrary takes care of it.
 		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a";
-		_NORM_NOTIFY(DO_DEFAULT, "Loading: " << file.toStdString())
+		qInfo() << "Loading: " << file;
 		QLibrary lib(file);
 		if (!lib.load())
 		{
-			qDebug() << "QLibrary(" << file << ")" << lib.errorString();
+			qCritical() << "QLibrary(" << file << ")" << lib.errorString();
 		}
 		else
 		{
-			FRuntimeIface = RuntimeIface::NewRegisterObject("Implementation_Alias", RuntimeIface::Parameters(100));
+			_RTTI_NOTIFY(DO_DEFAULT, "Size() : " << RuntimeIface::Interface().Size())
+			//
+			std::string names[] = {"Class", "Class-A", "Class-B"};
+			for (auto& name: names)
+			{
+				qDebug() << "IndexOf(" << name.c_str() << ") >> " << RuntimeIface::Interface().IndexOf(name);
+			}
+			//
+			FRuntimeIface = RuntimeIface::Interface().Create("Class-A", RuntimeIface::Parameters(123));
 		}
 	}
 	else
 	{
-		qDebug() << FRuntimeIface->getString();
+		qInfo() << FRuntimeIface->getString();
 	}
 
 }

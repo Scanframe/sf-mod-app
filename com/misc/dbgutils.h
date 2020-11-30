@@ -84,19 +84,19 @@ enum EDebugOutputType
 };
 
 // Allows the passed string to be presented in various ways.
-void _MISC_FUNC UserOutputDebugString(unsigned int type, const char *s);
+_MISC_FUNC void UserOutputDebugString(unsigned int type, const char *s);
 
 // Set and get function for the type of output when DO_DEFAULT is passed.
-void _MISC_FUNC SetDefaultDebugOutput(unsigned int type);
+_MISC_FUNC void SetDefaultDebugOutput(unsigned int type);
 
 // Returns the combination of EDebugOutputType which is the default output.
-int _MISC_FUNC GetDefaultDebugOutput();
+_MISC_FUNC int GetDefaultDebugOutput();
 
 // Returns true if debugging is passed at the command line.
-bool _MISC_FUNC IsDebug();
+_MISC_FUNC bool IsDebug();
 
 // Demangle the passed rtti type name.
-std::string _MISC_FUNC Demangle(const char *name);
+_MISC_FUNC std::string Demangle(const char *name);
 
 // Output stream used as
 class _MISC_CLASS debug_ostream

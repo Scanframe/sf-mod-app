@@ -6,7 +6,7 @@ _add_shared_library("rt-iface")
 # Set target additional include directories.
 target_include_directories(${PROJECT_NAME}
 	# For lib 'sf-misc' headers.
-	PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
+	PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../com"
 	# For lib 'iface' headers.
 	PUBLIC "${CMAKE_CURRENT_LIST_DIR}"
 	)

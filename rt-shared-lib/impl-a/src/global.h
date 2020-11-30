@@ -17,7 +17,7 @@ Add compiler definition flags:
 #define IMPL_A_GLOBAL_H
 
 // Import of defines for this target.
-#include "com/misc/target.h"
+#include "misc/target.h"
 
 // When DL target and the iface PKG is not used the iface DL is being build.
 #if IS_DL_TARGET && defined(_IMPL_A_PKG)

@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "mainwindow.h"
-#include "com/misc/dbgutils.h"
+#include "misc/dbgutils.h"
 
 class Application : public QApplication
 {

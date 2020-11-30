@@ -17,13 +17,6 @@ class _IMPL_A_CLASS RuntimeLibImplementationA : public RuntimeIface
 	private:
 		std::string FMessage;
 
-/*
-	Defines to declare and implement registration for objects
-		DECLARE_REGISTER_BASE(T)
-		DECLARE_REGISTER_OBJECT(T)
-		DECLARE_REGISTER_BASE_AND_OBJECT(T)
-*/
-	DECLARE_REGISTER_OBJECT(RuntimeLibImplementationA);
 };
 
 #endif // RT_IMPL_A_H

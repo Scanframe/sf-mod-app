@@ -117,7 +117,7 @@ class mcvector : public std::vector<T>
 		*/
 
 		// Get function when the vector is passed as a pointer.
-		T& Get(unsigned i)
+		T& Get(size_t i)
 		{
 			return base_t::at(i);
 		}
