@@ -10,6 +10,3 @@ target_include_directories(${PROJECT_NAME}
 	# For lib 'iface' headers.
 	PUBLIC "${CMAKE_CURRENT_LIST_DIR}"
 	)
-
-message("Include Directory: 'file://${CMAKE_CURRENT_LIST_DIR}'")
-

@@ -18,7 +18,7 @@ endmacro()
 macro(_add_shared_library TargetName)
 	# When the target does not exists add it.
 	if (NOT TARGET ${TargetName})
-		message("Adding library '${TargetName}'")
+		message(STATUS "Adding library: ${TargetName}")
 		add_library(${TargetName} SHARED IMPORTED)
 		if (WIN32)
 			_populate_target_props(${TargetName} DEBUG "lib${TargetName}.dll" "lib${TargetName}.dll.a")

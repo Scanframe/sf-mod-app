@@ -31,5 +31,5 @@ Each library containing an different implementation of a virtual interface class
 ## Concept Project 2: Serializing UI Forms at Runtime
 
 The [`rt-ui-serialize`](rt-ui-serialize) directory is a proof of
-This proof of concept that UI elements on a form can be serialized to a file and 
+of concept that UI elements on a form can be serialized to a file and 
 recreated by reading by the same file.

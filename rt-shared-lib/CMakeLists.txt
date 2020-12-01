@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.14)
 # Set the global project name.
 project("rt-shared-lib")
 
+# Add this for the headers in the autogen directory made by the *.ui files.
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # Set output directories only when the current cmake project is also the main project.
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	message("Setting Output Dir for Project '${PROJECT_NAME}'")

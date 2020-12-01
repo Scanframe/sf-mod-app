@@ -20,6 +20,9 @@ set(SOURCES
 	src/mainwindow.ui
 	)
 
+# Add this for the headers in the autogen directory made by the *.ui files.
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 #add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
 qt5_add_resources(SOURCES src/main.qrc)
 # Set the actual target.

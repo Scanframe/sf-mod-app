@@ -11,14 +11,12 @@ find_package(Qt5Widgets REQUIRED)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-include_directories(AFTER "./../../" "./../")
-
 add_library(${PROJECT_NAME} SHARED
 	src/global.h
 	src/rt-impl-a.h
 	src/rt-impl-a.cpp
 	src/alias.cpp
-)
+	)
 
 # Include library configuration.
 include("../libraries.cmake")
@@ -43,7 +41,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # Tell the code the library is used as dynamic library. (So imports needed)
 target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_A_PKG)
-
 
 if (WIN32)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".dll")
