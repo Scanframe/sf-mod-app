@@ -23,12 +23,12 @@ Install **Cygwin** to build this project the same way as for Linux using the sam
 
 ## Concept Project 1: Shared Library Loading at Runtime
 
-The [`rt-shared-lib`]("./-/tree/master/rt-shared-lib") directory is a proof of 
+The [`rt-shared-lib`](-/tree/master/rt-shared-lib) directory is a proof of 
 concept on loading shared libraries at runtime.
 Each library containing an different implementation of a virtual interface class. 
 
 ## Concept Project 2: Serializing UI Forms at Runtime
 
-The [`rt-ui-serialize`]("./-/tree/master/rt-ui-serialize") directory is a proof of
+The [`rt-ui-serialize`](-/tree/master/rt-ui-serialize) directory is a proof of
 This proof of concept that UI elements on a form can be serialized to a file and 
 recreated by reading by the same file.
