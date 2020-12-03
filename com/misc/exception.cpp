@@ -1,18 +1,21 @@
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdarg>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <cxxabi.h>
 #include "exception.h"
 
-TExceptionSystemCall::TExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func)
+namespace sf
+{
+
+ExceptionSystemCall::ExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func)
 {
 	Msg = new char[BUF_SIZE];
 	int status;
 	char* nm = (char*) "";
 	if (mangled_name)
 	{
-		nm = abi::__cxa_demangle(mangled_name, 0, NULL, &status);
+		nm = abi::__cxa_demangle(mangled_name, 0, nullptr, &status);
 	}
 	snprintf(Msg, BUF_SIZE, "%s::%s() %s (%i) %s", nm, func, syscall, error, strerror(error));
 	if (mangled_name)
@@ -21,34 +24,31 @@ TExceptionSystemCall::TExceptionSystemCall(const char* syscall, int error, const
 	}
 }
 
-TExceptionBase::TExceptionBase()
-	: Msg(NULL)
+ExceptionBase::ExceptionBase()
+	: Msg(nullptr)
 {
 }
 
 //
-TExceptionBase::TExceptionBase(const TExceptionBase& ex)
+ExceptionBase::ExceptionBase(const ExceptionBase& ex)
 	: Msg(new char[BUF_SIZE])
 {
 	::strncpy(Msg, ex.Msg, BUF_SIZE);
 }
 
-TExceptionBase::~TExceptionBase() throw()
+ExceptionBase::~ExceptionBase() noexcept
 {
-	if (Msg)
-	{
-		delete[] Msg;
-	}
-	Msg = NULL;
+	delete[] Msg;
+	Msg = nullptr;
 }
 
-const char* TExceptionBase::what() const throw()
+const char* ExceptionBase::what() const noexcept
 {
 	return Msg;
 }
 
-TExceptionBase::TExceptionBase(const char* fmt, ...)
-	: Msg(NULL)
+ExceptionBase::ExceptionBase(const char* fmt, ...)
+	: Msg(nullptr)
 {
 	va_list argptr;
 	va_start(argptr, fmt);
@@ -57,7 +57,7 @@ TExceptionBase::TExceptionBase(const char* fmt, ...)
 }
 
 //
-void TExceptionBase::FormatMsg(const char* fmt, ...)
+void ExceptionBase::FormatMsg(const char* fmt, ...)
 {
 	Msg = new char[BUF_SIZE];
 	va_list argptr;
@@ -66,18 +66,13 @@ void TExceptionBase::FormatMsg(const char* fmt, ...)
 	va_end(argptr);
 }
 
-TException::TException()
-	: TExceptionBase()
-{
-}
+Exception::Exception()
+	: ExceptionBase() {}
 
-TException::TException(const TException& ex)
-	: TExceptionBase(ex)
-{
-}
+Exception::Exception(const Exception& ex) = default;
 
-TException::TException(const char* fmt, ...)
-	: TExceptionBase()
+Exception::Exception(const char* fmt, ...)
+	: ExceptionBase()
 {
 	va_list argptr;
 	va_start(argptr, fmt);
@@ -85,12 +80,12 @@ TException::TException(const char* fmt, ...)
 	va_end(argptr);
 }
 
-TException& TException::Function(const char* mangled_name, const char* func, const char* fmt, ...)
+Exception& Exception::Function(const char* mangled_name, const char* func, const char* fmt, ...)
 {
 	Msg = new char[BUF_SIZE];
 	char* Fmt = new char[BUF_SIZE];
 	int status;
-	char* nm = abi::__cxa_demangle(mangled_name, 0, NULL, &status);
+	char* nm = abi::__cxa_demangle(mangled_name, 0, nullptr, &status);
 	snprintf(Fmt, BUF_SIZE, "%s::%s() %s", nm, func, fmt);
 	free(nm);
 	va_list argptr;
@@ -100,3 +95,5 @@ TException& TException::Function(const char* mangled_name, const char* func, con
 	delete[] Fmt;
 	return *this;
 }
+
+} // namespace sf

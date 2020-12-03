@@ -1,9 +1,10 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("rt-lib-app" LANGUAGES CXX)
+project("rt-ui-serialize" LANGUAGES CXX)
+
 # Include common configuration.
-include("../config.cmake")
+include("config.cmake")
 
 find_package(Qt5Designer REQUIRED)
 find_package(Qt5Core REQUIRED)
@@ -14,8 +15,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(SOURCES
 	src/main.cpp
-	src/stringlistmodel.h
-	src/stringlistmodel.cpp
 	src/mainwindow.h
 	src/mainwindow.cpp
 	src/mainwindow.ui
@@ -29,6 +28,9 @@ qt5_add_resources(SOURCES src/main.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+# Include library configuration.
+include("libraries.cmake")
+
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 
@@ -41,10 +43,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
-# Include library configuration.
-include("../libraries.cmake")
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc rt-iface)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc)
 
 if (WIN32)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}" SUFFIX ".exe")

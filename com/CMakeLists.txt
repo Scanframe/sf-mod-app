@@ -14,9 +14,17 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	misc/global.h
+	misc/class_reg.h
+	misc/fifoclass.h
 	misc/target.h
 	misc/dbgutils.h
 	misc/dbgutils.cpp
+	misc/qt_utils.h
+	misc/qt_utils.cpp
+	misc/linebuffer.h
+	misc/linebuffer.cpp
+	misc/qcapturelistmodel.h
+	misc/qcapturelistmodel.cpp
 	misc/genutils.h
 	misc/genutils.cpp
 	misc/exception.h

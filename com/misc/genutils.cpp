@@ -20,12 +20,15 @@
 #include <sys/syscall.h>
 #endif
 
-// Import of TExceptionSystemCall.
+// Import of ExceptionSystemCall.
 #include "exception.h"
 // Import debug utilities.
 #include "dbgutils.h"
 // Import the files header file.
 #include "genutils.h"
+
+namespace sf
+{
 
 std::string stringf(const char* fmt, ...)
 {
@@ -158,13 +161,9 @@ bool kbhit()
 
 #endif // WIN32
 
-namespace misc
+std::string implode(strings strs, std::string glue, bool skip_empty)
 {
-using namespace std;
-
-string implode(strings strs, string glue, bool skip_empty)
-{
-	string retval;
+	std::string retval;
 	strings_iter i(strs);
 	while (i)
 	{
@@ -177,25 +176,25 @@ string implode(strings strs, string glue, bool skip_empty)
 	return retval;
 }
 
-strings explode(string str, string separator, bool skip_empty)
+strings explode(std::string str, std::string separator, bool skip_empty)
 {
 	strings result;
 	size_t ofs = 0, found = str.find_first_of(separator, ofs);
-	if (found != string::npos)
+	if (found != std::string::npos)
 	{
 		do
 		{
 			result.push_back(str.substr(ofs, found - ofs));
 			//
 			ofs = skip_empty ? str.find_first_not_of(separator, found) : (found + 1);
-			if (ofs == string::npos)
+			if (ofs == std::string::npos)
 			{
 				break;
 			}
 			//
 			found = str.find_first_of(separator, ofs);
 		}
-		while (found != string::npos);
+		while (found != std::string::npos);
 	}
 	//
 	if (str.length() > ofs)
@@ -243,7 +242,7 @@ string md5str(string s)
 #endif
 
 //
-string getline(istream& is)
+std::string getline(std::istream& is)
 {
 	const size_t sz = 4096;
 	char* buf = (char*) malloc(sz);
@@ -253,7 +252,7 @@ string getline(istream& is)
 }
 
 //
-string getcwdstr()
+std::string getcwdstr()
 {
 	const size_t sz = 4096;
 	char* buf = (char*) malloc(sz);
@@ -262,11 +261,11 @@ string getcwdstr()
 }
 
 //
-string demangle(const char* name)
+std::string demangle(const char* name)
 {
 	int status;
 	char* nm = abi::__cxa_demangle(name, 0, nullptr, &status);
-	string retval(nm);
+	std::string retval(nm);
 	free(nm);
 	return retval;
 }
@@ -277,7 +276,7 @@ timespec gettime()
 	timespec ct{};
 	if (clock_gettime(CLOCK_REALTIME, &ct))
 	{
-		throw TExceptionSystemCall("epoll_wait", errno, nullptr, __FUNCTION__);
+		throw ExceptionSystemCall("epoll_wait", errno, nullptr, __FUNCTION__);
 	}
 	return ct;
 }
@@ -306,11 +305,11 @@ int timespeccmp(const timespec& ts1, const timespec& ts2)
 }
 
 //
-string tolower(string s)
+std::string tolower(std::string s)
 {
 	// Make the data pointer accessible.
 	char* p = const_cast<char*>(s.data());
-	for (string::size_type i = 0; i <= s.length(); i++)
+	for (std::string::size_type i = 0; i <= s.length(); i++)
 	{
 		if (isalpha(p[i]))
 		{
@@ -320,11 +319,11 @@ string tolower(string s)
 	return s;
 }
 
-string toupper(string s)
+std::string toupper(std::string s)
 {
 	// Make the data pointer accessible.
 	char* p = const_cast<char*>(s.data());
-	for (string::size_type i = 0; i <= s.length(); i++)
+	for (std::string::size_type i = 0; i <= s.length(); i++)
 	{
 		if (isalpha(p[i]))
 		{
@@ -334,26 +333,26 @@ string toupper(string s)
 	return s;
 }
 
-string trim_right(string s, const string& t)
+std::string trim_right(std::string s, const std::string& t)
 {
 	return s.erase(s.find_last_not_of(t) + 1);
 }
 
-string trim_left(string s, const string& t)
+std::string trim_left(std::string s, const std::string& t)
 {
 	return s.erase(0, s.find_first_not_of(t));
 }
 
 //
-string trim(string s, const string& t)
+std::string trim(std::string s, const std::string& t)
 {
 	return trim_left(trim_right(s, t), t);
 }
 
 //
-string unique(const string& s)
+std::string unique(const std::string& s)
 {
-	return string(s.c_str(), s.length());
+	return std::string(s.c_str(), s.length());
 }
 
 //
@@ -405,13 +404,13 @@ const char* strnstr(const char* s, const char* find, size_t n)
 			{
 				if ((sc = *s++) == '\0' || n-- < 1)
 				{
-					return (NULL);
+					return nullptr;
 				}
 			}
 			while (sc != c);
 			if (len > n)
 			{
-				return NULL;
+				return nullptr;
 			}
 		}
 		while (strncmp(s, find, len) != 0);
@@ -494,37 +493,23 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 }
 
 //
-bool getfiles(strings& files, string
-directory,
-	string wildcard
-)
+bool getfiles(strings& files, std::string directory, std::string wildcard)
 {
 	DIR* dp;
 	dirent* dirp;
-// Prevent errors from printing by checking the access.
-	if (
-		access(directory
-				.
-					c_str(),
-			F_OK | X_OK))
+	// Prevent errors from printing by checking the access.
+	if (access(directory.c_str(), F_OK | X_OK))
 	{
 		return false;
 	}
-//
-	if ((
-				dp = ::opendir(directory.c_str())
-			) == NULL)
+	//
+	if ((dp = ::opendir(directory.c_str())) == nullptr)
 	{
-		cerr << "Error(" << errno << ") " <<
-				 strerror(errno)
-				 << " " << directory <<
-				 endl;
+		std::cerr << "Error(" << errno << ") " << strerror(errno) << " " << directory << std::endl;
 		return false;
 	}
-//
-	while ((
-					 dirp = readdir(dp)
-				 ) != NULL)
+	//
+	while ((dirp = readdir(dp)) != nullptr)
 	{
 		if (
 			wildcmp(wildcard
@@ -533,28 +518,26 @@ directory,
 				->d_name, true))
 		{
 			files.
-				push_back(string(dirp->d_name)
+				push_back(std::string(dirp->d_name)
 			);
 		}
 	}
-//
+	//
 	::closedir(dp);
-//
+	//
 	return true;
 }
-
-} /* namespace std */
 
 //
 std::string file_basename(const std::string& path)
 {
-	return ::basename(const_cast<char*>(misc::unique(path).c_str()));
+	return ::basename(const_cast<char*>(sf::unique(path).c_str()));
 }
 
 //
 std::string file_dirname(const std::string& path)
 {
-	return ::dirname(const_cast<char*>(misc::unique(path).c_str()));
+	return ::dirname(const_cast<char*>(sf::unique(path).c_str()));
 }
 
 //
@@ -644,20 +627,20 @@ bool file_mkdir(const char* path, __mode_t mode)
 
 #endif // WIN32
 
-bool file_find(misc::strings& files,
+bool file_find(sf::strings& files,
 	const std::string& path
 )
 {
 	return
-		misc::getfiles(files, file_dirname(path), file_basename(path)
+		sf::getfiles(files, file_dirname(path), file_basename(path)
 		);
 }
 
 bool file_write(const char* path, const void* buf, size_t sz, bool append)
 {
 	// Set mode to 644
-	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode);
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // NOLINT(hicpp-signed-bitwise)
+	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode); // NOLINT(hicpp-signed-bitwise)
 	if (fd == -1)
 	{
 		_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n" << strerror(errno))
@@ -670,14 +653,13 @@ bool file_write(const char* path, const void* buf, size_t sz, bool append)
 	return true;
 }
 
-
 std::string time_format(time_t time, const char* format, bool gmtime)
 {
-	struct tm ti;
+	struct tm ti{};
 	// When -1 is passed get the time ourselfs.
 	if (time == -1)
 	{
-		time = ::time(NULL);
+		time = ::time(nullptr);
 	}
 	// Pass it on to the other function doing the actual work.
 	if (gmtime)
@@ -690,10 +672,9 @@ std::string time_format(time_t time, const char* format, bool gmtime)
 	}
 }
 
-
 std::string time_format(const struct tm* timeinfo, const char* format)
 {
-	struct tm ti;
+	struct tm ti{};
 	// When not format has been passed format the XML date.
 	if (!format)
 	{
@@ -754,16 +735,16 @@ time_t time_str2time(std::string str, const char* format, bool gmtime)
 		format = "%Y%m%dT%H%M";
 	}
 	//
-	struct tm timeinfo;
+	struct tm timeinfo{};
 	memset(&timeinfo, 0, sizeof(timeinfo));
 	// Returns NULL in case of an error.
-	if (::strptime(str.c_str(), format, &timeinfo) == NULL)
+	if (::strptime(str.c_str(), format, &timeinfo) == nullptr)
 	{
 		return -1;
 	}
 	// Set the fields from the time zone which are not set using strptime().
 	{
-		struct tm ti;
+		struct tm ti{};
 		time_t rawtime = 0;
 		::time(&rawtime);
 		if (gmtime)
@@ -789,7 +770,7 @@ void proc_setuid(uid_t uid)
 {
 	if (setuid(uid))
 	{
-		throw TExceptionSystemCall("setuid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("setuid", errno, nullptr, __FUNCTION__);
 	}
 }
 
@@ -797,7 +778,7 @@ void proc_seteuid(uid_t uid)
 {
 	if (seteuid(uid))
 	{
-		throw TExceptionSystemCall("seteuid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("seteuid", errno, nullptr, __FUNCTION__);
 	}
 }
 
@@ -805,7 +786,7 @@ void proc_setgid(gid_t gid)
 {
 	if (setgid(gid))
 	{
-		throw TExceptionSystemCall("setgid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("setgid", errno, nullptr, __FUNCTION__);
 	}
 }
 
@@ -813,7 +794,7 @@ void proc_setegid(gid_t gid)
 {
 	if (setegid(gid))
 	{
-		throw TExceptionSystemCall("setegid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("setegid", errno, nullptr, __FUNCTION__);
 	}
 }
 
@@ -822,7 +803,7 @@ void proc_setfsuid(uid_t uid)
 	int cuid = setfsuid(uid);
 	if (cuid)
 	{
-		throw TExceptionSystemCall("setfsuid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("setfsuid", errno, nullptr, __FUNCTION__);
 	}
 }
 
@@ -831,11 +812,11 @@ void proc_setfsgid(gid_t gid)
 	int cgid = setfsgid(gid);
 	if (cgid)
 	{
-		throw TExceptionSystemCall("setfsgid", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("setfsgid", errno, nullptr, __FUNCTION__);
 	}
 }
 
-passwd_t::passwd_t()
+passwd_t::passwd_t() : passwd()
 {
 	reset();
 	// Get the buffer size needed.
@@ -851,7 +832,7 @@ passwd_t::passwd_t()
 	// Check for failure.
 	if (!buf)
 	{
-		throw TExceptionSystemCall("malloc", errno, typeid(*this).name(), __FUNCTION__);
+		throw ExceptionSystemCall("malloc", errno, typeid(*this).name(), __FUNCTION__);
 	}
 }
 
@@ -864,47 +845,48 @@ void passwd_t::reset()
 {
 	valid = false;
 	// Clear the passwd_typ part of this instance.
-	memset(this, 0, sizeof(passwd_type));
+	memset(this, 0, sizeof(passwd_type)); // NOLINT(bugprone-undefined-memory-manipulation)
 }
 
 bool proc_getpwnam(std::string name, passwd_t& pwd)
 {
-	passwd_type* __pwd;
+	passwd_type* _pwd;
 	//
-	int err = ::getpwnam_r(name.c_str(), &pwd, pwd.buf, pwd.bufsz, &__pwd);
+	int err = ::getpwnam_r(name.c_str(), &pwd, pwd.buf, pwd.bufsz, &_pwd);
 	// In case of an error or not found reset the content.
-	if (err || !__pwd)
+	if (err || !_pwd)
 	{
 		pwd.reset();
 	}
 	// When an error was found.
 	if (err)
 	{
-		throw TExceptionSystemCall("getpwnam_r", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("getpwnam_r", errno, nullptr, __FUNCTION__);
 	}
 	// Signal success.
-	return pwd.valid = (__pwd != NULL);
+	return pwd.valid = (_pwd != nullptr);
 }
 
 bool proc_getpwuid(uid_t uid, passwd_t& pwd)
 {
-	passwd_type* __pwd;
+	passwd_type* _pwd;
 	//
-	int err = ::getpwuid_r(uid, &pwd, pwd.buf, pwd.bufsz, &__pwd);
+	int err = ::getpwuid_r(uid, &pwd, pwd.buf, pwd.bufsz, &_pwd);
 	// Incase of an errror or not found reset the content.
-	if (err || !__pwd)
+	if (err || !_pwd)
 	{
 		pwd.reset();
 	}
 	if (err)
 	{
-		throw TExceptionSystemCall("getpwuid_r", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("getpwuid_r", errno, nullptr, __FUNCTION__);
 	}
 	// Signal success or failure.
-	return pwd.valid = (__pwd != NULL);
+	return pwd.valid = (_pwd != nullptr);
 }
 
 group_t::group_t()
+	: group()
 {
 	reset();
 	// Get the buffer size needed.
@@ -920,7 +902,7 @@ group_t::group_t()
 	// Check for failure.
 	if (!buf)
 	{
-		throw TExceptionSystemCall("malloc", errno, typeid(*this).name(), __FUNCTION__);
+		throw ExceptionSystemCall("malloc", errno, typeid(*this).name(), __FUNCTION__);
 	}
 }
 
@@ -938,40 +920,42 @@ void group_t::reset()
 
 bool proc_getgrnam(std::string name, group_t& grp)
 {
-	group_type* __grp;
+	group_type* _grp;
 	//
-	int err = ::getgrnam_r(name.c_str(), &grp, grp.buf, grp.bufsz, &__grp);
+	int err = ::getgrnam_r(name.c_str(), &grp, grp.buf, grp.bufsz, &_grp);
 	// In case of an error or not found reset the content.
-	if (err || !__grp)
+	if (err || !_grp)
 	{
 		grp.reset();
 	}
 	// When an error was found.
 	if (err)
 	{
-		throw TExceptionSystemCall("getgrnam_r", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("getgrnam_r", errno, nullptr, __FUNCTION__);
 	}
 	// Signal success.
-	return grp.valid = (__grp != NULL);
+	return grp.valid = (_grp != nullptr);
 }
 
 bool proc_getgrgid(gid_t gid, group_t& grp)
 {
-	group_type* __grp;
+	group_type* _grp;
 	//
-	int err = ::getgrgid_r(gid, &grp, grp.buf, grp.bufsz, &__grp);
+	int err = ::getgrgid_r(gid, &grp, grp.buf, grp.bufsz, &_grp);
 	// Incase of an errror or not found reset the content.
-	if (err || !__grp)
+	if (err || !_grp)
 	{
 		grp.reset();
 	}
 	if (err)
 	{
-		throw TExceptionSystemCall("getgrgid_r", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("getgrgid_r", errno, NULL, __FUNCTION__);
 	}
 	// Signal success or failure.
-	return grp.valid = (__grp != NULL);
+	return grp.valid = (_grp != nullptr);
 }
+
+} // namespace sf
 
 #endif
 

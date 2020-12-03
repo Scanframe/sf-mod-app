@@ -1,36 +1,39 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include "global.h"
 #include <exception>
 #include <string>
+#include "global.h"
+
+namespace sf
+{
 
 /**
  * Exception implementation.
  */
-class _MISC_CLASS TExceptionBase :public std::exception
+class _MISC_CLASS ExceptionBase : public std::exception
 {
 	public:
 		/**
 		 * Default Constructor.
 		 */
-		TExceptionBase();
+		ExceptionBase();
 		/**
 		 * Default Constructor.
 		 */
-		TExceptionBase(const TExceptionBase& ex);
+		ExceptionBase(const ExceptionBase& ex);
 		/**
 		 * Destructor.
 		 */
-		virtual ~TExceptionBase() throw();
+		~ExceptionBase() noexcept override;
 		/**
 		 * Formatting Constructor.
 		 */
-		TExceptionBase(const char *fmt, ...);
+		explicit ExceptionBase(const char* fmt, ...);
 		/**
 		 * Overloaded from base class 'std::exception'.
 		 */
-		const char* what() const throw();
+		const char* what() const noexcept override;
 
 	protected:
 		/**
@@ -50,38 +53,40 @@ class _MISC_CLASS TExceptionBase :public std::exception
 /**
 * Exception implementation.
 */
-class _MISC_CLASS TException :public TExceptionBase
+class _MISC_CLASS Exception : public ExceptionBase
 {
 	public:
 		/**
 		* Default Constructor.
 		*/
-		TException();
+		Exception();
 		/**
 		* Default Constructor.
 		*/
-		TException(const TException& ex);
+		Exception(const Exception& ex);
 		/**
 		* Formatting Constructor.
 		*/
-		TException(const char *fmt, ...);
+		explicit Exception(const char* fmt, ...);
 		/**
-		* Formatting Constructor with a class type_info, and formating.
+		* Formatting Constructor with a class type_info, and formatting.
 		* First boolean is to get a distinct constructor.
 		*/
-		TException& Function(const char* mangled_name, const char* func, const char* fmt, ...);
+		Exception& Function(const char* mangled_name, const char* func, const char* fmt, ...);
 };
 
 /**
-* Exception implementation for  syscalls.
+* Exception implementation for syscalls.
 */
-class _MISC_CLASS TExceptionSystemCall :public TExceptionBase
+class _MISC_CLASS ExceptionSystemCall : public ExceptionBase
 {
 	public:
 		/**
 		* Formatting Constructor with a class type_info, function and error value.
 		*/
-		TExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func);
+		ExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func);
 };
+
+} // namespace sf
 
 #endif // EXCEPTION_H

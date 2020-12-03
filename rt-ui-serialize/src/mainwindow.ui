@@ -97,9 +97,8 @@
     <property name="title">
      <string>Library</string>
     </property>
-    <addaction name="actionLoad_A"/>
-    <addaction name="actionLoad_B"/>
-    <addaction name="actionLoad_C"/>
+    <addaction name="actionWriteUI"/>
+    <addaction name="actionReadUI"/>
    </widget>
    <addaction name="menuLibrary"/>
   </widget>
@@ -117,35 +116,37 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionLoad_A"/>
-   <addaction name="actionLoad_B"/>
-   <addaction name="actionLoad_C"/>
+   <addaction name="actionWriteUI"/>
+   <addaction name="actionReadUI"/>
   </widget>
-  <action name="actionLoad_A">
+  <action name="actionWriteUI">
    <property name="icon">
     <iconset resource="main.qrc">
      <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
    </property>
    <property name="text">
-    <string>Load A</string>
+    <string>&amp;Write UI</string>
+   </property>
+   <property name="toolTip">
+    <string>Write UI to file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
-  <action name="actionLoad_B">
+  <action name="actionReadUI">
    <property name="icon">
     <iconset resource="main.qrc">
      <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
    </property>
    <property name="text">
-    <string>Load B</string>
+    <string>&amp;Read UI</string>
    </property>
-  </action>
-  <action name="actionLoad_C">
-   <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+   <property name="toolTip">
+    <string>Read UI from file</string>
    </property>
-   <property name="text">
-    <string>Load C</string>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

@@ -12,11 +12,12 @@ SF_REG_CLASS
 RuntimeLibImplementationA::RuntimeLibImplementationA(const RuntimeIface::Parameters& params)
 	: RuntimeIface(params)
 {
-	_RTTI_NOTIFY(DO_DEFAULT, "Constructed: " << string_format("Handle(%d)", params.Handle))
+	_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
 }
 
 const char* RuntimeLibImplementationA::getString()
 {
-	FMessage = string_format("Register Name (%s)", _RTTI_TYPENAME.c_str());
+	_RTTI_NOTIFY(DO_CLOG, "Calling: " << __FUNCTION__)
+	FMessage = sf::string_format("Class Name is: %s", _RTTI_TYPENAME.c_str());
 	return FMessage.c_str();
 }

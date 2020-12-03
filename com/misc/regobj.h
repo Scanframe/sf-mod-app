@@ -38,28 +38,30 @@ Member functions added to base class.
 #define MISC_REGOBJ_H
 
 // Import of debugging derfines and macros.
-#include "com/misc/dbgutils.h"
+#include "dbgutils.h"
 // Import of debugging derfines and macros.
-#include "com/misc/genutils.h"
+#include "genutils.h"
+
+namespace sf
+{
 
 // Template class to use in a list
-//
-struct TRegObject
+struct RegisterObject
 { // Pointer to the static registered name.
 	const char* Name;
 	// Pointer to some extra information about the instance.
 	const void* Data;
 	// Pointer to the static function to create an instance of registerd class.
 	void* (* NewObject)(const void*);
-	// Some usefull types.
-	typedef mcvector<TRegObject*> TPtrVector;
-	typedef mciterator<TRegObject*> TPtrIterator;
+	// Some useful types.
+	typedef mcvector<RegisterObject*> TPtrVector;
+	typedef mciterator<RegisterObject*> TPtrIterator;
 };
 
 //
 // Function to find a registered class structure.
 inline
-TRegObject* FindRegObject(TRegObject::TPtrVector* list, const char* regname)
+RegisterObject* FindRegObject(RegisterObject::TPtrVector* list, const char* regname)
 {
 	if (list && regname && strlen(regname))
 	{
@@ -79,7 +81,7 @@ TRegObject* FindRegObject(TRegObject::TPtrVector* list, const char* regname)
 //
 // Function to find a registered class structure index.
 inline
-unsigned FindRegIndex(TRegObject::TPtrVector* list, const char* regname)
+unsigned FindRegIndex(RegisterObject::TPtrVector* list, const char* regname)
 {
 	if (list && regname && strlen(regname))
 	{
@@ -98,11 +100,11 @@ unsigned FindRegIndex(TRegObject::TPtrVector* list, const char* regname)
 
 // Function to find and create registered class.
 inline
-void* NewRegObject(TRegObject::TPtrVector* list, const char* regname, const void* params)
+void* NewRegObject(RegisterObject::TPtrVector* list, const char* regname, const void* params)
 {
 	if (list)
 	{
-		TRegObject* regobj = FindRegObject(list, regname);
+		RegisterObject* regobj = FindRegObject(list, regname);
 		if (regobj)
 		{
 			return regobj->NewObject(params);
@@ -113,12 +115,12 @@ void* NewRegObject(TRegObject::TPtrVector* list, const char* regname, const void
 
 // Function to find and create registered class.
 inline
-void* NewRegObject(TRegObject::TPtrVector* list, unsigned index, const void* params)
+void* NewRegObject(RegisterObject::TPtrVector* list, unsigned index, const void* params)
 {
 	if (list)
 	{
 		// Check if index is in list range.
-		TRegObject* regobj = (index < list->Count()) ? (*list)[index] : NULL;
+		RegisterObject* regobj = (index < list->Count()) ? (*list)[index] : NULL;
 		if (regobj)
 		{
 			return regobj->NewObject(params);
@@ -129,7 +131,7 @@ void* NewRegObject(TRegObject::TPtrVector* list, unsigned index, const void* par
 
 // Template class to get a class registerd
 template <class T>
-class TObjectRegister : public TRegObject
+class TObjectRegister : public RegisterObject
 {
 	public:
 		// Constructor
@@ -152,7 +154,7 @@ class TObjectRegister : public TRegObject
 			// Add this structure to the list.
 			RegList->Add(this);
 			// Report the fact of registration.
-			_NORM_NOTIFY(DO_DEFAULT, "TObjectRegister<T>: Registered '" << regname << '\'');
+			_NORM_NOTIFY(DO_DEFAULT, "TObjectRegister<T>: Registered '" << regname << '\'')
 		}
 
 		// Destructor
@@ -168,7 +170,7 @@ class TObjectRegister : public TRegObject
 
 	private:
 		// Holds the list where it is registered.
-		TRegObject::TPtrVector*& RegList;
+		RegisterObject::TPtrVector*& RegList;
 		static void* NewObjectFunc(const void* params);
 
 };
@@ -180,14 +182,16 @@ void* TObjectRegister<T>::NewObjectFunc(const void* params)
 	return new T(*(typename T::Parameters*) params);
 }
 
+} // namespace sf
+
 //
 // Macro used in other macros.
 //
 #define __DECLARE_REGOBJECTLISTPTR \
-  static TRegObject::TPtrVector* RegObjectListPtr;
+  static RegisterObject::TPtrVector* RegObjectListPtr;
 
 #define __DECLARE_REGOBJECTPTR \
-  static TRegObject* RegObjectPtr;
+  static RegisterObject* RegObjectPtr;
 
 #define __DECLARE_STATICREGISTERFUNCTIONS(T) \
   static unsigned GetRegisterCount() \
@@ -196,9 +200,9 @@ void* TObjectRegister<T>::NewObjectFunc(const void* params)
     { return (RegObjectListPtr && i<RegObjectListPtr->Count()) ? (*RegObjectListPtr)[i]->Name : nullptr;} \
   static const void* GetRegisterData(unsigned i) \
     { return (RegObjectListPtr && i<RegObjectListPtr->Count()) ? (*RegObjectListPtr)[i]->Data : nullptr;} \
-  static TRegObject* GetRegisterObject(unsigned i) \
+  static RegisterObject* GetRegisterObject(unsigned i) \
     { return (RegObjectListPtr && i<RegObjectListPtr->Count()) ? (*RegObjectListPtr)[i] : nullptr;} \
-  static TRegObject* FindRegisterObject(const char* regname) \
+  static RegisterObject* FindRegisterObject(const char* regname) \
     {return ::FindRegObject(RegObjectListPtr, regname);} \
   static unsigned FindRegisterIndex(const char* regname) \
     {return ::FindRegIndex(RegObjectListPtr, regname);} \
@@ -221,12 +225,12 @@ void* TObjectRegister<T>::NewObjectFunc(const void* params)
     __DECLARE_REGOBJECTLISTPTR \
   public: \
     __DECLARE_STATICREGISTERFUNCTIONS(T)\
-    virtual const TRegObject* GetRegisterObject() const { return nullptr;}
+    virtual const RegisterObject* GetRegisterObject() const { return nullptr;}
 
 // Macro used to declare a registered object of a class which is derived from registered base.
 #define DECLARE_REGISTER_OBJECT(T) \
   public:\
-    const TRegObject* GetRegisterObject() const override { return RegObjectPtr;}\
+    const RegisterObject* GetRegisterObject() const override { return RegObjectPtr;}\
   protected: \
     __DECLARE_REGOBJECTPTR \
   __DECLARE_REGISTER_FIEND(T)
@@ -234,7 +238,7 @@ void* TObjectRegister<T>::NewObjectFunc(const void* params)
 // Macro used to declare a registered base and the base is also a registered object itself.
 #define DECLARE_REGISTER_BASE_AND_OBJECT(T) \
   public: \
-    const TRegObject* GetRegisterObject() const override { return RegObjectPtr;} \
+    const RegisterObject* GetRegisterObject() const override { return RegObjectPtr;} \
     __DECLARE_STATICREGISTERFUNCTIONS(T) \
   protected: \
     __DECLARE_REGOBJECTLISTPTR \
@@ -243,16 +247,16 @@ void* TObjectRegister<T>::NewObjectFunc(const void* params)
 
 // Macro used to Implement a registered base but the base is not registered object itself.
 #define IMPLEMENT_REGISTER_BASE(T)\
-  TRegObject::TPtrVector* T::RegObjectListPtr = nullptr;
+  RegisterObject::TPtrVector* T::RegObjectListPtr = nullptr;
 
 // Macro used to implement a registered object of a class which is derived from registered base.
 #define IMPLEMENT_REGISTER_OBJECT_STATIC(T, name, data) \
   TObjectRegister<T> __##T##Register(name, data); \
-  TRegObject* T::RegObjectPtr = &__##T##Register;
+  RegisterObject* T::RegObjectPtr = &__##T##Register;
 
 // Macro used to implement a registered object of a class which is derived from registered base.
 #define IMPLEMENT_REGISTER_OBJECT(T, name, data)   \
-  TRegObject* T::RegObjectPtr = nullptr; \
+  RegisterObject* T::RegObjectPtr = nullptr; \
   __attribute__((constructor)) void __##T##RegisterOnLoad() \
   { \
     static TObjectRegister<T> __##T##Register(name, data);\

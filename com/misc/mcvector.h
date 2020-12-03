@@ -2,7 +2,10 @@
 #define MCVECTOR_H
 
 #	include <vector>
-#include <limits.h>
+#include <climits>
+
+namespace sf
+{
 
 /**
  * Counted vector.
@@ -16,19 +19,19 @@ class mcvector : public std::vector<T>
 		typedef std::vector<T> base_t;
 
 		// Default constructor.
-		mcvector() {}
+		mcvector() = default;
 
 		// Initializing constructor.
-		template <typename _InputIterator>
-		mcvector(_InputIterator first, _InputIterator last)
+		template <typename InputIterator>
+		mcvector(InputIterator first, InputIterator last)
 			:base_t(first, last) {}
 
 		//
-		mcvector(const base_t& sv)
+		explicit mcvector(const base_t& sv)
 			: base_t(sv) {}
 
 		// Initializing constructor.
-		mcvector(size_t sz)
+		explicit mcvector(size_t sz)
 			: base_t(sz) {}
 
 		// Adds item at the end of the vector.
@@ -134,7 +137,7 @@ class mcvector : public std::vector<T>
 		}
 
 		// Returns the constant base type.
-		const base_t GetBase() const
+		base_t GetBase() const
 		{
 			return this;
 		}
@@ -146,7 +149,7 @@ class mciterator
 	public:
 		typedef std::vector<T> base_t;
 
-		mciterator(const base_t& v)
+		explicit mciterator(const base_t& v)
 		{
 			Vect = const_cast<base_t*>(&v);
 			Restart(0, v.size());
@@ -158,7 +161,7 @@ class mciterator
 			Restart(start, stop);
 		}
 
-		operator int() const
+		operator int() const // NOLINT(google-explicit-constructor)
 		{
 			return Cur < Upper;
 		}
@@ -173,7 +176,7 @@ class mciterator
 			return (*Vect)[Cur];
 		}
 
-		const T& operator++(int)
+		const T& operator++(int) // NOLINT(cert-dcl21-cpp)
 		{
 			const T& temp = Current();
 			Cur++;
@@ -199,8 +202,8 @@ class mciterator
 
 	private:
 		base_t* Vect;
-		unsigned Cur;
-		unsigned Lower, Upper;
+		unsigned Cur{};
+		unsigned Lower{}, Upper{};
 };
 
 template <class T>
@@ -212,31 +215,31 @@ bool mcvector<T>::Add(const T& t)
 }
 
 template <class T>
-bool mcvector<T>::AddAt(const T& t, size_t loc)
+bool mcvector<T>::AddAt(const T& t, size_t index)
 {
-	if (loc > base_t::size())
+	if (index > base_t::size())
 	{
 		return true;
 	}
-	if (loc == base_t::size())
+	if (index == base_t::size())
 	{
 		base_t::insert(base_t::end(), t);
 	}
 	else
 	{
-		base_t::insert(base_t::begin() + loc, t);
+		base_t::insert(base_t::begin() + index, t);
 	}
 	return true;
 }
 
 template <class T>
-bool mcvector<T>::Detach(size_t loc)
+bool mcvector<T>::Detach(size_t index)
 {
-	if (loc >= base_t::size())
+	if (index >= base_t::size())
 	{
 		return false;
 	}
-	base_t::erase(base_t::begin() + loc, base_t::begin() + loc + 1);
+	base_t::erase(base_t::begin() + index, base_t::begin() + index + 1);
 	return true;
 }
 
@@ -266,5 +269,7 @@ size_t mcvector<T>::Find(const T& t) const
 	}
 	return (size_t) -1;
 }
+
+} // namespace sf
 
 #endif // MCVECTOR_H_

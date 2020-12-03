@@ -9,3 +9,7 @@ RuntimeIface::RuntimeIface(const RuntimeIface::Parameters& params)
 }
 
 
+RuntimeIface::~RuntimeIface()
+{
+	_RTTI_NOTIFY(DO_DEFAULT, "Destructed");
+}

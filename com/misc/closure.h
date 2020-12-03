@@ -2,18 +2,18 @@
 #define MISC_CLOSURE_H
 
 #include <functional>
-#include <assert.h>
+#include <cassert>
 
-namespace misc
+namespace sf
 {
 
-template <typename _Result, typename... _Args>
+template <typename Result, typename... Args>
 struct Closure
 {
 	/**
 	 * Function type of the lambda or function.
 	 */
-	typedef std::function<_Result(_Args...)> _Type;
+	typedef std::function<Result(Args...)> _Type;
 	/**
 	 * Member holding the function.
 	 */
@@ -23,26 +23,24 @@ struct Closure
 	 * Default constructor
 	 */
 	Closure()
-		: Func(NULL) {}
+		: Func(nullptr) {}
+
+	/**
+	 * Pointer constructor
+	 */
+	explicit Closure(const Closure* c)
+		: Func(c ? c->Func : NULL) {}
 
 	/**
 	 * Default constructor
 	 */
-	Closure(const Closure* c)
-		: Func(c->Func)
-	{
-	}
-
-	/**
-	 * Default constructor
-	 */
-	Closure(const _Type fn)
+	explicit Closure(const _Type fn)
 		: Func(fn) {}
 
 	/**
 	 * Make the call to the member function.
 	 */
-	_Result operator()(_Args... args)
+	Result operator()(Args... args)
 	{
 		// Bail out when called and not assigned.
 		assert(isAssigned());
@@ -55,10 +53,10 @@ struct Closure
 	 */
 	inline bool isAssigned() const
 	{
-		return Func != NULL;
+		return Func != nullptr;
 	}
 };
 
-}
+} // namespace sf
 
 #endif // MISC_CLOSURE_H

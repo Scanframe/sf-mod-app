@@ -29,11 +29,11 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 
 #ifdef __DBG_MT_SAFEGUARD
 namespace {
-static misc::TCriticalSection CriticalSection;
+static sf::TCriticalSection CriticalSection;
 }
 #endif
 
-namespace misc
+namespace sf
 {
 // Raise signal SIGTRAP when debugger present otherwise the process crashes.
 void DebugBreak()
@@ -64,28 +64,28 @@ void DebugBreak()
 
 static unsigned int DefaultDebugOutputType = dotCLOG;
 
-class notify_exception :public std::exception
+class notify_exception : public std::exception
 {
 	public:
 
-		explicit notify_exception(const char *s) :msg(s) {}
+		explicit notify_exception(const char* s) : msg(s) {}
 
-		const char *what() const noexcept override;
+		const char* what() const noexcept override;
 
 	private:
 		std::string msg;
 };
 
-const char *notify_exception::what() const noexcept
+const char* notify_exception::what() const noexcept
 {
 	return msg.c_str();
 }
 
 // Debug output stream for easy streaming of information.
 debug_ostream::debug_ostream(int type)
-	:std::ostream(std::cout.rdbuf())
-	 , std::streambuf()
-	 , Type(type)
+	: std::ostream(std::cout.rdbuf())
+	, std::streambuf()
+	, Type(type)
 {
 	// Assign the buffer again because some times it is not enough
 	this->rdbuf(this);
@@ -100,7 +100,7 @@ debug_ostream::~debug_ostream()
 	}
 }
 
-std::size_t debug_ostream::do_sputn(const char *s, std::size_t count)
+std::size_t debug_ostream::do_sputn(const char* s, std::size_t count)
 {
 	msg.append(s, 0, static_cast<std::string::size_type>(count));
 	return count;
@@ -132,11 +132,11 @@ int debug_ostream::overflow(int c)
 	return 1;
 }
 
-void UserOutputDebugString(unsigned int type, const char *s)
+void UserOutputDebugString(unsigned int type, const char* s)
 {
 #ifdef __DBG_MT_SAVEGUARD
 	// Critical section to prevent simultaneous modification of the Fifo.
-	misc::TCriticalSection::TLock lock(CriticalSection);
+	sf::TCriticalSection::TLock lock(CriticalSection);
 #endif
 	// When default is specified set the the bit.
 	if (type & dotDEFAULT)
@@ -155,7 +155,7 @@ void UserOutputDebugString(unsigned int type, const char *s)
 		std::clog << tm << ' ' << s << '\n';
 	}
 	// Find the file separator character '\x1C'.
-	char *sep = strchr(const_cast<char *>(s), '\x1C');
+	char* sep = strchr(const_cast<char*>(s), '\x1C');
 	// make it a newline character when found.
 	if (sep)
 	{
@@ -172,9 +172,9 @@ void UserOutputDebugString(unsigned int type, const char *s)
 	}
 	if (type & dotMSGBOX || type & dotTHROW)
 	{
-		const char *caption = "Notification";
+		const char* caption = "Notification";
 		// Find caption separator in text
-		char *text = strchr(const_cast<char *>(s), _CLS_SEP);
+		char* text = strchr(const_cast<char*>(s), _CLS_SEP);
 		// When found set caption pointer
 		if (text)
 		{
@@ -188,7 +188,7 @@ void UserOutputDebugString(unsigned int type, const char *s)
 		else
 		{
 			// if no separator was found all buffer text is message text
-			text = const_cast<char *>(s);
+			text = const_cast<char*>(s);
 		}
 		//
 		if (type & dotMSGBOX)
@@ -227,7 +227,7 @@ void SetDefaultDebugOutput(unsigned int type)
 	DefaultDebugOutputType = type & unsigned(~dotTHROW);
 }
 
-unsigned int getDefaultDebugOutput()
+unsigned int GetDefaultDebugOutput()
 {
 	return DefaultDebugOutputType;
 }
@@ -248,11 +248,11 @@ bool IsDebug()
 	return flag > 0;
 }
 
-std::string Demangle(const char *name)
+std::string Demangle(const char* name)
 {
 #if IS_GNU
 	int status;
-	char *nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+	char* nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
 	std::string rv(nm);
 	free(nm);
 	return rv;
@@ -261,4 +261,4 @@ std::string Demangle(const char *name)
 #endif
 }
 
-} // namespace misc
+} // namespace sf

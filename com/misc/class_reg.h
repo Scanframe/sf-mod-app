@@ -15,24 +15,24 @@
  */
 #define SF_DECL_IFACE(InterfaceType, ParamType, FuncName) \
   public: \
-    static misc::TClassRegistration<InterfaceType, ParamType> FuncName();
+    static sf::TClassRegistration<InterfaceType, ParamType> FuncName();
 /*
-static misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> Interface();
+static sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> Interface();
 */
 
 /**
  * Implements the public static function in the class where it is used.
  */
 #define SF_IMPL_IFACE(InterfaceType, ParamType, FuncName) \
-misc::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName() \
-{ static misc::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
+sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName() \
+{ static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
 return entries; }
 
 /*
-misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::Interface()
+sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::Interface()
 {
 	// Static storage declaration here so it resides in this DL.
-	static misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters>::entries_t entries;
+	static sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters>::entries_t entries;
 	// Return the entries and the assignment constructor is called for.
 	return entries;
 }
@@ -52,7 +52,7 @@ size_t dist = InterfaceType::FuncName().Register \
   ( \
     RegName, \
     Decription, \
-    misc::TClassRegistration<InterfaceType, ParamType>::callback_t \
+    sf::TClassRegistration<InterfaceType, ParamType>::callback_t \
       ([](const ParamType& params)->InterfaceType* {return new DerivedType(params);}) \
   ); } \
 }
@@ -66,7 +66,7 @@ __attribute__((constructor)) void register_on_load()
 		(
 			"Implementation_A",
 			"A description of the class.",
-			misc::TClassRegistration<RuntimeIface, RuntimeIface::Parameters>::callback_t
+			sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters>::callback_t
 				(
 					[](const RuntimeIface::Parameters& params)->RuntimeIface*
 					{
@@ -78,7 +78,7 @@ __attribute__((constructor)) void register_on_load()
 }
 */
 
-namespace misc
+namespace sf
 {
 
 /**
@@ -100,7 +100,7 @@ class TClassRegistration
 		/**
 		 * Constructor For the base class.
 		 */
-		TClassRegistration<T, P>(entries_t& entries);
+		TClassRegistration<T, P>(entries_t& entries); // NOLINT(google-explicit-constructor)
 		/**
 		 * Copying is allowed.
 		 */
@@ -113,7 +113,12 @@ class TClassRegistration
 		 */
 		TClassRegistration<T, P>& operator=(const TClassRegistration<T, P>& inst)
 		{
-			Entries = inst.Entries;
+			// Prevent self assignment.
+			if (this != &inst)
+			{
+				Entries = inst.Entries;
+			}
+			return *this;
 		}
 
 		/**

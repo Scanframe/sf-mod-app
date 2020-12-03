@@ -25,6 +25,10 @@ make C++ programming easier.
 // Import of shared library export defines.
 #include "global.h"
 
+namespace sf
+{
+//using namespace std;
+
 /**
 * Calculates the offset for a given range and setpoint.
 */
@@ -153,7 +157,7 @@ class TPointerBase
 
 	private:
 		// Prohibit use of new
-		void* operator new(size_t) throw() {return nullptr;}
+		void* operator new(size_t) noexcept {return nullptr;}
 
 		// Delete only sets pointer to null.
 		void operator delete(void* p) {((TPointerBase<T>*) p)->P = 0;}
@@ -289,9 +293,12 @@ class TEnvelope
 template <class T>
 TEnvelope<T>& TEnvelope<T>::operator=(const TEnvelope<T>& src)
 {
-	Letter->Release();
-	Letter = src.Letter;
-	Letter->AddRef();
+	if (this != &src)
+	{
+		Letter->Release();
+		Letter = src.Letter;
+		Letter->AddRef();
+	}
 	return *this;
 }
 
@@ -350,9 +357,12 @@ class TAEnvelope
 template <class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 {
-	Letter->Release();
-	Letter = src.Letter;
-	Letter->AddRef();
+	if (this != &src)
+	{
+		Letter->Release();
+		Letter = src.Letter;
+		Letter->AddRef();
+	}
 	return *this;
 }
 
@@ -509,7 +519,7 @@ class TBitSet
 template <size_t Size>
 inline
 TBitSet<Size>::TBitSet()
-:FMask({0})
+	:FMask({0})
 {
 	Clear();
 }
@@ -578,15 +588,15 @@ _MISC_FUNC std::string stringf(const char* fmt, ...);
 /**
  * Better implementation of 'stringf' ?
  */
-template<typename ... Args>
+template <typename ... Args>
 std::string string_format(const std::string& format, Args ... args)
 {
 	// Extra space for '\0'
-	size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1;
-	std::unique_ptr<char[]> buf( new char[ size ] );
-	snprintf( buf.get(), size, format.c_str(), args ... );
+	size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+	std::unique_ptr<char[]> buf(new char[size]);
+	snprintf(buf.get(), size, format.c_str(), args ...);
 	// We don't want the '\0' inside
-	return std::string( buf.get(), buf.get() + size - 1 );
+	return std::string(buf.get(), buf.get() + size - 1);
 }
 
 // converts a integer value to bit string '0' and '1' characters
@@ -611,26 +621,23 @@ _MISC_FUNC bool kbhit();
  */
 _MISC_FUNC pid_t gettid() noexcept;
 
-namespace misc
-{
-using namespace std;
 /**
 * Counted vector of strings.
 */
-typedef mcvector<string> strings;
+typedef mcvector<std::string> strings;
 /**
 * Counted vector iterator of strings.
 */
-typedef mciterator<string> strings_iter;
+typedef mciterator<std::string> strings_iter;
 /**
  * Implodes a string list into a single string.
  */
-_MISC_FUNC string implode(strings strs, string glue, bool skip_empty = false);
+_MISC_FUNC std::string implode(strings strs, std::string glue, bool skip_empty = false);
 /**
  * Explodes the passed string into a strings using the separator.
  * When skip_empty is true empty strings are ignored.
  */
-_MISC_FUNC strings explode(string str, string separator, bool skip_empty = false);
+_MISC_FUNC strings explode(std::string str, std::string separator, bool skip_empty = false);
 
 #ifndef WIN32
 /**
@@ -657,26 +664,26 @@ _MISC_FUNC md5hash_t md5(const char* s);
 /**
  * Returns the MD5 hash of the passed string.
  */
-_MISC_FUNC md5hash_t md5(string s);
+_MISC_FUNC md5hash_t md5(std::string s);
 /**
  * Returns the md5 hexadecimal string of the passed string.
  */
-_MISC_FUNC string md5str(string s);
+_MISC_FUNC std::string md5str(std::string s);
 /**
  * Returns the string md5 hexadecimal representation string of the hash.
  */
-_MISC_FUNC string md5hexstr(const md5hash_t& hash);
+_MISC_FUNC std::string md5hexstr(const md5hash_t& hash);
 
 #endif // WIN32
 
 /**
 * Return a line from the input stream.
 */
-_MISC_FUNC string getline(istream& is);
+_MISC_FUNC std::string getline(std::istream& is);
 /**
 * Converts the passed string into a lower case one and returns it.
 */
-_MISC_FUNC string getcwdstr();
+_MISC_FUNC std::string getcwdstr();
 /**
 * Returns the timespec as function return value as clock_gettime().
 */
@@ -684,7 +691,7 @@ _MISC_FUNC timespec gettime();
 /**
 * Returns the unmagled function name returned by type ID.
 */
-_MISC_FUNC string demangle(const char* name);
+_MISC_FUNC std::string demangle(const char* name);
 /**
 * Compares the 2 times.
 * Returns -1, 0, 1 respectively for smaller, equal en larger.
@@ -693,27 +700,27 @@ _MISC_FUNC int timespeccmp(const timespec& ts1, const timespec& ts2);
 /**
 * Converts the passed string into a lower case one and returns it.
 */
-_MISC_FUNC string tolower(string s);
+_MISC_FUNC std::string tolower(std::string s);
 /**
 * Converts the passed string into a upper case one and returns it.
 */
-_MISC_FUNC string toupper(string s);
+_MISC_FUNC std::string toupper(std::string s);
 /**
 * Trims a passed string at both sides and returns it.
 */
-_MISC_FUNC string trim(string s, const string& t = " ");
+_MISC_FUNC std::string trim(std::string s, const std::string& t = " ");
 /**
 * Trims a passed string left and returns it.
 */
-_MISC_FUNC string trim_left(string s, const string& t = " ");
+_MISC_FUNC std::string trim_left(std::string s, const std::string& t = " ");
 /**
 * Trims a passed string right and returns it.
 */
-_MISC_FUNC string trim_right(string s, const string& t = " ");
+_MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
 /**
 * Returns the same string but now uses a new buffer making the string thread save.
 */
-_MISC_FUNC string unique(const string& s);
+_MISC_FUNC std::string unique(const std::string& s);
 /**
 * Returns the same string but now uses a new buffer making the string thread save.
 
@@ -756,22 +763,24 @@ _MISC_FUNC const char* strnstr(const char* s, const char* find, size_t n);
 _MISC_FUNC int wildcmp(const char* wild, const char* str, bool case_s);
 
 inline
-int wildcmp(const string& wild, const string& str, bool case_s)
+int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 {
 	return wildcmp(wild.c_str(), str.c_str(), case_s);
 }
 
 // Returns all the files from the passed directory using a wildcard.
-_MISC_FUNC bool getfiles(strings& files, string directory, string wildcard);
-//
-} /* namespace misc */
+_MISC_FUNC bool getfiles(strings& files, std::string directory, std::string wildcard);
+
 /**
  * Checks if the passed path exists (by doing a access() using F_OK).
  */
 _MISC_FUNC bool file_exists(const char* path);
 
 inline
-bool file_exists(const std::string& path) {return file_exists(path.c_str());}
+bool file_exists(const std::string& path)
+{
+	return file_exists(path.c_str());
+}
 
 #ifndef WIN32
 
@@ -781,7 +790,10 @@ bool file_exists(const std::string& path) {return file_exists(path.c_str());}
 _MISC_FUNC bool file_mkdir(const char* path, __mode_t mode = 0755);
 
 inline
-bool file_mkdir(const std::string& path, __mode_t mode = 0755) {return file_mkdir(path.c_str(), mode);}
+bool file_mkdir(const std::string& path, __mode_t mode = 0755)
+{
+	return file_mkdir(path.c_str(), mode);
+}
 
 #endif
 
@@ -830,7 +842,7 @@ _MISC_FUNC bool file_stat(const std::string& path, stat_t& _stat);
 /**
  * Finds the files using the passed wildcard.
  */
-_MISC_FUNC bool file_find(misc::strings& files, const std::string& wildcard);
+_MISC_FUNC bool file_find(sf::strings& files, const std::string& wildcard);
 /**
  * Formats the time to a the given format.
  * When the format is NULL the XML format is used.
@@ -854,9 +866,9 @@ _MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
 /**
  * Intermediate type to beable to create passwd_t struct/class.
  */
- 
+
 #ifndef WIN32
- 
+
 typedef struct passwd passwd_type;
 
 /**
@@ -980,4 +992,7 @@ void proc_setfsgid(gid_t gid);
 
 #endif // WIN32
 
+} // namespace sf
+
 #endif // MISC_GENUTILS_H
+

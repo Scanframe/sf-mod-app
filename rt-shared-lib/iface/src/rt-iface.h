@@ -19,6 +19,8 @@ class _IFACE_CLASS RuntimeIface
 
 		// Required type of constructor passing a parameters structure.
 		explicit RuntimeIface(const Parameters& params);
+		// Virtual destructor required.
+		virtual ~RuntimeIface();
 		// Method needed to implemented in the implementation of a derived class.
 		virtual const char* getString() = 0;
 		// Declare the interface function.
