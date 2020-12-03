@@ -14,8 +14,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(SOURCES
 	src/main.cpp
-	src/stringlistmodel.h
-	src/stringlistmodel.cpp
 	src/mainwindow.h
 	src/mainwindow.cpp
 	src/mainwindow.ui
