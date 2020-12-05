@@ -2,8 +2,6 @@
 Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 */
 
-// Import defines to get the right target
-#include "target.h"
 #include "dbgutils.h"
 
 #include <csignal>
@@ -148,11 +146,15 @@ void UserOutputDebugString(unsigned int type, const char* s)
 	{
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
-	auto tm = double(clock()) / (CLOCKS_PER_SEC / 10);
+	auto tm = double(clock()) / (CLOCKS_PER_SEC);
+	#if !IS_WIN
+	auto /= 10;
+	#endif
 	// If the log bit is enabled write the line as is.
 	if (type & dotCLOG)
 	{
-		std::clog << tm << ' ' << s << '\n';
+		std::clog.precision(3);
+		std::clog << std::fixed  << tm << ' ' << s << '\n';
 	}
 	// Find the file separator character '\x1C'.
 	char* sep = strchr(const_cast<char*>(s), '\x1C');

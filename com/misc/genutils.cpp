@@ -1,4 +1,6 @@
-// Import of type va_list and its functions.
+// Import the files header file.
+#include "genutils.h"
+
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
@@ -12,8 +14,8 @@
 #include <ctime>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#ifndef WIN32
+// When not Windows.
+#if !IS_WIN
 #include <sys/select.h>
 #include <sys/fsuid.h>
 // Import of SYS_xxx
@@ -24,8 +26,6 @@
 #include "exception.h"
 // Import debug utilities.
 #include "dbgutils.h"
-// Import the files header file.
-#include "genutils.h"
 
 namespace sf
 {
@@ -576,7 +576,8 @@ bool file_stat(const std::string& path, stat_t& st)
 	return true;
 }
 
-#ifndef WIN32
+// When not windows.
+#if !IS_WIN
 
 bool file_mkdir(const char* path, __mode_t mode)
 {
@@ -627,13 +628,9 @@ bool file_mkdir(const char* path, __mode_t mode)
 
 #endif // WIN32
 
-bool file_find(sf::strings& files,
-	const std::string& path
-)
+bool file_find(sf::strings& files, const std::string& path)
 {
-	return
-		sf::getfiles(files, file_dirname(path), file_basename(path)
-		);
+	return sf::getfiles(files, file_dirname(path), file_basename(path));
 }
 
 bool file_write(const char* path, const void* buf, size_t sz, bool append)
@@ -955,7 +952,8 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 	return grp.valid = (_grp != nullptr);
 }
 
+#endif // IS_WIN
+
 } // namespace sf
 
-#endif
 

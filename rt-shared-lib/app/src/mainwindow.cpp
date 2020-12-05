@@ -59,7 +59,7 @@ void MainWindow::onLoadLibAndExecuteFunction()
 	{
 		// Do not specify the extension because this is different in Windows then it is in Linux and QLibrary takes care of it.
 		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a";
-		qInfo() << "Loading: " << file;
+		_RTTI_NOTIFY(DO_DEFAULT, "Loading: " << file);
 		QLibrary lib(file);
 		if (!lib.load())
 		{
