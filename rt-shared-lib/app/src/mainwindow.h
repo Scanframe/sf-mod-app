@@ -25,7 +25,6 @@ class MainWindow : public QMainWindow
 		void onCallMethod();
 
 	private:
-		void loadLibAndExecuteFunction();
 		// Pointer to the main window.
 		Ui::MainWindow* ui;
 		// Holds the list of libraries.

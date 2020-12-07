@@ -33,10 +33,10 @@ MainWindow::MainWindow(QWidget* parent)
 	// Connecting ScanFrame style using strings only so connection can read from a config file.
 	//sf::QObject_connect(ui->pushButtonLoad, "triggered", this, "onLoadLib");
 	// Method of connecting Qt5 style
-	connect(ui->actionFindLibs, &QAction::triggered, this, &MainWindow::onFindLibs);
+	connect(ui->pushButtonFind, &QPushButton::clicked, this, &MainWindow::onFindLibs);
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadLib);
 	connect(ui->pushButtonCreate, &QPushButton::clicked, this, &MainWindow::onCreateInstance);
-	connect(ui->actionCall, &QAction::triggered, this, &MainWindow::onCallMethod);
+	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallMethod);
 }
 
 MainWindow::~MainWindow()
@@ -47,7 +47,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::onFindLibs() // NOLINT(readability-convert-member-functions-to-static)
 {
+	// Clear the combo entries.
 	ui->comboBoxLibrary->clear();
+	// Clear the info list entries.
+	_libraryInfoList.clear();
 	QDirIterator it(QCoreApplication::applicationDirPath(), {"*.so", "*.dll"}, QDir::Files);
 	while (it.hasNext())
 	{
@@ -128,37 +131,5 @@ void MainWindow::onCallMethod()
 		mb.setText("No instance created for calling a method on.");
 		mb.setIcon(QMessageBox::Information);
 		mb.exec();
-	}
-}
-
-void MainWindow::loadLibAndExecuteFunction()
-{
-	// Sentry for loading.
-	if (!_interfaceInstance)
-	{
-		// Do not specify the extension because this is different in Windows then it is in Linux and QLibrary takes care of it.
-		QString file = QCoreApplication::applicationDirPath() + QDir::separator() + "librt-impl-a";
-		_RTTI_NOTIFY(DO_DEFAULT, "Loading: " << file);
-		QLibrary lib(file);
-		if (!lib.load())
-		{
-			_RTTI_NOTIFY(DO_DEFAULT, "QLibrary(" << file << ")" << lib.errorString())
-		}
-		else
-		{
-			_RTTI_NOTIFY(DO_DEFAULT, "_size(): " << RuntimeIface::Interface().Size())
-			//
-			std::string names[] = {"Class", "Class-A", "Class-B"};
-			for (auto& name: names)
-			{
-				_RTTI_NOTIFY(DO_DEFAULT, "IndexOf(" << name.c_str() << ") >> " << RuntimeIface::Interface().IndexOf(name))
-			}
-			//
-			_interfaceInstance = RuntimeIface::Interface().Create("Class-A", RuntimeIface::Parameters(123));
-		}
-	}
-	else
-	{
-		_RTTI_NOTIFY(DO_DEFAULT, "getString(): " << _interfaceInstance->getString())
 	}
 }

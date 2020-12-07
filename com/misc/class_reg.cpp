@@ -20,8 +20,8 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 	// Clear the structure members.
 	reset();
 	// Get the markers to look for.
-	const u_int64_t mark_beg = *((u_int64_t*) (_DL_MARKER_BEGIN));
-	const u_int64_t mark_end = *((u_int64_t*) (_DL_MARKER_END));
+	const uint64_t mark_beg = *((uint64_t*) (_DL_MARKER_BEGIN));
+	const uint64_t mark_end = *((uint64_t*) (_DL_MARKER_END));
 	// Set to 1 when the begin marker has been found and to 2 when both are found.
 	int flag = 0;
 	// Sanity check.
@@ -63,12 +63,12 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 			return false;
 		}
 		// Set the virtual size of the buffer so the last 64 bit integer can be compared.
-		buf.resize(1 + is.tellg() - ofs_idx - sizeof(u_int64_t));
+		buf.resize(1 + is.tellg() - ofs_idx - sizeof(uint64_t));
 		// Iterate through the buffer comparing markers.
 		for (size_t i = 0; i < buf.size(); i++)
 		{
 			// When the begin or end marker matches.
-			if (*(u_int64_t*) buf.data(i) == (flag ? mark_end : mark_beg))
+			if (*(uint64_t*) buf.data(i) == (flag ? mark_end : mark_beg))
 			{
 				// When the begin marker has been found.
 				if (!flag)
@@ -76,7 +76,7 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 					// Set the flag to find the end mark.
 					flag = 1;
 					// Calculate the last index of the begin marker which starts at after the matching 64bit position.
-					beg_idx = i + ofs_idx + sizeof(u_int64_t);
+					beg_idx = i + ofs_idx + sizeof(uint64_t);
 				}
 					// End marker has also be found.
 				else
@@ -96,7 +96,7 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 			// Increment the offset index with the size of the buffer which is the file chunk that was compared.
 			ofs_idx += buf.size();
 			// Move file read pointer some bytes back for the markers to compare fully next round.
-			is.seekg(1 - sizeof(u_int64_t), std::ifstream::cur);
+			is.seekg(1 - sizeof(uint64_t), std::ifstream::cur);
 		}
 	}
 	while (!is.eof() && flag <= 1);

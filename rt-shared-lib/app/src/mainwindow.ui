@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>607</width>
-    <height>355</height>
+    <width>695</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,46 +24,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="labelNameLibrary">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>&amp;Dynamic Library</string>
-      </property>
-      <property name="buddy">
-       <cstring>comboBoxLibrary</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="comboBoxLibrary">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="pushButtonLoad">
-      <property name="text">
-       <string>L&amp;oad</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="3">
-     <widget class="QListView" name="listViewLog">
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QLabel" name="labelNameClass">
       <property name="sizePolicy">
@@ -80,7 +40,21 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="0" colspan="6">
+     <widget class="QListView" name="listViewLog">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pushButtonFind">
+      <property name="text">
+       <string extracomment="Find libraries that can be loaded.">F&amp;ind</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
      <widget class="QComboBox" name="comboBoxClass">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -90,71 +64,64 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
+    <item row="0" column="3">
+     <widget class="QComboBox" name="comboBoxLibrary">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
      <widget class="QPushButton" name="pushButtonCreate">
       <property name="text">
        <string>C&amp;reate</string>
       </property>
      </widget>
     </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="labelNameLibrary">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&amp;Dynamic Library</string>
+      </property>
+      <property name="buddy">
+       <cstring>comboBoxLibrary</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QPushButton" name="pushButtonLoad">
+      <property name="text">
+       <string>L&amp;oad</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4">
+     <widget class="QPushButton" name="pushButtonCall">
+      <property name="text">
+       <string>&amp;Call</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>607</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuLibrary">
-    <property name="title">
-     <string>Library</string>
-    </property>
-    <addaction name="actionFindLibs"/>
-   </widget>
-   <addaction name="menuLibrary"/>
-  </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextBesideIcon</enum>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionFindLibs"/>
-   <addaction name="actionCall"/>
-  </widget>
-  <action name="actionFindLibs">
-   <property name="text">
-    <string>&amp;Find</string>
-   </property>
-   <property name="toolTip">
-    <string>Find libraries to populate the list</string>
-   </property>
-  </action>
-  <action name="actionCall">
-   <property name="text">
-    <string>&amp;Call</string>
-   </property>
-   <property name="toolTip">
-    <string>Calls a virtual function the derived class.</string>
-   </property>
-  </action>
  </widget>
  <tabstops>
+  <tabstop>pushButtonFind</tabstop>
   <tabstop>comboBoxLibrary</tabstop>
   <tabstop>pushButtonLoad</tabstop>
-  <tabstop>comboBoxClass</tabstop>
   <tabstop>pushButtonCreate</tabstop>
+  <tabstop>comboBoxClass</tabstop>
+  <tabstop>pushButtonCall</tabstop>
   <tabstop>listViewLog</tabstop>
  </tabstops>
  <resources>
