@@ -25,60 +25,75 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="labelName">
+     <widget class="QLabel" name="labelNameLibrary">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="text">
-       <string>&amp;Name</string>
+       <string>&amp;Dynamic Library</string>
       </property>
       <property name="buddy">
-       <cstring>lineEditName</cstring>
+       <cstring>comboBoxLibrary</cstring>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEditName"/>
+     <widget class="QComboBox" name="comboBoxLibrary">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pushButtonLoad">
+      <property name="text">
+       <string>L&amp;oad</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QListView" name="listViewLog">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="labelPassword">
+     <widget class="QLabel" name="labelNameClass">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="text">
-       <string>My Secret &amp;Password</string>
+       <string> &amp;Implementation</string>
       </property>
       <property name="buddy">
-       <cstring>lineEditPassword</cstring>
+       <cstring>comboBoxClass</cstring>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEditPassword"/>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="labelFunction">
-      <property name="text">
-       <string>&amp;Function</string>
-      </property>
-      <property name="buddy">
-       <cstring>lineEditFunction</cstring>
+     <widget class="QComboBox" name="comboBoxClass">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEditFunction"/>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QListView" name="listView">
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="pushButtonCreate">
+      <property name="text">
+       <string>C&amp;reate</string>
       </property>
      </widget>
     </item>
@@ -97,9 +112,7 @@
     <property name="title">
      <string>Library</string>
     </property>
-    <addaction name="actionLoad_A"/>
-    <addaction name="actionLoad_B"/>
-    <addaction name="actionLoad_C"/>
+    <addaction name="actionFindLibs"/>
    </widget>
    <addaction name="menuLibrary"/>
   </widget>
@@ -117,42 +130,32 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionLoad_A"/>
-   <addaction name="actionLoad_B"/>
-   <addaction name="actionLoad_C"/>
+   <addaction name="actionFindLibs"/>
+   <addaction name="actionCall"/>
   </widget>
-  <action name="actionLoad_A">
-   <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
-   </property>
+  <action name="actionFindLibs">
    <property name="text">
-    <string>Load A</string>
+    <string>&amp;Find</string>
+   </property>
+   <property name="toolTip">
+    <string>Find libraries to populate the list</string>
    </property>
   </action>
-  <action name="actionLoad_B">
-   <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
-   </property>
+  <action name="actionCall">
    <property name="text">
-    <string>Load B</string>
+    <string>&amp;Call</string>
    </property>
-  </action>
-  <action name="actionLoad_C">
-   <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load C</string>
+   <property name="toolTip">
+    <string>Calls a virtual function the derived class.</string>
    </property>
   </action>
  </widget>
  <tabstops>
-  <tabstop>lineEditFunction</tabstop>
-  <tabstop>lineEditPassword</tabstop>
-  <tabstop>lineEditName</tabstop>
+  <tabstop>comboBoxLibrary</tabstop>
+  <tabstop>pushButtonLoad</tabstop>
+  <tabstop>comboBoxClass</tabstop>
+  <tabstop>pushButtonCreate</tabstop>
+  <tabstop>listViewLog</tabstop>
  </tabstops>
  <resources>
   <include location="main.qrc"/>

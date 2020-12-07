@@ -13,7 +13,7 @@ Defines these defines with true (1) or false (0):
 #ifndef MISC_TARGET_H
 #define MISC_TARGET_H
 
-// Detect usage of the GCC GNU compiler.
+// Detect _usage of the GCC GNU compiler.
 #if defined(__GNUC__)
 	#define IS_GNU 1
 //#pragma GCC visibility

@@ -1,18 +1,13 @@
-#ifndef RT_IMPL_B_H
-#define RT_IMPL_B_H
-
-#include <memory>
+#ifndef RT_IMPL_A_H
+#define RT_IMPL_A_H
 
 #include "iface/src/rt-iface.h"
 
-/**
- * Exporting is not needed.
- */
-class RuntimeLibImplementationA : public RuntimeIface
+class RuntimeLibImplementationB : public RuntimeIface
 {
 	public:
 		// Required constructor passing a parameters structure.
-		explicit RuntimeLibImplementationA(const Parameters& params);
+		explicit RuntimeLibImplementationB(const Parameters& params);
 		// Implementing the the virtual method.
 		const char* getString() override;
 

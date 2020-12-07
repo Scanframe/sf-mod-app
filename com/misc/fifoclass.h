@@ -65,12 +65,12 @@ class TFifoClass
 		const T& Latest() const;
 
 		/**
-		 * Get item at head of buffer.
+		 * Read item at head of buffer.
 		 */
 		T Get();
 
 		/**
-		 * Same as Get(void) this time '0' is return when buffer is empty.
+		 * Same as Read(void) this time '0' is return when buffer is empty.
 		 */
 		int Get(T& item);
 
@@ -112,7 +112,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Clear Buffer
+		 * Reset Buffer
 		 */
 		void Clear()
 		{

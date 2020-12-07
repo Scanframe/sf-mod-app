@@ -12,7 +12,6 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-	src/global.h
 	src/rt-impl-a.h
 	src/rt-impl-a.cpp
 	src/alias.cpp

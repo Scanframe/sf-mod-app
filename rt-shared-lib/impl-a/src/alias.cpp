@@ -4,6 +4,6 @@
 SF_REG_CLASS
 (
 	RuntimeIface, RuntimeIface::Parameters, Interface,
-	RuntimeLibImplementationA, "Class-B", "Alias version of the class."
+	RuntimeLibImplementationA, "Class-A Alias", "Alias version of the class."
 )
 

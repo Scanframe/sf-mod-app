@@ -6,6 +6,9 @@ make C++ programming easier.
 #ifndef MISC_GENUTILS_H
 #define MISC_GENUTILS_H
 
+// Import of shared library export defines.
+#include "global.h"
+
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
@@ -13,17 +16,15 @@ make C++ programming easier.
 #include <string>
 #include <iostream>
 #include <memory>
-
-#ifndef WIN32
+#if !IS_WIN
 #include <pwd.h>
 #include <grp.h>
 #include <openssl/md5.h>
+#include <sys/stat.h>
 #endif
 
 // Import of template class mcvector.
 #include "mcvector.h"
-// Import of shared library export defines.
-#include "global.h"
 
 namespace sf
 {
@@ -639,7 +640,7 @@ _MISC_FUNC std::string implode(strings strs, std::string glue, bool skip_empty =
  */
 _MISC_FUNC strings explode(std::string str, std::string separator, bool skip_empty = false);
 
-#ifndef WIN32
+#if !IS_WIN
 /**
  * Type for storing an MD5 hash.
  */
@@ -689,7 +690,7 @@ _MISC_FUNC std::string getcwdstr();
 */
 _MISC_FUNC timespec gettime();
 /**
-* Returns the unmagled function name returned by type ID.
+* Returns the unmangled function name returned by type ID.
 */
 _MISC_FUNC std::string demangle(const char* name);
 /**

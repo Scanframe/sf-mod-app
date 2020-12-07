@@ -107,7 +107,7 @@ std::size_t debug_ostream::do_sputn(const char* s, std::size_t count)
 void debug_ostream::execute()
 {
 	UserOutputDebugString(Type, msg.c_str());
-	// Clear the buffer for another message
+	// Reset the buffer for another message
 	msg.resize(0);
 }
 
@@ -148,7 +148,8 @@ void UserOutputDebugString(unsigned int type, const char* s)
 	}
 	auto tm = double(clock()) / (CLOCKS_PER_SEC);
 	#if !IS_WIN
-	auto /= 10;
+	// Value 'CLOCKS_PER_SEC' Seems not to be correct in Linux some how.
+	tm /= 10;
 	#endif
 	// If the log bit is enabled write the line as is.
 	if (type & dotCLOG)

@@ -4,6 +4,32 @@
 #include <vector>
 #include "dbgutils.h"
 #include "closure.h"
+#include "global.h"
+
+/**
+ * Defines marker string used to find the start of a naming and description block in a compiled binary
+ */
+#define _DL_MARKER_BEGIN "\n#@$!*^\n"
+/**
+ * End marker
+ */
+#define _DL_MARKER_END "\n^*!$@#\n"
+
+/**
+ * Separator between name and description.
+ */
+#define _DL_NAME_SEPARATOR "\n\n"
+
+#define _DL_INFORMATION(Name, Description) \
+namespace \
+{ \
+const char* _dl_ = \
+  _DL_MARKER_BEGIN \
+  Name \
+  _DL_NAME_SEPARATOR \
+  Description \
+  _DL_MARKER_END; \
+}
 
 /**
  * Declares a public static function in the class where it is used.
@@ -14,8 +40,11 @@
  * 		registering derived classes or to create them.
  */
 #define SF_DECL_IFACE(InterfaceType, ParamType, FuncName) \
+  private: \
+    std::string _Register_Name_; \
   public: \
-    static sf::TClassRegistration<InterfaceType, ParamType> FuncName();
+    static sf::TClassRegistration<InterfaceType, ParamType> FuncName(); \
+ 	friend class sf::TClassRegistration<InterfaceType, ParamType>;
 /*
 static sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> Interface();
 */
@@ -27,6 +56,7 @@ static sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> Interface(
 sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName() \
 { static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
 return entries; }
+
 
 /*
 sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::Interface()
@@ -45,15 +75,20 @@ sf::TClassRegistration<RuntimeIface, RuntimeIface::Parameters> RuntimeIface::Int
  * 	RegName: Quoted character string containing the  name.
  * 	Decription: Quoted character string holding the name.
  */
-#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Decription) \
+#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Description) \
 namespace { \
 __attribute__((constructor)) void _##DerivedType##_() { \
 size_t dist = InterfaceType::FuncName().Register \
   ( \
     RegName, \
-    Decription, \
+    Description, \
     sf::TClassRegistration<InterfaceType, ParamType>::callback_t \
-      ([](const ParamType& params)->InterfaceType* {return new DerivedType(params);}) \
+      ([](const ParamType& params)->InterfaceType* \
+      { \
+        auto inst = new DerivedType(params); \
+        sf::TClassRegistration<InterfaceType, ParamType>::SetRegisterName(inst, RegName); \
+        return inst;\
+       }) \
   ); } \
 }
 
@@ -142,7 +177,7 @@ class TClassRegistration
 		 */
 		T* Create(const std::string& name, const P& params) const;
 		/**
-		 * Function to find and create registered class by index.
+		 * Function create registered class by index.
 		 * @param index
 		 * @param params
 		 * @return nullptr on failure on success a new instance of the registered class.
@@ -153,6 +188,29 @@ class TClassRegistration
 		 * @return Derived instance of type T.
 		 */
 		size_t Size() const;
+		/**
+		 * Sets the register name on the passed instance.
+		 * This automatically is called from the callback_t when a class is registered.
+		 */
+		static void SetRegisterName(T* inst, const char* name)
+		{
+			inst->_Register_Name_ = name;
+		}
+		/**
+		 * Gets the register name of the passed.
+		 */
+		const std::string& RegisterName(T* inst) const
+		{
+			return inst->_Register_Name_;
+		}
+		/**
+		 * Returns the name of the class from the passed index.
+		 */
+		const char* Name(size_t index) const;
+		/**
+		 * Returns the description of the class from the passed index.
+		 */
+		const char* Description(size_t index) const;
 
 		// Type of registered entry in the list.
 		struct entry_t
@@ -271,14 +329,56 @@ T* TClassRegistration<T, P>::Create(const std::string& name, const P& params) co
 template <typename T, typename P>
 T* TClassRegistration<T, P>::Create(size_t index, const P& params) const
 {
-	auto sz = Entries->size();
-	// Sanity check.
-	if (sz && index > 0 and index <= sz)
-	{
-		return Entries->at(index -1).Callback(params);
-	}
-	return nullptr;
+	return Entries->at(index).Callback(params);
 }
 
+template <typename T, typename P>
+const char* TClassRegistration<T, P>::Name(size_t index) const
+{
+	return Entries->at(index).Name;
 }
+
+template <typename T, typename P>
+const char* TClassRegistration<T, P>::Description(size_t index) const
+{
+	return Entries->at(index).Description;
+}
+
+/**
+ * Information on a dynamic library set using _DL_INFORMATION macro.
+ */
+struct _MISC_CLASS DynamicLibraryInfo
+{
+	/**
+	 * Default destructor.
+	 */
+	DynamicLibraryInfo() = default;
+	/**
+	 * Copy destructor.
+	 */
+	DynamicLibraryInfo(const DynamicLibraryInfo&);
+	/**
+	 * Path of the dynamic library.
+	 */
+	std::string Path;
+	/**
+	 * Name of the dynamic library.
+	 */
+	std::string Name;
+	/**
+	 * Description of the dynamic library.
+	 */
+	std::string Description;
+	/**
+	 * Reads the information from the file and return true on success.
+	 */
+	bool read(const std::string& filepath);
+	/**
+	 * Clears the members.
+	 */
+	void reset();
+};
+
+} // namespace sf
+
 #endif // MISC_CLASS_REG_H

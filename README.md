@@ -9,7 +9,7 @@ C++ concepts for proofing for me needed concepts using the Qt framework.
 Use the `build.sh` to call the `cmake` command having the needed options. 
 All projects are configured to drop the result into the **`./bin`** directory.
 
-Usage is `./build.sh <directory>`.<br>
+_usage is `./build.sh <directory>`.<br>
 Where the directory is any with a `CMakelists.txt` project file in it.
 
 #### Windows Build

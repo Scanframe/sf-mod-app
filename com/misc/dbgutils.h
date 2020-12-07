@@ -53,6 +53,7 @@
 
 #if IS_QT
 	#include <QString>
+	#include <QDebug>
 #endif
 
 // This define should be defined externaly in the project or make file.
@@ -71,9 +72,15 @@
 
 #if IS_QT
 inline
-std::ostream& operator<<(std::ostream& os, QString qs)
+std::ostream& operator<<(std::ostream& os, const QString& qs)
 {
 	return os << qs.toStdString();
+}
+
+inline
+QDebug&	operator<<(QDebug& qd, const std::string& ss)
+{
+	return qd << QString::fromStdString(ss);
 }
 #endif
 

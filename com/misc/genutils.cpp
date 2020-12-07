@@ -2,16 +2,12 @@
 #include "genutils.h"
 
 #include <cstdarg>
-#include <cstdlib>
-#include <cstdio>
-#include <dirent.h>
+#include <ctime>
 #include <cxxabi.h>
+#include <dirent.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstring>
 #include <libgen.h>
 #include <fcntl.h>
-#include <ctime>
 #include <sys/types.h>
 #include <sys/stat.h>
 // When not Windows.
@@ -139,8 +135,8 @@ bool kbhit()
 				(
 					1,
 					&read_fd,
-					NULL,    /* NO writes */
-					NULL,    /* NO exceptions */
+					nullptr,    /* NO writes */
+					nullptr,    /* NO exceptions */
 					&tv
 				) == -1)
 	{
@@ -161,7 +157,7 @@ bool kbhit()
 
 #endif // WIN32
 
-std::string implode(strings strs, std::string glue, bool skip_empty)
+std::string implode(strings strs, std::string glue, bool skip_empty) // NOLINT(performance-unnecessary-value-param)
 {
 	std::string retval;
 	strings_iter i(strs);
@@ -176,7 +172,7 @@ std::string implode(strings strs, std::string glue, bool skip_empty)
 	return retval;
 }
 
-strings explode(std::string str, std::string separator, bool skip_empty)
+strings explode(std::string str, std::string separator, bool skip_empty) // NOLINT(performance-unnecessary-value-param)
 {
 	strings result;
 	size_t ofs = 0, found = str.find_first_of(separator, ofs);
@@ -265,9 +261,9 @@ std::string demangle(const char* name)
 {
 	int status;
 	char* nm = abi::__cxa_demangle(name, 0, nullptr, &status);
-	std::string retval(nm);
+	std::string rv(nm);
 	free(nm);
-	return retval;
+	return rv;
 }
 
 //
@@ -493,7 +489,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 }
 
 //
-bool getfiles(strings& files, std::string directory, std::string wildcard)
+bool getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
 {
 	DIR* dp;
 	dirent* dirp;
@@ -584,11 +580,11 @@ bool file_mkdir(const char* path, __mode_t mode)
 	std::string dir(path);
 	// Add terminating slash.
 	dir += '/';
-	// Get root directory
+	// Read root directory
 	size_t ofs = dir.find('/');
 	do
 	{
-		// Get next '/' in the directory.string.
+		// Read next '/' in the directory.string.
 		size_t pos = dir.find('/', ofs + 1);
 		// When a directory separator was found.
 		if (pos != std::string::npos)
@@ -622,7 +618,7 @@ bool file_mkdir(const char* path, __mode_t mode)
 		}
 	}
 	while (ofs);
-	// In the end check if the odirectory exists as a whole.
+	// In the end check if the directory exists as a whole.
 	return file_exists(dir.c_str());
 }
 
@@ -816,7 +812,7 @@ void proc_setfsgid(gid_t gid)
 passwd_t::passwd_t() : passwd()
 {
 	reset();
-	// Get the buffer size needed.
+	// Read the buffer size needed.
 	bufsz = ::sysconf(_SC_GETPW_R_SIZE_MAX);
 	// Value was indeterminate
 	if (bufsz == -1)
@@ -841,7 +837,7 @@ passwd_t::~passwd_t()
 void passwd_t::reset()
 {
 	valid = false;
-	// Clear the passwd_typ part of this instance.
+	// Reset the passwd_typ part of this instance.
 	memset(this, 0, sizeof(passwd_type)); // NOLINT(bugprone-undefined-memory-manipulation)
 }
 
@@ -886,7 +882,7 @@ group_t::group_t()
 	: group()
 {
 	reset();
-	// Get the buffer size needed.
+	// Read the buffer size needed.
 	bufsz = ::sysconf(_SC_GETGR_R_SIZE_MAX);
 	// Value was indeterminate
 	if (bufsz == -1)
@@ -911,7 +907,7 @@ group_t::~group_t()
 void group_t::reset()
 {
 	valid = false;
-	// Clear the passwd_typ part of this instance.
+	// Reset the passwd_typ part of this instance.
 	memset(this, 0, sizeof(passwd_type));
 }
 
@@ -946,7 +942,7 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 	}
 	if (err)
 	{
-		throw ExceptionSystemCall("getgrgid_r", errno, NULL, __FUNCTION__);
+		throw ExceptionSystemCall("getgrgid_r", errno, nullptr, __FUNCTION__);
 	}
 	// Signal success or failure.
 	return grp.valid = (_grp != nullptr);

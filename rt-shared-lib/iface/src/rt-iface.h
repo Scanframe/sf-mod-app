@@ -23,8 +23,9 @@ class _IFACE_CLASS RuntimeIface
 		virtual ~RuntimeIface();
 		// Method needed to implemented in the implementation of a derived class.
 		virtual const char* getString() = 0;
-		// Declare the interface function.
-		SF_DECL_IFACE(RuntimeIface, RuntimeIface::Parameters, Interface)
+
+	// Declare the interface function.
+	SF_DECL_IFACE(RuntimeIface, RuntimeIface::Parameters, Interface)
 };
 
 #endif // RT_IFACE_H

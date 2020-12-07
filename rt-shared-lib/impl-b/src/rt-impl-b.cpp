@@ -1,28 +1,26 @@
-#include "rt-impl-a.h"
+#include "rt-impl-b.h"
 #include "misc/dbgutils.h"
 #include "misc/genutils.h"
 
-
 // Declaration of the dynamic library information.
-_DL_INFORMATION("Implementation Library A",
-	"This is the description of the library and what it contains.\n"
-	"A second line of a multi lined description."
+_DL_INFORMATION("Implementation Library B",
+	"Second  implementation of the same class"
 )
 
 // Register this derived class.
 SF_REG_CLASS
 (
 	RuntimeIface, RuntimeIface::Parameters, Interface,
-	RuntimeLibImplementationA, "Class-A", "Actual name of the class."
+	RuntimeLibImplementationB, "Class-B", "Actual name of the class."
 )
 
-RuntimeLibImplementationA::RuntimeLibImplementationA(const RuntimeIface::Parameters& params)
+RuntimeLibImplementationB::RuntimeLibImplementationB(const RuntimeIface::Parameters& params)
 	: RuntimeIface(params)
 {
 	_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
 }
 
-const char* RuntimeLibImplementationA::getString()
+const char* RuntimeLibImplementationB::getString()
 {
 	_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().RegisterName(this) << "): " << __FUNCTION__)
 	FMessage = sf::string_format("Greetings from Class '%s' created by name '%s' ", _RTTI_TYPENAME.c_str(),

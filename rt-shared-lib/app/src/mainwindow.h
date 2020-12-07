@@ -19,15 +19,19 @@ class MainWindow : public QMainWindow
 		~MainWindow() override;
 
 	private slots:
-		void onLoadA();
-		void onLoadB();
-		void onLoadLibAndExecuteFunction();
+		void onFindLibs();
+		void onLoadLib();
+		void onCreateInstance();
+		void onCallMethod();
 
 	private:
+		void loadLibAndExecuteFunction();
 		// Pointer to the main window.
 		Ui::MainWindow* ui;
+		// Holds the list of libraries.
+		QVector<sf::DynamicLibraryInfo> _libraryInfoList;
 		// Pointer to an implementation of RuntimeIface.
-		RuntimeIface* interfaceInstance;
+		RuntimeIface* _interfaceInstance;
 };
 
 #endif // MAINWINDOW_H
