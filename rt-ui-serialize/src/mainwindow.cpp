@@ -2,7 +2,6 @@
 #include "./ui_mainwindow.h"
 
 #include <QDate>
-#include <QDebug>
 #include <QMessageBox>
 #include <QStringList>
 #include <QTimer>
@@ -19,7 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	this->setWindowIcon(QIcon(":/img/icon.ico"));
+	this->setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
 	auto clm = new sf::QCaptureListModel(ui->listView);
 	// Set to capture 'clog'.

@@ -1,53 +1,100 @@
 #include <QDebug>
-#include <QtWidgets/QListView>
+#include <QListView>
 
 #include "qcapturelistmodel.h"
+#include "genutils.h"
+#include "qt_utils.h"
+#include "qresource.h"
 
 namespace sf
 {
 
-std::streambuf* QCaptureListModel::FCOutSaved = nullptr;
-std::streambuf* QCaptureListModel::FCLogSaved = nullptr;
-std::streambuf* QCaptureListModel::FCErrSaved = nullptr;
+std::streambuf* QCaptureListModel::_coutSaved = nullptr;
+std::streambuf* QCaptureListModel::_clogSaved = nullptr;
+std::streambuf* QCaptureListModel::_cerrSaved = nullptr;
 
 QCaptureListModel::QCaptureListModel(QObject* parent)
 	: QAbstractListModel(parent)
-	, FStringList()
-	, FSource(0)
-	, FStreamBuf(new LineBuffer(10))
+	, _source(0)
+	, _streamBuf(new LineBuffer(300))
+	, _contextMenu(nullptr)
 {
 	// Assign the new line event handler.
-	FStreamBuf->setNewLineHandler(LineBuffer::EvNewLine([this](LineBuffer* sender, const std::string& line)->void
+	_streamBuf->setNewLineHandler(LineBuffer::event_t([this](LineBuffer* sender, const std::string& line)->void
 	{
 		append(line.c_str());
 	}));
+	// When the parent is a widget.
+	if (auto avi = dynamic_cast<QAbstractItemView*>(parent))
+	{
+		avi->setContextMenuPolicy(Qt::CustomContextMenu);
+		connect(avi, &QWidget::customContextMenuRequested, this, &QCaptureListModel::contextMenuRequested);
+		_contextMenu = new QMenu(avi);
+		//
+		auto action = new QAction(QResource::getIcon(QResource::Icon::Clear), "Clear", this);
+		_contextMenu->addAction(action);
+		connect(action, &QAction::triggered, this, &QCaptureListModel::onClear);
+
+#ifdef _FILL_ACTION
+		action = new QAction(QIcon(":action/submit"), "Fill", this);
+		_contextMenu->addAction(action);
+		connect(action, &QAction::triggered, this, &QCaptureListModel::onFill);
+#endif
+	}
 }
 
-void QCaptureListModel::HandleNewLine(LineBuffer* sender, const QString& line)
+void QCaptureListModel::onClear()
+{
+	beginRemoveColumns(QModelIndex(), 0, _streamBuf->lineCount());
+	_streamBuf->clear();
+	endRemoveColumns();
+
+}
+
+void QCaptureListModel::onFill()
+{
+	static int idx = 0;
+	for (int i = 0; i < 6; ++i)
+	{
+		std::clog << sf::string_format("This is line %03d", idx++) << std::endl;
+	}
+}
+
+void QCaptureListModel::contextMenuRequested(QPoint pos)
+{
+	// When the parent is a listView.
+	if (auto aiv = dynamic_cast<QAbstractItemView*>(parent()))
+	{
+		//QModelIndex index = aiv->indexAt(pos);
+		_contextMenu->popup(aiv->viewport()->mapToGlobal(pos));
+	}
+}
+
+void QCaptureListModel::handleNewLine(LineBuffer* sender, const QString& line)
 {
 	append(line);
 }
 
 QCaptureListModel::~QCaptureListModel()
 {
-	if (FCOutSaved)
+	if (_coutSaved)
 	{
-		std::cout.rdbuf(FCOutSaved);
+		std::cout.rdbuf(_coutSaved);
 	}
-	if (FCLogSaved)
+	if (_clogSaved)
 	{
-		std::clog.rdbuf(FCLogSaved);
+		std::clog.rdbuf(_clogSaved);
 	}
-	if (FCErrSaved)
+	if (_cerrSaved)
 	{
-		std::cerr.rdbuf(FCErrSaved);
+		std::cerr.rdbuf(_cerrSaved);
 	}
-	delete FStreamBuf;
+	delete _streamBuf;
 }
 
 int QCaptureListModel::rowCount(const QModelIndex& parent) const
 {
-	return FStringList.count();
+	return _streamBuf->lineCount();
 }
 
 QVariant QCaptureListModel::data(const QModelIndex& index, int role) const
@@ -56,13 +103,13 @@ QVariant QCaptureListModel::data(const QModelIndex& index, int role) const
 	{
 		return QVariant();
 	}
-	if (index.row() >= FStringList.size())
+	if (index.row() >= _streamBuf->lineCount())
 	{
 		return QVariant();
 	}
 	if (role == Qt::DisplayRole)
 	{
-		return FStringList.at(index.row());
+		return QString::fromStdString(_streamBuf->getLine(index.row()));
 	}
 	else
 	{
@@ -77,7 +124,6 @@ QVariant QCaptureListModel::headerData(int section, Qt::Orientation orientation,
 	{
 		return QVariant();
 	}
-
 	if (orientation == Qt::Horizontal)
 	{
 		return QString("Column %1").arg(section);
@@ -90,9 +136,15 @@ QVariant QCaptureListModel::headerData(int section, Qt::Orientation orientation,
 
 bool QCaptureListModel::append(const QString& str)
 {
-	beginInsertRows(QModelIndex(), FStringList.size(), FStringList.size() + 1);
-	FStringList.append(str);
+	if (_streamBuf->lineCount())
+	{
+		dataChanged(QModelIndex(), index(_streamBuf->lineCount() - 1));
+	}
+/*
+	beginInsertRows(QModelIndex(), _streamBuf->lineCount() - 1, _streamBuf->lineCount());
 	endInsertRows();
+*/
+
 	// Automatically scroll to bottom.
 	if (auto lv = dynamic_cast<QListView*>(parent()))
 	{
@@ -103,37 +155,37 @@ bool QCaptureListModel::append(const QString& str)
 
 unsigned QCaptureListModel::source() const
 {
-	return FSource;
+	return _source;
 }
 
 unsigned QCaptureListModel::setSource(unsigned ss)
 {
-	FSource = ss;
-	if (FSource & ssCout)
+	_source = ss;
+	if (_source & ssCout)
 	{
-		if (!FCOutSaved)
+		if (!_coutSaved)
 		{
-			FCOutSaved = std::cout.rdbuf();
+			_coutSaved = std::cout.rdbuf();
 		}
-		std::cout.rdbuf(FStreamBuf);
+		std::cout.rdbuf(_streamBuf);
 	}
-	if (FSource & ssClog)
+	if (_source & ssClog)
 	{
-		if (!FCLogSaved)
+		if (!_clogSaved)
 		{
-			FCLogSaved = std::clog.rdbuf();
+			_clogSaved = std::clog.rdbuf();
 		}
-		std::clog.rdbuf(FStreamBuf);
+		std::clog.rdbuf(_streamBuf);
 	}
-	if (FSource & ssCerr)
+	if (_source & ssCerr)
 	{
-		if (!FCErrSaved)
+		if (!_cerrSaved)
 		{
-			FCErrSaved = std::cerr.rdbuf();
+			_cerrSaved = std::cerr.rdbuf();
 		}
-		std::cerr.rdbuf(FStreamBuf);
+		std::cerr.rdbuf(_streamBuf);
 	}
-	return FSource;
+	return _source;
 }
 
 } // namespace sf

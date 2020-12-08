@@ -134,7 +134,7 @@ TIniProfile::~TIniProfile()
 	{
 		Write();
 	}
-	// Clear all entries.
+	// clear all entries.
 	Flush();
 }
 

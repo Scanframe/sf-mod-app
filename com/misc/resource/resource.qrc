@@ -1,0 +1,11 @@
+<RCC>
+	<qresource prefix="logo/">
+		<file alias="scanframe">icon/scanframe.ico</file>
+		<file alias="scanframe2">icon/scanframe.png</file>
+	</qresource>
+	<qresource prefix="action/">
+		<file alias="clear">icon/clear.svg</file>
+		<file alias="reload">icon/reload.svg</file>
+		<file alias="submit">icon/submit.svg</file>
+	</qresource>
+</RCC>

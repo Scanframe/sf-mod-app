@@ -17,7 +17,7 @@ void DynamicLibraryInfo::reset()
 
 bool DynamicLibraryInfo::read(const std::string& filepath)
 {
-	// Clear the structure members.
+	// clear the structure members.
 	reset();
 	// Get the markers to look for.
 	const uint64_t mark_beg = *((uint64_t*) (_DL_MARKER_BEGIN));

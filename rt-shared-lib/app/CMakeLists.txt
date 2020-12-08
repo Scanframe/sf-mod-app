@@ -23,7 +23,8 @@ set(SOURCES
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
-qt5_add_resources(SOURCES src/main.qrc)
+# Add resource to the application.
+#qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 

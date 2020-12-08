@@ -6,58 +6,58 @@ namespace sf
 
 LineBuffer::LineBuffer(unsigned max_lines)
 	: std::streambuf()
-	, FTotalLineCount(0)
-	, FLineFifo(int(max_lines))
-	, FOnNewLine(nullptr)
+	, _totalLineCount(0)
+	, _lineFifo(int(max_lines))
+	, _onOnNewLine(nullptr)
 {
 }
 
 LineBuffer::~LineBuffer()
 {
-	if (FLineFifo.IsValid())
+	if (_lineFifo.IsValid())
 	{
-		Clear();
+		clear();
 	}
 }
 
-void LineBuffer::Clear()
+void LineBuffer::clear()
 {
 	// Delete all string instances in the fifo
-	std::string* item = nullptr;
-	while (FLineFifo.Get(item))
+	std::string* item;
+	while (_lineFifo.Get(item))
 	{
 		delete item;
 	}
 }
 
 // Sets the maximum lines the stream can hold. Flushes all lines first.
-void LineBuffer::SetMaxLines(unsigned max_lines)
+void LineBuffer::setMaxLines(unsigned max_lines)
 {
-	Clear();
-	FLineFifo.Set(int(max_lines));
+	clear();
+	_lineFifo.Set(int(max_lines));
 }
 
-std::string LineBuffer::GetLine(unsigned line) const
+std::string LineBuffer::getLine(unsigned line) const
 {
 	std::string retval;
-	if (line < (unsigned) GetLineCount())
+	if (line < (unsigned) lineCount())
 	{
-		std::string* s = FLineFifo[int(line)];
+		std::string* s = _lineFifo[int(line)];
 		retval = *s;
 	}
 	return retval;
 }
 
-int LineBuffer::GetLineCount() const
+int LineBuffer::lineCount() const
 {
-	return FLineFifo.Size();
+	return _lineFifo.Size();
 }
 
 int LineBuffer::overflow(int c)
 {
 	if (c == '\x12')
 	{
-		Clear();
+		clear();
 		return 1;
 	}
 	char ch[] =
@@ -74,12 +74,12 @@ int LineBuffer::overflow(int c)
 std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 {
 	// get latest string inserted in fifo
-	std::string* latest = FLineFifo.Latest();
+	std::string* latest = _lineFifo.Latest();
 	std::string* cur;
 	// Put new string instance in the fifo if it is empty.
 	if (!latest)
 	{
-		FLineFifo.Put(latest = new std::string());
+		_lineFifo.Put(latest = new std::string());
 	}
 	// TODO: This can be done a lot smarter.
 	// add characters
@@ -90,23 +90,23 @@ std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 			// new line so new string
 			case '\n':
 				cur = latest;
-				FTotalLineCount++;
+				_totalLineCount++;
 				// remove one line if Fifo is full
-				if (FLineFifo.IsFull())
+				if (_lineFifo.IsFull())
 				{
-					latest = FLineFifo.Get();
+					latest = _lineFifo.Get();
 					*latest = "";
-					FLineFifo.Put(latest);
+					_lineFifo.Put(latest);
 				}
 				else // Add a new line to the fifo
 				{
 					latest = new std::string();
-					FLineFifo.Put(latest);
+					_lineFifo.Put(latest);
 				}
 				// Call handler on new line
-				if (FOnNewLine.isAssigned())
+				if (_onOnNewLine.isAssigned())
 				{
-					FOnNewLine(this, *cur);
+					_onOnNewLine(this, *cur);
 				}
 				break;
 
@@ -136,14 +136,14 @@ std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 	return count;
 }
 
-void LineBuffer::setNewLineHandler(const LineBuffer::EvNewLine& event)
+void LineBuffer::setNewLineHandler(const LineBuffer::event_t& event)
 {
-	FOnNewLine = event;
+	_onOnNewLine = event;
 }
 
-LineBuffer::EvNewLine& LineBuffer::newLineHandler()
+const LineBuffer::event_t& LineBuffer::newLineHandler()
 {
-	return FOnNewLine;
+	return _onOnNewLine;
 }
 
 } // namespace sf

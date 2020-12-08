@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <misc/qcapturelistmodel.h>
+#include <misc/qresource.h>
 #include "misc/dbgutils.h"
 #include "misc/genutils.h"
 #include "misc/qt_utils.h"
@@ -23,7 +24,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
-	this->setWindowIcon(QIcon(":/img/icon.ico"));
+	this->setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
 	auto clm = new sf::QCaptureListModel(ui->listViewLog);
 	// Set to capture 'clog'.
@@ -37,6 +38,11 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadLib);
 	connect(ui->pushButtonCreate, &QPushButton::clicked, this, &MainWindow::onCreateInstance);
 	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallMethod);
+	// Set the same icon on all push buttons.
+	for (auto pb: {ui->pushButtonFind, ui->pushButtonLoad, ui->pushButtonCreate, ui->pushButtonCall})
+	{
+		pb->setIcon(sf::QResource::getIcon(sf::QResource::Icon::Submit));
+	}
 }
 
 MainWindow::~MainWindow()
@@ -45,11 +51,11 @@ MainWindow::~MainWindow()
 	delete _interfaceInstance;
 }
 
-void MainWindow::onFindLibs() // NOLINT(readability-convert-member-functions-to-static)
+void MainWindow::onFindLibs()
 {
-	// Clear the combo entries.
+	// clear the combo entries.
 	ui->comboBoxLibrary->clear();
-	// Clear the info list entries.
+	// clear the info list entries.
 	_libraryInfoList.clear();
 	QDirIterator it(QCoreApplication::applicationDirPath(), {"*.so", "*.dll"}, QDir::Files);
 	while (it.hasNext())
@@ -70,7 +76,8 @@ void MainWindow::onFindLibs() // NOLINT(readability-convert-member-functions-to-
 	QVectorIterator<sf::DynamicLibraryInfo> dli(_libraryInfoList);
 	for (int i = 0; i < _libraryInfoList.count(); i++)
 	{
-		auto filename = QDir(QCoreApplication::applicationDirPath()).relativeFilePath(QString::fromStdString(_libraryInfoList[i].Path));
+		auto filename = QDir(QCoreApplication::applicationDirPath()).relativeFilePath(
+			QString::fromStdString(_libraryInfoList[i].Path));
 		QString name = QString("%1 (%2)").arg(QString::fromStdString(_libraryInfoList[i].Name)).arg(filename);
 		ui->comboBoxLibrary->addItem(name, QVariant(i));
 	}
@@ -98,7 +105,7 @@ void MainWindow::onLoadLib()
 	{
 		qWarning() << "QLibrary(" << file << ")" << lib.errorString();
 	}
-	// Clear the current entries.
+	// clear the current entries.
 	ui->comboBoxClass->clear();
 	// Iterate through registered classes and fill
 	for (size_t i = 0; i < RuntimeIface::Interface().Size(); ++i)

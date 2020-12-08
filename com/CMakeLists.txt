@@ -12,7 +12,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
+set(SOURCES
 	misc/global.h
 	misc/dynamicbuffer.h
 	misc/profile.h
@@ -33,7 +33,14 @@ add_library(${PROJECT_NAME} SHARED
 	misc/genutils.cpp
 	misc/exception.h
 	misc/exception.cpp
-	misc/class_reg.cpp)
+	misc/class_reg.cpp
+	misc/qresource.h
+	misc/qresource.cpp
+	)
+
+qt5_add_resources(SOURCES misc/resource/resource.qrc)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 #[[
 # Set target additional include directories.
@@ -64,8 +71,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
-if(WIN32)
+if (WIN32)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".dll")
-else()
+else ()
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".so")
-endif()
+endif ()

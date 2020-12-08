@@ -2,11 +2,10 @@
 #define MISC_QCAPTURELISTMODEL_H
 
 #include <QAbstractListModel>
-// Include for cout, cerr ,clog and ostream.
+#include <QMenu>
+
 #include <iostream>
-
 #include "linebuffer.h"
-
 #include "global.h"
 
 namespace sf
@@ -55,19 +54,24 @@ class _MISC_CLASS QCaptureListModel : public QAbstractListModel
 		int rowCount(const QModelIndex& parent/* = QModelIndex()*/) const override;
 		QVariant data(const QModelIndex& index, int role) const override;
 
+	private slots:
+		void onClear();
+		static void onFill();
+
 	private:
-		// Holds the string list.
-		QStringList FStringList;
 		// Holds the stream source
-		unsigned FSource;
+		unsigned _source;
 		// Pointer to own stream buffer.
-		LineBuffer* FStreamBuf;
+		LineBuffer* _streamBuf;
 		// Pointers to save stream buffers of the standard streams.
-		static std::streambuf* FCOutSaved;
-		static std::streambuf* FCLogSaved;
-		static std::streambuf* FCErrSaved;
+		static std::streambuf* _coutSaved;
+		static std::streambuf* _clogSaved;
+		static std::streambuf* _cerrSaved;
+		// Holds the context menu.
+		QMenu* _contextMenu;
 		//
-		void HandleNewLine(LineBuffer* sender, const QString& line);
+		void handleNewLine(LineBuffer* sender, const QString& line);
+		void contextMenuRequested(QPoint);
 };
 
 } // namespace sf
