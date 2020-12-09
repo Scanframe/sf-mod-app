@@ -38,11 +38,13 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadLib);
 	connect(ui->pushButtonCreate, &QPushButton::clicked, this, &MainWindow::onCreateInstance);
 	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallMethod);
+/*
 	// Set the same icon on all push buttons.
 	for (auto pb: {ui->pushButtonFind, ui->pushButtonLoad, ui->pushButtonCreate, ui->pushButtonCall})
 	{
 		pb->setIcon(sf::QResource::getIcon(sf::QResource::Icon::Submit));
 	}
+*/
 }
 
 MainWindow::~MainWindow()

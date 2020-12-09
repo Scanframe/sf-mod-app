@@ -10,12 +10,12 @@ namespace sf
 {
 
 /**
- * Connects void signal(void) functions and handlers by their string
- * @param sender
- * @param signal_name
- * @param receiver
- * @param method_name
- * @return
+ * Sets the styling and the color from an ini file.
+ */
+_MISC_FUNC void setApplicationStyle(const QString& path);
+
+/**
+ * Connects void signal(void) functions and handlers by their string.
  */
 _MISC_FUNC QMetaObject::Connection QObject_connect
 	(

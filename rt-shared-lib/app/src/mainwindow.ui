@@ -49,8 +49,15 @@
     </item>
     <item row="0" column="1">
      <widget class="QPushButton" name="pushButtonFind">
+      <property name="toolTip">
+       <string extracomment="Find the dynamic libraries which can be loaded."/>
+      </property>
       <property name="text">
        <string extracomment="Find libraries that can be loaded.">F&amp;ind</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
       </property>
      </widget>
     </item>
@@ -79,6 +86,10 @@
       <property name="text">
        <string>C&amp;reate</string>
       </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
@@ -102,12 +113,20 @@
       <property name="text">
        <string>L&amp;oad</string>
       </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
+      </property>
      </widget>
     </item>
     <item row="1" column="4">
      <widget class="QPushButton" name="pushButtonCall">
       <property name="text">
        <string>&amp;Call</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
       </property>
      </widget>
     </item>
@@ -125,7 +144,7 @@
   <tabstop>listViewLog</tabstop>
  </tabstops>
  <resources>
-  <include location="main.qrc"/>
+  <include location="../../../com/misc/resource/resource.qrc"/>
  </resources>
  <connections/>
 </ui>
