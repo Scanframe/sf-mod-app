@@ -3,26 +3,67 @@
 #include <QStyle>
 #include <QSettings>
 #include <QMetaEnum>
+#include <QDir>
+#include <QFileInfo>
+#include <QFileSystemWatcher>
+#include <QDebug>
 
 #include "qt_utils.h"
 
 namespace sf
 {
 
-void setApplicationStyle(const QString& filepath)
+QApplicationSettings::QApplicationSettings(QObject* parent)
+	: QObject(parent)
+	, _watcher(new QFileSystemWatcher(this))
 {
+	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &QApplicationSettings::onFileChance);
+}
+
+void QApplicationSettings::onFileChance(const QString& file)
+{
+	// Do not set file watches.
+	doStyleApplication(false);
+}
+
+void QApplicationSettings::setFilepath(const QString& filepath, bool watch)
+{
+	_fileInfo.setFile(filepath);
+	if (_fileInfo.exists())
+	{
+		// Remove existing watches.
+		if (_watcher->files().length())
+		{
+			_watcher->removePaths(_watcher->files());
+		}
+		// Set the styling on the application.
+		doStyleApplication(watch);
+		// When watch
+		if (watch)
+		{
+			// Add the file to watch.
+			_watcher->addPath(_fileInfo.absoluteFilePath());
+		}
+	}
+	qDebug() << "_watcher->files():" << _watcher->files();
+}
+
+void QApplicationSettings::doStyleApplication(bool watch)
+{
+	// Form the ini's directory to relate too.
+	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// To use the same ini file in Linux and Windows a different prefix is used.
 #if IS_WIN
 	QString prefix = "Windows";
 #else
 	QString prefix = "Linux";
 #endif
-	// Get the current font.
-	QFont font = QApplication::font();
 	// Create the settings instance.
-	QSettings settings(filepath, QSettings::IniFormat);
+	QSettings settings(_fileInfo.absoluteFilePath(), QSettings::IniFormat);
 	// String identifying the current key.
 	QString key;
+	// Get the current font.
+	QFont font = QApplication::font();
 	// Start the *-Style ini section.
 	settings.beginGroup(prefix + "-Style");
 	// Get the keys in the section to check existence in the ini-section.
@@ -45,6 +86,28 @@ void setApplicationStyle(const QString& filepath)
 		settings.setValue(key, font.pointSize());
 	}
 	font.setPointSize(settings.value(key, font.pointSize()).toInt());
+	// Same as above.
+	if (settings.isWritable() && !keys.contains(key = "StyleSheet"))
+	{
+		settings.setValue(key, "");
+	}
+	QString rel_file(settings.value(key, "").toString());
+	if (rel_file.length())
+	{
+		QFile qss(dir + rel_file);
+		if (qss.exists())
+		{
+			if (qss.open(QFile::ReadOnly | QIODevice::Text))
+			{
+				QByteArray ba = qss.readAll();
+				qApp->setStyleSheet(ba); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+			}
+		}
+		if (watch)
+		{
+			_watcher->addPath(qss.fileName());
+		}
+	}
 	// End the section.
 	settings.endGroup();
 	// Start the Palette ini section.
@@ -95,17 +158,6 @@ void setApplicationStyle(const QString& filepath)
 	QApplication::setPalette(palette);
 	// Write changes to disk.
 	settings.sync();
-	// TODO: Set a key for a stylesheet (qss) file relative to the ini-file to be used here.
-/*
-	qApp->setStyleSheet(
-		"QComboBox {"
-		"padding: 0.15em;"
-		"}"
-		"QComboBox QAbstractItemView::item {"
-		"padding: 0.08em;"
-		"background-color: red;"
-		"}");
-*/
 }
 
 QMetaObject::Connection QObject_connect

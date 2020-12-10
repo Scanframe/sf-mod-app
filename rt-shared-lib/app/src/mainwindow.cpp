@@ -13,9 +13,8 @@
 #include <iostream>
 #include <misc/qcapturelistmodel.h>
 #include <misc/qresource.h>
+#include <QStyledItemDelegate>
 #include "misc/dbgutils.h"
-#include "misc/genutils.h"
-#include "misc/qt_utils.h"
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -38,13 +37,11 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadLib);
 	connect(ui->pushButtonCreate, &QPushButton::clicked, this, &MainWindow::onCreateInstance);
 	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallMethod);
-/*
-	// Set the same icon on all push buttons.
-	for (auto pb: {ui->pushButtonFind, ui->pushButtonLoad, ui->pushButtonCreate, ui->pushButtonCall})
+	// Needs to be set to be able to style the popup list from the QComboBox from the qss file.
+	for (auto cb: {ui->comboBoxLibrary, ui->comboBoxClass})
 	{
-		pb->setIcon(sf::QResource::getIcon(sf::QResource::Icon::Submit));
+		ui->comboBoxLibrary->setItemDelegate(new QStyledItemDelegate(ui->comboBoxLibrary));
 	}
-*/
 }
 
 MainWindow::~MainWindow()
