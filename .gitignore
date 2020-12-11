@@ -1,5 +1,9 @@
 **/.idea
-bin
+/bin/*.bin
+/bin/*.exe
+/bin/*.so
+/bin/*.dll
+/bin/*.dll.a
 */*/*.user
 **/cmake-build-*
 **/CMakeLists.txt.user
