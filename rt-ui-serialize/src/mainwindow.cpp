@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	this->setWindowIcon(QIcon(":logo/scanframe"));
+	setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
 	auto clm = new sf::QCaptureListModel(ui->listView);
 	// Set to capture 'clog'.
@@ -26,8 +26,8 @@ MainWindow::MainWindow(QWidget* parent)
 	// Assign the modal to the listview.
 	ui->listView->setModel(clm);
 	// Connecting ScanFrame style using strings only so connection can read from a config file.
-	sf::QObject_connect(ui->actionWriteUI, "triggered", this, "onWriteToFile");
-	sf::QObject_connect(ui->actionReadUI, "triggered", this, "onReadFromFile");
+	connect(ui->actionWriteUI, &QAction::triggered, this, &MainWindow::onWriteToFile);
+	connect(ui->actionReadUI, &QAction::triggered, this, &MainWindow::onReadFromFile);
 	// Start timer and call a member function each second.
 	auto *timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &MainWindow::backgroundHandler);

@@ -30,14 +30,17 @@ class _MISC_CLASS QApplicationSettings : public QObject
 		void setFilepath(const QString& filepath, bool watch = false);
 
 	private slots:
+		/**
+		 * Triggered when a watched files changes.
+		 */
 		void onFileChance(const QString& file);
 
 	private:
-		//
+		// Called from setFilepath and the event handler.
 		void doStyleApplication(bool watch);
-		//
+		// File watcher instance.
 		QFileSystemWatcher* _watcher;
-		//
+		// File info structure of the ini-file.
 		QFileInfo _fileInfo;
 };
 

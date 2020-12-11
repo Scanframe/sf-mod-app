@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
-	this->setWindowIcon(QIcon(":logo/scanframe"));
+	setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
 	auto clm = new sf::QCaptureListModel(ui->listViewLog);
 	// Set to capture 'clog'.
@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget* parent)
 	{
 		ui->comboBoxLibrary->setItemDelegate(new QStyledItemDelegate(ui->comboBoxLibrary));
 	}
+	//centralWidget()->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 }
 
 MainWindow::~MainWindow()

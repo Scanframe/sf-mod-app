@@ -42,6 +42,9 @@
     </item>
     <item row="2" column="0" colspan="6">
      <widget class="QListView" name="listViewLog">
+      <property name="toolTip">
+       <string>Clog captured stream.</string>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -50,7 +53,10 @@
     <item row="0" column="1">
      <widget class="QPushButton" name="pushButtonFind">
       <property name="toolTip">
-       <string extracomment="Find the dynamic libraries which can be loaded."/>
+       <string>Find the dynamic libraries which can be loaded.</string>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
       </property>
       <property name="text">
        <string extracomment="Find libraries that can be loaded.">F&amp;ind</string>
@@ -69,6 +75,9 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="toolTip">
+       <string>Selected the class to be created.</string>
+      </property>
      </widget>
     </item>
     <item row="0" column="3">
@@ -79,10 +88,16 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="toolTip">
+       <string>Select the dynamic library to load.</string>
+      </property>
      </widget>
     </item>
     <item row="1" column="1">
      <widget class="QPushButton" name="pushButtonCreate">
+      <property name="toolTip">
+       <string>Create the selected class.</string>
+      </property>
       <property name="text">
        <string>C&amp;reate</string>
       </property>
@@ -110,6 +125,9 @@
     </item>
     <item row="0" column="4">
      <widget class="QPushButton" name="pushButtonLoad">
+      <property name="toolTip">
+       <string>Load the selected library.</string>
+      </property>
       <property name="text">
        <string>L&amp;oad</string>
       </property>
@@ -121,6 +139,9 @@
     </item>
     <item row="1" column="4">
      <widget class="QPushButton" name="pushButtonCall">
+      <property name="toolTip">
+       <string>Call a virtual function from the created class.</string>
+      </property>
       <property name="text">
        <string>&amp;Call</string>
       </property>
