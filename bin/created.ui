@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>544</width>
+    <height>353</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>My form from a UI-File</string>
+  </property>
+  <widget class="QPushButton" name="pushButton1">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>121</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton1</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>131</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton2</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>20</y>
+     <width>341</width>
+     <height>331</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border: 2px solid red</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>:/image/ecosystem</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+   <property name="margin">
+    <number>10</number>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../com/misc/resource/resource.qrc"/>
+  <include location="../rt-ui-serialize/resource/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

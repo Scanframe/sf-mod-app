@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>607</width>
-    <height>355</height>
+    <width>566</width>
+    <height>536</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,61 +24,38 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="labelName">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>&amp;Name</string>
-      </property>
-      <property name="buddy">
-       <cstring>lineEditName</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEditName"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="labelPassword">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>My Secret &amp;Password</string>
-      </property>
-      <property name="buddy">
-       <cstring>lineEditPassword</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEditPassword"/>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="labelFunction">
-      <property name="text">
-       <string>&amp;Function</string>
-      </property>
-      <property name="buddy">
-       <cstring>lineEditFunction</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEditFunction"/>
-    </item>
-    <item row="3" column="0" colspan="2">
+    <item row="4" column="0">
      <widget class="QListView" name="listView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="4">
+     <widget class="QScrollArea" name="frameEmbedded">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
      </widget>
     </item>
@@ -89,7 +66,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>607</width>
+     <width>566</width>
      <height>29</height>
     </rect>
    </property>
@@ -99,6 +76,8 @@
     </property>
     <addaction name="actionWriteUI"/>
     <addaction name="actionReadUI"/>
+    <addaction name="separator"/>
+    <addaction name="actionReadFile"/>
    </widget>
    <addaction name="menuLibrary"/>
   </widget>
@@ -118,11 +97,13 @@
    </attribute>
    <addaction name="actionWriteUI"/>
    <addaction name="actionReadUI"/>
+   <addaction name="separator"/>
+   <addaction name="actionReadFile"/>
   </widget>
   <action name="actionWriteUI">
    <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+    <iconset resource="../../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
    </property>
    <property name="text">
     <string>&amp;Write UI</string>
@@ -136,8 +117,8 @@
   </action>
   <action name="actionReadUI">
    <property name="icon">
-    <iconset resource="main.qrc">
-     <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+    <iconset resource="../../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe2</normaloff>:/logo/scanframe2</iconset>
    </property>
    <property name="text">
     <string>&amp;Read UI</string>
@@ -149,14 +130,25 @@
     <string>Ctrl+R</string>
    </property>
   </action>
+  <action name="actionReadFile">
+   <property name="icon">
+    <iconset resource="../../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe2</normaloff>:/logo/scanframe2</iconset>
+   </property>
+   <property name="text">
+    <string>Read &amp;File</string>
+   </property>
+   <property name="toolTip">
+    <string>Read UI from file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
- <tabstops>
-  <tabstop>lineEditFunction</tabstop>
-  <tabstop>lineEditPassword</tabstop>
-  <tabstop>lineEditName</tabstop>
- </tabstops>
  <resources>
-  <include location="main.qrc"/>
+  <include location="../../com/misc/resource/resource.qrc"/>
+  <include location="../resource/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

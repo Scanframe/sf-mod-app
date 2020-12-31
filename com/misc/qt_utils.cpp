@@ -48,6 +48,12 @@ void QApplicationSettings::setFilepath(const QString& filepath, bool watch)
 	qDebug() << "_watcher->files():" << _watcher->files();
 }
 
+
+const QFileInfo& QApplicationSettings::fileInfo() const
+{
+	return _fileInfo;
+}
+
 void QApplicationSettings::doStyleApplication(bool watch)
 {
 	// Form the ini's directory to relate too.

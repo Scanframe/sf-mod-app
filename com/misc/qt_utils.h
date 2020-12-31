@@ -2,11 +2,30 @@
 #define MISC_QT_UTILS_H
 
 #include <QFileInfo>
+#include <QDataStream>
 #include <QFileSystemWatcher>
 
 #include "qt_utils.h"
 // Import of shared library export defines.
 #include "global.h"
+
+/**
+ * Allows moving a QPoint using a QSize.
+ */
+inline
+QPoint operator-(const QPoint& pt, const QSize& sz)
+{
+	return {pt.x() - sz.width(), pt.y() - sz.height()};
+}
+
+/**
+ * Allows moving a QPoint using a QSize.
+ */
+inline
+QPoint operator+(const QPoint& pt, const QSize& sz)
+{
+	return {pt.x() + sz.width(), pt.y() + sz.height()};
+}
 
 namespace sf
 {
@@ -25,11 +44,16 @@ class _MISC_CLASS QApplicationSettings : public QObject
 		 */
 		explicit QApplicationSettings(QObject* parent = nullptr);
 		/**
-		 * Sets the filepath
+		 * Sets the fileInfo
 		 */
 		void setFilepath(const QString& filepath, bool watch = false);
+		/**
+		 * Sets the fileInfo
+		 */
+		const QFileInfo& fileInfo() const;
 
 	private slots:
+
 		/**
 		 * Triggered when a watched files changes.
 		 */
@@ -38,6 +62,7 @@ class _MISC_CLASS QApplicationSettings : public QObject
 	private:
 		// Called from setFilepath and the event handler.
 		void doStyleApplication(bool watch);
+
 		// File watcher instance.
 		QFileSystemWatcher* _watcher;
 		// File info structure of the ini-file.

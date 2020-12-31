@@ -61,16 +61,22 @@
 #  define _DEBUG_LEVEL 1
 #endif
 
-// Define that converts a this pointer to the class type name.
-#define _RTTI_TYPENAME sf::Demangle(typeid(*this).name())
 // Coverts the passed type into a name.
-#define _RTTI_NAME(this) sf::Demangle(typeid(this).name())
+#define _RTTI_NAME(self) sf::Demangle(typeid(self).name())
+// Define that converts a this pointer to the class type name.
+#define _RTTI_TYPENAME _RTTI_NAME(*this)
 // Only the filename part of __FILE__.
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 // Equals end of page character 12.
 #define END_OF_MSG ('\f')
 
 #if IS_QT
+
+// Coverts the passed type into a name.
+#define _Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
+// Define that converts a this pointer to the class type name.
+#define _Q_RTTI_TYPENAME _Q_RTTI_NAME(*this)
+
 inline
 std::ostream& operator<<(std::ostream& os, const QString& qs)
 {

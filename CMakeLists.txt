@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the global project name.
-project("qt-concepts")
+project("qt-concepts" VERSION 0.1.0 HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts")
 
 # Set output directories only when the current cmake project is also the main project.
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")

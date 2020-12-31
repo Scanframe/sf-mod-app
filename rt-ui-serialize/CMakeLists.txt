@@ -14,6 +14,8 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(SOURCES
+	src/qformdialog.h
+	src/qformdialog.cpp
 	src/main.cpp
 	src/mainwindow.h
 	src/mainwindow.cpp
@@ -23,9 +25,8 @@ set(SOURCES
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
-
-#qt5_add_resources(SOURCES resource/resource.qrc)
+# Add a resource file.
+qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 

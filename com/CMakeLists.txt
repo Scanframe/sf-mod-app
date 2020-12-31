@@ -1,11 +1,12 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("sf-misc" LANGUAGES CXX)
+project("sf-misc" LANGUAGES CXX VERSION 0.1.0)
 # Include common configuration.
 include("cmake/SfCommonInc.cmake")
 
 # Finde the needed packages.
+find_package(Qt5Designer REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -36,7 +37,9 @@ set(SOURCES
 	misc/class_reg.cpp
 	misc/qresource.h
 	misc/qresource.cpp
-	)
+	misc/qformwriter.cpp
+	misc/qformwriter.h
+)
 
 qt5_add_resources(SOURCES misc/resource/resource.qrc)
 
@@ -50,8 +53,11 @@ target_include_directories(${PROJECT_NAME}
 	)
 ]]
 
+# This wil start scanning all home directory files.
+#target_include_directories(${PROJECT_NAME} PUBLIC ~/)
+
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

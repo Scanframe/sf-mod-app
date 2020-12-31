@@ -1,0 +1,5 @@
+<RCC>
+	<qresource prefix="image/">
+		<file alias="ecosystem">image/ecosystem.png</file>
+	</qresource>
+</RCC>
