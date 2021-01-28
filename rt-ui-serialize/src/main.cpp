@@ -1,12 +1,14 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QDebug>
 
 #include <misc/qt_utils.h>
 #include "mainwindow.h"
 
 int main(int argc, char* argv[])
 {
+	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	//QApplication::setDesktopSettingsAware(false);
 	QApplication app(argc, argv);
 	// Initialize using the application file path.

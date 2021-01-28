@@ -8,11 +8,10 @@
 namespace sf
 {
 
-	class _MISC_CLASS QFormWriter :public ::QFormBuilder
+class _MISC_CLASS QFormWriter : public ::QFormBuilder
 {
 	protected:
-	 QList<DomProperty*> computeProperties(QObject *obj) override;
-
+		QList<DomProperty*> computeProperties(QObject* obj) override;
 };
 
 }

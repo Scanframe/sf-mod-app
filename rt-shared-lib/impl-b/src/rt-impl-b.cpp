@@ -4,7 +4,7 @@
 
 // Declaration of the dynamic library information.
 _DL_INFORMATION("Implementation Library B",
-	"Second  implementation of the same class"
+	R"(Second  implementation of the same class)"
 )
 
 // Register this derived class.

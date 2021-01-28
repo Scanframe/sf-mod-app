@@ -5,8 +5,8 @@
 
 // Declaration of the dynamic library information.
 _DL_INFORMATION("Implementation Library A",
-	"This is the description of the library and what it contains.\n"
-	"A second line of a multi lined description."
+	R"(This is the description of the library and what it contains.
+	A second line of a multi lined description.)"
 )
 
 // Register this derived class.

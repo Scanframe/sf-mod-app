@@ -14,11 +14,13 @@ QList<DomProperty*> QFormWriter::computeProperties(QObject* obj)
 
 	auto mo = obj->metaObject();
 	auto label = dynamic_cast<QLabel*>(obj);
-
-	if (label && obj->property("pixmap").isValid())
+	auto var_pixmap = obj->property("pixmap");
+	//
+	if (label && var_pixmap.isValid())
 	{
 		qDebug() << _Q_RTTI_TYPENAME << mo->property(mo->indexOfProperty("pixmap")).typeName();
-		if (!mo->property(mo->indexOfProperty("pixmap")).isStored())
+		auto prop = mo->property(mo->indexOfProperty("pixmap"));
+		if (!prop.isStored())
 		{
 			qDebug() << _Q_RTTI_TYPENAME << "\"pixmap\" NOT isStored";
 		}
@@ -26,8 +28,12 @@ QList<DomProperty*> QFormWriter::computeProperties(QObject* obj)
 		{
 			qDebug() << _Q_RTTI_TYPENAME << "\"pixmap\" isStored";
 		}
-		//qDebug() << "map::keys" << map.keys();
+		qDebug() << "Pixmap Variant:" << var_pixmap;
+		auto pixmap = var_pixmap.value<QPixmap>();
+		qDebug() << "Pixmap:" << pixmap;
 
+		//qDebug() << "map::keys" << map.keys();
+/*
 		//variantToDomProperty();
 		if (checkProperty(obj, "pixmap"))
 		{
@@ -37,6 +43,7 @@ QList<DomProperty*> QFormWriter::computeProperties(QObject* obj)
 				list.append(prop);
 			}
 		}
+*/
 		//list.append(createProperty(obj, "mytest", "Just a value."));
 	}
 	return list;

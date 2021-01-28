@@ -15,6 +15,7 @@ endif ()
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
 add_subdirectory(rt-shared-lib)
+add_subdirectory(custom-ui-plugin)
 add_subdirectory(rt-ui-serialize)
 
 # Add this for the headers in the autogen directory made by the *.ui files.

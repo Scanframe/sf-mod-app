@@ -2,7 +2,6 @@
 #include "./ui_mainwindow.h"
 
 #include <QDate>
-#include <QDialog>
 #include <QStringList>
 #include <QTimer>
 #include <QCoreApplication>
@@ -17,11 +16,13 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QWidget>
+#include <QScreen>
 
 #include <misc/qcapturelistmodel.h>
 #include <misc/qformwriter.h>
 #include "misc/qt_utils.h"
 #include "misc/dbgutils.h"
+//#include "../../custom-ui-plugin/src/customwidgetplugin.h"
 #include "qformdialog.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -43,9 +44,13 @@ MainWindow::MainWindow(QWidget* parent)
 	//
 	connect(ui->actionReadFile, &QAction::triggered, this, &MainWindow::onCreateFormDialog);
 	// For now put the application main window in the top right corner of the screen.
-	QRect rc = QApplication::desktop()->screenGeometry();
-	QSize sz(600, 400);
-	setGeometry(QRect(rc.topRight() - sz, sz));
+	if (QGuiApplication::screens().count())
+	{
+		auto scr = QGuiApplication::screens().at(0);
+		QRect rc = scr->geometry();
+		QSize sz(600, 400);
+		setGeometry(QRect(rc.topRight() - sz, sz));
+	}
 	// Start timer and call a member function each second.
 	auto* timer = new QTimer(this);
 	// Every 10 seconds.
@@ -112,6 +117,8 @@ QString MainWindow::uiFilepath()
 void MainWindow::onCreateFormDialog()
 {
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
+	qDebug() << "QCoreApplication::libraryPaths()" << QCoreApplication::libraryPaths();
+
 	auto dlg = new QFormDialog(this);
 	//dlg->setModal(true);
 	dlg->setSizeGripEnabled(true);
@@ -125,8 +132,11 @@ void MainWindow::onCreateFormDialog()
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
 	{
+		QFormBuilder builder;
+		// Add the application directory as the plugin directory to find custom plugins.
+		builder.addPluginPath(QCoreApplication::applicationDirPath());
 		// Create widget from the loaded ui-file.
-		auto widget = QFormBuilder().load(&file);
+		auto widget = builder.load(&file);
 		// When loading is successful.
 		if (widget)
 		{
@@ -151,7 +161,13 @@ void MainWindow::onReadFromFile()
 {
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	QFormBuilder builder;
+	// Add the application directory as the plugin directory to find custom plugins.
+	builder.addPluginPath(QCoreApplication::applicationDirPath());
+	// Show the plugin paths.
+	qDebug() << "builder.pluginPaths(): " << builder.pluginPaths();
+	//
 	QFile file(uiFilepath());
+	//
 	if (file.exists() && file.open(QFile::ReadOnly))
 	{
 		QWidget* widget = builder.load(&file, ui->frameEmbedded);
@@ -168,7 +184,6 @@ void MainWindow::onReadFromFile()
 void MainWindow::onWriteToFile()
 {
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
-
 	if (QCoreApplication::instance()->property("SettingsFile").isValid())
 	{
 		// Setting file information.

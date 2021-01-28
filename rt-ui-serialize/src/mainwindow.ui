@@ -67,15 +67,15 @@
      <x>0</x>
      <y>0</y>
      <width>566</width>
-     <height>29</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLibrary">
     <property name="title">
      <string>Library</string>
     </property>
-    <addaction name="actionWriteUI"/>
     <addaction name="actionReadUI"/>
+    <addaction name="actionWriteUI"/>
     <addaction name="separator"/>
     <addaction name="actionReadFile"/>
    </widget>
@@ -95,26 +95,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionWriteUI"/>
    <addaction name="actionReadUI"/>
+   <addaction name="actionWriteUI"/>
    <addaction name="separator"/>
    <addaction name="actionReadFile"/>
   </widget>
-  <action name="actionWriteUI">
-   <property name="icon">
-    <iconset resource="../../com/misc/resource/resource.qrc">
-     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Write UI</string>
-   </property>
-   <property name="toolTip">
-    <string>Write UI to file</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
-   </property>
-  </action>
   <action name="actionReadUI">
    <property name="icon">
     <iconset resource="../../com/misc/resource/resource.qrc">
@@ -128,6 +113,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionWriteUI">
+   <property name="icon">
+    <iconset resource="../../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Write UI</string>
+   </property>
+   <property name="toolTip">
+    <string>Write UI to file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionReadFile">
@@ -148,7 +148,6 @@
  </widget>
  <resources>
   <include location="../../com/misc/resource/resource.qrc"/>
-  <include location="../resource/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

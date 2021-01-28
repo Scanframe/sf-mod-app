@@ -20,7 +20,7 @@ set(SOURCES
 	src/mainwindow.h
 	src/mainwindow.cpp
 	src/mainwindow.ui
-	)
+	src/widgets.cpp src/widgets.h)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
