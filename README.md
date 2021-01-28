@@ -23,12 +23,16 @@ Install **Cygwin** to build this project the same way as for Linux using the sam
 
 ## Concept Project 1: Shared Library Loading at Runtime
 
-
 The [`rt-shared-lib`](rt-shared-lib) directory is a proof of 
 concept on loading shared libraries at runtime.
 Each library containing an different implementation of a virtual interface class. 
 
-## Concept Project 2: Serializing UI Forms at Runtime
+## Concept Project 2: Custom UI Plugin
+
+The [`custom-ui-plugin`](custom-ui-plugin) directory is an example from QT to understand how UI 
+designer plugin is created, installed (designer) and used (application). 
+
+## Concept Project 3: Serializing UI Forms at Runtime
 
 The [`rt-ui-serialize`](rt-ui-serialize) directory is a proof of
 of concept that UI elements on a form can be serialized to a file and 
