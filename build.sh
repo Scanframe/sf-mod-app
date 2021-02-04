@@ -3,6 +3,8 @@
 
 # Set the directory the local QT root expected.
 LOCAL_QT_ROOT="${HOME}/lib/Qt"
+# Initialize the build options.
+BUIlD_OPTIONS=
 
 # Writes to stderr.
 #
@@ -15,32 +17,53 @@ function WriteLog()
 #
 function ShowHelp()
 {
-	WriteLog "Usage: ${0} <sub-dir> [<target>] [-l]"
-	WriteLog "-l : Local QT version (needs ${LOCAL_QT_ROOT} directory)."
-	WriteLog "	Where sub-dir is 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface', 'rt-shared-lib/impl-a', 'rt-shared-lib'"
+	WriteLog "Usage: ${0} <sub-dir> [<target>] [-l]
+
+  -l : Build using local user QT version (needs ${LOCAL_QT_ROOT} directory).
+  -c : Cleans build targets first (adds build option '--clean-first')
+  Where <sub-dir> is:
+    '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
+    'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
+  When the <target> argument is omitted it defaults to 'all'.
+  The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
+
+  Examples:
+    Build all projects: ${0} .
+    Same as above: ${0} . all
+    Clean all projects: ${0} . clean
+    Install all projects: ${0} . install
+    Build 'sf-misc' project in 'com' sub-dir only: ${0} . sf-misc
+    Build 'com' project and all sub-projects: ${0} com
+    Build 'rt-shared-lib' project and all sub-projects: ${0} rt-shared-lib
+	"
 }
 
 # Parse all options and arguments.
 # ---------------------------------
+
 # Initialize arguments and switches.
 argument=()
 LOCAL_QT=false
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hl" opt; do
+	while getopts "hlc" opt; do
 		case $opt in
-			 h)
+			h)
 				ShowHelp
 				exit 0
 				;;
-			 l)
-			 	WriteLog "Using local Qt version from: ${LOCAL_QT_ROOT}"
-			 	LOCAL_QT=true
-			 	;;
-			 \?)
-			 	WriteLog "Invalid option: -$OPTARG"
+			l)
+				WriteLog "Using local Qt version from: ${LOCAL_QT_ROOT}"
+				LOCAL_QT=true
+				;;
+			c)
+			 	WriteLog "Clean first enabled"
+				BUIlD_OPTIONS="--clean-first"
+				;;
+			\?)
+				WriteLog "Invalid option: -$OPTARG"
 				ShowHelp
 			 	exit 1
-			 	;;
+				;;
 	esac
 	done
 	shift $((OPTIND-1))
@@ -65,12 +88,10 @@ fi
 SOURCE_DIR="${argument[0]}"
 TARGET="all"
 BUILD_SUBDIR="cmake-build-debug"
-BUIlD_OPTIONS="--clean-first"
 
 # When second argument is not given all targets are build as the default.
 if [[ ! -z ${argument[1]} ]]; then
 	TARGET="${argument[1]}"
-	BUIlD_OPTIONS=""
 fi
 
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]]; then

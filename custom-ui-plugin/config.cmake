@@ -1,5 +1,6 @@
 # Make sure builds do not wind up in the source directory.
 list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
+find_package(SfCompiler CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 
@@ -9,9 +10,6 @@ add_definitions("-fvisibility=hidden")
 # Generate an error on undefined (imported) symbols on dyn libs
 # because the error appears only at load-time.
 add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
-
-# Directory for in stalling plugins.
-set(QT_PLUGINS_DIR "/usr/lib/x86_64-linux-gnu/qt5/plugins")
 
 # Set output directories only when the current cmake project is also the main project.
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
@@ -24,7 +22,6 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../bin")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../bin")
 endif ()
-
 
 # Write a information messages.
 message(STATUS "Project name: ${PROJECT_NAME}")

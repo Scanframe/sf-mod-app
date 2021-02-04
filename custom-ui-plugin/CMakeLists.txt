@@ -31,7 +31,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt$
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 
 # Tell the compiled code a dynamic library (DL) is being build.
-target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
+target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
 
 # The 'DEBUG_LEVEL' controls the debug output macro's.
 target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
@@ -51,4 +51,5 @@ else ()
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".so")
 endif ()
 
+# Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14)
 project("sf-misc" LANGUAGES CXX VERSION 0.1.0)
 
 # Include common configuration.
-include("cmake/SfCommonInc.cmake")
+include("config.cmake")
 
 # Finde the needed packages.
 find_package(Qt5Designer REQUIRED)
