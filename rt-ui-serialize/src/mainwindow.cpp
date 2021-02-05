@@ -22,7 +22,6 @@
 #include <misc/qformwriter.h>
 #include "misc/qt_utils.h"
 #include "misc/dbgutils.h"
-//#include "../../custom-ui-plugin/src/customwidgetplugin.h"
 #include "qformdialog.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -116,6 +115,8 @@ QString MainWindow::uiFilepath()
 
 void MainWindow::onCreateFormDialog()
 {
+	qDebug() << ui->actionReadFile->property("icon");
+	return;
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	qDebug() << "QCoreApplication::libraryPaths()" << QCoreApplication::libraryPaths();
 

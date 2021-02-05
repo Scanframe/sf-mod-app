@@ -15,11 +15,15 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-	src/analogclock.cpp
-	src/analogclock.h
-	src/customwidgetplugin.cpp
-	src/customwidgetplugin.h
-)
+	src/SfAnalogClock.cpp
+	src/SfAnalogClock.h
+	src/SfAnalogClockPlugin.cpp
+	src/SfAnalogClockPlugin.h
+	src/SfPushButton.cpp
+	src/SfPushButton.h
+	src/SfPushButtonPlugin.cpp
+	src/SfPushButtonPlugin.h
+	src/SfCustomWidgets.cpp src/SfCustomWidgets.h)
 
 # Include library configuration.
 include("libraries.cmake")

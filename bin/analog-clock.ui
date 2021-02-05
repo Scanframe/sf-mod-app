@@ -29,13 +29,13 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="AnalogClock" name="analogClock">
+  <widget class="SfAnalogClock" name="SfAnalogClock">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>40</y>
+     <x>10</x>
+     <y>10</y>
      <width>251</width>
-     <height>161</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -45,10 +45,34 @@
     <string>The analog clock widget displays the current time.</string>
    </property>
   </widget>
+  <widget class="SfPushButton" name="sfPushButton">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>110</y>
+     <width>121</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>A inherited push button</string>
+   </property>
+   <property name="whatsThis">
+    <string>The a button for testing properties.</string>
+   </property>
+   <property name="text">
+    <string>SfPushButton</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AnalogClock</class>
+   <class>SfPushButton</class>
+   <extends>QPushButton</extends>
+   <header>sfpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SfAnalogClock</class>
    <extends>QWidget</extends>
    <header>analogclock.h</header>
   </customwidget>

@@ -1,12 +1,11 @@
-#ifndef CUSTOMWIDGETPLUGIN_H
-#define CUSTOMWIDGETPLUGIN_H
+#ifndef SFANALOGCLOCKPLUGIN_H
+#define SFANALOGCLOCKPLUGIN_H
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 class AnalogClockPlugin :public QObject, public QDesignerCustomWidgetInterface
 {
 	Q_OBJECT
-		Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
