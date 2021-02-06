@@ -4,15 +4,20 @@
 #include <QWidget>
 #include <QtUiPlugin/QDesignerExportWidget>
 
-class QDESIGNER_WIDGET_EXPORT SfAnalogClock :public QWidget
+namespace sf
 {
-    Q_OBJECT
 
-public:
-    explicit SfAnalogClock(QWidget *parent = nullptr);
+class QDESIGNER_WIDGET_EXPORT AnalogClock :public QWidget
+{
+	Q_OBJECT
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
+	public:
+		explicit AnalogClock(QWidget* parent = nullptr);
+
+	protected:
+		void paintEvent(QPaintEvent* event) override;
 };
+
+} // namespace
 
 #endif

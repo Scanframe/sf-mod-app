@@ -3,12 +3,15 @@
 
 #include <QtPlugin>
 
-SfPushButtonPlugin::SfPushButtonPlugin(QObject* parent)
+namespace sf
+{
+
+PushButtonPlugin::PushButtonPlugin(QObject* parent)
 	:QObject(parent)
 {
 }
 
-void SfPushButtonPlugin::initialize(QDesignerFormEditorInterface* /* core */)
+void PushButtonPlugin::initialize(QDesignerFormEditorInterface* /* core */)
 {
 	if (initialized)
 	{
@@ -18,52 +21,53 @@ void SfPushButtonPlugin::initialize(QDesignerFormEditorInterface* /* core */)
 	initialized = true;
 }
 
-bool SfPushButtonPlugin::isInitialized() const
+bool PushButtonPlugin::isInitialized() const
 {
 	return initialized;
 }
 
-QWidget* SfPushButtonPlugin::createWidget(QWidget* parent)
+QWidget* PushButtonPlugin::createWidget(QWidget* parent)
 {
-	return new SfPushButton(parent);
+	return new sf::PushButton(parent);
 }
 
-QString SfPushButtonPlugin::name() const
+QString PushButtonPlugin::name() const
 {
-	return QStringLiteral("SfPushButton");
+	// Must be the exact full class name including namespace.
+	return QStringLiteral("sf::PushButton");
 }
 
-QString SfPushButtonPlugin::group() const
+QString PushButtonPlugin::group() const
 {
 	return QStringLiteral("ScanFrame Widgets");
 }
 
-QIcon SfPushButtonPlugin::icon() const
+QIcon PushButtonPlugin::icon() const
 {
 	return QIcon();
 }
 
-QString SfPushButtonPlugin::toolTip() const
+QString PushButtonPlugin::toolTip() const
 {
 	return QString();
 }
 
-QString SfPushButtonPlugin::whatsThis() const
+QString PushButtonPlugin::whatsThis() const
 {
 	return QString();
 }
 
-bool SfPushButtonPlugin::isContainer() const
+bool PushButtonPlugin::isContainer() const
 {
 	return false;
 }
 
-QString SfPushButtonPlugin::domXml() const
+QString PushButtonPlugin::domXml() const
 {
 	// The XML part starting with 'propertyspecifications' prevents the 'iconSource' QString property from being translated or
 	// having those options in the designer.
 	return R"(<ui language="c++">
- <widget class="SfPushButton" name="sfPushButton">
+ <widget class="sf::PushButton" name="sf::PushButton">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -79,7 +83,7 @@ QString SfPushButtonPlugin::domXml() const
    <string>The a button for testing properties.</string>
   </property>
   <property name="text">
-   <string>SfPushButton</string>
+   <string>sfPushButton</string>
   </property>
   <property name="iconSource">
    <string>:/logo/scanframe</string>
@@ -88,7 +92,7 @@ QString SfPushButtonPlugin::domXml() const
  <!-- Propery specification part -->
  <customwidgets>
   <customwidget>
-   <class>SfPushButton</class>
+   <class>sf::PushButton</class>
    <propertyspecifications>
     <stringpropertyspecification name="iconSource" notr="true" type="singleline" />
    </propertyspecifications>
@@ -97,24 +101,10 @@ QString SfPushButtonPlugin::domXml() const
 </ui>
 )";
 }
-/*
 
-<ui language="c++"> displayname="MyWidget">
-    <widget class="mynamespace::MyWidget" name="mywidget"/>
-    <customwidgets>
-        <customwidget>
-            <class>mynamespace::MyWidget</class>
-            <propertyspecifications>
-                <stringpropertyspecification name="exampleProperty" notr="true" type="singleline" />
-            </propertyspecifications>
-        </customwidget>
-    </customwidgets>
-</ui>
-
-*/
-
-
-QString SfPushButtonPlugin::includeFile() const
+QString PushButtonPlugin::includeFile() const
 {
-	return QStringLiteral("sfpushbutton.h");
+	return QStringLiteral("SfPushButton.h");
 }
+
+} // namespace

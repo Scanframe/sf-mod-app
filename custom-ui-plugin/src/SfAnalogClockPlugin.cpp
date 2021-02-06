@@ -3,6 +3,9 @@
 
 #include <QtPlugin>
 
+namespace sf
+{
+
 AnalogClockPlugin::AnalogClockPlugin(QObject* parent)
 	:QObject(parent)
 {
@@ -24,12 +27,12 @@ bool AnalogClockPlugin::isInitialized() const
 
 QWidget* AnalogClockPlugin::createWidget(QWidget* parent)
 {
-	return new SfAnalogClock(parent);
+	return new AnalogClock(parent);
 }
 
 QString AnalogClockPlugin::name() const
 {
-	return QStringLiteral("SfAnalogClock");
+	return QStringLiteral("sf::AnalogClock");
 }
 
 QString AnalogClockPlugin::group() const
@@ -60,7 +63,7 @@ bool AnalogClockPlugin::isContainer() const
 QString AnalogClockPlugin::domXml() const
 {
 	return R"(<ui language="c++">
- <widget class="SfAnalogClock" name="sfAnalogClock">
+ <widget class="sf::AnalogClock" name="sfAnalogClock">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -82,5 +85,7 @@ QString AnalogClockPlugin::domXml() const
 
 QString AnalogClockPlugin::includeFile() const
 {
-	return QStringLiteral("SfAnalogClock.h");
+	return QStringLiteral("AnalogClock.h");
 }
+
+} // namespace

@@ -5,7 +5,10 @@
 #include <QTime>
 #include <QTimer>
 
-SfAnalogClock::SfAnalogClock(QWidget* parent)
+namespace sf
+{
+
+AnalogClock::AnalogClock(QWidget* parent)
 	:QWidget(parent)
 {
 	auto* timer = new QTimer(this);
@@ -16,7 +19,7 @@ SfAnalogClock::SfAnalogClock(QWidget* parent)
 	resize(200, 200);
 }
 
-void SfAnalogClock::paintEvent(QPaintEvent*)
+void AnalogClock::paintEvent(QPaintEvent*)
 {
 	static const QPoint hourHand[3] = {
 		QPoint(7, 8),
@@ -75,3 +78,5 @@ void SfAnalogClock::paintEvent(QPaintEvent*)
 		painter.rotate(6.0);
 	}
 }
+
+} //namespace

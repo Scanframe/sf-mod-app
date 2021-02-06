@@ -1,24 +1,29 @@
 #include "SfPushButton.h"
 #include "misc/dbgutils.h"
 
-SfPushButton::SfPushButton(QWidget* parent)
+namespace sf
+{
+
+PushButton::PushButton(QWidget* parent)
 	:QPushButton(parent)
 {
 }
 
-void SfPushButton::mousePressEvent(QMouseEvent* event)
+void PushButton::mousePressEvent(QMouseEvent* event)
 {
 	std::clog << __FUNCTION__ << " IconSource: " << IconSource << std::endl;
 	// Call overridden method.
 	QPushButton::mousePressEvent(event);
 }
 
-void SfPushButton::setIconSource(const QString& text)
+void PushButton::setIconSource(const QString& text)
 {
 	setIcon(QIcon(IconSource = text));
 }
 
-QString SfPushButton::iconSource() const
+QString PushButton::iconSource() const
 {
 	return IconSource;
 }
+
+} // namespace

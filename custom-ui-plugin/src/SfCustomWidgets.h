@@ -3,19 +3,24 @@
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class SfCustomWidgets :public QObject, public QDesignerCustomWidgetCollectionInterface
+namespace sf
+{
+
+class CustomWidgets :public QObject, public QDesignerCustomWidgetCollectionInterface
 {
 	Q_OBJECT
 		Q_PLUGIN_METADATA(IID QDesignerCustomWidgetCollectionInterface_iid)
 		Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
 
 	public:
-		explicit SfCustomWidgets(QObject* parent = nullptr);
+		explicit CustomWidgets(QObject* parent = nullptr);
 
 		QList<QDesignerCustomWidgetInterface*> customWidgets() const override;
 
 	private:
 		QList<QDesignerCustomWidgetInterface*> widgets;
 };
+
+} // namespace
 
 #endif

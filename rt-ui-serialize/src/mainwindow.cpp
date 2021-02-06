@@ -115,8 +115,6 @@ QString MainWindow::uiFilepath()
 
 void MainWindow::onCreateFormDialog()
 {
-	qDebug() << ui->actionReadFile->property("icon");
-	return;
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	qDebug() << "QCoreApplication::libraryPaths()" << QCoreApplication::libraryPaths();
 

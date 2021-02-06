@@ -2,16 +2,20 @@
 #include "SfPushButtonPlugin.h"
 #include "SfAnalogClockPlugin.h"
 
+namespace sf
+{
 
-SfCustomWidgets::SfCustomWidgets(QObject *parent)
-	: QObject(parent)
+CustomWidgets::CustomWidgets(QObject* parent)
+	:QObject(parent)
 {
 	// Add the implemented widgets to the list.
-	widgets.append(new SfPushButtonPlugin(this));
-	widgets.append(new AnalogClockPlugin(this));
+	widgets.append(new sf::AnalogClockPlugin(this));
+	widgets.append(new sf::PushButtonPlugin(this));
 }
 
-QList<QDesignerCustomWidgetInterface*> SfCustomWidgets::customWidgets() const
+QList<QDesignerCustomWidgetInterface*> CustomWidgets::customWidgets() const
 {
 	return widgets;
 }
+
+} // namespace

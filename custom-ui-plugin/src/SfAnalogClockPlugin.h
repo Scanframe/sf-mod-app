@@ -3,6 +3,9 @@
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
+namespace sf
+{
+
 class AnalogClockPlugin :public QObject, public QDesignerCustomWidgetInterface
 {
 	Q_OBJECT
@@ -36,5 +39,7 @@ class AnalogClockPlugin :public QObject, public QDesignerCustomWidgetInterface
 	private:
 		bool initialized = false;
 };
+
+} // namespace
 
 #endif

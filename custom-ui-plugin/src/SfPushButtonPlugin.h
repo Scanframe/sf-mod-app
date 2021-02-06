@@ -3,13 +3,16 @@
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class SfPushButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
+namespace sf
+{
+
+class PushButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
 {
 	Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
-		explicit SfPushButtonPlugin(QObject* parent = nullptr);
+		explicit PushButtonPlugin(QObject* parent = nullptr);
 
 		bool isContainer() const override;
 
@@ -36,5 +39,7 @@ class SfPushButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
 	private:
 		bool initialized = false;
 };
+
+} // namespace
 
 #endif
