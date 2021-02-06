@@ -23,7 +23,9 @@ add_library(${PROJECT_NAME} SHARED
 	src/SfPushButton.h
 	src/SfPushButtonPlugin.cpp
 	src/SfPushButtonPlugin.h
-	src/SfCustomWidgets.cpp src/SfCustomWidgets.h)
+	src/SfCustomWidgets.cpp
+	src/SfCustomWidgets.h
+)
 
 # Include library configuration.
 include("libraries.cmake")

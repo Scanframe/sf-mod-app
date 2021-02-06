@@ -45,13 +45,13 @@
     <string>The analog clock widget displays the current time.</string>
    </property>
   </widget>
-  <widget class="SfPushButton" name="sfPushButton">
+  <widget class="SfPushButton" name="sfPushButton1">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>110</y>
+     <x>260</x>
+     <y>20</y>
      <width>121</width>
-     <height>91</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -61,7 +61,42 @@
     <string>The a button for testing properties.</string>
    </property>
    <property name="text">
-    <string>SfPushButton</string>
+    <string>SfPushButton1</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../com/misc/resource/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+   </property>
+   <property name="iconSource">
+    <string notr="true"/>
+   </property>
+  </widget>
+  <widget class="SfPushButton" name="sfPushButton2">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>90</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>A inherited push button</string>
+   </property>
+   <property name="whatsThis">
+    <string>The a button for testing properties.</string>
+   </property>
+   <property name="text">
+    <string>SfPushButton2</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="iconSource">
+    <string notr="true">:/logo/scanframe</string>
    </property>
   </widget>
  </widget>
@@ -74,10 +109,13 @@
   <customwidget>
    <class>SfAnalogClock</class>
    <extends>QWidget</extends>
-   <header>analogclock.h</header>
+   <header>SfAnalogClock.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../rt-ui-serialize/resource/resource.qrc"/>
+  <include location="../com/misc/resource/resource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -108,6 +146,22 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sfPushButton1</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>raise()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>170</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>

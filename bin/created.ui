@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
-    <height>353</height>
+    <width>540</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton1">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
+     <x>10</x>
+     <y>30</y>
      <width>121</width>
      <height>33</height>
     </rect>
@@ -33,9 +33,9 @@
   <widget class="QPushButton" name="pushButton2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>200</y>
-     <width>131</width>
+     <x>10</x>
+     <y>80</y>
+     <width>121</width>
      <height>33</height>
     </rect>
    </property>
@@ -50,8 +50,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>20</y>
+     <x>190</x>
+     <y>10</y>
      <width>341</width>
      <height>331</height>
     </rect>
@@ -66,7 +66,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>:/image/ecosystem</pixmap>
+    <pixmap resource="../rt-ui-serialize/resource/resource.qrc">:/image/ecosystem</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

@@ -60,6 +60,8 @@ bool SfPushButtonPlugin::isContainer() const
 
 QString SfPushButtonPlugin::domXml() const
 {
+	// The XML part starting with 'propertyspecifications' prevents the 'iconSource' QString property from being translated or
+	// having those options in the designer.
 	return R"(<ui language="c++">
  <widget class="SfPushButton" name="sfPushButton">
   <property name="geometry">
@@ -79,10 +81,38 @@ QString SfPushButtonPlugin::domXml() const
   <property name="text">
    <string>SfPushButton</string>
   </property>
+  <property name="iconSource">
+   <string>:/logo/scanframe</string>
+  </property>
  </widget>
+ <!-- Propery specification part -->
+ <customwidgets>
+  <customwidget>
+   <class>SfPushButton</class>
+   <propertyspecifications>
+    <stringpropertyspecification name="iconSource" notr="true" type="singleline" />
+   </propertyspecifications>
+  </customwidget>
+ </customwidgets>
 </ui>
 )";
 }
+/*
+
+<ui language="c++"> displayname="MyWidget">
+    <widget class="mynamespace::MyWidget" name="mywidget"/>
+    <customwidgets>
+        <customwidget>
+            <class>mynamespace::MyWidget</class>
+            <propertyspecifications>
+                <stringpropertyspecification name="exampleProperty" notr="true" type="singleline" />
+            </propertyspecifications>
+        </customwidget>
+    </customwidgets>
+</ui>
+
+*/
+
 
 QString SfPushButtonPlugin::includeFile() const
 {

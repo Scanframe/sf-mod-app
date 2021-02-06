@@ -8,9 +8,17 @@ SfPushButton::SfPushButton(QWidget* parent)
 
 void SfPushButton::mousePressEvent(QMouseEvent* event)
 {
-	// ToDo something
-	qDebug() << __FUNCTION__;
-	std::clog << __FUNCTION__ << std::endl;
+	std::clog << __FUNCTION__ << " IconSource: " << IconSource << std::endl;
 	// Call overridden method.
 	QPushButton::mousePressEvent(event);
+}
+
+void SfPushButton::setIconSource(const QString& text)
+{
+	setIcon(QIcon(IconSource = text));
+}
+
+QString SfPushButton::iconSource() const
+{
+	return IconSource;
 }
