@@ -3,13 +3,13 @@
 
 #include <QDialog>
 
-class QFormDialog :public QDialog
+class FormDialog :public QDialog
 {
 	public:
 		/**
 		 * Constructor
 		 */
-		explicit QFormDialog(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+		explicit FormDialog(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
 		/**
 		 * Overridden to return the size of the contained UI file.

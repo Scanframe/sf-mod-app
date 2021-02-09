@@ -1,21 +1,21 @@
 #include <QDebug>
 #include <QScrollArea>
 #include <QResizeEvent>
-#include "qformdialog.h"
+#include "formdialog.h"
 #include "misc/dbgutils.h"
 
-QFormDialog::QFormDialog(QWidget* parent, Qt::WindowFlags f)
+FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
 	:QDialog(parent, f)
 {
 }
 
-void QFormDialog::resizeEvent(QResizeEvent* event)
+void FormDialog::resizeEvent(QResizeEvent* event)
 {
 	QDialog::resizeEvent(event);
 	emit resizing(event);
 }
 
-QSize QFormDialog::sizeHint() const
+QSize FormDialog::sizeHint() const
 {
 	// Call the base class method.
 	auto sz = QDialog::sizeHint();

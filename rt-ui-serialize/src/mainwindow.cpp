@@ -22,7 +22,7 @@
 #include <misc/formwriter.h>
 #include "misc/qt_utils.h"
 #include "misc/dbgutils.h"
-#include "qformdialog.h"
+#include "formdialog.h"
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -118,7 +118,7 @@ void MainWindow::onCreateFormDialog()
 	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	qDebug() << "QCoreApplication::libraryPaths()" << QCoreApplication::libraryPaths();
 
-	auto dlg = new QFormDialog(this);
+	auto dlg = new FormDialog(this);
 	//dlg->setModal(true);
 	dlg->setSizeGripEnabled(true);
 	dlg->setMinimumSize(100, 50);
@@ -147,8 +147,8 @@ void MainWindow::onCreateFormDialog()
 			scrollArea->setWidget(widget);
 		}
 	}
-	// Connect the resizing signal from the QFormDialog to the scroll area.
-	connect(dlg, &QFormDialog::resizing, [scrollArea](QResizeEvent* event)->void
+	// Connect the resizing signal from the FormDialog to the scroll area.
+	connect(dlg, &FormDialog::resizing, [scrollArea](QResizeEvent* event)->void
 	{
 		scrollArea->setGeometry(QRect(QPoint(), event->size()));
 	});
