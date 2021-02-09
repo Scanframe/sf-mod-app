@@ -13,9 +13,4 @@ Simple widget drawing a analog clock.
 ### Plugin 2: Extended PushButton
 
 This widget is created from an existing [QPushButton](https://doc.qt.io/qt-5/qpushbutton.html).
-Adds properties which can be 
-
-
-
-
-
+Adds a property for setting icon from resource or external file. 

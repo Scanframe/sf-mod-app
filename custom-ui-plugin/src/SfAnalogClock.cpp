@@ -9,7 +9,7 @@ namespace sf
 {
 
 AnalogClock::AnalogClock(QWidget* parent)
-	:QWidget(parent)
+	:ObjectExtension(this), QWidget(parent)
 {
 	auto* timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&QWidget::update));
@@ -17,6 +17,17 @@ AnalogClock::AnalogClock(QWidget* parent)
 
 	setWindowTitle(tr("Analog Clock"));
 	resize(200, 200);
+}
+
+bool AnalogClock::isRequiredProperty(const QString& name)
+{
+	static const char* keys[] = {"geometry", "toolTip", "whatsThis", "text"};
+	for (auto key: keys)
+	{
+		if (name == key)
+			return true;
+	}
+	return false;
 }
 
 void AnalogClock::paintEvent(QPaintEvent*)
@@ -40,7 +51,7 @@ void AnalogClock::paintEvent(QPaintEvent*)
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
-	painter.translate(width() / 2, height() / 2);
+	painter.translate(width() / 2.0, height() / 2.0);
 	painter.scale(side / 200.0, side / 200.0);
 
 	painter.setPen(Qt::NoPen);

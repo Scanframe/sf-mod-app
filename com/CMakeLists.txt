@@ -38,9 +38,9 @@ set(SOURCES
 	misc/class_reg.cpp
 	misc/qresource.h
 	misc/qresource.cpp
-	misc/qformwriter.cpp
-	misc/qformwriter.h
-)
+	misc/formwriter.cpp
+	misc/formwriter.h
+	misc/objectextension.cpp misc/objectextension.h)
 
 qt5_add_resources(SOURCES misc/resource/resource.qrc)
 

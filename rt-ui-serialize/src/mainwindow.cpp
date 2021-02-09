@@ -19,7 +19,7 @@
 #include <QScreen>
 
 #include <misc/qcapturelistmodel.h>
-#include <misc/qformwriter.h>
+#include <misc/formwriter.h>
 #include "misc/qt_utils.h"
 #include "misc/dbgutils.h"
 #include "qformdialog.h"
@@ -27,7 +27,7 @@
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
-	, rootName("__FORM_ROOT__")
+	, rootName("FormRoot")
 {
 	ui->setupUi(this);
 	setWindowIcon(QIcon(":logo/scanframe"));
@@ -194,7 +194,7 @@ void MainWindow::onWriteToFile()
 		// Open file write only.
 		file.open(QFileDevice::WriteOnly);
 		//
-		sf::QFormWriter builder;
+		sf::FormWriter builder;
 		//
 		auto wgt = ui->frameEmbedded->findChild<QWidget*>(rootName, Qt::FindChildrenRecursively);
 		if (wgt)

@@ -1,3 +1,9 @@
+sf--PushButton:hover
+{
+	background-color: darkorange;
+	border: 1px solid green;
+}
+
 QPushButton
 {
 	/*

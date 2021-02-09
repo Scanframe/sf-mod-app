@@ -3,11 +3,12 @@
 
 #include <QWidget>
 #include <QtUiPlugin/QDesignerExportWidget>
+#include <misc/objectextension.h>
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT AnalogClock :public QWidget
+class QDESIGNER_WIDGET_EXPORT AnalogClock :public QWidget, public ObjectExtension
 {
 	Q_OBJECT
 
@@ -15,6 +16,8 @@ class QDESIGNER_WIDGET_EXPORT AnalogClock :public QWidget
 		explicit AnalogClock(QWidget* parent = nullptr);
 
 	protected:
+		bool isRequiredProperty(const QString& name) override;
+
 		void paintEvent(QPaintEvent* event) override;
 };
 
