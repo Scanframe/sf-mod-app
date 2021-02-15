@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QDebug>
 
 #include <misc/qt_utils.h>
 #include "mainwindow.h"
@@ -23,5 +24,4 @@ int main(int argc, char* argv[])
 	//
 	MainWindow w;
 	w.show();
-	return QApplication::exec();
-}
+	return QApplication::exec();}

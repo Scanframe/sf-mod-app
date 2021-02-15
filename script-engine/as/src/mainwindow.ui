@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>695</width>
+    <height>490</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Angel Script Engine Test</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="3">
+     <widget class="QComboBox" name="comboBoxScripts">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip">
+       <string>Select the dynamic library to load.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pushButtonRun">
+      <property name="toolTip">
+       <string>Find the dynamic libraries which can be loaded.</string>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
+      <property name="text">
+       <string extracomment="Find libraries that can be loaded.">&amp;Run</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="5">
+     <widget class="QListView" name="listViewLog">
+      <property name="toolTip">
+       <string>Clog captured stream.</string>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QComboBox" name="comboBoxFunctions">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip">
+       <string>Selected the class to be created.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="labelNameClass">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string> &amp;Function</string>
+      </property>
+      <property name="buddy">
+       <cstring>comboBoxFunctions</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="pushButtonCall">
+      <property name="toolTip">
+       <string>Create the selected class.</string>
+      </property>
+      <property name="text">
+       <string>&amp;Call</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../../../com/misc/resource/resource.qrc">
+        <normaloff>:/action/submit</normaloff>:/action/submit</iconset>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="labelNameLibrary">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&amp;Script</string>
+      </property>
+      <property name="buddy">
+       <cstring>comboBoxScripts</cstring>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <tabstops>
+  <tabstop>pushButtonRun</tabstop>
+  <tabstop>comboBoxScripts</tabstop>
+  <tabstop>pushButtonCall</tabstop>
+  <tabstop>comboBoxFunctions</tabstop>
+  <tabstop>listViewLog</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../../com/misc/resource/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

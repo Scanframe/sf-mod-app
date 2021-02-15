@@ -1,0 +1,5 @@
+<RCC>
+	<qresource prefix="as/">
+		<file alias="tutorial">as/tutorial.as</file>
+	</qresource>
+</RCC>

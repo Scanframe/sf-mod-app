@@ -1,21 +1,32 @@
+#include <QFile>
 #include "qresource.h"
 
 namespace sf
 {
 
-const char* QResource::_iconNames[] =
+const char* Resource::_iconNames[] =
 	{
 		":action/clear", ":action/reload", ":action/submit"
 	};
 
-const char* QResource::getIconName(QResource::Icon icon)
+const char* Resource::getIconName(Resource::Icon icon)
 {
 	return _iconNames[static_cast<int>(icon)];
 }
 
-QIcon QResource::getIcon(QResource::Icon icon)
+QIcon Resource::getIcon(Resource::Icon icon)
 {
 	return QIcon(_iconNames[static_cast<int>(icon)]);
+}
+
+QString Resource::getString(const QString& resource_location)
+{
+	QFile file(resource_location);
+	if (file.open(QIODevice::ReadOnly))
+	{
+		return file.readAll();
+	}
+	return nullptr;
 }
 
 }

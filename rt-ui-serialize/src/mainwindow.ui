@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Runtime Dynamic Library Loader Test</string>
+   <string>Runtime UI Serialize Test</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>

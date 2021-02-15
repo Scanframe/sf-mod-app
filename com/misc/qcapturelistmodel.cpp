@@ -31,7 +31,7 @@ QCaptureListModel::QCaptureListModel(QObject* parent)
 		connect(avi, &QWidget::customContextMenuRequested, this, &QCaptureListModel::contextMenuRequested);
 		_contextMenu = new QMenu(avi);
 		//
-		auto action = new QAction(QResource::getIcon(QResource::Icon::Clear), "Clear", this);
+		auto action = new QAction(Resource::getIcon(Resource::Icon::Clear), "Clear", this);
 		_contextMenu->addAction(action);
 		connect(action, &QAction::triggered, this, &QCaptureListModel::onClear);
 

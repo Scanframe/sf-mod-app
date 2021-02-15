@@ -10,7 +10,7 @@ namespace sf
 /**
  * Class to make resource accessible using enums which make autocomplete possible.
  */
-class _MISC_CLASS QResource
+class _MISC_CLASS Resource
 {
 	public:
 		/**
@@ -29,6 +29,12 @@ class _MISC_CLASS QResource
 		 * Gets an QIcon type from resource.
 		 */
 		static QIcon getIcon(Icon icon);
+		/**
+		 * Retrieves resource in a string.
+		 * @param resource_location location in the resource tree.
+		 * @return Resource file content.
+		 */
+		static QString getString(const QString& resource_location);
 
 	private:
 		/*
@@ -40,4 +46,4 @@ class _MISC_CLASS QResource
 
 } // namespace sf
 
-#endif // MISC_QRESOURCE_H
+#endif

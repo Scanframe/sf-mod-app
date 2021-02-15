@@ -20,7 +20,6 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../bin")
 endif ()
 
-
 # Write a information messages.
 message(STATUS "Project name: ${PROJECT_NAME}")
 

@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget* parent)
 	// Needs to be set to be able to style the popup list from the QComboBox from the qss file.
 	for (auto cb: {ui->comboBoxLibrary, ui->comboBoxClass})
 	{
-		ui->comboBoxLibrary->setItemDelegate(new QStyledItemDelegate(ui->comboBoxLibrary));
+		cb->setItemDelegate(new QStyledItemDelegate(cb));
 	}
 	//centralWidget()->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 }
@@ -53,9 +53,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::onFindLibs()
 {
-	// clear the combo entries.
+	// Clear the combo entries.
 	ui->comboBoxLibrary->clear();
-	// clear the info list entries.
+	// Clear the info list entries.
 	_libraryInfoList.clear();
 	QDirIterator it(QCoreApplication::applicationDirPath(), {"*.so", "*.dll"}, QDir::Files);
 	while (it.hasNext())

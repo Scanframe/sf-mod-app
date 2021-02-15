@@ -1,10 +1,14 @@
 #!/bin/bash
 #set -x
 
+# Get the bash script directory.
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Set the directory the local QT root expected.
 LOCAL_QT_ROOT="${HOME}/lib/Qt"
 # Initialize the build options.
 BUIlD_OPTIONS=
+# Initialize the config options.
+CONFIG_OPTIONS=
 
 # Writes to stderr.
 #
@@ -99,11 +103,9 @@ if [[ "$(uname -s)" == "CYGWIN_NT"* ]]; then
 	# "P:\Qt\5.15.2\mingw81_64\bin"
 	# CMAKE_BIN="/cygdrive/p/Qt/Tools/CMake_64/bin/cmake"
 	CMAKE_BIN="CMD /C P:\Qt\Tools\CMake_64\bin\cmake.exe"
-	BUILD_DIR="$(cygpath -aw "${SOURCE_DIR}/${BUILD_SUBDIR}")"
-	# Configure
-	${CMAKE_BIN} -B "${BUILD_DIR}" --config "$(cygpath -aw "${SOURCE_DIR}")" -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug
-	# Build debug
-	${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS}
+	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
+	BUILD_GENERATOR="MinGW Makefiles"
+	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
 else
 	# Make cmake find local Qt version.
 	if $LOCAL_QT ; then
@@ -116,10 +118,16 @@ else
 			WriteLog "No local QT library directory found in '${LOCAL_QT_ROOT}'"
 		fi
 	fi
+	#CMAKE_BIN="~/lib/clion/bin/cmake/linux/bin/cmake"
 	CMAKE_BIN="cmake"
-	BUILD_DIR="${SOURCE_DIR}/${BUILD_SUBDIR}"
-	# Configure
-	${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -DCMAKE_BUILD_TYPE=Debug
-	# Build debug
-	${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS}
+	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
+	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
 fi
+
+# Initialize configuration options
+CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(realpath "${SCRIPT_DIR}/..") -L"
+
+# Configure debug
+${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
+# Build
+${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS}

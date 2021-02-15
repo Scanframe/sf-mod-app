@@ -35,5 +35,12 @@ designer plugin is created, installed (designer) and used (application).
 ## Concept Project 3: Serializing UI Forms at Runtime
 
 The [`rt-ui-serialize`](rt-ui-serialize) directory is a proof of
-of concept that UI elements on a form can be serialized to a file and 
+concept that UI elements on a form can be serialized to a file and 
 recreated by reading by the same file.
+
+## Concept Project 4: Event Handling by Scripts  
+
+The [`script-engine`](script-engine) directory is a proof of concept that application 
+events timed and initiated from within the application can be handled by scripts.
+
+

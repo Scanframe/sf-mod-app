@@ -10,4 +10,4 @@ else ()
 	set(QT_PLUGINS_DIR "$ENV{HOME}/lib/Qt/5.15.1/gcc_64/plugins")
 endif ()
 
-message(STATUS "Plugins Dir: '${QT_PLUGINS_DIR}'" )
+message(STATUS "Designer Plugins Dir: '${QT_PLUGINS_DIR}'" )
