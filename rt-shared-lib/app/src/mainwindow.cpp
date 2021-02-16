@@ -11,8 +11,8 @@
 #include <QDirIterator>
 
 #include <iostream>
-#include <misc/qcapturelistmodel.h>
-#include <misc/qresource.h>
+#include <misc/capturelistmodel.h>
+#include <misc/resource.h>
 #include <QStyledItemDelegate>
 #include "misc/dbgutils.h"
 
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget* parent)
 	// Set an icon on the window.
 	setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
-	auto clm = new sf::QCaptureListModel(ui->listViewLog);
+	auto clm = new sf::CaptureListModel(ui->listViewLog);
 	// Set to capture 'clog'.
 	clm->setSource(clm->ssClog);
 	// Assign the modal to the listview.

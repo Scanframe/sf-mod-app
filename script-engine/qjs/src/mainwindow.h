@@ -19,14 +19,14 @@ class MainWindow : public QMainWindow
 		~MainWindow() override;
 
 	private slots:
-		void onRunScript();
+		void onLoadScript();
 		void onCallFunction();
 
 	private:
 		// Pointer to the main window.
 		Ui::MainWindow* ui;
 		// Script engine.
-		QJSEngine _engine;
+		QJSEngine* _engine;
 		// Holds the targeted object having the callable functions.
 		QJSValue _object;
 };

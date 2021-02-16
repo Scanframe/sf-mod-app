@@ -18,7 +18,7 @@
 #include <QWidget>
 #include <QScreen>
 
-#include <misc/qcapturelistmodel.h>
+#include <misc/capturelistmodel.h>
 #include <misc/formwriter.h>
 #include "misc/qt_utils.h"
 #include "misc/dbgutils.h"
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget* parent)
 	ui->setupUi(this);
 	setWindowIcon(QIcon(":logo/scanframe"));
 	// Assign the model to the listView.
-	auto clm = new sf::QCaptureListModel(ui->listView);
+	auto clm = new sf::CaptureListModel(ui->listView);
 	// Set to capture 'clog'.
 	clm->setSource(clm->ssClog);
 	// Assign the modal to the listview.

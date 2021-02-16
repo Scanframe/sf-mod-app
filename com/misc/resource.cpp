@@ -1,5 +1,5 @@
 #include <QFile>
-#include "qresource.h"
+#include "resource.h"
 
 namespace sf
 {

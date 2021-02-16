@@ -1,5 +1,6 @@
 <RCC>
 	<qresource prefix="js/">
-		<file alias="Main">js/main.js</file>
+		<file alias="First Script">js/first.js</file>
+		<file alias="Second Script">js/second.js</file>
 	</qresource>
 </RCC>

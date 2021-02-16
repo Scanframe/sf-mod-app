@@ -14,7 +14,7 @@
 #endif
 #include <angelscript.h>
 #include "add_on/scriptstdstring.h"
-#include <misc/qresource.h>
+#include <misc/resource.h>
 
 using namespace std;
 

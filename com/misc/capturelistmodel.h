@@ -1,5 +1,5 @@
-#ifndef MISC_QCAPTURELISTMODEL_H
-#define MISC_QCAPTURELISTMODEL_H
+#ifndef MISC_CAPTURELISTMODEL_H
+#define MISC_CAPTURELISTMODEL_H
 
 #include <QAbstractListModel>
 #include <QMenu>
@@ -11,7 +11,7 @@
 namespace sf
 {
 
-class _MISC_CLASS QCaptureListModel : public QAbstractListModel
+class _MISC_CLASS CaptureListModel :public QAbstractListModel
 {
 	Q_OBJECT
 
@@ -19,11 +19,11 @@ class _MISC_CLASS QCaptureListModel : public QAbstractListModel
 		/**
 		 * Constructor.
 		 */
-		explicit QCaptureListModel(QObject* parent = nullptr);
+		explicit CaptureListModel(QObject* parent = nullptr);
 		/**
 		 * Destructor.
 		 */
-		~QCaptureListModel() override;
+		~CaptureListModel() override;
 
 		/**
 		 * Append string to the end of the list.
@@ -76,4 +76,4 @@ class _MISC_CLASS QCaptureListModel : public QAbstractListModel
 
 } // namespace sf
 
-#endif // MISC_QCAPTURELISTMODEL_H
+#endif

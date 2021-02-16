@@ -34,7 +34,7 @@ namespace sf
  * Keeps the application up-to-date with changes in the settings file.
  * Sets the styling and the color from an ini file.
  */
-class _MISC_CLASS QApplicationSettings : public QObject
+class _MISC_CLASS ApplicationSettings :public QObject
 {
 	Q_OBJECT
 
@@ -42,7 +42,7 @@ class _MISC_CLASS QApplicationSettings : public QObject
 		/**
 		 * Constructor
 		 */
-		explicit QApplicationSettings(QObject* parent = nullptr);
+		explicit ApplicationSettings(QObject* parent = nullptr);
 		/**
 		 * Sets the fileInfo
 		 */

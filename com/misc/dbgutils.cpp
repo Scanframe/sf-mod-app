@@ -62,11 +62,11 @@ void DebugBreak()
 
 static unsigned int DefaultDebugOutputType = dotCLOG;
 
-class notify_exception : public std::exception
+class notify_exception :public std::exception
 {
 	public:
 
-		explicit notify_exception(const char* s) : msg(s) {}
+		explicit notify_exception(const char* s) :msg(s) {}
 
 		const char* what() const noexcept override;
 
@@ -81,9 +81,9 @@ const char* notify_exception::what() const noexcept
 
 // Debug output stream for easy streaming of information.
 debug_ostream::debug_ostream(int type)
-	: std::ostream(std::cout.rdbuf())
-	, std::streambuf()
-	, Type(type)
+	:std::ostream(std::cout.rdbuf())
+	 , std::streambuf()
+	 , Type(type)
 {
 	// Assign the buffer again because some times it is not enough
 	this->rdbuf(this);
@@ -147,15 +147,15 @@ void UserOutputDebugString(unsigned int type, const char* s)
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
 	auto tm = double(clock()) / (CLOCKS_PER_SEC);
-	#if !IS_WIN
+#if !IS_WIN
 	// Value 'CLOCKS_PER_SEC' Seems not to be correct in Linux some how.
 	tm /= 10;
-	#endif
+#endif
 	// If the log bit is enabled write the line as is.
 	if (type & dotCLOG)
 	{
 		std::clog.precision(3);
-		std::clog << std::fixed  << tm << ' ' << s << '\n';
+		std::clog << std::fixed << tm << ' ' << s << '\n';
 	}
 	// Find the file separator character '\x1C'.
 	char* sep = strchr(const_cast<char*>(s), '\x1C');
@@ -263,5 +263,83 @@ std::string Demangle(const char* name)
 	return name;
 #endif
 }
+
+#if IS_QT
+
+// Initialization of the initial handler/sentry.
+QtMessageHandler MessageHandler::_initial(nullptr);
+
+void MessageHandler::enable(bool enabled)
+{
+	if (enabled)
+	{
+		// Install our handler if it was not installed yet.
+		if (!_initial)
+		{
+			_initial = qInstallMessageHandler(_handler);
+		}
+	}
+	else
+	{
+		// Restore the initial handler if it was not replaced yet.
+		if (_initial)
+		{
+			qInstallMessageHandler(_initial);
+			//
+			_initial = nullptr;
+		}
+	}
+}
+
+// Auto install the message handler before the main function.
+__attribute__((constructor)) void QtMessageHandlerEnabler()
+{
+	MessageHandler::enable(true);
+}
+
+// Auto uninstall the message handler after the main function.
+__attribute__((destructor)) void QtMessageHandlerDisabler()
+{
+	MessageHandler::enable(false);
+}
+
+void MessageHandler::_handler(QtMsgType type, const QMessageLogContext& ctx, const QString& msg)
+{
+	QByteArray text = msg.toLocal8Bit();
+	switch (type)
+	{
+		default:
+			_initial(type, ctx, msg);
+			break;
+
+		case QtDebugMsg:
+			std::clog << text.constData() << std::endl;
+			//fprintf(stderr, "Debug: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
+			break;
+
+		case QtInfoMsg:
+			std::clog << text.constData() << std::endl;
+			//fprintf(stderr, "Info: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
+			break;
+
+		case QtWarningMsg:
+			//std::cerr << text.constData() << std::endl;
+			fprintf(stderr, "Warning: \n%s (%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
+			break;
+
+		case QtCriticalMsg:
+			//std::cerr << text.constData() << std::endl;
+			fprintf(stderr, "Critical: \n%s (%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
+			break;
+
+		case QtFatalMsg:
+			//std::cerr << text.constData() << std::endl;
+			fprintf(stderr, "Fatal: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
+			abort();
+			break;
+	}
+}
+
+#endif
 
 } // namespace sf

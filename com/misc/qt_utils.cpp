@@ -13,20 +13,20 @@
 namespace sf
 {
 
-QApplicationSettings::QApplicationSettings(QObject* parent)
-	: QObject(parent)
-	, _watcher(new QFileSystemWatcher(this))
+ApplicationSettings::ApplicationSettings(QObject* parent)
+	:QObject(parent)
+	 , _watcher(new QFileSystemWatcher(this))
 {
-	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &QApplicationSettings::onFileChance);
+	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &ApplicationSettings::onFileChance);
 }
 
-void QApplicationSettings::onFileChance(const QString& file)
+void ApplicationSettings::onFileChance(const QString& file)
 {
 	// Do not set file watches.
 	doStyleApplication(false);
 }
 
-void QApplicationSettings::setFilepath(const QString& filepath, bool watch)
+void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 {
 	_fileInfo.setFile(filepath);
 	if (_fileInfo.exists())
@@ -45,16 +45,18 @@ void QApplicationSettings::setFilepath(const QString& filepath, bool watch)
 			_watcher->addPath(_fileInfo.absoluteFilePath());
 		}
 	}
-	qDebug() << "_watcher->files():" << _watcher->files();
+	for (auto file: _watcher->files())
+	{
+		qDebug() << "Watching:" << file;
+	}
 }
 
-
-const QFileInfo& QApplicationSettings::fileInfo() const
+const QFileInfo& ApplicationSettings::fileInfo() const
 {
 	return _fileInfo;
 }
 
-void QApplicationSettings::doStyleApplication(bool watch)
+void ApplicationSettings::doStyleApplication(bool watch)
 {
 	// Form the ini's directory to relate too.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
@@ -125,29 +127,29 @@ void QApplicationSettings::doStyleApplication(bool watch)
 	// List all the color enums to write to file.
 	for (auto role:
 		{
-			QPalette::WindowText
-			, QPalette::Button
-			, QPalette::Light
-			, QPalette::Midlight
-			, QPalette::Dark
-			, QPalette::Mid
-			, QPalette::Text
-			, QPalette::BrightText
-			, QPalette::ButtonText
-			, QPalette::Base
-			, QPalette::Window
-			, QPalette::Shadow
-			, QPalette::Highlight
-			, QPalette::HighlightedText
-			, QPalette::Link
-			, QPalette::LinkVisited
-			, QPalette::AlternateBase
-			, QPalette::NoRole
-			, QPalette::ToolTipBase
-			, QPalette::ToolTipText
-			, QPalette::PlaceholderText
-			, QPalette::Foreground
-			, QPalette::Background
+			QPalette::WindowText,
+			QPalette::Button,
+			QPalette::Light,
+			QPalette::Midlight,
+			QPalette::Dark,
+			QPalette::Mid,
+			QPalette::Text,
+			QPalette::BrightText,
+			QPalette::ButtonText,
+			QPalette::Base,
+			QPalette::Window,
+			QPalette::Shadow,
+			QPalette::Highlight,
+			QPalette::HighlightedText,
+			QPalette::Link,
+			QPalette::LinkVisited,
+			QPalette::AlternateBase,
+			QPalette::NoRole,
+			QPalette::ToolTipBase,
+			QPalette::ToolTipText,
+			QPalette::PlaceholderText,
+			QPalette::Foreground,
+			QPalette::Background
 		})
 	{
 		// When the key does not exist write it with the current value.

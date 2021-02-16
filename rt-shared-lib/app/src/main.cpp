@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	// Make settings file available through a property..
 	QCoreApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
 	// Create instance to handle settings.
-	sf::QApplicationSettings settings;
+	sf::ApplicationSettings settings;
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
 	//

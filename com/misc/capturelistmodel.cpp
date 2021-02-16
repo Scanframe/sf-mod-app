@@ -1,19 +1,19 @@
 #include <QDebug>
 #include <QListView>
 
-#include "qcapturelistmodel.h"
+#include "capturelistmodel.h"
 #include "genutils.h"
 #include "qt_utils.h"
-#include "qresource.h"
+#include "resource.h"
 
 namespace sf
 {
 
-std::streambuf* QCaptureListModel::_coutSaved = nullptr;
-std::streambuf* QCaptureListModel::_clogSaved = nullptr;
-std::streambuf* QCaptureListModel::_cerrSaved = nullptr;
+std::streambuf* CaptureListModel::_coutSaved = nullptr;
+std::streambuf* CaptureListModel::_clogSaved = nullptr;
+std::streambuf* CaptureListModel::_cerrSaved = nullptr;
 
-QCaptureListModel::QCaptureListModel(QObject* parent)
+CaptureListModel::CaptureListModel(QObject* parent)
 	: QAbstractListModel(parent)
 	, _source(0)
 	, _streamBuf(new LineBuffer(300))
@@ -28,22 +28,22 @@ QCaptureListModel::QCaptureListModel(QObject* parent)
 	if (auto avi = dynamic_cast<QAbstractItemView*>(parent))
 	{
 		avi->setContextMenuPolicy(Qt::CustomContextMenu);
-		connect(avi, &QWidget::customContextMenuRequested, this, &QCaptureListModel::contextMenuRequested);
+		connect(avi, &QWidget::customContextMenuRequested, this, &CaptureListModel::contextMenuRequested);
 		_contextMenu = new QMenu(avi);
 		//
 		auto action = new QAction(Resource::getIcon(Resource::Icon::Clear), "Clear", this);
 		_contextMenu->addAction(action);
-		connect(action, &QAction::triggered, this, &QCaptureListModel::onClear);
+		connect(action, &QAction::triggered, this, &CaptureListModel::onClear);
 
 #ifdef _FILL_ACTION
 		action = new QAction(QIcon(":action/submit"), "Fill", this);
 		_contextMenu->addAction(action);
-		connect(action, &QAction::triggered, this, &QCaptureListModel::onFill);
+		connect(action, &QAction::triggered, this, &CaptureListModel::onFill);
 #endif
 	}
 }
 
-void QCaptureListModel::onClear()
+void CaptureListModel::onClear()
 {
 	beginRemoveColumns(QModelIndex(), 0, _streamBuf->lineCount());
 	_streamBuf->clear();
@@ -51,7 +51,7 @@ void QCaptureListModel::onClear()
 
 }
 
-void QCaptureListModel::onFill()
+void CaptureListModel::onFill()
 {
 	static int idx = 0;
 	for (int i = 0; i < 6; ++i)
@@ -60,7 +60,7 @@ void QCaptureListModel::onFill()
 	}
 }
 
-void QCaptureListModel::contextMenuRequested(QPoint pos)
+void CaptureListModel::contextMenuRequested(QPoint pos)
 {
 	// When the parent is a listView.
 	if (auto aiv = dynamic_cast<QAbstractItemView*>(parent()))
@@ -70,12 +70,12 @@ void QCaptureListModel::contextMenuRequested(QPoint pos)
 	}
 }
 
-void QCaptureListModel::handleNewLine(LineBuffer* sender, const QString& line)
+void CaptureListModel::handleNewLine(LineBuffer* sender, const QString& line)
 {
 	append(line);
 }
 
-QCaptureListModel::~QCaptureListModel()
+CaptureListModel::~CaptureListModel()
 {
 	if (_coutSaved)
 	{
@@ -92,12 +92,12 @@ QCaptureListModel::~QCaptureListModel()
 	delete _streamBuf;
 }
 
-int QCaptureListModel::rowCount(const QModelIndex& parent) const
+int CaptureListModel::rowCount(const QModelIndex& parent) const
 {
 	return _streamBuf->lineCount();
 }
 
-QVariant QCaptureListModel::data(const QModelIndex& index, int role) const
+QVariant CaptureListModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
 	{
@@ -117,8 +117,8 @@ QVariant QCaptureListModel::data(const QModelIndex& index, int role) const
 	}
 }
 
-QVariant QCaptureListModel::headerData(int section, Qt::Orientation orientation,
-	int role) const
+QVariant CaptureListModel::headerData(int section, Qt::Orientation orientation,
+																			int role) const
 {
 	if (role != Qt::DisplayRole)
 	{
@@ -134,7 +134,7 @@ QVariant QCaptureListModel::headerData(int section, Qt::Orientation orientation,
 	}
 }
 
-bool QCaptureListModel::append(const QString& str)
+bool CaptureListModel::append(const QString& str)
 {
 	if (_streamBuf->lineCount())
 	{
@@ -153,12 +153,12 @@ bool QCaptureListModel::append(const QString& str)
 	return true;
 }
 
-unsigned QCaptureListModel::source() const
+unsigned CaptureListModel::source() const
 {
 	return _source;
 }
 
-unsigned QCaptureListModel::setSource(unsigned ss)
+unsigned CaptureListModel::setSource(unsigned ss)
 {
 	_source = ss;
 	if (_source & ssCout)

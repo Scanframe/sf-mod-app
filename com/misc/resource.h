@@ -1,5 +1,5 @@
-#ifndef MISC_QRESOURCE_H
-#define MISC_QRESOURCE_H
+#ifndef MISC_RESOURCE_H
+#define MISC_RESOURCE_H
 
 #include <QIcon>
 

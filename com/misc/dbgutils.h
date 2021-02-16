@@ -52,8 +52,10 @@
 #include <iostream>
 
 #if IS_QT
+	#include <QtGlobal>
 	#include <QString>
 	#include <QDebug>
+
 #endif
 
 // This define should be defined externaly in the project or make file.
@@ -84,10 +86,35 @@ std::ostream& operator<<(std::ostream& os, const QString& qs)
 }
 
 inline
-QDebug&	operator<<(QDebug& qd, const std::string& ss)
+QDebug& operator<<(QDebug& qd, const std::string& ss)
 {
 	return qd << QString::fromStdString(ss);
 }
+
+namespace sf
+{
+
+/**
+ * Class to contain own QT message handler.
+ * Is automatically installed on loading and uninstalled on unloading.
+ */
+class _MISC_CLASS MessageHandler
+{
+	public:
+		/**
+		 * Enables or resets the interception of messages by our own handler.
+		 */
+		static void enable(bool enabled = true);
+
+	private:
+		// Holds the initial handler and  functions as a sentry for handling in @enable().
+		static QtMessageHandler _initial;
+		// Handler function to install.
+		static void _handler(QtMsgType type, const QMessageLogContext& ctx, const QString& msg);
+};
+
+}
+
 #endif
 
 namespace sf
@@ -106,7 +133,7 @@ enum EDebugOutputType
 };
 
 // Allows the passed string to be presented in various ways.
-_MISC_FUNC void UserOutputDebugString(unsigned int type, const char *s);
+_MISC_FUNC void UserOutputDebugString(unsigned int type, const char* s);
 
 // Set and get function for the type of output when DO_DEFAULT is passed.
 _MISC_FUNC void SetDefaultDebugOutput(unsigned int type);
@@ -118,7 +145,7 @@ _MISC_FUNC unsigned int GetDefaultDebugOutput();
 _MISC_FUNC bool IsDebug();
 
 // Demangle the passed rtti type name.
-_MISC_FUNC std::string Demangle(const char *name);
+_MISC_FUNC std::string Demangle(const char* name);
 
 // Output stream used as
 class _MISC_CLASS debug_ostream
@@ -141,7 +168,7 @@ class _MISC_CLASS debug_ostream
 		int overflow(int c) override;
 
 //		std::streamsize xsputn(const char *s, streamsize count);
-		std::size_t do_sputn(const char *s, std::size_t count);
+		std::size_t do_sputn(const char* s, std::size_t count);
 };
 
 } // namespace sf

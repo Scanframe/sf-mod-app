@@ -4,12 +4,12 @@
 ExposedObject::ExposedObject(QObject* parent)
 	:QObject(parent)
 {
-	std::clog << __FUNCTION__ << std::endl;
+	std::clog << "Creating: " << __FUNCTION__ << std::endl;
 }
 
 int ExposedObject::stdClog(const QString& str)
 {
-	std::clog << str << std::endl;
+	qDebug() <<  str;
 	return str.length();
 }
 
@@ -17,13 +17,13 @@ int ExposedObject::passValue(const QJSValue& value)
 {
 	if (value.isString())
 	{
-		std::clog << value.toString() << std::endl;
+		qDebug() << value.toString();
 	}
 	QJSValueIterator it(value);
 	while (it.hasNext())
 	{
 		it.next();
-		std::clog << it.name() << ": " << it.value().toString() << std::endl;
+		qDebug() << it.name() << ": " << it.value().toString();
 	}
 	return 0;
 }

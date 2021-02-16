@@ -38,7 +38,7 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QPushButton" name="pushButtonRun">
+     <widget class="QPushButton" name="pushButtonLoad">
       <property name="toolTip">
        <string>Find the dynamic libraries which can be loaded.</string>
       </property>
@@ -46,7 +46,7 @@
        <number>-1</number>
       </property>
       <property name="text">
-       <string extracomment="Find libraries that can be loaded.">&amp;Run</string>
+       <string extracomment="Find libraries that can be loaded.">&amp;Load</string>
       </property>
       <property name="icon">
        <iconset resource="../../../com/misc/resource/resource.qrc">
@@ -61,6 +61,9 @@
       </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -131,7 +134,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
-  <tabstop>pushButtonRun</tabstop>
+  <tabstop>pushButtonLoad</tabstop>
   <tabstop>comboBoxScripts</tabstop>
   <tabstop>pushButtonCall</tabstop>
   <tabstop>comboBoxFunctions</tabstop>

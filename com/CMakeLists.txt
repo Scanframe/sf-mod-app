@@ -29,15 +29,15 @@ set(SOURCES
 	misc/qt_utils.cpp
 	misc/linebuffer.h
 	misc/linebuffer.cpp
-	misc/qcapturelistmodel.h
-	misc/qcapturelistmodel.cpp
+	misc/capturelistmodel.h
+	misc/capturelistmodel.cpp
 	misc/genutils.h
 	misc/genutils.cpp
 	misc/exception.h
 	misc/exception.cpp
 	misc/class_reg.cpp
-	misc/qresource.h
-	misc/qresource.cpp
+	misc/resource.h
+	misc/resource.cpp
 	misc/formwriter.cpp
 	misc/formwriter.h
 	misc/objectextension.cpp misc/objectextension.h)

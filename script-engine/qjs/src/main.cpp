@@ -1,14 +1,13 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QDebug>
 
 #include <misc/qt_utils.h>
+#include <misc/dbgutils.h>
 #include "mainwindow.h"
 
 int main(int argc, char* argv[])
 {
-	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	//QApplication::setDesktopSettingsAware(false);
 	QApplication app(argc, argv);
 	// Initialize using the application file path.
@@ -18,10 +17,12 @@ int main(int argc, char* argv[])
 	// Make settings file available through a property..
 	QCoreApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
 	// Create instance to handle settings.
-	sf::QApplicationSettings settings;
+	sf::ApplicationSettings settings;
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
 	//
 	MainWindow w;
 	w.show();
-	return QApplication::exec();}
+	qDebug() << "QT Ver: " << QT_VERSION_STR;
+	return QApplication::exec();
+}
