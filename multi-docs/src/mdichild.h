@@ -2,6 +2,7 @@
 #define MDICHILD_H
 
 #include <QTextEdit>
+#include "highlighter.h"
 
 class MdiChild : public QTextEdit
 {
@@ -31,6 +32,7 @@ private:
 
     QString curFile;
     bool isUntitled;
+		Highlighter highlighter;
 };
 
 #endif

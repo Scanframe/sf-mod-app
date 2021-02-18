@@ -42,5 +42,6 @@ recreated by reading by the same file.
 
 The [`script-engine`](script-engine) directory is a proof of concept that application 
 events timed and initiated from within the application can be handled by scripts.
+Also demonstrates a highlighting editor for javascript.
 
 

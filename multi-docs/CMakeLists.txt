@@ -15,10 +15,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(SOURCES
 	src/main.cpp
-	src/mainwindow.cpp
+	src/highlighter.h
+	src/highlighter.cpp
 	src/mainwindow.h
-	src/mdichild.cpp
+	src/mainwindow.cpp
 	src/mdichild.h
+	src/mdichild.cpp
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.

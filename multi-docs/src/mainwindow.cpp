@@ -10,8 +10,7 @@ MainWindow::MainWindow()
 	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setCentralWidget(mdiArea);
-	connect(mdiArea, &QMdiArea::subWindowActivated,
-					this, &MainWindow::updateMenus);
+	connect(mdiArea, &QMdiArea::subWindowActivated,this, &MainWindow::updateMenus);
 
 	createActions();
 	createStatusBar();
@@ -165,7 +164,7 @@ void MainWindow::updateRecentFileActions()
 
 void MainWindow::openRecentFile()
 {
-	if (const QAction* action = qobject_cast<const QAction*>(sender()))
+	if (auto action = qobject_cast<const QAction*>(sender()))
 	{
 		openFile(action->data().toString());
 	}
@@ -267,7 +266,7 @@ void MainWindow::updateWindowMenu()
 	for (int i = 0; i < windows.size(); ++i)
 	{
 		QMdiSubWindow* mdiSubWindow = windows.at(i);
-		MdiChild* child = qobject_cast<MdiChild*>(mdiSubWindow->widget());
+		auto child = qobject_cast<MdiChild*>(mdiSubWindow->widget());
 
 		QString text;
 		if (i < 9)
@@ -291,7 +290,7 @@ void MainWindow::updateWindowMenu()
 
 MdiChild* MainWindow::createMdiChild()
 {
-	MdiChild* child = new MdiChild;
+	auto child = new MdiChild;
 	mdiArea->addSubWindow(child);
 
 #ifndef QT_NO_CLIPBOARD
@@ -357,13 +356,11 @@ void MainWindow::createActions()
 
 	fileMenu->addSeparator();
 
-//! [0]
 	const QIcon exitIcon = QIcon::fromTheme("application-exit");
 	QAction* exitAct = fileMenu->addAction(exitIcon, tr("E&xit"), qApp, &QApplication::closeAllWindows);
 	exitAct->setShortcuts(QKeySequence::Quit);
 	exitAct->setStatusTip(tr("Exit the application"));
 	fileMenu->addAction(exitAct);
-//! [0]
 
 #ifndef QT_NO_CLIPBOARD
 	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
@@ -451,19 +448,7 @@ void MainWindow::createStatusBar()
 
 void MainWindow::readSettings()
 {
-/*
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
-	if (geometry.isEmpty()) 
-	{
-			const QRect availableGeometry = screen()->availableGeometry();
-			resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
-			move((availableGeometry.width() - width()) / 2,
-						(availableGeometry.height() - height()) / 2);
-	} else {
-			restoreGeometry(geometry);
-	}
-  */
+	#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
 	if (geometry.isEmpty())
@@ -477,6 +462,19 @@ void MainWindow::readSettings()
 	{
 		restoreGeometry(geometry);
 	}
+	#else
+	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+	const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
+	if (geometry.isEmpty()) 
+	{
+			const QRect availableGeometry = screen()->availableGeometry();
+			resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
+			move((availableGeometry.width() - width()) / 2,
+						(availableGeometry.height() - height()) / 2);
+	} else {
+			restoreGeometry(geometry);
+	}
+	#endif
 }
 
 void MainWindow::writeSettings()
@@ -501,7 +499,7 @@ QMdiSubWindow* MainWindow::findMdiChild(const QString& fileName) const
 	const QList<QMdiSubWindow*> subWindows = mdiArea->subWindowList();
 	for (QMdiSubWindow* window : subWindows)
 	{
-		MdiChild* mdiChild = qobject_cast<MdiChild*>(window->widget());
+		auto mdiChild = qobject_cast<MdiChild*>(window->widget());
 		if (mdiChild->currentFile() == canonicalFilePath)
 		{
 			return window;
