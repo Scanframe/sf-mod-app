@@ -18,6 +18,7 @@ add_subdirectory(rt-shared-lib)
 add_subdirectory(custom-ui-plugin)
 add_subdirectory(rt-ui-serialize)
 add_subdirectory(script-engine)
+add_subdirectory(multi-docs)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
