@@ -5,7 +5,6 @@
 #include <QDataStream>
 #include <QFileSystemWatcher>
 
-#include "qt_utils.h"
 // Import of shared library export defines.
 #include "global.h"
 

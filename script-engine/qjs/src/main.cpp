@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
 	//
-	MainWindow w;
-	w.show();
+	MainWindow win;
+	win.show();
 	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	return QApplication::exec();
 }

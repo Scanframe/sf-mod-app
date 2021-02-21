@@ -7,9 +7,11 @@
 
 int main(int argc, char* argv[])
 {
-	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	//QApplication::setDesktopSettingsAware(false);
 	QApplication app(argc, argv);
+	QCoreApplication::setOrganizationName("ScanFrame");
+	QCoreApplication::setApplicationName("Shared Library Concept");
+	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
 	// Initialize using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.
@@ -21,7 +23,8 @@ int main(int argc, char* argv[])
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
 	//
-	MainWindow w;
-	w.show();
+	MainWindow win;
+	win.show();
+	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	return QApplication::exec();
 }

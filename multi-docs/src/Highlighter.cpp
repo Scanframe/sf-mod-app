@@ -1,4 +1,4 @@
-#include "highlighter.h"
+#include "Highlighter.h"
 
 Highlighter::Highlighter(QTextDocument* parent)
 	:QSyntaxHighlighter(parent)
@@ -6,7 +6,7 @@ Highlighter::Highlighter(QTextDocument* parent)
 	// The order of appending rules is important otherwise functions in commented lines are highlighted too.
 
 	HighlightingRule rule;
-	keywordFormat.setForeground(Qt::blue);
+	keywordFormat.setForeground(QColor(Qt::blue).darker());
 	keywordFormat.setFontWeight(QFont::Bold);
 	auto keywords = R"(
 let
@@ -55,7 +55,7 @@ with
 	highlightingRules.append(rule);
 
 	functionFormat.setFontItalic(true);
-	functionFormat.setForeground(Qt::blue);
+	functionFormat.setForeground(Qt::magenta);
 	rule.pattern = QRegularExpression(QStringLiteral("\\b[A-Za-z0-9_]+(?=\\()"));
 	rule.format = functionFormat;
 	highlightingRules.append(rule);

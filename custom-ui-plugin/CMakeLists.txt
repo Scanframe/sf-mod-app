@@ -3,16 +3,22 @@ cmake_minimum_required(VERSION 3.14)
 # Set the project name.
 project("custom-ui-plugin" LANGUAGES CXX)
 
-# Include common configuration.
-include("config.cmake")
+# Make sure builds do not wind up in the source directory.
+list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
+find_package(SfMacros CONFIG REQUIRED)
+find_package(SfCompiler CONFIG REQUIRED)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Designer REQUIRED)
-find_package(Qt5UiPlugin REQUIRED)
+# Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
+_SetOutputDirs()
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+# Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin Designer REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	src/SfAnalogClock.cpp
@@ -51,11 +57,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # Tell the code the library is used as dynamic library. (So imports needed)
 target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_A_PKG)
 
-if (WIN32)
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".dll")
-else ()
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".so")
-endif ()
+# Sets the extension of the generated binary.
+#_SetBinarySuffix("${PROJECT_NAME}")
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

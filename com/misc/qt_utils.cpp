@@ -45,7 +45,7 @@ void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 			_watcher->addPath(_fileInfo.absoluteFilePath());
 		}
 	}
-	for (auto file: _watcher->files())
+	for (auto& file: _watcher->files())
 	{
 		qDebug() << "Watching:" << file;
 	}
@@ -77,7 +77,8 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	// Get the keys in the section to check existence in the ini-section.
 	auto keys = settings.childKeys();
 	// Check if settings can be written and the key does not exist.
-	if (settings.isWritable() && !keys.contains(key = "App-Style"))
+	key = "App-Style";
+	if (settings.isWritable() && !keys.contains(key))
 	{
 		settings.setValue(key, QApplication::style()->objectName());
 	}
@@ -148,8 +149,13 @@ void ApplicationSettings::doStyleApplication(bool watch)
 			QPalette::ToolTipBase,
 			QPalette::ToolTipText,
 			QPalette::PlaceholderText,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
+			QPalette::WindowText,
+			QPalette::Window
+#else
 			QPalette::Foreground,
 			QPalette::Background
+#endif
 		})
 	{
 		// When the key does not exist write it with the current value.

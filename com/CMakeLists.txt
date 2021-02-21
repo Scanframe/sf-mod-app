@@ -3,16 +3,21 @@ cmake_minimum_required(VERSION 3.14)
 # Set the project name.
 project("sf-misc" LANGUAGES CXX VERSION 0.1.0)
 
-# Include common configuration.
-include("config.cmake")
+list(APPEND CMAKE_PREFIX_PATH "cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
+find_package(SfMacros CONFIG REQUIRED)
+find_package(SfCompiler CONFIG REQUIRED)
 
-# Finde the needed packages.
-find_package(Qt5Designer REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+# Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
+_SetOutputDirs()
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+# Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
 set(SOURCES
 	misc/global.h
@@ -40,22 +45,15 @@ set(SOURCES
 	misc/resource.cpp
 	misc/formwriter.cpp
 	misc/formwriter.h
-	misc/objectextension.cpp misc/objectextension.h)
+	misc/objectextension.cpp
+	misc/objectextension.h
+	)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 qt5_add_resources(SOURCES misc/resource/resource.qrc)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
-
-#[[
-# Set target additional include directories.
-target_include_directories(${PROJECT_NAME}
-	# For lib misc headers.
-	PUBLIC "${CMAKE_CURRENT_LIST_DIR}/.."
-	)
-]]
-
-# This wil start scanning all home directory files.
-#target_include_directories(${PROJECT_NAME} PUBLIC ~/)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
@@ -66,7 +64,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
 
-# Tell the code the 'misc' library is used as an archive. (So no imports or exports)
+# Tell the code the 'sf-misc' library is used as an archive. (So no imports or exports)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE _MISC_ARC)
 
 # Tell the code the 'misc' library is used as dynamic library. (So imports needed)
@@ -77,9 +75,3 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
-
-if (WIN32)
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".dll")
-else ()
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME} SUFFIX ".so")
-endif ()

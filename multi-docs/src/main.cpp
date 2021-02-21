@@ -1,30 +1,44 @@
 #include <QApplication>
+#include <QDir>
+#include <QFileInfo>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-#include "mainwindow.h"
+#include <misc/qt_utils.h>
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {
 	Q_INIT_RESOURCE(resource);
 
 	QApplication app(argc, argv);
-	QCoreApplication::setApplicationName("MDI Example");
-	QCoreApplication::setOrganizationName("QtProject");
+	QCoreApplication::setOrganizationName("ScanFrame");
+	QCoreApplication::setApplicationName("Multi Document Concept");
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
+	// Initialize using the application file path.
+	QFileInfo fi(QCoreApplication::applicationFilePath());
+	// Set the instance to change the extension only.
+	fi.setFile(fi.absolutePath(), fi.completeBaseName() + ".ini");
+	// Make settings file available through a property..
+	QCoreApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
+	// Create instance to handle settings.
+	sf::ApplicationSettings settings;
+	// Set the file path to the settings instance and make it watch changes.
+	settings.setFilepath(fi.absoluteFilePath(), true);
+	//
 	QCommandLineParser parser;
-	parser.setApplicationDescription("Qt MDI Example");
+	parser.setApplicationDescription("ScanFrame's MDI concept example.");
 	parser.addHelpOption();
 	parser.addVersionOption();
 	parser.addPositionalArgument("file", "The file to open.");
 	parser.process(app);
-
-	MainWindow mainWin;
+	//
+	MainWindow win;
 	const QStringList posArgs = parser.positionalArguments();
-	for (const QString& fileName : posArgs)
+	for (const QString& fileName: posArgs)
 	{
-		mainWin.openFile(fileName);
+		win.openFile(fileName);
 	}
-	mainWin.show();
+	win.show();
 	return QApplication::exec();
 }

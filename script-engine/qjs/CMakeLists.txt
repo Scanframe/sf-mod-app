@@ -2,11 +2,22 @@
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
 project("qjs-app" LANGUAGES CXX)
-# Include common configuration.
-include("config.cmake")
+
+# Make sure builds do not wind up in the source directory.
+list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+find_package(SfBuildCheck CONFIG REQUIRED)
+find_package(SfMacros CONFIG REQUIRED)
+find_package(SfCompiler CONFIG REQUIRED)
+
+# Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
+_SetOutputDirs()
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Designer Qml REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Qml REQUIRED)
 
 set(SOURCES
 	src/main.cpp
@@ -38,10 +49,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # Include library configuration.
 include("libraries.cmake")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer Qt${QT_VERSION_MAJOR}::Qml sf-misc)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Qml sf-misc)
 
-if (WIN32)
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}" SUFFIX ".exe")
-else ()
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}" SUFFIX ".bin")
-endif ()
+# Sets the extension of the generated binary.
+_SetBinarySuffix("${PROJECT_NAME}")

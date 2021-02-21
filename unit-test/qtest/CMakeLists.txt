@@ -1,12 +1,13 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("rt-lib-app" LANGUAGES CXX)
+project("ut-qtest" LANGUAGES CXX)
 
 # Make sure builds do not wind up in the source directory.
-list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
+find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
@@ -17,23 +18,22 @@ set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Test REQUIRED)
 
 set(SOURCES
-	src/main.cpp
-	src/mainwindow.h
-	src/mainwindow.cpp
-	src/mainwindow.ui
+	src/testqstring.cpp
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
-# Add resource to the application.
+## Add a resource file.
 #qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Include library configuration.
+include("libraries.cmake")
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
@@ -47,10 +47,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
-# Include library configuration.
-include("../libraries.cmake")
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc rt-iface)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Test)
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")
