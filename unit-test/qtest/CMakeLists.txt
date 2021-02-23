@@ -1,7 +1,18 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("ut-qtest" LANGUAGES CXX)
+project("ut-qtest"
+	VERSION 0.1
+	DESCRIPTION "An example using QTest library"
+	LANGUAGES CXX)
+
+# Only do these if this is the main project, and not if it is included through add_subdirectory
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+	# Testing only available if this is the main app
+	# Note this needs to be done in the main CMakeLists
+	# since it calls enable_testing, which must be in the main CMakeLists.
+	include(CTest)
+endif()
 
 # Make sure builds do not wind up in the source directory.
 list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
@@ -21,7 +32,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Test REQUIRED)
 
 set(SOURCES
-	src/testqstring.cpp
+	src/main.cpp
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
@@ -47,9 +58,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Test)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")
 
-
+# Testing only available if this is the main app
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND BUILD_TESTING)
+if (BUILD_TESTING)
+	add_subdirectory(tests)
+endif()

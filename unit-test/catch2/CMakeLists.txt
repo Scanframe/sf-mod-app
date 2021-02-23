@@ -59,7 +59,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")
 
-
 # Testing only available if this is the main app
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND BUILD_TESTING)
 if (BUILD_TESTING)

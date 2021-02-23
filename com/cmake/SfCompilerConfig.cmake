@@ -23,4 +23,13 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_CXX_STANDARD 11)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+	# When GNU compiler is used set some options.
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+		if (WIN32)
+			# Needed for Windows since Catch2 is creating a huge obj file.
+			add_compile_options(-m64 -Wa,-mbig-obj)
+		endif ()
+	endif ()
+
 endif ()

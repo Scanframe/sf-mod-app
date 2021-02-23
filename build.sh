@@ -25,6 +25,7 @@ function ShowHelp()
 
   -l : Build using local user QT version (needs ${LOCAL_QT_ROOT} directory).
   -c : Cleans build targets first (adds build option '--clean-first')
+  -t : Add tests to the build config.
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -36,6 +37,7 @@ function ShowHelp()
     Same as above: ${0} . all
     Clean all projects: ${0} . clean
     Install all projects: ${0} . install
+    Show all projects to be build: ${0} . help
     Build 'sf-misc' project in 'com' sub-dir only: ${0} . sf-misc
     Build 'com' project and all sub-projects: ${0} com
     Build 'rt-shared-lib' project and all sub-projects: ${0} rt-shared-lib
@@ -49,7 +51,7 @@ function ShowHelp()
 argument=()
 LOCAL_QT=false
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hlc" opt; do
+	while getopts "hlct" opt; do
 		case $opt in
 			h)
 				ShowHelp
@@ -61,7 +63,11 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 				;;
 			c)
 			 	WriteLog "Clean first enabled"
-				BUIlD_OPTIONS="--clean-first"
+				BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
+				;;
+			t)
+			 	WriteLog "Include test builds"
+				CONFIG_OPTIONS="${CONFIG_OPTIONS} -DBUILD_TESTING=ON"
 				;;
 			\?)
 				WriteLog "Invalid option: -$OPTARG"
@@ -118,14 +124,15 @@ else
 			WriteLog "No local QT library directory found in '${LOCAL_QT_ROOT}'"
 		fi
 	fi
-	#CMAKE_BIN="~/lib/clion/bin/cmake/linux/bin/cmake"
+
+	#CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
 	CMAKE_BIN="cmake"
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
 fi
 
 # Initialize configuration options
-CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(realpath "${SCRIPT_DIR}/..") -L"
+CONFIG_OPTIONS="${CONFIG_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(realpath "${SCRIPT_DIR}/..") -L"
 
 # Configure debug
 ${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}

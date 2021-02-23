@@ -247,7 +247,7 @@ class TClassRegistration
 };
 
 template <typename T, typename P>
-TClassRegistration<T, P>::TClassRegistration(TClassRegistration<T, P>::entries_t& entries)
+TClassRegistration<T, P>::TClassRegistration(entries_t& entries)
 	: Entries(&entries) {}
 
 template <typename T, typename P>
