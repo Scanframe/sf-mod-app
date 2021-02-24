@@ -1,3 +1,4 @@
+
 # Add doxygen project when doxygen was found
 find_package(Doxygen QUIET)
 if (Doxygen_FOUND)
@@ -15,11 +16,23 @@ if (Doxygen_FOUND)
 			OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/man"
 			COMMENT "Generate manual pages on interface"
 		)
+
+		find_program(CYGPATH cygpath ${CMAKE_CURRENT_BINARY_DIR})
+		if (NOT CYGPATH)
+			message(FATAL_ERROR "Can't find 'cygpath'!")
+		else ()
+			execute_process(COMMAND "${CYGPATH}" "${PROJECT_SOURCE_DIR}" OUTPUT_VARIABLE PROJECT_SOURCE_DIR)
+			string(REGEX REPLACE "\n$" "" PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
+		endif ()
 	]]
+	
+	# For cygwin only relative path are working.
+	file(RELATIVE_PATH LOGO_FILE "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/com/misc/resource/icon/scanframe.ico")
+	file(RELATIVE_PATH OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/bin/man")
 	# Get the markdown files in this project directory.
-	file(GLOB DOXYGEN_SOURCES *.md)
+	file(GLOB DOXYGEN_SOURCES RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md")
 	# Get all the header files in the ../com module.
-	file(GLOB_RECURSE DOXYGEN_SOURCES_TMP ../com/*.h)
+	file(GLOB_RECURSE DOXYGEN_SOURCES_TMP RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../com/*.h" )
 	list (APPEND DOXYGEN_SOURCES ${DOXYGEN_SOURCES_TMP})
 	# Replace the list separator ';' with space in the list.
 	list(JOIN DOXYGEN_SOURCES " " DOXYGEN_SRC)
