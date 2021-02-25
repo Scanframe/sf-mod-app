@@ -5,7 +5,6 @@ See: [How it should work](https://gitlab.com/CLIUtils/modern-cmake/-/tree/master
 Import Boost library by fetching from [GitHub](https://github.com/Orphis/boost-cmake)
 
 ```cmake
-
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)
 	message("Catch2 not found")

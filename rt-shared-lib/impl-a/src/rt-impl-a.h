@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "iface/src/rt-iface.h"
+#include "rt-iface.h"
 
 /**
  * Exporting is not needed.

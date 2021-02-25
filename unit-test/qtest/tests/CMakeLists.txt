@@ -1,7 +1,7 @@
 # Set the target name using the project name as a base name.
 set(MY_TEST_TARGET "${PROJECT_NAME}-test")
 
-message("MY_TEST_TARGET: ${MY_TEST_TARGET}")
+#message(STATUS "MY_TEST_TARGET: ${MY_TEST_TARGET}")
 
 # Tests need to be added as executables first
 add_executable(${MY_TEST_TARGET} testqstring.cpp)

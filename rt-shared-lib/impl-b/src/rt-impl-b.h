@@ -1,7 +1,7 @@
 #ifndef RT_IMPL_A_H
 #define RT_IMPL_A_H
 
-#include "iface/src/rt-iface.h"
+#include "rt-iface.h"
 
 class RuntimeLibImplementationB : public RuntimeIface
 {

@@ -12,6 +12,9 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
+# Uses directory set by _SetOutputDirs().
+find_package(SfMisc REQUIRED)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -37,9 +40,6 @@ qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Include library configuration.
-include("libraries.cmake")
-
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 
@@ -56,6 +56,3 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt$
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")
-
-
-

@@ -75,3 +75,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
+
+# Set the include directory for this library when it is imported by another sub project.
+set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}")

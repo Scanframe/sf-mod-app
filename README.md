@@ -44,4 +44,8 @@ The [`script-engine`](script-engine) directory is a proof of concept that applic
 events timed and initiated from within the application can be handled by scripts.
 Also demonstrates a highlighting editor for javascript.
 
+## Concept Project 5: Unit Testing in Projects  
+
+The [`unit-test`](unit-test) directory is a proof of concept that application 
+can have unit tests in `CMakelists.txt` files using different unit test libraries.
 

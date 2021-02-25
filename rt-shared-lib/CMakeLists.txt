@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 3.14)
 # Set the global project name.
 project("rt-shared-lib")
 
-# Add this for the headers in the autogen directory made by the *.ui files.
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Make sure builds do not wind up in the source directory.
+list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
+find_package(SfMacros CONFIG REQUIRED)
+
+# Need to call this here since this is the top project.
+_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(iface)

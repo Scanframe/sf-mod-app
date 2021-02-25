@@ -1,38 +1,16 @@
-/*
-
-Copyright (c) ScanFrame 2005.
-All Rights Reserved.
-
-$Source: /cppsrc/com/gii/gen/range.h,v $
-$Author: avo $
-$Revision: 1.6 $
-
-Identification:
-	COM_GII_GEN
-
-Initial Author:
-	AVO 19991116
-
-Purpose:
-	Interface of a class that handles a single range.
-
-*/
-
-#ifndef GII_RANGE_H
-#define GII_RANGE_H
+#pragma once
 
 #include <iostream>
 #include "mcvector.h"
-//---------------------------------------------------------------------------
+
 // Forward definition
 class TRange;
-//---------------------------------------------------------------------------
-//
-// Struct that contains the data members of class 'TRange'.
-//
-		// Set byte alignment to 1 byte.
-//
+
+// Set byte alignment to 1 byte.
 #pragma pack(push,1)
+/**
+ * Struct that contains the data members of class 'TRange'.
+ */
 typedef struct tagRANGE
 {
 	// Start position of the range or interval.
@@ -42,17 +20,16 @@ typedef struct tagRANGE
 	// Identifier of this range.
 	long Id;
 } RANGE;
-//
 // Restore the pack option.
 #pragma pack(pop)
-//---------------------------------------------------------------------------
-//
-// Class to manage integer ranges.
-//
+
+/**
+ * Class to manage integer ranges.
+ */
 class TRange :private RANGE
 {
 	public:
-		//
+
 		typedef mcvector<TRange> TVector;
 		typedef mciterator<TRange> TIterator;
 
@@ -147,7 +124,7 @@ class TRange :private RANGE
 		// Set the onwer id of this range
 		TRange& SetId(long id);
 
-		// This virual assignment operator allow derived classes to
+		// This virtual assignment operator allow derived classes to
 		// copy their data members
 		TRange& operator=(const TRange& r);
 		TRange& operator=(const RANGE& r);
@@ -200,79 +177,72 @@ class TRange :private RANGE
 	friend std::istream& operator >>(std::istream& is, TRange& r);
 
 };
-//---------------------------------------------------------------------------
-//
+
+
 inline
 std::ostream& operator <<(std::ostream& os, const TRange& r)
 {
 	return os << '(' << r.Start << ',' << r.Stop << ',' << r.Id << ')';
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 std::istream& operator >>(std::istream& is, TRange& r)
 {
 	char c; return is >> c >> r.Start >> c >> r.Stop >> c >> r.Id >> c;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange::TRange()
 {
 	Clear();
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange::TRange(const TRange& r)
 {
 	Set(r);
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 TRange::TRange(const RANGE& r)
 {
 	Set(r);
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 TRange::TRange(long start, long stop, long id)
 {
 	Set(start, stop, id);
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 long TRange::GetStart() const
 {
 	return Start;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 long TRange::GetStop() const
 {
 	return Stop;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 long TRange::GetId() const
 {
 	return Id;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 TRange& TRange::SetId(long id)
 {
 	Id = id;
 	return *this;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 void TRange::Clear()
 {
@@ -280,130 +250,127 @@ void TRange::Clear()
 	Stop = 0;
 	Id = 0;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 TRange& TRange::Set(const TRange& r)
 {
 	*(tagRANGE*)this = *(tagRANGE*)&r;
 	return *this;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 long TRange::GetSize() const
 {
 	return Stop - Start;
 }
-//---------------------------------------------------------------------------
-//
+
 inline
 bool TRange::IsEmpty() const
 {
 	return (Stop==Start);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsMergeable(const TRange& r) const
 {
 	return abs(Compare(r))!=4;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsOverlapped(const TRange& r) const
 {
 	return abs(Compare(r))<=2;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsExtension(const TRange& r) const
 {
 	return abs(Compare(r))==3;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsPartOfOther(const TRange& r) const
 {
 	int res = Compare(r);
 	return (res==-1 || res==0);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsPartOfThis(const TRange& r) const
 {
 	int res = Compare(r);
 	return (res==1 || res==0);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange& TRange::operator=(const TRange& r)
 {
 	return Set(r);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange& TRange::operator=(const RANGE& r)
 {
 	return Set(r);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange::operator int() const
 {
 	return IsEmpty();
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 int TRange::operator ==(const TRange& r) const
 {
 	return Compare(r) == 0;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 int TRange::operator !=(const TRange& r) const
 {
 	return Compare(r) != 0;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 int TRange::operator <(const TRange& r) const
 {
 	return IsEmpty() ? 0 : (r.IsEmpty() ? 1 : ((Start==r.Start) ? Stop<r.Stop : Start<r.Start));
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange& TRange::operator -=(const TRange& r)
 {
 	return Set(*this - r);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange& TRange::operator += (const TRange& r)
 {
 	return Set(*this + r);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange TRange::operator &=(const TRange& r)
 {
 	return Set(*this & r);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange& TRange::OffsetBy(long ofs)
 {
@@ -411,27 +378,25 @@ TRange& TRange::OffsetBy(long ofs)
 	Stop += ofs;
 	return *this;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 TRange TRange::Offset(long ofs) const
 {
 	return TRange(*this).OffsetBy(ofs);
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 bool TRange::IsInRange(long idx) const
 {
 	return idx >= Start && idx < Stop;
 }
-//---------------------------------------------------------------------------
-//
+
+
 inline
 const TRange& TRange::CopyTo(RANGE& dest) const
 {
 	dest = *this;
 	return *this;
 }
-//---------------------------------------------------------------------------
-#endif // GII_RANGE_H

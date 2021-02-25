@@ -12,13 +12,15 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
+find_package(SfMisc REQUIRED)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin Designer REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	src/SfAnalogClock.cpp
@@ -33,11 +35,8 @@ add_library(${PROJECT_NAME} SHARED
 	src/SfCustomWidgets.h
 )
 
-# Include library configuration.
-include("libraries.cmake")
-
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::UiPlugin)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::UiPlugin sf-misc)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

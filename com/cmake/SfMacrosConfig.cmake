@@ -7,7 +7,6 @@ endmacro()
 macro(_populate_target_props TargetName Configuration LIB_LOCATION IMPLIB_LOCATION)
 	# Seems a relative directory is not working using REALPATH.
 	get_filename_component(imported_location "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${LIB_LOCATION}" REALPATH)
-	#set(imported_location "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${LIB_LOCATION}")
 	_check_file_exists(${imported_location})
 	set_target_properties(${TargetName} PROPERTIES "IMPORTED_LOCATION_${Configuration}" ${imported_location})
 	if (NOT "${IMPLIB_LOCATION}" STREQUAL "")
@@ -18,9 +17,11 @@ macro(_populate_target_props TargetName Configuration LIB_LOCATION IMPLIB_LOCATI
 endmacro()
 
 macro(_add_shared_library TargetName)
-	# When the target does not exists add it.
-	if (NOT TARGET ${TargetName})
-		message(STATUS "Adding library: ${TargetName}")
+	# When the target exists ignore it.
+	if (TARGET ${TargetName})
+		#message(STATUS "Not adding (${PROJECT_NAME}) library ${TargetName} already part of build and ignored.")
+	else ()
+		message(STATUS "Adding (${PROJECT_NAME}) library: ${TargetName}")
 		add_library(${TargetName} SHARED IMPORTED)
 		if (WIN32)
 			_populate_target_props(${TargetName} DEBUG "lib${TargetName}.dll" "lib${TargetName}.dll.a")
@@ -88,24 +89,24 @@ endfunction()
 ## Sets the extension of the created executable binary.
 ##
 function(_SetBinarySuffix)
-	foreach(_var IN LISTS ARGN)
+	foreach (_var IN LISTS ARGN)
 		if (WIN32)
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".exe")
 		else ()
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".bin")
 		endif ()
-	endforeach()
+	endforeach ()
 endfunction()
 
 ##
 ## Sets the extension of the created dynamic library.
 ##
 function(_SetDynamicLibrarySuffix)
-	foreach(_var IN LISTS ARGN)
+	foreach (_var IN LISTS ARGN)
 		if (WIN32)
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".dll")
 		else ()
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".so")
 		endif ()
-	endforeach()
+	endforeach ()
 endfunction()

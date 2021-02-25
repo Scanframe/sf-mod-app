@@ -1,2 +1,2 @@
-# Unit Testing - QtTest
+# Unit Testing - QTest
 

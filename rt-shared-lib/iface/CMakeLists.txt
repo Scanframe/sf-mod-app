@@ -11,6 +11,9 @@ find_package(SfMacros CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
+# Uses directory set by _SetOutputDirs().
+find_package(SfMisc REQUIRED)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -24,9 +27,6 @@ add_library(${PROJECT_NAME} SHARED
 	src/rt-iface.h
 	src/rt-iface.cpp
 	)
-
-# Include library configuration.
-include("../libraries.cmake")
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc)
@@ -49,5 +49,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 # Tell the code the library is used as dynamic library. (So imports needed)
 target_compile_definitions(${PROJECT_NAME} PRIVATE _IFACE_PKG)
 
-
-
+# Set the include directory for this library when it is imported by another sub project.
+set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/src")

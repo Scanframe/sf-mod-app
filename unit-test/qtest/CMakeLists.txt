@@ -43,9 +43,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Include library configuration.
-include("libraries.cmake")
-
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 

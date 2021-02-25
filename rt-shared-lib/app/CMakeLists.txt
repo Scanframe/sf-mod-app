@@ -11,6 +11,9 @@ find_package(SfMacros CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
+# Uses directory set by _SetOutputDirs().
+find_package(SfMisc REQUIRED)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -46,9 +49,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
-
-# Include library configuration.
-include("../libraries.cmake")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc rt-iface)
 
