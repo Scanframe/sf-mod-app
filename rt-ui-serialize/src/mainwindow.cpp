@@ -43,13 +43,13 @@ MainWindow::MainWindow(QWidget* parent)
 	//
 	connect(ui->actionReadFile, &QAction::triggered, this, &MainWindow::onCreateFormDialog);
 	// For now put the application main window in the top right corner of the screen.
-	if (QGuiApplication::screens().count())
-	{
-		auto scr = QGuiApplication::screens().at(0);
-		QRect rc = scr->geometry();
-		QSize sz(600, 400);
-		setGeometry(QRect(rc.topRight() - sz, sz));
-	}
+	// if (QGuiApplication::screens().count())
+	// {
+		// auto scr = QGuiApplication::screens().at(0);
+		// QRect rc = scr->geometry();
+		// QSize sz(600, 400);
+		// setGeometry(QRect(rc.topRight() - sz, sz));
+	// }
 	// Start timer and call a member function each second.
 	auto* timer = new QTimer(this);
 	// Every 10 seconds.

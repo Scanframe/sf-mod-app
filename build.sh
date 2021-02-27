@@ -47,9 +47,10 @@ function ShowHelp()
 # ---------------------------------
 
 # Initialize arguments and switches.
+CONFIG_ONLY=false
 argument=()
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hct" opt; do
+	while getopts "hcbt" opt; do
 		case $opt in
 			h)
 				ShowHelp
@@ -58,6 +59,10 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 			c)
 			 	WriteLog "Clean first enabled"
 				BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
+				;;
+			b)
+			 	WriteLog "Create build directory and configure only"
+				CONFIG_ONLY=true
 				;;
 			t)
 			 	WriteLog "Include test builds"
@@ -125,6 +130,9 @@ CONFIG_OPTIONS="${CONFIG_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=O
 
 # Configure debug
 ${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
-# Build
-${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS} -- -j "$(nproc --all)"
 
+# Build/Compile
+if ! ${CONFIG_ONLY} ; then
+	CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+	${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS} -- -j ${CPU_CORES_TO_USE}
+fi

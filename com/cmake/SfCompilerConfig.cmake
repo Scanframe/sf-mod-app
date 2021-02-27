@@ -1,8 +1,19 @@
 # Gets the Qt directory given by the bash script 'QtLibDir.sh'
 #
 function(_GetQtLibDir VarOut)
-	execute_process(COMMAND "bash" "${SfMacros_DIR}/QtLibDir.sh" OUTPUT_VARIABLE Result)
-	set(${VarOut} ${Result} PARENT_SCOPE)
+	if (WIN32)
+		set(_Command "C:\\cygwin64\\bin\\bash.exe")
+		string(REPLACE "\/" "\\" _Script "${SfMacros_DIR}/QtLibDir.sh")
+	else ()
+		set(_Command "bash")
+		set(_Script "${SfMacros_DIR}/QtLibDir.sh")
+	endif ()
+	execute_process(COMMAND "${_Command}" "${_Script}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
+	# Validate the exit code.
+	if(_ExitCode GREATER "0")
+		message(FATAL_ERROR "Failed execution of script: ${_Script}")
+	endif()
+	set(${VarOut} "${_Result}" PARENT_SCOPE)
 endfunction()
 
 # Set the Qt Library location variable.
@@ -11,16 +22,23 @@ if (NOT DEFINED QT_DIRECTORY)
 	message(STATUS "Qt Directory: ${QT_DIRECTORY}")
 	# When changing this CMAKE_PREFIX_PATH remove the 'cmake-build-xxxx' directory
 	# since it weirdly keeps the previous selected CMAKE_PREFIX_PATH
-	# Variable 'QT_DIRECTORY' is set by 'SfCompiler'
-	list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/gcc_64")
+	if (WIN32)
+		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/mingw81_64")
+	else ()	
+		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/gcc_64")
+	endif ()
 endif ()
 
 # Set the Qt directory variable.
 if (NOT DEFINED QT_PLUGINS_DIR)
 	if (NOT QT_DIRECTORY STREQUAL "")
-		set(QT_PLUGINS_DIR "${QT_DIRECTORY}/gcc_64/plugins")
+		if (WIN32)
+			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/mingw81_64/plugins")
+		else ()
+			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/gcc_64/plugins")
+		endif ()
 	endif ()
-	message(STATUS "Designer Plugins Dir: '${QT_PLUGINS_DIR}'")
+	message(STATUS "Designer Plugins Dir: ${QT_PLUGINS_DIR}")
 endif ()
 
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")

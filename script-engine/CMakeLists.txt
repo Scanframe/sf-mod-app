@@ -13,5 +13,7 @@ find_package(SfCompiler CONFIG REQUIRED)
 _SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
-add_subdirectory(as)
+if (NOT WIN32)
+	add_subdirectory(as)
+endif()
 add_subdirectory(qjs)
