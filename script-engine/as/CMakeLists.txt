@@ -41,13 +41,12 @@ set(SOURCES
 	src/add_on/scriptstdstring.h
 	src/add_on/scriptstdstring.cpp
 	src/add_on/scriptstdstring_utils.cpp
+	resource/resource.qrc
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Add resource to the application.
-qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 

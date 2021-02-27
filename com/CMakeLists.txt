@@ -47,11 +47,10 @@ set(SOURCES
 	misc/formwriter.h
 	misc/objectextension.cpp
 	misc/objectextension.h
+	misc/resource/resource.qrc
 	)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-qt5_add_resources(SOURCES misc/resource/resource.qrc)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 

@@ -30,13 +30,12 @@ set(SOURCES
 	src/mainwindow.h
 	src/mainwindow.cpp
 	src/mainwindow.ui
+	resource/resource.qrc
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Add a resource file.
-qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -48,9 +47,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 
 # The 'DEBUG_LEVEL' controls the debug output macro's.
 target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
-
-#target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
-#link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc)
 

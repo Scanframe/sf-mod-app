@@ -42,7 +42,6 @@ if (${CMAKE_VERSION} VERSION_LESS 3.14)
 	endmacro()
 endif ()
 
-
 ##
 ## Locates a top 'bin' directory containing the file named '__output__'.
 ## Sets the '_OutputDir' variable when found.
@@ -109,4 +108,15 @@ function(_SetDynamicLibrarySuffix)
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".so")
 		endif ()
 	endforeach ()
+endfunction()
+
+function(_SubDirList Result CurDir)
+	file(GLOB children RELATIVE ${CurDir} ${CurDir}/*)
+	set(dirlist "")
+	foreach(child ${children})
+		if(IS_DIRECTORY ${CurDir}/${child})
+			LIST(APPEND dirlist ${child})
+		endif()
+	endforeach()
+	set(${Result} ${dirlist} PARENT_SCOPE)
 endfunction()

@@ -32,13 +32,13 @@ set(SOURCES
 	src/TextEditor.cpp
 	src/CodeEditor.h
 	src/CodeEditor.cpp
-	src/MdiChild.cpp src/MdiChild.h)
+	src/MdiChild.cpp src/MdiChild.h
+	resource/resource.qrc
+	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Add a resource file.
-qt5_add_resources(SOURCES resource/resource.qrc)
 # Set the actual target.
 add_executable(${PROJECT_NAME} ${SOURCES})
 

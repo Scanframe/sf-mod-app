@@ -3,7 +3,7 @@
 
 # Get the bash script directory.
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# Set the directory the local QT root expected.
+# Set the directory the local QT root expects/
 LOCAL_QT_ROOT="${HOME}/lib/Qt"
 # Initialize the build options.
 BUIlD_OPTIONS=
@@ -21,9 +21,8 @@ function WriteLog()
 #
 function ShowHelp()
 {
-	WriteLog "Usage: ${0} <sub-dir> [<target>] [-l]
+	WriteLog "Usage: [<options>] ${0} <sub-dir> [<target>]
 
-  -l : Build using local user QT version (needs ${LOCAL_QT_ROOT} directory).
   -c : Cleans build targets first (adds build option '--clean-first')
   -t : Add tests to the build config.
   Where <sub-dir> is:
@@ -49,17 +48,12 @@ function ShowHelp()
 
 # Initialize arguments and switches.
 argument=()
-LOCAL_QT=false
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hlct" opt; do
+	while getopts "hct" opt; do
 		case $opt in
 			h)
 				ShowHelp
 				exit 0
-				;;
-			l)
-				WriteLog "Using local Qt version from: ${LOCAL_QT_ROOT}"
-				LOCAL_QT=true
 				;;
 			c)
 			 	WriteLog "Clean first enabled"
@@ -106,35 +100,31 @@ fi
 
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]]; then
 	echo "Windows NT detected."
-	# "P:\Qt\5.15.2\mingw81_64\bin"
 	# CMAKE_BIN="/cygdrive/p/Qt/Tools/CMake_64/bin/cmake"
 	CMAKE_BIN="CMD /C P:\Qt\Tools\CMake_64\bin\cmake.exe"
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
 	BUILD_GENERATOR="MinGW Makefiles"
 	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
 else
-	# Make cmake find local Qt version.
-	if $LOCAL_QT ; then
-		QT_LIB_DIR="$(find "${LOCAL_QT_ROOT}" -maxdepth 2 -type d -name "gcc_64")"
-		if [[ ! -z "${QT_LIB_DIR}" ]] ; then
-			BUILD_SUBDIR="${BUILD_SUBDIR}-local"
-			WriteLog "QT library directory '${QT_LIB_DIR}'"
-			export CMAKE_PREFIX_PATH="${QT_LIB_DIR}:${CMAKE_PREFIX_PATH}"
-		else
-			WriteLog "No local QT library directory found in '${LOCAL_QT_ROOT}'"
-		fi
-	fi
+	# Try to use the CLion installed version of the cmake command.
+	CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
+ 	if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
+ 		# Try to use the Qt installed version of the cmake command.
+ 		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake/bin/cmake"
+ 		if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
+ 			CMAKE_BIN="cmake"
+ 		fi
+ 	fi
 
-	#CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
-	CMAKE_BIN="cmake"
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
 fi
 
 # Initialize configuration options
-CONFIG_OPTIONS="${CONFIG_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$(realpath "${SCRIPT_DIR}/..") -L"
+CONFIG_OPTIONS="${CONFIG_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -L"
 
 # Configure debug
 ${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
 # Build
-${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS}
+${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS} -- -j "$(nproc --all)"
+

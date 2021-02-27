@@ -12,6 +12,7 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
+# Uses directory set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
@@ -49,12 +50,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
-
-# Tell the code the library is used as an archive. (So no imports or exports)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_A_ARC)
-
-# Tell the code the library is used as dynamic library. (So imports needed)
-target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_A_PKG)
 
 # Sets the extension of the generated binary.
 #_SetBinarySuffix("${PROJECT_NAME}")

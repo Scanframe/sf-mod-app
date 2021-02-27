@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QDate>
-#include <QDebug>
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QStringList>
@@ -73,7 +72,6 @@ void MainWindow::onFindLibs()
 	// Sort the list of libraries by name.
 	std::sort(_libraryInfoList.begin(), _libraryInfoList.end(),
 		[](const sf::DynamicLibraryInfo& a, const sf::DynamicLibraryInfo& b) {return a.Name < b.Name;});
-	QVectorIterator<sf::DynamicLibraryInfo> dli(_libraryInfoList);
 	for (int i = 0; i < _libraryInfoList.count(); i++)
 	{
 		auto filename = QDir(QCoreApplication::applicationDirPath()).relativeFilePath(

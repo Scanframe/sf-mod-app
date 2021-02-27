@@ -10,7 +10,7 @@
 #include <QStandardPaths>
 #include <QScrollArea>
 #include <QPushButton>
-#include <QDesktopWidget>
+//#include <QDesktopWidget>
 #include <QResizeEvent>
 #include <QFormLayout>
 #include <QSettings>
