@@ -18,6 +18,12 @@ function WriteLog()
 function GetLocalQtDir()
 {
 	local LocalQtDir=""
+	# Check is the Qt install can be found.
+	if [[ ! -d "${LOCAL_QT_ROOT}" ]] ; then
+		WriteLog "Qt install directory or symbolic link '${LOCAL_QT_ROOT}' was not found!"
+		exit 1
+	fi
+	# Find the newest Qt library installed.
 	LocalQtDir="$(find "${LOCAL_QT_ROOT}/" -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
 	if [[ -z "${LocalQtDir}" ]] ; then
 		WriteLog "Could not find local installed Qt directory."
@@ -29,4 +35,8 @@ function GetLocalQtDir()
 	echo -n "${LocalQtDir}"
 }
 
-GetLocalQtDir
+
+
+if ! GetLocalQtDir ; then
+	exit 1
+fi 
