@@ -47,10 +47,11 @@ function ShowHelp()
 # ---------------------------------
 
 # Initialize arguments and switches.
-CONFIG_ONLY=false
+FLAG_CONFIG=false
+FLAG_BUILD=false
 argument=()
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hcbt" opt; do
+	while getopts "hcbtm" opt; do
 		case $opt in
 			h)
 				ShowHelp
@@ -60,9 +61,13 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 			 	WriteLog "Clean first enabled"
 				BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
 				;;
+			m)
+			 	WriteLog "Create build directory and makefiles only"
+				FLAG_CONFIG=true
+				;;
 			b)
-			 	WriteLog "Create build directory and configure only"
-				CONFIG_ONLY=true
+			 	WriteLog "Build the given target only"
+				FLAG_BUILD=true
 				;;
 			t)
 			 	WriteLog "Include test builds"
@@ -128,11 +133,21 @@ fi
 # Initialize configuration options
 CONFIG_OPTIONS="${CONFIG_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -L"
 
+# When both flags are not set enable them both.
+if ! ${FLAG_CONFIG} && ! ${FLAG_BUILD} ; then
+	FLAG_CONFIG=true
+	FLAG_BUILD=true
+	echo "Both not set."
+fi
+
+# Configure
+if ${FLAG_CONFIG} ; then
 # Configure debug
 ${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
+fi
 
 # Build/Compile
-if ! ${CONFIG_ONLY} ; then
+if ${FLAG_BUILD} ; then
 	CPU_CORES_TO_USE="$(($(nproc --all) -1))"
 	${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS} -- -j ${CPU_CORES_TO_USE}
 fi

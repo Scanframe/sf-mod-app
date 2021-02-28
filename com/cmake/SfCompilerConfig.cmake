@@ -3,7 +3,7 @@
 function(_GetQtLibDir VarOut)
 	if (WIN32)
 		set(_Command "C:\\cygwin64\\bin\\bash.exe")
-		string(REPLACE "\/" "\\" _Script "${SfMacros_DIR}/QtLibDir.sh")
+		string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/QtLibDir.sh")
 	else ()
 		set(_Command "bash")
 		set(_Script "${SfMacros_DIR}/QtLibDir.sh")
@@ -16,6 +16,7 @@ function(_GetQtLibDir VarOut)
 	set(${VarOut} "${_Result}" PARENT_SCOPE)
 endfunction()
 
+#TODO: This QT stuff should probably be in its own cmake package file so it can be omitted in non Qt builds.
 # Set the Qt Library location variable.
 if (NOT DEFINED QT_DIRECTORY)
 	_GetQtLibDir(QT_DIRECTORY)

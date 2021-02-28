@@ -2,6 +2,20 @@
 
 C++ concepts for proofing for me needed concepts using the Qt framework.
 
+## Prerequisites
+
+Before building some packages need to be installed:
+
+* libopengl0 (Linux) 
+* libgl1-mesa-dev (Linux)
+* libxkbcommon-dev (Linux) 
+* libxkbfile-dev (Linux)
+* libvulkan-dev (Linux)
+* doxygen (Linux, Cygwin)
+* graphviz (Linux, Cygwin)
+
+For Cygwin a script `apt-cyg` it there to install packages from the command line. 
+
 ## General Building (Compiling/Linking) 
 
 ### Linux Build
@@ -9,7 +23,7 @@ C++ concepts for proofing for me needed concepts using the Qt framework.
 Use the `build.sh` to call the `cmake` command having the needed options. 
 All projects are configured to drop the result into the **`./bin`** directory.
 
-_usage is `./build.sh <directory>`.<br>
+The usage is `./build.sh <directory>`.<br>
 Where the directory is any with a `CMakelists.txt` project file in it.
 
 #### Windows Build

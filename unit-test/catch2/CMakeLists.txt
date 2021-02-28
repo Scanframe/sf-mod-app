@@ -14,8 +14,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	include(CTest)
 endif()
 
-# Make sure builds do not wind up in the source directory.
+# Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+# Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)

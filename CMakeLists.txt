@@ -12,9 +12,9 @@ project("qt-concepts"
 # So the test targets are listed and can be executed.
 set(BUILD_TESTING ON)
 
+# Make it so our own packages are found.
+list(APPEND CMAKE_PREFIX_PATH "../com/cmake")
 # Make sure builds do not wind up in the source directory.
-list(APPEND CMAKE_PREFIX_PATH "com/cmake")
-
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
