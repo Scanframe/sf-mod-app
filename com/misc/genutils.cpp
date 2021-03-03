@@ -3,6 +3,7 @@
 
 #include <cstdarg>
 #include <ctime>
+#include <climits>
 #include <cxxabi.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -582,74 +583,51 @@ const char* strnstr(const char* s, const char* find, size_t n)
 	return (char*) s;
 }
 
+template <typename T>
+char* int_to_a(T value, char* buffer, int base)
+{
+	const size_t buf_size = sizeof(T) * CHAR_BIT;
+	// Sanity check.
+	if (!value || base < 2 || base > 16)
+	{
+		buffer[0] = '0';
+		buffer[1] = 0;
+		return buffer;
+	}
+	bool neg = false;
+	// In standard ltoa(), negative numbers are handled only with
+	// base 10. Otherwise numbers are considered unsigned.
+	if (value < 0 && base == 10)
+	{
+		neg = true;
+		value *= -1;
+	}
+	// Terminate the buffer.
+	buffer[buf_size + 1] = 0;
+	// Reverse iterate in the character buffer.
+	int i;
+	for (i = buf_size; value && i; --i, value /= base)
+	{
+		buffer[i] = "0123456789abcdef"[value % base];
+	}
+	// When negative in base 10 prepend the negative sign.
+	if (neg)
+	{
+		buffer[i--] = '-';
+	}
+	// Return the pointer of the last written character.
+	return &buffer[i + 1];
+}
+
+char* lltoa(long long value, char* buffer, int base)
+{
+	return int_to_a(value, buffer, base);
+}
+
 char* itoa(int value, char* buffer, int base)
 {
-	// Sanity check.
-	if (!value || base < 2 || base > 16)
-	{
-		buffer[0] = '0';
-		buffer[1] = 0;
-		return buffer;
-	}
-	bool neg = false;
-	// In standard itoa(), negative numbers are handled only with
-	// base 10. Otherwise numbers are considered unsigned.
-	if (value < 0 && base == 10)
-	{
-		neg = true;
-		value *= -1;
-	}
-	// Terminate the buffer.
-	buffer[INTBITS + 1] = 0;
-	// Reverse iterate in the character buffer.
-	int i;
-	for (i = INTBITS; value && i; --i, value /= base)
-	{
-		buffer[i] = "0123456789abcdef"[value % base];
-	}
-	// When negative in base 10 prepend the negative sign.
-	if (neg)
-	{
-		buffer[i--] = '-';
-	}
-	// Return the pointer of the last written character.
-	return &buffer[i + 1];
+	return int_to_a(value, buffer, base);
 }
-
-char* ltoa(long value, char* buffer, int base)
-{
-	// Sanity check.
-	if (!value || base < 2 || base > 16)
-	{
-		buffer[0] = '0';
-		buffer[1] = 0;
-		return buffer;
-	}
-	bool neg = false;
-	// In standard itoa(), negative numbers are handled only with
-	// base 10. Otherwise numbers are considered unsigned.
-	if (value < 0 && base == 10)
-	{
-		neg = true;
-		value *= -1;
-	}
-	// Terminate the buffer.
-	buffer[LONGBITS + 1] = 0;
-	// Reverse iterate in the character buffer.
-	int i;
-	for (i = LONGBITS; value && i; --i, value /= base)
-	{
-		buffer[i] = "0123456789abcdef"[value % base];
-	}
-	// When negative in base 10 prepend the negative sign.
-	if (neg)
-	{
-		buffer[i--] = '-';
-	}
-	// Return the pointer of the last written character.
-	return &buffer[i + 1];
-}
-
 
 int wildcmp(const char* wild, const char* str, bool case_s)
 {
@@ -1058,7 +1036,7 @@ void passwd_t::reset()
 	memset(this, 0, sizeof(passwd_type)); // NOLINT(bugprone-undefined-memory-manipulation)
 }
 
-bool proc_getpwnam(std::string name, passwd_t& pwd)
+bool proc_getpwnam(std::string name, passwd_t& pwd) // NOLINT(performance-unnecessary-value-param)
 {
 	passwd_type* _pwd;
 	//
@@ -1082,7 +1060,7 @@ bool proc_getpwuid(uid_t uid, passwd_t& pwd)
 	passwd_type* _pwd;
 	//
 	int err = ::getpwuid_r(uid, &pwd, pwd.buf, pwd.bufsz, &_pwd);
-	// Incase of an errror or not found reset the content.
+	// In case of an error or not found reset the content.
 	if (err || !_pwd)
 	{
 		pwd.reset();
@@ -1124,8 +1102,8 @@ group_t::~group_t()
 void group_t::reset()
 {
 	valid = false;
-	// Reset the passwd_typ part of this instance.
-	memset(this, 0, sizeof(passwd_type));
+	// Reset the passwd_type part of this instance.
+	memset(reinterpret_cast<passwd_type*>(this), '\0', sizeof(passwd_type));
 }
 
 bool proc_getgrnam(std::string name, group_t& grp)

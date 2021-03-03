@@ -22,27 +22,10 @@ struct
 TEST_CASE("sf::Value", "[main]")
 {
 
-	SECTION("Reference Type")
-	{
-		// Original value.
-		sf::TValue v(123);
-		// Reference value.
-		sf::TValue r(&v);
-		// Reference the original by passing a pointer of an instance to the constructor.
-		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(INTEGER,\"123\")"));
-		// Change original.
-		v.SetType(sf::TValue::vitFLOAT);
-		// Check reference content.
-		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(FLOAT,\"123\")"));
-		// Undo the reference by setting.
-		r.Set(345);
-		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(INTEGER,\"345\")"));
-		// The original has not been changed.
-		REQUIRE_THAT(Helper(v), Catch::Matchers::Equals("(FLOAT,\"123\")"));
-	}
-
 	SECTION("Constructors")
 	{
+		// Floating point without decimals.
+		REQUIRE_THAT(Helper(sf::TValue(12345.0)), Catch::Matchers::Equals("(FLOAT,\"12345\")"));
 		// Default
 		REQUIRE_THAT(Helper(sf::TValue()), Catch::Matchers::Equals("(UNDEF,\"\")"));
 		// Unsigned
@@ -96,6 +79,25 @@ TEST_CASE("sf::Value", "[main]")
 	{
 		REQUIRE_THAT(Helper(sf::TValue(2.468) / sf::TValue(2)), Catch::Matchers::Equals("(FLOAT,\"1.234\")"));
 		REQUIRE_THAT(Helper(sf::TValue(-2.468) / sf::TValue(2)), Catch::Matchers::Equals("(FLOAT,\"-1.234\")"));
+	}
+
+	SECTION("Reference Type")
+	{
+		// Original value.
+		sf::TValue v(123);
+		// Reference value.
+		sf::TValue r(&v);
+		// Reference the original by passing a pointer of an instance to the constructor.
+		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(INTEGER,\"123\")"));
+		// Change original.
+		v.SetType(sf::TValue::vitFLOAT);
+		// Check reference content.
+		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(FLOAT,\"123\")"));
+		// Undo the reference by setting.
+		r.Set(345);
+		REQUIRE_THAT(Helper(r), Catch::Matchers::Equals("(INTEGER,\"345\")"));
+		// The original has not been changed.
+		REQUIRE_THAT(Helper(v), Catch::Matchers::Equals("(FLOAT,\"123\")"));
 	}
 
 }

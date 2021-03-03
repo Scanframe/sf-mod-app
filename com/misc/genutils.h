@@ -15,7 +15,6 @@ make C++ programming easier.
 #include <string>
 #include <iostream>
 #include <memory>
-#include <values.h>
 #if !IS_WIN
 #include <pwd.h>
 #include <grp.h>
@@ -535,7 +534,7 @@ bool TBitSet<Size>::Has(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
-		return (FMask[bit / (sizeof(int) * BITSPERBYTE)] & (1 << (bit % (sizeof(int) * BITSPERBYTE))));
+		return (FMask[bit / (sizeof(int) * CHAR_BIT)] & (1 << (bit % (sizeof(int) * CHAR_BIT))));
 	}
 	return false;
 }
@@ -546,7 +545,7 @@ void TBitSet<Size>::Set(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
-		FMask[bit / (sizeof(int) * BITSPERBYTE)] |= (1 << (bit % (sizeof(int) * BITSPERBYTE)));
+		FMask[bit / (sizeof(int) * CHAR_BIT)] |= (1 << (bit % (sizeof(int) * CHAR_BIT)));
 	}
 }
 
@@ -556,7 +555,7 @@ void TBitSet<Size>::Reset(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
-		FMask[bit / (sizeof(int) * BITSPERBYTE)] &= ~(1 << (bit % (sizeof(int) * BITSPERBYTE)));
+		FMask[bit / (sizeof(int) * CHAR_BIT)] &= ~(1 << (bit % (sizeof(int) * CHAR_BIT)));
 	}
 }
 
@@ -742,10 +741,12 @@ _MISC_FUNC std::string trim(std::string s, const std::string& t = " ");
  * Trims a passed string left and returns it.
  */
 _MISC_FUNC std::string trim_left(std::string s, const std::string& t = " ");
+
 /**
  * Trims a passed string right and returns it.
  */
 _MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
+
 /**
  * Returns the same string but now uses a new buffer making the string thread save.
  */
@@ -760,31 +761,36 @@ _MISC_FUNC std::string unique(const std::string& s);
  * itoa can return up to 33 bytes.
  */
 _MISC_FUNC char* itoa(int value, char* buffer, int base/* = 10*/);
+
 /**
  * Converts an long integer to a buffer.<br>
  * itoa converts value to a null-terminated buffer and stores the result
  * in buffer. With ltoa, value is an long integer<br>
  * <b>Note:</b> The space allocated for buffer must be large enough to hold
  * the returned buffer, including the terminating null character (\0).
- * itoa can return up to 33 bytes.
+ * lltoa can return up to 33 bytes.
  */
-_MISC_FUNC char* ltoa(long value, char* buffer, int base/* = 10*/);
+_MISC_FUNC char* lltoa(long long value, char* buffer, int base/* = 10*/);
+
 /*
  * The strncspn() function calculates the length of the initial segment of 's'
  * which consists entirely of characters not in reject up to a maximum 'n'.
  * When no reject chars were found n is returned.
  */
 _MISC_FUNC size_t strncspn(const char* s, size_t n, const char* reject);
+
 /*
  * The strncspn() function calculates the length of the initial segment of 's'
  * which consists entirely of characters in accept up to a maximum 'n'.
  */
 _MISC_FUNC size_t strnspn(const char* s, size_t n, const char* accept);
+
 /*
  * Find the first occurrence of find in s, where the search is limited to the
  * first slen characters of s.
  */
 _MISC_FUNC const char* strnstr(const char* s, const char* find, size_t n);
+
 /**
  * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
  */
@@ -829,7 +835,6 @@ bool file_mkdir(const std::string& path, __mode_t mode = 0755)
 }
 
 #endif
-
 
 /**
  * Writes a buffer to a file.
@@ -901,7 +906,7 @@ _MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
 #ifndef WIN32
 
 /**
- * Intermediate type to beable to create passwd_t struct/class.
+ * Intermediate type to be able to create passwd_t struct/class.
  */
 typedef struct passwd passwd_type;
 
@@ -1003,15 +1008,15 @@ struct group_t :group_type
 		/**
 		 * Holds the buffer size.
 		 */
-		ssize_t bufsz;
+		ssize_t bufsz{0};
 		/**
 		 * Holds the buffer for the group_type dynamic fields.
 		 */
-		char* buf;
+		char* buf{nullptr};
 		/**
 		 * Flag telling if this instance contains data or not.
 		 */
-		bool valid;
+		bool valid{false};
 
 		friend bool proc_getgrnam(std::string name, group_t& grp);
 

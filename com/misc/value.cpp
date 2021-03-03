@@ -1,10 +1,10 @@
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 #include <cfenv>
 #include <sstream>
 #include <malloc.h>
-#include <values.h>
+#include <cfloat>
+#include <climits>
 #include "dynamicbuffer.h"
 #include "value.h"
 #include "genutils.h"
@@ -54,25 +54,31 @@ TValue::TValue(double v)
 
 TValue::TValue(bool v)
 {
-	long l = v;
-	Set(vitINTEGER, &l);
+	int_type ll = v;
+	Set(vitINTEGER, &ll);
 }
 
 TValue::TValue(int v)
 {
-	long l = v;
-	Set(vitINTEGER, &l);
+	int_type ll = v;
+	Set(vitINTEGER, &ll);
 }
 
 TValue::TValue(unsigned v)
 {
-	long l = v;
-	Set(vitINTEGER, &l);
+	int_type ll = v;
+	Set(vitINTEGER, &ll);
 }
 
-TValue::TValue(long l)
+TValue::TValue(long v)
 {
-	Set(vitINTEGER, &l);
+	int_type ll(v);
+	Set(vitINTEGER, &ll);
+}
+
+TValue::TValue(int_type v)
+{
+	Set(vitINTEGER, &v);
 }
 
 TValue::TValue(const char* s)
@@ -125,7 +131,7 @@ TValue& TValue::Set(int type, const void* content, size_t size)
 			break;
 
 		case vitINTEGER:
-			_size = sizeof(long);
+			_size = sizeof(_data.Int);
 			if (content)
 			{
 				memcpy(&_data.Int, content, _size);
@@ -293,10 +299,10 @@ TValue& TValue::Set(const TValue& v)
 	return *this;
 }
 
-long TValue::GetInteger(int* cnverr) const
+TValue::int_type TValue::GetInteger(int* cnverr) const
 {
 	char* end_ptr = nullptr;
-	long rv = 0;
+	int_type rv = 0;
 	switch (_type)
 	{
 		case vitINTEGER:
@@ -384,8 +390,8 @@ std::string TValue::GetString(int precision) const
 		case vitINTEGER:
 		{
 			// Create buffer on stack.
-			char buf[LONGBITS + 1];
-			return ltoa(_data.Int, buf, 10);
+			char buf[sizeof(_data.Int) + 1];
+			return lltoa(_data.Int, buf, 10);
 		}
 
 		case vitFLOAT:
@@ -398,7 +404,9 @@ std::string TValue::GetString(int precision) const
 			else
 			{
 				char buf[64];
-				return gcvt(_data.Flt, (DBL_MANT_DIG * 5 / 16 - 1), buf);
+				std::string s(gcvt(_data.Flt, (DBL_MANT_DIG * 5 / 16 - 1), buf));
+				// Windows adds a '.' even when not required.
+				return s.erase(s.find_last_not_of('.') + 1);
 			}
 
 		case vitREFERENCE:
@@ -600,7 +608,7 @@ TValue TValue::Div(const TValue& v) const
 
 		case vitINTEGER:
 		{
-			long divider = v.GetInteger();
+			int_type divider = v.GetInteger();
 			// Check if the divider is zero.
 			if (!divider)
 			{
@@ -722,7 +730,7 @@ int TValue::Compare(const TValue& v) const
 	{
 		case vitINTEGER:
 		{
-			long l = v.GetInteger();
+			int_type l = v.GetInteger();
 			int rv = _data.Int != l;
 			rv *= (l > _data.Int) ? -1 : 1;
 			return rv;
@@ -738,7 +746,7 @@ int TValue::Compare(const TValue& v) const
 				try
 				{
 					// The difference must be smaller then 1E10 of the operand.
-					rv = fabs(a / (a - b)) < 1E10;
+					rv = std::fabs(a / (a - b)) < 1E10;
 				}
 				catch (...)
 				{
@@ -805,6 +813,8 @@ TValue& TValue::Round(const TValue& v)
 			case vitREFERENCE:
 				return _data.Ref->Round(v);
 
+			default:
+				break;
 		}// switch
 	}
 	return *this;

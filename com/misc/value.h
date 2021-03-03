@@ -1,7 +1,6 @@
 #pragma once
 
 #include "global.h"
-#include <values.h>
 #include "mcvector.h"
 #if IS_QT
 	#include <QString>
@@ -19,6 +18,15 @@ class _MISC_CLASS TValue;
 class TValue
 {
 	public:
+		/**
+		 * Type used internally for storing integers.
+		 */
+		typedef long long int_type;
+		/**
+		 * Type used internally for storing floating point value.
+		 */
+		typedef double flt_type;
+
 		/**
 		 * Enumerate for types.
 		 */
@@ -117,6 +125,12 @@ class TValue
 		explicit TValue(long v);
 
 		/**
+		 * int_type type constructor for implicit vitINTEGER.
+		 * @param v The int_type  value.
+		 */
+		explicit TValue(int_type v);
+
+		/**
 		 * Binary type constructor for implicit vitBINARY.
 		 * @param v The raw value.
 		 * @param size Size of the raw value.
@@ -182,6 +196,13 @@ class TValue
 		 * @return Itself.
 		 */
 		TValue& Set(long v);
+
+		/**
+		 * Sets the type and content.
+		 * @param v value.
+		 * @return Itself.
+		 */
+		TValue& Set(int_type v);
 
 		/**
 		 * Sets the type and content.
@@ -377,12 +398,12 @@ class TValue
 		 * if the current type is a string the 'cnv_err' is set to
 		 * the error position and is zero on success.
 		 */
-		long GetInteger(int* cnverr) const;
+		int_type GetInteger(int* cnv_err) const;
 
 		/**
 		 * Returns a integer value of the current value if possible.
 		 */
-		[[nodiscard]] long GetInteger() const;
+		[[nodiscard]] int_type GetInteger() const;
 
 		/**
 		 * Returns size of the occupied space.
@@ -502,10 +523,10 @@ class TValue
 		{
 			// Pointer to special, binary or string data.
 			char* Ptr;
-			// Double floating point value.
-			double Flt;
-			// Long integer value.
-			long Int;
+			// Floating point value.
+			flt_type Flt;
+			// Integer value.
+			int_type Int;
 			// Reference pointer to other instance.
 			TValue* Ref;
 		} _data{nullptr};
@@ -565,6 +586,13 @@ TValue& TValue::Set(unsigned v)
 
 inline
 TValue& TValue::Set(long v)
+{
+	int_type ll(v);
+	return Set(vitINTEGER, &ll);
+}
+
+inline
+TValue& TValue::Set(int_type v)
 {
 	return Set(vitINTEGER, &v);
 }
@@ -807,7 +835,7 @@ double TValue::GetFloat() const
 }
 
 inline
-long TValue::GetInteger() const
+TValue::int_type TValue::GetInteger() const
 {
 	return GetInteger(nullptr);
 }
@@ -847,4 +875,4 @@ _MISC_FUNC std::ostream& operator<<(std::ostream& os, const TValue& v);
 
 _MISC_FUNC std::istream& operator>>(std::istream& is, TValue& v);
 
-} // namespace sf
+} // namespace
