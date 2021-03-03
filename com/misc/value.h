@@ -59,12 +59,12 @@ class TValue
 		/**
 		 * Copy constructor
 		 */
-		TValue(const TValue&);
+		TValue(const TValue& v);
 
 		/**
 		 * Reference constructor.
 		 */
-		explicit TValue(TValue*);
+		explicit TValue(TValue* v);
 
 		/**
 		 * Constructs an empty but typed value.
@@ -73,22 +73,22 @@ class TValue
 		explicit TValue(EType type);
 
 		/**
-		 * Double type constructor for implicit vitFLOAT.
+		 * Floating point type constructor for implicit vitFLOAT.
 		 * @param d The floating point value.
 		 */
-		explicit TValue(double d);
+		explicit TValue(flt_type v);
 
 		/**
 		 * Double type constructor for implicit vitSTRING.
 		 * @param s The string value.
 		 */
-		explicit TValue(const char* s);
+		explicit TValue(const char* v);
 
 		/**
 		 * Double type constructor for implicit vitSTRING.
 		 * @param s The std string value.
 		 */
-		explicit TValue(const std::string& s);
+		explicit TValue(const std::string& v);
 
 #if IS_QT
 
@@ -210,7 +210,7 @@ class TValue
 		 * @param v value.
 		 * @return Itself.
 		 */
-		TValue& Set(double v);
+		TValue& Set(flt_type v);
 
 		/**
 		 * Sets the type and content.
@@ -298,12 +298,12 @@ class TValue
 		TValue& Assign(long v);
 
 		/**
-		 * Assigns a double value but not changing the current type.
+		 * Assigns a floating point value but not changing the current type.
 		 * Except for undefined and invalid type.
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		TValue& Assign(double v);
+		TValue& Assign(flt_type v);
 
 		/**
 		 * Assigns a string value but not changing the current type.
@@ -386,12 +386,12 @@ class TValue
 		 * if the current type is a string the 'cnv_err' is set to
 		 * the error position and is zero on success.
 		 */
-		double GetFloat(int* cnv_err) const;
+		flt_type GetFloat(int* cnv_err) const;
 
 		/**
 		 * Returns a floating point value of the current value if possible.
 		 */
-		[[nodiscard]] double GetFloat() const;
+		[[nodiscard]] flt_type GetFloat() const;
 
 		/**
 		 * Returns a integer value of the current value if possible.
@@ -522,23 +522,23 @@ class TValue
 		union
 		{
 			// Pointer to special, binary or string data.
-			char* Ptr;
+			char* _ptr;
 			// Floating point value.
-			flt_type Flt;
+			flt_type _flt;
 			// Integer value.
-			int_type Int;
+			int_type _int;
 			// Reference pointer to other instance.
-			TValue* Ref;
+			TValue* _ref;
 		} _data{nullptr};
 
 		/**
 	  * Holds the invalid string when needed.
 	  */
-		static const char* InvalidStr;
+		static const char* _invalidStr;
 		/**
 		 * Holds all the type name strings from the EType enumerate.
 		 */
-		static const char* TypeNameArray[];
+		static const char* _typeNames[];
 		/**
 		 * Additional size to allocate.
 		 * Minimal is 1 for terminating a string.
@@ -598,7 +598,7 @@ TValue& TValue::Set(int_type v)
 }
 
 inline
-TValue& TValue::Set(double v)
+TValue& TValue::Set(flt_type v)
 {
 	return Set(vitFLOAT, &v);
 }
@@ -656,7 +656,7 @@ TValue& TValue::Assign(const long v)
 }
 
 inline
-TValue& TValue::Assign(const double v)
+TValue& TValue::Assign(const flt_type v)
 {
 	return Assign(TValue(v));
 }
@@ -692,25 +692,25 @@ TValue& TValue::Assign(const void* v, size_t size)
 inline
 TValue::EType TValue::GetType() const
 {
-	return (_type == vitREFERENCE) ? _data.Ref->GetType() : _type;
+	return (_type == vitREFERENCE) ? _data._ref->GetType() : _type;
 }
 
 inline
 bool TValue::IsValid() const
 {
-	return (_type == vitREFERENCE) ? _data.Ref->IsValid() : _type != vitINVALID;
+	return (_type == vitREFERENCE) ? _data._ref->IsValid() : _type != vitINVALID;
 }
 
 inline
 bool TValue::IsNummeric() const
 {
-	return (_type == vitREFERENCE) ? _data.Ref->IsNummeric() : _type == vitINTEGER || _type == vitFLOAT;
+	return (_type == vitREFERENCE) ? _data._ref->IsNummeric() : _type == vitINTEGER || _type == vitFLOAT;
 }
 
 inline
 size_t TValue::GetSize() const
 {
-	return (_type == vitREFERENCE) ? _data.Ref->GetSize() : _size;
+	return (_type == vitREFERENCE) ? _data._ref->GetSize() : _size;
 }
 
 inline
@@ -829,7 +829,7 @@ TValue& TValue::Set(TValue* v)
 }
 
 inline
-double TValue::GetFloat() const
+TValue::flt_type TValue::GetFloat() const
 {
 	return GetFloat(nullptr);
 }

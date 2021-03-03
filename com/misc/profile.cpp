@@ -178,7 +178,7 @@ bool IniProfile::Init(std::istream& is)
 	Dirty = false;
 	// read profile from stream
 	bool retval = Read(is);
-	// check size of profile and set current section Ptr
+	// check size of profile and set current section _ptr
 	SectionListPtr = SectionList.Count() ? 0 : UINT_MAX;
 	return retval;
 }
