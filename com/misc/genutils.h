@@ -3,8 +3,7 @@ General functions, defines, type definitions and templates to
 make C++ programming easier.
 */
 
-#ifndef MISC_GENUTILS_H
-#define MISC_GENUTILS_H
+#pragma once
 
 // Import of shared library export defines.
 #include "global.h"
@@ -16,6 +15,7 @@ make C++ programming easier.
 #include <string>
 #include <iostream>
 #include <memory>
+#include <values.h>
 #if !IS_WIN
 #include <pwd.h>
 #include <grp.h>
@@ -33,7 +33,7 @@ namespace sf
 /**
 * Calculates the offset for a given range and setpoint.
 */
-template <class T, class S>
+template<class T, class S>
 inline
 S calc_offset(T value, T min, T max, S len, bool clip)
 {
@@ -46,7 +46,7 @@ S calc_offset(T value, T min, T max, S len, bool clip)
 /**
 * Return clipped value of v between a and b where a < b.
 */
-template <class T>
+template<class T>
 T clip(const T v, const T a, const T b)
 {
 	return (v < a) ? a : ((v > b) ? b : v);
@@ -58,7 +58,7 @@ T clip(const T v, const T a, const T b)
 * Defines and templates for deleting allocated memory and
 * testing for zero and clearing the pointer at the same time.
 */
-template <class T>
+template<class T>
 inline void delete_null(T& p)
 {
 	if (p)
@@ -69,7 +69,7 @@ inline void delete_null(T& p)
 }
 
 //
-template <class T>
+template<class T>
 inline void delete_anull(T& p)
 {
 	if (p)
@@ -80,7 +80,7 @@ inline void delete_anull(T& p)
 }
 
 //
-template <class T>
+template<class T>
 inline void free_null(T& p)
 {
 	if (p)
@@ -90,7 +90,7 @@ inline void free_null(T& p)
 	}
 }
 
-template <class T>
+template<class T>
 inline void swap_it(T& t1, T& t2)
 {
 	T t(t1);
@@ -98,7 +98,7 @@ inline void swap_it(T& t1, T& t2)
 	t2 = t;
 }
 
-template <class T>
+template<class T>
 class scope_delete
 {
 	public:
@@ -112,7 +112,7 @@ class scope_delete
 		T* P;
 };
 
-template <class T>
+template<class T>
 class scope_free
 {
 	public:
@@ -132,7 +132,7 @@ class scope_free
 * These classes assume that they alone are responsible for deleting the
 * object or array unless Relinquish() is called.
 */
-template <typename T>
+template<typename T>
 class TPointerBase
 {
 	public:
@@ -150,9 +150,9 @@ class TPointerBase
 		}
 
 	protected:
-		explicit TPointerBase(T* pointer) : P(pointer) {}
+		explicit TPointerBase(T* pointer) :P(pointer) {}
 
-		TPointerBase() : P(0) {}
+		TPointerBase() :P(0) {}
 
 		T* P;
 
@@ -167,16 +167,16 @@ class TPointerBase
 /**
 * Pointer to a single object. Provides member access operator ->
 */
-template <typename T>
-class TPointer : public TPointerBase<T>
+template<typename T>
+class TPointer :public TPointerBase<T>
 {
 	private:
 		typedef TPointerBase<T> TBase;
 
 	public:
-		TPointer() : TBase() {}
+		TPointer() :TBase() {}
 
-		explicit TPointer(T* pointer) : TBase(pointer) {}
+		explicit TPointer(T* pointer) :TBase(pointer) {}
 
 		~TPointer() {delete TBase::P;}
 
@@ -195,16 +195,16 @@ class TPointer : public TPointerBase<T>
 * Pointer to an array of type T. Provides an array subscript operator
 * and uses array delete[]
 */
-template <typename T>
-class TAPointer : public TPointerBase<T>
+template<typename T>
+class TAPointer :public TPointerBase<T>
 {
 	private:
 		typedef TPointerBase<T> TBase;
 
 	public:
-		TAPointer() : TBase() {}
+		TAPointer() :TBase() {}
 
-		explicit TAPointer(T array[]) : TBase(array) {}
+		explicit TAPointer(T array[]) :TBase(array) {}
 
 		~TAPointer() {delete[] TBase::P;}
 
@@ -237,17 +237,18 @@ class TAPointer : public TPointerBase<T>
 *  TAEnvelope<T> e2 = e1;           // e2 safely shares the letter with e1
 *</pre>
 */
-template <class T>
+template<class T>
 class TEnvelope
 {
 	public:
-		explicit TEnvelope(T* object) : Letter(new TLetter(object)) {}
+		explicit TEnvelope(T* object) :Letter(new TLetter(object)) {}
 
-		TEnvelope(const TEnvelope& src) : Letter(src.Letter) {Letter->AddRef();}
+		TEnvelope(const TEnvelope& src) :Letter(src.Letter) {Letter->AddRef();}
 
 		~TEnvelope() {Letter->Release();}
 
 		TEnvelope& operator=(const TEnvelope& src);
+
 		TEnvelope& operator=(T* object);
 
 		T* operator->() {return Letter->Object;}
@@ -258,12 +259,12 @@ class TEnvelope
 
 		explicit operator T*() {return Letter->Object;}
 
-		int RefCount() const {return Letter ? Letter->RefCount : 0;}
+		[[nodiscard]] int RefCount() const {return Letter ? Letter->RefCount : 0;}
 
 	private:
 		struct TLetter
 		{
-			explicit TLetter(T* object) : Object(object), RefCount(1) {}
+			explicit TLetter(T* object) :Object(object), RefCount(1) {}
 
 			~TLetter()
 			{
@@ -291,7 +292,7 @@ class TEnvelope
 };
 
 //
-template <class T>
+template<class T>
 TEnvelope<T>& TEnvelope<T>::operator=(const TEnvelope<T>& src)
 {
 	if (this != &src)
@@ -304,7 +305,7 @@ TEnvelope<T>& TEnvelope<T>::operator=(const TEnvelope<T>& src)
 }
 
 //
-template <class T>
+template<class T>
 TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 {
 	Letter->Release();
@@ -315,17 +316,18 @@ TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 /**
 * class TAEnvelope
 */
-template <class T>
+template<class T>
 class TAEnvelope
 {
 	public:
-		explicit TAEnvelope(T array[]) : Letter(new TLetter(array)) {}
+		explicit TAEnvelope(T array[]) :Letter(new TLetter(array)) {}
 
-		TAEnvelope(const TAEnvelope& src) : Letter(src.Letter) {Letter->AddRef();}
+		TAEnvelope(const TAEnvelope& src) :Letter(src.Letter) {Letter->AddRef();}
 
 		~TAEnvelope() {Letter->Release();}
 
 		TAEnvelope& operator=(const TAEnvelope& src);
+
 		TAEnvelope& operator=(T array[]);
 
 		T& operator[](int i) {return Letter->Array[i];}
@@ -335,7 +337,7 @@ class TAEnvelope
 	private:
 		struct TLetter
 		{
-			explicit TLetter(T array[]) : Array(array), RefCount(1) {}
+			explicit TLetter(T array[]) :Array(array), RefCount(1) {}
 
 			~TLetter() {delete[] Array;}
 
@@ -343,8 +345,7 @@ class TAEnvelope
 
 			void Release()
 			{
-				if (--RefCount == 0)
-				{delete this;}
+				if (--RefCount == 0) {delete this;}
 			}
 
 			T* Array;
@@ -355,7 +356,7 @@ class TAEnvelope
 };
 
 //
-template <class T>
+template<class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 {
 	if (this != &src)
@@ -368,7 +369,7 @@ TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 }
 
 //
-template <class T>
+template<class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(T array[])
 {
 	Letter->Release();
@@ -380,23 +381,23 @@ TAEnvelope<T>& TAEnvelope<T>::operator=(T array[])
  * Template class for managing bit maks preferably when bits are
  * defined as enumerate values.
  */
-template <class T>
+template<class T>
 struct TSet
 {
 	/**
 	 * Default constructor.
 	 */
-	TSet() : Bits(0) {}
+	TSet() :Bits(0) {}
 
 	/**
 	 * Init constructor.
 	 */
-	explicit TSet(int bits) : Bits(bits) {}
+	explicit TSet(int bits) :Bits(bits) {}
 
 	/**
 	 * Copy constructor.
 	 */
-	TSet(const TSet& set) : Bits(set.Bits) {}
+	TSet(const TSet& set) :Bits(set.Bits) {}
 
 	/**
 	 * Assign operator.
@@ -478,7 +479,7 @@ struct TSet
 //
 // Template for creating large memory inexpensive bitmasks or bit sets.
 //
-template <size_t Size>
+template<size_t Size>
 class TBitSet
 {
 	public:
@@ -486,22 +487,27 @@ class TBitSet
 		 * Default constructor.
 		 */
 		TBitSet();
+
 		/**
 		 * Tests if a bit has been set.
 		 */
 		bool Has(int bit);
+
 		/**
 		 * Sets a single bit.
 		 */
 		void Set(int bit);
+
 		/**
 		 * Sets a single bit.
 		 */
 		void Reset(int bit);
+
 		/**
 		 * Clears all bits.
 		 */
 		void Clear();
+
 		/**
 		 * Returns true if one of the bits has been set.
 		 */
@@ -512,21 +518,18 @@ class TBitSet
 		 * Holds the actual data.
 		 */
 		int FMask[Size / sizeof(int) + 1]{};
-		//
-		enum {BITSPERBYTE = 8};
 };
 
-//
-template <size_t Size>
+template<size_t Size>
 inline
 TBitSet<Size>::TBitSet()
 	:FMask({0})
 {
+	(void) Size;
 	Clear();
 }
 
-//
-template <size_t Size>
+template<size_t Size>
 inline
 bool TBitSet<Size>::Has(int bit)
 {
@@ -537,8 +540,7 @@ bool TBitSet<Size>::Has(int bit)
 	return false;
 }
 
-//
-template <size_t Size>
+template<size_t Size>
 inline
 void TBitSet<Size>::Set(int bit)
 {
@@ -548,8 +550,7 @@ void TBitSet<Size>::Set(int bit)
 	}
 }
 
-//
-template <size_t Size>
+template<size_t Size>
 inline
 void TBitSet<Size>::Reset(int bit)
 {
@@ -559,18 +560,18 @@ void TBitSet<Size>::Reset(int bit)
 	}
 }
 
-//
-template <size_t Size>
+template<size_t Size>
 inline
 void TBitSet<Size>::Clear()
 {
+	(void) Size;
 	memset(&FMask, 0, sizeof(FMask));
 }
 
-//
-template <size_t Size>
+template<size_t Size>
 bool TBitSet<Size>::IsClear()
 {
+	(void) Size;
 	for (size_t i = 0; i < sizeof(FMask) / sizeof(int); i++)
 	{
 		if (FMask[i])
@@ -582,14 +583,14 @@ bool TBitSet<Size>::IsClear()
 }
 
 /**
-* creates a formatted string and returns it in a string class instance.
-*/
+ * creates a formatted string and returns it in a string class instance.
+ */
 _MISC_FUNC std::string stringf(const char* fmt, ...);
 
 /**
  * Better implementation of 'stringf' ?
  */
-template <typename ... Args>
+template<typename ... Args>
 std::string string_format(const std::string& format, Args ... args)
 {
 	// Extra space for '\0'
@@ -600,18 +601,42 @@ std::string string_format(const std::string& format, Args ... args)
 	return std::string(buf.get(), buf.get() + size - 1);
 }
 
-// converts a integer value to bit string '0' and '1' characters
-// where the first character is the first bit
+/**
+ * converts a integer value to bit string '0' and '1' characters
+ * where the first character is the first bit
+ */
 _MISC_FUNC std::string bittostring(unsigned long wrd, size_t count);
 
-// Returns numeric the value of the passed hexadecimal character
+/**
+ *  Returns numeric the value of the passed hexadecimal character
+ */
 _MISC_FUNC char hexcharvalue(char ch);
 
-// Converts a hexadeciamal string to a block of data
+/**
+ * Converts a hexadecimal string to a block of data
+ */
 _MISC_FUNC size_t stringhex(const char* hexstr, void* buffer, size_t sz);
 
-// Converts a block of data to a hexadecimal string
+/**
+ * Converts a block of data to a hexadecimal string
+ */
 _MISC_FUNC std::string hexstring(const void* buffer, size_t sz);
+
+/**
+ * Escapes all control and non ascii characters.
+ * @see unescape()
+ * @param str String to be escaped.
+ * @param delimiter Character delimiting the escaped string.
+ * @return Escaped string
+ */
+_MISC_FUNC std::string escape(const std::string& str, char delimiter = '\0');
+/**
+ * Unescapes the passed string escaped by the escape() function.
+ * @see escape()
+ * @param str Input string
+ * @return Unescaped string
+ */
+_MISC_FUNC std::string unescape(const std::string& str);
 
 /**
 * Checks if a keyboard key pas pressed.
@@ -626,6 +651,7 @@ _MISC_FUNC pid_t gettid() noexcept;
 * Counted vector of strings.
 */
 typedef mcvector<std::string> strings;
+
 /**
 * Counted vector iterator of strings.
 */
@@ -646,6 +672,7 @@ _MISC_FUNC strings explode(std::string str, std::string separator, bool skip_emp
  */
 // Set byte alignment to 1 byte.
 #pragma pack(push, 1)
+
 typedef union
 {
 	unsigned char data[MD5_DIGEST_LENGTH];
@@ -654,6 +681,7 @@ typedef union
 } md5hash_t;
 // Restore the pack option.
 #pragma pack(pop)
+
 /**
  * Compare operator for storing an MD5 hash.
  */
@@ -678,98 +706,102 @@ _MISC_FUNC std::string md5hexstr(const md5hash_t& hash);
 #endif // WIN32
 
 /**
-* Return a line from the input stream.
-*/
+ * Return a line from the input stream.
+ */
 _MISC_FUNC std::string getline(std::istream& is);
 /**
-* Converts the passed string into a lower case one and returns it.
-*/
+ * Converts the passed string into a lower case one and returns it.
+ */
 _MISC_FUNC std::string getcwdstr();
 /**
-* Returns the timespec as function return value as clock_gettime().
-*/
+ * Returns the timespec as function return value as clock_gettime().
+ */
 _MISC_FUNC timespec gettime();
 /**
-* Returns the unmangled function name returned by type ID.
-*/
+ * Returns the unmangled function name returned by type ID.
+ */
 _MISC_FUNC std::string demangle(const char* name);
 /**
-* Compares the 2 times.
-* Returns -1, 0, 1 respectively for smaller, equal en larger.
-*/
+ * Compares the 2 times.
+ * Returns -1, 0, 1 respectively for smaller, equal en larger.
+ */
 _MISC_FUNC int timespeccmp(const timespec& ts1, const timespec& ts2);
 /**
-* Converts the passed string into a lower case one and returns it.
-*/
+ * Converts the passed string into a lower case one and returns it.
+ */
 _MISC_FUNC std::string tolower(std::string s);
 /**
-* Converts the passed string into a upper case one and returns it.
-*/
+ * Converts the passed string into a upper case one and returns it.
+ */
 _MISC_FUNC std::string toupper(std::string s);
 /**
-* Trims a passed string at both sides and returns it.
-*/
+ * Trims a passed string at both sides and returns it.
+ */
 _MISC_FUNC std::string trim(std::string s, const std::string& t = " ");
 /**
-* Trims a passed string left and returns it.
-*/
+ * Trims a passed string left and returns it.
+ */
 _MISC_FUNC std::string trim_left(std::string s, const std::string& t = " ");
 /**
-* Trims a passed string right and returns it.
-*/
+ * Trims a passed string right and returns it.
+ */
 _MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
 /**
-* Returns the same string but now uses a new buffer making the string thread save.
-*/
+ * Returns the same string but now uses a new buffer making the string thread save.
+ */
 _MISC_FUNC std::string unique(const std::string& s);
-/**
-* Returns the same string but now uses a new buffer making the string thread save.
-
-inline
-string operator + ( const char* cp, const string& s)
-//string operator + (const string& s, const char* cp)
-{
-	return string(cp).append(s);
-}
-*/
 
 /**
-* Converts an integer to a string.
-* itoa converts value to a null-terminated string and stores the result
-* in string. With itoa, value is an integer
-* <b>Note:</b> The space allocated for string must be large enough to hold
-* the returned string, including the terminating null character (\0).
-* itoa can return up to 33 bytes.
-*/
-_MISC_FUNC char* itoa(int value, char* string, int radix/* = 10*/);
+ * Converts an integer to a buffer.<br>
+ * itoa converts value to a null-terminated buffer and stores the result
+ * in buffer. With itoa, value is an integer.<br>
+ * <b>Note:</b> The space allocated for buffer must be large enough to hold
+ * the returned buffer, including the terminating null character (\0).
+ * itoa can return up to 33 bytes.
+ */
+_MISC_FUNC char* itoa(int value, char* buffer, int base/* = 10*/);
+/**
+ * Converts an long integer to a buffer.<br>
+ * itoa converts value to a null-terminated buffer and stores the result
+ * in buffer. With ltoa, value is an long integer<br>
+ * <b>Note:</b> The space allocated for buffer must be large enough to hold
+ * the returned buffer, including the terminating null character (\0).
+ * itoa can return up to 33 bytes.
+ */
+_MISC_FUNC char* ltoa(long value, char* buffer, int base/* = 10*/);
 /*
-* The strncspn() function calculates the length of the initial segment of 's'
-* which consists entirely of characters not in reject up to a maximum 'n'.
-* When no reject chars were found n is returned.
-*/
+ * The strncspn() function calculates the length of the initial segment of 's'
+ * which consists entirely of characters not in reject up to a maximum 'n'.
+ * When no reject chars were found n is returned.
+ */
 _MISC_FUNC size_t strncspn(const char* s, size_t n, const char* reject);
 /*
-* The strncspn() function calculates the length of the initial segment of 's'
-* which consists entirely of characters in accept up to a maximum 'n'.
-*/
-_MISC_FUNC  size_t strnspn(const char* s, size_t n, const char* accept);
+ * The strncspn() function calculates the length of the initial segment of 's'
+ * which consists entirely of characters in accept up to a maximum 'n'.
+ */
+_MISC_FUNC size_t strnspn(const char* s, size_t n, const char* accept);
 /*
  * Find the first occurrence of find in s, where the search is limited to the
  * first slen characters of s.
  */
 _MISC_FUNC const char* strnstr(const char* s, const char* find, size_t n);
 /**
-* Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
-*/
+ * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
+ */
 _MISC_FUNC int wildcmp(const char* wild, const char* str, bool case_s);
 
+/**
+ * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
+ */
 inline
 int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 {
 	return wildcmp(wild.c_str(), str.c_str(), case_s);
 }
 
-// Returns all the files from the passed directory using a wildcard.
+/**
+ * Returns all the files from the passed directory using a wildcard.
+ */
 _MISC_FUNC bool getfiles(strings& files, std::string directory, std::string wildcard);
 
 /**
@@ -832,6 +864,7 @@ _MISC_FUNC bool file_unlink(const std::string& path);
  * Same as rename() but using an std::string.
  */
 _MISC_FUNC bool file_rename(const std::string& oldpath, const std::string& newpath);
+
 /**
  * Easier typename.
  */
@@ -859,73 +892,91 @@ _MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullpt
  * When the format is NULL the XML format is used.
  * When gmtime is true GMT is used otherwise the local time.
  */
-_MISC_FUNC time_t time_str2time(std::string str, const char* format = nullptr, bool gmtime = false);
+_MISC_FUNC time_t time_str2time(const std::string& str, const char* format = nullptr, bool gmtime = false);
 /**
  * Same as mktime() only GMT is the result value not the localtime when gmtime is true.
  */
 _MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
-/**
- * Intermediate type to beable to create passwd_t struct/class.
- */
 
 #ifndef WIN32
 
+/**
+ * Intermediate type to beable to create passwd_t struct/class.
+ */
 typedef struct passwd passwd_type;
 
 /**
  * Extends struct passwd and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct passwd_t : passwd_type
+struct passwd_t :passwd_type
 {
 	public:
-		// Constructor allocating the right amount of memory.
+		/**
+		 * Constructor allocating the right amount of memory.
+		 */
 		passwd_t();
-		// Destructor
+
+		/**
+		 * Destructor
+		 */
 		~passwd_t();
 
 		//
 		explicit operator bool() const {return valid;}
 
 	private:
-		// Clears the passwd_type part only.
+		/*
+		 * Clears the passwd_type part only.
+		 */
 		void reset();
-		// Holds the buffer size.
+
+		/**
+		 * Holds the buffer size.
+		 */
 		ssize_t bufsz;
-		// Holds the buffer for the passwd_type dynamic fields.
+		/**
+		 * Holds the buffer for the passwd_type dynamic fields.
+		 */
 		char* buf;
-		// Flag telling if this instance contains data or not.
+		/**
+		 * Flag telling if this instance contains data or not.
+		 */
 		bool valid;
 
 		friend bool proc_getpwnam(std::string name, passwd_t& pwd);
+
 		friend bool proc_getpwuid(uid_t uid, passwd_t& pwd);
 };
 
 /**
  * Wrapper for getpwnam_r() but simplified using passwd_t.
  * Returns true when an entry was found.
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 bool proc_getpwnam(std::string name, passwd_t& pwd);
+
 /**
  * Wrapper for getpwuid_r() but simplified using passwd_t.
  * Returns true when an entry was found.
  * Incase of an error it throws en exception.
  */
 bool proc_getpwuid(uid_t uid, passwd_t& pwd);
+
 /**
  * Wrapper for setuid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_setuid(uid_t uid);
+
 /**
  * Wrapper for seteuid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_seteuid(uid_t uid);
 
 /**
- * Intermediate type to beable to create group_t struct/class.
+ * Intermediate type to be able to create group_t struct/class.
  */
 typedef struct group group_type;
 
@@ -933,11 +984,12 @@ typedef struct group group_type;
  * Extends struct group and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct group_t : group_type
+struct group_t :group_type
 {
 	public:
 		// Constructor allocating the right amount of memory.
 		group_t();
+
 		// Destructor
 		~group_t();
 
@@ -947,14 +999,22 @@ struct group_t : group_type
 	private:
 		// Clears the passwd_type part only.
 		void reset();
-		// Holds the buffer size.
+
+		/**
+		 * Holds the buffer size.
+		 */
 		ssize_t bufsz;
-		// Holds the buffer for the group_type dynamic fields.
+		/**
+		 * Holds the buffer for the group_type dynamic fields.
+		 */
 		char* buf;
-		// Flag telling if this instance contains data or not.
+		/**
+		 * Flag telling if this instance contains data or not.
+		 */
 		bool valid;
 
 		friend bool proc_getgrnam(std::string name, group_t& grp);
+
 		friend bool proc_getgrgid(gid_t gid, group_t& grp);
 };
 
@@ -964,30 +1024,35 @@ struct group_t : group_type
  * Incase of an error it throws en exception.
  */
 bool proc_getgrnam(std::string name, group_t& grp);
+
 /**
  * Wrapper for getpwuid_r() but simplified using group_t.
  * Returns true when an entry was found.
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 bool proc_getgrgid(gid_t gid, group_t& grp);
+
 /**
  * Wrapper for setgid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_setgid(gid_t gid);
+
 /**
  * Wrapper for setegid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_setegid(gid_t gid);
+
 /**
  * Wrapper for setfsuid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_setfsuid(uid_t uid);
+
 /**
  * Wrapper for setfsgid().
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 void proc_setfsgid(gid_t gid);
 
@@ -995,5 +1060,4 @@ void proc_setfsgid(gid_t gid);
 
 } // namespace sf
 
-#endif // MISC_GENUTILS_H
 

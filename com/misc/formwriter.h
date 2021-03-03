@@ -1,5 +1,4 @@
-#ifndef MISC_FORMWRITER_H
-#define MISC_FORMWRITER_H
+#pragma once
 
 #include <QtDesigner/QFormBuilder>
 
@@ -18,4 +17,3 @@ class _MISC_CLASS FormWriter :public ::QFormBuilder
 
 }
 
-#endif

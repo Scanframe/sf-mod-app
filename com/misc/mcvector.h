@@ -1,5 +1,4 @@
-#ifndef MCVECTOR_H
-#define MCVECTOR_H
+#pragma once
 
 #	include <vector>
 #include <climits>
@@ -7,98 +6,160 @@
 namespace sf
 {
 
+template<class T>
+class mciterator;
+
 /**
- * Counted vector.
- * @tparam T
+ * Counted vector having function names compatible with Borland C++ templates.
+ * @tparam T Type contained by the vector.
  */
-template <class T>
-class mcvector : public std::vector<T>
+template<typename T>
+class mcvector :public std::vector<T>
 {
 	public:
-		// Base type for this template.
-		typedef std::vector<T> base_t;
+		/**
+		 * Base types for this template.
+		 */
+		typedef typename std::vector<T> base_t;
+		typedef typename base_t::size_type size_type;
+		typedef typename base_t::value_type value_type;
+		typedef mciterator<value_type> iter_type;
 
-		// Default constructor.
+		/**
+		 * Value returned by various member functions when they fail.
+		 */
+		static const size_t npos = static_cast<size_type>(-1);
+
+		/**
+		 * Default constructor.
+		 */
 		mcvector() = default;
 
-		// Initializing constructor.
-		template <typename InputIterator>
+		/**
+		 * Initializing constructor using an iterator.
+		 * @tparam InputIterator
+		 * @param first
+		 * @param last
+		 */
+		template<typename InputIterator>
 		mcvector(InputIterator first, InputIterator last)
 			:base_t(first, last) {}
 
-		//
+		/**
+		 * Initializing constructor using list like:<br>
+		 * <code>mcvector vect{1,2,3,4,5,6,7}</code>
+		 * @param list
+		 */
+		mcvector(std::initializer_list<value_type> list)
+			:base_t(list) {}
+
+		/**
+		 * Copy constructor for base type..
+		 * @param sv
+		 */
 		explicit mcvector(const base_t& sv)
-			: base_t(sv) {}
+			:base_t(sv) {}
 
-		// Initializing constructor.
-		explicit mcvector(size_t sz)
-			: base_t(sz) {}
+		/**
+		 * Initializing constructor.
+		 * @param sz Size of the vector.
+		 */
+		explicit mcvector(size_type sz)
+			:base_t(sz) {}
 
-		// Adds item at the end of the vector.
-		bool Add(const T&);
-		// Adds an item at index.
-		bool AddAt(const T&, size_t index);
+		/**
+		 * Adds item at the end of the vector.
+		 */
+		void Add(const T&);
 
-		// Removes specific item from the list by instance.
+		/**
+		 * Adds an item at index position.
+		 * @param t Reference of instance.
+		 * @param index Position where to add/insert.
+		 * @return True on success.
+		 */
+		bool AddAt(const T& t, size_type index);
+
+		/**
+		 * Removes specific item from the list by instance.
+		 * @param t Reference of instance to detach.
+		 * @return True on success.
+		 */
 		bool Detach(const T& t);
-		// Removes specific item from the list by index
-		bool Detach(size_t index);
 
-		// Returns non zero when empty.
-		int IsEmpty() const
+		/**
+		 * Removes specific item from the list by index.
+		 * @param index Index of the item.
+		 * @return True on success.
+		 */
+		bool Detach(size_type index);
+
+		/**
+		 * Returns true when empty false otherwise.
+		 * @return True when empty.
+		 */
+		[[nodiscard]] bool IsEmpty() const
 		{
 			return base_t::empty();
 		}
 
-		// Removes all entries from the vector.
+		/**
+		 * Removes all entries from the vector.
+		 */
 		void Flush()
 		{
 			base_t::erase(base_t::begin(), base_t::end());
 		}
 
-		// Removes specific range of entries from the vector.
-		void Flush(size_t stop, size_t start = 0)
+		/**
+		 * Removes specific range of entries from the vector.
+		 * @param stop
+		 * @param start
+		 */
+		void Flush(size_type stop, size_type start = 0)
 		{
 			base_t::erase(base_t::begin() + start,
 				base_t::end() + ((stop >= base_t::size()) ? (base_t::size() - 1) : stop));
 		}
 
-		// Finds an entry by instance in the vector.
-		// Returns (size_t)-1 when not found.
-		size_t Find(const T&) const;
+		/**
+		 * Finds an entry by instance in the vector.
+		 * Returns (size_type)-1 when not found.
+		 * @return Index of the fount item.
+		 */
+		size_type Find(const T&) const;
 
-		// Returns the amount of entries in the vector.
-		size_t Count() const
+		/**
+		 * Returns the amount of entries in the vector.
+		 * @return Entry count.
+		 */
+		[[nodiscard]] size_type Count() const
 		{
 			return base_t::size();
 		}
 
-		size_t Limit() const
+		/**
+		 * Resizes (adds or truncates) the vector.
+		 * @param sz New size of the vector.
+		 */
+		void Resize(size_type sz)
 		{
-			return base_t::size();
+			base_t::resize(sz);
 		}
 
-		// Resizes (adds or truncates) the vector.
-		void Resize(size_t n)
+		/**
+		 * Reserves space in the vector.
+		 * @param sz Reserved space.
+		 */
+		void Reserve(size_type sz)
 		{
-			base_t::resize(n);
+			base_t::reserve(sz);
 		}
 
-		// Reserves space in the vector.
-		void Reserve(size_t n)
-		{
-			base_t::reserve(n);
-		}
-
-		// Returns the pointer to the allocated array for this vector.
-		const T* Data() const
-		{
-			// Looks strange but is necessary for overloaded operator to be
-			// called on the iterator.
-			return &(*base_t::begin());
-		}
-
-		// Returns the pointer to the allocated array for this vector.
+		/**
+		 * Returns the pointer to the allocated array for this vector.
+		 * @return Typed pointer
+		 */
 		T* Data()
 		{
 			// Looks strange but is necessary for overloaded operator to be
@@ -106,44 +167,114 @@ class mcvector : public std::vector<T>
 			return &(*base_t::begin());
 		}
 
-		/*
-		// Array operators for easy access.
-		T& operator[](size_t i)
+		/**
+		 * Returns the pointer to the allocated array for this vector.
+		 * @return Typed const pointer
+		 */
+		const T* Data() const
+		{
+			// Looks strange but is necessary for overloaded operator to be
+			// called on the iterator.
+			return &(*base_t::begin());
+		}
+
+		/**
+		 * Gets entry from index position.
+		 * @param i  Index position
+		 * @return Instance at position.
+		 */
+		T& Get(size_type i)
 		{
 			return base_t::at(i);
 		}
 
-		const T& operator[](size_t i) const
-		{
-			return base_t::at(i);
-		}
-		*/
-
-		// Read function when the vector is passed as a pointer.
-		T& Get(size_t i)
-		{
-			return base_t::at(i);
-		}
-
-		const T& Get(size_t i) const
+		/**
+		 * Const version of getting entry from index position.
+		 * @param i  Index position
+		 * @return Instance at position.
+		 */
+		const T& Get(size_type i) const
 		{
 			return base_t::at(i);
 		}
 
-		// Returns the base type.
+		/**
+		 * Returns the base type.
+		 * @return
+		 */
 		base_t GetBase()
 		{
 			return this;
 		}
 
-		// Returns the constant base type.
+		/**
+		 * Returns the constant const base type.
+		 * @return Base type
+		 */
 		base_t GetBase() const
 		{
 			return this;
 		}
+
+		/*
+		 * Array operator needs reimplementation using std::vector::at() which does a range check
+		 * in contrast to the std::vector::operator[] functions.
+		 */
+		#pragma clang diagnostic push
+		#pragma ide diagnostic ignored "HidingNonVirtualFunction"
+
+		/**
+		 * Array operator
+		 * @param i Index position
+		 * @return Template type
+		 */
+		T& operator[](size_type i)
+		{
+			return base_t::at(i);
+		}
+
+		/**
+		 * Const array operator.
+		 * @param i Index position
+		 * @return Template type
+		 */
+		const T& operator[](size_type i) const
+		{
+			return base_t::at(i);
+		}
+
+		#pragma clang diagnostic pop
+
 };
 
-template <class T>
+/**
+ *
+ * @tparam T
+ * @param os Output stream
+ * @param v Value of the entry.
+ * @return
+ */
+template<typename T>
+std::ostream& operator<<(std::ostream& os, mcvector<T> const& v)
+{
+	os << "{";
+	for (const auto& x: v)
+	{
+		os << x;
+		// Check if this is the last entry in the list using pointer comparison instead of value.
+		if (&(*(v.end() - 1)) != &x)
+		{
+			os << ", ";
+		}
+	}
+	return os << "}";
+}
+
+/**
+ * Counted vector having function names compatible with Borland C++ templates.
+ * @tparam T Type contained by the mcvector.
+ */
+template<typename T>
 class mciterator
 {
 	public:
@@ -151,75 +282,76 @@ class mciterator
 
 		explicit mciterator(const base_t& v)
 		{
-			Vect = const_cast<base_t*>(&v);
+			_vector = const_cast<base_t*>(&v);
 			Restart(0, v.size());
 		}
 
 		mciterator(const base_t& v, unsigned start, unsigned stop)
 		{
-			Vect = &v;
+			_vector = &v;
 			Restart(start, stop);
 		}
 
 		operator int() const // NOLINT(google-explicit-constructor)
 		{
-			return Cur < Upper;
+			return _cur < _upper;
 		}
 
 		const T& Current() const
 		{
-			return (*Vect)[Cur];
+			return (*_vector)[_cur];
 		}
 
 		T& Current()
 		{
-			return (*Vect)[Cur];
+			return (*_vector)[_cur];
 		}
 
 		const T& operator++(int) // NOLINT(cert-dcl21-cpp)
 		{
 			const T& temp = Current();
-			Cur++;
+			_cur++;
 			return temp;
 		}
 
 		const T& operator++()
 		{
-			Cur++;
+			_cur++;
 			return Current();
 		}
 
 		void Restart()
 		{
-			Restart(Lower, Upper);
+			Restart(_lower, _upper);
 		}
 
 		void Restart(unsigned start, unsigned stop)
 		{
-			Cur = Lower = start;
-			Upper = stop;
+			_cur = _lower = start;
+			_upper = stop;
 		}
 
 	private:
-		base_t* Vect;
-		unsigned Cur{};
-		unsigned Lower{}, Upper{};
+		base_t* _vector;
+		unsigned _cur{};
+		unsigned _lower{};
+		unsigned _upper{};
 };
 
-template <class T>
-bool mcvector<T>::Add(const T& t)
+template<typename T>
+void mcvector<T>::Add(const T& t)
 {
 	// Insert item at the end.
 	base_t::insert(base_t::end(), t);
-	return true;
 }
 
-template <class T>
-bool mcvector<T>::AddAt(const T& t, size_t index)
+template<typename T>
+bool mcvector<T>::AddAt(const T& t, size_type index)
 {
+	// Check if index is in range.
 	if (index > base_t::size())
 	{
-		return true;
+		return false;
 	}
 	if (index == base_t::size())
 	{
@@ -232,9 +364,10 @@ bool mcvector<T>::AddAt(const T& t, size_t index)
 	return true;
 }
 
-template <class T>
-bool mcvector<T>::Detach(size_t index)
+template<typename T>
+bool mcvector<T>::Detach(size_type index)
 {
+	// Check if index is in range.
 	if (index >= base_t::size())
 	{
 		return false;
@@ -243,7 +376,7 @@ bool mcvector<T>::Detach(size_t index)
 	return true;
 }
 
-template <class T>
+template<typename T>
 bool mcvector<T>::Detach(const T& t)
 {
 	for (unsigned i = 0; i < base_t::size(); i++)
@@ -257,19 +390,17 @@ bool mcvector<T>::Detach(const T& t)
 	return false;
 }
 
-template <class T>
-size_t mcvector<T>::Find(const T& t) const
+template<typename T>
+typename mcvector<T>::size_type mcvector<T>::Find(const T& t) const
 {
-	for (size_t i = 0; i < base_t::size(); i++)
+	for (size_type i = 0; i < base_t::size(); i++)
 	{
 		if (base_t::at(i) == t)
 		{
 			return i;
 		}
 	}
-	return (size_t) -1;
+	return npos;
 }
 
-} // namespace sf
-
-#endif // MCVECTOR_H_
+} // namespace

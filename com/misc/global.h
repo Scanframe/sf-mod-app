@@ -13,8 +13,7 @@ Add compiler definition flags:
 	* _MISC_ARC when including in a compile or using it as an archive.
 */
 
-#ifndef MISC_GLOBAL_H
-#define MISC_GLOBAL_H
+#pragma once
 
 // Import of defines for this target.
 #include "target.h"
@@ -35,5 +34,3 @@ Add compiler definition flags:
 	#define _MISC_FUNC TARGET_IMPORT
 	#define _MISC_CLASS TARGET_IMPORT
 #endif
-
-#endif // MISC_GLOBAL_H

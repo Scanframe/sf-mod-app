@@ -1,5 +1,4 @@
-#ifndef MISC_FIFOCLASS_H
-#define MISC_FIFOCLASS_H
+#pragma once
 
 #include <cstring>
 
@@ -293,6 +292,4 @@ const T& TFifoClass<T>::operator[](int pos) const
 	return Buffer[(pos + Head) % BufSize];
 }
 
-} // namespace sf
-
-#endif // MISC_FIFOCLASS_H
+} // namespace

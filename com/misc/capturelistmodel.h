@@ -1,5 +1,4 @@
-#ifndef MISC_CAPTURELISTMODEL_H
-#define MISC_CAPTURELISTMODEL_H
+#pragma once
 
 #include <QAbstractListModel>
 #include <QMenu>
@@ -74,6 +73,4 @@ class _MISC_CLASS CaptureListModel :public QAbstractListModel
 		void contextMenuRequested(QPoint);
 };
 
-} // namespace sf
-
-#endif
+} // namespace

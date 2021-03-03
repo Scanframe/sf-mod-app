@@ -1,5 +1,4 @@
-#ifndef MISC_OBJECTEXTENSION_H
-#define MISC_OBJECTEXTENSION_H
+#pragma once
 
 #include <QObject>
 #include <QtDesigner/QAbstractFormBuilder>
@@ -41,5 +40,3 @@ ObjectExtension::ObjectExtension(QObject* object)
 	:_object(*object) {}
 
 } // namespace
-
-#endif

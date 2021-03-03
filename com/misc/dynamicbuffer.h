@@ -4,8 +4,7 @@ dynamic buffering class.
  Implements template TDynamicBuffer and TDynamicArray
 */
 
-#ifndef MISC_DYNAMICBUFFFER_H
-#define MISC_DYNAMICBUFFFER_H
+#pragma once
 
 #include <malloc.h>
 
@@ -92,7 +91,7 @@ class TDynamicBuffer
 		/**
 		 * Returns the current offset.
 		 */
-		size_t offset() const;
+		[[nodiscard]] size_t offset() const;
 		/**
 		 * Returns the byte size of the buffer.
 		 */
@@ -100,19 +99,28 @@ class TDynamicBuffer
 		/**
 		 * Returns the byte size of the buffer.
 		 */
-		size_t size() const;
+		[[nodiscard]] size_t size() const;
 		/**
 		 * Returns the reserved size of this instance.
 		 */
-		size_t reserved() const;
+		[[nodiscard]] size_t reserved() const;
 		/**
 		 * Returns a pointer to the start of the buffer.
 		 */
 		void* data();
+
+		template<typename T>
+		T* ptr(size_t offset = 0)
+		{
+			// Compensate for the offset.
+			offset += _reference->_offset;
+			return (T*)((char*) _reference->_data + offset);
+		}
+
 		/**
 		 * Returns a const pointer to the start of the buffer.
 		 */
-		const void* data() const;
+		[[nodiscard]] const void* data() const;
 		/**
 		 * Returns a character pointer to the start of the buffer.
 		 */
@@ -120,7 +128,7 @@ class TDynamicBuffer
 		/**
 		 * Returns a const character pointer to the start of the buffer.
 		 */
-		const char* c_str() const;
+		[[nodiscard]] const char* c_str() const;
 		/**
 		 * Grows the array to the specified size but keeps the current data intact.
 		 */
@@ -141,7 +149,7 @@ class TDynamicBuffer
 		/**
 		 * Returns a const void pointer with a byte offset from the start.
 		 */
-		const void* data(size_t offset) const;
+		[[nodiscard]] const void* data(size_t offset) const;
 		/**
 		 * Cast operator to pointer.
 		 */
@@ -216,7 +224,7 @@ class TDynamicArray
 		/**
 		 * Returns the size of the array.
 		 */
-		size_t count() const
+		[[nodiscard]] size_t count() const
 		{
 			return buffer.size() / sizeof(T);
 		}
@@ -606,6 +614,4 @@ size_t TDynamicBuffer<Alloc>::reserved() const
  */
 typedef TDynamicBuffer<Allocator> DynamicBuffer;
 
-} // namespace sf
-
-#endif // MISC_DYNAMICBUFFFER_H
+} // namespace

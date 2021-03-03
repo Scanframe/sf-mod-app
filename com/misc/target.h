@@ -10,8 +10,7 @@ Defines these defines with true (1) or false (0):
  * IS_SL_TARGET > A static library is the current target.
 */
 
-#ifndef MISC_TARGET_H
-#define MISC_TARGET_H
+#pragma once
 
 // Detect _usage of the GCC GNU compiler.
 #if defined(__GNUC__)
@@ -82,5 +81,3 @@ Defines these defines with true (1) or false (0):
 		#pragma message ("Target: Static Library")
 	#endif
 #endif // REPORT_TARGET
-
-#endif // MISC_TARGET_H

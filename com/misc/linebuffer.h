@@ -1,6 +1,4 @@
-
-#ifndef MISC_LINEBUFFER_H
-#define MISC_LINEBUFFER_H
+#pragma once
 
 #include <iostream>
 #include "fifoclass.h"
@@ -27,15 +25,15 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 		/**
 		 * Returns requested line in the buffer.
 		 */
-		std::string getLine(unsigned line) const;
+		[[nodiscard]] std::string getLine(unsigned line) const;
 		/**
 		 * Returns the amount of lines in the buffer.
 		 */
-		int lineCount() const;
+		[[nodiscard]] int lineCount() const;
 		/**
 		 * Returns the total lines passed through the fifo buffer.
 		 */
-		int totalLineCount() const {return _totalLineCount;}
+		[[nodiscard]] int totalLineCount() const {return _totalLineCount;}
 		/**
 		 * Clears the current line buffer.
 		 */
@@ -71,6 +69,5 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 		event_t _onOnNewLine;
 };
 
-} // namespace sf
+} // namespace
 
-#endif // MISC_LINEBUFFER_H

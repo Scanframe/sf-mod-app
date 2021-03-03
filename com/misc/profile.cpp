@@ -37,7 +37,7 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 	const std::string::size_type increment = 256;
 	char buffer[increment + 10];
 	// Initialize the read counter.
-//	size_t rc = 0;
+//	std::string::size_type rc = 0;
 	s.clear();
 	// skip first character if this is a delimiter
 	if (is.peek() == delim)
@@ -60,20 +60,20 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 }
 
 //
-// TIniProfile Members
+// IniProfile Members
 //
 
-void TIniProfile::Initialize()
+void IniProfile::Initialize()
 {
-	SectionListPtr = UINT_MAX;
+	SectionListPtr = EntryListType::npos;
 }
 
-TIniProfile::TIniProfile(bool skip_init)
-	: SectionList(0)
-	, Dirty(false)
-	, FlagClearOnRead(true)
-	,SectionListPtr(UINT_MAX)
-	,WriteOnDirty(true)
+IniProfile::IniProfile(bool skip_init)
+	:SectionList(0)
+	 , Dirty(false)
+	 , FlagClearOnRead(true)
+	 , SectionListPtr(UINT_MAX)
+	 , WriteOnDirty(true)
 {
 	Initialize();
 	if (!skip_init)
@@ -82,75 +82,74 @@ TIniProfile::TIniProfile(bool skip_init)
 	}
 }
 
-TIniProfile::TIniProfile()
-	: SectionList(0)
-	, Dirty(false)
-	, FlagClearOnRead(true)
-	, WriteOnDirty(true)
-	, SectionListPtr(UINT_MAX)
+IniProfile::IniProfile()
+	:SectionList(0)
+	 , Dirty(false)
+	 , FlagClearOnRead(true)
+	 , WriteOnDirty(true)
+	 , SectionListPtr(UINT_MAX)
 {
 	Initialize();
 	Init(nullptr);
 }
 
-TIniProfile::TIniProfile(const char* path)
-	: SectionList(0)
-	, Dirty(false)
-	, FlagClearOnRead(true)
-	, WriteOnDirty(true)
-	, SectionListPtr(UINT_MAX)
+IniProfile::IniProfile(const char* path)
+	:SectionList(0)
+	 , Dirty(false)
+	 , FlagClearOnRead(true)
+	 , WriteOnDirty(true)
+	 , SectionListPtr(UINT_MAX)
 {
 	Initialize();
 	Init(path);
 }
 
-TIniProfile::TIniProfile(const char* section, const char* path)
-	: SectionList(0)
-	, Dirty(false)
-	, FlagClearOnRead(true)
-	, WriteOnDirty(true)
-	, SectionListPtr(UINT_MAX)
+IniProfile::IniProfile(const char* section, const char* path)
+	:SectionList(0)
+	 , Dirty(false)
+	 , FlagClearOnRead(true)
+	 , WriteOnDirty(true)
+	 , SectionListPtr(UINT_MAX)
 {
 	Initialize();
 	Init(path);
 	SetSection(section);
 }
 
-TIniProfile::TIniProfile(std::istream& is)
-	: SectionList(0)
-	, Dirty(false)
-	, FlagClearOnRead(true)
-	, WriteOnDirty(true)
-	, SectionListPtr(UINT_MAX)
+IniProfile::IniProfile(std::istream& is)
+	:SectionList(0)
+	 , Dirty(false)
+	 , FlagClearOnRead(true)
+	 , WriteOnDirty(true)
+	 , SectionListPtr(UINT_MAX)
 {
 	Initialize();
 	Init(is);
 }
 
-TIniProfile::~TIniProfile()
+IniProfile::~IniProfile()
 {
 	// Before destruction write all changes to file, if there is a change and it is allowed.
 	if (WriteOnDirty)
 	{
 		Write();
 	}
-	// clear all entries.
+	// Clear all entries.
 	Flush();
 }
 
-void TIniProfile::Flush()
+void IniProfile::Flush()
 {
-	TSectionListIterator i(SectionList);
 	// Delete all section instances.
-	while (i)
+	for (auto i: SectionList)
 	{
-		delete (i++);
+		delete i;
 	}
 	// Flush the pointers in the list.
 	SectionList.Flush();
 }
 
-bool TIniProfile::Init(const char* path)
+bool IniProfile::Init(const char* path)
 {  // create path to profile file
 	// if path = NULL the startup directory is selected with default name
 	if (path)
@@ -162,18 +161,18 @@ bool TIniProfile::Init(const char* path)
 		Path += "default.cfg";
 	}
 	//
-	bool retval = true;
+	bool rv = true;
 	// create 'std::istream' using Path member variable
 	if (Path.length())
 	{
 		std::istream* is = new std::ifstream(Path.c_str(), std::ios::in/*, filebuf::openprot*/);
-		retval = Init(*is);
+		rv = Init(*is);
 		delete_null(is);
 	}
-	return retval;
+	return rv;
 }
 
-bool TIniProfile::Init(std::istream& is)
+bool IniProfile::Init(std::istream& is)
 {
 	// set dirty flag to false
 	Dirty = false;
@@ -184,16 +183,16 @@ bool TIniProfile::Init(std::istream& is)
 	return retval;
 }
 
-void TIniProfile::SetKeyPrefix(const char* prefix)
+void IniProfile::SetKeyPrefix(const char* prefix)
 {
 	Prefix = prefix ? prefix : "";
 }
 
-bool TIniProfile::Read(std::istream& is)
+bool IniProfile::Read(std::istream& is)
 {
 	while (is.good())
 	{  // create empty section
-		auto section = new TSection;
+		auto section = new Section;
 		// read the next section
 		if (section->Read(is))
 		{
@@ -210,22 +209,19 @@ bool TIniProfile::Read(std::istream& is)
 	return (is.good() || is.eof());
 }
 
-std::ostream& TIniProfile::Write(std::ostream& os) const
+std::ostream& IniProfile::Write(std::ostream& os) const
 {
 	if (os.good())
-	{ //write all sections to the stream
-		TSectionListIterator i(SectionList);
-		while (i)
+	{
+		for (const auto& i: SectionList)
 		{
-			// write section to stream and add a empty line at the end
-			i.Current()->Write(os) << '\n';
-			i++;
+			i->Write(os) << '\n';
 		}
 	}
 	return os;
 }
 
-bool TIniProfile::Write()
+bool IniProfile::Write()
 {
 	// check dirty flag and Path member
 	if (Dirty && Path.length())
@@ -243,92 +239,94 @@ bool TIniProfile::Write()
 	return !Dirty;
 }
 
-const char* TIniProfile::GetSection(unsigned p) const
+const char* IniProfile::GetSection(IniProfile::size_type p) const
 {
 	// return NULL if there are no section loaded at all
 	if (SectionList.Count())
 	{ // check if 'p' has a valid value
-		if (p < SectionList.Count() || p == UINT_MAX)
+		if (p < SectionList.Count() || p == npos)
 		{
-			// if p==UINT_MAX get current section
-			return SectionList[(p == UINT_MAX) ? SectionListPtr : p]->Name.c_str();
+			return SectionList[(p == npos) ? SectionListPtr : p]->Name.c_str();
 		}
 	}
 	return nullptr;
 }
 
-bool TIniProfile::SetSection(unsigned p)
+bool IniProfile::SetSection(IniProfile::size_type p)
 {
-	// return NULL if there are no section loaded at all
+	// Return NULL if there are no section loaded at all
 	if (SectionList.Count())
-	{ // check if 'p' has a valid value
+	{
+		// Check if 'p' has a valid value
 		if (p < SectionList.Count())
 		{
 			SectionListPtr = p;
 			return true;
 		}
 	}
-	// on an invalid value keep current SectionListPtr
+	// On an invalid value keep current SectionListPtr
 	return false;
 }
 
-bool TIniProfile::SetSection(const char* section, bool create)
+bool IniProfile::SetSection(const char* section, bool create)
 {
-	// locate section
+	// Locate section
 	SectionListPtr = FindSection(section);
-	// if found return true
+	// If found return true
 	if (SectionListPtr != UINT_MAX)
 	{
 		return true;
 	}
-	// check if section must and can be created
+	// Check if section must and can be created
 	if (create && section)
-	{ // create empty section
-		auto s = new TSection();
-		// assign name to it
+	{
+		// Create empty section
+		auto s = new Section();
+		// Assign name to it
 		s->Name = section;
-		// add section to the list
+		// Add section to the list
 		SectionList.Add(s);
-		// make this section the current one
+		// Make this section the current one
 		SectionListPtr = SectionList.Count() - 1;
-		// set dirty flag
+		// Set dirty flag
 		Dirty = true;
-		// tells that section dit not exist at the start of this function
+		// Tells that section dit not exist at the start of this function
 		return false;
 	}
-	// if section not found make first section the current one
+	// If section not found make first section the current one
 	SectionListPtr = 0;
 	// tells that section dit not exist at the start of this function
 	return false;
 }
 
-unsigned TIniProfile::FindEntry(const char* key)
+IniProfile::size_type  IniProfile::FindEntry(const char* key)
 {
-	unsigned retval = SectionList.Count() ? SectionList[SectionListPtr]->FindEntry(key) : UINT_MAX;
-	if (retval == UINT_MAX)
+	auto rv = SectionList.Count() ? SectionList[SectionListPtr]->FindEntry(key) : IniProfile::npos;
+	if (rv == IniProfile::npos)
 	{
 		if (SectionList.Count() && key)
 		{
-			std::clog << "TIniProfile: Key '" << key << "' Not Found In Section '"
-								<< SectionList[SectionListPtr]->Name << "' In File '" << Path << std::endl;
+			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '"
+				<< SectionList[SectionListPtr]->Name << "' In File '" << Path << std::endl;
 		}
 	}
-	return retval;
+	return rv;
 }
 
-bool TIniProfile::GetString(const char* key, char buff[], unsigned buffSize, const char* defaultString) const
+bool IniProfile::GetString(const char* key, char buff[], size_t buffSize, const char* defaultString) const
 {
-	unsigned p = SectionList[SectionListPtr]->FindEntry(key);
-	if (p == UINT_MAX)
-	{ // if not found, copy default string into buffer and return false
-		// check for valid buffer
+	IniProfile::size_type p = SectionList[SectionListPtr]->FindEntry(key);
+	if (p == IniProfile::npos)
+	{
+		// If not found, copy default string into buffer and return false.
+		// Check for valid buffer.
 		if (buff)
 		{
 			strncpy(buff, defaultString ? defaultString : "", buffSize);
 		}
 		return false;
 	}
-	// check for valid buffer
+	// Check for valid buffer.
 	if (buff)
 	{
 		strncpy(buff, SectionList[SectionListPtr]->EntryList[p]->GetValue(), buffSize);
@@ -336,28 +334,31 @@ bool TIniProfile::GetString(const char* key, char buff[], unsigned buffSize, con
 	return true;
 }
 
-bool TIniProfile::GetString(const char* key, std::string& value, const char* defaultString) const
+bool IniProfile::GetString(const char* key, std::string& value, const char* defaultString) const
 {
-	unsigned p = SectionList[SectionListPtr]->FindEntry(key);
-	if (p == UINT_MAX)
-	{ // if not found, copy default std::string into the std::string and return false
-		// check for valid buffer
+	auto p = SectionList[SectionListPtr]->FindEntry(key);
+	if (p == SectionListType::npos)
+	{
+		// if not found, copy default std::string into the std::string and return false
+		// Check for valid buffer
 		value = defaultString ? defaultString : "";
+		// Signal failure.
 		return false;
 	}
-	// check for valid buffer
+	// Check for valid buffer
 	value = SectionList[SectionListPtr]->EntryList[p]->GetValue();
+	// Signal success.
 	return true;
 }
 
-std::string TIniProfile::GetString(const char* key, const char* defaultString) const
+std::string IniProfile::GetString(const char* key, const char* defaultString) const
 {
 	std::string value;
 	GetString(key, value, defaultString);
 	return value;
 }
 
-int TIniProfile::GetInt(const char* key, int defaultInt) const
+int IniProfile::GetInt(const char* key, int defaultInt) const
 {
 	const char* value = nullptr;
 	// check section entries
@@ -370,7 +371,7 @@ int TIniProfile::GetInt(const char* key, int defaultInt) const
 	return value ? atoi(value) : defaultInt; // NOLINT(cert-err34-c)
 }
 
-bool TIniProfile::SetString(const char* key, const char* value)
+bool IniProfile::SetString(const char* key, const char* value)
 {  // check section entry count
 	if (SectionList.Count())
 	{  // set dirty flag so the write function really writes to file
@@ -381,20 +382,23 @@ bool TIniProfile::SetString(const char* key, const char* value)
 	return false;
 }
 
-bool TIniProfile::SetInt(const char* key, int value)
-{ // use SetString function to do this
+bool IniProfile::SetInt(const char* key, int value)
+{
+	// Use SetString function to do this
 	char buf[33];
 	return SetString(key, itoa(value, buf, 10));
 }
 
-TIniProfile::TEntry* TIniProfile::GetEntry(unsigned p)
-{ // check for sections
+IniProfile::Entry* IniProfile::GetEntry(IniProfile::size_type p)
+{
+	// Check for sections
 	if (SectionList.Count())
-	{ // get section pointer
-		TSection* section = SectionList[SectionListPtr];
-		// check for valid index
+	{
+		// Get section pointer
+		Section* section = SectionList[SectionListPtr];
+		// Check for valid index
 		if (p < section->EntryList.Count())
-		{ // return entry pointer
+		{ // Return entry pointer
 			return section->EntryList[p];
 		}
 	}
@@ -402,12 +406,12 @@ TIniProfile::TEntry* TIniProfile::GetEntry(unsigned p)
 	return nullptr;
 }
 
-bool TIniProfile::InsertComment(const char* key, const char* comment)
+bool IniProfile::InsertComment(const char* key, const char* comment)
 {
 	// Check section entry count.
 	if (SectionList.Count())
 	{
-		// set dirty flag so the write function really writes to file.
+		// Set dirty flag so the write function really writes to file.
 		Dirty = true;
 		// Look key up in current section and set the entry.
 		return SectionList[SectionListPtr]->InsertComment(key, comment);
@@ -415,27 +419,29 @@ bool TIniProfile::InsertComment(const char* key, const char* comment)
 	return false;
 }
 
-unsigned TIniProfile::FindSection(const char* section)
+IniProfile::size_type IniProfile::FindSection(const char* section)
 {
 	if (!section)
 	{
 		return SectionListPtr;
 	}
-	// loop through section list
-	for (unsigned i = 0; i < SectionList.Count(); i++)
-	{  // section name is case insensitive compared
+	// Loop through section list
+	for (IniProfile::size_type i = 0; i < SectionList.Count(); i++)
+	{
+		// Section name is case insensitive compared
 		if (!::strcmp(SectionList[i]->Name.c_str(), section))
-		{ // return position
+		{
+			// Return position
 			return i;
 		}
 	}
-	// return UINT_MAX on not found
-	return UINT_MAX;
+	// Return UINT_MAX on not found
+	return IniProfile::npos;
 }
 
-bool TIniProfile::RemoveSection(unsigned p)
+bool IniProfile::RemoveSection(IniProfile::size_type p)
 { // check for valid parameters
-	if (p != UINT_MAX && p < SectionList.Count())
+	if (p != IniProfile::npos && p < SectionList.Count())
 	{ // delete instance
 		delete_null(SectionList[p]);
 		// remove from list
@@ -458,23 +464,24 @@ bool TIniProfile::RemoveSection(unsigned p)
 }
 
 //=============================================================================
-// TSection Members
+// Section Members
 //=============================================================================
 //
-TIniProfile::TSection::~TSection()
+IniProfile::Section::~Section()
 {
-	TEntryListIterator i(EntryList);
+	EntryListType::iter_type i(EntryList);
 	while (i)
 	{
 		delete (i++);
 	}
 }
 
-bool TIniProfile::TSection::Read(std::istream& is)
+bool IniProfile::Section::Read(std::istream& is)
 {
 	// check stream for errors
 	if (is.good())
-	{  // find section begin, is the first '[' character on a line
+	{
+		// find section begin, is the first '[' character on a line
 		while (is.good() && is.get() != '[')
 		{
 			is.ignore(INT_MAX, '\n');
@@ -487,8 +494,9 @@ bool TIniProfile::TSection::Read(std::istream& is)
 			skip_to_nextline(is);
 			// check for section start character
 			while (is.good() && is.peek() != '[')
-			{  // create empty entry
-				auto entry = new TEntry();
+			{
+				// create empty entry
+				auto entry = new Entry();
 				// read entry from if stream has no errors and entry
 				if (entry->Read(is) && entry->IsValid())
 				{
@@ -501,21 +509,22 @@ bool TIniProfile::TSection::Read(std::istream& is)
 				// skip empty lines
 				skip_empty_lines(is);
 			}
-			// read of TSection suceeded
+			// read of Section suceeded
 			return true;
 		}
 	}
-	// error reading TSection
+	// error reading Section
 	return false;
 }
 
-std::ostream& TIniProfile::TSection::Write(std::ostream& os) // NOLINT(readability-make-member-function-const)
+std::ostream& IniProfile::Section::Write(std::ostream& os) // NOLINT(readability-make-member-function-const)
 {
-	// check stream for errors
+	// Check stream for errors
 	if (os.good())
-	{ // write section head
+	{
+		// Write section head
 		os << '[' << Name << ']' << '\n';
-		TEntryListIterator i(EntryList);
+		EntryListType::iter_type i(EntryList);
 		// write all entries to the stream
 		while (i)
 		{
@@ -525,60 +534,72 @@ std::ostream& TIniProfile::TSection::Write(std::ostream& os) // NOLINT(readabili
 	return os;
 }
 
-const char* TIniProfile::TSection::GetEntry(const char* key, const char* defValue)
+const char* IniProfile::Section::GetEntry(const char* key, const char* defValue)
 {
-	unsigned p = FindEntry(key);
-	return (p == UINT_MAX) ? defValue : EntryList[p]->GetValue();
+	auto p = FindEntry(key);
+	return (p == EntryListType::npos) ? defValue : EntryList[p]->GetValue();
 }
 
-bool TIniProfile::TSection::SetEntry(const char* key, const char* value)
-{ // check for valid paramters
+bool IniProfile::Section::SetEntry(const char* key, const char* value)
+{
+	// Check for valid parameters.
 	if (key && value && strlen(key))
 	{ // create the entry
-		auto entry = new TEntry(key, value);
-		// if not found p is equals UINT_MAX
-		unsigned p = FindEntry(key);
-		// if found
-		if (p != UINT_MAX)
-		{  // remove entry from heap
+		auto entry = new Entry(key, value);
+		// When not found p is equals EntryListType::npos.
+		auto p = FindEntry(key);
+		// if entry was found
+		if (p != EntryListType::npos)
+		{
+			// Remove entry from heap
 			delete_null(EntryList[p]);
-			// assign new entry instance pointer to same location in list
+			// Assign new entry instance pointer to same location in list
 			EntryList[p] = entry;
 		}
-		else // if not found
-		{ // add entry at the end of the section list
+		// if not found
+		else
+		{
+			// Add entry at the end of the section list
 			EntryList.Add(entry);
 		}
+		// Signal success.
 		return true;
 	}
+	// Signal failure.
 	return false;
 }
 
-bool TIniProfile::TSection::InsertComment(const char* key, const char* comment)
+bool IniProfile::Section::InsertComment(const char* key, const char* comment)
 {
-	// check for valid parameters
+	// Check for valid parameters
 	if (key && comment && strlen(key))
-	{ // create the comment entry
-		auto entry = new TEntry(comment);
-		// if not found p is equals UINT_MAX
-		unsigned p = FindEntry(key);
-		// if found
-		if (p != UINT_MAX)
-		{  // add entry at found location
+	{
+		// Create the comment entry
+		auto entry = new Entry(comment);
+		// If not found p is equals UINT_MAX
+		auto p = FindEntry(key);
+		// When found
+		if (p != EntryListType::npos)
+		{
+			// Add entry at found location
 			EntryList.AddAt(entry, p);
+			// Signal success.
 			return true;
 		}
 	}
-	// comment not inserted
+	// Comment was not inserted
 	return false;
 }
 
-unsigned TIniProfile::TSection::FindEntry(const char* key)
-{ // test if key is valid
+IniProfile::EntryListType::size_type IniProfile::Section::FindEntry(const char* key)
+{
+	// Check if key is valid.
 	if (key)
-	{ // loop through entry list
-		for (unsigned p = 0; p < EntryList.Count(); p++)
-		{  // section name is case insesitive compared
+	{
+		// Loop through entry list
+		for (EntryListType::size_type p = 0; p < EntryList.Count(); p++)
+		{
+			// Section name is case sensitive compared.
 			if (!::strcmp(EntryList[p]->GetKey(), key))
 			{
 				// return pointer in list
@@ -586,14 +607,15 @@ unsigned TIniProfile::TSection::FindEntry(const char* key)
 			}
 		}
 	}
-	// return UINT_MAX when not found
-	return UINT_MAX;
+	// Signal not found.
+	return EntryListType::npos;
 }
 
-bool TIniProfile::TSection::RemoveEntry(unsigned p)
+bool IniProfile::Section::RemoveEntry(EntryListType::size_type p)
 { // check for valid parameters
-	if (p != UINT_MAX && p < EntryList.Count())
-	{  // delete entry instance
+	if (p != EntryListType::npos && p < EntryList.Count())
+	{
+		// delete entry instance
 		delete_null(EntryList[p]);
 		// remove from list
 		EntryList.Detach(p);
@@ -604,30 +626,30 @@ bool TIniProfile::TSection::RemoveEntry(unsigned p)
 }
 
 //=============================================================================
-// TEntry Members
+// Entry Members
 //=============================================================================
 //
-TIniProfile::TEntry::TEntry(const char* key, const char* value)
-	: Line(nullptr)
-	, ValPos(0)
+IniProfile::Entry::Entry(const char* key, const char* value)
+	:Line(nullptr)
+	 , ValPos(0)
 {
 	Set(std::string(key).append("=").append(value));
 }
 
-TIniProfile::TEntry::TEntry(const char* comment)
-	: Line(nullptr)
-	, ValPos(0)
+IniProfile::Entry::Entry(const char* comment)
+	:Line(nullptr)
+	 , ValPos(0)
 {
 	// make comment line
 	Set(std::string("; ").append(comment));
 }
 
-TIniProfile::TEntry::~TEntry()
+IniProfile::Entry::~Entry()
 {
 	free_null(Line);
 }
 
-bool TIniProfile::TEntry::Set(const std::string& line)
+bool IniProfile::Entry::Set(const std::string& line)
 {
 	delete_null(Line);
 	// create entry line buffer
@@ -643,22 +665,25 @@ bool TIniProfile::TEntry::Set(const std::string& line)
 		ValPos = line.find_first_of('=');
 		// if not found the line is the keyword itself ValPos==NPOS
 		if (ValPos != std::string::npos)
-		{  // save value position position
-			size_t p = ValPos;
-			// seperate key and value by placing a terminator
+		{
+			// Save value position position
+			std::string::size_type p = ValPos;
+			// Separate key and value by placing a terminator
 			Line[ValPos++] = 0;
-			// skip white space after key part of std::string
+			// Skip white space after key part of std::string
 			while (Line[--p] == ' ' && p)
 			{
 				Line[p] = 0;
 			}
-			// check for valid key
+			// Check for valid key
 			if (!p)
-			{  // free and clear because pointer is also flag
+			{
+				// Free and clear because pointer is also flag
 				free_null(Line);
 			}
 			else
-			{  // skip white space infront of value
+			{
+				// Skip white space in front of value.
 				while (Line[ValPos] == ' ')
 				{
 					Line[ValPos++] = 0;
@@ -667,7 +692,7 @@ bool TIniProfile::TEntry::Set(const std::string& line)
 		}
 		else
 		{
-			// free and clear because pointer is also flag
+			// Free and clear because pointer is also flag
 			free_null(Line);
 		}
 	}
@@ -680,7 +705,7 @@ bool TIniProfile::TEntry::Set(const std::string& line)
 	return Line != nullptr;
 }
 
-bool TIniProfile::TEntry::Read(std::istream& is)
+bool IniProfile::Entry::Read(std::istream& is)
 {
 #if 1
 	std::string line;
@@ -705,17 +730,18 @@ bool TIniProfile::TEntry::Read(std::istream& is)
 #endif
 }
 
-const char* TIniProfile::TEntry::GetKey()
+const char* IniProfile::Entry::GetKey()
 { // check if line is valid
 	return (Line && ValPos) ? Line : "";
 }
 
-const char* TIniProfile::TEntry::GetValue()
-{  // check if line is valid
+const char* IniProfile::Entry::GetValue()
+{
+	// Check if line is valid
 	return Line ? &Line[ValPos] : "";
 }
 
-std::ostream& TIniProfile::TEntry::Write(std::ostream& os)
+std::ostream& IniProfile::Entry::Write(std::ostream& os)
 { // check stream for errors
 	if (os.good())
 	{

@@ -38,7 +38,6 @@ std::string stringf(const char* fmt, ...)
 	return &buf[0];
 }
 
-//
 std::string bittostring(unsigned long wrd, size_t count)
 {
 	std::string ret;
@@ -49,14 +48,12 @@ std::string bittostring(unsigned long wrd, size_t count)
 	return ret;
 }
 
-//
 char hexcharvalue(char ch)
 {
 	ch = (char) ((isalpha(ch)) ? ch & (~(1 << 5)) : ch);
 	return (char) ((isalpha(ch)) ? ch - 'A' + 10 : ch - '0');
 }
 
-//
 std::string hexstring(const void* array, size_t size)
 {
 	// look up table for hex characters
@@ -73,25 +70,23 @@ std::string hexstring(const void* array, size_t size)
 	return buffer;
 }
 
-//
 size_t stringhex(const char* hexstr, void* buffer, size_t size)
 {
-	// check valid pointers
+	// Check valid pointers.
 	if (!hexstr || !buffer)
 	{
 		return -1;
 	}
-	// get the amount of bytes to convert
+	// Get the amount of bytes to convert.
 	unsigned chars = strlen(hexstr);
-	// check mstring length
-	if (!chars)
-	{return 0;}
-	// check for odd number of characters to convert
+	// Check mstring length.
+	if (!chars) {return 0;}
+	// check for odd number of characters to convert.
 	if (chars % 2)
 	{
 		chars--;
 	}
-	// adjust amount of bytes to convert to the size of the buffer
+	// Adjust amount of bytes to convert to the size of the buffer
 	if (chars / 2 > size)
 	{
 		chars = size * 2;
@@ -103,8 +98,180 @@ size_t stringhex(const char* hexstr, void* buffer, size_t size)
 			((char*) buffer)[i / 2] = (char) ((hexcharvalue(hexstr[i]) << 4) + hexcharvalue(hexstr[i + 1]));
 		}
 	}
-	// return the number of returned bytes
+	// Return the number of returned bytes.
 	return chars / 2;
+}
+
+std::string do_escaping(const std::string& str, bool reverse = false, char delimiter = '\0')
+{
+	std::string rv;
+	// create conversion table
+	static struct
+	{
+		char code;
+		char ch;
+	}
+		table[] =
+		{
+			// single quote
+			{'\'', '\''},
+			// double quote
+			{'\"', '"'},
+			// bell
+			{'\a', 'a'},
+			// backspace
+			{'\b', 'b'},
+			// form feed / new page
+			{'\f', 'f'},
+			// new line / line feed
+			{'\n', 'n'},
+			// carriage return
+			{'\r', 'r'},
+			// horizontal tab
+			{'\t', 't'},
+			// vertical tab
+			{'\v', 'v'},
+			// '\' character
+			{'\\', '\\'},
+		};
+	// When escaping.
+	if (!reverse)
+	{
+		// Convert std::string character by character.
+		for (size_t i = 0; i < str.length(); i++)
+		{
+			// get the current character 'ch'
+			char ch = str[i];
+			// Check if the delimiter has been set and the current is one.
+			if (delimiter && ch == delimiter)
+			{
+				// Add the delimiter character as a hexadecimal 2 character code.
+				rv += '\\';
+				rv += 'x';
+				rv += hexstring(str.c_str() + i, 1);
+			}
+			else
+			{
+				bool escaped = false;
+				// Iterate though the table and assemble escapable characters.
+				for (auto entry: table)
+				{
+					// When the character is to be escaped.
+					if (ch == entry.code)
+					{
+						// Add the escaped character.
+						rv += '\\';
+						rv += entry.ch;
+						// Break the loop
+						escaped = true;
+						break;
+					}
+				}
+				// Check if code above did the conversion.
+				if (!escaped)
+				{
+					// Al characters below the space are control characters and should hex.
+					if (ch < ' ')
+					{
+						// Add the character as a hexadecimal 2 character code.
+						rv += '\\';
+						rv += 'x';
+						rv += hexstring(str.c_str() + i, 1);
+					}
+					else
+					{
+						// Just add the character.
+						rv += ch;
+					}
+				}
+			}
+		} // for
+	}
+	// In reverse (unescape).
+	else
+	{
+		// Convert std::string character by character.
+		for (size_t i = 0; i < str.length(); i++)
+		{
+			// Check for '\' character.
+			if (str[i] == '\\')
+			{
+				bool found = false;
+				// Increase index an check validity of the same index.
+				if (++i < str.length())
+				{
+					// Iterate though the table and assemble escapable characters.
+					for (auto entry: table)
+					{
+						// Check if the escaped character is convertible.
+						if (entry.ch == str[i])
+						{
+							// Add character code.
+							rv += entry.code;
+							found = true;
+							// Break from while loop.
+							break;
+						}
+					}
+				}
+				// Check if code above did the conversion.
+				if (!found)
+				{
+					// Check if the next character is 'x'.
+					if (::tolower(str[i]) == 'x')
+					{
+						// Increase index an check validity of the same index.
+						if (i += 2 < str.length())
+						{
+							// convert next 2 characters in the std::string to a binary character.
+							char ch;
+							if (stringhex(str.c_str() + i, &ch, 1))
+							{
+								// On success add the character
+								rv += ch;
+								// Increase index
+								i++;
+							}
+						}
+					}
+					// Not a hex value.
+					else
+					{
+						// Increase index and check validity of the same index.
+						if (i < str.length())
+						{
+							// if next char is '\' add '\' to the returning std::string.
+							if (str[i] == '\\')
+							{
+								rv += '\\';
+							}
+							else
+							{
+								rv += str[i];
+							}
+						}
+					}
+				}
+			}
+			// Not a control character.
+			else
+			{
+				// Just add the character.
+				rv += str[i];
+			}
+		} // for
+	}
+	return rv;
+}
+
+std::string escape(const std::string& str, char delimiter)
+{
+	return  do_escaping(str, false, delimiter);
+}
+
+std::string unescape(const std::string& str)
+{
+	return do_escaping(str, true);
 }
 
 #ifndef WIN32
@@ -122,7 +289,7 @@ bool kbhit()
 	/* do not wait at all, not even a microsecond */
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
-	/* must be done first to initilize read_fd */
+	/* must be done first to initialize read_fd */
 	FD_ZERO(&read_fd);
 	/* makes select() ask if input is ready :
 	* 0 is the file descriptor for stdin
@@ -132,13 +299,13 @@ bool kbhit()
 	* largest file descriptor to check + 1.
 	*/
 	if (select
-				(
-					1,
-					&read_fd,
-					nullptr,    /* NO writes */
-					nullptr,    /* NO exceptions */
-					&tv
-				) == -1)
+		(
+			1,
+			&read_fd,
+			nullptr,    /* NO writes */
+			nullptr,    /* NO exceptions */
+			&tv
+		) == -1)
 	{
 		return false;
 	}      /* An error occured	*/
@@ -260,7 +427,7 @@ std::string getcwdstr()
 std::string demangle(const char* name)
 {
 	int status;
-	char* nm = abi::__cxa_demangle(name, 0, nullptr, &status);
+	char* nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
 	std::string rv(nm);
 	free(nm);
 	return rv;
@@ -281,11 +448,11 @@ timespec gettime()
 int timespeccmp(const timespec& ts1, const timespec& ts2)
 {
 	if (ts1.tv_sec > ts2.tv_sec)
-	{
+	{ // NOLINT(bugprone-branch-clone)
 		return 1;
 	}
 	else if (ts1.tv_sec < ts2.tv_sec)
-	{
+	{ // NOLINT(bugprone-branch-clone)
 		return -1;
 	}
 	else if (ts1.tv_nsec > ts2.tv_nsec)
@@ -415,26 +582,75 @@ const char* strnstr(const char* s, const char* find, size_t n)
 	return (char*) s;
 }
 
-//
-char* itoa(int value, char* string, int radix)
+char* itoa(int value, char* buffer, int base)
 {
-	if (!value)
+	// Sanity check.
+	if (!value || base < 2 || base > 16)
 	{
-		string[0] = '0';
-		string[1] = 0;
-		return string;
+		buffer[0] = '0';
+		buffer[1] = 0;
+		return buffer;
 	}
-	string[32] = 0;
-	int i = 31;
-	for (; value && i; --i, value /= radix)
+	bool neg = false;
+	// In standard itoa(), negative numbers are handled only with
+	// base 10. Otherwise numbers are considered unsigned.
+	if (value < 0 && base == 10)
 	{
-		string[i] = "0123456789abcdef"[value % radix];
+		neg = true;
+		value *= -1;
 	}
-	//
-	return &string[i + 1];
+	// Terminate the buffer.
+	buffer[INTBITS + 1] = 0;
+	// Reverse iterate in the character buffer.
+	int i;
+	for (i = INTBITS; value && i; --i, value /= base)
+	{
+		buffer[i] = "0123456789abcdef"[value % base];
+	}
+	// When negative in base 10 prepend the negative sign.
+	if (neg)
+	{
+		buffer[i--] = '-';
+	}
+	// Return the pointer of the last written character.
+	return &buffer[i + 1];
 }
 
-//
+char* ltoa(long value, char* buffer, int base)
+{
+	// Sanity check.
+	if (!value || base < 2 || base > 16)
+	{
+		buffer[0] = '0';
+		buffer[1] = 0;
+		return buffer;
+	}
+	bool neg = false;
+	// In standard itoa(), negative numbers are handled only with
+	// base 10. Otherwise numbers are considered unsigned.
+	if (value < 0 && base == 10)
+	{
+		neg = true;
+		value *= -1;
+	}
+	// Terminate the buffer.
+	buffer[LONGBITS + 1] = 0;
+	// Reverse iterate in the character buffer.
+	int i;
+	for (i = LONGBITS; value && i; --i, value /= base)
+	{
+		buffer[i] = "0123456789abcdef"[value % base];
+	}
+	// When negative in base 10 prepend the negative sign.
+	if (neg)
+	{
+		buffer[i--] = '-';
+	}
+	// Return the pointer of the last written character.
+	return &buffer[i + 1];
+}
+
+
 int wildcmp(const char* wild, const char* str, bool case_s)
 {
 	if (!wild || !str)
@@ -448,7 +664,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 	while ((*str) && (*wild != '*'))
 	{
 		if ((case_s ? (*wild != *str) : (std::toupper(*wild) != std::toupper(*str)))
-				&& (*wild != '?'))
+			&& (*wild != '?'))
 		{
 			return 0;
 		}
@@ -469,7 +685,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 			cp = str + 1;
 		}
 		else if ((case_s ? (*wild == *str) : (std::toupper(*wild) == std::toupper(*str)))
-						 || (*wild == '?'))
+			|| (*wild == '?'))
 		{
 			wild++;
 			str++;
@@ -489,7 +705,8 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 }
 
 //
-bool getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
+bool
+getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
 {
 	DIR* dp;
 	dirent* dirp;
@@ -720,7 +937,7 @@ time_t time_mktime(struct tm* tm, bool gmtime)
 	return ret;
 }
 
-time_t time_str2time(std::string str, const char* format, bool gmtime)
+time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 {
 	// When not format has been passed format the XML date.
 	if (!format)
@@ -809,7 +1026,7 @@ void proc_setfsgid(gid_t gid)
 	}
 }
 
-passwd_t::passwd_t() : passwd()
+passwd_t::passwd_t() :passwd()
 {
 	reset();
 	// Read the buffer size needed.
@@ -879,7 +1096,7 @@ bool proc_getpwuid(uid_t uid, passwd_t& pwd)
 }
 
 group_t::group_t()
-	: group()
+	:group()
 {
 	reset();
 	// Read the buffer size needed.
@@ -950,6 +1167,4 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 
 #endif // IS_WIN
 
-} // namespace sf
-
-
+} // namespace

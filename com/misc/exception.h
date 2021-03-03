@@ -1,5 +1,4 @@
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#pragma once
 
 #include <exception>
 #include <string>
@@ -33,7 +32,7 @@ class _MISC_CLASS ExceptionBase : public std::exception
 		/**
 		 * Overloaded from base class 'std::exception'.
 		 */
-		const char* what() const noexcept override;
+		[[nodiscard]] const char* what() const noexcept override;
 
 	protected:
 		/**
@@ -87,6 +86,4 @@ class _MISC_CLASS ExceptionSystemCall : public ExceptionBase
 		ExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func);
 };
 
-} // namespace sf
-
-#endif // EXCEPTION_H
+} // namespace

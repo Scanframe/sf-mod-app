@@ -1,5 +1,4 @@
-#ifndef MISC_QT_UTILS_H
-#define MISC_QT_UTILS_H
+#pragma once
 
 #include <QFileInfo>
 #include <QDataStream>
@@ -80,6 +79,4 @@ _MISC_FUNC QMetaObject::Connection QObject_connect
 		Qt::ConnectionType = Qt::AutoConnection
 	);
 
-} // namespace sf
-
-#endif // MISC_QT_UTILS_H
+} // namespace

@@ -1,5 +1,4 @@
-#ifndef MISC_CLASS_REG_H
-#define MISC_CLASS_REG_H
+#pragma once
 
 #include <vector>
 #include "dbgutils.h"
@@ -168,7 +167,7 @@ class TClassRegistration
 		 * @param name Registered name of the class
 		 * @return Non zero index/position of the class in the registration list where Zero means not found.
 		 */
-		size_t IndexOf(const std::string& name) const;
+		[[nodiscard]] size_t IndexOf(const std::string& name) const;
 		/**
 		 * Find and create registered class by name.
 		 * @param name Registered name of the class
@@ -187,7 +186,7 @@ class TClassRegistration
 		 * Returns the amount of registered entries.
 		 * @return Derived instance of type T.
 		 */
-		size_t Size() const;
+		[[nodiscard]] size_t Size() const;
 		/**
 		 * Sets the register name on the passed instance.
 		 * This automatically is called from the callback_t when a class is registered.
@@ -206,19 +205,19 @@ class TClassRegistration
 		/**
 		 * Returns the name of the class from the passed index.
 		 */
-		const char* Name(size_t index) const;
+		[[nodiscard]] const char* Name(size_t index) const;
 		/**
 		 * Returns the description of the class from the passed index.
 		 */
-		const char* Description(size_t index) const;
+		[[nodiscard]] const char* Description(size_t index) const;
 
 		// Type of registered entry in the list.
 		struct entry_t
 		{
 			// Constructor.
 			inline
-			entry_t(const char* name, const char* description, const callback_t& calback)
-				: Name(name), Description(description), Callback(calback) {}
+			entry_t(const char* name, const char* description, const callback_t& callback)
+				: Name(name), Description(description), Callback(callback) {}
 
 			// Copy constructor.
 			inline
@@ -274,7 +273,7 @@ TClassRegistration<T, P>::Lookup(const std::string& name) const
 	// Sanity check.
 	if (!name.empty() && !Entries->empty())
 	{
-		// Iterat through the list.
+		// Iterate through the list.
 		for (typename entries_t::const_iterator it = Entries->begin(); it != Entries->end(); ++it)
 		{
 			// Compare the name case insensitive.
@@ -379,6 +378,4 @@ struct _MISC_CLASS DynamicLibraryInfo
 	void reset();
 };
 
-} // namespace sf
-
-#endif // MISC_CLASS_REG_H
+} // namespace

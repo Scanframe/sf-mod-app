@@ -44,11 +44,10 @@
 	CLASS_?? notifications use the classes NameOf() function.
 */
 
-#ifndef MISC_DBGUTILS_H
-#define MISC_DBGUTILS_H
+#pragma once
 
 #include "global.h"
-// Include for cout, cerr ,clog and ostream.
+// Include for std::cout, std::cerr ,std::clog and std::ostream.
 #include <iostream>
 
 #if IS_QT
@@ -222,5 +221,3 @@ class _MISC_CLASS debug_ostream
 #define _COND_RTTI_NOTIFY(p, f, a) {}
 
 #endif //DEBUG_LEVEL
-
-#endif // MISC_DBGUTILS_H
