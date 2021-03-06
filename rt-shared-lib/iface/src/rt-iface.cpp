@@ -1,5 +1,5 @@
 #include "rt-iface.h"
-#include "misc/dbgutils.h"
+#include "misc/gen/dbgutils.h"
 
 SF_IMPL_IFACE(RuntimeIface, RuntimeIface::Parameters, Interface)
 

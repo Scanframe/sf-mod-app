@@ -3,6 +3,16 @@
 Help written from code by Doxygen.
 
 Sample classes:
-* `::TRange`
+* `::sf::Value`
+* `::sf::Variable`
+* `::sf::Range`
+
+
+Sample template classes:
 * `::sf::TFifoClass`
-* `::sf::Closure`
+* `::sf::TClosure`
+* `::sf::TClassRegistration`
+* `::sf::TDynamicBuffer`
+
+
+Link to [other](sf-Variable.html) markdown.

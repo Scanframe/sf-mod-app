@@ -16,7 +16,7 @@
 #define AS_USE_STLNAMES 0
 #endif
 
-// Some prefer to use property accessors to get/set the length of the array
+// Some prefer to use property accessors to get/Set the length of the array
 // This option registers the accessors instead of the method length()
 #ifndef AS_USE_ACCESSORS
 #define AS_USE_ACCESSORS 0
@@ -64,7 +64,7 @@ public:
 	void       *At(asUINT index);
 	const void *At(asUINT index) const;
 
-	// Set value of an element. 
+	// Set value of an element.
 	// The value arg should be a pointer to the value that will be copied to the element.
 	// Remember, if the array holds handles the value parameter should be the 
 	// address of the handle. The refCount of the object will also be incremented

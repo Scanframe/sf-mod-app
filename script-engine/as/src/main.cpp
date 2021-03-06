@@ -3,7 +3,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
-#include <misc/qt_utils.h>
+#include <misc/qt/qt_utils.h>
 #include "mainwindow.h"
 
 int main(int argc, char* argv[])
@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 	qDebug() << "QT Ver: " << QT_VERSION_STR;
 	//QApplication::setDesktopSettingsAware(false);
 	QApplication app(argc, argv);
-	// Initialize using the application file path.
+	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.
 	fi.setFile(fi.absolutePath(), fi.completeBaseName() + ".ini");

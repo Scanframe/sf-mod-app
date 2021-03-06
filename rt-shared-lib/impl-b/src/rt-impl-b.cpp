@@ -1,6 +1,6 @@
 #include "rt-impl-b.h"
-#include "misc/dbgutils.h"
-#include "misc/genutils.h"
+#include "misc/gen/dbgutils.h"
+#include "misc/gen/genutils.h"
 
 // Declaration of the dynamic library information.
 _DL_INFORMATION("Implementation Library B",

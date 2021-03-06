@@ -2,7 +2,7 @@
 #include <QScrollArea>
 #include <QResizeEvent>
 #include "formdialog.h"
-#include "misc/dbgutils.h"
+#include "misc/gen/dbgutils.h"
 
 FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
 	:QDialog(parent, f)

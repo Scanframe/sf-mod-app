@@ -53,7 +53,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 _SetBinarySuffix("${PROJECT_NAME}")
 
 # Testing only available if this is the main app
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND BUILD_TESTING)
-if (BUILD_TESTING)
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
+if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
 endif()

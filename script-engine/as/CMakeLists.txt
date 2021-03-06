@@ -17,7 +17,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../script-engines
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
-# Uses directory set by _SetOutputDirs().
+# Uses directory Set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
 
 set(CMAKE_AUTOUIC ON)

@@ -3,7 +3,7 @@
 
 #include <QPushButton>
 #include <QtUiPlugin/QDesignerExportWidget>
-#include <misc/objectextension.h>
+#include <misc/qt/objectextension.h>
 
 namespace sf
 {

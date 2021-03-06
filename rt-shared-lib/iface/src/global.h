@@ -3,7 +3,7 @@ This include file determines the the way the classes and functions in the
 library are exported when they are used as a dynamic or as application and static library.
 When building this Dynamic Library then _IFACE_PKG (package) should be defined.
 
-List of the declaration modifiers for types:
+_list of the declaration modifiers for types:
 	classes:        _IFACE_CLASS
 	Function calls: _IFACE_FUNC _IFACE_CALL
 	_data:           _IFACE_DATA
@@ -17,7 +17,7 @@ Add compiler definition flags:
 #define IFACE_GLOBAL_H
 
 // Import of defines for this target.
-#include "misc/target.h"
+#include "misc/gen/target.h"
 
 // When DL target and the iface PKG is not used the iface DL is being build.
 #if IS_DL_TARGET && defined(_IFACE_PKG)

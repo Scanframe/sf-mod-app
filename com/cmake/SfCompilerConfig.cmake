@@ -54,7 +54,7 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_CXX_STANDARD 17)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	#set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
-	# When GNU compiler is used set some options.
+	# When GNU compiler is used Set some options.
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 		if (WIN32)

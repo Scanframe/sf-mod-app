@@ -1,5 +1,5 @@
 #include "SfPushButton.h"
-#include "misc/dbgutils.h"
+#include "misc/gen/dbgutils.h"
 
 /*
 Styling a custom control is as follows the '::' is replaced with '--' for the selector.

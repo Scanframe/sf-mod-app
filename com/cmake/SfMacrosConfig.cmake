@@ -47,7 +47,7 @@ endif ()
 ## Sets the '_OutputDir' variable when found.
 ##
 function(_LocateOutputDir)
-	# Initialize return value variable.
+	# InitializeBase return value variable.
 	set(_OutputDir "" PARENT_SCOPE)
 	# Loop from 9 to 4 with step 1.
 	foreach (_Counter RANGE 0 4 1)
@@ -55,7 +55,7 @@ function(_LocateOutputDir)
 		string(REPEAT "/.." ${_Counter} _Sub)
 		# Get the real filepath which is looked for.
 		get_filename_component(_Dir "${CMAKE_CURRENT_LIST_DIR}${_Sub}/bin" REALPATH)
-		# When the file inside is found set the output directories and break the loop.
+		# When the file inside is found Set the output directories and break the loop.
 		if (EXISTS "${_Dir}/__output__")
 			set(_OutputDir "${_Dir}" PARENT_SCOPE)
 			# Stop here the directory has been found.

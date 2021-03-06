@@ -18,10 +18,10 @@
 #include <QWidget>
 #include <QScreen>
 
-#include <misc/capturelistmodel.h>
-#include <misc/formwriter.h>
-#include "misc/qt_utils.h"
-#include "misc/dbgutils.h"
+#include <misc/qt/capturelistmodel.h>
+#include <misc/qt/formwriter.h>
+#include "misc/qt/qt_utils.h"
+#include "misc/gen/dbgutils.h"
 #include "formdialog.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -189,7 +189,7 @@ void MainWindow::onWriteToFile()
 		QFileInfo sfi(QCoreApplication::instance()->property("SettingsFile").toString());
 		QString filepath = QFileDialog::getSaveFileName(this,
 			"Save UI File", sfi.absolutePath(), tr("UI Files (*.ui)"));
-		// Initialize file object.
+		// InitializeBase file object.
 		QFile file(filepath);
 		// Open file write only.
 		file.open(QFileDevice::WriteOnly);

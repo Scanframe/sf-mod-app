@@ -3,7 +3,7 @@ This include file determines the the way the classes and functions in the
 library are exported when they are used as a dynamic or as application and static library.
 When building this Dynamic Library then _MISC_PKG (package) should be defined.
 
-List of the declaration modifiers for types:
+_list of the declaration modifiers for types:
 	classes:  _MISC_CLASS
 	Function: _MISC_FUNC
 	_data:     _MISC_DATA
@@ -16,7 +16,7 @@ Add compiler definition flags:
 #pragma once
 
 // Import of defines for this target.
-#include "target.h"
+#include "gen/target.h"
 
 // When DL target and the misc PKG is not used the misc DL is being build.
 #if IS_DL_TARGET && defined(_MISC_PKG)

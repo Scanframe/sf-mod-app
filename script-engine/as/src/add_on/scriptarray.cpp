@@ -21,7 +21,7 @@ BEGIN_AS_NAMESPACE
 static asALLOCFUNC_t userAlloc = asAllocMem;
 static asFREEFUNC_t  userFree  = asFreeMem;
 
-// Allows the application to set which memory routines should be used by the array object
+// Allows the application to Set which memory routines should be used by the array object
 void CScriptArray::SetMemoryFunctions(asALLOCFUNC_t allocFunc, asFREEFUNC_t freeFunc)
 {
 	userAlloc = allocFunc;
@@ -74,7 +74,7 @@ CScriptArray* CScriptArray::Create(asITypeInfo *ti, asUINT length)
 		return 0;
 	}
 
-	// Initialize the object
+	// InitializeBase the object
 	CScriptArray *a = new(mem) CScriptArray(length, ti);
 
 	return a;
@@ -93,7 +93,7 @@ CScriptArray* CScriptArray::Create(asITypeInfo *ti, void *initList)
 		return 0;
 	}
 
-	// Initialize the object
+	// InitializeBase the object
 	CScriptArray *a = new(mem) CScriptArray(ti, initList);
 
 	return a;
@@ -112,7 +112,7 @@ CScriptArray* CScriptArray::Create(asITypeInfo *ti, asUINT length, void *defVal)
 		return 0;
 	}
 
-	// Initialize the object
+	// InitializeBase the object
 	CScriptArray *a = new(mem) CScriptArray(length, defVal, ti);
 
 	return a;
@@ -209,7 +209,7 @@ static bool ScriptArrayTemplateCallback(asITypeInfo *ti, bool &dontGarbageCollec
 	{
 		assert( typeId & asTYPEID_OBJHANDLE );
 
-		// It is not necessary to set the array as garbage collected for all handle types.
+		// It is not necessary to Set the array as garbage collected for all handle types.
 		// If it is possible to determine that the handle cannot refer to an object type
 		// that can potentially form a circular reference with the array then it is not 
 		// necessary to make the array garbage collected.
@@ -549,7 +549,7 @@ CScriptArray::CScriptArray(asUINT length, void *defVal, asITypeInfo *ti)
 	if( objType->GetFlags() & asOBJ_GC )
 		objType->GetEngine()->NotifyGarbageCollectorOfNewObject(this, objType);
 
-	// Initialize the elements with the default value
+	// InitializeBase the elements with the default value
 	for( asUINT n = 0; n < GetSize(); n++ )
 		SetValue(n, defVal);
 }
@@ -725,7 +725,7 @@ void CScriptArray::Resize(int delta, asUINT at)
 		if( at < buffer->numElements )
 			memcpy(newBuffer->data + (at+delta)*elementSize, buffer->data + at*elementSize, (buffer->numElements-at)*elementSize);
 
-		// Initialize the new elements with default values
+		// InitializeBase the new elements with default values
 		Construct(newBuffer, at, at+delta);
 
 		// Release the old buffer
@@ -961,11 +961,11 @@ void CScriptArray::Construct(SArrayBuffer *buf, asUINT start, asUINT end)
 			*d = (void*)engine->CreateScriptObject(subType);
 			if( *d == 0 )
 			{
-				// Set the remaining entries to null so the destructor 
+				// Set the remaining entries to null so the destructor
 				// won't attempt to destroy invalid objects later
 				memset(d, 0, sizeof(void*)*(max-d));
 
-				// There is no need to set an exception on the context,
+				// There is no need to Set an exception on the context,
 				// as CreateScriptObject has already done that
 				return;
 			}
@@ -1249,15 +1249,15 @@ int CScriptArray::Find(asUINT startAt, void *value) const
 
 				if( cache && cache->eqFuncReturnCode == asMULTIPLE_FUNCTIONS )
 #if defined(_MSC_VER) && _MSC_VER >= 1500 && !defined(__S3E__)
-					sprintf_s(tmp, 512, "Type '%s' has multiple matching opEquals or opCmp methods", subType->GetName());
+					sprintf_s(tmp, 512, "_type '%s' has multiple matching opEquals or opCmp methods", subType->GetName());
 #else
-					sprintf(tmp, "Type '%s' has multiple matching opEquals or opCmp methods", subType->GetName());
+					sprintf(tmp, "_type '%s' has multiple matching opEquals or opCmp methods", subType->GetName());
 #endif
 				else
 #if defined(_MSC_VER) && _MSC_VER >= 1500 && !defined(__S3E__)
-					sprintf_s(tmp, 512, "Type '%s' does not have a matching opEquals or opCmp method", subType->GetName());
+					sprintf_s(tmp, 512, "_type '%s' does not have a matching opEquals or opCmp method", subType->GetName());
 #else
-					sprintf(tmp, "Type '%s' does not have a matching opEquals or opCmp method", subType->GetName());
+					sprintf(tmp, "_type '%s' does not have a matching opEquals or opCmp method", subType->GetName());
 #endif
 				ctx->SetException(tmp);
 			}
@@ -1399,15 +1399,15 @@ void CScriptArray::Sort(asUINT startAt, asUINT count, bool asc)
 
 				if( cache && cache->cmpFuncReturnCode == asMULTIPLE_FUNCTIONS )
 #if defined(_MSC_VER) && _MSC_VER >= 1500 && !defined(__S3E__)
-					sprintf_s(tmp, 512, "Type '%s' has multiple matching opCmp methods", subType->GetName());
+					sprintf_s(tmp, 512, "_type '%s' has multiple matching opCmp methods", subType->GetName());
 #else
-					sprintf(tmp, "Type '%s' has multiple matching opCmp methods", subType->GetName());
+					sprintf(tmp, "_type '%s' has multiple matching opCmp methods", subType->GetName());
 #endif
 				else
 #if defined(_MSC_VER) && _MSC_VER >= 1500 && !defined(__S3E__)
-					sprintf_s(tmp, 512, "Type '%s' does not have a matching opCmp method", subType->GetName());
+					sprintf_s(tmp, 512, "_type '%s' does not have a matching opCmp method", subType->GetName());
 #else
-					sprintf(tmp, "Type '%s' does not have a matching opCmp method", subType->GetName());
+					sprintf(tmp, "_type '%s' does not have a matching opCmp method", subType->GetName());
 #endif
 
 				ctx->SetException(tmp);

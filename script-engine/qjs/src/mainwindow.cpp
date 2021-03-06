@@ -4,12 +4,12 @@
 #include <QDebug>
 #include <QStyledItemDelegate>
 #include <iostream>
-#include <misc/capturelistmodel.h>
-#include <misc/resource.h>
+#include <misc/qt/capturelistmodel.h>
+#include <misc/qt/resource.h>
 #include <QJSValueIterator>
 #include <QDir>
 #include <QDirIterator>
-#include "misc/dbgutils.h"
+#include "misc/gen/dbgutils.h"
 #include "ExposedObject.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget* parent)
 	// Method of connecting Qt5 style
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadScript);
 	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallFunction);
-	// Needs to be set to be able to style the popup list from the QComboBox from the qss file.
+	// Needs to be Set to be able to style the popup list from the QComboBox from the qss file.
 	for (auto cb: {ui->comboBoxScripts, ui->comboBoxFunctions})
 	{
 		cb->setItemDelegate(new QStyledItemDelegate(cb));

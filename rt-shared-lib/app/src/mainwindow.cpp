@@ -10,10 +10,10 @@
 #include <QDirIterator>
 
 #include <iostream>
-#include <misc/capturelistmodel.h>
-#include <misc/resource.h>
+#include <misc/qt/capturelistmodel.h>
+#include <misc/qt/resource.h>
 #include <QStyledItemDelegate>
-#include "misc/dbgutils.h"
+#include "misc/gen/dbgutils.h"
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->pushButtonLoad, &QPushButton::clicked, this, &MainWindow::onLoadLib);
 	connect(ui->pushButtonCreate, &QPushButton::clicked, this, &MainWindow::onCreateInstance);
 	connect(ui->pushButtonCall, &QPushButton::clicked, this, &MainWindow::onCallMethod);
-	// Needs to be set to be able to style the popup list from the QComboBox from the qss file.
+	// Needs to be Set to be able to style the popup list from the QComboBox from the qss file.
 	for (auto cb: {ui->comboBoxLibrary, ui->comboBoxClass})
 	{
 		cb->setItemDelegate(new QStyledItemDelegate(cb));
@@ -65,8 +65,8 @@ void MainWindow::onFindLibs()
 		{
 			_libraryInfoList.append(dld);
 			qDebug() << "Path:" << dld.Path;
-			qDebug() << "Name: " << dld.Name;
-			qDebug() << "Description: " << dld.Description;
+			qDebug() << "_name: " << dld.Name;
+			qDebug() << "_description: " << dld.Description;
 		}
 	}
 	// Sort the list of libraries by name.

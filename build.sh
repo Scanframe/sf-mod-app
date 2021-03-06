@@ -71,7 +71,7 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 				;;
 			t)
 			 	WriteLog "Include test builds"
-				CONFIG_OPTIONS="${CONFIG_OPTIONS} -DBUILD_TESTING=ON"
+				CONFIG_OPTIONS="${CONFIG_OPTIONS} -DSF_BUILD_TESTING=ON"
 				;;
 			\?)
 				WriteLog "Invalid option: -$OPTARG"

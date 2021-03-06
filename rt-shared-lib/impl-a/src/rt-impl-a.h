@@ -11,9 +11,14 @@
 class RuntimeLibImplementationA : public RuntimeIface
 {
 	public:
-		// Required constructor passing a parameters structure.
+		/**
+		 * Required constructor passing a parameters structure.
+		 * @param params
+		 */
 		explicit RuntimeLibImplementationA(const Parameters& params);
-		// Implementing the the virtual method.
+		/**
+		 * Implementing the pure virtual method.
+		 */
 		const char* getString() override;
 
 	private:

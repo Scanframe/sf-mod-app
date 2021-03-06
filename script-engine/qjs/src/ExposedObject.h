@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJSValue>
 #include <QDebug>
-#include <misc/dbgutils.h>
+#include <misc/gen/dbgutils.h>
 
 class ExposedObject :public QObject
 {

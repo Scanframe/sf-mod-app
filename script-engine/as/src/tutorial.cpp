@@ -14,7 +14,7 @@
 #endif
 #include <angelscript.h>
 #include "add_on/scriptstdstring.h"
-#include <misc/resource.h>
+#include <misc/qt/resource.h>
 
 using namespace std;
 
@@ -99,15 +99,15 @@ int RunApplication()
 	}
 
 	// We don't want to allow the script to hang the application, e.g. with an
-	// infinite loop, so we'll use the line callback function to set a timeout
+	// infinite loop, so we'll use the line callback function to Set a timeout
 	// that will abort the script after a certain time. Before executing the
-	// script the timeOut variable will be set to the time when the script must
+	// script the timeOut variable will be Set to the time when the script must
 	// stop executing.
 	DWORD timeOut;
 	r = ctx->SetLineCallback(asFUNCTION(LineCallback), &timeOut, asCALL_CDECL);
 	if (r < 0)
 	{
-		cout << "Failed to set the line callback function." << endl;
+		cout << "Failed to Set the line callback function." << endl;
 		ctx->Release();
 		engine->Release();
 		return -1;
@@ -280,7 +280,7 @@ int CompileScript(asIScriptEngine* engine)
 	}
 
 	// Compile the script. If there are any compiler messages they will
-	// be written to the message stream that we set right after creating the
+	// be written to the message stream that we Set right after creating the
 	// script engine. If there are no errors, and no warnings, nothing will
 	// be written to the stream.
 	r = mod->Build();

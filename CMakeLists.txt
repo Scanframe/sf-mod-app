@@ -10,7 +10,10 @@ project("qt-concepts"
 
 # Enable test builds from the root file by default for now.
 # So the test targets are listed and can be executed.
-set(BUILD_TESTING ON)
+set(SF_BUILD_TESTING ON)
+
+# Enables including Qt libraries when building (libraries).
+set(SF_BUILD_QT ON)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
@@ -31,4 +34,3 @@ add_subdirectory(script-engine)
 add_subdirectory(multi-docs)
 add_subdirectory(unit-test)
 add_subdirectory(manual)
-
