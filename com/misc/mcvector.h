@@ -2,6 +2,7 @@
 
 #	include <vector>
 #include <climits>
+#include <iostream>
 
 namespace sf
 {

@@ -1,5 +1,4 @@
-#ifndef MISC_RESOURCE_H
-#define MISC_RESOURCE_H
+#pragma once
 
 #include <QIcon>
 
@@ -44,6 +43,5 @@ class _MISC_CLASS Resource
 
 };
 
-} // namespace sf
+} // namespace
 
-#endif

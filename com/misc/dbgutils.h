@@ -23,7 +23,7 @@
 
 	Define that are fixed: (Can be removed when _DEBUG_LEVEL is -1)
 	----------------------
-	_NOTIFY(flags, text)
+	_NORM_NOTIFY(flags, text)
 	_COND_NOTIFY(cond, flags, text)
 	_CLASS_NOTIFY(flags, text)
 	_COND_CLASS_NOTIFY(cond, flags, text)

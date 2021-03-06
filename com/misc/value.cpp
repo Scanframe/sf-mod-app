@@ -3,7 +3,6 @@
 #include <cfenv>
 #include <sstream>
 #include <malloc.h>
-#include <cfloat>
 #include <climits>
 #include "dynamicbuffer.h"
 #include "value.h"
@@ -81,21 +80,21 @@ TValue::TValue(int_type v)
 	Set(vitINTEGER, &v);
 }
 
-TValue::TValue(const char* s)
+TValue::TValue(const char* v)
 {
-	Set(vitSTRING, s);
+	Set(vitSTRING, v);
 }
 
-TValue::TValue(const std::string& s)
+TValue::TValue(const std::string& v)
 {
-	Set(vitSTRING, s.c_str(), s.length());
+	Set(vitSTRING, v.c_str(), v.length());
 }
 
 #if IS_QT
 
-TValue::TValue(const QString& as)
+TValue::TValue(const QString& v)
 {
-	Set(as);
+	Set(v);
 }
 
 #endif
@@ -194,7 +193,7 @@ TValue& TValue::Set(int type, const void* content, size_t size)
 			}
 			break;
 
-		case vitSPECIAL:
+		case vitCUSTOM:
 			_size = size;
 			if (_size > maxSPECIAL)
 			{
@@ -250,19 +249,19 @@ bool TValue::IsZero() const
 	switch (_type)
 	{
 		case vitINTEGER:
-			return _data._int == 0;
+			return _data._int == std::numeric_limits<int_type>::denorm_min();
 
 		case vitFLOAT:
-			return _data._flt == 0.0;
+			return std::fabs(_data._flt) <= std::numeric_limits<flt_type>::denorm_min();
 
 		case vitREFERENCE:
 			return _data._ref->IsZero();
 
 		case vitSTRING:
-			return strlen(_data._ptr) == 0;
+			return !strlen(_data._ptr);
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return _size == 0;
 
 		case vitINVALID:
@@ -318,7 +317,7 @@ TValue::int_type TValue::GetInteger(int* cnverr) const
 		}
 
 		case vitREFERENCE:
-			return _data._ref->GetInteger();
+			return _data._ref->GetInteger(nullptr);
 
 		case vitSTRING:
 			rv = strtol(_data._ptr, &end_ptr, 0);
@@ -329,7 +328,7 @@ TValue::int_type TValue::GetInteger(int* cnverr) const
 			break;
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 		case vitINVALID:
 		case vitUNDEF:
 		default:
@@ -367,7 +366,7 @@ TValue::flt_type TValue::GetFloat(int* cnv_err) const
 			break;
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 		case vitINVALID:
 		case vitUNDEF:
 		default:
@@ -390,21 +389,23 @@ std::string TValue::GetString(int precision) const
 		case vitINTEGER:
 		{
 			// Create buffer on stack.
-			char buf[sizeof(_data._int) + 1];
-			return lltoa(_data._int, buf, 10);
+			char buf[std::numeric_limits<int_type>::max_digits10 + 1];
+			return itoa(_data._int, buf, 10);
 		}
 
 		case vitFLOAT:
 			if (precision != INT_MAX)
 			{
 				// Clip the precision
-				precision = clip(precision, 0, (DBL_MANT_DIG * 5 / 16 - 1));
+				precision = clip(precision, 0, std::numeric_limits<flt_type>::digits10);
 				return stringf("%.*lf", precision, _data._flt);
 			}
 			else
 			{
-				char buf[64];
-				std::string s(gcvt(_data._flt, (DBL_MANT_DIG * 5 / 16 - 1), buf));
+				// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
+				char buf[std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5];
+				// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
+				std::string s(gcvt(_data._flt, std::numeric_limits<flt_type>::digits10, buf));
 				// Only needed for Windows since it adds a trailing '.' even when not required.
 				return s.erase(s.find_last_not_of('.') + 1);
 			}
@@ -416,7 +417,7 @@ std::string TValue::GetString(int precision) const
 			return _data._ptr;
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return hexstring(_data._ptr, _size);
 
 		case vitLASTENTRY:
@@ -435,7 +436,7 @@ const void* TValue::GetBinary() const
 
 		case vitSTRING:
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return _data._ptr;
 
 		case vitREFERENCE:
@@ -503,7 +504,7 @@ bool TValue::SetType(EType type)
 		return false;
 	}
 	// Variable to hold type conversion error position
-	int cnverr = 0;
+	int cnv_err = 0;
 	// Convert to the requested type.
 	switch (type)
 	{
@@ -521,11 +522,11 @@ bool TValue::SetType(EType type)
 			break;
 
 		case vitINTEGER:
-			Set(GetInteger(&cnverr));
+			Set(GetInteger(&cnv_err));
 			break;
 
 		case vitFLOAT:
-			Set(GetFloat(&cnverr));
+			Set(GetFloat(&cnv_err));
 			break;
 
 		case vitSTRING:
@@ -533,19 +534,20 @@ bool TValue::SetType(EType type)
 			break;
 
 		case vitBINARY:
-			if (_type == vitSPECIAL)
+			if (_type == vitCUSTOM)
 			{
 				_type = type;
 				break;
 			}// Fall into next
 
-		case vitSPECIAL:
+		case vitCUSTOM:
 			if (_type == vitBINARY)
 			{
 				_type = type;
 			}
 			else
-			{// Copy std::string to temporary std::string buffer
+			{
+				// Copy std::string to temporary std::string buffer
 				std::string tmp = GetString();
 				// Calculate new _size
 				_size = tmp.length() / 2;
@@ -559,9 +561,10 @@ bool TValue::SetType(EType type)
 				_data._ptr = new char[_size + _sizeExtra];
 				// Convert hex std::string to binary data
 				if (stringhex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
-				{// Clear all memory after conversion error
-					memset(_data._ptr, '\0', _size);
-					cnverr = -1;
+				{
+					// Clear all memory after conversion error
+					std::memset(_data._ptr, '\0', _size);
+					cnv_err = -1;
 				}
 				// Assign the type member.
 				_type = type;
@@ -570,7 +573,7 @@ bool TValue::SetType(EType type)
 
 	}// switch
 	// Return true at success.
-	return !cnverr;
+	return !cnv_err;
 }
 
 TValue TValue::Mul(const TValue& v) const
@@ -581,14 +584,14 @@ TValue TValue::Mul(const TValue& v) const
 		case vitUNDEF:
 		case vitSTRING:
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return *this;
 
 		case vitINTEGER:
-			return TValue(_data._int * v.GetInteger());
+			return TValue(_data._int * v.GetInteger(nullptr));
 
 		case vitFLOAT:
-			return TValue(_data._flt * v.GetFloat());
+			return TValue(_data._flt * v.GetFloat(nullptr));
 
 		case vitREFERENCE:
 			return _data._ref->Mul(v);
@@ -608,7 +611,7 @@ TValue TValue::Div(const TValue& v) const
 
 		case vitINTEGER:
 		{
-			int_type divider = v.GetInteger();
+			int_type divider = v.GetInteger(nullptr);
 			// Check if the divider is zero.
 			if (!divider)
 			{
@@ -633,7 +636,7 @@ TValue TValue::Div(const TValue& v) const
 
 		case vitSTRING:
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return *this;
 
 		default:
@@ -650,10 +653,10 @@ TValue TValue::Add(const TValue& v) const
 			return v;
 
 		case vitINTEGER:
-			return TValue(_data._int + v.GetInteger());
+			return TValue(_data._int + v.GetInteger(nullptr));
 
 		case vitFLOAT:
-			return TValue(_data._flt + v.GetFloat());
+			return TValue(_data._flt + v.GetFloat(nullptr));
 
 		case vitSTRING:
 			return TValue(_data._ptr + v.GetString());
@@ -662,7 +665,7 @@ TValue TValue::Add(const TValue& v) const
 			return _data._ref->Add(v);
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return *this;
 
 		default:
@@ -674,22 +677,20 @@ TValue TValue::Sub(const TValue& v) const
 {
 	switch (_type)
 	{
-		case vitINVALID:
-		case vitUNDEF:
-			return *this;
-
 		case vitINTEGER:
-			return TValue(_data._int - v.GetInteger());
+			return TValue(_data._int - v.GetInteger(nullptr));
 
 		case vitFLOAT:
-			return TValue(_data._flt - v.GetFloat());
+			return TValue(_data._flt - v.GetFloat(nullptr));
 
 		case vitREFERENCE:
 			return _data._ref->Sub(v);
 
+		case vitINVALID:
+		case vitUNDEF:
 		case vitSTRING:
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return *this;
 
 		default:
@@ -701,22 +702,20 @@ TValue TValue::Mod(const TValue& v) const
 {
 	switch (_type)
 	{
-		case vitINVALID:
-		case vitUNDEF:
-			return *this;
-
 		case vitINTEGER:
-			return TValue(_data._int % v.GetInteger());
+			return TValue(imodulo<int_type>(_data._int, v.GetInteger(nullptr)));
 
 		case vitFLOAT:
-			return TValue(fmod(_data._flt, v.GetFloat()));
+			return TValue(fmodulo<flt_type>(_data._flt, v.GetFloat(nullptr)));
 
 		case vitREFERENCE:
 			return _data._ref->Mod(v);
 
+		case vitINVALID:
+		case vitUNDEF:
 		case vitSTRING:
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 			return *this;
 
 		default:
@@ -730,7 +729,7 @@ int TValue::Compare(const TValue& v) const
 	{
 		case vitINTEGER:
 		{
-			int_type l = v.GetInteger();
+			int_type l = v.GetInteger(nullptr);
 			int_type rv = _data._int != l;
 			rv *= (l > _data._int) ? -1 : 1;
 			return rv;
@@ -738,7 +737,7 @@ int TValue::Compare(const TValue& v) const
 
 		case vitFLOAT:
 		{
-			const flt_type & b(_data._flt);
+			const flt_type& b(_data._flt);
 			flt_type a = v.GetFloat();
 			int rv = (a == b) ? 0 : 1;
 			if (rv)
@@ -759,22 +758,22 @@ int TValue::Compare(const TValue& v) const
 
 		case vitSTRING:
 		{
-			// Case insensitive compare
-			return strcasecmp(_data._ptr, v.GetString().c_str());
+			// Case sensitive compare
+			return std::basic_string_view(_data._ptr, _size - 1).compare(v.GetString());
 		}
 
 		case vitREFERENCE:
 			return _data._ref->Compare(v);
 
 		case vitBINARY:
-		case vitSPECIAL:
+		case vitCUSTOM:
 		{// if the sizes aren't the same the compare criteria is the size
 			if (v._size != _size)
 			{
 				return v._size >= _size;
 			}
 			// if the compared type isn't the same type it's not equal by default
-			if (v._type == vitBINARY || v._type == vitSPECIAL)
+			if (v._type == vitBINARY || v._type == vitCUSTOM)
 			{
 				return memcmp(_data._ptr, v._data._ptr, _size);
 			}
@@ -791,7 +790,7 @@ int TValue::Compare(const TValue& v) const
 			return 1;
 
 		default:
-			// return INT_MAX if in compareable
+			// return INT_MAX if in comparable.
 			return INT_MAX;
 	}// switch
 }
@@ -803,12 +802,18 @@ TValue& TValue::Round(const TValue& v)
 		switch (_type)
 		{
 			case vitINTEGER:
-				_data._int = ((_data._int + (v.GetInteger() / 2L)) / v.GetInteger()) * v.GetInteger();
+			{
+//				_data._int = sf::round(_data._int, v.GetInteger(nullptr));
+				int_type iv = v.GetInteger(nullptr);
+				_data._int = ((_data._int + (iv / 2L)) / iv) * iv;
 				break;
+			}
 
 			case vitFLOAT:
-				_data._flt = floor(_data._flt / v.GetFloat() + 0.5) * v.GetFloat();
+			{
+				_data._flt = sf::round(_data._flt, v.GetFloat(nullptr));
 				break;
+			}
 
 			case vitREFERENCE:
 				return _data._ref->Round(v);
@@ -831,21 +836,18 @@ TValue::operator QString() const
 
 std::ostream& operator<<(std::ostream& os, const TValue& v)
 {
-	os << '('
-		<< TValue::GetType(v.GetType())
-		<< ','
-		<< '"';
+	auto delim = '"';
+	os << '('	<< TValue::GetType(v.GetType())	<< ',' << delim;
 	// Do only std::string conversion when type is STRING.
 	if (v.GetType() == TValue::vitSTRING)
 	{
-		os << escape(v.GetString(), false);
+		os << escape(v.GetString(), delim);
 	}
 	else
 	{
 		os << v.GetString();
 	}
-	os << '"'
-		<< ')';
+	os << delim	<< ')';
 	return os;
 }
 
@@ -883,9 +885,9 @@ std::istream& operator>>(std::istream& is, TValue& v)
 	read_to_delimiter(is, content, '"') >> c;
 	is.get(c);
 	// Get the type value from the string.
-	TValue::EType etype = TValue::GetType(type.c_str());
+	TValue::EType t = TValue::GetType(type.c_str());
 	// When it could not.
-	if (etype == TValue::vitINVALID)
+	if (t == TValue::vitINVALID)
 	{
 		// Make the instance invalid when reading fails.
 		v.MakeInvalid();
@@ -893,12 +895,12 @@ std::istream& operator>>(std::istream& is, TValue& v)
 	else
 	{
 		// std::string conversion for a STRING type only.
-		if (etype == TValue::vitSTRING)
+		if (t == TValue::vitSTRING)
 		{
-			content = escape(content, true);
+			content = unescape(content);
 		}
 		// Set type and content for instance 'v'
-		v.Set(content).SetType(etype);
+		v.Set(content).SetType(t);
 	}
 	return is;
 }

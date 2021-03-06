@@ -37,16 +37,16 @@ class TValue
 			vitINVALID = 0,
 			// When a type is assigned it will use the assigned type.
 			vitUNDEF,
-			// 32-bit integer value using no additional allocated memory.
+			// Integer value using no additional allocated memory.
 			vitINTEGER,
-			// 64-bit floating point value using no additional allocated memory.
+			// Floating point value using no additional allocated memory.
 			vitFLOAT,
 			// String value having additional allocated memory.
 			vitSTRING,
 			// Binary untyped value having additional allocated memory.
 			vitBINARY,
-			// Special value for now handled the same as a binary typed.
-			vitSPECIAL,
+			// Custom value for now handled the same as a binary typed.
+			vitCUSTOM,
 			// Last entry used for iterations.
 			vitLASTENTRY
 		};
@@ -74,19 +74,19 @@ class TValue
 
 		/**
 		 * Floating point type constructor for implicit vitFLOAT.
-		 * @param d The floating point value.
+		 * @param v The floating point value.
 		 */
 		explicit TValue(flt_type v);
 
 		/**
 		 * Double type constructor for implicit vitSTRING.
-		 * @param s The string value.
+		 * @param v The string value.
 		 */
 		explicit TValue(const char* v);
 
 		/**
 		 * Double type constructor for implicit vitSTRING.
-		 * @param s The std string value.
+		 * @param v The std string value.
 		 */
 		explicit TValue(const std::string& v);
 
@@ -94,9 +94,9 @@ class TValue
 
 		/**
 		 * QString type constructor for implicit vitSTRING.
-		 * @param s The Qt string value.
+		 * @param v The Qt string value.
 		 */
-		explicit TValue(const QString& s);
+		explicit TValue(const QString& v);
 
 #endif
 
@@ -379,7 +379,7 @@ class TValue
 		 * Checks if this is a numeric type (vitFLOAT or vitINTEGER) of instance.
 		 * @return false if the type is numerical.
 		 */
-		[[nodiscard]] bool IsNummeric() const;
+		[[nodiscard]] bool IsNumber() const;
 
 		/**
 		 * Returns a floating point value of the current value if possible.
@@ -440,9 +440,15 @@ class TValue
 
 #endif
 
+		/**
+		 * Type operator returning a string.
+		 */
 		explicit operator std::string() const;
 
-		explicit operator int() const;
+		/**
+		 * Type operator returning a boolean.
+		 */
+		explicit operator bool() const;
 
 		bool operator!() const
 		{
@@ -518,19 +524,36 @@ class TValue
 		 */
 		size_t _size{0};
 
-		// Pointer to the memory location.
+		/**
+		 * Pointer to the memory location.
+		 */
 		union
 		{
-			// Pointer to special, binary or string data.
+			/**
+			 * Pointer to special, binary or string data.
+			 */
 			char* _ptr;
-			// Floating point value.
+			/**
+			 * Floating point value.
+			 */
 			flt_type _flt;
-			// Integer value.
+			/**
+			 * Integer value.
+			 */
 			int_type _int;
-			// Reference pointer to other instance.
+			/**
+			 * Reference pointer to other instance.
+			 */
 			TValue* _ref;
 		} _data{nullptr};
 
+		/**
+		 * Additional size to allocate.
+		 * Minimal is 1 for terminating a string.
+		 */
+		static const size_t _sizeExtra;
+
+	public:
 		/**
 	  * Holds the invalid string when needed.
 	  */
@@ -540,16 +563,9 @@ class TValue
 		 */
 		static const char* _typeNames[];
 		/**
-		 * Additional size to allocate.
-		 * Minimal is 1 for terminating a string.
-		 */
-		static const size_t _sizeExtra;
-
-	public:
-		/**
 		 * Vector type and implicit iterator for this class.
 		 */
-		typedef mcvector<TValue> Vector;
+		typedef mcvector<TValue> vector_type;
 
 		friend TValue operator*(const TValue& v1, const TValue& v2);
 
@@ -702,9 +718,9 @@ bool TValue::IsValid() const
 }
 
 inline
-bool TValue::IsNummeric() const
+bool TValue::IsNumber() const
 {
-	return (_type == vitREFERENCE) ? _data._ref->IsNummeric() : _type == vitINTEGER || _type == vitFLOAT;
+	return (_type == vitREFERENCE) ? _data._ref->IsNumber() : _type == vitINTEGER || _type == vitFLOAT;
 }
 
 inline
@@ -714,7 +730,7 @@ size_t TValue::GetSize() const
 }
 
 inline
-TValue::operator int() const
+TValue::operator bool() const
 {
 	return !IsZero();
 }

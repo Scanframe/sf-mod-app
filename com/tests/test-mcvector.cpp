@@ -4,13 +4,13 @@
 #include <sstream>
 #include <misc/mcvector.h>
 
-SCENARIO("Counter Vector", "[mcvector]")
+SCENARIO("sf::mcvector", "[mcvector]")
 {
 	GIVEN("A Counted Vector")
 	{
 		sf::mcvector<int> v{5, 6, 7, 1, 2, 3, 4};
-		REQUIRE(v.Count() == 7);
-//		std::clog << v << std::endl;
+		CHECK(v.Count() == 7);
+		//std::clog << v << std::endl;
 
 		WHEN("After vector initialisation")
 		{

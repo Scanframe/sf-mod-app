@@ -11,6 +11,7 @@ make C++ programming easier.
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <cmath>
 #include <cerrno>
 #include <string>
 #include <iostream>
@@ -638,6 +639,11 @@ _MISC_FUNC std::string escape(const std::string& str, char delimiter = '\0');
 _MISC_FUNC std::string unescape(const std::string& str);
 
 /**
+ * Filters all characters from the passed string and returns the resulting string.
+ */
+_MISC_FUNC std::string filter(std::string str, const std::string& filter);
+
+/**
 * Checks if a keyboard key pas pressed.
 */
 _MISC_FUNC bool kbhit();
@@ -753,24 +759,166 @@ _MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
 _MISC_FUNC std::string unique(const std::string& s);
 
 /**
+ * Returns the precision of the passed floating point value.
+ * This is the amount of characters after the point without the trailing zeros.
+ * When the value is 12300.00 the value returned is 3.
+ * When the value is 0.0123 the value returned is also 3.
+ * @tparam T  Floating point type.
+ * @param value Floating point value
+ * @return Amount of characters after the point without the trailing zeros.
+ */
+template <typename T>
+int precision(T value)
+{
+	constexpr int len = std::numeric_limits<double>::digits10;
+	int i;
+	char* s = ecvt(value, len, &i, &i);
+	i = len;
+	while (i--)
+	{
+		if (s[i] != '0')
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+/**
+ * Returns the amount of digits which are significant for the value.
+ * When the value is 12300.00 the value returned is -2.
+ * When the value is 0.0123 the value returned is 4.
+ * @tparam T Floating point type.
+ * @param value
+ * @return Amount of significant digits for the passed number.
+ */
+template <typename T>
+int digits(T value)
+{
+	constexpr int len = std::numeric_limits<T>::digits10;
+	int dec, sign;
+	char* s = ecvt(value, len, &dec, &sign);
+	int i = len;
+	while (i--)
+	{
+		if (s[i] != '0' || !i)
+		{
+			return -(dec - i - 1);
+		}
+	}
+	return -(len + dec - 1);
+}
+
+/**
+ * Returns the order of magnitude of the passed value.
+ * Examples:
+ *  magnitude(0.001234) => -2
+ *  magnitude(0.123400) =>  0
+ *  magnitude(12340.00) =>  6
+ */
+template <typename T>
+int magnitude(T value)
+{
+	if (value)
+	{
+		int dec, sign;
+		ecvt(value, std::numeric_limits<T>::digits10, &dec, &sign);
+		return dec;
+	}
+	return 0;
+}
+
+/**
+ * Rounds the passed value to a multiple of the rnd value.
+ */
+template <typename T>
+T round(T value, T rnd)
+{
+	if (std::numeric_limits<T>::is_integer)
+	{
+		return ((value + (rnd / T(2))) / rnd) * rnd;
+	}
+	else
+	{
+		return std::floor(value / rnd + T(0.5)) * rnd;
+	}
+}
+
+/**
  * Converts an integer to a buffer.<br>
  * itoa converts value to a null-terminated buffer and stores the result
  * in buffer. With itoa, value is an integer.<br>
  * <b>Note:</b> The space allocated for buffer must be large enough to hold
  * the returned buffer, including the terminating null character (\0).
- * itoa can return up to 33 bytes.
+ * itoa can return up to (sizeof(T) * CHAR_BIT + 1) bytes.
  */
-_MISC_FUNC char* itoa(int value, char* buffer, int base/* = 10*/);
+template <typename T>
+char* itoa(T value, char* buffer, int base)
+{
+	const size_t buf_size = sizeof(T) * CHAR_BIT;
+	// Sanity check.
+	if (!value || base < 2 || base > 16)
+	{
+		buffer[0] = '0';
+		buffer[1] = 0;
+		return buffer;
+	}
+	bool neg = false;
+	// In standard ltoa(), negative numbers are handled only with
+	// base 10. Otherwise numbers are considered unsigned.
+	if (value < 0 && base == 10)
+	{
+		neg = true;
+		value *= -1;
+	}
+	// Terminate the buffer.
+	buffer[buf_size + 1] = 0;
+	// Reverse iterate in the character buffer.
+	int i;
+	for (i = buf_size; value && i; --i, value /= base)
+	{
+		buffer[i] = "0123456789abcdef"[value % base];
+	}
+	// When negative in base 10 prepend the negative sign.
+	if (neg)
+	{
+		buffer[i--] = '-';
+	}
+	// Return the pointer of the last written character.
+	return &buffer[i + 1];
+}
 
 /**
- * Converts an long integer to a buffer.<br>
- * itoa converts value to a null-terminated buffer and stores the result
- * in buffer. With ltoa, value is an long integer<br>
- * <b>Note:</b> The space allocated for buffer must be large enough to hold
- * the returned buffer, including the terminating null character (\0).
- * lltoa can return up to 33 bytes.
+ * Modulo function.
+ * @tparam T Integer type of the template.
+ * @param k Is the dividend.
+ * @param n Is the divisor.
+ * @return Remainder
  */
-_MISC_FUNC char* lltoa(long long value, char* buffer, int base/* = 10*/);
+template<typename T>
+T imodulo(T k, T n)
+{
+	T	r = k % n;
+	//if the r is less than zero, add n to put it in the [0, n-1] range if n is positive
+	//if the r is greater than zero, add n to put it in the [n-1, 0] range if n is negative
+	return ((n > 0 && r < 0) || (n < 0 && r > 0)) ? r + n : r;
+}
+
+/**
+ * Modulo function
+ * @tparam T Floating point type of the template.
+ * @param k Is the dividend.
+ * @param n Is the divisor.
+ * @return Remainder
+ */
+template<typename T>
+T fmodulo(T k, T n)
+{
+	T r = std::fmod(k, n);
+	//if the r is less than zero, add n to put it in the [0, n-1] range if n is positive
+	//if the r is greater than zero, add n to put it in the [n-1, 0] range if n is negative
+	return ((n > 0 && r < 0) || (n < 0 && r > 0)) ? r + n : r;
+}
 
 /*
  * The strncspn() function calculates the length of the initial segment of 's'
@@ -939,15 +1087,15 @@ struct passwd_t :passwd_type
 		/**
 		 * Holds the buffer size.
 		 */
-		ssize_t bufsz;
+		ssize_t buf_sz{0};
 		/**
 		 * Holds the buffer for the passwd_type dynamic fields.
 		 */
-		char* buf;
+		char* buf{nullptr};
 		/**
 		 * Flag telling if this instance contains data or not.
 		 */
-		bool valid;
+		bool valid{};
 
 		friend bool proc_getpwnam(std::string name, passwd_t& pwd);
 
@@ -992,23 +1140,29 @@ typedef struct group group_type;
 struct group_t :group_type
 {
 	public:
-		// Constructor allocating the right amount of memory.
+		/**
+		 * Constructor allocating the right amount of memory.
+		 */
 		group_t();
 
-		// Destructor
+		/**
+		 * Destructor
+		 */
 		~group_t();
 
 		//
 		explicit operator bool() const {return valid;}
 
 	private:
-		// Clears the passwd_type part only.
+		/**
+		 * Clears the passwd_type part only.
+		 */
 		void reset();
 
 		/**
 		 * Holds the buffer size.
 		 */
-		ssize_t bufsz{0};
+		ssize_t buf_sz{0};
 		/**
 		 * Holds the buffer for the group_type dynamic fields.
 		 */
@@ -1026,7 +1180,7 @@ struct group_t :group_type
 /**
  * Wrapper for getgrnam_r() but simplified using group_t.
  * Returns true when an entry was found.
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 bool proc_getgrnam(std::string name, group_t& grp);
 
@@ -1063,6 +1217,4 @@ void proc_setfsgid(gid_t gid);
 
 #endif // WIN32
 
-} // namespace sf
-
-
+} // namespace

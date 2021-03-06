@@ -3,7 +3,7 @@
 
 #include <cstdarg>
 #include <ctime>
-#include <climits>
+#include <utility>
 #include <cxxabi.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -275,6 +275,21 @@ std::string unescape(const std::string& str)
 	return do_escaping(str, true);
 }
 
+std::string filter(std::string s, const std::string& filter)
+{
+	// Remove the unwanted characters from the string.
+	size_t p;
+	do
+	{
+		p = s.find_first_of(filter);
+		if (p != std::string::npos)
+			s.erase(p, 1);
+	}
+	while (p != std::string::npos);
+	return s;
+}
+
+
 #ifndef WIN32
 
 pid_t gettid() noexcept
@@ -497,6 +512,7 @@ std::string toupper(std::string s)
 	return s;
 }
 
+
 std::string trim_right(std::string s, const std::string& t)
 {
 	return s.erase(s.find_last_not_of(t) + 1);
@@ -507,19 +523,16 @@ std::string trim_left(std::string s, const std::string& t)
 	return s.erase(0, s.find_first_not_of(t));
 }
 
-//
 std::string trim(std::string s, const std::string& t)
 {
-	return trim_left(trim_right(s, t), t);
+	return trim_left(trim_right(std::move(s), t), t);
 }
 
-//
 std::string unique(const std::string& s)
 {
 	return std::string(s.c_str(), s.length());
 }
 
-//
 size_t strncspn(const char* s, size_t n, const char* reject)
 {
 	// Iterate from zero to the maximum.
@@ -536,7 +549,6 @@ size_t strncspn(const char* s, size_t n, const char* reject)
 	return i;
 }
 
-//
 size_t strnspn(const char* s, size_t n, const char* accept)
 {
 	// Iterate from zero to the maximum.
@@ -553,7 +565,6 @@ size_t strnspn(const char* s, size_t n, const char* accept)
 	return i;
 }
 
-//
 const char* strnstr(const char* s, const char* find, size_t n)
 {
 	char c, sc;
@@ -581,52 +592,6 @@ const char* strnstr(const char* s, const char* find, size_t n)
 		s--;
 	}
 	return (char*) s;
-}
-
-template <typename T>
-char* int_to_a(T value, char* buffer, int base)
-{
-	const size_t buf_size = sizeof(T) * CHAR_BIT;
-	// Sanity check.
-	if (!value || base < 2 || base > 16)
-	{
-		buffer[0] = '0';
-		buffer[1] = 0;
-		return buffer;
-	}
-	bool neg = false;
-	// In standard ltoa(), negative numbers are handled only with
-	// base 10. Otherwise numbers are considered unsigned.
-	if (value < 0 && base == 10)
-	{
-		neg = true;
-		value *= -1;
-	}
-	// Terminate the buffer.
-	buffer[buf_size + 1] = 0;
-	// Reverse iterate in the character buffer.
-	int i;
-	for (i = buf_size; value && i; --i, value /= base)
-	{
-		buffer[i] = "0123456789abcdef"[value % base];
-	}
-	// When negative in base 10 prepend the negative sign.
-	if (neg)
-	{
-		buffer[i--] = '-';
-	}
-	// Return the pointer of the last written character.
-	return &buffer[i + 1];
-}
-
-char* lltoa(long long value, char* buffer, int base)
-{
-	return int_to_a(value, buffer, base);
-}
-
-char* itoa(int value, char* buffer, int base)
-{
-	return int_to_a(value, buffer, base);
 }
 
 int wildcmp(const char* wild, const char* str, bool case_s)
@@ -682,7 +647,6 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 	return !*wild;
 }
 
-//
 bool
 getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
 {
@@ -719,19 +683,16 @@ getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(
 	return true;
 }
 
-//
 std::string file_basename(const std::string& path)
 {
 	return ::basename(const_cast<char*>(sf::unique(path).c_str()));
 }
 
-//
 std::string file_dirname(const std::string& path)
 {
 	return ::dirname(const_cast<char*>(sf::unique(path).c_str()));
 }
 
-//
 bool file_exists(const char* path)
 {
 	return !access(path, F_OK);
@@ -1008,15 +969,15 @@ passwd_t::passwd_t() :passwd()
 {
 	reset();
 	// Read the buffer size needed.
-	bufsz = ::sysconf(_SC_GETPW_R_SIZE_MAX);
+	buf_sz = ::sysconf(_SC_GETPW_R_SIZE_MAX);
 	// Value was indeterminate
-	if (bufsz == -1)
+	if (buf_sz == -1)
 	{
 		// Should be more than enough
-		bufsz = 16384;
+		buf_sz = 16384;
 	}
 	// Allocate the memory.
-	buf = (char*) ::malloc(bufsz);
+	buf = (char*) ::malloc(buf_sz);
 	// Check for failure.
 	if (!buf)
 	{
@@ -1040,7 +1001,7 @@ bool proc_getpwnam(std::string name, passwd_t& pwd) // NOLINT(performance-unnece
 {
 	passwd_type* _pwd;
 	//
-	int err = ::getpwnam_r(name.c_str(), &pwd, pwd.buf, pwd.bufsz, &_pwd);
+	int err = ::getpwnam_r(name.c_str(), &pwd, pwd.buf, pwd.buf_sz, &_pwd);
 	// In case of an error or not found reset the content.
 	if (err || !_pwd)
 	{
@@ -1059,7 +1020,7 @@ bool proc_getpwuid(uid_t uid, passwd_t& pwd)
 {
 	passwd_type* _pwd;
 	//
-	int err = ::getpwuid_r(uid, &pwd, pwd.buf, pwd.bufsz, &_pwd);
+	int err = ::getpwuid_r(uid, &pwd, pwd.buf, pwd.buf_sz, &_pwd);
 	// In case of an error or not found reset the content.
 	if (err || !_pwd)
 	{
@@ -1078,15 +1039,15 @@ group_t::group_t()
 {
 	reset();
 	// Read the buffer size needed.
-	bufsz = ::sysconf(_SC_GETGR_R_SIZE_MAX);
+	buf_sz = ::sysconf(_SC_GETGR_R_SIZE_MAX);
 	// Value was indeterminate
-	if (bufsz == -1)
+	if (buf_sz == -1)
 	{
 		// Should be more than enough
-		bufsz = 16384;
+		buf_sz = 16384;
 	}
 	// Allocate the memory.
-	buf = (char*) ::malloc(bufsz);
+	buf = (char*) ::malloc(buf_sz);
 	// Check for failure.
 	if (!buf)
 	{
@@ -1110,7 +1071,7 @@ bool proc_getgrnam(std::string name, group_t& grp)
 {
 	group_type* _grp;
 	//
-	int err = ::getgrnam_r(name.c_str(), &grp, grp.buf, grp.bufsz, &_grp);
+	int err = ::getgrnam_r(name.c_str(), &grp, grp.buf, grp.buf_sz, &_grp);
 	// In case of an error or not found reset the content.
 	if (err || !_grp)
 	{
@@ -1129,7 +1090,7 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 {
 	group_type* _grp;
 	//
-	int err = ::getgrgid_r(gid, &grp, grp.buf, grp.bufsz, &_grp);
+	int err = ::getgrgid_r(gid, &grp, grp.buf, grp.buf_sz, &_grp);
 	// Incase of an errror or not found reset the content.
 	if (err || !_grp)
 	{
