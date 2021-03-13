@@ -24,7 +24,9 @@ function ShowHelp()
 	WriteLog "Usage: [<options>] ${0} <sub-dir> [<target>]
 
   -c : Cleans build targets first (adds build option '--clean-first')
-  -t : Add tests to the build config.
+  -t : Add tests to the build configuration.
+  -m : Create build directory and makefiles only.
+  -b : Build target only.
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'

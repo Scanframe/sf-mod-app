@@ -25,7 +25,6 @@ if (Doxygen_FOUND)
 			string(REGEX REPLACE "\n$" "" PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 		endif ()
 	]]
-
 	# For cygwin only relative path are working.
 	file(RELATIVE_PATH LOGO_FILE "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/com/misc/qt/res/icon/scanframe.ico")
 	# Enable when to change the output directory.
@@ -47,7 +46,7 @@ if (Doxygen_FOUND)
 		set(HTML_EXTRA_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}")
 	endif ()
 	# Set the example path to this parent directory.
-	get_filename_component(EXAMPLE_PATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/.." REALPATH)
+	file(RELATIVE_PATH EXAMPLE_PATH "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
 	# Set input and output files for the generation of the actual config file.
 	set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.conf)
 	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doxyfile.conf)

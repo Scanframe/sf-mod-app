@@ -87,18 +87,6 @@ double UnitConverter::GetOrgValue(const std::string& value, double def) const
 	return GetOrgValue(Calculator(value, def));
 }
 
-#if IS_WIN
-_MISC_FUNC bool IsSystemMetric()
- {
-	static int value = -1;
-	// When not initialized.
-	if (value == -1)
-		value = GetProfileInt("intl", "iMeasure", 0);
-	// Get from the registry if the system is Metric or US measurement.
-	return value == 0;
-}
-#endif
-
 } // namespace
 
 

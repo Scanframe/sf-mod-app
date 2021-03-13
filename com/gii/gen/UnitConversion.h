@@ -16,13 +16,6 @@
 namespace sf
 {
 
-#if IS_WIN
-/**
- * Returns true is the system is using metric measures instead of US.
- */
-_MISC_FUNC bool IsSystemMetric();
-#endif
-
 /**
  * Type of the server callback function.
  * @param option Special conversion option code.
