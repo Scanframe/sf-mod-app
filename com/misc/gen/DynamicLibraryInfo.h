@@ -20,19 +20,20 @@ namespace sf
 {
 
 /**
- * @brief
- * Information on a dynamic library Set using _DL_INFORMATION macro.
+ * @brief Information on a dynamic library file using the _DL_INFORMATION macro.
  */
 struct _MISC_CLASS DynamicLibraryInfo
-	{
-		/**
-		 * Default destructor.
-		 */
-		DynamicLibraryInfo() = default;
+{
 	/**
-	 * Copy destructor.
+	 * Default constructor.
+	 */
+	DynamicLibraryInfo() = default;
+
+	/**
+	 * Copy constructor.
 	 */
 	DynamicLibraryInfo(const DynamicLibraryInfo&);
+
 	/**
 	 * Path of the dynamic library.
 	 */
@@ -45,14 +46,18 @@ struct _MISC_CLASS DynamicLibraryInfo
 	 * Description of the dynamic library.
 	 */
 	std::string Description;
+
 	/**
-	 * Reads the information from the file and return true on success.
+	 * Reads the information from the file.
+	 * @param filepath Location of the dynamic library file.
+	 * @return  True on success.
 	 */
 	bool read(const std::string& filepath);
+
 	/**
 	 * Clears the members.
 	 */
 	void reset();
-	};
+};
 
 }

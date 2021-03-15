@@ -1,5 +1,4 @@
-#ifndef QT_CONCEPTS_MDICHILD_H
-#define QT_CONCEPTS_MDICHILD_H
+#pragma once
 
 #include <QString>
 
@@ -32,5 +31,3 @@ class MdiChild
 
 #endif
 };
-
-#endif

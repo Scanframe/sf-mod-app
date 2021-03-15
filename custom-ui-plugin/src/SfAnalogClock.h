@@ -1,9 +1,8 @@
-#ifndef ANALOGCLOCK_H
-#define ANALOGCLOCK_H
+#pragma once
 
 #include <QWidget>
 #include <QtUiPlugin/QDesignerExportWidget>
-#include <misc/qt/objectextension.h>
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
@@ -22,5 +21,3 @@ class QDESIGNER_WIDGET_EXPORT AnalogClock :public QWidget, public ObjectExtensio
 };
 
 } // namespace
-
-#endif

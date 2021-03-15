@@ -1,9 +1,9 @@
 #pragma once
 
-#include "misc/gen/genutils.h"
+#include "misc/gen/gen_utils.h"
 #include "misc/gen/TVector.h"
 
-#include "global.h"
+#include "../global.h"
 
 /*
   From -> To calculation:
@@ -19,7 +19,7 @@ namespace sf
 /**
  * Type of the server callback function.
  * @param option Special conversion option code.
- * @param from_unit Current unit string.
+ * @param from_unit current unit string.
  * @param from_precision Decimals of current unit. (can be negative)
  * @param multiplier Multiplication factor.
  * @param offset Offset value.
@@ -48,7 +48,7 @@ _MISC_FUNC void SetUnitConversionServer(UnitConversionServerCallBack func, void*
 /**
  * Returns true if a conversion could be made.
  * @param option Special conversion option code.
- * @param from_unit Current unit string.
+ * @param from_unit current unit string.
  * @param from_precision Decimals of current unit. (can be negative)
  * @param multiplier Multiplication factor.
  * @param offset Offset value.
@@ -63,7 +63,7 @@ GetUnitConversion(std::string option, std::string from_unit, int from_precision,
 /**
  *
  */
-class _MISC_CLASS UnitConverter
+class _GII_CLASS UnitConverter
 {
 	public:
 		/**

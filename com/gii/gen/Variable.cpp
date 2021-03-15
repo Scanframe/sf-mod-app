@@ -2,7 +2,7 @@
 #include <cstdio>
 
 #include <misc/gen/dbgutils.h>
-#include <misc/gen/genutils.h>
+#include <misc/gen/gen_utils.h>
 #include <misc/gen/Value.h>
 #include <misc/gen/csf.h>
 
@@ -10,140 +10,17 @@
 #include "Variable.h"
 // Not part of the public interface.
 #include "VariableStatic.h"
+#include "VariableReference.h"
 
 namespace sf
 {
 
-VariableReference::VariableReference(bool global)
+Variable::Variable()
 {
-	_global = global;
-	_type = Value::vitInvalid;
-	_description = Value::_invalidStr;
-	_name = Value::_invalidStr;
-	_unit = Value::_invalidStr;
-	// Add to global reference list declared in VariableStatic
-	if (_global)
-	{
-		VariableStatic::_referenceList.Add(this);
-	}
-}
-
-void VariableReference::copy(const VariableReference& ref)
-{
-//  bool _global;
-//  Vector _list;
-	_COND_RTTI_NOTIFY(this == VariableStatic::zero()._reference,
-		DO_MSGBOX | DO_DBGBRK, "Cannot assign a ref to Zero Ref!")
-	_valid = ref._valid;
-	_id = ref._id;
-	_flags = ref._flags;
-	_curFlags = ref._curFlags;
-	_type = ref._type;
-	_name = ref._name;
-	_description = ref._description;
-	_unit = ref._unit;
-	_curValue = ref._curValue;
-	_defValue = ref._defValue;
-	_maxValue = ref._maxValue;
-	_minValue = ref._minValue;
-	_rndValue = ref._rndValue;
-	_sigDigits = ref._sigDigits;
-	_states = ref._states;
-	_localActive = ref._localActive;
-	_convertUnit = ref._convertUnit;
-	_convertCurValue = ref._convertCurValue;
-	_convertDefValue = ref._convertDefValue;
-	_convertMaxValue = ref._convertMaxValue;
-	_convertMinValue = ref._convertMinValue;
-	_convertRndValue = ref._convertRndValue;
-	_convertSigDigits = ref._convertSigDigits;
-	_convertMultiplier = ref._convertMultiplier;
-	_convertOffset = ref._convertOffset;
-}
-
-VariableReference::~VariableReference()
-{
-	// If TVariables are still referenced these must be removed first
-	// except if it is ZeroVariable itself.
-	if (VariableStatic::zero()._reference == this)
-	{
-		// Check if there are still variables in the system
-		// when zero variable is destructed
-//    if (Variable::GetInstanceCount())
-		unsigned total_count = 0;
-		VariableStatic::ReferenceVector::iter_type i(VariableStatic::_referenceList);
-		// Iterate through all variable references and count the usage count
-		while (i)
-		{
-			VariableReference* ref = i++;
-			total_count += ref->_list.Count();
-			// Notification of warning
-			// Check if current ref is the ZeroVariable reference.
-			if (ref == VariableStatic::zero()._reference)
-			{
-				// Iterate through each variable entry in the list.
-				size_type count = ref->_list.Count();
-				// Skip the first one because there is always ZeroVariable itself.
-				for (size_type idx = 1; i < count; i++)
-				{
-					// Notification of warning
-					_NORM_NOTIFY
-					(
-						DO_MSGBOX | DO_DEFAULT,
-						_RTTI_TYPENAME
-							<< ": Dangling instance [" << idx << "/" << count
-							<< "] with desired ID "
-							<< stringf("0x%lX", ref->_list[idx]->_desiredId)
-							<< " in this process!"
-					)
-					// Limit the amount shown to a maximum of 3.
-					if (idx >= 3)
-					{
-						_NORM_NOTIFY(DO_MSGBOX | DO_DEFAULT,
-							_RTTI_TYPENAME << ": Too many [" << count << "] dangling instances to be shown!")
-						break;
-					}
-				}
-			}
-			else
-			{
-				_NORM_NOTIFY
-				(
-					DO_MSGBOX | DO_DEFAULT,
-					_RTTI_TYPENAME
-						<< ": Dangling reference owning instance with ID "
-						<< stringf("0x%lX", ref->_id)
-						<< " in this process!"
-				)
-			}
-		}
-		// Subtract 1 for zero variable itself.
-		// There should only be one left in the list
-		total_count--;
-		// Notification of warning
-		_COND_NORM_NOTIFY
-		(
-			total_count,
-			DO_MSGBOX | DO_DEFAULT,
-			_RTTI_TYPENAME
-				<< ": Total of " << total_count
-				<< " dangling Variable instances in this process!"
-		)
-	}
-	else
-	{
-		size_type count = _list.Count();
-		while (count--)
-		{
-			// Attach variable to Zero which is the default and the invalid one
-			if (_list[count])
-			{
-				_list[count]->setup(0L, false);
-			}
-		}
-	}
-	// Remove from global reference list declared in VariableStatic
-	VariableStatic::_referenceList.Detach(this);
+	_COND_RTTI_THROW(!VariableStatic::zero()._reference,
+		"ZeroVariable has NOT been created yet! Library initialisation error!")
+	_global = true;
+	attachRef(VariableStatic::zero()._reference);
 }
 
 Variable::Variable(void*, void*)
@@ -155,14 +32,6 @@ Variable::Variable(void*, void*)
 		_global = true;
 		setup(std::string("0x0,n/a,n/a,R,n/a,n/a,n/a,,,,,?=?,"), 0);
 	}
-}
-
-Variable::Variable()
-{
-	_COND_RTTI_THROW(!VariableStatic::zero()._reference,
-		"ZeroVariable has NOT been created yet! Library initialisation error!")
-	_global = true;
-	attachRef(VariableStatic::zero()._reference);
 }
 
 Variable::Variable(bool global)
@@ -182,7 +51,7 @@ bool Variable::setExport(bool global)
 	if
 		(
 		!isOwner()            // Only an owner can be exported.
-			|| !isFlag(flgEXPORT) // And it must be exportable.
+			|| !isFlag(flgExport) // And it must be exportable.
 			|| !_reference              // The reference pointer cannot be NULL.
 			|| _reference == VariableStatic::zero()._reference  // The attached reference may not be the Zero one.
 			|| _global            // To make an owner appear global it must be local.
@@ -221,7 +90,7 @@ bool Variable::setExport(bool global)
 			return false;
 		}
 		// Add this variable to the global static list.
-		VariableStatic::_referenceList.Add(_reference);
+		VariableStatic::_referenceList.add(_reference);
 		// Notify all global linked users of Variable instances of new ID.
 		emitGlobalEvent(veNewId, true);
 		// Iterate through global variable instances and attach those having
@@ -232,7 +101,7 @@ bool Variable::setExport(bool global)
 	else
 	{
 		// Remove the reference from the global static list.
-		if (!VariableStatic::_referenceList.Detach(_reference))
+		if (!VariableStatic::_referenceList.detach(_reference))
 		{
 			return true;
 		}
@@ -244,7 +113,7 @@ bool Variable::setExport(bool global)
 		{
 			if (i->_global)
 			{
-				list.Add(i);
+				list.add(i);
 			}
 		}
 		// Now iterated through the new list.
@@ -280,14 +149,14 @@ void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 	{
 		_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting Instance During An Event!")
 		// Do not free allocated data before end of global event remove
-		VariableStatic::_deleteWaitCache.Add(p);
+		VariableStatic::_deleteWaitCache.add(p);
 	}
 	else
 	{
 		// Call real destructor.
 		::operator delete(p);
 		// If deletion is allowed again delete the wait cache too.
-		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache.Count();
+		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache.count();
 		if (count)
 		{
 			while (count--)
@@ -295,7 +164,7 @@ void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 				delete (char*) VariableStatic::_deleteWaitCache[count];
 			}
 			// Flush the entries from the list.
-			VariableStatic::_deleteWaitCache.Flush();
+			VariableStatic::_deleteWaitCache.flush();
 		}
 	}
 }
@@ -315,7 +184,7 @@ Variable::~Variable()
 Variable::size_type Variable::getVariableCount()
 {
 	// Return the actual count -1 because of Zero.
-	return VariableStatic::_referenceList.Count() - 1;
+	return VariableStatic::_referenceList.count() - 1;
 }
 
 Variable::size_type Variable::getInstanceCount()
@@ -324,7 +193,7 @@ Variable::size_type Variable::getInstanceCount()
 	// Iterate through all variable references and count the usage count.
 	for (auto i: VariableStatic::_referenceList)
 	{
-		rv += i->_list.Count();
+		rv += i->_list.count();
 	}
 	// Subtract 1 for zero variable before returning.
 	return --rv;
@@ -336,7 +205,7 @@ const Variable* Variable::getVariableListItem(Variable::size_type p)
 	// there is always one in there otherwise no Reference would exist
 	// increase p by 1 to skip Zero which is the first in the list
 	p++;
-	VariableReference* ref = (p < VariableStatic::_referenceList.Count()) ? VariableStatic::_referenceList[p] : nullptr;
+	VariableReference* ref = (p < VariableStatic::_referenceList.count()) ? VariableStatic::_referenceList[p] : nullptr;
 	return (ref) ? ref->_list[0] : &VariableStatic::zero();
 }
 
@@ -382,8 +251,8 @@ void Variable::makeOwner()
 		return;
 	}
 	// Put this pointer at the beginning of the list which makes it the owner
-	_reference->_list.Detach(this);
-	_reference->_list.AddAt(this, 0);
+	_reference->_list.detach(this);
+	_reference->_list.addAt(this, 0);
 	// Notify previous owner of losing ownership
 	prev_owner->emitEvent(veLostOwner, *this);
 	// Notify this instance of getting ownership.
@@ -412,11 +281,11 @@ bool Variable::attachRef(VariableReference* ref)
 			if (_reference == VariableStatic::zero()._reference)
 			{
 				// Remove this variable from the Zero reference variable list.
-				_reference->_list.Detach(this);
+				_reference->_list.detach(this);
 				// Create a new local variable reference.
 				_reference = new VariableReference(false);
 				// Attach this variable to the new reference.
-				_reference->_list.Add(this);
+				_reference->_list.add(this);
 			}
 			// Copy the reference fields from the global reference to the current reference.
 			_reference->copy(*ref);
@@ -432,7 +301,7 @@ bool Variable::attachRef(VariableReference* ref)
 	{
 		// If this was the last one or the owner the referring reference will be deleted
 		// _list[0] is the owner default the one who created the reference instance
-		if (_reference->_list.Count() == 0 || this == _reference->_list[0])
+		if (_reference->_list.count() == 0 || this == _reference->_list[0])
 		{
 			// Notify all variables that this reference is to become invalid.
 			emitLocalEvent(veInvalid, false);
@@ -447,7 +316,7 @@ bool Variable::attachRef(VariableReference* ref)
 		}
 		else
 		{ // Just remove variable from list if it is not the owner.
-			if (!_reference->_list.Detach(this))
+			if (!_reference->_list.detach(this))
 			{
 				_RTTI_NOTIFY(DO_MSGBOX | DO_CERR, "Could not remove instance from list!")
 				rv = false;
@@ -461,7 +330,7 @@ bool Variable::attachRef(VariableReference* ref)
 	{
 		_reference = ref;
 		// Add this instance to the the Variable Reference list
-		_reference->_list.Add(this);
+		_reference->_list.add(this);
 		// Notify the user of this instance by telling it was attached.
 		emitEvent(veIdChanged, *this);
 	}
@@ -562,7 +431,7 @@ bool Variable::setup(const Definition* definition)
 		ref->_maxValue = definition->_min;
 		for (auto& state: definition->_states)
 		{
-			ref->_states.Add(state);
+			ref->_states.add(state);
 		}
 		// Get significant digits for the float type variable.
 		if (Value::vitFloat == ref->_type)
@@ -592,7 +461,7 @@ bool Variable::setup(const Definition* definition)
 			ret_val &= ref->_maxValue.setType(ref->_type);
 			ret_val &= ref->_minValue.setType(ref->_type);
 			ret_val &= ref->_rndValue.setType(ref->_type);
-			for (uint i = 0; i < ref->_states.Count(); i++)
+			for (size_t i = 0; i < ref->_states.count(); i++)
 			{
 				ret_val &= ref->_states[i]._value.setType(ref->_type);
 			}
@@ -642,7 +511,7 @@ bool Variable::setup(const Definition* definition)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error Setup Definition: "
+	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error setup Definition: "
 		<< definition->_name << " (0x" << std::hex << definition->_id << ")!")
 	//
 	return ret_val;
@@ -746,7 +615,7 @@ bool Variable::setup(const std::string& definition, Variable::id_type id_ofs)
 		{
 			state_count++;
 		}
-		ref->_states.Resize(state_count);
+		ref->_states.resize(state_count);
 		for (int i = 0; i < state_count; i++)
 		{
 			ref->_states[i]._name = GetCsfField(vfFirstState + i, defin);
@@ -794,7 +663,7 @@ bool Variable::setup(const std::string& definition, Variable::id_type id_ofs)
 			ret_val &= ref->_maxValue.setType(type);
 			ret_val &= ref->_minValue.setType(type);
 			ret_val &= ref->_rndValue.setType(type);
-			for (uint i = 0; i < ref->_states.Count(); i++)
+			for (size_t i = 0; i < ref->_states.count(); i++)
 			{
 				ret_val &= ref->_states[i]._value.setType(type);
 			}
@@ -845,7 +714,7 @@ bool Variable::setup(const std::string& definition, Variable::id_type id_ofs)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error In Setup String: " << definition << '!')
+	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error In setup String: " << definition << '!')
 	//
 	return ret_val;
 }
@@ -942,7 +811,7 @@ Variable::size_type Variable::getState(const Value& v) const
 const Value& Variable::getStateValue(Variable::size_type state) const
 {
 	// Check index versus range
-	if (state < _reference->_states.Count())
+	if (state < _reference->_states.count())
 	{
 		return _reference->_states[state]._value;
 	}
@@ -952,7 +821,7 @@ const Value& Variable::getStateValue(Variable::size_type state) const
 
 std::string Variable::getStateName(Variable::size_type state) const
 { // check index versus range
-	if (state < _reference->_states.Count())
+	if (state < _reference->_states.count())
 	{
 		return _reference->_states[state]._name;
 	}
@@ -1031,7 +900,7 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 		// Check for skip_self
 		if (i && (!skip_self || i != this))
 		{
-			ev_list.Add(i);
+			ev_list.add(i);
 		}
 	}
 	// Iterate through the generated list and call the event handler.
@@ -1044,7 +913,7 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 	// Enable deletion of local instances.
 	VariableStatic::_globalActive--;
 	// return the amount of variables that were effected by the call to this function.
-	return ev_list.Count();
+	return ev_list.count();
 }
 
 Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
@@ -1069,7 +938,7 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 			if (var && (!skip_self || var != this) && var->_global)
 			{
 				// Add variable to list.
-				ev_list.Add(var);
+				ev_list.add(var);
 			}
 		}
 	}
@@ -1106,7 +975,7 @@ Variable::size_type Variable::attachDesired()
 			if (var && var->_global && var->_desiredId && var->_desiredId == _reference->_id)
 			{
 				// Add instance pointer the to list.
-				ev_list.Add(var);
+				ev_list.add(var);
 			}
 		}
 	}
@@ -1124,7 +993,7 @@ Variable::size_type Variable::attachDesired()
 	// Enable deletion of instances.
 	VariableStatic::_globalActive--;
 	// Return  the lists size as the count of the events.
-	return ev_list.Count();
+	return ev_list.count();
 }
 
 void Variable::setHandler(VariableHandler* handler)
@@ -1151,14 +1020,14 @@ void Variable::setHandler(VariableHandler* handler)
 void Variable::removeHandler(VariableHandler* handler)
 {
 	// Get the total count of variable references.
-	unsigned vc = VariableStatic::VariableStatic::_referenceList.Count();
+	unsigned vc = VariableStatic::VariableStatic::_referenceList.count();
 	// iterate through variable references
 	for (unsigned i = 0; i < vc; i++)
 	{
 		// Get the current variable pointer.
 		VariableReference* ref = VariableStatic::_referenceList[i];
 		// get the total amount of variables attached to this reference.
-		unsigned vrc = ref->_list.Count();
+		unsigned vrc = ref->_list.count();
 		// iterate through the variables.
 		for (unsigned j = 0; j < vrc; j++)
 		{
@@ -1182,15 +1051,15 @@ int Variable::toFlags(const char* flags)
 	}
 		a[] =
 		{
-			{'R', flgREADONLY},
-			{'A', flgARCHIVE},
-			{'S', flgSHARE},
-			{'L', flgLINK},
-			{'F', flgFUNCTION},
-			{'P', flgPARAMETER},
-			{'H', flgHIDDEN},
-			{'E', flgEXPORT},
-			{'W', flgWRITEABLE},
+			{'R', flgReadonly},
+			{'A', flgArchive},
+			{'S', flgShare},
+			{'L', flgLink},
+			{'F', flgFunction},
+			{'P', flgParameter},
+			{'H', flgHidden},
+			{'E', flgExport},
+			{'W', flgWriteable},
 			{0, 0}
 		};
 
@@ -1221,15 +1090,15 @@ std::string Variable::getFlagsString(Variable::flags_type flg)
 	}
 		a[] =
 		{
-			{'R', flgREADONLY},
-			{'A', flgARCHIVE},
-			{'S', flgSHARE},
-			{'L', flgLINK},
-			{'F', flgFUNCTION},
-			{'P', flgPARAMETER},
-			{'H', flgHIDDEN},
-			{'E', flgEXPORT},
-			{'W', flgWRITEABLE},
+			{'R', flgReadonly},
+			{'A', flgArchive},
+			{'S', flgShare},
+			{'L', flgLink},
+			{'F', flgFunction},
+			{'P', flgParameter},
+			{'H', flgHidden},
+			{'E', flgExport},
+			{'W', flgWriteable},
 			{0, 0}
 		};
 	char flags[33];
@@ -1331,7 +1200,7 @@ bool Variable::isReadOnly() const
 	{
 		// If the flag READONLY is Set the not owned variable is
 		// read only by default.
-		if (isFlag(flgREADONLY))
+		if (isFlag(flgReadonly))
 		{
 			return true;
 		}
@@ -1340,7 +1209,7 @@ bool Variable::isReadOnly() const
 		// local referencing variables may change the current value or flags.
 		if (!const_cast<Variable*>(this)->getOwner()._global && _global)
 		{
-			if (isFlag(flgWRITEABLE))
+			if (isFlag(flgWriteable))
 			{
 				return false;
 			}
@@ -1356,7 +1225,7 @@ bool Variable::loadCur(const Value& value) const
 	if (isOwner())
 	{
 		// Check if this instance is not read-only and global because only globals are loadable.
-		if (!isFlag(flgREADONLY) && const_cast<Variable*>(this)->getOwner()._global)
+		if (!isFlag(flgReadonly) && const_cast<Variable*>(this)->getOwner()._global)
 		{  // Make a writable copy of the passed value.
 			Value new_val(value);
 			// Adjust the new_val type
@@ -1691,7 +1560,7 @@ bool Variable::create(std::istream& is, Variable::Vector& list, bool global, int
 			{
 				if (not_ref_null(list))
 				{
-					list.Add(var);
+					list.add(var);
 				}
 				else
 				{
@@ -1806,7 +1675,7 @@ std::string Variable::getCurString(bool use_states) const
 		{
 			// there are states return the state name if 'states' is true
 			// if not run in to default switch
-			unsigned count = _reference->_states.Count();
+			unsigned count = _reference->_states.count();
 			if (use_states && count)
 			{
 				// Find the state of the current value.
@@ -2139,7 +2008,7 @@ const char* Variable::getEventName(EEvent event)
 			break;
 
 		case veGetOwner:
-			rv = "GetOwner";
+			rv = "getOwner";
 			break;
 
 		case veLostOwner:
@@ -2155,7 +2024,7 @@ const char* Variable::getEventName(EEvent event)
 			break;
 
 		case veSetup:
-			rv = "Setup";
+			rv = "setup";
 			break;
 
 		case veValueChange:
@@ -2296,6 +2165,154 @@ void Variable::initialize() noexcept
 void Variable::deinitialize() noexcept
 {
 	VariableStatic::initialize(false);
+}
+
+void Variable::setDesiredId()
+{
+	setDesiredId(_reference->_id);
+}
+
+Variable& Variable::getOwner()
+{
+	return *_reference->_list[0];
+}
+
+bool Variable::isOwner() const
+{
+	return this == _reference->_list[0];
+}
+
+bool Variable::isValid() const
+{
+	return _reference && _reference->_valid;
+}
+
+bool Variable::isNumber() const
+{
+	return _reference->_type == Value::vitFloat || _reference->_type == Value::vitInteger;
+}
+
+bool Variable::isConverted() const
+{
+	return
+		_converted &&
+			_reference->_type == Value::vitFloat &&
+			_reference->_convertUnit.length();
+}
+
+bool Variable::isTemporary()
+{
+	return _temporary != nullptr;
+}
+
+bool Variable::isFlag(int flag) const
+{
+	return (_reference->_curFlags & flag) == flag;
+}
+
+Variable::id_type Variable::getId() const
+{
+	return _reference->_id;
+}
+
+std::string Variable::getDescription() const
+{
+	return _reference->_description;
+}
+
+std::string Variable::getCurFlagsString() const
+{
+	return getFlagsString(_reference->_curFlags);
+}
+
+std::string Variable::getFlagsString() const
+{
+	return Variable::getFlagsString(_reference->_flags);
+}
+
+Variable::flags_type Variable::getFlags() const
+{
+	return _reference->_flags;
+}
+
+Variable::flags_type Variable::getCurFlags() const
+{
+	return _reference->_curFlags;
+}
+
+const Value& Variable::getDef() const
+{
+	return isConverted() ? _reference->_convertDefValue : _reference->_defValue;
+}
+
+const Value& Variable::getMin() const
+{
+	return isConverted() ? _reference->_convertMinValue : _reference->_minValue;
+}
+
+const Value& Variable::getMax() const
+{
+	return isConverted() ? _reference->_convertMaxValue : _reference->_maxValue;
+}
+
+const Value& Variable::getRnd() const
+{
+	return isConverted() ? _reference->_convertRndValue : _reference->_rndValue;
+}
+
+const Value& Variable::getDef(bool converted) const
+{
+	return (converted && _reference->_convertUnit.length()) ? _reference->_convertDefValue : _reference->_defValue;
+}
+
+int Variable::getSigDigits() const
+{
+	return isConverted() ? _reference->_convertSigDigits : _reference->_sigDigits;
+}
+
+const Value& Variable::getMin(bool converted) const
+{
+	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMinValue : _reference->_minValue;
+}
+
+const Value& Variable::getMax(bool converted) const
+{
+	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMaxValue : _reference->_maxValue;
+}
+
+const Value& Variable::getRnd(bool converted) const
+{
+	return (converted && _reference->_convertUnit.length()) ? _reference->_convertRndValue : _reference->_rndValue;
+}
+
+int Variable::getSigDigits(bool converted) const
+{
+	return (converted && _reference->_convertUnit.length()) ? _reference->_convertSigDigits : _reference->_sigDigits;
+}
+
+Value::EType Variable::getType() const
+{
+	return _reference->_type;
+}
+
+const Variable& Variable::getVariableById(Variable::id_type id)
+{
+	return *(getReferenceById(id)->_list[0]);
+}
+
+Variable::size_type Variable::getUsageCount() const
+{
+	return _reference->_list.count();
+}
+
+Variable::size_type Variable::getStateCount() const
+{
+	return _reference->_states.count();
+}
+
+const Variable::StateVector& Variable::getStates() const
+{
+	return _reference->_states;
 }
 
 }

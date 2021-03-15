@@ -12,12 +12,12 @@ namespace sf
 /**
  * Forward declaration.
  */
-class _GII_CLASS VariableReference;
+class VariableReference;
 
 /**
  * Forward declaration.
  */
-class _GII_CLASS Variable;
+class Variable;
 
 /**
  * This base class contains all local types of used in the Variable class.
@@ -105,10 +105,10 @@ class VariableTypes :public InformationTypes
 
 		/**
 		 * For broadcast events the variable parameter is not the variable
-		 * who Set the link with function 'SetLink()' and the param parameter
-		 * isn't also the one passed to function 'SetLink()' either.
+		 * who Set the link with function 'setHandler()' and the param parameter
+		 * isn't also the one passed to function 'setHandler()' either.
 		 */
-		enum EEvent
+		enum EEvent: int
 		{
 			/** Special event passed to the global conversion handler.*/
 			veConvert = 64000,
@@ -118,9 +118,9 @@ class VariableTypes :public InformationTypes
 			veUserGlobal,
 			/** From here only specific variables are called.<br>Indicates first local event.*/
 			veFirstLocal = 0,
-			/** Current flags have been changed.*/
+			/** current flags have been changed.*/
 			veFlagsChange = 1,
-			/** Current value has been changed.<br>Can be local when temp value is used.*/
+			/** current value has been changed.<br>Can be local when temp value is used.*/
 			veValueChange = 2,
 			/** Variable reference is becoming invalid for this instance.*/
 			veInvalid = 3,
@@ -153,7 +153,7 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration of the order of fields in the setup string.
 		 */
-		enum EField
+		enum EField: int
 		{
 			/** Integer identifier */
 			vfId = 0,
@@ -183,33 +183,33 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration type for specifying flags.
 		 */
-		enum EFlag
+		enum EFlag: flags_type
 		{
 			/** Represented by character 'R'.<br>Only the owner can change Set it.*/
-			flgREADONLY = 1 << 0,
+			flgReadonly = 1 << 0,
 			/** Represented by character 'A'.<br> Variable is needs saving when storing results.*/
-			flgARCHIVE = 1 << 1,
+			flgArchive = 1 << 1,
 			/** Represented by character 'S'.<br>Parameter may be exported out side the application.*/
-			flgSHARE = 1 << 2,
+			flgShare = 1 << 2,
 			/** Represented by character 'L'.*/
-			flgLINK = 1 << 3,
+			flgLink = 1 << 3,
 			/** Represented by character 'F'.<br>
 			 * Variable is used as a function and is reset or changed by the owning instance after execution. */
-			flgFUNCTION = 1 << 4,
+			flgFunction = 1 << 4,
 			/** Represented by character 'P'.<br>Variable is a parameter and indicates that it is needed to configuration. (Filter for settings files)*/
-			flgPARAMETER = 1 << 5,
+			flgParameter = 1 << 5,
 			/** Represented by character 'H'.<br>For selection of client only when listing.*/
-			flgHIDDEN = 1 << 6,
+			flgHidden = 1 << 6,
 			/** Represented by character 'E'.<br>Set when Local variable may be exported globally.<br>
 			 * Exported local variables are readonly by default. */
-			flgEXPORT = 1 << 7,
+			flgExport = 1 << 7,
 			/** Represented by character 'W'.<br> Set when a local variable is exported globally and may be written to globally.*/
-			flgWRITEABLE = 1 << 8
+			flgWriteable = 1 << 8
 		};
 		/**
 		 * Enumeration of string types used for filtering.
 		 */
-		enum EStringType
+		enum EStringType: int
 		{
 			/** When the instance is not of type string.*/
 			stNoString = -1,

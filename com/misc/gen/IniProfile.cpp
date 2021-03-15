@@ -2,7 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "genutils.h"
+#include "gen_utils.h"
 #include "IniProfile.h"
 
 namespace sf
@@ -146,7 +146,7 @@ void IniProfile::Flush()
 		delete i;
 	}
 	// Flush the pointers in the list.
-	SectionList.Flush();
+	SectionList.flush();
 }
 
 bool IniProfile::Init(const char* path)
@@ -179,7 +179,7 @@ bool IniProfile::Init(std::istream& is)
 	// Read profile from stream
 	bool retval = Read(is);
 	// Check size of profile and Set current section ptr
-	SectionListPtr = SectionList.Count() ? 0 : UINT_MAX;
+	SectionListPtr = SectionList.count() ? 0 : UINT_MAX;
 	return retval;
 }
 
@@ -197,7 +197,7 @@ bool IniProfile::Read(std::istream& is)
 		if (section->Read(is))
 		{
 			// add section on success
-			SectionList.Add(section);
+			SectionList.add(section);
 		}
 		else
 		{
@@ -242,9 +242,9 @@ bool IniProfile::Write()
 const char* IniProfile::GetSection(IniProfile::size_type p) const
 {
 	// return NULL if there are no section loaded at all
-	if (SectionList.Count())
+	if (SectionList.count())
 	{ // check if 'p' has a valid value
-		if (p < SectionList.Count() || p == npos)
+		if (p < SectionList.count() || p == npos)
 		{
 			return SectionList[(p == npos) ? SectionListPtr : p]->Name.c_str();
 		}
@@ -255,10 +255,10 @@ const char* IniProfile::GetSection(IniProfile::size_type p) const
 bool IniProfile::SetSection(IniProfile::size_type p)
 {
 	// Return NULL if there are no section loaded at all
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		// Check if 'p' has a valid value
-		if (p < SectionList.Count())
+		if (p < SectionList.count())
 		{
 			SectionListPtr = p;
 			return true;
@@ -285,9 +285,9 @@ bool IniProfile::SetSection(const char* section, bool create)
 		// Assign name to it
 		s->Name = section;
 		// Add section to the list
-		SectionList.Add(s);
+		SectionList.add(s);
 		// Make this section the current one
-		SectionListPtr = SectionList.Count() - 1;
+		SectionListPtr = SectionList.count() - 1;
 		// Set dirty flag
 		Dirty = true;
 		// Tells that section dit not exist at the start of this function
@@ -301,10 +301,10 @@ bool IniProfile::SetSection(const char* section, bool create)
 
 IniProfile::size_type  IniProfile::FindEntry(const char* key)
 {
-	auto rv = SectionList.Count() ? SectionList[SectionListPtr]->FindEntry(key) : IniProfile::npos;
+	auto rv = SectionList.count() ? SectionList[SectionListPtr]->FindEntry(key) : IniProfile::npos;
 	if (rv == IniProfile::npos)
 	{
-		if (SectionList.Count() && key)
+		if (SectionList.count() && key)
 		{
 			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '"
 				<< SectionList[SectionListPtr]->Name << "' In File '" << Path << std::endl;
@@ -362,7 +362,7 @@ int IniProfile::GetInt(const char* key, int defaultInt) const
 {
 	const char* value = nullptr;
 	// check section entries
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		// get current section entry value, returns NULL when not found
 		value = SectionList[SectionListPtr]->GetEntry(key, nullptr);
@@ -373,7 +373,7 @@ int IniProfile::GetInt(const char* key, int defaultInt) const
 
 bool IniProfile::SetString(const char* key, const char* value)
 {  // check section entry count
-	if (SectionList.Count())
+	if (SectionList.count())
 	{  // Set dirty flag so the write function really writes to file
 		Dirty = true;
 		// look key up in current section and Set the entry
@@ -392,12 +392,12 @@ bool IniProfile::SetInt(const char* key, int value)
 IniProfile::Entry* IniProfile::GetEntry(IniProfile::size_type p)
 {
 	// Check for sections
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		// Get section pointer
 		Section* section = SectionList[SectionListPtr];
 		// Check for valid index
-		if (p < section->EntryList.Count())
+		if (p < section->EntryList.count())
 		{ // Return entry pointer
 			return section->EntryList[p];
 		}
@@ -409,7 +409,7 @@ IniProfile::Entry* IniProfile::GetEntry(IniProfile::size_type p)
 bool IniProfile::InsertComment(const char* key, const char* comment)
 {
 	// Check section entry count.
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		// Set dirty flag so the write function really writes to file.
 		Dirty = true;
@@ -426,7 +426,7 @@ IniProfile::size_type IniProfile::FindSection(const char* section)
 		return SectionListPtr;
 	}
 	// Loop through section list
-	for (IniProfile::size_type i = 0; i < SectionList.Count(); i++)
+	for (IniProfile::size_type i = 0; i < SectionList.count(); i++)
 	{
 		// Section name is case insensitive compared
 		if (!::strcmp(SectionList[i]->Name.c_str(), section))
@@ -441,19 +441,19 @@ IniProfile::size_type IniProfile::FindSection(const char* section)
 
 bool IniProfile::RemoveSection(IniProfile::size_type p)
 { // check for valid parameters
-	if (p != IniProfile::npos && p < SectionList.Count())
+	if (p != IniProfile::npos && p < SectionList.count())
 	{ // delete instance
 		delete_null(SectionList[p]);
 		// remove from list
-		SectionList.Detach(p);
+		SectionList.detach(p);
 		// correct current section index pointer
 		if (p < SectionListPtr)
 		{
 			SectionListPtr--;
 		}
-		if (SectionListPtr >= SectionList.Count())
+		if (SectionListPtr >= SectionList.count())
 		{
-			SectionListPtr = SectionList.Count() - 1;
+			SectionListPtr = SectionList.count() - 1;
 		}
 		// Set dirty flag
 		Dirty = true;
@@ -500,7 +500,7 @@ bool IniProfile::Section::Read(std::istream& is)
 				// read entry from if stream has no errors and entry
 				if (entry->Read(is) && entry->IsValid())
 				{
-					EntryList.Add(entry);
+					EntryList.add(entry);
 				}
 				else
 				{
@@ -560,7 +560,7 @@ bool IniProfile::Section::SetEntry(const char* key, const char* value)
 		else
 		{
 			// Add entry at the end of the section list
-			EntryList.Add(entry);
+			EntryList.add(entry);
 		}
 		// Signal success.
 		return true;
@@ -582,7 +582,7 @@ bool IniProfile::Section::InsertComment(const char* key, const char* comment)
 		if (p != EntryListType::npos)
 		{
 			// Add entry at found location
-			EntryList.AddAt(entry, p);
+			EntryList.addAt(entry, p);
 			// Signal success.
 			return true;
 		}
@@ -597,7 +597,7 @@ IniProfile::EntryListType::size_type IniProfile::Section::FindEntry(const char* 
 	if (key)
 	{
 		// Loop through entry list
-		for (EntryListType::size_type p = 0; p < EntryList.Count(); p++)
+		for (EntryListType::size_type p = 0; p < EntryList.count(); p++)
 		{
 			// Section name is case sensitive compared.
 			if (!::strcmp(EntryList[p]->GetKey(), key))
@@ -613,12 +613,12 @@ IniProfile::EntryListType::size_type IniProfile::Section::FindEntry(const char* 
 
 bool IniProfile::Section::RemoveEntry(EntryListType::size_type p)
 { // check for valid parameters
-	if (p != EntryListType::npos && p < EntryList.Count())
+	if (p != EntryListType::npos && p < EntryList.count())
 	{
 		// delete entry instance
 		delete_null(EntryList[p]);
 		// remove from list
-		EntryList.Detach(p);
+		EntryList.detach(p);
 		// return true on success
 		return true;
 	}

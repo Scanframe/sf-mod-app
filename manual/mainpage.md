@@ -2,6 +2,7 @@
 
 Help written from code by Doxygen.
 
+
 Sample classes:
 * `::sf::Value`
 * `::sf::Variable`
@@ -16,3 +17,12 @@ Sample template classes:
 
 
 Link to [other](sf-Variable.html) markdown.
+
+# CLion
+
+To make it so that Running the project in **CLion** a external application and command line needs to be configured.
+
+### Linux
+
+* Application: `google-chrome`
+* Command line: `--app=file://$CMakeCurrentBuildDir$/html/index.html`

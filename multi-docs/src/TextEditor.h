@@ -1,5 +1,4 @@
-#ifndef MDICHILD_H
-#define MDICHILD_H
+#pragma once
 
 #include <QTextEdit>
 #include "MdiChild.h"
@@ -49,5 +48,3 @@ class TextEditor :public QTextEdit, public MdiChild
 		QString curFile;
 		bool isUntitled;
 };
-
-#endif

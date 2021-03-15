@@ -25,8 +25,8 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-	src/rt-impl-b.h
-	src/rt-impl-b.cpp
+	src/RuntimeLibImplementationB.h
+	src/RuntimeLibImplementationB.cpp
 	)
 
 # Link the Qt widgets library.

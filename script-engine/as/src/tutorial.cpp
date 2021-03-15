@@ -9,12 +9,12 @@
 	#include <sys/time.h> // NOLINT(modernize-deprecated-headers)
 	#include <cstdio>
 #else
-	#include <conio.h>   // kbhit(), getch()
+	#include <conio.h>   // kb_hit(), getch()
 	#include <windows.h> // timeGetTime()
 #endif
 #include <angelscript.h>
 #include "add_on/scriptstdstring.h"
-#include <misc/qt/resource.h>
+#include <misc/qt/Resource.h>
 
 using namespace std;
 

@@ -49,6 +49,7 @@
 #include "../global.h"
 // Include for std::cout, std::cerr ,std::clog and std::ostream.
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 
 #if IS_QT
@@ -77,12 +78,6 @@
 #define _Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
 // Define that converts a this pointer to the class type name.
 #define _Q_RTTI_TYPENAME _Q_RTTI_NAME(*this)
-
-inline
-std::ostream& operator<<(std::ostream& os, const QString& qs)
-{
-	return os << qs.toStdString();
-}
 
 inline
 QDebug& operator<<(QDebug& qd, const std::string& ss)
@@ -180,7 +175,7 @@ class _MISC_CLASS debug_ostream
 
 } // namespace sf
 
-// Defined types of debug output of which combinations are alolowed.
+// Defined types of debug output of which combinations are allowed.
 #define DO_DEFAULT sf::dotDEFAULT
 #define DO_COUT    sf::dotCOUT
 #define DO_CLOG    sf::dotCLOG

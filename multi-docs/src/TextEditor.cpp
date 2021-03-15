@@ -1,5 +1,5 @@
 #include <QtWidgets>
-#include <misc/qt/resource.h>
+#include <misc/qt/Resource.h>
 
 #include "TextEditor.h"
 #include "Highlighter.h"

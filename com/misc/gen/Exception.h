@@ -79,7 +79,7 @@ class _MISC_CLASS Exception :public ExceptionBase
 		 * Formatting Constructor with a class type_info, and formatting.
 		 * First boolean is to get a distinct constructor.
 		 */
-		Exception& Function(const char* mangled_name, const char* func, const char* fmt, ...);
+		Exception Function(const char* mangled_name, const char* func, const char* fmt, ...);
 };
 
 /**

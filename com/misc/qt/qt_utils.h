@@ -1,11 +1,20 @@
 #pragma once
 
+#include <QString>
 #include <QFileInfo>
 #include <QDataStream>
+#include <QPoint>
+#include <QSize>
 #include <QFileSystemWatcher>
 
 // Import of shared library export defines.
 #include "../global.h"
+
+inline
+std::ostream& operator<<(std::ostream& os, const QString& qs)
+{
+	return os << qs.toStdString();
+}
 
 /**
  * Allows moving a QPoint using a QSize.
@@ -48,7 +57,7 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		/**
 		 * Sets the fileInfo
 		 */
-		const QFileInfo& fileInfo() const;
+		[[nodiscard]] const QFileInfo& fileInfo() const;
 
 	private slots:
 

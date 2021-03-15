@@ -3,7 +3,7 @@
 #include <QFileInfo>
 
 #include <misc/qt/qt_utils.h>
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {

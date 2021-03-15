@@ -5,9 +5,3 @@ project("sf-com")
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(misc)
 add_subdirectory(gii)
-
-# Testing only available if this is the main app
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
-if (SF_BUILD_TESTING)
-	add_subdirectory(tests)
-endif()

@@ -4,7 +4,7 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 
 
 #include "dbgutils.h"
-
+#include <ctime>
 
 #if IS_GNU
 #include <cxxabi.h>

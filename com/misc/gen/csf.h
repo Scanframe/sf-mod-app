@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "genutils.h"
+#include "gen_utils.h"
 #include "../global.h"
 
 namespace sf

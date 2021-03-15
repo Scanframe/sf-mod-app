@@ -2,10 +2,10 @@
 set(TargetName "sf-misc")
 # When the target exists ignore it.
 if (TARGET ${TargetName})
-	message(STATUS "Target '${PROJECT_NAME}': Library '${TargetName}' is already part of build.")
+	#message(STATUS "Target '${PROJECT_NAME}': Library '${TargetName}' is already part of build.")
 else ()
 	message(STATUS "Target '${PROJECT_NAME}': Adding library '${TargetName}'.")
-	add_library(${TargetName} SHARED IMPORTED ../misc/gen/csf.cpp ../misc/gen/csf.h ../misc/gen/DynamicLibraryInfo.h)
+	add_library(${TargetName} SHARED IMPORTED ../misc/gen/TPointer.h ../misc/gen/TSet.h)
 	if (WIN32)
 		_populate_target_props(${TargetName} DEBUG "lib${TargetName}.dll" "lib${TargetName}.dll.a")
 	else ()

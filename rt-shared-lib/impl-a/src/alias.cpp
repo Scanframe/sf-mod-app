@@ -1,4 +1,4 @@
-#include "rt-impl-a.h"
+#include "RuntimeLibImplementationA.h"
 
 // Register the same derived class as an alias.
 SF_REG_CLASS

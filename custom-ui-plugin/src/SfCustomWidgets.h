@@ -1,5 +1,4 @@
-#ifndef SFCUSTOMWIDGETS_H
-#define SFCUSTOMWIDGETS_H
+#pragma once
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
@@ -22,5 +21,3 @@ class CustomWidgets :public QObject, public QDesignerCustomWidgetCollectionInter
 };
 
 } // namespace
-
-#endif

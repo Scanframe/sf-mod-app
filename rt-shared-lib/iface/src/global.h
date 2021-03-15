@@ -13,8 +13,7 @@ Add compiler definition flags:
 	* _IFACE_ARC when including in a compile or using it as an archive.
 */
 
-#ifndef IFACE_GLOBAL_H
-#define IFACE_GLOBAL_H
+#pragma once
 
 // Import of defines for this target.
 #include "misc/gen/target.h"
@@ -35,5 +34,3 @@ Add compiler definition flags:
 	#define _IFACE_CLASS TARGET_IMPORT
 	#define _IFACE_FUNC TARGET_IMPORT
 #endif
-
-#endif // IFACE_GLOBAL_H

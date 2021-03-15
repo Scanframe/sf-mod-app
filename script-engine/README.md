@@ -1,6 +1,6 @@
 # Event Handling by Scripts
 
-This sub-project aims to handle an events by a embedded scripting engines.
+This subtract-project aims to handle an events by a embedded scripting engines.
 
 Answers of questions that are looked for:
 

@@ -32,9 +32,9 @@ find_package(Angelscript COMPONENTS angelscript REQUIRED)
 
 set(SOURCES
 	src/main.cpp
-	src/mainwindow.h
-	src/mainwindow.cpp
-	src/mainwindow.ui
+	src/MainWindow.h
+	src/MainWindow.cpp
+	src/MainWindow.ui
 	src/tutorial.cpp
 	src/tutorial.h
 	src/add_on/scriptarray.h

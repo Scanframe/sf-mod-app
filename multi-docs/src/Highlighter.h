@@ -1,5 +1,4 @@
-#ifndef HIGHLIGHTER_H
-#define HIGHLIGHTER_H
+#pragma once
 
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
@@ -38,5 +37,3 @@ class Highlighter :public QSyntaxHighlighter
 		QTextCharFormat quotationFormat;
 		QTextCharFormat functionFormat;
 };
-
-#endif // HIGHLIGHTER_H

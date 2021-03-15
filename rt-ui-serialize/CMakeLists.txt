@@ -25,12 +25,12 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
 set(SOURCES
-	src/formdialog.h
-	src/formdialog.cpp
+	src/FormDialog.h
+	src/FormDialog.cpp
 	src/main.cpp
-	src/mainwindow.h
-	src/mainwindow.cpp
-	src/mainwindow.ui
+	src/MainWindow.h
+	src/MainWindow.cpp
+	src/MainWindow.ui
 	resource/resource.qrc
 	)
 

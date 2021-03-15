@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "dbgutils.h"
-#include "genutils.h"
+#include "gen_utils.h"
 #include "Value.h"
 #include "ScriptCalc.h"
 
@@ -998,7 +998,7 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 								{
 									return false;
 								}
-								params.Add(loc_res);
+								params.add(loc_res);
 							}
 							while (Cmd[Pos] != ')');
 						}
@@ -1011,14 +1011,14 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 						if (datacode.Info->ParamCount != INT_MAX)
 						{
 							// Get the minimum amount of parameters needed for this function
-							uint n = abs(datacode.Info->ParamCount);
+							unsigned n = abs(datacode.Info->ParamCount);
 							// Check in any case if there are sufficient parameters passed
-							if (params.Count() > n && datacode.Info->ParamCount > 0)
+							if (params.count() > n && datacode.Info->ParamCount > 0)
 							{
 								SetErrorValue(aeTOO_MANY_PARAMS, datacode.Info->Name);
 							}
 							// Check the minimum amount of parameters needed
-							if (params.Count() < n)
+							if (params.count() < n)
 							{
 								SetErrorValue(aeTOO_FEW_PARAMS, datacode.Info->Name);
 							}

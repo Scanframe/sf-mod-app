@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include "MdiChild.h"
@@ -106,5 +105,3 @@ class MainWindow :public QMainWindow
 		QAction* previousAct{};
 		QAction* windowMenuSeparatorAct{};
 };
-
-#endif

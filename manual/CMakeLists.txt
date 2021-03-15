@@ -43,7 +43,10 @@ if (Doxygen_FOUND)
 		set(HTML_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/theme/zen/header.html")
 		set(HTML_FOOTER "${CMAKE_CURRENT_SOURCE_DIR}/theme/zen/footer.html")
 		set(HTML_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}/theme/zen/stylesheet.css")
-		set(HTML_EXTRA_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}")
+		set(HTML_EXTRA_STYLESHEET "")
+	else()
+		# Fixes source file viewing.
+		set(HTML_EXTRA_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}/custom.css")
 	endif ()
 	# Set the example path to this parent directory.
 	file(RELATIVE_PATH EXAMPLE_PATH "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")

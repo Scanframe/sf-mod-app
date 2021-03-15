@@ -26,8 +26,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	src/global.h
-	src/rt-iface.h
-	src/rt-iface.cpp
+	src/RuntimeIface.h
+	src/RuntimeIface.cpp
 	)
 
 # Link the Qt widgets library.

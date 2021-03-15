@@ -14,100 +14,11 @@ namespace sf
 {
 
 /**
- * Class referenced by the Variable class which carries the actual data.
- * This type is never directly used.
- */
-struct VariableReference :public VariableTypes
-{
-	/**
-	 * Constructor when global is true the reference is added to the global list.
-	 * @param global
-	 */
-	explicit VariableReference(bool global);
-
-	/**
-	 * Destructor.
-	 */
-	~VariableReference();
-
-	/**
-	 * Copies the members to this instance except for the list and global members.
-	 * @param ref
-	 */
-	void copy(const VariableReference& ref);
-
-	/** Holds the flag about the global status of this reference.*/
-	bool _global{false};
-	/** Holds the exported flag for local applications.*/
-	bool _exported{false};
-	/** Holds the valid status of this reference.*/
-	bool _valid{false};
-	/** In case of a global instance this value is a unique ID.*/
-	id_type _id{0};
-	/** Holds the flags at creation.*/
-	flags_type _flags{0};
-	/** Holds the current flags.*/
-	flags_type _curFlags{0};
-	/** Holds the internal type of the variable.*/
-	Value::EType _type{Value::vitUndefined};
-	/** Name path separated by '|' characters.*/
-	std::string _name;
-	/** Describes the*/
-	std::string _description;
-	/** Contains the SI unit or the string filter.*/
-	std::string _unit;
-	/** Current value.*/
-	Value _curValue;
-	/** Default value.*/
-	Value _defValue;
-	/** Maximum value.*/
-	Value _maxValue;
-	/** Minimum value.*/
-	Value _minValue;
-	/** Rounding value.*/
-	Value _rndValue;
-	/** Significant digits based on the round value.*/
-	int _sigDigits{0};
-	/** Vector which holds all states of this instance.*/
-	StateVector _states;
-	/** list of variables attached to this reference.*/
-	Vector _list;
-	/** Static this counter is increased if a local event is generated.<br>
-	 * It is decreased when it returns from the event handler.*/
-	int _localActive{0};
-	/** Conversion option.*/
-	std::string _convertOption;
-	/** Converted unit.
-	 * String length of unit is used as a flag for conversion enabling.*/
-	std::string _convertUnit;
-	/** Converted current value.*/
-	Value _convertCurValue;
-	/** Converted default value.*/
-	Value _convertDefValue;
-	/** Converted maximum value.*/
-	Value _convertMaxValue;
-	/** Converted minimum value.*/
-	Value _convertMinValue;
-	/** Converted rounding value.*/
-	Value _convertRndValue;
-	/** Significant digits after conversion.*/
-	int _convertSigDigits{0};
-	/** Multiplication value for convert calculation.*/
-	Value _convertMultiplier;
-	/** Offset value for convert calculation.*/
-	Value _convertOffset;
-
-	friend class VariableStatic;
-
-	friend class Variable;
-};
-
-/**
  * @brief Class for creating and referencing global or local created parameters or settings called variables.<br>
  * This class allows linking of member functions of other classes to handle events generated.<br>
  * See the [Example](sf-gii-variable.html) on how to use this class and the 'TVariableHandler' template class.<br>
  */
-class _GII_CLASS Variable :public InformationObject, public VariableTypes
+class _GII_CLASS Variable :public InformationBase, public VariableTypes
 {
 	public:
 		/**
@@ -280,10 +191,6 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		 */
 		[[nodiscard]] bool isExported() const;
 
-		//
-		// Functions for controls in for property sheets.
-		//
-
 		/**
 		 * Returns true when temporary is used instead of current value.
 		 * @return
@@ -324,7 +231,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		void setHandler(VariableHandler* handler);
 
 		/**
-		 * Returns the link Set by SetLink().
+		 * Returns the link Set by setHandler().
 		 * @return Link instance pointer
 		 */
 		[[nodiscard]] VariableHandler* getHandler() const;
@@ -370,7 +277,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		void setData(uint64_t data);
 
 		/**
-		 * Gets the data for this instance for user purposes Set with SetData().
+		 * Gets the data for this instance for user purposes Set with setData().
 		 * @return
 		 */
 		[[nodiscard]] uint64_t getData() const;
@@ -633,7 +540,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		[[nodiscard]] const Value& getRnd(bool converted) const;
 
 		/**
-		 * Gets the Current value converted or not
+		 * Gets the current value converted or not
 		 * converted independent of the conversion flag.
 		 * @param converted
 		 * @return Does not return the temporary value when it is used.
@@ -891,7 +798,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 
 		/**
 		 * Initiate event for all instances of this variable
-		 * if params was Set by SetLink this param is ignored
+		 * if params was Set by setHandler this param is ignored
 		 * @param event
 		 * @param skip_self
 		 * @return Amount of events sent.
@@ -899,7 +806,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		size_type emitLocalEvent(EEvent event, bool skip_self = true);
 
 		/**
-		 * Initiate event for all variable instances if param was Set by SetLink this past param is used
+		 * Initiate event for all variable instances if param was Set by setHandler this past param is used
 		 * @param event
 		 * @param skip_self
 		 * @return Amount of events sent.
@@ -945,7 +852,7 @@ class _GII_CLASS Variable :public InformationObject, public VariableTypes
 		 */
 		VariableReference* _reference{nullptr};
 		/**
-		 * Holds the instance data for user purposes Set with SetData() and got with GetData().
+		 * Holds the instance data for user purposes Set with setData() and got with getData().
 		 */
 		uint64_t _data{0};
 		/**
@@ -1055,163 +962,16 @@ Variable::id_type Variable::getDesiredId() const
 }
 
 inline
-void Variable::setDesiredId()
-{
-	setDesiredId(_reference->_id);
-}
-
-inline
 bool Variable::setCur(const Value& value, bool skip_self) const
 {
 	// Cast this pointer to non-const class.
-	return ((Variable*) this)->setCur(value, skip_self);
-}
-
-inline
-Variable& Variable::getOwner()
-{
-	return *_reference->_list[0];
-}
-
-inline
-bool Variable::isOwner() const
-{
-	return this == _reference->_list[0];
-}
-
-inline
-bool Variable::isValid() const
-{
-	return _reference && _reference->_valid;
+	return const_cast<Variable*>(this)->setCur(value, skip_self);
 }
 
 inline
 bool Variable::isGlobal() const
 {
 	return _global;
-}
-
-inline
-bool Variable::isNumber() const
-{
-	return _reference->_type == Value::vitFloat || _reference->_type == Value::vitInteger;
-}
-
-inline
-bool Variable::isConverted() const
-{
-	return
-		_converted &&
-			_reference->_type == Value::vitFloat &&
-			_reference->_convertUnit.length();
-}
-
-inline
-bool Variable::isTemporary()
-{
-	return _temporary != nullptr;
-}
-
-inline
-bool Variable::isFlag(int flag) const
-{
-	return (_reference->_curFlags & flag) == flag;
-}
-
-inline
-Variable::id_type Variable::getId() const
-{
-	return _reference->_id;
-}
-
-inline
-std::string Variable::getDescription() const
-{
-	return _reference->_description;
-}
-
-inline
-std::string Variable::getCurFlagsString() const
-{
-	return getFlagsString(_reference->_curFlags);
-}
-
-inline
-std::string Variable::getFlagsString() const
-{
-	return Variable::getFlagsString(_reference->_flags);
-}
-
-inline
-Variable::flags_type Variable::getFlags() const
-{
-	return _reference->_flags;
-}
-
-inline
-Variable::flags_type Variable::getCurFlags() const
-{
-	return _reference->_curFlags;
-}
-
-inline
-const Value& Variable::getDef() const
-{
-	return isConverted() ? _reference->_convertDefValue : _reference->_defValue;
-}
-
-inline
-const Value& Variable::getMin() const
-{
-	return isConverted() ? _reference->_convertMinValue : _reference->_minValue;
-}
-
-inline
-const Value& Variable::getMax() const
-{
-	return isConverted() ? _reference->_convertMaxValue : _reference->_maxValue;
-}
-
-inline
-const Value& Variable::getRnd() const
-{
-	return isConverted() ? _reference->_convertRndValue : _reference->_rndValue;
-}
-
-inline
-const Value& Variable::getDef(bool converted) const
-{
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertDefValue : _reference->_defValue;
-}
-
-inline
-int Variable::getSigDigits() const
-{
-	return isConverted() ? _reference->_convertSigDigits : _reference->_sigDigits;
-}
-
-inline
-const Value& Variable::getMin(bool converted) const
-{
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMinValue : _reference->_minValue;
-}
-
-inline
-const Value& Variable::getMax(bool converted) const
-{
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMaxValue : _reference->_maxValue;
-}
-
-inline
-const Value& Variable::getRnd(bool converted) const
-{
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertRndValue : _reference->_rndValue;
-}
-
-inline
-int Variable::getSigDigits(bool converted) const
-{
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertSigDigits : _reference->_sigDigits;
 }
 
 inline
@@ -1226,40 +986,11 @@ const char* Variable::getType(Value::EType type)
 	return Value::getType(type);
 }
 
-inline
-Value::EType Variable::getType() const
-{
-	return _reference->_type;
-}
-
-inline
-const Variable& Variable::getVariableById(Variable::id_type id)
-{
-	return *(getReferenceById(id)->_list[0]);
-}
 
 inline
 const Variable& Variable::getVariableById(Variable::id_type id, const Vector& list)
 {
 	return Variable::getVariableById(id, (Vector&) list);
-}
-
-inline
-Variable::size_type Variable::getUsageCount() const
-{
-	return _reference->_list.Count();
-}
-
-inline
-Variable::size_type Variable::getStateCount() const
-{
-	return _reference->_states.Count();
-}
-
-inline
-const Variable::StateVector& Variable::getStates() const
-{
-	return _reference->_states;
 }
 
 inline
@@ -1279,7 +1010,6 @@ VariableHandler* Variable::getHandler() const
 {
 	return _handler;
 }
-
 
 inline
 int Variable::operator==(const Variable& v) const

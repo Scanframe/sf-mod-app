@@ -32,5 +32,5 @@ First build the common miscellaneous dependent dynamic
 library '**libsf-misc**' with `./build.sh com` from the root of this git repository.
 
 #### Step 2 
-Second to build are the three sub projects '**iface**', '**app**' and '**impl-a**' by building 
+Second to build are the three subtract projects '**iface**', '**app**' and '**impl-a**' by building 
 the overarching project directory '**rt-shared-lib**' with `./build.sh rt-shared-lib`.      

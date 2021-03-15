@@ -1,9 +1,8 @@
-#ifndef SFPUSHBUTTON_H
-#define SFPUSHBUTTON_H
+#pragma once
 
 #include <QPushButton>
 #include <QtUiPlugin/QDesignerExportWidget>
-#include <misc/qt/objectextension.h>
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
@@ -23,12 +22,10 @@ class QDESIGNER_WIDGET_EXPORT PushButton :public QPushButton, public ObjectExten
 
 		void setIconSource(const QString& text);
 
-		QString iconSource() const;
+		[[nodiscard]] QString iconSource() const;
 
 	private:
 		QString IconSource;
 };
 
 } // namespace
-
-#endif

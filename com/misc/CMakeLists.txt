@@ -15,42 +15,72 @@ _SetOutputDirs()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(LIBRARIES "")
+# Include pthread library.
+set(LIBRARIES pthread)
 # Generic sources only STL dependent.
 set(SOURCES
 	global.h
-	gen/Value.h
-	gen/Value.cpp
-	gen/ScriptCalc.h
-	gen/ScriptCalc.cpp
-	gen/TDynamicBuffer.h
-	gen/IniProfile.h
-	gen/IniProfile.cpp
-	gen/DynamicLibraryInfo.h
-	gen/DynamicLibraryInfo.cpp
-	gen/TClassRegistration.h
-	gen/TFifoClass.h
 	gen/target.h
-	gen/dbgutils.h
-	gen/dbgutils.cpp
-	gen/LineBuffer.h
-	gen/LineBuffer.cpp
-	gen/genutils.h
-	gen/genutils.cpp
-	gen/Exception.h
-	gen/Exception.cpp
-	gen/Range.h
-	gen/Range.cpp
-	gen/csf.h
-	gen/csf.cpp
+	gen/Sustain.h gen/Sustain.cpp
+	gen/IFileMapper.cpp gen/IFileMapper.h
+	gen/gen_utils.h	gen/gen_utils.cpp
+	gen/dbgutils.h gen/dbgutils.cpp
+	gen/TimeSpec.h gen/TimeSpec.cpp
+	gen/IntervalTimer.h gen/IntervalTimer.cpp
+	gen/ElapseTimer.h gen/ElapseTimer.cpp
+	gen/PerformanceTimer.h gen/PerformanceTimer.cpp
+	gen/Value.h	gen/Value.cpp
+	gen/ScriptCalc.h gen/ScriptCalc.cpp
+	gen/TDynamicBuffer.h gen/IniProfile.h
+	gen/IniProfile.cpp gen/DynamicLibraryInfo.h
+	gen/DynamicLibraryInfo.cpp gen/TClassRegistration.h
+	gen/LineBuffer.h gen/LineBuffer.cpp
+	gen/Exception.h gen/Exception.cpp
+	gen/Range.h	gen/Range.cpp
+	gen/RangeManager.h gen/RangeManager.cpp
+	gen/csf.h gen/csf.cpp
+	gen/CriticalSection.h	gen/CriticalSection.cpp
+	gen/Thread.h gen/Thread.cpp
+	gen/TFifoClass.h
+	gen/TStaticSync.h
+	gen/TEnvelope.h
+	gen/TPointer.h
+	gen/TBitSet.h
+)
+
+if (NOT WIN32)
+
+find_package(OpenSSL REQUIRED)
+
+set(SOURCES_LNX
+	lnx/lnx_utils.h lnx/lnx_utils.cpp
+	lnx/EventCounter.h lnx/EventCounter.cpp
+	lnx/Condition.h lnx/Condition.cpp
+	lnx/File.h lnx/File.cpp
+	lnx/FileMapper.h lnx/FileMapper.cpp
+	lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
 	)
 
-# When SF_LINK_QT is Set link the Qt libraries.
+list(APPEND SOURCES ${SOURCES_LNX})
+list(APPEND LIBRARIES OpenSSL::Crypto)
+
+else ()
+
+set(SOURCES_WIN
+	win/win_utils.cpp win/win_utils.h
+	win/WinTimer.cpp win/WinTimer.h
+	win/FileMapper.h win/FileMapper.cpp
+	)
+list(APPEND SOURCES ${SOURCES_WIN})
+
+endif ()
+
+# When SF_BUILD_QT is Set link the Qt libraries.
 if (SF_BUILD_QT)
 
-	# Find the needed packages.
-	find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-	find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+# Find the needed packages.
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
 	set(CMAKE_AUTOUIC ON)
 	set(CMAKE_AUTOMOC ON)
@@ -58,23 +88,20 @@ if (SF_BUILD_QT)
 
 	# Qt dependent sources.
 	set(SOURCES_QT
-	qt/qt_utils.h
-	qt/qt_utils.cpp
-	qt/capturelistmodel.h
-	qt/capturelistmodel.cpp
-	qt/resource.h
-	qt/resource.cpp
-	qt/formwriter.cpp
-	qt/formwriter.h
-	qt/objectextension.cpp
-	qt/objectextension.h
-	qt/res/resource.qrc
-	)
+		qt/qt_utils.cpp qt/qt_utils.h
+		qt/CaptureListModel.cpp qt/CaptureListModel.h
+		qt/Resource.h	qt/Resource.cpp
+		qt/FormWriter.cpp	qt/FormWriter.h
+		qt/ObjectExtension.cpp qt/ObjectExtension.h
+		qt/FileMapper.cpp qt/FileMapper.h
+		qt/ObjectExtension.h
+		qt/res/resource.qrc
+		)
 
 	list(APPEND SOURCES ${SOURCES_QT})
 	list(APPEND LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
 
-endif(SF_BUILD_QT)
+endif (SF_BUILD_QT)
 
 # Add the library to create.
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -82,7 +109,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
-endif(SF_BUILD_QT)
+endif (SF_BUILD_QT)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
@@ -104,3 +131,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # Set the include directory for this library when it is imported by another sub project.
 set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/..")
+
+# Testing only available if this is the main app
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
+if (SF_BUILD_TESTING)
+	add_subdirectory(tests)
+endif()

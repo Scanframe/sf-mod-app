@@ -1,10 +1,9 @@
 #pragma once
 
 #include <misc/gen/TVector.h>
-#include <misc/gen/genutils.h>
-#include <misc/gen/TVector.h>
+#include <misc/gen/gen_utils.h>
 
-#include "global.h"
+#include "../global.h"
 
 namespace sf
 {
@@ -35,13 +34,13 @@ class _GII_CLASS InformationTypes
 /**
  * Base class for all generic information objects to be able to put them in a typed list together.
  */
-class _GII_CLASS InformationObject
+class _GII_CLASS InformationBase
 {
 	public:
 		/**
 		 * Virtual destructor so derived classes can be destroyed by a pointer of this type.
 		 */
-		virtual ~InformationObject() = default;
+		virtual ~InformationBase() = default;
 };
 
 }

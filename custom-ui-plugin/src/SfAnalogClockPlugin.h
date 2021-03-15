@@ -1,5 +1,4 @@
-#ifndef SFANALOGCLOCKPLUGIN_H
-#define SFANALOGCLOCKPLUGIN_H
+#pragma once
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
@@ -41,5 +40,3 @@ class AnalogClockPlugin :public QObject, public QDesignerCustomWidgetInterface
 };
 
 } // namespace
-
-#endif

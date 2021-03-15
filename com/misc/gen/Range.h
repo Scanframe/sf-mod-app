@@ -7,22 +7,28 @@
 namespace sf
 {
 
-// Set byte alignment to 1 byte.
+/**
+ * Set the equal and unequal operators to include the id's.
+ * Used in unit tests.
+ */
+_MISC_DATA extern bool RangeCompareExact;
+
+// Packed structure for binary storage.
 #pragma pack(push, 1)
 
 /**
  * Struct that contains the data members of class 'Range'.
  */
-typedef struct tagRANGE
+struct RANGE
 {
 	/**
 	 * Integer type used for start and stop.
 	 */
-	typedef int32_t size_type;
+	typedef int64_t size_type;
 	/**
 	 * Integer type used for the ID.
 	 */
-	typedef int32_t id_type;
+	typedef int64_t id_type;
 	/**
 	 * Start position of the range or interval.
 	 */
@@ -35,349 +41,526 @@ typedef struct tagRANGE
 	 * Identifier of this range.
 	 */
 	id_type _id;
-} RANGE;
+};
 // Restore the pack option.
 #pragma pack(pop)
 
 /**
- * Class to manage integer ranges.
+ * @brief Class to manage 64-bit integer ranges.
  */
 class _MISC_CLASS Range :private RANGE
 {
 	public:
 		/**
-		 * Type to create lists of ranges.
+		 * Integer type used for start and stop.
 		 */
-		typedef TVector <Range> Vector;
+		typedef RANGE::size_type size_type;
 		/**
-		 * Iteration type for lists of ranges.
+		 * Integer type used for the ID.
+		 */
+		typedef RANGE::id_type id_type;
+
+		/**
+		 * Type to contain and manipulate range lists.
+		 */
+		class Vector :public TVector<Range>
+		{
+			public:
+				/**
+				 * @brief Sorts the vector according the Range operator '<'.
+				 * @return Itself
+				 */
+				Vector& sort();
+
+				/**
+				 * @brief Sorts the vector according the Range operator '<'.
+				 * @return A sorted copy of itself.
+				 */
+				[[nodiscard]] Vector sort() const;
+
+				/**
+				 * @brief Rearranges vector of ranges which means the vector is sorted and ranges are merged if possible.
+				 */
+				Vector& rearrange();
+
+				/**
+				 * @brief Exclude the parts of the ranges in this vector which corresponds with the passed vector.
+				 * Removes all the matching parts of in this vector of the passed vector.
+				 * The current vector needs to be sorted for it to work.
+				 * @return Sorted vector.
+				 */
+				[[nodiscard]] Vector exclude(const Vector& rel) const;
+
+				/**
+				 * @brief Same as #exclude but non const and the vector is modified.
+				 * @return This resulting vector.
+				 */
+				Vector& exclude(const Vector& rl_ex);
+
+				/**
+				 * @brief Extracts the covered ranges in the vector using the 'rl' vector and puts them in the 'rl_ex' vector.
+				 * @return The resulting vector.
+				 * @param rl Range vector to compare with for coverage. (must be rearranged sorted/merged)
+				 * @param rl_ex Returns ranges that were covered. (The ID's of the ranges are preserved)
+				 * @return Vector containing the range leftover after extraction.
+				 */
+				Vector extract(const Vector& rl, Vector& rl_ex) const;
+
+				/**
+				 * @brief Adds the passed list to this vector and rearranges it.
+				 * @return This resulting vector.
+				 */
+				Vector& merge(const Vector& rl_add);
+		};
+
+		/**
+		 * @brief Iteration type for lists of ranges.
 		 */
 		typedef Vector::iter_type Iterator;
 
 		/**
-		 * Default constructor
+		 * @brief Default constructor.
 		 */
 		Range();
 
 		/**
-		 * Copy constructor
+		 * @brief Copy constructor.
 		 * @param r
 		 */
 		Range(const Range& r);
 
 		/**
-		 * Base class constructor
+		 * @brief Base class constructor.
 		 */
 		explicit Range(const RANGE& r);
 
 		/**
-		 * Constructor
+		 * @brief Initializing constructor.
+		 * @param start Start of the range.
+		 * @param stop Start of the range.
+		 * @param id Identifier of the range.
 		 */
-		Range(size_type start, size_type stop, size_type id = 0);
+		Range(size_type start, size_type stop, id_type id = 0);
 
 		/**
-		 * Swaps start and stop if the order is wrong
+		 * @brief Swaps start and stop if the order is wrong.
 		 */
 		void normalize();
 
 		/**
-		 * InitializeBase data members
-		 * @param start
-		 * @param stop
-		 * @param id
-		 * @return
+		 * @brief Assigns the data members.
+		 * @param start Start of the range.
+		 * @param stop Start of the range.
+		 * @param id Identifier of the range.
+		 * @return Itself
 		 */
-		Range& Set(size_type start, size_type stop, size_type id = 0);
+		Range& assign(size_type start, size_type stop, id_type id = 0);
 
 		/**
-		 * InitializeBase instance with other instance
+		 * @brief InitializeBase instance with other instance.
 		 */
-		Range& Set(const Range& r);
+		Range& assign(const Range& r);
 
 		/**
-		 * InitializeBase instance with other instance
+		 * @brief InitializeBase instance with other instance.
 		 */
-		Range& Set(const RANGE& r);
+		Range& set(const RANGE& r);
 
 		/**
 		 * Copies the current instance to RANGE base struct.
 		 */
-		const Range& CopyTo(RANGE& dest) const;
+		const Range& copyTo(RANGE& dst) const;
 
 		/**
-		 * const function to access the start of the range.
+		 * @brief Const function to access the start of the range.
 		 */
-		[[nodiscard]] size_type GetStart() const;
+		[[nodiscard]] size_type getStart() const;
 
 		/**
-		 * Const function to access the stop of the range.
+		 * @brief Const function to access the stop of the range.
 		 */
-		[[nodiscard]] size_type GetStop() const;
+		[[nodiscard]] size_type getStop() const;
 
 		/**
-		 * clears the range to an empty state.
+		 * @brief Clears the range to an empty state.
 		 */
-		void Clear();
+		void clear();
 
 		/**
-		 * Returns the size of the range minimum is 1.
+		 * @brief Returns the size of the range minimum is 1.
 		 */
-		[[nodiscard]] size_type GetSize() const;
+		[[nodiscard]] size_type getSize() const;
 
 		/**
-		 * Return true if the range is empty.
+		 * @brief Return true if the range is empty.
 		 */
-		[[nodiscard]] bool IsEmpty() const;
+		[[nodiscard]] bool isEmpty() const;
 
 		/**
-		 * Returns if the passed range have some overlap.
-		 * @param r
-		 * @return
+		 * @brief Returns if the passed range have some overlap.
 		 */
-		[[nodiscard]] bool IsOverlapped(const Range& r) const;
+		[[nodiscard]] bool isOverlapped(const Range& r) const;
 
 		/**
-		 * Returns true if the passed range is part of this range.
+		 * @brief Returns true if the passed range is part of this range.
 		 */
-		[[nodiscard]] bool IsPartOfThis(const Range& r) const;
+		[[nodiscard]] bool isWithinOther(const Range& r) const;
 
 		/**
-		 * Returns true if this range is part of the passed range.
+		 * @brief Returns true if this range is part of the passed range.
 		 */
-		[[nodiscard]] bool IsPartOfOther(const Range& r) const;
+		[[nodiscard]] bool isWithinSelf(const Range& r) const;
 
 		/**
-		 * Returns if the passed range an extension of this one.
-		 * @param r
-		 * @return
+		 * @brief Returns if the passed range an extension of this one.
 		 */
-		[[nodiscard]] bool IsExtension(const Range& r) const;
+		[[nodiscard]] bool isExtension(const Range& r) const;
 
 		/**
-		 * Returns true if the passed range can be added to this range so that
-		 * @param r
-		 * @return One range
+		 * @brief Returns true if the passed range can be combined to this range without having to bridge a gap.
 		 */
-		[[nodiscard]] bool IsMergeable(const Range& r) const;
+		[[nodiscard]] bool isMergeable(const Range& r) const;
 
 		/**
-		 * Check if idx is within this range
+		 * @brief Splits this range into segments bounded ranges according to the passed segment size.
+		 * The ID field of the range carries the segment index.
+		 * @param seg_sz Size of the segment.
+		 * @param rl_dst Destination list to receive the range(s) after splitting.
+		 * @return Amount ranges it was split into.
 		 */
-		[[nodiscard]] bool IsInRange(size_type idx) const;
+		size_type split(size_type seg_sz, Vector& rl_dst) const
+		{
+			return split(seg_sz, *this, rl_dst);
+		}
 
 		/**
-		 * Boolean operator for testing content of this instance
+		 * @brief Splits a range into segments bounded ranges according to the passed segment size.
+		 * The ID field of the range carries the segment index.
+		 * @param seg_sz Size of the segment.
+		 * @param req Requested range.
+		 * @param rl_dst Destination list to receive the range(s) after splitting.
+		 * @return Amount ranges it was split into.
+		 */
+		static size_type split(size_type seg_sz, const Range& req, Vector& rl_dst);
+
+		/**
+		 * @brief Same as #split but now for a complete vector of ranges.
+		 * @param seg_sz Size of the segment.
+		 * @param req Requested ranges.
+		 * @param rl List where ranges are appended.
+		 * @return Amount ranges the request list was split into.
+		 */
+		static size_type split(size_type seg_sz, const Vector& req, Vector& rl);
+
+		/**
+		 * @brief Check if idx is within this range
+		 */
+		[[nodiscard]] bool isInRange(size_type idx) const;
+
+		/**
+		 * @brief Boolean operator for testing content of this instance.
 		 */
 		explicit operator bool() const;
 
 		/**
-		 * Base function for comparing ranges
-		 *    '-' token of 'this' range
-		 *    '=' token of the 'other' range
-		 *     0 = same range                           |------------|
-		 *                                              |============|
-		 *
-		 *     1 = other range is part of this range    |--------------|
-		 *                                                 |=======|
-		 *
-		 *    -1 = this range is part of other range       |-------|
-		 *                                              |==============|
-		 *
-		 *     2 = this range start beyond other start      |---------|
-		 *         this range stop beyond other stop    |=========|
-		 *
-		 *    -2 = this range start before other start  |---------|
-		 *         this range stop before other stop        |=========|
-		 *
-		 *     3 = this range extends other                    |-----|
-		 *         this range beyond other range        |=====|
-		 *
-		 *    -3 = this range extends other             |-----|
-		 *         this range before other range               |=====|
-		 *
-		 *     4 = ranges do not touch                           |-----|
-		 *         this range beyond other range        |=====|
-		 *
-		 *    -4 = ranges do not touch                  |-----|
-		 *         this range before other range                 |=====|
-		 *
-		 *     5 = this range is empty                    ||
-		 *                                             |=====|
-		 *
-		 *    -5 = other range is empty                |-----|
-		 *                                                ||
+		 * @brief All possible comparison results.<br>
+		 *  '-' token of 'this' range.<br>
+		 *  '=' token of the 'other' range.<br>
 		 */
-		[[nodiscard]] int Compare(const Range& other) const;
+		enum ECompare :int
+		{
+			/**
+			 * Failed to compare.
+			 */
+			cmpError = INT_MAX,
+			/**
+			 * Both ranges ae the same.
+			 * ```text
+			 *    |------------|
+			 *    |============|
+			 *```
+			 */
+			cmpSame = 0,
+			/**
+			 * The other range fits in this range.
+			 * ```text
+			 *    |--------------|
+			 *       |=======|
+			 * ```
+			 */
+			cmpWithinSelf = 1,
+			/**
+			 * This range is fits in the other range.
+			 * ```text
+			 *       |-------|
+			 *    |==============|
+			 * ```
+			 */
+			cmpWithinOther = -1,
+			/**
+			 *  This range overlaps and extends the other.
+			 * ```text
+			 *        |---------|
+			 *    |=========|
+			 * ```
+			 */
+			cmpOverlapsOther = 2,
+			/**
+			 * The other range overlaps and extends this.
+			 * ```text
+			 *    |---------|
+			 *        |=========|
+			 * ```
+			 */
+			cmpOverlapsSelf = -2,
+			/**
+			 * This range extends the other exact.
+			 * ```text
+			 *           |-----|
+			 *    |=====|
+			 * ```
+			 */
+			cmpExtendsOther = 3,
+			/**
+			 * The other range extends this one exact.
+			 * ```text
+			 *    |-----|
+			 *           |=====|
+			 * ```
+			 */
+			cmpExtendsSelf = -3,
+			/**
+			 * The other range does not overlap and is located before this one.
+			 * ```text
+			 *             |-----|
+			 *    |=====|
+			 * ```
+			 */
+			cmpBeforeSelf = 4,
+			/**
+			 * The other range does not overlap and is located after this one.
+			 * ```text
+			 *    |-----|
+			 *             |=====|
+			 * ```
+			 */
+			cmpAfterSelf = -4,
+			/**
+			 *
+			 * ```text
+			 *      ||
+			 *   |=====|
+			 * ```
+			 */
+			cmpSelfEmpty = 5,
+			/**
+			 * ```text
+			 *   |-----|
+			 *      ||
+			 * ```
+			 */
+			cmpOtherEmpty = -5,
+		};
 
 		/**
-		 * Returns the owner id of this range.
+		 * @brief Base function for comparing ranges
 		 */
-		[[nodiscard]] size_type GetId() const;
+		[[nodiscard]] ECompare compare(const Range& other) const;
 
 		/**
-		 * Set the owner id of this range.
+		 * @brief Returns the owner id of this range.
 		 */
-		Range& SetId(size_type id);
+		[[nodiscard]] id_type getId() const;
 
 		/**
-		 * Assignment operator allow derived classes to copy their data members.
+		 * @brief Set the owner id of this range.
+		 */
+		Range& setId(id_type id);
+
+		/**
+		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
 		Range& operator=(const Range& r);
 
 		/**
-		 * Assignment operator allow derived classes to copy their data members.
+		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
 		Range& operator=(const RANGE& r);
 
 		/**
-		 * Tests if the range start and stop members are the same.
+		 * @brief Tests if the range start and stop members are the same.
 		 */
 		bool operator==(const Range& r) const;
 
 		/**
-		 * Tests if the range start and stop members are not the same.
+		 * @brief Tests if the range start and stop members are not the same.
 		 */
 		bool operator!=(const Range& r) const;
 
 		/**
-		 * Operator used for sorting
+		 * @brief Operator used for sorting.
 		 * Depends only on the start position first and then the stop position.
 		 * Empty ranges are always larger then non empty ones to be able to
 		 * move empty ones to the end of a vector.
 		 */
-		int operator<(const Range& r) const;
+		bool operator<(const Range& r) const;
 
 		/**
-		 * And operator which is a subset of both range where elements
-		 * of the one also exists in the other range.
+		 * @brief And operator which is a subset of both range where elements of the one also exists in the other range.
 		 */
 		Range operator&(const Range& r) const;
 
-		Range operator&=(const Range& r);
-
 		/**
-		 * Returns a new range which is a sub Set of the two ranges
+		 * @brief And operator which is a subset of both range where elements of the one also exists in the other range.
 		 */
-		Range operator-(const Range& r) const;
+		Range& operator&=(const Range& r);
 
 		/**
-		 * Returns a new range which is a sub Set of the two ranges
-		 */
-		Range& operator-=(const Range& r);
-
-		/**
-		 * Returns a new range which is a super Set of the two ranges
-		 * the two ranges must at least extend each other in order
-		 * to perform this operation otherwise the result is a range of (MAX_LONG,LONG_MIN)
+		 * @brief Returns a new range which is a super Set of the two ranges.
+		 * A gap in between is bridged by the resulting.
 		 */
 		Range operator+(const Range& r) const;
 
 		/**
-		 * Returns a new range which is a super Set of the two ranges
-		 * the two ranges must at least extend each other in order
-		 * to perform this operation otherwise the result is a range of (MAX_LONG,LONG_MIN)
+		 * @brief Returns a new range which is a super Set of the two ranges.
+		 * A gap in between is bridged by the resulting.
 		 */
 		Range& operator+=(const Range& r);
 
 		/**
-		 * Shifts the range using the passed offset.
+	   * @brief Exclude the range in the the other which could result in an single range (0),
+	   * an additional second range (1) or in an single empty range (-1).
+		 * @param r Range excluded from this one.
+		 * @param rest Set when 2 is returned.
+		 * @param cmp Optional compare result.
+	   * @return Amount of resulting ranges. Could be -1, 0 or 1.
 		 */
-		Range& OffsetBy(size_type ofs);
+		int exclude(const Range& r, Range& rest, Range::ECompare* cmp = nullptr);
 
 		/**
-		 * Shifts the range using the passed offset.
+		 * @brief Shifts this range using the passed offset.
+		 * @return Itself
 		 */
-		[[nodiscard]] Range Offset(size_type ofs) const;
+		Range& offsetBy(size_type ofs);
 
 		/**
-		 * Not allowed operators.
+		 * @brief Shifts the range using the passed offset.
+		 * @return The shifted range
+		 */
+		[[nodiscard]] Range offset(size_type ofs) const;
+
+		/**
+		 * @brief Not allowed operator.
 		 */
 		bool operator>(const Range& r) const = delete;
 
+		/**
+		 * @brief Not allowed operator.
+		 */
 		bool operator>(const Range& r) = delete;
 
+		/**
+		 * @brief Not allowed operator.
+		 */
 		bool operator<=(const Range& r) const = delete;
 
+		/**
+		 * @brief Not allowed operator.
+		 */
 		bool operator<=(const Range& r) = delete;
 
+		/**
+		 * @brief Not allowed operator.
+		 */
 		bool operator>=(const Range& r) const = delete;
 
+		/**
+		 * @brief Not allowed operator.
+		 */
 		bool operator>=(const Range& r) = delete;
 
+	private:
 		friend std::ostream& operator<<(std::ostream& os, const Range& r);
 
 		friend std::istream& operator>>(std::istream& is, Range& r);
-
 };
 
-inline
-std::ostream& operator<<(std::ostream& os, const Range& r)
-{
-	return os << '(' << r._start << ',' << r._stop << ',' << r._id << ')';
-}
+/**
+ * Output stream operator for a range.
+ */
+_MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range& r);
 
-inline
-std::istream& operator>>(std::istream& is, Range& r)
-{
-	char c;
-	return is >> c >> r._start >> c >> r._stop >> c >> r._id >> c;
-}
+/**
+ * Input stream operator for a range.
+ */
+_MISC_FUNC std::istream& operator>>(std::istream& is, Range& r);
+
+
+/**
+ * Output stream operator for a range vector.
+ */
+_MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range::Vector& rl);
+
+/**
+ * Input stream operator for a range vector.
+ */
+_MISC_FUNC std::istream& operator>>(std::istream& is, Range::Vector& rl);
 
 inline
 Range::Range()
-	:tagRANGE()
+	:RANGE()
 {
-	Clear();
+	clear();
 }
 
 inline
 Range::Range(const Range& r)
-	:tagRANGE(r)
+	:RANGE(r)
 {
-	Set(r);
+	assign(r);
 }
 
 inline
 Range::Range(const RANGE& r)
-	:tagRANGE()
+	:RANGE()
 {
-	Set(r);
+	set(r);
 }
 
 inline
 Range::Range(size_type start, size_type stop, id_type id)
-	:tagRANGE()
+	:RANGE()
 {
-	Set(start, stop, id);
+	assign(start, stop, id);
 }
 
 inline
-Range::size_type Range::GetStart() const
+Range::size_type Range::getStart() const
 {
 	return _start;
 }
 
 inline
-Range::size_type Range::GetStop() const
+Range::size_type Range::getStop() const
 {
 	return _stop;
 }
 
 inline
-Range::id_type Range::GetId() const
+Range::id_type Range::getId() const
 {
 	return _id;
 }
 
 inline
-Range& Range::SetId(id_type id)
+Range& Range::setId(id_type id)
 {
 	_id = id;
 	return *this;
 }
 
 inline
-void Range::Clear()
+void Range::clear()
 {
 	_start = 0;
 	_stop = 0;
@@ -385,114 +568,76 @@ void Range::Clear()
 }
 
 inline
-Range& Range::Set(const Range& r)
+Range& Range::assign(const Range& r)
 {
-	*(tagRANGE*) this = *(tagRANGE*) &r;
+	*(RANGE*) this = *(RANGE*) &r;
 	return *this;
 }
 
 inline
-Range::size_type Range::GetSize() const
+Range::size_type Range::getSize() const
 {
 	return _stop - _start;
 }
 
 inline
-bool Range::IsEmpty() const
+bool Range::isEmpty() const
 {
 	return (_stop == _start);
 }
 
 inline
-bool Range::IsMergeable(const Range& r) const
-{
-	return abs(Compare(r)) != 4;
-}
-
-inline
-bool Range::IsOverlapped(const Range& r) const
-{
-	return abs(Compare(r)) <= 2;
-}
-
-inline
-bool Range::IsExtension(const Range& r) const
-{
-	return abs(Compare(r)) == 3;
-}
-
-inline
-bool Range::IsPartOfOther(const Range& r) const
-{
-	int res = Compare(r);
-	return (res == -1 || res == 0);
-}
-
-inline
-bool Range::IsPartOfThis(const Range& r) const
-{
-	int res = Compare(r);
-	return (res == 1 || res == 0);
-}
-
-inline
 Range& Range::operator=(const Range& r)
 {
-	Set(r);
+	assign(r);
 	return *this;
 }
 
 inline
 Range& Range::operator=(const RANGE& r)
 {
-	Set(r);
+	set(r);
 	return *this;
 }
 
 inline
 Range::operator bool() const
 {
-	return IsEmpty();
+	return isEmpty();
 }
 
 inline
 bool Range::operator==(const Range& r) const
 {
-	return Compare(r) == 0;
+	return compare(r) == cmpSame && (!RangeCompareExact || _id == r._id);
 }
 
 inline
 bool Range::operator!=(const Range& r) const
 {
-	return Compare(r) != 0;
+	return !(compare(r) == cmpSame && (!RangeCompareExact || _id == r._id));
 }
 
 inline
-int Range::operator<(const Range& r) const
+bool Range::operator<(const Range& r) const
 {
-	return IsEmpty() ? 0 : (r.IsEmpty() ? 1 : ((_start == r._start) ? _stop < r._stop : _start < r._start));
-}
-
-inline
-Range& Range::operator-=(const Range& r)
-{
-	return Set(*this - r);
+	return !isEmpty() && (r.isEmpty() || ((_start == r._start) ? _stop < r._stop : _start < r._start));
 }
 
 inline
 Range& Range::operator+=(const Range& r)
 {
-	return Set(*this + r);
+	return assign(*this + r);
 }
 
 inline
-Range Range::operator&=(const Range& r)
+Range& Range::operator&=(const Range& r)
 {
-	return Set(*this & r);
+	return assign(*this & r);
 }
 
 inline
-Range& Range::OffsetBy(size_type ofs)
+Range& Range::offsetBy(size_type ofs)
 {
 	_start += ofs;
 	_stop += ofs;
@@ -500,21 +645,21 @@ Range& Range::OffsetBy(size_type ofs)
 }
 
 inline
-Range Range::Offset(size_type ofs) const
+Range Range::offset(size_type ofs) const
 {
-	return Range(*this).OffsetBy(ofs);
+	return Range(*this).offsetBy(ofs);
 }
 
 inline
-bool Range::IsInRange(size_type idx) const
+bool Range::isInRange(size_type idx) const
 {
 	return idx >= _start && idx < _stop;
 }
 
 inline
-const Range& Range::CopyTo(RANGE& dest) const
+const Range& Range::copyTo(RANGE& dst) const
 {
-	dest = *this;
+	dst = *this;
 	return *this;
 }
 

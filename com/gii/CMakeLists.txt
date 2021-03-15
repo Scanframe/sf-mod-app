@@ -34,6 +34,22 @@ set(SOURCES
 	gen/Variable.cpp
 	gen/VariableHandler.cpp
 	gen/VariableHandler.h
+	gen/ResultDataTypes.cpp
+	gen/ResultDataTypes.h
+	gen/ResultData.h
+	gen/ResultData.cpp
+	gen/ResultDataReference.cpp
+	gen/ResultDataReference.h
+	gen/ResultDataHandler.cpp
+	gen/ResultDataHandler.h
+	gen/ResultDataRequester.h
+	gen/ResultDataRequester.cpp
+	gen/ResultDataStorage.h
+	gen/ResultDataStorage.cpp
+	gen/ResultDataStatic.cpp
+	gen/ResultDataStatic.h
+	gen/VariableReference.cpp
+	gen/VariableReference.h
 	)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -63,3 +79,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
 # Set the include directory for this library when it is imported by another sub project.
 set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}")
+
+# Testing only available if this is the main app
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
+if (SF_BUILD_TESTING)
+	add_subdirectory(tests)
+endif()

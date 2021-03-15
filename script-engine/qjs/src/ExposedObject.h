@@ -1,5 +1,4 @@
-#ifndef QT_CONCEPTS_EXPOSEDOBJECT_H
-#define QT_CONCEPTS_EXPOSEDOBJECT_H
+#pragma once
 
 #include <QObject>
 #include <QJSValue>
@@ -17,4 +16,3 @@ class ExposedObject :public QObject
 		Q_INVOKABLE int passValue(const QJSValue& value);
 };
 
-#endif //QT_CONCEPTS_EXPOSEDOBJECT_H

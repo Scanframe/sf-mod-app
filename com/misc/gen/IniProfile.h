@@ -1,7 +1,3 @@
-/*
-Class that can read\write windows like profile files.
-*/
-
 #pragma once
 
 #include <string>
@@ -107,7 +103,7 @@ class _MISC_CLASS IniProfile
 		 */
 		SectionListType SectionList;
 		/**
-		 * Current index to section.
+		 * current index to section.
 		 */
 		EntryListType::size_type SectionListPtr;
 		/**
@@ -370,7 +366,7 @@ class _MISC_CLASS IniProfile
 inline
 IniProfile::size_type IniProfile::GetSectionCount() const
 {
-	return SectionList.Count();
+	return SectionList.count();
 }
 
 inline
@@ -394,7 +390,7 @@ bool IniProfile::WriteInt(const char* key, int value)
 inline
 IniProfile::size_type IniProfile::GetEntryCount() const
 {
-	return SectionList.Count() ? SectionList[SectionListPtr]->EntryList.Count() : 0;
+	return SectionList.count() ? SectionList[SectionListPtr]->EntryList.count() : 0;
 }
 
 inline
@@ -415,7 +411,7 @@ inline
 std::ostream& IniProfile::WriteSection(std::ostream& os) const
 {
 	// Check section entry count.
-	return (SectionList.Count()) ? SectionList[SectionListPtr]->Write(os) : os;
+	return (SectionList.count()) ? SectionList[SectionListPtr]->Write(os) : os;
 }
 
 inline
@@ -429,7 +425,7 @@ bool IniProfile::RemoveEntry(IniProfile::size_type p)
 {
 	// Set dirty flag
 	Dirty = true;
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		return SectionList[SectionListPtr]->RemoveEntry(p);
 	}
@@ -441,7 +437,7 @@ bool IniProfile::RemoveEntry(const char* key)
 {
 	// Set dirty flag
 	Dirty = true;
-	if (SectionList.Count())
+	if (SectionList.count())
 	{
 		return SectionList[SectionListPtr]->RemoveEntry(SectionList[SectionListPtr]->FindEntry(key));
 	}

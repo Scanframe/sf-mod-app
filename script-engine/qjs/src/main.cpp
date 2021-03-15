@@ -4,7 +4,7 @@
 
 #include <misc/qt/qt_utils.h>
 #include <misc/gen/dbgutils.h>
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {

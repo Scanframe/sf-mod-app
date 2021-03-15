@@ -1,5 +1,4 @@
-#ifndef SFPUSHBUTTONPLUGIN_H
-#define SFPUSHBUTTONPLUGIN_H
+#pragma once
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
@@ -41,5 +40,3 @@ class PushButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
 };
 
 } // namespace
-
-#endif

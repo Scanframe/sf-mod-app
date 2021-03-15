@@ -45,12 +45,12 @@ ClientOrServer::ClientOrServer()
     Fvariable->setHandler(&_eventHandler);
     if (client)
     {
-        // Setup instance as a client which triggers events.
+        // setup instance as a client which triggers events.
         _variable.setup(0x98001);
     }
     else
     {
-        // Setup instance as a server which triggers events.
+        // setup instance as a server which triggers events.
         _variable.setup
         (
             "0x98001,Calibrate|Blue Pos,%,ASP,"
