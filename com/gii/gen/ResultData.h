@@ -637,7 +637,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * Returns the amount of results in the system
 		 * @return
 		 */
-		static size_type GetResultDataCount();
+		static size_type getResultDataCount();
 
 		/**
 		 * Returns the amount of result instances in the system

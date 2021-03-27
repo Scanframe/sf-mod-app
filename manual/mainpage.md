@@ -1,28 +1,25 @@
-# Documentation {#mainpage}
+# Qt Concept Documentation {#mainpage}
 
-Help written from code by Doxygen.
+Generated from code by [Doxygen](https://www.doxygen.nl/) 
+(_[GitHub](https://github.com/doxygen/doxygen.git)_).
 
+View/Get the code on [GitLab](git.scanframe.com/shared/qt-concepts)
 
-Sample classes:
+### Samples
+
+**Classes**:
 * `::sf::Value`
-* `::sf::Variable`
 * `::sf::Range`
+* `::sf::Range::Vector`
+* `::sf::RangeManager`
+* `::sf::Variable`
+* `::sf::ResultData`
 
-
-Sample template classes:
-* `::sf::TFifoClass`
-* `::sf::TClosure`
+**Templates**:
 * `::sf::TClassRegistration`
 * `::sf::TDynamicBuffer`
-
+* `::sf::TClosure`
+* `::sf::TVector`
 
 Link to [other](sf-Variable.html) markdown.
 
-# CLion
-
-To make it so that Running the project in **CLion** a external application and command line needs to be configured.
-
-### Linux
-
-* Application: `google-chrome`
-* Command line: `--app=file://$CMakeCurrentBuildDir$/html/index.html`

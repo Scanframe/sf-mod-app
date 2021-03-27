@@ -8,20 +8,32 @@ namespace sf
 {
 
 /**
- * @brief Manages range requests made by clients identified by ID's.
- * By a server granted access results in requests becoming accessible.
- * Limits are set by
+ * @brief This class manages range requests made by clients identified by ID's in the ranges.<br>
+ * @image html "com/misc/doc/RangeManager-1.svg"
+ *
+ * A server sets the range which is managed.<br>
+ * Multiple clients make requests for ranges passing a unique ID (Range::setId).<br>
+ * The requested ranges are reduced to actual requests for the server by excluding ranges that are available already.<br>
+ * A server retrieves the actual requests (#getActualRequests) and translates those to multiples of the used block size.<br>
+ * When the blocks finished processing the server tells the range manager by calling #setAccessible .<br>
+ * The manager updates the accessible ranges and rearrange them.
+ * This means that overlapped and each other extending ranges are merged and sorted.<br>
+ * At the same time the fulfilled client requests are extracted and removed from the manager.<br>
+ * The server notifies clients identified by Range::getId.
+ *
+ * @see setManaged, getManaged, request, getRequests, getActualRequests, setAccessible, setAutoManaged
+ * @see Range, Range::Vector
  */
 class _MISC_CLASS RangeManager
 {
 	public:
 		/**
-		 * @brief Default constructor
+		 * @brief Default constructor.
 		 */
 		RangeManager() = default;
 
 		/**
-		 * @brief Destructor
+		 * @brief Destructor.
 		 */
 		~RangeManager() = default;
 
@@ -64,7 +76,7 @@ class _MISC_CLASS RangeManager
 		[[nodiscard]] const Range::Vector& getRequests() const;
 
 		/**
-		 * @brief Retrieves actual request list of ranges missing to fulfill requests.
+		 * @brief Retrieves actual request list of ranges missing to fulfill requests.<br>
 		 * These are the resulting requested ranges when all requests are added up.
 		 * @returns Real request
 		 */
@@ -101,21 +113,20 @@ class _MISC_CLASS RangeManager
 		EResult request(const Range& r, Range::Vector& rrl);
 
 		/**
-		 * @brief This function is called by a derived class to reply on a call
-		 * to 'WantRanges()' by passing the got ranges to this function.
+		 * @brief This function is called by a derived server class to as a reply to an event.
 		 * The function will return all ranges and owners in a owned range list
-		 * which out standing request are satisfied with the passes ranges (server action)
-		 * @param rl Ranges that became accessible.
-		 * @param rl_req Requested ranges becoming accessible because of it.
-		 * @return True when a range became accessible.
+		 * which request are satisfied/fulfilled with the passed ranges.
+		 * @param rl New ranges that have are accessible.
+		 * @param rl_req Requested and fulfilled ranges becoming accessible now.
+		 * @return True when ranges have become accessible.
 		 */
 		bool setAccessible(const Range::Vector& rl, Range::Vector& rl_req);
 
 		/**
 		 * @brief Same as #setAccessible but now for a single Range element.
 		 * @param r Range that became accessible.
-		 * @param rl_req Requested ranges becoming accessible now.
-		 * @return True when a range became accessible.
+		 * @param rl_req Requested and fulfilled ranges becoming accessible now.
+		 * @return True when ranges have become accessible.
 		 */
 		bool setAccessible(const Range& r, Range::Vector& rl_req);
 
@@ -136,7 +147,8 @@ class _MISC_CLASS RangeManager
 		/**
 		 * @brief Test function for set privates during a unit test.
 		 */
-		void unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr , Range::Vector* requests = nullptr);
+		void
+		unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr, Range::Vector* requests = nullptr);
 
 	private:
 		/**
@@ -160,9 +172,9 @@ class _MISC_CLASS RangeManager
 		 */
 		Range::Vector _actualRequests;
 		/**
-		 * When true clog entries are produced.
+		 * When true notify entries are produced in std::clog.
 		 */
-		bool _flagLog{true};
+		bool _flagLog{false};
 };
 
 inline

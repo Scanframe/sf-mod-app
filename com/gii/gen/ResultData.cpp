@@ -97,7 +97,7 @@ bool ResultData::recycleEnable(bool recycle)
 	return false;
 }
 
-ResultData::size_type ResultData::GetResultDataCount()
+ResultData::size_type ResultData::getResultDataCount()
 {
 	// Return the actual count -1 because of ZeroResult
 	return ResultDataStatic::RefList->count() - 1;
