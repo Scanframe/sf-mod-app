@@ -4,7 +4,7 @@ namespace sf
 {
 
 /**
-* A pair of smart pointer template classes. Provides basic conversion
+* @brief A pair of smart pointer template classes. Provides basic conversion
 * operator to T*, as well as dereference (*), and 0-checking (!).
 * These classes assume that they alone are responsible for deleting the
 * object or array unless Relinquish() is called.
@@ -42,7 +42,7 @@ class TPointerBase
 };
 
 /**
-* Pointer to a single object. Provides member access operator ->
+* @brief Pointer to a single object. Provides member access operator ->
 */
 template<typename T>
 class TPointer :public TPointerBase<T>
@@ -69,8 +69,7 @@ class TPointer :public TPointerBase<T>
 };
 
 /**
-* Pointer to an array of type T. Provides an array subscript operator
-* and uses array delete[]
+* @brief Pointer to an array of type T. Provides an array subscript operator and uses array delete[]
 */
 template<typename T>
 class TAPointer :public TPointerBase<T>

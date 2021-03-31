@@ -26,6 +26,8 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 		CHECK_THAT(sf::itoa(-1234567890, buf, 10), Equals("-1234567890"));
 		CHECK_THAT(sf::itoa(987654321, buf, 10), Equals("987654321"));
 		CHECK_THAT(sf::itoa(0x123456789abcdefL, buf, 16), Equals("123456789abcdef"));
+
+		CHECK_THAT(sf::itostr(0x123456789abcdefL, 16), Equals("123456789abcdef"));
 	}
 
 	SECTION("sf::escape,unescape", "C escaping strings")

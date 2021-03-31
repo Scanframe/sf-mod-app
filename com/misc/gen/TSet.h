@@ -4,9 +4,9 @@ namespace sf
 {
 
 /**
- * @brief
- * Template class for managing bit maks preferably when bits are
- * defined as enumerate values.
+ * @brief Template class for managing bit maks preferably when bits are defined as enumerate values.
+ *
+ * @todo Needs second template type as used integer type.
  */
 template<class T>
 struct TSet
@@ -17,17 +17,17 @@ struct TSet
 	TSet() :Bits(0) {}
 
 	/**
-	 * Initialize constructor.
+	 * @brief Initialize constructor.
 	 */
 	explicit TSet(int bits) :Bits(bits) {}
 
 	/**
-	 * Copy constructor.
+	 * @brief Copy constructor.
 	 */
 	TSet(const TSet& set) :Bits(set.Bits) {}
 
 	/**
-	 * Assign operator.
+	 * @brief Assign operator.
 	 */
 	TSet& operator=(const TSet& set)
 	{
@@ -36,7 +36,7 @@ struct TSet
 	}
 
 	/**
-	 * Returns true when the bit was Set.
+	 * @brief Returns true when the bit was Set.
 	 */
 	bool Has(T bit) const
 	{
@@ -44,7 +44,7 @@ struct TSet
 	}
 
 	/**
-	 * Sets bits in the mask.
+	 * @brief Sets bits in the mask.
 	 */
 	TSet& Set(T bit)
 	{
@@ -53,7 +53,7 @@ struct TSet
 	}
 
 	/**
-	 * Unsets bits in the mask.
+	 * @brief Unsets bits in the mask.
 	 */
 	TSet& Unset(T bit)
 	{
@@ -62,28 +62,28 @@ struct TSet
 	}
 
 	/**
-	 * Toggles a bit in the mask.
+	 * @brief Toggles a bit in the mask.
 	 */
 	TSet& Toggle(T bit) {return Has(bit) ? Unset(bit) : Set(bit);}
 
 	/**
-	 * Compare equal operator.
+	 * @brief Compare equal operator.
 	 */
 	bool operator==(const TSet& set) const {return Bits == set.Bits;}
 
 	/**
-	 * Compare unequal operator.
+	 * @brief Compare unequal operator.
 	 */
 	bool operator!=(const TSet& set) const {return Bits != set.Bits;}
 
 	/**
-	 * Operators and functions that are also available in the VCL 'Set' template.
-	 * Returns true if bit is in the bit mask.
+	 * @brief Operators and functions that are also available in the VCL 'Set' template.
+	 * @return True when bit is in the bit mask.
 	 */
 	bool Contains(T bit) const {return Has(bit);}
 
 	/**
-	 * Operator for adding bits to the mask.
+	 * @brief Operator for adding bits to the mask.
 	 */
 	TSet& operator<<(T bit)
 	{
@@ -92,7 +92,7 @@ struct TSet
 	}
 
 	/**
-	 * Operator for removing bits from the mask.
+	 * @brief Operator for removing bits from the mask.
 	 */
 	TSet& operator>>(T bit)
 	{
@@ -101,7 +101,7 @@ struct TSet
 	}
 
 	/**
-	 * Holds the actual bits.
+	 * @brief Holds the actual bits.
 	 */
 	int Bits;
 };

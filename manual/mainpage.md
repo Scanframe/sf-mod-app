@@ -1,25 +1,47 @@
 # Qt Concept Documentation {#mainpage}
 
-Generated from code by [Doxygen](https://www.doxygen.nl/) 
-(_[GitHub](https://github.com/doxygen/doxygen.git)_).
+<small>
+Generated from code by [Doxygen](https://www.doxygen.nl/) (_[GitHub](https://github.com/doxygen/doxygen.git)_).
+</small>
 
-View/Get the code on [GitLab](git.scanframe.com/shared/qt-concepts)
+View or clone the code from [GitLab](https://git.scanframe.com/shared).
 
-### Samples
+## Classes
 
-**Classes**:
-* `::sf::Value`
-* `::sf::Range`
-* `::sf::Range::Vector`
-* `::sf::RangeManager`
+### Information
+
+Classes/Interfaces for exchanging information between application modules (dynamic libraries).
+
 * `::sf::Variable`
 * `::sf::ResultData`
 
-**Templates**:
-* `::sf::TClassRegistration`
-* `::sf::TDynamicBuffer`
-* `::sf::TClosure`
-* `::sf::TVector`
+### Classes :
 
-Link to [other](sf-Variable.html) markdown.
+Classes needed for 
+
+* `::sf::Value`
+* `::sf::Range`
+* `::sf::RangeManager`
+
+### Unit Conversion:
+
+Unit conversion related functions and classes.
+
+* `::sf::getUnitConversion()`
+* `::sf::setUnitConversionHandler()`
+* `::sf::UnitConverter`
+* `::sf::UnitConversionServer`
+
+### Miscellaneous Templates
+
+* `::sf::TVector`
+* `::sf::TClosure`
+* `::sf::TDynamicBuffer`
+* `::sf::TClassRegistration`
+
+
+## Examples
+
+* [Variable Handler](sf-gii-Variable.html)
+* [Unit Conversion](sf-gii-UnitConversionServer.html)
 

@@ -4,14 +4,14 @@ namespace sf
 {
 
 /**
- * Fifo template for classes and structures.
+ * @brief Fifo template for classes and structures.
  */
-template <class T>
+template<class T>
 class TFifoClass
 {
 	public:
 		/**
-		 *Default constructor which needs Set() to validate object
+		 * @brief Default constructor which needs Set() to validate object
 		 */
 		TFifoClass()
 		{
@@ -19,7 +19,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Constructor that will setup the object immediately
+		 * @brief Constructor that will setup the object immediately
 		 */
 		explicit TFifoClass(int size)
 		{
@@ -28,16 +28,17 @@ class TFifoClass
 		}
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~TFifoClass();
+
 		/*
-		 * Put item in buffer if successful it returns '1' else '0'
+		 * @brief Put item in buffer if successful it returns '1' else '0'
 		 */
 		int Put(const T& item);
 
 		/**
-		 * Put item of zero in fifo
+		 * @brief Put item of zero in fifo
 		 */
 		inline
 		int Put()
@@ -46,38 +47,37 @@ class TFifoClass
 		}
 
 		/**
-		 * Put multiple items if possible else it returns '0'
-		 * and no items are inserted at all
+		 * @brief Put multiple items if possible else it returns '0' and no items are inserted at all
 		 */
 		int Put(const T* item, int count);
 
 		/**
-		 * returns next item without removing it.
+		 * @brief Returns next item without removing it.
 		 */
 		const T& Peek() const;
 
 		/**
-		 * Gives latest item put into the fifo.
+		 * @brief Gives latest item put into the fifo.
 		 */
 		const T& Latest() const;
 
 		/**
-		 * Read item at head of buffer.
+		 * @brief Read item at head of buffer.
 		 */
 		T Get();
 
 		/**
-		 * Same as Read(void) this time '0' is return when buffer is empty.
+		 * @brief Same as Read(void) this time '0' is return when buffer is empty.
 		 */
 		int Get(T& item);
 
 		/**
-		 * Returns current buffer data size.
+		 * @brief Returns current buffer data size.
 		 */
 		int Size() const;
 
 		/**
-		 * Returns maximum containable size.
+		 * @brief Returns maximum containable size.
 		 */
 		int SizeMax() const
 		{
@@ -85,7 +85,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Returns remaining available size.
+		 * @brief Returns remaining available size.
 		 */
 		int SizeRemain() const
 		{
@@ -93,7 +93,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Returns 1 if object is valid else 0
+		 * @brief Returns 1 if object is valid else 0
 		 */
 		int IsValid() const
 		{
@@ -101,7 +101,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Returns '1' if object is full else 0
+		 * @brief Returns '1' if object is full else 0
 		 */
 		int IsFull() const
 		{
@@ -109,7 +109,7 @@ class TFifoClass
 		}
 
 		/**
-		 * Reset Buffer
+		 * @brief Resets instance to the initial state.
 		 */
 		void Clear()
 		{
@@ -117,55 +117,50 @@ class TFifoClass
 		}
 
 		/**
-		 * InitializeBase object after default construction or to increase size
-		 * Returns 1 if valid else 0.
+		 * @brief InitializeBase object after default construction or to increase size
+		 *
+		 * @return 1 if valid else 0.
 		 */
 		int Set(int size);
 
 		/**
-		 * Array operator offset from head of buffer.
+		 * @brief Array operator offset from head of buffer.
 		 */
 		T& operator[](int pos);
+
+		/**
+		 * @brief Const array operator offset from head of buffer.
+		 */
 		const T& operator[](int pos) const;
 
 		/**
-		 * Access function for private member.
+		 * @brief Access function for private member.
 		 */
-		inline
-		int GetTail() const
-		{
-			return Tail;
-		}
+		int GetTail() const;
 
 		/**
-		 * Access function for private member.
+		 * @brief Access function for private member.
 		 */
-		inline
-		int GetHead() const
-		{
-			return Head;
-		}
+		int GetHead() const;
 
 		/**
-		 * Access function for private member.
+		 * @brief Access function for private member.
 		 */
-		inline
-		const T* GetBuffer(int pos = 0) const
-		{
-			return &Buffer[pos];
-		}
+		const T* GetBuffer(int pos = 0) const;
 
 	private:
 		int Tail{};
 		int Head{};
 		T* Buffer;
+
 		void Init();
+
 		int Valid{};
 		int BufSize{};
 		T Zero;
 };
 
-template <class T>
+template<class T>
 TFifoClass<T>::~TFifoClass()
 {
 	if (Valid)
@@ -174,17 +169,17 @@ TFifoClass<T>::~TFifoClass()
 	}
 }
 
-template <class T>
+template<class T>
 void TFifoClass<T>::Init()
 {
 	Valid = 0;
 	BufSize = 0;
 	Head = Tail = 0;
-	Buffer = NULL;
+	Buffer = nullptr;
 	memset(&Zero, 0, sizeof(T));
 }
 
-template <class T>
+template<class T>
 int TFifoClass<T>::Set(int size)
 {
 	if (size < 1)
@@ -203,7 +198,7 @@ int TFifoClass<T>::Set(int size)
 	return Valid;
 }
 
-template <class T>
+template<class T>
 int TFifoClass<T>::Put(const T& item)
 {
 	if ((((Tail + 1) % BufSize)) == Head)
@@ -215,19 +210,18 @@ int TFifoClass<T>::Put(const T& item)
 	return 1;
 }
 
-template <class T>
+template<class T>
 int TFifoClass<T>::Put(const T* item, int count)
 {
 	if (SizeRemain() < count)
 	{
 		return 0;
 	}
-	for (int i = 0; i < count; Put(item[i++]))
-	{}
+	for (int i = 0; i < count; Put(item[i++])) {}
 	return 1;
 }
 
-template <class T>
+template<class T>
 const T& TFifoClass<T>::Peek() const
 {
 	if (Head == Tail)
@@ -237,7 +231,7 @@ const T& TFifoClass<T>::Peek() const
 	return Buffer[Head];
 }
 
-template <class T>
+template<class T>
 const T& TFifoClass<T>::Latest() const
 {
 	if (Head == Tail)
@@ -247,7 +241,7 @@ const T& TFifoClass<T>::Latest() const
 	return Buffer[(((Tail + BufSize - 1) % BufSize))];
 }
 
-template <class T>
+template<class T>
 T TFifoClass<T>::Get()
 {
 	if (Tail == Head)
@@ -259,7 +253,7 @@ T TFifoClass<T>::Get()
 	return tmp;
 }
 
-template <class T>
+template<class T>
 int TFifoClass<T>::Get(T& item)
 {
 	if (Tail == Head)
@@ -272,22 +266,40 @@ int TFifoClass<T>::Get(T& item)
 	return 1;
 }
 
-template <class T>
+template<class T>
 int TFifoClass<T>::Size() const
 {
 	return (Tail < Head) ? (BufSize + (Tail - Head)) : (Tail - Head);
 }
 
-template <class T>
+template<class T>
 T& TFifoClass<T>::operator[](int pos)
 {
 	return Buffer[(pos + Head) % BufSize];
 }
 
-template <class T>
+template<class T>
 const T& TFifoClass<T>::operator[](int pos) const
 {
 	return Buffer[(pos + Head) % BufSize];
+}
+
+template<class T>
+const T* TFifoClass<T>::GetBuffer(int pos) const
+{
+	return &Buffer[pos];
+}
+
+template<class T>
+int TFifoClass<T>::GetTail() const
+{
+	return Tail;
+}
+
+template<class T>
+int TFifoClass<T>::GetHead() const
+{
+	return Head;
 }
 
 } // namespace

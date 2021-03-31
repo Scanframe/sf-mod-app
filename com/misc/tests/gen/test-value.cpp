@@ -56,10 +56,13 @@ TEST_CASE("sf::Value", "[generic][value]")
 	SECTION("General")
 	{
 		// Is zero test function.
-		CHECK(sf::Value(0).isZero() == true);
-		CHECK(sf::Value("0").isZero() == false);
+		CHECK(sf::Value(0).isZero());
+		CHECK_FALSE(sf::Value("0").isZero());
 		// Validity function testing type on vitInvalid type by getting non exisiting type string.
-		CHECK(!sf::Value(sf::Value::getType("INTeger"), "abc", 4).isValid());
+		CHECK_FALSE(sf::Value(sf::Value::getType("INTeger"), "abc", 4).isValid());
+		CHECK(sf::Value::getType("FLOAT") == sf::Value::vitFloat);
+		CHECK(sf::Value::getType("CUSTOM") == sf::Value::vitCustom);
+		CHECK(sf::Value::getType("bogus") == sf::Value::vitInvalid);
 		// Number types test function.
 		CHECK(sf::Value(4).isNumber());
 		CHECK(sf::Value(4.4).isNumber());

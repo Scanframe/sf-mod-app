@@ -10,7 +10,7 @@ namespace
 // Helper function.
 void Report(sf::RangeManager& rm, const sf::Range::Vector& results)
 {
-	//*
+	/*
 	std::clog << "Resulting: " << results << std::endl;
 	std::clog << "Requests: " << rm.getRequests() << std::endl;
 	std::clog << "Accessibles: " << rm.getAccessibles() << std::endl;

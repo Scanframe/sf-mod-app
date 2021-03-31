@@ -51,7 +51,7 @@ ResultDataReference::~ResultDataReference()
 	}
 	else
 	{ // Check if there are still results in the system when zero result is destructed.
-		_COND_RTTI_NOTIFY(ResultData::getInstanceCount(), DO_MSGBOX | DO_CERR | DO_COUT,
+		_COND_RTTI_NOTIFY(ResultData::getInstanceCount(), DO_CERR | DO_COUT,
 			"Dangling Instances In The System!");
 	}
 	// Remove from global reference list declared in TResultDataCommon.

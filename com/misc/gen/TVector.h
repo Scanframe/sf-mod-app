@@ -1,8 +1,10 @@
 #pragma once
 
-#	include <vector>
+#include <vector>
 #include <climits>
 #include <iostream>
+#include <sstream>
+#include <iterator>
 
 namespace sf
 {
@@ -11,7 +13,11 @@ template<class T>
 class TIterator;
 
 /**
- * Counted vector having function names compatible with Borland C++ templates.
+ * @brief Counted vector having additional methods and operators for ease of usage.
+ *
+ * This template class extends the std::vector template with easier to use methods for
+ * adding finding entries and an array operator.
+ *
  * @tparam T Type contained by the vector.
  */
 template<typename T>
@@ -19,67 +25,78 @@ class TVector :public std::vector<T>
 {
 	public:
 		/**
-		 * Base types for this template.
+		 * @brief Base type of this template .
 		 */
-		typedef typename std::vector<T> base_t;
-		typedef typename base_t::size_type size_type;
-		typedef typename base_t::value_type value_type;
+		typedef typename std::vector<T> base_type;
+		/**
+		 * @brief Size type of this template.
+		 */
+		typedef typename base_type::size_type size_type;
+		/**
+		 * @brief Value type contained by this vector template.
+		 */
+		typedef typename base_type::value_type value_type;
+		/**
+		 * @brief Iteration type of the template.
+		 */
 		typedef TIterator<value_type> iter_type;
 
 		/**
-		 * Value returned by various member functions when they fail.
+		 * @brief Value returned by various member functions when they fail.
 		 */
 		static const size_t npos = static_cast<size_type>(-1);
 
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		TVector() = default;
 
 		/**
-		 * Initializing constructor using an iterator.
-		 * @tparam InputIterator
-		 * @param first
-		 * @param last
+		 * @brief Initializing constructor using an iterator.
 		 */
 		template<typename InputIterator>
 		TVector(InputIterator first, InputIterator last)
-			:base_t(first, last) {}
+			:base_type(first, last) {}
 
 		/**
-		 * Initializing constructor using list like:<br>
-		 * <code>TVector vect{1,2,3,4,5,6,7}</code>
-		 * @param list
+		 * @brief Initializing constructor using list like:<br>
+		 * `TVector vect{1,2,3,4,5,6,7}`
 		 */
 		TVector(std::initializer_list<value_type> list)
-			:base_t(list) {}
+			:base_type(list) {}
 
 		/**
-		 * Copy constructor for base type..
-		 * @param sv
+		 * @brief Copy constructor for base type.
 		 */
-		explicit TVector(const base_t& sv)
-			:base_t(sv) {}
+		explicit TVector(const base_type& sv)
+			:base_type(sv) {}
 
 		/**
-		 * Initializing constructor.
+		 * @brief Initializing constructor.
+		 *
 		 * @param sz Size of the vector.
 		 */
 		explicit TVector(size_type sz)
-			:base_t(sz) {}
+			:base_type(sz) {}
 
 		/**
-		 * Adds item at the end of the vector.
+		 * @brief Adds item at the end of the vector.
+		 *
+		 * @return Start index of the inserted entry.
+		 *
 		 */
-		void add(const T&);
+		size_type add(const T&);
 
 		/**
-		 * Adds the vectors items at the end of the vector.
+		 * @brief Adds the vectors items at the end of the vector.
+		 *
+		 * @return Start index of the inserted entries.
 		 */
-		void add(const TVector<T>&);
+		size_type add(const TVector<T>&);
 
 		/**
-		 * Adds an item at index position.
+		 * @brief Adds an item at index position.
+		 *
 		 * @param t Reference of instance.
 		 * @param index Position where to add/insert.
 		 * @return True on success.
@@ -87,143 +104,164 @@ class TVector :public std::vector<T>
 		bool addAt(const T& t, size_type index);
 
 		/**
-		 * Removes specific item from the list by instance.
+		 * @brief Removes specific item from the list by instance.
+		 *
 		 * @param t Reference of instance to detach.
 		 * @return True on success.
 		 */
 		bool detach(const T& t);
 
 		/**
-		 * Removes specific item from the list by index.
+		 * @brief Removes specific item from the list by index.
+		 *
 		 * @param index Index of the item.
 		 * @return True on success.
 		 */
 		bool detach(size_type index);
 
 		/**
-		 * Returns true when empty false otherwise.
+		 * @brief Returns true when empty false otherwise.
+		 *
 		 * @return True when empty.
 		 */
 		[[nodiscard]] bool isEmpty() const
 		{
-			return base_t::empty();
+			return base_type::empty();
 		}
 
 		/**
-		 * Removes all entries from the vector.
+		 * @brief Removes all entries from the vector.
 		 */
 		void flush()
 		{
-			base_t::erase(base_t::begin(), base_t::end());
+			base_type::erase(base_type::begin(), base_type::end());
 		}
 
 		/**
-		 * Removes specific range of entries from the vector.
+		 * @brief Removes specific range of entries from the vector.
+		 *
 		 * @param stop
 		 * @param start
 		 */
 		void flush(size_type stop, size_type start = 0)
 		{
-			base_t::erase(base_t::begin() + start,
-				base_t::end() + ((stop >= base_t::size()) ? (base_t::size() - 1) : stop));
+			base_type::erase(base_type::begin() + start,
+				base_type::end() + ((stop >= base_type::size()) ? (base_type::size() - 1) : stop));
 		}
 
 		/**
-		 * Finds an entry by instance in the vector.
-		 * Returns (size_type)-1 when not found.
-		 * @return Index of the fount item.
+		 * @brief Finds an entry by instance in the vector.
+		 *
+		 * @return Index of the found item and 'npos' when not found.
 		 */
 		size_type find(const T&) const;
 
 		/**
-		 * Returns the amount of entries in the vector.
+		 * @brief Returns the amount of entries in the vector.
+		 *
 		 * @return Entry count.
 		 */
 		[[nodiscard]] size_type count() const
 		{
-			return base_t::size();
+			return base_type::size();
 		}
 
 		/**
-		 * Gets entry from index position.
+		 * @brief Gets entry from index position.
+		 *
 		 * @param i  Index position
 		 * @return Instance at position.
 		 */
 		T& get(size_type i)
 		{
-			return base_t::at(i);
+			return base_type::at(i);
 		}
 
 		/**
-		 * Const version of getting entry from index position.
+		 * @brief Const version of getting entry from index position.
+		 *
 		 * @param i  Index position
 		 * @return Instance at position.
 		 */
 		const T& get(size_type i) const
 		{
-			return base_t::at(i);
+			return base_type::at(i);
 		}
 
 		/**
-		 * Returns the base type.
-		 * @return
-		 */
-		base_t getBase()
-		{
-			return this;
-		}
-
-		/**
-		 * Returns the constant const base type.
+		 * @brief Returns the base type to access it methods explicitly.
+		 *
 		 * @return Base type
 		 */
-		base_t getBase() const
+		base_type getBase()
 		{
 			return this;
 		}
 
-		/*
-		 * Array operator needs reimplementation using std::vector::at() which does a range check
-		 * in contrast to the std::vector::operator[] functions.
+		/**
+		 * @brief Returns the constant const base type.
+		 *
+		 * @return Base type
 		 */
-		#pragma clang diagnostic push
-		#pragma ide diagnostic ignored "HidingNonVirtualFunction"
+		base_type getBase() const
+		{
+			return this;
+		}
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "HidingNonVirtualFunction"
 
 		/**
-		 * Array operator
+		 * @brief Array operator
+		 *
+		 * Array operator needs reimplementation using std::vector::at() which does a range check
+		 * in contrast to the std::vector::operator[] functions.
 		 * @param i Index position
 		 * @return Template type
 		 */
 		T& operator[](size_type i)
 		{
-			return base_t::at(i);
+			return base_type::at(i);
 		}
 
 		/**
-		 * Const array operator.
+		 * @brief Const array operator.
+		 *
+		 * Array operator needs reimplementation using std::vector::at() which does a range check
+		 * in contrast to the std::vector::operator[] functions.
 		 * @param i Index position
 		 * @return Template type
 		 */
 		const T& operator[](size_type i) const
 		{
-			return base_t::at(i);
+			return base_type::at(i);
 		}
 
-		#pragma clang diagnostic pop
+#pragma clang diagnostic pop
 
 };
 
+inline
+std::string getLabeledPointsString(const std::string& delimiter)
+{
+	std::vector<int> x;
+	std::stringstream os;
+	std::copy(x.begin(), x.end(), std::ostream_iterator<int>(os, delimiter.c_str()));
+	return os.str();
+}
+
 /**
+ * @brief Output stream operator.
  *
- * @tparam T
+ * @tparam T Type of the vector.
  * @param os Output stream
  * @param v Value of the entry.
- * @return
+ * @return Stream
  */
 template<typename T>
 std::ostream& operator<<(std::ostream& os, TVector<T> const& v)
 {
-	os << "{";
+	os << '{';
 	for (const auto& x: v)
 	{
 		os << x;
@@ -233,11 +271,11 @@ std::ostream& operator<<(std::ostream& os, TVector<T> const& v)
 			os << ", ";
 		}
 	}
-	return os << "}";
+	return os << '}';
 }
 
 /**
- * Counted vector having function names compatible with Borland C++ templates.
+ * @brief Counted vector having function names compatible with Borland C++ templates.
  * @tparam T Type contained by the TVector.
  */
 template<typename T>
@@ -305,34 +343,34 @@ class TIterator
 };
 
 template<typename T>
-void TVector<T>::add(const T& t)
+typename TVector<T>::size_type TVector<T>::add(const T& t)
 {
 	// Insert item at the end.
-	base_t::insert(base_t::end(), t);
+	return std::distance(base_type::begin(), base_type::insert(base_type::end(), t));
 }
 
 template<typename T>
-void TVector<T>::add(const TVector<T>& tv)
+typename TVector<T>::size_type TVector<T>::add(const TVector<T>& tv)
 {
 	// Insert item at the end.
-	base_t::insert(base_t::end(), tv.begin(), tv.end());
+	return std::distance(base_type::begin(), base_type::insert(base_type::end(), tv.begin(), tv.end()));
 }
 
 template<typename T>
 bool TVector<T>::addAt(const T& t, size_type index)
 {
 	// Check if index is in range.
-	if (index > base_t::size())
+	if (index > base_type::size())
 	{
 		return false;
 	}
-	if (index == base_t::size())
+	if (index == base_type::size())
 	{
-		base_t::insert(base_t::end(), t);
+		base_type::insert(base_type::end(), t);
 	}
 	else
 	{
-		base_t::insert(base_t::begin() + index, t);
+		base_type::insert(base_type::begin() + index, t);
 	}
 	return true;
 }
@@ -341,22 +379,22 @@ template<typename T>
 bool TVector<T>::detach(size_type index)
 {
 	// Check if index is in range.
-	if (index >= base_t::size())
+	if (index >= base_type::size())
 	{
 		return false;
 	}
-	base_t::erase(base_t::begin() + index, base_t::begin() + index + 1);
+	base_type::erase(base_type::begin() + index, base_type::begin() + index + 1);
 	return true;
 }
 
 template<typename T>
 bool TVector<T>::detach(const T& t)
 {
-	for (unsigned i = 0; i < base_t::size(); i++)
+	for (unsigned i = 0; i < base_type::size(); i++)
 	{
-		if (base_t::at(i) == t)
+		if (base_type::at(i) == t)
 		{
-			base_t::erase(base_t::begin() + i, base_t::begin() + i + 1);
+			base_type::erase(base_type::begin() + i, base_type::begin() + i + 1);
 			return true;
 		}
 	}
@@ -366,9 +404,9 @@ bool TVector<T>::detach(const T& t)
 template<typename T>
 typename TVector<T>::size_type TVector<T>::find(const T& t) const
 {
-	for (size_type i = 0; i < base_t::size(); i++)
+	for (size_type i = 0; i < base_type::size(); i++)
 	{
-		if (base_t::at(i) == t)
+		if (base_type::at(i) == t)
 		{
 			return i;
 		}

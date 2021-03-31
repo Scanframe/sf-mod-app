@@ -12,29 +12,29 @@ static UnitConversionServerCallBack UnitConversionCallBack = nullptr;
 
 static void* UnitConversionCallBackData = nullptr;
 
-void SetUnitConversionServer(UnitConversionServerCallBack func, void* data)
+void setUnitConversionHandler(UnitConversionServerCallBack func, void* data)
 {
 	UnitConversionCallBack = func;
 	UnitConversionCallBackData = data;
 }
 
-bool GetUnitConversion(std::string option, std::string from, int precision, double& mul, double& ofs, std::string& to, int& newprec)
+bool getUnitConversion(const std::string& option, const std::string& from, int precision, double& mul, double& ofs, std::string& to, int& to_precision)
 {
 	if (UnitConversionCallBack)
 	{
-		return UnitConversionCallBack(UnitConversionCallBackData, std::move(option), std::move(from), precision, mul, ofs, to, newprec);
+		return UnitConversionCallBack(UnitConversionCallBackData, option, from, precision, mul, ofs, to, to_precision);
 	}
 	return false;
 }
 
-bool UnitConverter::Set(const std::string& unit, int sig_digits)
+bool UnitConverter::set(const std::string& unit, int sig_digits)
 {
 	_originalSigDigits = sig_digits;
 	_originalUnit.assign(unique(unit));
-	return Set();
+	return set();
 }
 
-double UnitConverter::GetValue(double value) const
+double UnitConverter::getValue(double value) const
 {
 	if (_valid && fabs(_multiplier) > std::numeric_limits<double>::min())
 	{
@@ -43,19 +43,17 @@ double UnitConverter::GetValue(double value) const
 	return value;
 }
 
-bool UnitConverter::Set()
+bool UnitConverter::set()
 {
-	// Get conversion values.
-	_valid = GetUnitConversion(_options, _originalUnit, _originalSigDigits, _multiplier, _offset, _unit, _sigDigits);
-	//
-	return _valid;
+	// Get conversion values using global function.
+	return getUnitConversion(_options, _originalUnit, _originalSigDigits, _multiplier, _offset, _unit, _sigDigits);
 }
 
-std::string UnitConverter::GetString(double value) const
+std::string UnitConverter::getString(double value) const
 {
-	value = GetValue(value);
+	value = getValue(value);
 	//
-	int precision = GetSigDigits();
+	int precision = getSigDigits();
 	//
 	if (precision != INT_MAX)
 	{
@@ -73,7 +71,7 @@ std::string UnitConverter::GetString(double value) const
 	}
 }
 
-double UnitConverter::GetOrgValue(double value) const
+double UnitConverter::getOrgValue(double value) const
 {
 	if (_valid && fabs(_multiplier) > std::numeric_limits<double>::min())
 	{
@@ -82,9 +80,9 @@ double UnitConverter::GetOrgValue(double value) const
 	return value;
 }
 
-double UnitConverter::GetOrgValue(const std::string& value, double def) const
+double UnitConverter::getOrgValue(const std::string& value, double def) const
 {
-	return GetOrgValue(Calculator(value, def));
+	return getOrgValue(Calculator(value, def));
 }
 
 } // namespace

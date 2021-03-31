@@ -23,7 +23,7 @@ const char* Value::_typeNames[] =
 		"FLOAT",
 		"STRING",
 		"BINARY",
-		"SPECIAL"
+		"CUSTOM"
 	};
 
 Value::Value(EType type)
@@ -66,12 +66,6 @@ Value::Value(int v)
 Value::Value(unsigned v)
 {
 	int_type ll = v;
-	set(vitInteger, &ll);
-}
-
-Value::Value(long v)
-{
-	int_type ll(v);
 	set(vitInteger, &ll);
 }
 
@@ -156,10 +150,10 @@ Value& Value::set(int type, const void* content, size_t size)
 		case vitString:
 			if (content)
 			{
-				_size = strlen((char*) content) + 1;
-				if (_size > maxSTRING)
+				_size = strlen(static_cast<char*>(const_cast<void*>(content))) + 1;
+				if (_size > maxString)
 				{
-					_size = maxSTRING;
+					_size = maxString;
 				}
 				_data._ptr = new char[_size + _sizeExtra];
 				memcpy(_data._ptr, content, _size);
@@ -167,9 +161,9 @@ Value& Value::set(int type, const void* content, size_t size)
 			}
 			else
 			{
-				if (_size > maxSTRING)
+				if (_size > maxString)
 				{
-					_size = maxSTRING;
+					_size = maxString;
 				}
 				_data._ptr = new char[_size + _sizeExtra];
 				memset(_data._ptr, 0, _size);
@@ -178,9 +172,9 @@ Value& Value::set(int type, const void* content, size_t size)
 
 		case vitBinary:
 			_size = size;
-			if (_size > maxBINARY)
+			if (_size > maxBinary)
 			{
-				_size = maxBINARY;
+				_size = maxBinary;
 			}
 			_data._ptr = new char[_size + _sizeExtra];
 			if (content)
@@ -195,9 +189,9 @@ Value& Value::set(int type, const void* content, size_t size)
 
 		case vitCustom:
 			_size = size;
-			if (_size > maxSPECIAL)
+			if (_size > maxCustom)
 			{
-				_size = maxSPECIAL;
+				_size = maxCustom;
 			}
 			_data._ptr = new char[_size + _sizeExtra];
 			if (content)
@@ -211,7 +205,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			break;
 
 		case vitReference:
-			_data._ref = (Value*) content;
+			_data._ref = static_cast<Value*>(const_cast<void*>(content));
 			break;
 
 		default:
@@ -420,8 +414,6 @@ std::string Value::getString(int precision) const
 		case vitCustom:
 			return hexstring(_data._ptr, _size);
 
-		case vitLastEntry:
-			break;
 	}// switch
 	return _invalidStr;
 }
@@ -460,19 +452,22 @@ const char* Value::getData() const
 
 Value::EType Value::getType(const char* type)
 {
-	for (int i = vitInvalid; i < vitLastEntry; i++)
+	int i = 0;
+	for (auto n: _typeNames)
 	{
-		if (!strcmp(type, _typeNames[i]))
+		if (!strcmp(type, n))
 		{
 			return (Value::EType) i;
 		}
+		i++;
 	}
 	return vitInvalid;
 }
 
 const char* Value::getType(Value::EType type)
 {
-	return _typeNames[(type >= vitLastEntry || type < 0) ? vitInvalid : type];
+	constexpr auto max = sizeof(_typeNames) / sizeof(_typeNames[0]);
+	return _typeNames[(type >= max || type < 0) ? vitInvalid : type];
 }
 
 void Value::makeInvalid()
@@ -836,18 +831,18 @@ Value::operator QString() const
 
 std::ostream& operator<<(std::ostream& os, const Value& v)
 {
-	auto delim = '"';
-	os << '('	<< Value::getType(v.getType())	<< ',' << delim;
+	auto delimiter = '"';
+	os << '(' << Value::getType(v.getType()) << ',' << delimiter;
 	// Do only std::string conversion when type is STRING.
 	if (v.getType() == Value::vitString)
 	{
-		os << escape(v.getString(), delim);
+		os << escape(v.getString(), delimiter);
 	}
 	else
 	{
 		os << v.getString();
 	}
-	os << delim	<< ')';
+	os << delimiter << ')';
 	return os;
 }
 

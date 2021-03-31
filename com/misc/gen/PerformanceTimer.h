@@ -6,23 +6,23 @@ namespace sf
 {
 
 /**
- * High resolution timer for testing performance.
+ * @brief High resolution timer for testing performance.
  */
 class _MISC_CLASS PerformanceTimer
 {
 	public:
 		/**
-		 * Default constructor. Initializes the timer and resets it.
+		 * @brief Default constructor. Initializes the timer and resets it.
 		 */
 		PerformanceTimer();
 
 		/**
-		 * Copy constructor.
+		 * @brief Copy constructor.
 		 */
 		PerformanceTimer(const PerformanceTimer& pt) = default;
 
 		/**
-		 * Assignment operator.
+		 * @brief Assignment operator.
 		 */
 		PerformanceTimer& operator=(const PerformanceTimer& pt)
 		{
@@ -34,33 +34,33 @@ class _MISC_CLASS PerformanceTimer
 		}
 
 		/**
-		 * Resets the time to start measuring.
+		 * @brief Resets the time to start measuring.
 		 */
 		void reset();
 
 		/**
-		 * Returns the current elapsed time in seconds since the last reset.
+		 * @brief Returns the current elapsed time in seconds since the last reset.
 		 */
 		TimeSpec elapse();
 
 		/**
-		 * Returns the current elapsed time in seconds since the last reset.
+		 * @brief Returns the current elapsed time in seconds since the last reset.
 		 */
 		TimeSpec elapse(const TimeSpec& ts);
 
 		/**
-		 * Returns the current elapsed time in micro seconds since the last reset.
+		 * @brief Returns the current elapsed time in micro seconds since the last reset.
 		 */
 		unsigned long elapseUSec();
 
 		/**
-		 * Returns the current elapsed time in milli seconds since the last reset.
+		 * @brief Returns the current elapsed time in milli seconds since the last reset.
 		 */
 		unsigned long elapseMSec();
 
 	protected:
 		/**
-		 * Holds the start time.
+		 * @brief Holds the start time.
 		 */
 		TimeSpec _start;
 };

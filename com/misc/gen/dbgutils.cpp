@@ -2,8 +2,7 @@
 Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 */
 
-
-#include "dbgutils.h"
+#include "target.h"
 #include <ctime>
 
 #if IS_GNU
@@ -16,6 +15,7 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <cstring>
 
 #if IS_QT
+#include <QApplication>
 #include <QException>
 #include <QIcon>
 #include <QMessageBox>
@@ -25,16 +25,17 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <debugapi.h>
 #endif
 
+#include "CriticalSection.h"
+#include "dbgutils.h"
+
 //#define __DBG_MT_SAFEGUARD
 
-#ifdef __DBG_MT_SAFEGUARD
-namespace {
-static sf::TCriticalSection CriticalSection;
-}
-#endif
 
 namespace sf
 {
+
+static sf::CriticalSection DbgCriticalSection;
+
 // Raise signal SIGTRAP when debugger present otherwise the process crashes.
 void DebugBreak()
 {
@@ -70,7 +71,7 @@ class notify_exception :public std::exception
 
 		explicit notify_exception(const char* s) :msg(s) {}
 
-		const char* what() const noexcept override;
+		[[nodiscard]] const char* what() const noexcept override;
 
 	private:
 		std::string msg;
@@ -134,10 +135,8 @@ int debug_ostream::overflow(int c)
 
 void UserOutputDebugString(unsigned int type, const char* s)
 {
-#ifdef __DBG_MT_SAVEGUARD
 	// Critical section to prevent simultaneous modification of the Fifo.
-	sf::TCriticalSection::TLock lock(CriticalSection);
-#endif
+	CriticalSection::lock lock(DbgCriticalSection);
 	// When default is specified Set the the bit.
 	if (type & dotDEFAULT)
 	{
@@ -204,11 +203,12 @@ void UserOutputDebugString(unsigned int type, const char* s)
 			{
 				sentry = true;
 				// Release lock to prevent lockup multiple threads.
-#ifdef __DBG_MT_SAVEGUARD
-				lock.Release();
-#endif
+				lock.release();
 #if IS_QT
-				QMessageBox(QMessageBox::Warning, caption, text).exec();
+				if (QApplication::instance())
+				{
+					QMessageBox(QMessageBox::Warning, caption, text).exec();
+				}
 #endif
 				sentry = false;
 			}

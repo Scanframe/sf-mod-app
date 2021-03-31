@@ -1,4 +1,3 @@
-// Import the files header file.
 #include <cstdarg>
 #include <ctime>
 #include <utility>
@@ -17,7 +16,7 @@ namespace sf
 std::string stringf(const char* fmt, ...)
 {
 	const size_t sz = 4096;
-	char* buf = (char*) malloc(sz);
+	auto buf = static_cast<char*>(malloc(sz));
 	scope_free<char> sf(buf);
 	va_list argptr;
 	va_start(argptr, fmt);
@@ -178,7 +177,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 			}
 		} // for
 	}
-	// In reverse (unescape).
+		// In reverse (unescape).
 	else
 	{
 		// Convert std::string character by character.
@@ -225,7 +224,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 							}
 						}
 					}
-					// Not a hex value.
+						// Not a hex value.
 					else
 					{
 						// Increase index and check validity of the same index.
@@ -244,7 +243,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 					}
 				}
 			}
-			// Not a control character.
+				// Not a control character.
 			else
 			{
 				// Just add the character.
@@ -257,7 +256,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 
 std::string escape(const std::string& str, char delimiter)
 {
-	return  do_escaping(str, false, delimiter);
+	return do_escaping(str, false, delimiter);
 }
 
 std::string unescape(const std::string& str)
@@ -273,7 +272,9 @@ std::string filter(std::string s, const std::string& filter)
 	{
 		p = s.find_first_of(filter);
 		if (p != std::string::npos)
+		{
 			s.erase(p, 1);
+		}
 	}
 	while (p != std::string::npos);
 	return s;
@@ -347,7 +348,7 @@ std::string implode(strings strs, std::string glue, bool skip_empty) // NOLINT(p
 	return retval;
 }
 
-strings explode(std::string str, std::string separator, bool skip_empty) // NOLINT(performance-unnecessary-value-param)
+strings explode(const std::string& str, const std::string& separator, bool skip_empty)
 {
 	strings result;
 	size_t ofs = 0, found = str.find_first_of(separator, ofs);
@@ -376,7 +377,6 @@ strings explode(std::string str, std::string separator, bool skip_empty) // NOLI
 	return result;
 }
 
-//
 std::string getline(std::istream& is)
 {
 	const size_t sz = 4096;
@@ -386,16 +386,43 @@ std::string getline(std::istream& is)
 	return &buf[0];
 }
 
-//
-std::string getcwdstr()
+std::string getWorkingDirectory()
 {
+	auto dir = get_current_dir_name();
+	std::string rv(dir);
+	free(dir);
+	return rv;
+/*
 	const size_t sz = 4096;
 	char* buf = (char*) malloc(sz);
 	scope_free<char> sf(buf);
 	return getcwd(buf, sz - 1);
+*/
 }
 
-//
+std::string::value_type getDirectorySeparator()
+{
+#if IS_WIN
+	return '\\';
+#else
+	return '/';
+#endif
+}
+
+std::string getExecutableFilepath()
+{
+	std::string rv(PATH_MAX, '\0');
+	rv.resize(::readlink("/proc/self/exe", rv.data(), rv.capacity()));
+	return rv;
+}
+
+std::string getExecutableDirectory()
+{
+	auto rv = getExecutableFilepath();
+	auto pos = rv.find_last_of(getDirectorySeparator());
+	return rv.erase((pos != std::string::npos && pos > 0) ? pos : 0);
+}
+
 std::string demangle(const char* name)
 {
 	int status;
@@ -418,11 +445,11 @@ timespec gettime()
 int timespeccmp(const timespec& ts1, const timespec& ts2)
 {
 	if (ts1.tv_sec > ts2.tv_sec)
-	{ // NOLINT(bugprone-branch-clone)
+	{  // NOLINT(bugprone-branch-clone)
 		return 1;
 	}
 	else if (ts1.tv_sec < ts2.tv_sec)
-	{ // NOLINT(bugprone-branch-clone)
+	{  // NOLINT(bugprone-branch-clone)
 		return -1;
 	}
 	else if (ts1.tv_nsec > ts2.tv_nsec)
@@ -437,7 +464,6 @@ int timespeccmp(const timespec& ts1, const timespec& ts2)
 	return 0;
 }
 
-//
 std::string tolower(std::string s)
 {
 	// Make the data pointer accessible.
@@ -465,7 +491,6 @@ std::string toupper(std::string s)
 	}
 	return s;
 }
-
 
 std::string trim_right(std::string s, const std::string& t)
 {
@@ -548,7 +573,8 @@ const char* strnstr(const char* s, const char* find, size_t n)
 	return (char*) s;
 }
 
-bool getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
+bool
+getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
 {
 	DIR* dp;
 	dirent* dirp;
@@ -566,15 +592,9 @@ bool getfiles(strings& files, std::string directory, std::string wildcard) // NO
 	//
 	while ((dirp = readdir(dp)) != nullptr)
 	{
-		if (
-			wildcmp(wildcard
-				.
-					c_str(), dirp
-				->d_name, true))
+		if (wildcmp(wildcard.c_str(), dirp->d_name, true))
 		{
-			files.
-				push_back(std::string(dirp->d_name)
-			);
+			files.push_back(std::string(dirp->d_name));
 		}
 	}
 	//

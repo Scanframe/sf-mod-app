@@ -7,47 +7,47 @@ namespace sf
 {
 
 /**
- * @brief
- * Template for creating large memory inexpensive bitmasks or bit sets.
- * @tparam _size
+ * @brief Template for creating large memory inexpensive bitmasks or bit sets.
+ *
+ * @tparam _size Amount of bits needed.
  */
 template<size_t _size>
 class TBitSet
 {
 	public:
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		TBitSet();
 
 		/**
-		 * Tests if a bit has been Set.
+		 * @brief Tests if a bit has been Set.
 		 */
 		bool Has(int bit);
 
 		/**
-		 * Sets a single bit.
+		 * @brief Sets a single bit.
 		 */
 		void Set(int bit);
 
 		/**
-		 * Sets a single bit.
+		 * @brief Sets a single bit.
 		 */
 		void Reset(int bit);
 
 		/**
-		 * Clears all bits.
+		 * @brief Clears all bits.
 		 */
 		void Clear();
 
 		/**
-		 * Returns true if one of the bits has been Set.
+		 * @brief Returns true if one of the bits has been Set.
 		 */
 		bool IsClear();
 
 	private:
 		/**
-		 * Holds the actual data.
+		 * @brief Holds the actual data.
 		 */
 		int _mask[_size / sizeof(int) + 1]{};
 };

@@ -11,19 +11,13 @@ VariableReference::VariableReference(bool global)
 	_description = Value::_invalidStr;
 	_name = Value::_invalidStr;
 	_unit = Value::_invalidStr;
-	// Add to global reference list declared in VariableStatic
-	if (_global)
-	{
-		VariableStatic::_referenceList.add(this);
-	}
+	// Add to static reference list declared in VariableStatic
+	VariableStatic::_references.add(this);
 }
 
 void VariableReference::copy(const VariableReference& ref)
 {
-//  bool _global;
-//  Vector _list;
-	_COND_RTTI_NOTIFY(this == VariableStatic::zero()._reference,
-		DO_MSGBOX | DO_DBGBRK, "Cannot assign a ref to Zero Ref!")
+	_COND_RTTI_NOTIFY(this == VariableStatic::zero()._reference, DO_CLOG, "Cannot assign a ref to Zero Ref!")
 	_valid = ref._valid;
 	_id = ref._id;
 	_flags = ref._flags;
@@ -53,12 +47,12 @@ void VariableReference::copy(const VariableReference& ref)
 
 VariableReference::~VariableReference()
 {
-	// If TVariables are still referenced these must be removed first except if it is ZeroVariable itself.
+	// If Variables are still referenced these must be removed first except if it is ZeroVariable itself.
 	if (VariableStatic::zero()._reference == this)
 	{
 		// Check if there are still variables in the system when zero variable is destructed
 		size_t total_count = 0;
-		VariableStatic::ReferenceVector::iter_type i(VariableStatic::_referenceList);
+		VariableStatic::ReferenceVector::iter_type i(VariableStatic::_references);
 		// Iterate through all variable references and count the usage count
 		while (i)
 		{
@@ -70,19 +64,15 @@ VariableReference::~VariableReference()
 			{
 				// Iterate through each variable entry in the list.
 				size_type count = ref->_list.count();
-				// Skip the first one because there is always ZeroVariable itself.
-				for (size_type idx = 1; i < count; i++)
+				// Skip the first one because there is always Zero Variable itself.
+				for (size_type idx = 1; idx < count; idx++)
 				{
-					// Notification of warning
-					_NORM_NOTIFY
-						(
-							DO_MSGBOX | DO_DEFAULT,
-							_RTTI_TYPENAME
-								<< ": Dangling instance [" << idx << "/" << count
-								<< "] with desired ID "
-								<< stringf("0x%lX", ref->_list[idx]->_desiredId)
-								<< " in this process!"
-						)
+					if (ref->_list[idx])
+					{
+						// Notification of warning
+						_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x" << std::hex
+							<< ref->_list[idx]->_desiredId << " in this process!")
+					}
 					// Limit the amount shown to a maximum of 3.
 					if (idx >= 3)
 					{
@@ -95,13 +85,13 @@ VariableReference::~VariableReference()
 			else
 			{
 				_NORM_NOTIFY
-					(
-						DO_MSGBOX | DO_DEFAULT,
-						_RTTI_TYPENAME
-							<< ": Dangling reference owning instance with ID "
-							<< stringf("0x%lX", ref->_id)
-							<< " in this process!"
-					)
+				(
+					DO_MSGBOX | DO_DEFAULT,
+					_RTTI_TYPENAME
+						<< ": Dangling reference owning instance with ID "
+						<< stringf("0x%lX", ref->_id)
+						<< " in this process!"
+				)
 			}
 		}
 		// Subtract 1 for zero variable itself.
@@ -109,13 +99,13 @@ VariableReference::~VariableReference()
 		total_count--;
 		// Notification of warning
 		_COND_NORM_NOTIFY
-			(
-				total_count,
-				DO_MSGBOX | DO_DEFAULT,
-				_RTTI_TYPENAME
-					<< ": Total of " << total_count
-					<< " dangling Variable instances in this process!"
-			)
+		(
+			total_count,
+			DO_MSGBOX | DO_DEFAULT,
+			_RTTI_TYPENAME
+				<< ": Total of " << total_count
+				<< " dangling Variable instances in this process!"
+		)
 	}
 	else
 	{
@@ -129,8 +119,8 @@ VariableReference::~VariableReference()
 			}
 		}
 	}
-	// Remove from global reference list declared in VariableStatic
-	VariableStatic::_referenceList.detach(this);
+	// Remove from reference from the vector.
+	VariableStatic::_references.detach(this);
 }
 
 }

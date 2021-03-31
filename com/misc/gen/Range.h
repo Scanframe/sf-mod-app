@@ -22,23 +22,23 @@ _MISC_DATA extern bool RangeCompareExact;
 struct RANGE
 {
 	/**
-	 * Integer type used for start and stop.
+	 * @brief Integer type used for start and stop.
 	 */
 	typedef int64_t size_type;
 	/**
-	 * Integer type used for the ID.
+	 * @brief Integer type used for the ID.
 	 */
 	typedef int64_t id_type;
 	/**
-	 * Start position of the range or interval.
+	 * @brief Start position of the range or interval.
 	 */
 	size_type _start;
 	/**
-	 * Stop position of the range or interval.
+	 * @brief Stop position of the range or interval.
 	 */
 	size_type _stop;
 	/**
-	 * Identifier of this range.
+	 * @brief Identifier of this range.
 	 */
 	id_type _id;
 };
@@ -52,16 +52,16 @@ class _MISC_CLASS Range :private RANGE
 {
 	public:
 		/**
-		 * Integer type used for start and stop.
+		 * @brief Integer type used for start and stop.
 		 */
 		typedef RANGE::size_type size_type;
 		/**
-		 * Integer type used for the ID.
+		 * @brief Integer type used for the ID.
 		 */
 		typedef RANGE::id_type id_type;
 
 		/**
-		 * Type to contain and manipulate range lists.
+		 * @brief Type to contain and manipulate range lists.
 		 */
 		class Vector :public TVector<Range>
 		{
@@ -223,6 +223,7 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief Splits this range into segments bounded ranges according to the passed segment size.
+		 *
 		 * The ID field of the range carries the segment index.
 		 * @param seg_sz Size of the segment.
 		 * @param rl_dst Destination list to receive the range(s) after splitting.
@@ -235,6 +236,7 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief Splits a range into segments bounded ranges according to the passed segment size.
+		 *
 		 * The ID field of the range carries the segment index.
 		 * @param seg_sz Size of the segment.
 		 * @param req Requested range.
@@ -245,6 +247,7 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief Same as #split but now for a complete vector of ranges.
+		 *
 		 * @param seg_sz Size of the segment.
 		 * @param req Requested ranges.
 		 * @param rl List where ranges are appended.
@@ -264,6 +267,7 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief All possible comparison results.<br>
+		 *
 		 *  '-' token of 'this' range.<br>
 		 *  '=' token of the 'other' range.<br>
 		 */
@@ -417,12 +421,14 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief Returns a new range which is a super Set of the two ranges.
+		 *
 		 * A gap in between is bridged by the resulting.
 		 */
 		Range operator+(const Range& r) const;
 
 		/**
 		 * @brief Returns a new range which is a super Set of the two ranges.
+		 *
 		 * A gap in between is bridged by the resulting.
 		 */
 		Range& operator+=(const Range& r);
@@ -430,6 +436,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 	   * @brief Exclude the range in the the other which could result in an single range (0),
 	   * an additional second range (1) or in an single empty range (-1).
+	   *
 		 * @param r Range excluded from this one.
 		 * @param rest Set when 2 is returned.
 		 * @param cmp Optional compare result.
@@ -439,12 +446,15 @@ class _MISC_CLASS Range :private RANGE
 
 		/**
 		 * @brief Shifts this range using the passed offset.
+		 *
+		 * @param ofs Offset
 		 * @return Itself
 		 */
 		Range& offsetBy(size_type ofs);
 
 		/**
 		 * @brief Shifts the range using the passed offset.
+		 *
 		 * @return The shifted range
 		 */
 		[[nodiscard]] Range offset(size_type ofs) const;

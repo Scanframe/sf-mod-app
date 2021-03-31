@@ -31,9 +31,9 @@ class _GII_DATA VariableStatic :public VariableTypes
 		 */
 		static Variable* _zero;
 		/**
-		 * Static reference list to all references.
+		 * Static reference list to all global references.
 		 */
-		static ReferenceVector _referenceList;
+		static ReferenceVector _references;
 		/**
 		 * Static this counter is increased if a global event is generated.
 		 * It is decreased when it returns from the event handler.
@@ -47,7 +47,16 @@ class _GII_DATA VariableStatic :public VariableTypes
 		/**
 		 * Holds the link to the global conversion handler.
 		 */
-		static VariableHandler* _convertLink;
+		static VariableHandler* _convertHandler;
+
+		/**
+		 * Lookup list for flags.
+		 */
+		struct FlagLetters
+		{
+			char _letter;
+			int _flag;
+		} static _flagLetters[9];
 
 		friend class Variable;
 

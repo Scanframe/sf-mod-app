@@ -3,7 +3,6 @@
 
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/gen_utils.h>
-
 #include "ResultDataStorage.h"
 
 namespace sf
@@ -18,7 +17,7 @@ ResultDataStorage::ResultDataStorage(ResultDataStorage::size_type seg_sz, Result
 	 , _segmentRecycleCount(recycle)
 {
 	_reference = new Reference();
-	_reference->_threadId = Thread::GetCurrentThreadHandle();
+	_reference->_threadId = Thread::getCurrentThreadHandle();
 	_reference->_referenceCount = 1;
 	_reference->_blockSize = blk_sz;
 	_reference->_segmentSize = seg_sz;
@@ -30,7 +29,7 @@ ResultDataStorage::ResultDataStorage(const ResultDataStorage& ds)
 	:_reference(nullptr), _cachedSegmentIndex(-1)
 {
 	// Lock the classes when copying reference pointers.
-	CriticalSection::Lock static_lock(_staticSync);
+	CriticalSection::lock static_lock(_staticSync);
 	// Lock also the reference data.
 	Reference::MtLock lock(ds._reference->_criticalSection);
 	// Increment the usage count.
@@ -74,7 +73,7 @@ void ResultDataStorage::flush()
 {
 	Reference::MtLock lock(_reference->_criticalSection);
 	// Can only flush when it is the creator thread.
-	if (_reference->_threadId == Thread::GetCurrentThreadHandle())
+	if (_reference->_threadId == Thread::getCurrentThreadHandle())
 	{
 		// Delete all segments instances belonging to this instance.
 		unsigned count = _reference->_segmentList.count();
@@ -205,7 +204,7 @@ bool ResultDataStorage::blockReadWrite(bool rd, ResultDataStorage::size_type ofs
 	// Copy the passed block count value.
 	size_type count = sz;
 	// Create temporary read pointer initialized with the 'data' address.
-	char* rwp = (char*) data;
+	auto rwp = static_cast<char*>(data);
 	// Check if count is non-zero before entering the do-while loop.
 	if (count)
 	{
@@ -368,11 +367,7 @@ ResultDataStorage::Segment::write(ResultDataStorage::size_type ofs, ResultDataSt
 		_RTTI_NOTIFY(DO_DEFAULT, "Tried To Write Beyond End Of Memory!")
 	}
 	// All is well
-#if IS_WIN
-	::CopyMemory(DataPtr + ofs, src, sz);
-#else
 	memcpy(DataPtr + ofs, src, sz);
-#endif
 	// Return true to indicate success.
 	return true;
 }
@@ -397,11 +392,7 @@ ResultDataStorage::Segment::read(ResultDataStorage::size_type ofs, ResultDataSto
 		_RTTI_NOTIFY(DO_DEFAULT, "Tried to read beyond end of memory!")
 	}
 	// All is well
-#if IS_WIN
-	::CopyMemory(dest, DataPtr + ofs, sz);
-#else
 	memcpy(dest, DataPtr + ofs, sz);
-#endif
 	// Return true to indicate success.
 	return true;
 }

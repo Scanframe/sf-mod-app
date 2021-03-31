@@ -70,7 +70,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the requested range is within the managed range first.
 	if (!_managedRange.isWithinSelf(r) || _managedRange.isEmpty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, __FUNCTION__ << r << " Out of the managed range " << _managedRange << "!")
+		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Out of the managed range " << _managedRange << "!")
 		return rmOutOfRange;
 	}
 	// Check if the requested range is part of the accessible ranges secondly.
@@ -78,7 +78,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	{
 		if (i.isWithinSelf(r))
 		{
-			_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, __FUNCTION__ << r << " Is already accessible.")
+			_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is already accessible.")
 			// Request is accessible.
 			return rmAccessible;
 		}
@@ -90,7 +90,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the request resolved.
 	if (rl.empty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, __FUNCTION__ << r << " Is accessible a second time!")
+		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is accessible a second time!")
 		// Request is accessible.
 		return rmAccessible;
 	}
@@ -101,7 +101,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the request was resolved.
 	if (rl.empty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, __FUNCTION__ << r << " Is already requested in some way!")
+		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is already requested in some way!")
 		return rmInaccessible;
 	}
 	// Add the real requests to the passed range vector.
@@ -109,7 +109,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Also add the requested ranges to the return value.
 	rrl.add(rl);
 	// Log a notification.
-	_RTTI_NOTIFY(DO_DEFAULT, __FUNCTION__ << r << " Generated Requests " << rl)
+	_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Generated Requests " << rl)
 	// Execution went well.
 	return rmInaccessible;
 }

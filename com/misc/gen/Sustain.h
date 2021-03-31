@@ -37,7 +37,7 @@ class _MISC_CLASS SustainBase
 	public:
 		typedef TVector<SustainBase*> PtrVector;
 		/**
-		 * Do not use an iterator because the sustain function could affect the vector itself.
+		 * @brief Do not use an iterator because the sustain function could affect the vector itself.
 		 */
 		enum ESustainPriority
 		{
@@ -46,18 +46,19 @@ class _MISC_CLASS SustainBase
 		};
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		SustainBase(const SustainBase&) = delete;
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		SustainBase& operator=(const SustainBase&) = delete;
 
 	protected:
 		/**
-		 * Default Constructor adding itself to the passed vector.
+		 * @brief Default Constructor adding itself to the passed vector.
+		 *
 		 * If the passed vector is NULL the default vector is selected.
 		 * @param vector
 		 * @param priority
@@ -65,21 +66,21 @@ class _MISC_CLASS SustainBase
 		SustainBase(PtrVector* vector, int priority);
 
 		/**
-		 * Does not have to be virtual because this base class is not used must always be derived.
+		 * @brief oes not have to be virtual because this base class is not used must always be derived.
 		 */
 		~SustainBase();
 
 	public:
 		/**
-		 * Returns the priority value of this instance;
-		 * @return
+		 * @brief Gets the priority value of this instance;
 		 */
 		[[nodiscard]] int getPriority() const {return _priority;}
 
 		/**
-		 * Sets the interval at which the hooked function is called.
-		 * This is only valid when the priority for this entry is spTIMER.
-		 * @param interval
+		 * @brief Sets the interval at which the hooked function is called.
+		 *
+		 * This is only valid when the priority for this entry is #spTimer.
+		 * @param interval In milliseconds.
 		 */
 		void setInterval(clock_t interval)
 		{
@@ -87,8 +88,9 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Returns the interval at which the hooked function is called.
-		 * @return Interval in msec.
+		 * @brief Gets the interval at which the hooked function is called.
+		 *
+		 * @return Interval in milliseconds.
 		 */
 		[[nodiscard]] clock_t getInterval() const
 		{
@@ -96,7 +98,7 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Enables this entry.
+		 * @brief Enables this entry.
 		 */
 		void enable()
 		{
@@ -104,7 +106,7 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Disables this entry.
+		 * @brief Disables this entry.
 		 */
 		void disable()
 		{
@@ -112,8 +114,9 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Returns if the entry is enabled or not.
-		 * @return
+		 * @brief  Returns if the entry is enabled or not.
+		 *
+		 * @return True when enabled.
 		 */
 		[[nodiscard]] bool isEnabled() const
 		{
@@ -121,7 +124,8 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Must be overloaded to be able to call the sustain member function.
+		 * @brief Must be overloaded to be able to call the sustain member function.
+		 *
 		 * @param time
 		 * @return
 		 */
@@ -131,41 +135,36 @@ class _MISC_CLASS SustainBase
 		}
 
 		/**
-		 * Flushes the vector and clears all Vector member of all entries first.
+		 * @brief Flushes the vector and clears all Vector member of all entries first.
 		 */
 		static void flushVector(PtrVector* vector);
 
 		/**
-		 * Calls all sustain table entry functions in the passed vector.
+		 * @brief Calls all sustain table entry functions in the passed vector.
+		 *
 		 * The default is the static default vector.
 		 * @param vector
 		 */
 		static void callSustain(PtrVector* vector = nullptr);
 
 		/**
-		 * Pointer to the default vector which is automatically created when
+		 * @brief Pointer to the default vector which is automatically created when
 		 */
 		static PtrVector* _defaultVector;
 
 	protected:
 		/**
-		 * Member data
+		 * @brief Data member holing priority.
 		 */
 		int _priority;
 		/**
-		 * Vector where this entry is part of.
+		 * @brief Vector where this entry is part of.
 		 */
 		PtrVector* _list;
 		/**
-		 * Timer for when priority spTIMER has been set.
+		 * @brief Timer for when priority #spTimer has been set.
 		 */
 		TIntervalTimer _timer;
-
-	private:
-		/**
-		 * Type only for private use.
-		 */
-		typedef PtrVector::iter_type TPtrIterator;
 };
 
 template<class T>
@@ -173,43 +172,45 @@ class TSustain :public SustainBase
 {
 	public:
 		/**
-		 * Required type.
+		 * @brief Required type.
 		 */
 		typedef bool (T::*TPmf)(clock_t);
 
 		/**
-		 * One and only constructor
-		 * @param self
-		 * @param pmf
-		 * @param priority
-		 * @param vector
+		 * @brief One and only initializing constructor.
+		 *
+		 * @param self This pointer.
+		 * @param pmf Pointer to member function.
+		 * @param priority The priority.
+		 * @param vector Optional pointer to vector keeping the instance.
 		 */
 		TSustain(T* self, TPmf pmf, int priority = spDefault, PtrVector* vector = nullptr);
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		TSustain(const TSustain&) = delete;
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		TSustain& operator=(const TSustain&) = delete;
 
 	private:
 		/**
-		 * void pointer to member function.
+		 * @brief Pointer to member function.
 		 */
 		TPmf _pmf;
 		/**
-		 * void pointer to class instance.
+		 * @brief To class instance.
 		 */
 		T* _self;
 
 		/**
-		 * Call the member function
-		 * @param time
-		 * @return
+		 * @brief Call the member function
+		 *
+		 * @param time Current clock time value.
+		 * @return True when...
 		 */
 		inline bool call(clock_t time) override
 		{
@@ -255,12 +256,13 @@ class _MISC_CLASS StaticSustain :public SustainBase
 
 	private:
 		/**
-		 * Void pointer to static function.
+		 * @brief Pointer to static function.
 		 */
 		TPf _pf{};
 
 		/**
-		 * Call the static function
+		 * @brief Call the static function.
+		 *
 		 * @param time
 		 * @return
 		 */
@@ -271,16 +273,19 @@ class _MISC_CLASS StaticSustain :public SustainBase
 };
 
 /**
- * This function will enable a timer that call all Sustain functions in the
+ * @brief This function will enable a timer that call all Sustain functions in the
  * DefaultVector member of the 'TSustainBaseTableEntry' class.
+ *
  * Passing the repetition rate in milliseconds.
  * if the passed time is zero the timer stops.
  * Returns true if it was successful.
+ * @param msec Time in milliseconds.
  */
 _MISC_FUNC bool setSustainTimer(unsigned msec);
 
 /**
- * Returns the current sustain timer interval.
+ * @brief Gets the current sustain timer interval.
+ * @return Interval in milliseconds.
  */
 _MISC_FUNC unsigned getSustainTimer();
 

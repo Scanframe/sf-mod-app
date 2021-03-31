@@ -13,25 +13,25 @@ namespace sf
 struct VariableReference :public VariableTypes
 {
 	/**
-	 * Constructor when global is true the reference is added to the global list.
+	 * @brief Constructor when global is true the reference is added to the global list.
+	 *
 	 * @param global
 	 */
 	explicit VariableReference(bool global);
 
 	/**
-	 * Destructor.
+	 * @brief Destructor.
 	 */
 	~VariableReference();
 
 	/**
-	 * Copies the members to this instance except for the list and global members.
-	 * @param ref
+	 * @brief Copies the members to this instance except for the list and global members.
 	 */
 	void copy(const VariableReference& ref);
 
 	/** Holds the flag about the global status of this reference.*/
 	bool _global{false};
-	/** Holds the exported flag for local applications.*/
+	/** Holds the exported flag for local variables.*/
 	bool _exported{false};
 	/** Holds the valid status of this reference.*/
 	bool _valid{false};
@@ -45,7 +45,7 @@ struct VariableReference :public VariableTypes
 	Value::EType _type{Value::vitUndefined};
 	/** Name path separated by '|' characters.*/
 	std::string _name;
-	/** Describes the*/
+	/** Describes the variable.*/
 	std::string _description;
 	/** Contains the SI unit or the string filter.*/
 	std::string _unit;
@@ -62,16 +62,20 @@ struct VariableReference :public VariableTypes
 	/** Significant digits based on the round value.*/
 	int _sigDigits{0};
 	/** Vector which holds all states of this instance.*/
-	StateVector _states;
+	State::Vector _states;
 	/** list of variables attached to this reference.*/
 	Vector _list;
-	/** Static this counter is increased if a local event is generated.<br>
-	 * It is decreased when it returns from the event handler.*/
+	/**
+	 * Static this counter is increased if a local event is generated.<br>
+	 * It is decreased when it returns from the event handler.
+	 */
 	int _localActive{0};
 	/** Conversion option.*/
 	std::string _convertOption;
-	/** Converted unit.
-	 * String length of unit is used as a flag for conversion enabling.*/
+	/**
+	 * Converted unit.
+	 * String length of unit is used as a flag for conversion enabling.
+	 * */
 	std::string _convertUnit;
 	/** Converted current value.*/
 	Value _convertCurValue;

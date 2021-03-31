@@ -6,91 +6,90 @@
 namespace sf
 {
 /**
- * Timer for turning true when a certain amount of time has passed.
+ * @brief Timer for turning true when a certain amount of time has passed.
  */
 class _MISC_CLASS ElapseTimer
 {
 	public:
 		/**
-		 * Default constructor
+		 * @brief Default constructor
 		 */
 		ElapseTimer();
 
 		/**
-		 * Initializing constructor setting the elapse time using a timespec struct.
+		 * @brief Initializing constructor setting the elapse time using a timespec struct.
 		 */
 		explicit ElapseTimer(const timespec& t);
 
 		/**
-		 * Initializing constructor setting the elapse time in usec.
+		 * @brief Initializing constructor setting the elapse time in usec.
 		 */
 		explicit ElapseTimer(unsigned long usec);
 
 		/**
-		 * Setting the elapse time and enabling the timer.
+		 * @brief Setting the elapse time and enabling the timer.
 		 */
 		void set(const timespec& t);
 
 		/**
-		 * Setting the elapse time and enabling the timer where
-		 * param 't' is in nano seconds.
+		 * @brief Setting the elapse time and enabling the timer where param 't' is in nano seconds.
 		 */
 		void set(unsigned long nsec);
 
 		/**
-		 * Sets the timer up to elapse again.
+		 * @brief Sets the timer up to elapse again.
 		 */
 		void reset();
 
 		/**
-		 * Disables timer so Active does not return non-zero any more.
+		 * @brief Disables timer so Active does not return non-zero any more.
 		 */
 		void disable();
 
 		/**
-		 * Enables timer so without resetting the elapse time.
+		 * @brief Enables timer so without resetting the elapse time.
 		 */
 		void enable();
 
 		/**
-		 * Returns non-zero is the timer is enabled.
+		 * @brief Returns non-zero is the timer is enabled.
 		 */
 		[[nodiscard]] bool isEnabled() const;
 
 		/**
-		 * Returns true if the time has elapsed and enabled.
+		 * @brief Returns true if the time has elapsed and enabled.
 		 */
 		[[nodiscard]] bool isActive() const;
 
 		/**
-		 * Returns the elapse time set or initialized by the constructor.
+		 * @brief Returns the elapse time set or initialized by the constructor.
 		 */
 		[[nodiscard]] TimeSpec getElapseTime() const;
 
 		/**
-		 * Returns the time left before the timer elapses.
+		 * @brief Returns the time left before the timer elapses.
 		 */
 		[[nodiscard]] TimeSpec getTimeLeft() const;
 
 		/**
-		 * Returns the time left before the timer elapses.
+		 * @brief Returns the time left before the timer elapses.
 		 */
 		[[nodiscard]] TimeSpec getTimeLeft(const timespec&) const;
 
 		/**
-		 * Test if timer is active or not.
+		 * @brief Test if timer is active or not.
 		 */
 		explicit operator bool() const;
 
 		/**
-		 * This operator is used to minimize clock() calls.
+		 * @brief This operator is used to minimize clock() calls.
 		 * Return non zero if timer is active.
 		 */
 		int operator()(const timespec& t) const;
 
 	private:
 		/**
-		 * Holds the enable flag
+		 * @brief Holds the enable flag
 		 */
 		bool _enabled{false};
 		/**
@@ -98,7 +97,7 @@ class _MISC_CLASS ElapseTimer
 		 */
 		TimeSpec _target{};
 		/**
-		 * Holds the interval the timer elapses when started.
+		 * @brief Holds the interval the timer elapses when started.
 		 */
 		TimeSpec _elapsedTime{};
 };

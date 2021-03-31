@@ -48,32 +48,37 @@ bool Variable::isExported() const
 bool Variable::setExport(bool global)
 {
 	// Check out before continuing
-	if
-		(
-		!isOwner()            // Only an owner can be exported.
-			|| !isFlag(flgExport) // And it must be exportable.
-			|| !_reference              // The reference pointer cannot be NULL.
-			|| _reference == VariableStatic::zero()._reference  // The attached reference may not be the Zero one.
-			|| _global            // To make an owner appear global it must be local.
-			|| (global && !_reference->_id)// The local variable ID cannot be zero when global.
+	if (
+		// Only an owner can be exported.
+		!isOwner()
+			// And it must be exportable.
+			|| !isFlag(flgExport)
+			// The reference pointer cannot be NULL.
+			|| !_reference
+			// The attached reference may not be the Zero one.
+			|| _reference == VariableStatic::zero()._reference
+			// To make an owner appear global it must be local.
+			|| _global
+			// The local variable ID cannot be zero when global.
+			|| (global && !_reference->_id)
 		)
 	{
+		//_RTTI_NOTIFY(DO_DEFAULT, "Cannot make this instance global!")
 		// Signal failure to make it global.
 		return false;
 	}
-	// Only continue when there is a real change at hand.
+	// Only continue when a change is made.
 	if (_reference->_exported == global)
 	{
 		return true;
 	}
-	// Assign the new value.
+	// Set the export flag accordingly.
 	_reference->_exported = global;
-	// Check if the ID already exist.
-	// GetReferenceById returns Zero if not found.
-	VariableReference* ref = getReferenceById(_reference->_id);
 	// See if the variable must be made global.
 	if (global)
 	{
+		// Check if a global ID already exist, getReferenceById returns Zero if not found.
+		VariableReference* ref = getReferenceById(_reference->_id);
 		// Check if the current reference is already global.
 		if (ref == _reference)
 		{
@@ -83,31 +88,23 @@ bool Variable::setExport(bool global)
 		// When the id was found.
 		if (ref != VariableStatic::zero()._reference)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:!\n"
-				<< stringf("0x%lX,", _reference->_id) << _reference->_name << "\nover!\n"
-				<< ref->_name << '!')
+			_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n"
+				<< stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n" << ref->_name << '!')
 			// If the ID already exist return false.
 			return false;
 		}
-		// Add this variable to the global static list.
-		VariableStatic::_referenceList.add(_reference);
 		// Notify all global linked users of Variable instances of new ID.
 		emitGlobalEvent(veNewId, true);
-		// Iterate through global variable instances and attach those having
-		// the desired ID just created.
+		// Iterate through global variable instances and attach those having the desired ID just created.
 		attachDesired();
 	}
 		// When variable must be made local again.
 	else
 	{
-		// Remove the reference from the global static list.
-		if (!VariableStatic::_referenceList.detach(_reference))
-		{
-			return true;
-		}
-		// Create a temporary vector pointers to variables that must be
-		// detached because the reference list is modified when a variable is detached.
+		// Create a temporary vector pointers to variables that must be attached because attachRef() modifies '_list'.
 		Variable::Vector list;
+		// Set the vector to reserve the maximum expected size.
+		list.reserve(_reference->_list.size());
 		// Iterate through all variables having the global flag Set.
 		for (auto i: _reference->_list)
 		{
@@ -128,19 +125,13 @@ bool Variable::setExport(bool global)
 
 bool Variable::setGlobal(bool global)
 {
-	if (_global != global)
+	// Only allowed when variable is not attached to other then Zero.
+	if (_reference == VariableStatic::zero()._reference)
 	{
-		// Only when variable is not attached to other then Zero.
-		if (_reference == VariableStatic::zero()._reference)
-		{
-			_global = global;
-		}
-		else
-		{
-			return false;
-		}
+		_global = global;
+		return true;
 	}
-	return true;
+	return false;
 }
 
 void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
@@ -156,7 +147,7 @@ void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 		// Call real destructor.
 		::operator delete(p);
 		// If deletion is allowed again delete the wait cache too.
-		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache.count();
+		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache.size();
 		if (count)
 		{
 			while (count--)
@@ -177,47 +168,72 @@ Variable::~Variable()
 	setHandler(nullptr);
 	// Remove this instance from the list by attach reference NULL.
 	attachRef(nullptr);
-	// if the temprary value is still in use do not forget to delete it.
-	delete_null(_temporary);
+	// If the temporary value is still in use do not forget to delete it.
+	if (_temporary)
+	{
+		delete _temporary;
+		_temporary = nullptr;
+	}
+	// When this is the zero variable being deleted null it because it is also used as a sentry.
+	if (VariableStatic::_zero == this)
+	{
+		VariableStatic::_zero = nullptr;
+	}
 }
 
 Variable::size_type Variable::getVariableCount()
 {
-	// Return the actual count -1 because of Zero.
-	return VariableStatic::_referenceList.count() - 1;
-}
-
-Variable::size_type Variable::getInstanceCount()
-{
-	size_type rv = 0;
-	// Iterate through all variable references and count the usage count.
-	for (auto i: VariableStatic::_referenceList)
+	ReferenceVector::size_type rv = 0;
+	for (auto ref: VariableStatic::_references)
 	{
-		rv += i->_list.count();
+		rv += (ref->_global || ref->_exported) ? 1 : 0;
 	}
 	// Subtract 1 for zero variable before returning.
 	return --rv;
 }
 
-const Variable* Variable::getVariableListItem(Variable::size_type p)
+Variable::size_type Variable::getInstanceCount(bool global_only)
 {
-	// Returns the first Variable in the list because this
-	// there is always one in there otherwise no Reference would exist
-	// increase p by 1 to skip Zero which is the first in the list
-	p++;
-	VariableReference* ref = (p < VariableStatic::_referenceList.count()) ? VariableStatic::_referenceList[p] : nullptr;
-	return (ref) ? ref->_list[0] : &VariableStatic::zero();
+	ReferenceVector::size_type rv = 0;
+	// Iterate through all variable references and count the usage count.
+	for (auto ref: VariableStatic::_references)
+	{
+		if (!global_only || ref->_global)
+		{
+			rv += ref->_list.size();
+		}
+	}
+	// Subtract 1 for zero variable before returning.
+	return --rv;
+}
+
+Variable::Vector Variable::getVariables()
+{
+	// Reserve the minimum expected size.
+	Variable::Vector rv;
+	// Set the vector to reserve the maximum expected size.
+	rv.reserve(VariableStatic::_references.size());
+	// Iterate through the references.
+	for (auto ref: VariableStatic::_references)
+	{
+		// Only globals and exclude zero variable which has id of zero.
+		if ((ref->_global || ref->_exported) && ref->_id)
+		{
+			rv.insert(rv.begin(), ref->_list.at(0));
+		}
+	}
+	return rv;
 }
 
 VariableReference* Variable::getReferenceById(Variable::id_type id)
 {
 	if (id)
 	{
-		for (auto i: VariableStatic::_referenceList)
+		for (auto ref: VariableStatic::_references)
 		{
-			if (i->_id == id)
+			if (ref->_id == id && ref->_global && ref != VariableStatic::zero()._reference)
 			{
-				return i;
+				return ref;
 			}
 		}
 	}
@@ -245,7 +261,7 @@ void Variable::makeOwner()
 	}
 	// Get the previous owner for signaling loosing of ownership.
 	Variable* prev_owner = _reference->_list[0];
-	// Do not change ownership if current instance is allready owner
+	// Do not change ownership if current instance is already owner
 	if (prev_owner == this)
 	{
 		return;
@@ -274,7 +290,8 @@ bool Variable::attachRef(VariableReference* ref)
 	// If the current instance is not global and the ref is global
 	// do not attach the reference but copy the reference members.
 	if ((ref != VariableStatic::zero()._reference) && ref && !_global && ref->_global)
-	{ // When the reference pointer valid continue.
+	{
+		// When the reference pointer valid continue.
 		if (_reference)
 		{
 			// Special handling when zero ref is the current reference.
@@ -295,15 +312,15 @@ bool Variable::attachRef(VariableReference* ref)
 			return true;
 		}
 	}
-	//
+	// Initialize return value.
 	bool rv = true;
 	if (_reference)
 	{
 		// If this was the last one or the owner the referring reference will be deleted
 		// _list[0] is the owner default the one who created the reference instance
-		if (_reference->_list.count() == 0 || this == _reference->_list[0])
+		if (_reference->_list.empty() || this == _reference->_list[0])
 		{
-			// Notify all variables that this reference is to become invalid.
+			// Notify all variables that this reference is becoming invalid.
 			emitLocalEvent(veInvalid, false);
 			// Make pointer to this variable NULL so it isn't attached again in
 			// the reference destructor and detach it when the ref is deleted
@@ -318,7 +335,7 @@ bool Variable::attachRef(VariableReference* ref)
 		{ // Just remove variable from list if it is not the owner.
 			if (!_reference->_list.detach(this))
 			{
-				_RTTI_NOTIFY(DO_MSGBOX | DO_CERR, "Could not remove instance from list!")
+				_RTTI_NOTIFY(DO_DEFAULT, __FUNCTION__ << ": Could not remove instance from list!")
 				rv = false;
 			}
 		}
@@ -341,9 +358,11 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 {
 	// Only owner of local variable is allowed to do this.
 	if (isOwner() && !_global)
-	{ // Check if the local instance is currently exported.
+	{
+		// Check if the local instance is currently exported.
 		if (!_reference->_exported)
-		{ // Check if the new ID is different and non zero.
+		{
+			// Check if the new ID is different and non zero.
 			if (id && _reference->_id != id)
 			{ // Assign the new ID.
 				_reference->_id = id;
@@ -357,7 +376,7 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 	return false;
 }
 
-bool Variable::setup(const Definition* definition)
+bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 {
 	// Check for not owning and global variable.
 	bool local_owner = !_global && isOwner() && getUsageCount() > 1;
@@ -367,24 +386,25 @@ bool Variable::setup(const Definition* definition)
 		attachRef(VariableStatic::zero()._reference);
 	}
 	// Reset the desired ID data member.
-	_desiredId = 0L;
-	// The default return value is true.
-	bool ret_val = true;
+	_desiredId = 0;
+	// The default return value is the definitions '_valid' field.
+	bool ret_val = definition._valid;
 	// Check if variables other then the zero variable have an ID of zero.
-	if (_reference != VariableStatic::zero()._reference && !local_owner && definition->_id == 0L)
+	if (_reference != VariableStatic::zero()._reference && !local_owner && definition._id == 0)
 	{
 		ret_val = false;
 	}
 	// Don' bother to go on if an error occurred so far.
 	if (ret_val)
-	{ // Check if the ID already exist.
-		// GetReferenceById returns Zero if not found or if
-		// this instance is non global.
-		VariableReference* ref = _global ? getReferenceById(definition->_id) : VariableStatic::zero()._reference;
+	{
+		// Check if the ID already exist with getReferenceById() returns the
+		// zero reference when not found or if this instance is non global.
+		VariableReference* ref = _global ? getReferenceById(definition._id + id_ofs) : VariableStatic::zero()._reference;
 		if (ref && ref != VariableStatic::zero()._reference)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
-				<< definition->_name << " (0x" << std::hex << definition->_id << ")\nover!\n" << ref->_name << '!')
+			_RTTI_NOTIFY(DO_DEFAULT, "Tried to create duplicate ID: !\n"
+				<< "(0x" << std::hex << (definition._id + id_ofs) << ") " << definition._name
+				<< "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!')
 			// If ref already exist return false.
 			return false;
 		}
@@ -403,36 +423,33 @@ bool Variable::setup(const Definition* definition)
 		}
 		// InitializeBase reference members from here.
 		ref->_valid = true;
-		ref->_id = definition->_id;
-		ref->_name = definition->_name;
-		ref->_unit = definition->_unit;
-		ref->_convertOption = definition->_convertOption;
-		ref->_description = definition->_description;
-		ref->_flags = definition->_flags;
-		ref->_type = definition->_type;
+		ref->_id = definition._id + id_ofs;
+		ref->_name = definition._name;
+		ref->_unit = definition._unit;
+		ref->_convertOption = definition._convertOption;
+		ref->_description = definition._description;
+		ref->_flags = definition._flags;
+		ref->_type = definition._type;
 		// Use the original flags for the current ones.
 		ref->_curFlags = ref->_flags;
 		// Check for multi line string so the default value
-		if (definition->_type == Value::vitString && ref->_unit.find('M') != std::string::npos)
+		if (definition._type == Value::vitString && ref->_unit.find('M') != std::string::npos)
 		{
-			ref->_defValue.set(unescape(definition->_default.getString()));
+			ref->_defValue.set(unescape(definition._defaultValue.getString()));
 		}
 		else
 		{
-			ref->_defValue = definition->_default;
+			ref->_defValue = definition._defaultValue;
 		}
 		// Do not Set the current value when it is a local owner.
 		if (!local_owner)
 		{
 			ref->_curValue.set(ref->_defValue);
 		}
-		ref->_rndValue = definition->_round;
-		ref->_minValue = definition->_min;
-		ref->_maxValue = definition->_min;
-		for (auto& state: definition->_states)
-		{
-			ref->_states.add(state);
-		}
+		ref->_rndValue = definition._roundValue;
+		ref->_minValue = definition._minValue;
+		ref->_maxValue = definition._maxValue;
+		ref->_states = definition._states;
 		// Get significant digits for the float type variable.
 		if (Value::vitFloat == ref->_type)
 		{
@@ -461,9 +478,9 @@ bool Variable::setup(const Definition* definition)
 			ret_val &= ref->_maxValue.setType(ref->_type);
 			ret_val &= ref->_minValue.setType(ref->_type);
 			ret_val &= ref->_rndValue.setType(ref->_type);
-			for (size_t i = 0; i < ref->_states.count(); i++)
+			for (auto& s: ref->_states)
 			{
-				ret_val &= ref->_states[i]._value.setType(ref->_type);
+				s._value.setType(ref->_type);
 			}
 		}
 		// Attach ref to this variable if possible if everything went well so far.
@@ -481,10 +498,10 @@ bool Variable::setup(const Definition* definition)
 		}
 		// Signal global variables of a new created variable ID.
 		if (ret_val && _global)
-		{ // Notify all global linked users of Variable instances of new ID.
+		{
+			// Notify all global linked users of Variable instances of new ID.
 			emitGlobalEvent(veNewId, false);
-			// Iterate through global variable instances and attach those having
-			// the desired ID just created.
+			// Iterate through global variable instances and attach those having the desired ID just created.
 			attachDesired();
 		}
 	}
@@ -495,8 +512,7 @@ bool Variable::setup(const Definition* definition)
 		// Attach it to the Zero instance.
 		if (ret_val)
 		{
-			// Notify the user of this instance of the redefined reference
-			// using an ID change event.
+			// Notify the user of this instance of the redefined reference using an ID change event.
 			emitLocalEvent(veIdChanged, false);
 		}
 		else
@@ -511,210 +527,8 @@ bool Variable::setup(const Definition* definition)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error setup Definition: "
-		<< definition->_name << " (0x" << std::hex << definition->_id << ")!")
-	//
-	return ret_val;
-}
-
-bool Variable::setup(const std::string& definition, Variable::id_type id_ofs)
-{
-	// Check for not owning and global variable.
-	bool local_owner = !_global && isOwner() && getUsageCount() > 1;
-	// If this is a not local owner attach it to the zero instance.
-	if (!local_owner)
-	{
-		attachRef(VariableStatic::zero()._reference);
-	}
-	// Reset the desired ID data member.
-	_desiredId = 0L;
-	// Pointer that points to the place where the conversion of the ID went wrong.
-	char* end_ptr = nullptr;
-	// Get the result ID from the setup string.
-	std::string tmp = GetCsfField(vfId, definition);
-	id_type id = std::strtoull(tmp.c_str(), &end_ptr, 0);
-	if (id)
-	{
-		id += id_ofs;
-	}
-	// The default return value is true.
-	bool ret_val = true;
-	// Return zero if an error occurred during conversion of the ID.
-	if (end_ptr && *end_ptr != '\0')
-	{
-		ret_val = false;
-	}
-	// Check if variables other then the zero variable have an ID of zero.
-	if (_reference != VariableStatic::zero()._reference && !local_owner && id == 0L)
-	{
-		ret_val = false;
-	}
-	// Don't bother to go on if an error occurred so far
-	if (ret_val)
-	{
-		// Check if the ID already exist.
-		// GetReferenceById returns Zero if not found or if
-		// this instance is non global.
-		VariableReference* ref = _global ? getReferenceById(id) : VariableStatic::zero()._reference;
-		if (ref && ref != VariableStatic::zero()._reference)
-		{
-			_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
-				<< definition << "\nover!\n" << ref->_name << '!')
-			// If ref already exist return false.
-			return false;
-		}
-		else
-		{ // Create new or use old one.
-			if (local_owner)
-			{
-				// Reuse the current reference
-				ref = _reference;
-				// Invalidate the conversion values by clearing the conversion unit.
-				_reference->_convertUnit.resize(0);
-			}
-			else
-			{
-				// Create new global or non global reference for this variable instance.
-				ref = new VariableReference(_global);
-			}
-		}
-		// Initialize reference members from here
-		// copy definition std::string in to buffer
-		const std::string defin = unique(definition);
-		ref->_valid = true;
-		// read all values in as strings to convert
-		// them later to the actual form
-		ref->_id = id;
-		ref->_name = GetCsfField(vfName, defin);
-		ref->_unit = GetCsfField(vfUnit, defin);
-		ref->_convertOption = GetCsfField(vfConversionType, defin);
-		ref->_description = escape(GetCsfField(vfDescription, defin));
-		ref->_flags = toFlags(GetCsfField(vfFlags, defin).c_str());
-		ref->_curFlags = ref->_flags;// copy of original flags
-		// Check for multi line string so the default value
-		Value::EType type = (Value::EType) Value::getType(GetCsfField(vfType, defin).c_str());
-		if (type == Value::vitString && ref->_unit.find('M') != std::string::npos)
-		{
-			ref->_defValue.set(unescape(GetCsfField(vfDefault, defin)));
-		}
-		else
-		{
-			ref->_defValue.set(GetCsfField(vfDefault, defin));
-		}
-		// Do not Set the current value when it is a local owner..
-		if (!local_owner)
-		{
-			ref->_curValue.set(ref->_defValue);
-		}
-		ref->_minValue.set(GetCsfField(vfMinimum, defin).c_str());
-		ref->_maxValue.set(GetCsfField(vfMaximum, defin).c_str());
-		ref->_rndValue.set(GetCsfField(vfRound, defin).c_str());
-		// Get max state field count
-		int state_count = 0;
-		while (GetCsfField(vfFirstState + state_count, defin).length())
-		{
-			state_count++;
-		}
-		ref->_states.resize(state_count);
-		for (int i = 0; i < state_count; i++)
-		{
-			ref->_states[i]._name = GetCsfField(vfFirstState + i, defin);
-			if (ref->_states[i]._name.length())
-			{
-				size_t pos = ref->_states[i]._name.find_first_of('=');
-				// If equal sign has been found add state value
-				if (pos != std::string::npos)
-				{
-					ref->_states[i]._value.set(ref->_states[i]._name.substr(pos + 1).c_str());
-					// Truncate name to position of the equal sign
-					ref->_states[i]._name.resize(pos);
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-		// Get significant digits for the float type variable.
-		if (Value::vitFloat == type)
-		{
-			// Get the significant digits from the round value.
-			if (ref->_rndValue)
-			{
-				ref->_sigDigits = digits(ref->_rndValue.getFloat());
-			}
-			else
-			{
-				// Digits to maximum int because round is zero.
-				ref->_sigDigits = std::numeric_limits<int>::max();
-			}
-		}
-		else
-		{
-			ref->_sigDigits = 0;
-		}
-		// Skip type conversion if an error occurred so far.
-		if (ret_val)
-		{
-			// Convert all Value reference data members to the wanted type
-			// and check for errors during the conversion.
-			ret_val &= ref->_curValue.setType(type);
-			ret_val &= ref->_defValue.setType(type);
-			ret_val &= ref->_maxValue.setType(type);
-			ret_val &= ref->_minValue.setType(type);
-			ret_val &= ref->_rndValue.setType(type);
-			for (size_t i = 0; i < ref->_states.count(); i++)
-			{
-				ret_val &= ref->_states[i]._value.setType(type);
-			}
-			ref->_type = (Value::EType) type;
-		}
-		// Attach ref to this variable if possible if everything went well so far.
-		if (!ret_val || !attachRef(ref))
-		{
-			// Set 'ret_val' to false so an error message is generated
-			ret_val = false;
-			// When it is the local owner the reference is automatically
-			// deleted further on.
-			if (!local_owner)
-			{
-				// Delete the reference made with new because it failed to attach.
-				delete ref;
-			}
-		}
-		// Signal global variables of a new created variable ID.
-		if (ret_val && _global)
-		{ // Notify all global linked users of Variable instances of new ID.
-			emitGlobalEvent(veNewId, false);
-			// Iterate through global variable instances and attach those having
-			// the desired ID just created.
-			attachDesired();
-		}
-	}
-	// When the reference was reused with all users attached.
-	if (local_owner)
-	{
-		// When setup fails to setup this local owning instance.
-		// Attach it to the Zero instance.
-		if (ret_val)
-		{
-			// Notify the user of this instance of the redefined reference
-			// using an ID change event.
-			emitLocalEvent(veIdChanged, false);
-		}
-		else
-		{
-			// This also signals the users.
-			attachRef(VariableStatic::zero()._reference);
-		}
-	}
-	// If the setup succeeded notify the handler of this event.
-	if (ret_val)
-	{
-		emitEvent(veSetup, *this);
-	}
-	// In case of an error report to standard out.
-	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT | DO_MSGBOX, "Error In setup String: " << definition << '!')
+	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: "
+		<< definition._name << " (0x" << std::hex << (definition._id) << ") offset (0x" << id_ofs << ")!")
 	//
 	return ret_val;
 }
@@ -811,7 +625,7 @@ Variable::size_type Variable::getState(const Value& v) const
 const Value& Variable::getStateValue(Variable::size_type state) const
 {
 	// Check index versus range
-	if (state < _reference->_states.count())
+	if (state < _reference->_states.size())
 	{
 		return _reference->_states[state]._value;
 	}
@@ -821,7 +635,7 @@ const Value& Variable::getStateValue(Variable::size_type state) const
 
 std::string Variable::getStateName(Variable::size_type state) const
 { // check index versus range
-	if (state < _reference->_states.count())
+	if (state < _reference->_states.size())
 	{
 		return _reference->_states[state]._name;
 	}
@@ -850,7 +664,7 @@ bool Variable::increase(int steps, bool skip_self)
 
 void Variable::emitEvent(EEvent event, const Variable& caller)
 {
-	// If the caller is an other instance teh this one when the value changes.
+	// If the caller is an other instance then this one when the value changes.
 	// When one these events passes, Update the temporary value.
 	if (_temporary)
 	{
@@ -892,12 +706,14 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 {
 	// Disable deletion of local instances.
 	VariableStatic::_globalActive++;
+	// Temporary vector to allow changes to the queried vectors.
 	Vector ev_list;
-	// Iterate through list and generate the variables from which
-	// the event handler needs to be called.
+	// Set vector to reserve max expected size.
+	ev_list.reserve(_reference->_list.size());
+	// Iterate through list and generate the variables from which the event handler needs to be called.
 	for (auto i: _reference->_list)
 	{
-		// Check for skip_self
+		// Check for skip_self.
 		if (i && (!skip_self || i != this))
 		{
 			ev_list.add(i);
@@ -913,7 +729,7 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 	// Enable deletion of local instances.
 	VariableStatic::_globalActive--;
 	// return the amount of variables that were effected by the call to this function.
-	return ev_list.count();
+	return ev_list.size();
 }
 
 Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
@@ -928,17 +744,21 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 	// Declare event list for instance pointers.
 	Vector ev_list;
 	// Iterate through all references.
-	for (auto ref: VariableStatic::_referenceList)
+	for (auto ref: VariableStatic::_references)
 	{
-		// Iterate through all variables of the reference.
-		for (auto var: ref->_list)
+		// Only global references are considered.
+		if (ref->_global)
 		{
-			// Check for skip_self and if the variable is global.
-			// Only global variables get a global event.
-			if (var && (!skip_self || var != this) && var->_global)
+			// Iterate through all variables of the reference.
+			for (auto var: ref->_list)
 			{
-				// Add variable to list.
-				ev_list.add(var);
+				// Check for skip_self and if the variable is global.
+				// Only global variables get a global event.
+				if (var && (!skip_self || var != this) && var->_global)
+				{
+					// Add variable to list.
+					ev_list.add(var);
+				}
 			}
 		}
 	}
@@ -958,24 +778,26 @@ Variable::size_type Variable::attachDesired()
 {
 	// Disable deletion of instances.
 	VariableStatic::_globalActive++;
-	// Signal other event handler functions are called using a
-	// global predefined list.
+	// Signal other event handler functions are called using a global predefined list.
 	Vector ev_list;
-	// Iterate through all references generating pointers to instances
-	// having a desired ID that must be attached.
-	for (auto ref: VariableStatic::_referenceList)
+	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
+	for (auto ref: VariableStatic::_references)
 	{
-		// Iterate through all variables of the reference.
-		for (auto var: ref->_list)
+		// Only applies for globals.
+		if (ref->_global)
 		{
-			// Check if the desired ID is non-zero which means it is enabled.
-			// Also compare the desired and this ID to check if it has not be
-			// linked to the reference. Also check if the variable is global
-			// because global variables can only be attached by a desired ID.
-			if (var && var->_global && var->_desiredId && var->_desiredId == _reference->_id)
+			// Iterate through all variables of the reference.
+			for (auto var: ref->_list)
 			{
-				// Add instance pointer the to list.
-				ev_list.add(var);
+				// Check if the desired ID is non-zero which means it is enabled.
+				// Also compare the desired and this ID to check if it has not be
+				// linked to the reference. Also check if the variable is global
+				// because global variables can only be attached by a desired ID.
+				if (var && var->_global && var->_desiredId && var->_desiredId == _reference->_id)
+				{
+					// Add instance pointer the to list.
+					ev_list.add(var);
+				}
 			}
 		}
 	}
@@ -993,7 +815,7 @@ Variable::size_type Variable::attachDesired()
 	// Enable deletion of instances.
 	VariableStatic::_globalActive--;
 	// Return  the lists size as the count of the events.
-	return ev_list.count();
+	return ev_list.size();
 }
 
 void Variable::setHandler(VariableHandler* handler)
@@ -1019,148 +841,84 @@ void Variable::setHandler(VariableHandler* handler)
 
 void Variable::removeHandler(VariableHandler* handler)
 {
-	// Get the total count of variable references.
-	unsigned vc = VariableStatic::VariableStatic::_referenceList.count();
-	// iterate through variable references
-	for (unsigned i = 0; i < vc; i++)
+	for (auto ref: VariableStatic::_references)
 	{
-		// Get the current variable pointer.
-		VariableReference* ref = VariableStatic::_referenceList[i];
-		// get the total amount of variables attached to this reference.
-		unsigned vrc = ref->_list.count();
-		// iterate through the variables.
-		for (unsigned j = 0; j < vrc; j++)
+		// Iterate through the variables.
+		for (auto v: ref->_list)
 		{
 			// Check if the 2 links are the same.
-			if (ref->_list[j]->_handler == handler)
+			if (v->_handler == handler)
 			{
 				// Set the link to NULL so the event function isn't called.
-				ref->_list[j]->_handler = nullptr;
+				v->_handler = nullptr;
 			}
 		}
 	}
 }
 
-int Variable::toFlags(const char* flags)
+Variable::flags_type Variable::toFlags(const std::string& flags)
 {
-	if (!flags) {return 0;}
-	struct
+	Variable::flags_type rv{0};
+	for (auto f: flags)
 	{
-		char ch;
-		int flag;
-	}
-		a[] =
+		for (auto fl: VariableStatic::_flagLetters)
 		{
-			{'R', flgReadonly},
-			{'A', flgArchive},
-			{'S', flgShare},
-			{'L', flgLink},
-			{'F', flgFunction},
-			{'P', flgParameter},
-			{'H', flgHidden},
-			{'E', flgExport},
-			{'W', flgWriteable},
-			{0, 0}
-		};
-
-	int retval = 0;
-	int i = 0;
-	while (flags[i])
-	{
-		int t = 0;
-		while (a[t].ch)
-		{
-			if (a[t].ch == flags[i])
+			if (f == fl._letter)
 			{
-				retval |= 1 << t;
+				rv |= fl._flag;
 			}
-			t++;
 		}
-		i++;
 	}
-	return retval;
+	return rv;
 }
 
-std::string Variable::getFlagsString(Variable::flags_type flg)
+std::string Variable::getFlagsString(Variable::flags_type flag)
 {
-	struct
+	std::string rv;
+	for (auto fl: VariableStatic::_flagLetters)
 	{
-		char ch;
-		int flag;
-	}
-		a[] =
+		if (flag & fl._flag)
 		{
-			{'R', flgReadonly},
-			{'A', flgArchive},
-			{'S', flgShare},
-			{'L', flgLink},
-			{'F', flgFunction},
-			{'P', flgParameter},
-			{'H', flgHidden},
-			{'E', flgExport},
-			{'W', flgWriteable},
-			{0, 0}
-		};
-	char flags[33];
-	char* tmp = &flags[0];
-	memset(flags, 0, sizeof(flags));
-	for (int i = 0; a[i].ch; i++)
-	{
-		if (flg & a[i].flag)
-		{
-			*tmp++ = a[i].ch;
+			rv.append(1, fl._letter);
 		}
 	}
-	return &flags[0];
+	return rv;
+}
+
+/**
+ * Unsets a flag or multiple flags of the attached VariableReference.
+ */
+bool Variable::updateFlags(int flags, bool skip_self)
+{
+	if (isOwner())
+	{
+		auto cur_flags = _reference->_curFlags;
+		_reference->_curFlags = flags;
+		if (_reference->_curFlags != cur_flags)
+		{ // skip self
+			emitLocalEvent(veFlagsChange, skip_self);
+			// Changes were made.
+			return true;
+		}
+	}
+	// Nothing changed.
+	return false;
 }
 
 /**
  * Sets a flag or multiple flags on the reference
  */
-void Variable::setFlag(int flag, bool skip_self)
+bool Variable::setFlag(flags_type flag, bool skip_self)
 {
-	// Only owner is allowed to Set flags.
-	if (isOwner())
-	{
-		auto tflgs = _reference->_curFlags;
-		_reference->_curFlags |= flag;
-		if (_reference->_curFlags != tflgs)
-		{
-			emitLocalEvent(veFlagsChange, skip_self);
-		}
-	}
+	return updateFlags(_reference->_curFlags | flag, skip_self);
 }
 
 /**
  * Unsets a flag or multiple flags of the attached VariableReference.
  */
-void Variable::unsetFlag(int flag, bool skip_self)
+bool Variable::unsetFlag(flags_type flag, bool skip_self)
 {
-	if (isOwner())
-	{
-		auto tflgs = _reference->_curFlags;
-		_reference->_curFlags &= ~flag;
-		if (_reference->_curFlags != tflgs)
-		{
-			emitLocalEvent(veFlagsChange, skip_self);
-		}
-	}
-}
-
-/**
- * Unsets a flag or multiple flags of the attached VariableReference.
- */
-void Variable::updateFlags(int flag, bool skip_self)
-{
-	if (isOwner())
-	{
-		auto tflgs = _reference->_curFlags;
-		_reference->_curFlags = flag;
-		if (_reference->_curFlags != tflgs)
-		{ // skip self
-			emitLocalEvent(veFlagsChange, skip_self);
-		}
-	}
+	return updateFlags(_reference->_curFlags & ~flag, skip_self);
 }
 
 const Value& Variable::getCur() const
@@ -1172,7 +930,7 @@ const Value& Variable::getCur() const
 const Value& Variable::getCur(bool converted) const
 {
 	// When temporary is used return the temporary value.
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertCurValue : _reference->_curValue;
+	return (converted && isConverted()) ? _reference->_convertCurValue : _reference->_curValue;
 }
 
 bool Variable::setCur(const Value& value, bool skip_self)
@@ -1182,19 +940,13 @@ bool Variable::setCur(const Value& value, bool skip_self)
 	{
 		return updateTempValue(value, skip_self);
 	}
-	// If this instance uses the converted value it must
-	// be converted first to the real value.
-	if (isConverted())
-	{
-		return updateValue(convert(value, true), skip_self);
-	}
-	// Update using the straight value.
-	return updateValue(value, skip_self);
+	// If this instance uses the converted value it must be converted first to the real value.
+	return updateValue(convert(value, true), skip_self);
 }
 
 bool Variable::isReadOnly() const
 {
-	// If it is the owner it is not readonly by defaylt.
+	// If it is the owner it is not readonly by default.
 	// Only the owner can change a readonly instance.
 	if (!isOwner())
 	{
@@ -1291,8 +1043,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 			// Set local 'changed ' to trigger event.
 			changed = _reference->_curValue != new_val;
 			_reference->_curValue = new_val;
-		}
 			break;
+		}
 
 		case Value::vitString:
 		{
@@ -1360,15 +1112,15 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 		case Value::vitCustom:
 		{
 			// create non const Value type
-			Value newval = value;
-			// adjust the newval type
-			if (!newval.setType(getType()))
+			Value new_val = value;
+			// adjust the new_val type
+			if (!new_val.setType(getType()))
 			{
 				// on failure return
 				return false;
 			}
 			// check for change of value
-			if (_reference->_curValue != newval)
+			if (_reference->_curValue != new_val)
 			{
 				_reference->_curValue = value;
 				// Set changed local variable to trigger event
@@ -1412,7 +1164,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 			// If the new value is numerical adjust type to _curValue type
 			// create non const Value type
 			Value new_val = value;
-			// Adjeust the newval type
+			// Adjust the new_val type
 			if (!new_val.setType(getType()))
 			{
 				// on failure return
@@ -1423,11 +1175,12 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 			// Set local 'changed ' to trigger an event.
 			changed = *_temporary != new_val;
 			*_temporary = new_val;
-		}
 			break;
+		}
 
 		case Value::vitString:
-		{ // create non const std::string to modify
+		{
+			// create non const std::string to modify
 			std::string s = value.getString();
 			auto max_len = (size_t) _reference->_rndValue.getInteger();
 			// adjust length if max_len is non-zero and length > std::string length
@@ -1441,14 +1194,14 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 			changed = *_temporary != v;
 			// Assign the new value.
 			*_temporary = v;
-		}
 			break;
+		}
 
 		case Value::vitBinary:
 		case Value::vitCustom:
 		{ // Create non const Value type.
 			Value new_val = value;
-			// adjeust the new_val type
+			// adjust the new_val type
 			if (!new_val.setType(getType()))
 			{
 				// on failure return
@@ -1461,12 +1214,12 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 				// Set changed local variable to trigger event
 				changed = true;
 			}
-		}
 			break;
+		}
 
 		default:
 			break;
-	} // switch
+	}
 	// Check if there was a change of the current value.
 	if (changed)
 	{
@@ -1502,7 +1255,7 @@ bool Variable::readUpdate(std::istream& is, bool skip_self, Vector& list)
 	{ // GetReferenceById get reference to owner to be able to update readonly vars
 		auto& var(not_ref_null(list) ? getVariableById(id, list) : const_cast<Variable&>(getVariableById(id)));
 		var.updateValue(value, skip_self);
-		var.updateFlags(toFlags(flags.c_str()), skip_self);
+		var.updateFlags(toFlags(flags), skip_self);
 		return true;
 	}
 	return false;
@@ -1673,17 +1426,14 @@ std::string Variable::getCurString(bool use_states) const
 
 		case Value::vitInteger:
 		{
-			// there are states return the state name if 'states' is true
-			// if not run in to default switch
-			unsigned count = _reference->_states.count();
-			if (use_states && count)
+			// there are states return the state name if 'states' is true if not run in to default switch
+			if (use_states && !_reference->_states.empty())
 			{
-				// Find the state of the current value.
-				for (unsigned i = 0; i < count; i++)
+				for (auto& state: _reference->_states)
 				{
-					if (_reference->_states[i]._value == (_temporary ? (*_temporary) : _reference->_curValue))
+					if (state._value == (_temporary ? (*_temporary) : _reference->_curValue))
 					{
-						return _reference->_states[i]._name;
+						return state._name;
 					}
 				}
 			}
@@ -1703,6 +1453,14 @@ std::string Variable::getCurString(bool use_states) const
 			}
 		}
 	} // switch
+}
+
+void Variable::setConvertHandler(VariableHandler* handler)
+{
+	if (VariableStatic::_convertHandler != handler)
+	{
+		VariableStatic::_convertHandler = handler;
+	}
 }
 
 bool Variable::setConvertValues
@@ -1773,47 +1531,44 @@ bool Variable::setConvertValues
 	return false;
 }
 
-void Variable::setConvertHandler(VariableHandler* link)
-{
-	if (VariableStatic::_convertLink != link)
-	{
-		VariableStatic::_convertLink = link;
-	}
-}
-
 bool Variable::setConvertValues(bool convert)
 {
-	// Only owners are allowed to Set the conversion values.
+	// Only owners are allowed to set the conversion values.
 	// Check if the type is a floating point value that can be converted.
 	if (isOwner() && _reference->_type == Value::vitFloat && _reference->_unit.length())
 	{
-		double mult = 1;
-		double ofs = 0;
+		// Initialize.
+		Value::flt_type multiplier = 1;
+		Value::flt_type offset = 0;
 		if (convert)
 		{
-			// If the global covert link has been Set use it.
-			if (VariableStatic::_convertLink)
-			{ // Call the handler setting the linker to the zero variable to
+			// If the global covert link has been set use it.
+			if (VariableStatic::_convertHandler)
+			{
+				// Call the handler setting the linker to the zero variable to
 				// indicate the global nature of the call.
-				VariableStatic::_convertLink->VariableEventHandler(veConvert, *this, VariableStatic::zero(), false);
+				VariableStatic::_convertHandler->VariableEventHandler(veConvert, *this, VariableStatic::zero(), false);
 			}
 			else
 			{
-				int sig = _reference->_sigDigits;
+				int digits = _reference->_sigDigits;
 				std::string new_unit = _reference->_unit;
 				// Check if a conversion is found.
-				if (GetUnitConversion(_reference->_convertOption, new_unit, sig, mult, ofs, new_unit, sig))
+				if (getUnitConversion(_reference->_convertOption, _reference->_unit, _reference->_sigDigits,
+					multiplier, offset, new_unit, digits))
 				{
 					// Set the convert values.
-					return setConvertValues(new_unit, Value(mult), Value(ofs), sig);
+					return setConvertValues(new_unit, Value(multiplier), Value(offset), digits);
 				}
 			}
 		}
 		else
-		{ // Check if a conversion value must be disabled.
+		{
+			// Check if a conversion value must be disabled by checking the length of the conversion unit string as a sentry.
 			if (_reference->_convertUnit.length())
-			{ // Set the convert values to the original.
-				return setConvertValues("", Value(mult), Value(ofs));
+			{
+				// Set the convert values to the original.
+				return setConvertValues("", Value(multiplier), Value(offset));
 			}
 			// Was al ready
 			return true;
@@ -1827,7 +1582,8 @@ bool Variable::setConvert(bool enable)
 {
 	// Only when there is a change.
 	if (_converted != enable)
-	{ // Make the change.
+	{
+		// Make the change.
 		_converted = enable;
 		// Signal only if a conversion exists.
 		if (_reference->_convertUnit.length())
@@ -1836,15 +1592,14 @@ bool Variable::setConvert(bool enable)
 			emitEvent(veConverted, *this);
 		}
 	}
-	//
 	return isConverted();
 }
 
 Value Variable::convert(const Value& value, bool to_org) const
 {
 	Value ret_val = value;
-	// Check if a conversion must be perfomed.
-	if (_reference->_convertUnit.length() && getType() == Value::vitFloat)
+	// Check if a conversion must be performed.
+	if (_reference->_convertUnit.length() && _reference->_type == Value::vitFloat)
 	{
 		// Abort the operation when conversion fails.
 		if (!ret_val.setType(Value::vitFloat))
@@ -1886,9 +1641,12 @@ void Variable::setTemporary(bool on_off)
 				// Notify the variable of the change.
 				emitEvent(veValueChange, *this);
 			}
-
-			// Delete and disable the temporary value.
-			delete_null(_temporary);
+			// Delete and disable the temporary value usage.
+			if (_temporary)
+			{
+				delete _temporary;
+				_temporary = nullptr;
+			}
 		}
 	}
 }
@@ -1898,19 +1656,13 @@ bool Variable::applyTemporary(bool skip_self)
 	// Check if the temporary value is used.
 	if (_temporary)
 	{
-		// If this instance uses the converted value it must
-		// be converted first to the real value.
-		if (isConverted())
-		{
-			return updateValue(convert(*_temporary, true), skip_self);
-		}
 		// Update using the straight value when not converted.
-		return updateValue(*_temporary, skip_self);
+		return updateValue(convert(*_temporary, true), skip_self);
 	}
 	return false;
 }
 
-bool Variable::temporaryDiffs() const
+bool Variable::isTemporaryDifferent() const
 {
 	// Check if the temporary value is used.
 	if (_temporary)
@@ -1966,7 +1718,7 @@ std::istream& operator>>(std::istream& is, Variable& v)
 	return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Variable::StateVector& v)
+std::ostream& operator<<(std::ostream& os, const Variable::State::Vector& v)
 {
 	for (auto& i: v)
 	{
@@ -2024,7 +1776,7 @@ const char* Variable::getEventName(EEvent event)
 			break;
 
 		case veSetup:
-			rv = "setup";
+			rv = "Setup";
 			break;
 
 		case veValueChange:
@@ -2094,9 +1846,9 @@ Variable::EStringType Variable::getStringType() const
 	return stNormal;
 }
 
-const char* Variable::getStringType(Variable::EStringType str)
+const char* Variable::getStringType(Variable::EStringType type)
 {
-	switch (str)
+	switch (type)
 	{
 		case stNormal:
 			return "Normal";
@@ -2154,15 +1906,15 @@ std::string Variable::getUnit(bool converted) const
 
 VariableHandler* Variable::getConvertHandler() const
 {
-	return VariableStatic::_convertLink;
+	return VariableStatic::_convertHandler;
 }
 
-void Variable::initialize() noexcept
+void Variable::initialize()
 {
 	VariableStatic::initialize(true);
 }
 
-void Variable::deinitialize() noexcept
+void Variable::deinitialize()
 {
 	VariableStatic::initialize(false);
 }
@@ -2302,17 +2054,99 @@ const Variable& Variable::getVariableById(Variable::id_type id)
 
 Variable::size_type Variable::getUsageCount() const
 {
-	return _reference->_list.count();
+	return _reference->_list.size();
 }
 
 Variable::size_type Variable::getStateCount() const
 {
-	return _reference->_states.count();
+	return _reference->_states.size();
 }
 
-const Variable::StateVector& Variable::getStates() const
+const Variable::State::Vector& Variable::getStates() const
 {
 	return _reference->_states;
+}
+
+Variable::Definition Variable::getDefinition(const std::string& str)
+{
+	Variable::Definition def;
+	// Flag to determine if the conversion went well.
+	bool ok = true;
+	// Pointer that points to the place where the conversion of the ID went wrong.
+	char* end_ptr = nullptr;
+	// Get the result ID from the setup string.
+	std::string tmp = GetCsfField(vfId, str);
+	id_type id = std::strtoull(tmp.c_str(), &end_ptr, 0);
+	// Return zero if an error occurred during conversion of the ID.
+	if (end_ptr && *end_ptr != '\0')
+	{
+		ok = false;
+	}
+	// Read all values in as strings to convert them later to the actual form.
+	def._id = id;
+	def._name = GetCsfField(vfName, str);
+	def._unit = GetCsfField(vfUnit, str);
+	def._convertOption = GetCsfField(vfConversionType, str);
+	def._description = escape(GetCsfField(vfDescription, str));
+	def._flags = toFlags(GetCsfField(vfFlags, str));
+	// Check for multi line string so the default value
+	Value::EType type = (Value::EType) Value::getType(GetCsfField(vfType, str).c_str());
+	//
+	if (type == Value::vitString && def._unit.find('M') != std::string::npos)
+	{
+		def._defaultValue.set(unescape(GetCsfField(vfDefault, str)));
+	}
+	else
+	{
+		def._defaultValue.set(GetCsfField(vfDefault, str));
+	}
+	def._minValue.set(GetCsfField(vfMinimum, str).c_str());
+	def._maxValue.set(GetCsfField(vfMaximum, str).c_str());
+	def._roundValue.set(GetCsfField(vfRound, str).c_str());
+	// Get max state field count
+	int state_count = 0;
+	while (GetCsfField(vfFirstState + state_count, str).length())
+	{
+		state_count++;
+	}
+	def._states.resize(state_count);
+	for (int i = 0; i < state_count; i++)
+	{
+		def._states[i]._name = GetCsfField(vfFirstState + i, str);
+		if (def._states[i]._name.length())
+		{
+			size_t pos = def._states[i]._name.find_first_of('=');
+			// If equal sign has been found add state value
+			if (pos != std::string::npos)
+			{
+				def._states[i]._value.set(def._states[i]._name.substr(pos + 1).c_str());
+				// Truncate name to position of the equal sign
+				def._states[i]._name.resize(pos);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	// Skip type conversion if an error occurred so far.
+	if (ok)
+	{
+		// Convert all Value reference data members to the wanted type
+		// and check for errors during the conversion.
+		ok &= def._maxValue.setType(type);
+		ok &= def._minValue.setType(type);
+		ok &= def._roundValue.setType(type);
+		for (auto& s: def._states)
+		{
+			ok &= s._value.setType(type);
+		}
+		def._type = (Value::EType) type;
+	}
+	// Set the validation boolean flag.
+	def._valid = ok;
+	//
+	return def;
 }
 
 }

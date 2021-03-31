@@ -70,7 +70,7 @@ void SustainBase::flushVector(PtrVector* vector)
 {
 	if (vector)
 	{
-		TPtrIterator i(*vector);
+		PtrVector::iter_type i(*vector);
 		while (i)
 		{
 			(i++)->_list = nullptr;

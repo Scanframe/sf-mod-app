@@ -16,292 +16,318 @@ namespace sf
 /**
  * @brief Class for creating and referencing global or local created parameters or settings called variables.<br>
  * This class allows linking of member functions of other classes to handle events generated.<br>
- * See the [Example](sf-gii-variable.html) on how to use this class and the 'TVariableHandler' template class.<br>
+ * See the [Example](sf-gii-Variable.html) on how to use this class and the 'TVariableHandler' template class.<br>
  */
 class _GII_CLASS Variable :public InformationBase, public VariableTypes
 {
 	public:
 		/**
-		 * Must be called to initialize the statics which this class depends on.
+		 * @brief Must be called to initialize the statics which this class depends on.
 		 */
-		static void initialize() noexcept;
-		/**
-		 * Called when terminating the application.
-		 */
-		static void deinitialize() noexcept;
+		static void initialize();
 
 		/**
-		 * Default constructor for a default global variable.
+		 * @brief Called when terminating the application.
+		 */
+		static void deinitialize();
+
+		/**
+		 * @brief Default constructor for a default global variable.
 		 */
 		Variable();
 
 		/**
-		 * Copy constructor.
-		 * Copies also the Desired ID data member.
+		 * @brief Copy constructor. Copies also the Desired ID data member.
 		 */
 		Variable(const Variable& v);
 
 		/**
-		 * Creates an instance having a reference with 'id'.
-		 * @param id
-		 * @param set_did
+		 * @brief Creates an instance having a reference with 'id'.
+		 * @param id Variable identifier.
+		 * @param set_did When true the 'DesiredID' data member is set to the passed 'id'.
 		 */
 		Variable(id_type id, bool set_did);
 
 		/**
-		 * Creates a variable according to the definition std::string passed to it.
-		 * @param definition
+		 * @brief Creates a variable according to the definition std::string passed to it.
+		 *
+		 * The "id" from the definition string is the passed id offset added to to form a final id.
+		 * This used when instances are created from resource strings for multiple instances of the same module.
+		 * @param definition Definition string.
+		 * @param id_ofs Offset for the 'id'.
 		 */
-		explicit Variable(const std::string& definition);
+		explicit Variable(const std::string& definition, id_type id_ofs = 0);
 
 		/**
-		 * same as above but the id from the string is used with the passed id offset.
-		 * @param definition
-		 * @param id_ofs
+		 * @brief Creates a variable using the passed definition structure.
+		 *
+		 * @param def Definition structure.
+		 * @param id_ofs Offset for the 'id'.
 		 */
-		Variable(const std::string& definition, id_type id_ofs);
+		explicit Variable(const Definition& def, id_type id_ofs = 0);
 
 		/**
-		 * creates a variable using the passed definition structure.
-		 * @param def
-		 */
-		explicit Variable(const Definition* def);
-
-		/**
-		 * Virtual destructor.
+		 * @brief Virtual destructor.
 		 */
 		~Variable() override;
 
 		/**
-		 * creates a variable according to the definition std::string passed to it.
-		 * @param definition
-		 * @return
+		 * @brief Creates a variable according to the definition std::string passed to it.
+
+		 * The passed identifier offset 'id_ofs' is added to the id in the string.
+		 * This used when instances are created from resource strings for multiple instances of the same module.
+		 * @param definition Comma separated definition string.
+		 * @param id_ofs Offset for the 'id'.
+		 * @return True on success.
 		 */
-		bool setup(const std::string& definition);
+		bool setup(const std::string& definition, id_type id_ofs = 0);
 
 		/**
-		 * same as above but the id from the string is used with the passed id offset.
-		 * @param definition
-		 * @param id_ofs
-		 * @return
+		 * @brief Creates a variable using the definition structure.
+		 * @param definition Definition structure.
+		 * @param id_ofs Offset for the 'id'.
+		 * @return True on success.
 		 */
-		bool setup(const std::string& definition, id_type id_ofs);
+		bool setup(const Definition& definition, Variable::id_type id_ofs = 0);
 
 		/**
-		 * creates a variable using the definition structure.
-		 * @param definition
-		 * @return
-		 */
-		bool setup(const Definition* definition);
-
-		/**
-		 * sets reference to other variable. only way for local variables.
+		 * @brief Sets reference to other variable.
+		 * This is the only way for local variables.
 		 * @param v
 		 * @return
 		 */
 		bool setup(const Variable& v);
 
 		/**
-		 * Sets reference to other variable by id.
-		 * The global list of references is searched for the ID.
+		 * @brief Sets reference to other variable by id.
+		 *
+		 * The global list of references is searched for the passed id and referenced when found.
+		 * When found event #veIdChanged is emitted.
+		 * When the desired id was set and changed the #veDesiredId event is emitted.
 		 * Cannot be used for local variables.
-		 * When 'set_did' is true the 'DesiredID' data member is Set to 'id'.
-		 * @param id
-		 * @param set_did
-		 * @return
+		 * @param id Variable identifier.
+		 * @param set_did When true the 'DesiredID' data member is set to the passed 'id'.
+		 * @return True when found and referenced.
 		 */
 		bool setup(id_type id, bool set_did = false);
 
 		/**
-		 * only for local non exported owning variables to Set the id after setup
-		 * is called using a string. The ID must can not be zero.
-		 * Attached local variables are notify with a new ID event.
-		 * @param id
-		 * @param skip_self
-		 * @return True onm success.
+		 * @brief Only for local non exported owning variables to set the id after setup is called using a string.
+		 *
+		 * The id can not be zero and attached local variables are notify with a #veNewId event.
+		 * @param id Variable identifier
+		 * @param skip_self When false the event to its own handler is skipped to be emitted.
+		 * @return True on success.
 		 */
 		bool setId(id_type id, bool skip_self = false);
 
 		/**
-		 * returns true if the variable is valid meaning if it has an id assigned to it.
-		 * @return
+		 * @brief Checks validity of the attached reference and used after a setup call.
+		 *
+		 * @return True if the variable is valid.
 		 */
 		[[nodiscard]] bool isValid() const;
 
 		/**
-		 * Return true is the current instance is converting float values.
-		 * @return
+		 * @brief Returns true is the current instance is converting floating point values.
+		 * @return True when converting.
 		 */
 		[[nodiscard]] bool isConverted() const;
 
 		/**
-		 * Enables or disables returns the value returned by ISConverted().
-		 * @param enable
-		 * @return
+		 * @brief Enables or disables conversion of floating point values.
+		 *
+		 * If a change was triggered a #veConverted event was emitted.
+		 * @param enable To enable pass 'true'. to disable 'false'.
+		 * @return Value returned by #isConverted().
 		 */
 		bool setConvert(bool enable);
 
 		/**
-		 * return true if the current attach reference is a number value.
-		 * @return
+		 * @brief Returns whether the value is a number or not.
+		 *
+		 * Result is true when the value type is either Value::vitFloat or Value::vitInteger.
+		 * @return True if the current variable value is a number.
 		 */
 		[[nodiscard]] bool isNumber() const;
 
 		/**
-		 * Makes this instance owner of this variable.
+		 * @brief Makes this instance owner of this variable instance and emits the appropriate events.
+		 *
+		 * When the owner really changes instances the new owner handler receives
+		 * a #veGetOwner event and the previous one #veLostOwner.
 		 */
 		void makeOwner();
 
 		/**
-		 * Return a reference to the owner variable.
-		 * @return
+		 * @brief Gets a reference to the owner/server instance of this variable.
+		 *
+		 * @return Owner reference.
 		 */
 		Variable& getOwner();
 
 		/**
-		 * Checks if this is the owner of this variable
-		 * @return
+		 * @brief Returns if this is the owner of this variable.
+		 * @return True when owner.
 		 */
 		[[nodiscard]] bool isOwner() const;
 
 		/**
-		 * returns true if the variable is global.
-		 * @return
+		 * @brief Returns true if this instance is a global variable or not.
+		 *
+		 * @return True when global.
 		 */
 		[[nodiscard]] bool isGlobal() const;
 
 		/**
-		 * Sets the variable to be global. this can only happen if it attached
-		 * to Zero Variable or the current id is zero. Returns true on success.
-		 * @param global
-		 * @return
+		 * @brief Sets the variable to be global.
+		 *
+		 * This can only happen if it attached to Zero Variable so when the id is zero.
+		 * @param global True when global and False when local.
+		 * @return True on success.
 		 */
 		bool setGlobal(bool global);
 
 		/**
-		 * Function to make an owning local variable appear globally or revert the process by passing 'false'.
-		 * @param global
+		 * @brief Makes an owning local variable appear globally.
+		 *
+		 * Useful when reading/creating instances from stored files.
+		 * First as local instances and then making them global.
+		 * @param global True to export as global and False to revert it.
 		 * @return True on success.
 		 */
 		bool setExport(bool global);
 
 		/**
-		 * Returns true if the variable is an exported local variable.
-		 * @return
+		 * @brief Checks if the variable is an exported local variable.
+		 *
+		 * @return True if exported.
 		 */
 		[[nodiscard]] bool isExported() const;
 
 		/**
-		 * Returns true when temporary is used instead of current value.
-		 * @return
+		 * @brief Checks if a temporary is used instead of current actual value.
+		 * @return True when temporary is enabled.
 		 */
 		bool isTemporary();
 
 		/**
-		 * When true is passed a local temporary value is used instead of current.
+		 * @brief When true is passed a local temporary value is used instead of current.
+		 *
 		 * @param on_off
 		 */
 		void setTemporary(bool on_off);
 
 		/**
-		 * When skip_self is true this instance is skipped in the event process.
-		 * @param skip_self
-		 * @return True when the value was actually changed.
+		 * @brief Applies the temporary value of this instance.
+		 *
+		 * Used mainly in dialogs to apply the changed value to become the actual current one.
+		 * The 'skip_self' flag is set to true by default because an event was already sent using #setCur().
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when the value was actually a change.
 		 */
-		bool applyTemporary(bool skip_self = false);
+		bool applyTemporary(bool skip_self = true);
 
 		/**
-		 * Updates the temporary value with the real value.
-		 * @param skip_self
-		 * @return
+		 * @brief Updates the temporary value with the real value.
+		 *
+		 * Used mainly in dialogs to update the temporary value with real/actual value.
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when a change was caused.
 		 */
 		bool updateTemporary(bool skip_self = false);
 
 		/**
-		 * Returns true if the Temporary value is different as the real value.
-		 * @return
+		 * @brief Check if the temporary value is differs from the actual value.
+		 *
+		 * Used mainly in dialogs to enable an apply button.
+		 * @return True when different.
 		 */
-		[[nodiscard]] bool temporaryDiffs() const;
+		[[nodiscard]] bool isTemporaryDifferent() const;
 
 		/**
-		 * Only one link is available at a time.
-		 * Sets a event handler for this variable, passing NULL wil disable the link
+		 * @brief Only one link is available at a time.
+		 *
+		 * Sets a event handler for this variable, passing NULL wil disable the link.
 		 * @param handler
 		 */
 		void setHandler(VariableHandler* handler);
 
 		/**
-		 * Returns the link Set by setHandler().
+		 * @brief Returns the link Set by setHandler().
+		 *
 		 * @return Link instance pointer
 		 */
 		[[nodiscard]] VariableHandler* getHandler() const;
 
 		/**
-		 * Special hooked handler for converting float variables globally.
-		 * Sets a event handler for this variable, passing NULL wil disable the link
-		 * @param link
+		 * @brief Special handler for converting float variables globally.
+		 *
+		 * Sets a event handler for this variable, passing NULL wil disable the handler
+		 * @param handler Handler from conversion interface.
 		 */
-		void setConvertHandler(VariableHandler* link);
+		void setConvertHandler(VariableHandler* handler);
 
 		/**
-		 * Returns the link to the global conversion handler.
-		 * @return
+		 * @brief Returns the link to the global conversion handler.
 		 */
 		[[nodiscard]] VariableHandler* getConvertHandler() const;
 
 		/**
-		 * Initiate event for all instances of this variables depending on the event value.
+		 * @brief Initiate event for all instances of this variables depending on the event value.
+		 *
 		 * Returns the amount of effected variables by this call.
 		 * @param event
-		 * @param skip_self
-		 * @return
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return Amount of events emitted.
 		 */
 		Variable::size_type emitEvent(EEvent event, bool skip_self = false);
 
 		/**
-		 * Sets the desired id member variable to the current reference id.
+		 * @brief Sets the desired id member variable to the current attached reference id.
 		 */
 		void setDesiredId();
 
 		/**
-		 * Sets the desired id member variable to the passed id.
+		 * @brief Sets the desired id member variable to the passed id.
+		 *
 		 * If the passed 'id' is zero the automatic attachment mechanism is disabled.
-		 * @param id
 		 */
 		void setDesiredId(id_type id);
 
 		/**
-		 * Sets the data for this instance for user purposes.
-		 * @param data
+		 * @brief Sets the data for this instance for user purposes.
+		 * @param data Could be a pointer casted value.
 		 */
 		void setData(uint64_t data);
 
 		/**
-		 * Gets the data for this instance for user purposes Set with setData().
-		 * @return
+		 * @brief Gets the data for this instance for user purposes Set with setData().
+		 * @return Could be a pointer casted value.
 		 */
 		[[nodiscard]] uint64_t getData() const;
 
 		/**
-		 * Both return true if there was a change and notify all variables of the same variable id through an event.
-		 * When skip_self is 'true' this instance is skipped in the list.
-		 * Returns true when the value was actually changed.
-		 * @param value
-		 * @param skip_self
-		 * @return
+		 * @brief Both return true if there was a change and notify all variables of the same variable id through an event.
+		 *
+		 * @param value Sets a new current value.
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when the value was actually changed.
 		 */
 		bool setCur(const Value& value, bool skip_self = false);
 
 		/**
-		 * Making this function also accessible for const objects of this instance.
-		 * @param value
-		 * @param skip_self
-		 * @return
+		 * @brief Same as #setCur() but for const instances objects of this instance.
+		 *
+		 * @param value Sets a new current value.
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when the value was actually changed.
 		 */
 		[[nodiscard]] bool setCur(const Value& value, bool skip_self = false) const;
 
 		/**
-		 * Used in settings loading routines which use the owner to Set a new value.
+		 * @brief Used in settings loading routines which use the owner to Set a new value.
+		 *
 		 * Checks if clients have write access and is global before applying the new value.
 		 * @param value
 		 * @return True on success of making a change.
@@ -309,7 +335,9 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		[[nodiscard]] bool loadCur(const Value& value) const;
 
 		/**
-		 * Increase current variable value by step increments also negative values
+		 * @brief Increase current variable value by step increments also negative values.
+		 *
+		 * Emits event #veValueChange when a change is flags occurred.
 		 * @param steps Amount of increments (>0) or decrements (<0)
 		 * @param skip_self Skip event on this instance.
 		 * @return True if this function made a difference.
@@ -317,397 +345,444 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		bool increase(int steps, bool skip_self = false);
 
 		/**
-		 * Unsets a flag or multiple flags of the attached VariableReference.
-		 * @param flag
-		 * @param skip_self
+		 * @brief Unsets a flag or multiple flags of the attached VariableReference.
+		 *
+		 * Emits event #veValueChange when a change in flags occurred.
+		 * @param flag Single or multiple values of #EFlag.
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when a change was made.
 		 */
-		void unsetFlag(int flag, bool skip_self = false);
+		bool unsetFlag(flags_type flag, bool skip_self = false);
 
 		/**
-		 * Sets a flag or multiple flags on the reference.
-		 * @param flag
-		 * @param skip_self
+		 * @brief Sets a flag or multiple flags on the reference.
+		 *
+		 * Only for an owner can call this function successful.
+		 * Emits event #veFlagsChange when a change in flags occurred.
+		 * @param flag Single or multiple values of #EFlag.
+		 * @param skip_self Skip event on this instance.
+		 * @return True when a change was made.
 		 */
-		void setFlag(int flag, bool skip_self = false);
+		bool setFlag(flags_type flag, bool skip_self = false);
 
 		/**
-		 * Clears and updates the flags, only for owner
-		 * @param flag
-		 * @param skip_self
+		 * @brief Replaces all flags with the passed flags.
+		 *
+		 * Only for an owner can call this function successful.
+		 * Emits event #veFlagsChange when a change in flags occurred.
+		 * @param flags Single or multiple values of #EFlag.
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
+		 * @return True when a change was made.
 		 */
-		void updateFlags(flags_type flag, bool skip_self = false);
+		bool updateFlags(flags_type flags, bool skip_self = false);
 
 		/**
-		 * Returns the flags at the time the instance was created.
-		 * @return Set of flag bits.
+		 * @brief Returns the flags at the time the instance was created.
+		 *
+		 * @return Set of #EFlag bits.
 		 */
 		[[nodiscard]] flags_type getFlags() const;
 
 		/**
-		 * Returns the current flags for this instance.
-		 * @return
+		 * @brief Returns the current flags for this instance.
+		 *
+		 * @return Set of #EFlag bits.
 		 */
 		[[nodiscard]] flags_type getCurFlags() const;
 
 		/**
-		 * Sets the global conversion values and signals the clients.
-		 * Only with owners this function has any effect.
-		 * @param unit
-		 * @param multiplier
-		 * @param offset
-		 * @param digits
+		 * @brief Sets the global conversion values and signals the clients.
+		 *
+		 * Only with owners a call is successful and effective.<br>
+		 * The formula is: <b><i>converted = (current * multiplier) + offset</i></b>
+		 * When successful event #veConverted emitted.
+		 * @param unit New Unit string.
+		 * @param multiplier Multiplier value.
+		 * @param offset Offset value.
+		 * @param digits Significant digits for the new unit.
 		 * @return
 		 */
 		bool setConvertValues(const std::string& unit, const Value& multiplier,
 			const Value& offset, int digits = std::numeric_limits<int>::max());
 
 		/**
+		 * @brief Enables or disables unit conversion.
+		 *
+		 * Only owners can make this call successfully.<br>
+		 * Depending on the globally set handler using #setConvertHandler() this function calls the handler with event
+		 * #veConvert which then should apply the conversion values using #setConvertValues() on the 'call_var' passed.<br>
+		 * When the global conversion handler has not been set the
 		 * Makes a call to the unit conversion interface and tries to get conversion values from it.
-		 * Only with owners this function has any effect.
-		 * When false passed the convert values are disabled.
+		 * <br>
+		 * When the global conversion handler not set it uses the locally available conversion values.
+		 * @param convert When true conversion is enabled and false disabled.
 		 * @return True on success of getting the values.
 		 */
-		bool setConvertValues(bool = true);
+		bool setConvertValues(bool convert = true);
 
 		/**
-		 * Returns the current attached ID.
-		 * @return
+		 * @brief Returns the current attached ID.
+		 *
+		 * @return Id of the current attached variable.
 		 */
 		[[nodiscard]] id_type getId() const;
 
 		/**
-		 * Returns the DesiredId data member value.
-		 * @return
+		 * @brief Returns the desired id of this instance.
+		 *
+		 * @return Desired id.
 		 */
 		[[nodiscard]] id_type getDesiredId() const;
 
 		/**
-		 * Returns the variable name which is default the full variable path name.
+		 * @brief Gets the name or a part of the name of the attached variable.
+		 *
+		 * Returns the variable name which is default (level 0) the full variable path name.
 		 * When levels is 'n' and larger then zero the last 'n' levels are returned.
 		 * When levels is 'n' and smaller then zero the first 'n' levels are omitted.
-		 * @param levels
-		 * @return
+		 * @param levels Amount of required levels.
+		 * @return Full or part of name depending on level.
 		 */
 		[[nodiscard]] std::string getName(int levels = 0) const;
 
 		/**
-		 * Returns the amount of levels of the full name path.
-		 * @return
+		 * @brief Returns the amount of levels of the full name path.
+		 *
+		 * @return Total name levels available.
 		 */
 		[[nodiscard]] int getNameLevelCount() const;
 
 		/**
-		 * Returns variable unit
-		 * @return
+		 * @brief Returns variable unit
+		 *
+		 * @return Unit string.
 		 */
 		[[nodiscard]] std::string getUnit() const;
 
 		/**
-		 * Returns variable unit of converted or non converted value.
-		 * @param converted
-		 * @return
+		 * @brief Returns variable unit of converted or non converted value.
+		 *
+		 * @param converted True when getting the converted value.
+		 * @return Unit string.
 		 */
 		[[nodiscard]] std::string getUnit(bool converted) const;
 
 		/**
-		 * Returns the conversion option string.
-		 * @return
+		 * @deprecated
+		 * @brief Returns the conversion option string.
+		 *
+		 * This string determines how the value is to be converted when exporting.
+		 * @return Option string.
 		 */
 		[[nodiscard]] std::string getConvertOption() const;
 
 		/**
-		 * The type is determined by the character in the unit field of the setup string.
-		 * @return Enumerate value
+		 * @brief The type is determined by the character in the unit field of the setup string.
+		 *
+		 * @return Enumerate value of #EStringType
 		 */
 		[[nodiscard]] EStringType getStringType() const;
 
 		/**
-		 * Return the unit for a specific string type.
-		 * @param str
-		 * @return
+		 * @brief Returns the name for passed string type.
+		 *
+		 * @param type Enumerate value.
+		 * @return Name of the string type.
 		 */
-		static const char* getStringType(EStringType str);
+		static const char* getStringType(EStringType type);
 
 		/**
-		 * Returns the purpose description of the variable.
-		 * @return String
+		 * @brief Returns the purpose description of the attached variable.
+		 *
+		 * @return Description string.
 		 */
 		[[nodiscard]] std::string getDescription() const;
 
 		/**
-		 * Returns true checks if a certain flag is set or combination of flags are all Set.
-		 * @param flag
-		 * @return
+		 * @brief Returns if a flag or flags has been set.
+		 *
+		 * @param flag Single value or a multiple of #EFlag values.
+		 * @return True when the flag(s) were set.
 		 */
 		[[nodiscard]] bool isFlag(int flag) const;
 
 		/**
-		 * Returns the current flags in a std::string form
-		 * @return
+		 * @brief Returns the current flags in a std::string form.
+		 *
+		 * @return Flags as a string.
 		 */
 		[[nodiscard]] std::string getCurFlagsString() const;
 
 		/**
-		 * Returns the original setup flags in a std::string form
-		 * @return
+		 * Returns the flags at setup in a std::string form.
+		 *
+		 * @return Flags as a string.
 		 */
 		[[nodiscard]] std::string getFlagsString() const;
 
 		/**
-		 * Returns true if variable can not change its value.
-		 * @return
+		 * @brief Returns if variable is allowed to change its value.
+		 *
+		 * @return True when readonly.
 		 */
 		[[nodiscard]] bool isReadOnly() const;
 
 		/**
-		 * Gets the significant digits for this instance.
-		 * @return
+		 * @brief Gets the significant digits for this instance.
+		 * @return Amount of digits.
 		 */
 		[[nodiscard]] int getSigDigits() const;
 
 		/**
-		 * Gets the significant digits for this instance.
-		 * @param converted
-		 * @return
+		 * @brief Gets the significant digits for this instance converted or not converted.
+		 *
+		 * @param converted True when needing the converted amount.
+		 * @return Amount of digits.
 		 */
 		[[nodiscard]] int getSigDigits(bool converted) const;
 
 		/**
-		 * Return the variable default value.
-		 * Converted when converted flag is true.
+		 * @brief Return the variable default value.
+		 *
+		 * Is converted when converted flag is true.
 		 * @return
 		 */
 		[[nodiscard]] const Value& getDef() const;
 
 		/**
-		 * Return the variable Minimum value.
-		 * Converted when converted flag is true.
-		 * @return
+		 * @brief Return the variable Minimum value.
+		 *
+		 * Is converted when converted flag is true.
 		 */
 		[[nodiscard]] const Value& getMin() const;
 
 		/**
-		 * Return the variable Maximum value.
-		 * Converted when converted flag is true.
-		 * @return
+		 * @brief Return the variable Maximum value.
+		 *
+		 * Is converted when converted flag is true.
 		 */
 		[[nodiscard]] const Value& getMax() const;
 
 		/**
-		 * Return the variable Rounding value.
+		 * @brief Return the variable Rounding value.
+		 *
 		 * Converted when converted flag is true.
-		 * @return
 		 */
 		[[nodiscard]] const Value& getRnd() const;
 
 		/**
-		 * Return the variable current value.
-		 * Converted when converted flag is true.
+		 * @brief Return the variable current value.
+		 *
+		 * Is converted when converted flag is true.
 		 * @return Temporary value when it is used.
 		 */
 		[[nodiscard]] const Value& getCur() const;
 
 		/**
-		 * Gets the default value converted or not
-		 * converted independent of the conversion flag.
-		 * @param converted
-		 * @return
+		 * @brief Gets the default value converted or not
+		 * Is converted independent of the conversion flag.
+		 * @param converted True when getting the converted value.
 		 */
 		[[nodiscard]] const Value& getDef(bool converted) const;
 
 		/**
-		 * Gets the Minimum value converted or not
+		 * @brief Gets the Minimum value converted or not
 		 * converted independent of the conversion flag.
-		 * @param converted
-		 * @return
+		 * @param converted True when getting the converted value.
 		 */
 		[[nodiscard]] const Value& getMin(bool converted) const;
 
 		/**
-		 * Gets the Maximum value converted or not
+		 * @brief Gets the Maximum value converted or not
 		 * converted independent of the conversion flag.
-		 * @param converted
+		 * @param converted True when getting the converted value.
 		 * @return
 		 */
 		[[nodiscard]] const Value& getMax(bool converted) const;
 
 		/**
-		 * Gets the Rounding value converted or not
+		 * @brief Gets the Rounding value converted or not
 		 * converted independent of the conversion flag.
-		 * @param converted
+		 * @param converted True when getting the converted value.
 		 * @return
 		 */
 		[[nodiscard]] const Value& getRnd(bool converted) const;
 
 		/**
-		 * Gets the current value converted or not
+		 * @brief Gets the current value converted or not
 		 * converted independent of the conversion flag.
-		 * @param converted
+		 * @param converted True when getting the converted value.
 		 * @return Does not return the temporary value when it is used.
 		 */
 		//
 		[[nodiscard]] const Value& getCur(bool converted) const;
 
 		/**
-		 * Returns the complete state vector as a reference.
-		 * @return
+		 * @brief Returns the complete state vector as a reference.
 		 */
-		[[nodiscard]] const StateVector& getStates() const;
+		[[nodiscard]] const State::Vector& getStates() const;
 
 		/**
-		 * Returns the usage count of this variable reference
+		 * @brief Returns the usage count of this variable reference
 		 * @return
 		 */
 		[[nodiscard]] size_type getUsageCount() const;
 
 		/**
-		 * Returns the state count.
-		 * @return
+		 * @brief Returns the state count.
+		 *
+		 * @return Amount of states.
 		 */
 		[[nodiscard]] size_type getStateCount() const;
 
 		/**
-		 * Returns the state index.
-		 * @param v
-		 * @return
+		 * @brief Returns the state index of passed value when it exists.
+		 *
+		 * @param v Value to lookup.
+		 * @return Valid index and when it does not exist it "std::numeric_limits<size_type>::max()".
 		 */
 		[[nodiscard]] size_type getState(const Value& v) const;
 
 		/**
-		 * Return the name of the passed state index.
-		 * @param state
-		 * @return
+		 * @brief Return the display name of the passed state's index.
+		 *
+		 * @param state Index of the state.
+		 * @return Display name.
 		 */
 		[[nodiscard]] std::string getStateName(size_type state) const;
 
 		/**
-		 * Return the value of the passed state index.
-		 * @param state
-		 * @return
+		 * @brief Return the value of the passed state index.
+		 *
+		 * @param state Index of the state.
+		 * @return Value of the passed state index.
 		 */
 		[[nodiscard]] const Value& getStateValue(size_type state) const;
 
 		/**
-		 * Returns enumerate value of the passed string.
+		 * @brief Returns enumerate value of the passed string.
+		 *
 		 * @param type
 		 * @return
 		 */
 		static Value::EType getType(const char* type);
 
 		/**
-		 * Returns type string of given enumerate value.
+		 * @brief Returns type string of given enumerate value.
+		 *
 		 * @param type
 		 * @return
 		 */
 		static const char* getType(Value::EType type);
 
 		/**
-		 * Returns type enumerate of this variable instance.
-		 * @see Value::EType
-		 * @return
+		 * @brief Returns type enumerate of this variable instance.
 		 */
 		[[nodiscard]] Value::EType getType() const;
 
 		/**
-		 * Returns the amount of variables having different ID's in the system.
-		 * @return
+		 * @brief Gets the amount of variables having different ID's in the system.
+		 *
+		 * @return Amount of instances.
 		 */
 		static size_type getVariableCount();
 
 		/**
-		 * Returns the total amount of variable instances in the system.
-		 * @return
+		 * @brief Gets the total amount of variable instances in the system.
+		 *
+		 * @param global_only When true, count only the global ones.
+		 * @return Amount of instances.
 		 */
-		static size_type getInstanceCount();
+		static size_type getInstanceCount(bool global_only = true);
 
 		/**
-		 * Returns the 'n' item in the static variable list.
-		 * It returns always a pointer to the owner.
-		 * @param p
-		 * @return
+		 * @brief Retrieves a list of variables available (global + exported).
+		 *
+		 * Useful in populating a selection dialog.
+		 * @return Vector with all global variables.
 		 */
-		static const Variable* getVariableListItem(size_type p);
+		static Vector getVariables();
 
 		/**
-		 * Returns variable with the given id.
+		 * @brief Returns variable with the given id.
+		 *
 		 * When not found it returns the zero variable.
-		 * @param id
-		 * @return
+		 * @param id Variable id to seek.
+		 * @return When not found always zero variable.
 		 */
 		static const Variable& getVariableById(id_type id);
 
 		/**
-		 * Returns variable with the given id.
+		 * @brief Returns variable with the given id.
+		 *
 		 * When not found it returns the zero variable.
-		 * @param id
-		 * @param list
-		 * @return
+		 * @param id Variable id to seek.
+		 * @param list Vector to use for lookup.
+		 * @return When not found always zero variable.
 		 */
 		static Variable& getVariableById(id_type id, Vector& list);
 
 		/**
-		 * Returns variable with the given id.
+		 * @brief Returns variable with the given id.
+		 *
 		 * When not found it returns the zero variable.
-		 * @param id
-		 * @param list
-		 * @return
+		 * @param id Variable id to seek.
+		 * @param list Vector to use for lookup.
+		 * @return When not found always zero variable.
 		 */
 		static const Variable& getVariableById(id_type id, const Vector& list);
 
 		/**
-		 * Assignment operator that attaches this instance to the same VariableReference as 'v'.
-		 * @param v
-		 * @return
+		 * @brief Assignment operator that attaches this instance to the same VariableReference as 'v'.
 		 */
 		Variable& operator=(const Variable& v);
 
 		/**
-		 * Comparison operator
-		 * @param v
-		 * @return
+		 * @brief Comparison operator.
 		 */
 		int operator==(const Variable& v) const;
 
 		/**
-		 * Returns current converted value in default formatted string or state.
+		 * @brief Returns current converted value in default formatted string or state.
+		 *
 		 * When a temporary value is used that value is returned.
-		 * @param states
-		 * @return
+		 * @param states Determines if a state string name is to be used.
+		 * @return String of the value.
 		 */
 		[[nodiscard]] std::string getCurString(bool states = true) const;
 
 		/**
-		 * Gets the setup std::string for this variable
-		 * @return
+		 * @brief Gets the setup std::string for this variable.
 		 */
 		[[nodiscard]] std::string getSetupString() const;
 
 		/**
-		 * Clips the passed value between min and max values.
-		 * @param value
+		 * @brief Clips the passed value between min and max values.
+		 *
+		 * @param value Value to be clipped.
 		 */
 		void clipRound(Value& value) const;
 
 		/**
-		 * Returns the passed value converted to new units or back again.
-		 * @param value
-		 * @param to_org
-		 * @return
+		 * @brief Returns the passed value converted to new units or back again.
+		 *
+		 * @param value Value to be converted.
+		 * @param to_org Direction of conversion.
+		 * @return Converted value.
 		 */
 		[[nodiscard]] Value convert(const Value& value, bool to_org = false) const;
 
 		/**
-		 * Writes id and current value and flags to the stream.
-		 * @param os
-		 * @return
+		 * @brief Writes id and current value and flags to the stream.
 		 */
 		bool writeUpdate(std::ostream& os) const;
 
 		/**
-		 * Read single current value and flags from stream.
+		 * @brief Read single current value and flags from stream.
+		 *
 		 * If 'list' is other then the default that list is used to seek the according variable instead of the global list.
 		 * @param is
-		 * @param skip_self
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @param list
 		 * @return
 		 */
@@ -721,10 +796,18 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		bool write(std::ostream& os) const;
 
 		/**
+		 * Fills a definition structure from a string.
+		 * On failure the _valid field is set to false.
+		 * @param str Definition string
+		 * @return Definition structure
+		 */
+		static Variable::Definition getDefinition(const std::string& str);
+
+		/**
 		 * Read single current values from stream.
 		 * If 'list' is other then a NULL_REF that list is used to seek the according variable instead of the global list.
 		 * @param is
-		 * @param skip_self
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @param list
 		 * @return
 		 */
@@ -749,7 +832,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param flags
 		 * @return
 		 */
-		static int toFlags(const char* flags);
+		static Variable::flags_type toFlags(const std::string& flags);
 
 		/**
 		 * Returns the passed flags in a std::string form
@@ -771,50 +854,53 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 
 	protected:
 		/**
-		 * Creates global or local variable instance depending on the value passed.
-		 * @param global
+		 * @brief Creates global or local variable instance depending on the value passed.
+		 * @param global True when global, false when local.
 		 */
 		explicit Variable(bool global);
 
 	private:
 		/**
-		 * Zero variable constructor.
+		 * @brief Zero variable constructor only.
 		 */
 		explicit Variable(void*, void*);
 
 		/**
-		 * Updates the original real version of this instance.
+		 * @brief Updates the original non converted version of this instance.
+		 *
 		 * @param value
-		 * @param skip_self
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when changed.
 		 */
 		bool updateValue(const Value& value, bool skip_self);
 
 		/**
-		 * Updates the temporary value of this instance.
+		 * @brief Updates the temporary value of this instance.
 		 * @return True when changed.
 		 */
 		bool updateTempValue(const Value& value, bool skip_self);
 
 		/**
-		 * Initiate event for all instances of this variable
-		 * if params was Set by setHandler this param is ignored
+		 * @brief Initiate event for all instances of this variable if params was Set by setHandler this param is ignored.
+		 *
 		 * @param event
-		 * @param skip_self
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return Amount of events sent.
 		 */
 		size_type emitLocalEvent(EEvent event, bool skip_self = true);
 
 		/**
-		 * Initiate event for all variable instances if param was Set by setHandler this past param is used
+		 * @brief Initiate event for all variable instances if param was Set by setHandler this past param is used
+		 *
 		 * @param event
-		 * @param skip_self
+		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return Amount of events sent.
 		 */
 		size_type emitGlobalEvent(EEvent event, bool skip_self = true);
 
 		/**
-		 * Function which checks the link before calling it.
+		 * @brief Function which checks the link before calling it.
+		 *
 		 * This is the only function which calls the Link handler directly.
 		 * @param ev
 		 * @param caller
@@ -822,27 +908,31 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		void emitEvent(EEvent ev, const Variable& caller);
 
 		/**
-		 * Get a reference by ID if not exist
+		 * @brief Get a reference by ID if not exist
+		 *
 		 * @param id
 		 * @return Reference from passed id.
 		 */
 		static VariableReference* getReferenceById(id_type id);
 
 		/**
-		 * Removes the passed link from any variables.
+		 * @brief Removes the passed link from any variables.
+		 *
 		 * @param handler
 		 */
 		static void removeHandler(VariableHandler* handler);
 
 		/**
-		 * Private function to attach variable references.
+		 * @brief Private function to attach variable references.
+		 *
 		 * @param ref
 		 * @return True when successful.
 		 */
 		bool attachRef(VariableReference* ref);
 
 		/**
-		 * Attaches all instances that have the desired id Set as this one.
+		 * @brief Attaches all instances that have the desired id Set as this one.
+		 *
 		 * @return Amount of events sent.
 		 */
 		size_type attachDesired();
@@ -884,7 +974,6 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		friend class VariableStatic;
 };
 
-
 inline
 Variable::Variable(const Variable& v)
 {
@@ -893,10 +982,10 @@ Variable::Variable(const Variable& v)
 }
 
 inline
-Variable::Variable(const Definition* def)
+Variable::Variable(const Definition& def, id_type id_ofs)
 {
 	_global = true;
-	setup(def);
+	setup(def, id_ofs);
 }
 
 inline
@@ -907,10 +996,9 @@ Variable::Variable(Variable::id_type id, bool set_did)
 }
 
 inline
-Variable::Variable(const std::string& definition)
+bool Variable::setup(const std::string& definition, Variable::id_type id_ofs)
 {
-	_global = true;
-	setup(definition, 0);
+	return setup(getDefinition(definition), id_ofs);
 }
 
 inline
@@ -937,12 +1025,6 @@ bool Variable::setup(Variable::id_type id, bool set_did)
 	}
 	// When non global the reference members are copied.
 	return attachRef(getReferenceById(id));
-}
-
-inline
-bool Variable::setup(const std::string& definition)
-{
-	return setup(definition, 0L);
 }
 
 inline
@@ -986,7 +1068,6 @@ const char* Variable::getType(Value::EType type)
 	return Value::getType(type);
 }
 
-
 inline
 const Variable& Variable::getVariableById(Variable::id_type id, const Vector& list)
 {
@@ -1020,7 +1101,7 @@ int Variable::operator==(const Variable& v) const
 /**
  * Class std::ostream operator
  */
-_GII_FUNC  std::ostream& operator<<(std::ostream& os, const Variable& v);
+_GII_FUNC std::ostream& operator<<(std::ostream& os, const Variable& v);
 
 /**
  * Class std::istream operator
@@ -1030,6 +1111,6 @@ _GII_FUNC std::istream& operator>>(std::istream& is, Variable& v);
 /**
  * Class std::ostream operator
  */
-_GII_FUNC  std::ostream& operator<<(std::ostream& os, const Variable::StateVector& v);
+_GII_FUNC std::ostream& operator<<(std::ostream& os, const Variable::State::Vector& v);
 
 }

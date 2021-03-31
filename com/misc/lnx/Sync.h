@@ -82,7 +82,7 @@ class _MISC_CLASS Sync
 		}
 
 	public:
-		class Lock :public CriticalSection::Lock
+		class Lock :public CriticalSection::lock
 		{
 			public:
 				explicit Lock(const Sync*, bool try_sync = false);
@@ -107,7 +107,7 @@ Sync::Sync(const Sync&)
  */
 inline
 Sync::Lock::Lock(const Sync* sync, bool try_sync)
-	:CriticalSection::Lock(GetRef(sync), try_sync)
+	:CriticalSection::lock(GetRef(sync), try_sync)
 {
 }
 

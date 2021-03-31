@@ -41,7 +41,7 @@ Condition::~Condition()
 
 bool Condition::Wait()
 {
-	CriticalSection::Lock lock(_mutex);
+	CriticalSection::lock lock(_mutex);
 	bool rv = true;
 	//
 	_waiting++;
@@ -78,7 +78,7 @@ bool Condition::Wait()
 
 bool Condition::Wait(const TimeSpec& timeout)
 {
-	CriticalSection::Lock lock(_mutex);
+	CriticalSection::lock lock(_mutex);
 	//
 	bool rv = true;
 	//
@@ -100,7 +100,7 @@ bool Condition::Wait(const TimeSpec& timeout)
 			throw ExceptionSystemCall("pthread_cond_timedwait", error, typeid(*this).name(), __FUNCTION__);
 		}
 	}
-	catch (Thread::TerminateException& tt)
+	catch (Thread::terminateException& tt)
 	{
 		_RTTI_NOTIFY(DO_DEFAULT, tt.what());
 		rv = false;
@@ -115,7 +115,7 @@ bool Condition::Wait(const TimeSpec& timeout)
 
 int Condition::NotifyOne()
 {
-	CriticalSection::Lock lock(_mutex);
+	CriticalSection::lock lock(_mutex);
 	// Set the work member.
 	_work++;
 	//
@@ -133,7 +133,7 @@ int Condition::NotifyOne()
 
 int Condition::NotifyAll()
 {
-	CriticalSection::Lock lock(_mutex);
+	CriticalSection::lock lock(_mutex);
 	// Set the work the same as the amount of threads waiting.
 	int retval = _work = _waiting;
 	//

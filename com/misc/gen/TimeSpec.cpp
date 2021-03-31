@@ -76,4 +76,14 @@ std::string TimeSpec::toString() const
 	return stringf("%lgs", toDouble());
 }
 
+TimeSpec& TimeSpec::add(const timespec& ts)
+{
+	return add(ts.tv_sec, ts.tv_nsec);
+}
+
+TimeSpec& TimeSpec::sub(const timespec& ts)
+{
+	return add(-ts.tv_sec, -ts.tv_nsec);
+}
+
 }

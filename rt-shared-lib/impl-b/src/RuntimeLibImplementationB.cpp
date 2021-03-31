@@ -22,8 +22,8 @@ RuntimeLibImplementationB::RuntimeLibImplementationB(const RuntimeIface::Paramet
 
 const char* RuntimeLibImplementationB::getString()
 {
-	_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().RegisterName(this) << "): " << __FUNCTION__)
+	_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().getRegisterName(this) << "): " << __FUNCTION__)
 	FMessage = sf::string_format("Greetings from Class '%s' created by name '%s' ", _RTTI_TYPENAME.c_str(),
-		Interface().RegisterName(this).c_str());
+		Interface().getRegisterName(this).c_str());
 	return FMessage.c_str();
 }

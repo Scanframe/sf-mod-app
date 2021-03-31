@@ -8,11 +8,9 @@
 namespace sf
 {
 
-//
-// Helper functions
-//
 std::istream& skip_empty_lines(std::istream& is)
-{ // now skip all new line character or carriage returns
+{
+	// now skip all new line character or carriage returns
 	while (is.good() && strchr("\n\r", is.peek()))
 	{
 		is.get();
@@ -63,141 +61,96 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 // IniProfile Members
 //
 
-void IniProfile::Initialize()
+void IniProfile::initialize()
 {
-	SectionListPtr = EntryListType::npos;
-}
-
-IniProfile::IniProfile(bool skip_init)
-	:SectionList(0)
-	 , Dirty(false)
-	 , FlagClearOnRead(true)
-	 , SectionListPtr(UINT_MAX)
-	 , WriteOnDirty(true)
-{
-	Initialize();
-	if (!skip_init)
-	{
-		Init(nullptr);
-	}
+	_sectionIndex = npos;
 }
 
 IniProfile::IniProfile()
-	:SectionList(0)
-	 , Dirty(false)
-	 , FlagClearOnRead(true)
-	 , WriteOnDirty(true)
-	 , SectionListPtr(UINT_MAX)
 {
-	Initialize();
-	Init(nullptr);
+	load("");
 }
 
-IniProfile::IniProfile(const char* path)
-	:SectionList(0)
-	 , Dirty(false)
-	 , FlagClearOnRead(true)
-	 , WriteOnDirty(true)
-	 , SectionListPtr(UINT_MAX)
+IniProfile::IniProfile(const std::string& path)
+:_path(path)
 {
-	Initialize();
-	Init(path);
+	load(path);
 }
 
-IniProfile::IniProfile(const char* section, const char* path)
-	:SectionList(0)
-	 , Dirty(false)
-	 , FlagClearOnRead(true)
-	 , WriteOnDirty(true)
-	 , SectionListPtr(UINT_MAX)
+IniProfile::IniProfile(const std::string& section, const std::string& path)
 {
-	Initialize();
-	Init(path);
-	SetSection(section);
+	load(path);
+	setSection(section);
 }
 
 IniProfile::IniProfile(std::istream& is)
-	:SectionList(0)
-	 , Dirty(false)
-	 , FlagClearOnRead(true)
-	 , WriteOnDirty(true)
-	 , SectionListPtr(UINT_MAX)
 {
-	Initialize();
-	Init(is);
+	load(is);
 }
 
 IniProfile::~IniProfile()
 {
 	// Before destruction write all changes to file, if there is a change and it is allowed.
-	if (WriteOnDirty)
+	if (_writeOnDirty)
 	{
-		Write();
+		sync();
 	}
 	// Clear all entries.
-	Flush();
+	flush();
 }
 
-void IniProfile::Flush()
+void IniProfile::flush()
 {
 	// Delete all section instances.
-	for (auto i: SectionList)
+	for (auto i: _sections)
 	{
 		delete i;
 	}
 	// Flush the pointers in the list.
-	SectionList.flush();
+	_sections.flush();
+	// Reset the current index.
+	_sectionIndex = npos;
 }
 
-bool IniProfile::Init(const char* path)
-{  // create path to profile file
-	// if path = NULL the startup directory is selected with default name
-	if (path)
-	{
-		Path = path;
-	}
-	else
-	{
-		Path += "default.cfg";
-	}
-	//
-	bool rv = true;
+bool IniProfile::load(const std::string& path)
+{
 	// create 'std::istream' using Path member variable
-	if (Path.length())
+	if (sf::file_exists(path))
 	{
-		std::istream* is = new std::ifstream(Path.c_str(), std::ios::in/*, filebuf::openprot*/);
-		rv = Init(*is);
-		delete_null(is);
+		std::ifstream is(path.c_str(), std::ios::in/*, filebuf::openprot*/);
+		load(is);
+		return is.good();
 	}
+	return false;
+}
+
+bool IniProfile::load(std::istream& is)
+{
+	// Set dirty flag to false
+	_dirty = false;
+	// Read profile from stream
+	bool rv = read(is);
+	// Check size of profile and set current section.
+	_sectionIndex = _sections.count() ? 0 : SectionVector::npos;
 	return rv;
 }
 
-bool IniProfile::Init(std::istream& is)
+void IniProfile::setKeyPrefix(const std::string& prefix)
 {
-	// Set dirty flag to false
-	Dirty = false;
-	// Read profile from stream
-	bool retval = Read(is);
-	// Check size of profile and Set current section ptr
-	SectionListPtr = SectionList.count() ? 0 : UINT_MAX;
-	return retval;
+	_prefix = prefix;
 }
 
-void IniProfile::SetKeyPrefix(const char* prefix)
-{
-	Prefix = prefix ? prefix : "";
-}
-
-bool IniProfile::Read(std::istream& is)
+bool IniProfile::read(std::istream& is)
 {
 	while (is.good())
-	{  // create empty section
+	{
+		// create empty section
 		auto section = new Section;
 		// read the next section
-		if (section->Read(is))
+		if (section->read(is))
 		{
 			// add section on success
-			SectionList.add(section);
+			_sections.add(section);
 		}
 		else
 		{
@@ -209,58 +162,58 @@ bool IniProfile::Read(std::istream& is)
 	return (is.good() || is.eof());
 }
 
-std::ostream& IniProfile::Write(std::ostream& os) const
+std::ostream& IniProfile::write(std::ostream& os) const
 {
 	if (os.good())
 	{
-		for (const auto& i: SectionList)
+		for (const auto& i: _sections)
 		{
-			i->Write(os) << '\n';
+			i->write(os) << '\n';
 		}
 	}
 	return os;
 }
 
-bool IniProfile::Write()
+bool IniProfile::sync()
 {
 	// check dirty flag and Path member
-	if (Dirty && Path.length())
+	if (_dirty && !_path.empty())
 	{
 		// clear file upon opening
-		std::ostream* os = new std::ofstream(Path.c_str(), std::ios::out | std::ios::trunc);
+		std::ofstream os(_path.c_str(), std::ios::out | std::ios::trunc);
 		// after file is written without errors Dirty flag is Set to false
-		Dirty = !Write(*os).good();
+		_dirty = !write(os).good();
 		// write End Of File (EOF) character to the end
 		//os->put('\x1A');
-		// Cleanup.
-		delete os;
+		// if not dirty file is written well or wasn't dirty
+		return !_dirty;
 	}
-	// if not dirty file is written well or wasn't dirty
-	return !Dirty;
+	// No path no failure to sync.
+	return true;
 }
 
-const char* IniProfile::GetSection(IniProfile::size_type p) const
+std::string IniProfile::getSection(IniProfile::size_type p) const
 {
 	// return NULL if there are no section loaded at all
-	if (SectionList.count())
+	if (_sections.count())
 	{ // check if 'p' has a valid value
-		if (p < SectionList.count() || p == npos)
+		if (p < _sections.count() || p == npos)
 		{
-			return SectionList[(p == npos) ? SectionListPtr : p]->Name.c_str();
+			return _sections[(p == npos) ? _sectionIndex : p]->_name;
 		}
 	}
-	return nullptr;
+	return "";
 }
 
-bool IniProfile::SetSection(IniProfile::size_type p)
+bool IniProfile::setSection(IniProfile::size_type index)
 {
 	// Return NULL if there are no section loaded at all
-	if (SectionList.count())
+	if (_sections.count())
 	{
-		// Check if 'p' has a valid value
-		if (p < SectionList.count())
+		// Check if 'index' has a valid value
+		if (index < _sections.count())
 		{
-			SectionListPtr = p;
+			_sectionIndex = index;
 			return true;
 		}
 	}
@@ -268,228 +221,203 @@ bool IniProfile::SetSection(IniProfile::size_type p)
 	return false;
 }
 
-bool IniProfile::SetSection(const char* section, bool create)
+bool IniProfile::setSection(const std::string& section, bool create)
 {
 	// Locate section
-	SectionListPtr = FindSection(section);
+	_sectionIndex = findSection(section);
 	// If found return true
-	if (SectionListPtr != UINT_MAX)
+	if (_sectionIndex != npos)
 	{
 		return true;
 	}
 	// Check if section must and can be created
-	if (create && section)
+	if (create && !section.empty())
 	{
 		// Create empty section
 		auto s = new Section();
 		// Assign name to it
-		s->Name = section;
-		// Add section to the list
-		SectionList.add(s);
-		// Make this section the current one
-		SectionListPtr = SectionList.count() - 1;
+		s->_name = section;
+		// Add section to the list and make it the current one.
+		_sectionIndex = _sections.add(s);
 		// Set dirty flag
-		Dirty = true;
+		_dirty = true;
 		// Tells that section dit not exist at the start of this function
-		return false;
+		return true;
 	}
 	// If section not found make first section the current one
-	SectionListPtr = 0;
+	_sectionIndex = 0;
 	// tells that section dit not exist at the start of this function
 	return false;
 }
 
-IniProfile::size_type  IniProfile::FindEntry(const char* key)
+IniProfile::size_type  IniProfile::findEntry(const std::string& key)
 {
-	auto rv = SectionList.count() ? SectionList[SectionListPtr]->FindEntry(key) : IniProfile::npos;
-	if (rv == IniProfile::npos)
+	auto rv = _sections.count() ? _sections[_sectionIndex]->findEntry(key) : npos;
+	if (rv == npos)
 	{
-		if (SectionList.count() && key)
+		if (_sections.count() && !key.empty())
 		{
 			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '"
-				<< SectionList[SectionListPtr]->Name << "' In File '" << Path << std::endl;
+				<< _sections[_sectionIndex]->_name << "' In File '" << _path << std::endl;
 		}
 	}
 	return rv;
 }
 
-bool IniProfile::GetString(const char* key, char buff[], size_t buffSize, const char* defaultString) const
+bool IniProfile::getString(const std::string& key, std::string& value, const std::string& defaultString) const
 {
-	IniProfile::size_type p = SectionList[SectionListPtr]->FindEntry(key);
-	if (p == IniProfile::npos)
-	{
-		// If not found, copy default string into buffer and return false.
-		// Check for valid buffer.
-		if (buff)
-		{
-			strncpy(buff, defaultString ? defaultString : "", buffSize);
-		}
-		return false;
-	}
-	// Check for valid buffer.
-	if (buff)
-	{
-		strncpy(buff, SectionList[SectionListPtr]->EntryList[p]->GetValue(), buffSize);
-	}
-	return true;
-}
-
-bool IniProfile::GetString(const char* key, std::string& value, const char* defaultString) const
-{
-	auto p = SectionList[SectionListPtr]->FindEntry(key);
-	if (p == SectionListType::npos)
+	auto p = _sections[_sectionIndex]->findEntry(key);
+	if (p == npos)
 	{
 		// if not found, copy default std::string into the std::string and return false
 		// Check for valid buffer
-		value = defaultString ? defaultString : "";
+		value = defaultString;
 		// Signal failure.
 		return false;
 	}
 	// Check for valid buffer
-	value = SectionList[SectionListPtr]->EntryList[p]->GetValue();
+	value = _sections[_sectionIndex]->_entries[p]->getValue();
 	// Signal success.
 	return true;
 }
 
-std::string IniProfile::GetString(const char* key, const char* defaultString) const
+std::string IniProfile::getString(const std::string& key, const std::string& defaultString) const
 {
 	std::string value;
-	GetString(key, value, defaultString);
+	getString(key, value, defaultString);
 	return value;
 }
 
-int IniProfile::GetInt(const char* key, int defaultInt) const
+int IniProfile::getInt(const std::string& key, int defaultInt) const
 {
-	const char* value = nullptr;
 	// check section entries
-	if (SectionList.count())
+	if (_sections.count())
 	{
-		// get current section entry value, returns NULL when not found
-		value = SectionList[SectionListPtr]->GetEntry(key, nullptr);
+		auto value = _sections[_sectionIndex]->getEntry(key,"");
+		return value.empty() ? defaultInt : std::stoi(value);
 	}
-	// if value == NULL return default value passed to function
-	return value ? atoi(value) : defaultInt; // NOLINT(cert-err34-c)
+	return defaultInt;
 }
 
-bool IniProfile::SetString(const char* key, const char* value)
-{  // check section entry count
-	if (SectionList.count())
-	{  // Set dirty flag so the write function really writes to file
-		Dirty = true;
-		// look key up in current section and Set the entry
-		return SectionList[SectionListPtr]->SetEntry(key, value);
+bool IniProfile::setString(const std::string& key, const std::string& value)
+{
+	// check section entry count
+	if (_sections.count())
+	{
+		// Lookup the key in current section and set the entry
+		auto rv = _sections[_sectionIndex]->setEntry(key, value);
+		// Set dirty flag when a change occurred so the write function really writes to file
+		_dirty |= rv > 0;
+		return rv >= 0;
 	}
 	return false;
 }
 
-bool IniProfile::SetInt(const char* key, int value)
+bool IniProfile::setInt(const std::string& key, int value)
 {
 	// Use SetString function to do this
 	char buf[33];
-	return SetString(key, itoa(value, buf, 10));
+	return setString(key, sf::itoa<int>(value, buf, 10));
 }
 
-IniProfile::Entry* IniProfile::GetEntry(IniProfile::size_type p)
+IniProfile::Entry* IniProfile::getEntry(IniProfile::size_type p)
 {
 	// Check for sections
-	if (SectionList.count())
+	if (_sections.count())
 	{
 		// Get section pointer
-		Section* section = SectionList[SectionListPtr];
+		Section* section = _sections[_sectionIndex];
 		// Check for valid index
-		if (p < section->EntryList.count())
+		if (p < section->_entries.count())
 		{ // Return entry pointer
-			return section->EntryList[p];
+			return section->_entries[p];
 		}
 	}
 	// return entry pointer NULL if not exist
 	return nullptr;
 }
 
-bool IniProfile::InsertComment(const char* key, const char* comment)
+bool IniProfile::insertComment(const std::string& key, const std::string& comment)
 {
 	// Check section entry count.
-	if (SectionList.count())
+	if (_sections.count())
 	{
 		// Set dirty flag so the write function really writes to file.
-		Dirty = true;
+		_dirty = true;
 		// Look key up in current section and Set the entry.
-		return SectionList[SectionListPtr]->InsertComment(key, comment);
+		return _sections[_sectionIndex]->insertComment(key, comment);
 	}
 	return false;
 }
 
-IniProfile::size_type IniProfile::FindSection(const char* section)
+IniProfile::size_type IniProfile::findSection(const std::string& section) const
 {
-	if (!section)
+	if (section.empty())
 	{
-		return SectionListPtr;
+		return _sectionIndex;
 	}
 	// Loop through section list
-	for (IniProfile::size_type i = 0; i < SectionList.count(); i++)
+	for (IniProfile::size_type i = 0; i < _sections.count(); i++)
 	{
 		// Section name is case insensitive compared
-		if (!::strcmp(SectionList[i]->Name.c_str(), section))
+		if (!::strcmp(_sections[i]->_name.c_str(), section.c_str()))
 		{
 			// Return position
 			return i;
 		}
 	}
 	// Return UINT_MAX on not found
-	return IniProfile::npos;
+	return npos;
 }
 
-bool IniProfile::RemoveSection(IniProfile::size_type p)
-{ // check for valid parameters
-	if (p != IniProfile::npos && p < SectionList.count())
+bool IniProfile::removeSection(IniProfile::size_type p)
+{
+	// check for valid parameters
+	if (p != npos && p < _sections.count())
 	{ // delete instance
-		delete_null(SectionList[p]);
+		delete_null(_sections[p]);
 		// remove from list
-		SectionList.detach(p);
+		_sections.detach(p);
 		// correct current section index pointer
-		if (p < SectionListPtr)
+		if (p < _sectionIndex)
 		{
-			SectionListPtr--;
+			_sectionIndex--;
 		}
-		if (SectionListPtr >= SectionList.count())
+		if (_sectionIndex >= _sections.count())
 		{
-			SectionListPtr = SectionList.count() - 1;
+			_sectionIndex = _sections.count() - 1;
 		}
 		// Set dirty flag
-		Dirty = true;
+		_dirty = true;
 		// return true on success
 		return true;
 	}
 	return false;
 }
 
-//=============================================================================
-// Section Members
-//=============================================================================
-//
 IniProfile::Section::~Section()
 {
-	EntryListType::iter_type i(EntryList);
+	EntryVector::iter_type i(_entries);
 	while (i)
 	{
 		delete (i++);
 	}
 }
 
-bool IniProfile::Section::Read(std::istream& is)
+bool IniProfile::Section::read(std::istream& is)
 {
 	// check stream for errors
 	if (is.good())
 	{
 		// find section begin, is the first '[' character on a line
-		while (is.good() && is.get() != '[')
+		if (is.get() != '[')
 		{
-			is.ignore(INT_MAX, '\n');
+			is.ignore(std::numeric_limits<std::streamsize>::max(), '[');
 		}
 		// test stream for errors
 		if (is.good())
 		{
-			read_to_delim(Name, is, ']');
+			read_to_delim(_name, is, ']');
 			// skip to end of this line
 			skip_to_nextline(is);
 			// check for section start character
@@ -498,9 +426,9 @@ bool IniProfile::Section::Read(std::istream& is)
 				// create empty entry
 				auto entry = new Entry();
 				// read entry from if stream has no errors and entry
-				if (entry->Read(is) && entry->IsValid())
+				if (entry->read(is) && entry->isValid())
 				{
-					EntryList.add(entry);
+					_entries.add(entry);
 				}
 				else
 				{
@@ -509,7 +437,7 @@ bool IniProfile::Section::Read(std::istream& is)
 				// skip empty lines
 				skip_empty_lines(is);
 			}
-			// read of Section suceeded
+			// Read of Section succeeded.
 			return true;
 		}
 	}
@@ -517,239 +445,264 @@ bool IniProfile::Section::Read(std::istream& is)
 	return false;
 }
 
-std::ostream& IniProfile::Section::Write(std::ostream& os) // NOLINT(readability-make-member-function-const)
+std::ostream& IniProfile::Section::write(std::ostream& os) // NOLINT(readability-make-member-function-const)
 {
 	// Check stream for errors
 	if (os.good())
 	{
 		// Write section head
-		os << '[' << Name << ']' << '\n';
-		EntryListType::iter_type i(EntryList);
+		os << '[' << _name << ']' << '\n';
+		EntryVector::iter_type i(_entries);
 		// write all entries to the stream
 		while (i)
 		{
-			(i++)->Write(os);
+			(i++)->write(os);
 		}
 	}
 	return os;
 }
 
-const char* IniProfile::Section::GetEntry(const char* key, const char* defValue)
+std::string IniProfile::Section::getEntry(const std::string& key, const std::string& defValue)
 {
-	auto p = FindEntry(key);
-	return (p == EntryListType::npos) ? defValue : EntryList[p]->GetValue();
+	auto p = findEntry(key);
+	return (p == npos) ? defValue : _entries[p]->getValue();
 }
 
-bool IniProfile::Section::SetEntry(const char* key, const char* value)
+int IniProfile::Section::setEntry(const std::string& key, const std::string& value)
 {
 	// Check for valid parameters.
-	if (key && value && strlen(key))
-	{ // create the entry
-		auto entry = new Entry(key, value);
-		// When not found p is equals EntryListType::npos.
-		auto p = FindEntry(key);
+	if (!key.empty())
+	{
+		// When not found p is equals npos.
+		auto p = findEntry(key);
 		// if entry was found
-		if (p != EntryListType::npos)
+		if (p != npos)
 		{
-			// Remove entry from heap
-			delete_null(EntryList[p]);
-			// Assign new entry instance pointer to same location in list
-			EntryList[p] = entry;
+			if (_entries[p]->getValue() == value)
+			{
+				// Signal no change made.
+				return 0;
+			}
+			else
+			{
+				// Remove entry from heap
+				delete _entries[p];
+				// Assign new entry instance pointer to same location in list.
+				_entries[p] = new Entry(key, value);
+				// Signal change.
+				return 1;
+			}
 		}
 		// if not found
 		else
 		{
 			// Add entry at the end of the section list
-			EntryList.add(entry);
+			_entries.add(new Entry(key, value));
+			// Signal change.
+			return 1;
 		}
-		// Signal success.
-		return true;
 	}
 	// Signal failure.
-	return false;
+	return -1;
 }
 
-bool IniProfile::Section::InsertComment(const char* key, const char* comment)
+bool IniProfile::Section::insertComment(const std::string& key, const std::string& comment)
 {
 	// Check for valid parameters
-	if (key && comment && strlen(key))
+	if (!comment.empty() && !key.empty())
 	{
 		// Create the comment entry
 		auto entry = new Entry(comment);
-		// If not found p is equals UINT_MAX
-		auto p = FindEntry(key);
+		// If not found p is equals npos.
+		auto p = findEntry(key);
 		// When found
-		if (p != EntryListType::npos)
+		if (p != npos)
 		{
 			// Add entry at found location
-			EntryList.addAt(entry, p);
-			// Signal success.
-			return true;
+			return _entries.addAt(entry, p);
 		}
 	}
 	// Comment was not inserted
 	return false;
 }
 
-IniProfile::EntryListType::size_type IniProfile::Section::FindEntry(const char* key)
+IniProfile::EntryVector::size_type IniProfile::Section::findEntry(const std::string& key)
 {
 	// Check if key is valid.
-	if (key)
+	if (!key.empty())
 	{
+		EntryVector::size_type idx = 0;
 		// Loop through entry list
-		for (EntryListType::size_type p = 0; p < EntryList.count(); p++)
+		for (auto& e: _entries)
 		{
 			// Section name is case sensitive compared.
-			if (!::strcmp(EntryList[p]->GetKey(), key))
+			if (e->_key == key)
 			{
-				// return pointer in list
-				return p;
+				// Return index in list
+				return idx;
 			}
+			idx++;
 		}
 	}
 	// Signal not found.
-	return EntryListType::npos;
+	return npos;
 }
 
-bool IniProfile::Section::RemoveEntry(EntryListType::size_type p)
+bool IniProfile::Section::removeEntry(EntryVector::size_type p)
 { // check for valid parameters
-	if (p != EntryListType::npos && p < EntryList.count())
+	if (p != npos && p < _entries.count())
 	{
 		// delete entry instance
-		delete_null(EntryList[p]);
+		delete_null(_entries[p]);
 		// remove from list
-		EntryList.detach(p);
+		_entries.detach(p);
 		// return true on success
 		return true;
 	}
 	return false;
 }
 
-//=============================================================================
-// Entry Members
-//=============================================================================
-//
-IniProfile::Entry::Entry(const char* key, const char* value)
-	:Line(nullptr)
-	 , ValPos(0)
+IniProfile::Entry::Entry(const std::string& key, const std::string& value)
 {
-	Set(std::string(key).append("=").append(value));
+	setLine(std::string(key).append("=").append(value));
 }
 
-IniProfile::Entry::Entry(const char* comment)
-	:Line(nullptr)
-	 , ValPos(0)
+IniProfile::Entry::Entry(const std::string& comment)
 {
-	// make comment line
-	Set(std::string("; ").append(comment));
+	_cmtFlag = true;
+	_value = comment;
 }
 
-IniProfile::Entry::~Entry()
+bool IniProfile::Entry::setLine(const std::string& line)
 {
-	free_null(Line);
-}
-
-bool IniProfile::Entry::Set(const std::string& line)
-{
-	delete_null(Line);
-	// create entry line buffer
-	Line = (char*) malloc(line.length() + 1);
-	// fill the Line member with data
-	strncpy(Line, line.c_str(), line.length() + 1);
-	// terminate line
-	Line[line.length()] = 0;
-	// check if this line is a comment line, line starts with ';' character
-	if (Line[0] != ';')
+	// Check if nothing to do.
+	if (!line.empty())
 	{
-		// get seperator position
-		ValPos = line.find_first_of('=');
-		// if not found the line is the keyword itself ValPos==NPOS
-		if (ValPos != std::string::npos)
+		// Check if this line is NOT a comment line by checking the first character.
+		if (line.at(0) != ';'|| line.at(0) != '#')
 		{
-			// Save value position position
-			std::string::size_type p = ValPos;
-			// Separate key and value by placing a terminator
-			Line[ValPos++] = 0;
-			// Skip white space after key part of std::string
-			while (Line[--p] == ' ' && p)
+			// Get key value separator position in the line.
+			auto pos = line.find_first_of('=');
+			_cmtFlag = false;
+			// If not found the line is the keyword.
+			if (pos == std::string::npos)
 			{
-				Line[p] = 0;
-			}
-			// Check for valid key
-			if (!p)
-			{
-				// Free and clear because pointer is also flag
-				free_null(Line);
+				_key = line;
 			}
 			else
 			{
-				// Skip white space in front of value.
-				while (Line[ValPos] == ' ')
-				{
-					Line[ValPos++] = 0;
-				}
+				_key = line.substr(0, pos);
+				_value = line.substr(pos + 1, line.length());
 			}
 		}
+		// Comment line.
 		else
 		{
-			// Free and clear because pointer is also flag
-			free_null(Line);
+			_cmtFlag = true;
+			// Strip the comment.
+			_value = line.substr(1, line.length());
 		}
 	}
-	else
-	{
-		// if it is a comment line Set ValPos to zero
-		ValPos = 0;
-	}
-	// if Line has a value the function succeeded
-	return Line != nullptr;
+	return isValid();
 }
 
-bool IniProfile::Entry::Read(std::istream& is)
+bool IniProfile::Entry::read(std::istream& is)
 {
-#if 1
 	std::string line;
 	getline(is, line);
 	// When the end of the stream has been reached a string is not empty signal succes.
 	if (line.length() && is.eof())
 	{
-		return Set(line);
+		return setLine(line);
 	}
-	return is.good() && Set(line);
-#else
-	// set skip_whitespace flag to true
-	int prev_skip_value = std::string::skip_whitespace(1);
-	std::string line;
-	// use std::string as buffer to read line from stream
-	// skips white space at the beginning, depends on mstring::skip_white
-	line.read_line(is);
-	// turn back skip whitespace
-	std::string::skip_whitespace(prev_skip_value);
-	// if read went well return value of Set function if not return false
-	return is.good() ? Set(line) : false;
-#endif
+	return is.good() && setLine(line);
 }
 
-const char* IniProfile::Entry::GetKey()
-{ // check if line is valid
-	return (Line && ValPos) ? Line : "";
-}
-
-const char* IniProfile::Entry::GetValue()
+const std::string& IniProfile::Entry::getKey()
 {
-	// Check if line is valid
-	return Line ? &Line[ValPos] : "";
+	return _key;
 }
 
-std::ostream& IniProfile::Entry::Write(std::ostream& os)
-{ // check stream for errors
+const std::string& IniProfile::Entry::getValue()
+{
+	return _value;
+}
+
+IniProfile::size_type IniProfile::getEntryCount() const
+{
+	return _sections.count() ? _sections[_sectionIndex]->_entries.count() : 0;
+}
+
+std::string IniProfile::getEntryKey(IniProfile::size_type p)
+{
+	Entry* entry = getEntry(p);
+	return entry ? entry->getKey() : std::string("");
+}
+
+std::string IniProfile::getEntryValue(IniProfile::size_type p)
+{
+	Entry* entry = getEntry(p);
+	return entry ? entry->getValue() : "";
+}
+
+std::ostream& IniProfile::writeSection(std::ostream& os) const
+{
+	// Check section entry count.
+	return (_sections.count()) ? _sections[_sectionIndex]->write(os) : os;
+}
+
+bool IniProfile::removeEntry(IniProfile::size_type p)
+{
+	// Set dirty flag
+	_dirty = true;
+	if (_sections.count())
+	{
+		return _sections[_sectionIndex]->removeEntry(p);
+	}
+	return false;
+}
+
+bool IniProfile::removeEntry(const std::string& key)
+{
+	// Set dirty flag
+	_dirty = true;
+	if (_sections.count())
+	{
+		return _sections[_sectionIndex]->removeEntry(_sections[_sectionIndex]->findEntry(key));
+	}
+	return false;
+}
+
+bool IniProfile::setFilepath(const std::string& path)
+{
+	// Flush current entries.
+	flush();
+	// Load the file when it exists
+	return load(path);
+}
+
+const std::string& IniProfile::getFilepath() const
+{
+	return _path;
+}
+
+std::ostream& IniProfile::Entry::write(std::ostream& os)
+{
+	// Check stream for errors
 	if (os.good())
 	{
-		if (ValPos)
+		if (_cmtFlag)
 		{
-			os << GetKey() << '=';
+			os << ';' << _value << std::endl;
 		}
-		os << GetValue() << '\n';
+		else if (_value.empty())
+		{
+			os << _key << std::endl;
+		}
+		else
+		{
+			os << _key << '=' << _value << std::endl;
+		}
 	}
 	return os;
 }

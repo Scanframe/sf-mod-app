@@ -1,4 +1,4 @@
-# Variable Event Example {#sf-Variable}
+# Variable Event Example {#sf-gii-Variable}
 
 Example 1: Linking an instance to another class. 
 
@@ -45,12 +45,12 @@ ClientOrServer::ClientOrServer()
     Fvariable->setHandler(&_eventHandler);
     if (client)
     {
-        // setup instance as a client which triggers events.
+        // Setup instance as a client which triggers events.
         _variable.setup(0x98001);
     }
     else
     {
-        // setup instance as a server which triggers events.
+        // Setup instance as a server which triggers events.
         _variable.setup
         (
             "0x98001,Calibrate|Blue Pos,%,ASP,"
@@ -61,7 +61,7 @@ ClientOrServer::ClientOrServer()
     }
 }
 
-void TClientOrServer::eventHandler
+void ClientOrServer::eventHandler
 (
     Variable::EEvent event,
     const Variable& caller,

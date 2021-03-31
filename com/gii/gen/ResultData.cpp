@@ -1436,7 +1436,7 @@ const char* ResultData::getEventName(EEvent event)
 			break;
 
 		case reGetOwner:
-			retval = "getOwner";
+			retval = "GetOwner";
 			break;
 
 		case reLostOwner:

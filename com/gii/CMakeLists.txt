@@ -50,7 +50,7 @@ set(SOURCES
 	gen/ResultDataStatic.h
 	gen/VariableReference.cpp
 	gen/VariableReference.h
-	)
+	gen/UnitConversionServer.cpp gen/UnitConversionServer.h)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

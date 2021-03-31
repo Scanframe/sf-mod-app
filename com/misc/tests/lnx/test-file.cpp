@@ -66,7 +66,6 @@ TEST_CASE("sf::lnx::File", "[linux][file]")
 		};
 		// Restore the pack option.
 		#pragma pack(pop)
-		std::clog << sizeof(MyType) << std::endl;
 		// Initialize the binary structure.
 		MyType mts{0x1234567, 0x1234, 0x123456789};
 		// Write the binary structure.

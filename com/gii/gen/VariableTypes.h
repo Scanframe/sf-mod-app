@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "misc/gen/TVector.h"
 #include "misc/gen/Value.h"
 
@@ -20,7 +22,8 @@ class VariableReference;
 class Variable;
 
 /**
- * This base class contains all local types of used in the Variable class.
+ * @brief This base class contains all local types of used in the Variable class.
+ *
  * Multiple inheritance makes these types local for other classes as well.
  * Making code more readable and also prevents name space problems.
  */
@@ -28,44 +31,53 @@ class VariableTypes :public InformationTypes
 {
 	public:
 		/**
-		 * Vector and Iterator for pointer to variables.
+		 * @brief Vector and Iterator for pointer to variables.
 		 */
 		typedef TVector<Variable*> Vector;
 
 		/**
-		 * Types for internal use.
+		 * @brief Types for internal use.
 		 */
 		typedef TVector<VariableReference*> ReferenceVector;
 
 		/**
-		 * Type containing a name representing a value.
-		 * This is called a state.
+		 * @brief Type containing a name referencing a value and is called a state.
 		 */
 		struct State
 		{
+			/**
+			 * @brief Default constructor.
+			 */
 			State()
-			{
-				_name = Value::_invalidStr;
-			}
+				:_name(Value::_invalidStr) {}
 
+			/**
+			 * @brief Initialization constructor.
+			 */
+			State(std::string name, const Value& value)
+				:_name(std::move(name)), _value(value) {}
+
+			/**
+			 * @brief Copy constructor.
+			 */
 			State(const State& s)
 			{
-				Assign(s);
+				assign(s);
 			}
 
 			/**
-			 * Name of the contained value.
+			 * @brief Name of the contained value.
 			 */
 			std::string _name;
 			/**
-			 * Value which belongs to the name.
+			 * @brief Value which belongs to the name.
 			 */
 			Value _value;
 
 			/**
-			 * Assignment function for save copying of the structure.
+			 * @brief Assignment function for save copying of the structure.
 			 */
-			State& Assign(const State& s)
+			State& assign(const State& s)
 			{
 				_name = s._name;
 				_value = s._value;
@@ -73,16 +85,16 @@ class VariableTypes :public InformationTypes
 			}
 
 			/**
-			 * Assignment operator for save copying of the structure.
+			 * @brief Assignment operator for save copying of the structure.
 			 */
 			State& operator=(const State& s)
 			{
-				Assign(s);
+				assign(s);
 				return *this;
 			}
 
 			/**
-			 * Compare equal operator.
+			 * @brief Compare equal operator.
 			 */
 			bool operator==(const State& s) const
 			{
@@ -90,25 +102,27 @@ class VariableTypes :public InformationTypes
 			}
 
 			/**
-			 * Compare unequal operator.
+			 * @brief Compare unequal operator.
 			 */
 			bool operator!=(const State& s) const
 			{
 				return (_name != s._name) || (_value != s._value);
 			}
+
+			/**
+			 * @brief Vector class to be able to create a state list.
+			 */
+			typedef TVector<State> Vector;
 		};
 
 		/**
-		 * Intermediate type for creating TStateArray type.
-		 */
-		typedef TVector<State> StateVector;
-
-		/**
+		 * @brief Events send to the handler set with #sf::Variable::setHandler.
+		 *
 		 * For broadcast events the variable parameter is not the variable
-		 * who Set the link with function 'setHandler()' and the param parameter
-		 * isn't also the one passed to function 'setHandler()' either.
+		 * that called the #sf::Variable::setHandler method and the param parameter
+		 * isn't also the one passed to function #sf::Variable::setHandler either.
 		 */
-		enum EEvent: int
+		enum EEvent :int
 		{
 			/** Special event passed to the global conversion handler.*/
 			veConvert = 64000,
@@ -122,9 +136,9 @@ class VariableTypes :public InformationTypes
 			veFlagsChange = 1,
 			/** current value has been changed.<br>Can be local when temp value is used.*/
 			veValueChange = 2,
-			/** Variable reference is becoming invalid for this instance.*/
+			/** Variable reference is becoming invalid for this instance. Owner is deleted.*/
 			veInvalid = 3,
-			/** Conversion values have been changed.*/
+			/** Conversion values have been changed or conversion was enables/disabled.*/
 			veConverted = 4,
 			/** First event which can be used by an implementation for its own purposes.*/
 			veUserLocal = 5,
@@ -153,7 +167,7 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration of the order of fields in the setup string.
 		 */
-		enum EField: int
+		enum EField :int
 		{
 			/** Integer identifier */
 			vfId = 0,
@@ -161,7 +175,7 @@ class VariableTypes :public InformationTypes
 			vfName,
 			/***/
 			vfUnit,
-			/**_flags */
+			/** Single character flags. @see EFlag.*/
 			vfFlags,
 			/** Description of the variable.*/
 			vfDescription,
@@ -183,33 +197,55 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration type for specifying flags.
 		 */
-		enum EFlag: flags_type
+		enum EFlag :flags_type
 		{
-			/** Represented by character 'R'.<br>Only the owner can change Set it.*/
+			/**
+			 * Represented by character <b>'R'</b>.<br>Only the owner can change Set it.
+			 */
 			flgReadonly = 1 << 0,
-			/** Represented by character 'A'.<br> Variable is needs saving when storing results.*/
+			/**
+			 * Represented by character <b>'A'</b>.<br> Variable is needs saving when storing results.
+			 */
 			flgArchive = 1 << 1,
-			/** Represented by character 'S'.<br>Parameter may be exported out side the application.*/
+			/**
+			 * Represented by character <b>'S'</b>.<br>Parameter may be exported outside of the application.
+			 * When communicating over a network connection only these variables are exported.
+			 */
 			flgShare = 1 << 2,
-			/** Represented by character 'L'.*/
+			/**
+			 * Represented by character <b>'L'</b>.
+			 */
 			flgLink = 1 << 3,
-			/** Represented by character 'F'.<br>
-			 * Variable is used as a function and is reset or changed by the owning instance after execution. */
+			/**
+			 * Represented by character <b>'F'</b>.<br>
+			 * Variable is used as a function and is reset or changed by the owning instance after execution.
+			 */
 			flgFunction = 1 << 4,
-			/** Represented by character 'P'.<br>Variable is a parameter and indicates that it is needed to configuration. (Filter for settings files)*/
+			/**
+			 * Represented by character <b>'P'</b>.<br>Variable is a parameter and indicates that it is
+			 * needed for configuration of an application.<br>
+			 * This makes it possible to distinguishes between settings and parameters.
+			 */
 			flgParameter = 1 << 5,
-			/** Represented by character 'H'.<br>For selection of client only when listing.*/
+			/**
+			 * Represented by character <b>'H'</b>.<br>For selection of client only when listing.
+			 */
 			flgHidden = 1 << 6,
-			/** Represented by character 'E'.<br>Set when Local variable may be exported globally.<br>
-			 * Exported local variables are readonly by default. */
+			/**
+			 * Represented by character <b>'E'</b>.<br>Set when Local variable may be exported globally.<br>
+			 * Exported local variables are readonly by default.
+			 */
 			flgExport = 1 << 7,
-			/** Represented by character 'W'.<br> Set when a local variable is exported globally and may be written to globally.*/
+			/**
+			 * Represented by character <b>'W'</b>.<br> Set when a local variable is exported globally and
+			 * may be written to globally.
+			 */
 			flgWriteable = 1 << 8
 		};
 		/**
 		 * Enumeration of string types used for filtering.
 		 */
-		enum EStringType: int
+		enum EStringType :int
 		{
 			/** When the instance is not of type string.*/
 			stNoString = -1,
@@ -232,9 +268,13 @@ class VariableTypes :public InformationTypes
 		struct Definition
 		{
 			/**
+			 * Flag indicating this structure is valid.
+			 */
+			bool _valid{false};
+			/**
 			 * ID of the new global instance.
 			 */
-			id_type _id;
+			id_type _id{0};
 			/**
 			 * Name path separated using '|' characters.
 			 */
@@ -242,7 +282,7 @@ class VariableTypes :public InformationTypes
 			/**
 			 * Combination of EFlag flags.
 			 */
-			flags_type _flags;
+			flags_type _flags{0};
 			/**
 			 * Description of the instance without comma's.
 			 */
@@ -263,24 +303,24 @@ class VariableTypes :public InformationTypes
 			/**
 			 * Rounding value. The value is a multiple of this value.
 			 */
-			Value _round;
+			Value _roundValue;
 			/**
 			 * This is the value this instance starts with.
 			 */
-			Value _default;
+			Value _defaultValue;
 			/**
 			 * Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
 			 */
-			Value _min;
+			Value _minValue;
 			/**
 			 * Maximum limit of this instance.<br>
 			 * When the min and max limits are zero no limits are applied.
 			 */
-			Value _max;
+			Value _maxValue;
 			/**
 			 * A vector of VariableTypes::State` instances.
 			 */
-			StateVector _states;
+			State::Vector _states;
 		};
 };
 

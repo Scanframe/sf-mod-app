@@ -16,17 +16,17 @@ class _MISC_CLASS CriticalSection
 {
 	public:
 		/**
-		 * Handle type.
+		 * @brief Handle type.
 		 */
 		typedef ::pthread_mutex_t* handle_type;
 
 		/**
-		 * Constructor.
+		 * @brief Default constructor.
 		 */
 		CriticalSection();
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~CriticalSection();
 
@@ -41,29 +41,29 @@ class _MISC_CLASS CriticalSection
 		/**
 		 * Locking class for easy locking and unlocking by destructor.
 		 */
-		class Lock
+		class lock
 		{
 			public:
 				/**
 				 * Constructor.
 				 */
-				explicit Lock(const CriticalSection& crit_sec, bool try_lock = false);
+				explicit lock(const CriticalSection& crit_sec, bool try_lock = false);
 
 				/**
 				 * Destructor.
 				 */
-				~Lock();
+				~lock();
 
 				/**
 				 * Returns true when if it was acquired.
 				 */
-				bool Acquire(bool try_lock = false);
+				bool acquire(bool try_lock = false);
 
 				/**
 				 * Releases the critical section.
 				 * @return True if actually released.
 				 */
-				bool Release();
+				bool release();
 
 				/**
 				 * Returns true if the class was locked. Always true when try_lock is false.
@@ -77,7 +77,7 @@ class _MISC_CLASS CriticalSection
 				/**
 				 * Copy constructor to prevent copying.
 				 */
-				Lock(const Lock& lock);
+				lock(const lock& lock);
 
 				/**
 				 * Holds the critical section reference.
@@ -88,8 +88,6 @@ class _MISC_CLASS CriticalSection
 				 */
 				bool _locked{false};
 		};
-
-		friend class Lock;
 
 		friend class Condition;
 
@@ -112,22 +110,22 @@ class _MISC_CLASS CriticalSection
 		/**
 		 * Arbitrary test whether the mutex is destroyed or not.
 		 */
-		bool IsMutexDestroyed();
+		bool isMutexDestroyed();
 
 		/**
 		 * Using memset to clear the mutex used.
 		 */
-		void ClearMutex();
+		void clearMutex();
 
 		/**
 		 * For locking without TLock instance.
 		 */
-		bool Acquire(bool try_lock);
+		bool acquire(bool try_lock);
 
 		/**
 		* Releases the critical section.
 		*/
-		void Release();
+		void release();
 };
 
 }

@@ -13,6 +13,7 @@ make C++ programming easier.
 #include <memory>
 #include <sys/types.h>
 #include "TVector.h"
+#include "TDynamicBuffer.h"
 // Import of shared library export defines.
 #include "../global.h"
 
@@ -53,7 +54,7 @@ inline void delete_null(T& p)
 	if (p)
 	{
 		delete p;
-		p = NULL;
+		p = nullptr;
 	}
 }
 
@@ -64,7 +65,7 @@ inline void delete_anull(T& p)
 	if (p)
 	{
 		delete[] p;
-		p = NULL;
+		p = nullptr;
 	}
 }
 
@@ -75,7 +76,7 @@ void free_null(T& p)
 	if (p)
 	{
 		free(p);
-		p = NULL;
+		p = nullptr;
 	}
 }
 
@@ -102,7 +103,7 @@ class scope_delete
 
 		~scope_delete() {delete_null(P);}
 
-		void disable_delete() {P = NULL;}
+		void disable_delete() {P = nullptr;}
 
 	private:
 		T* P;
@@ -116,7 +117,7 @@ class scope_free
 
 		~scope_free() {free_null(P);}
 
-		void disable_free() {P = NULL;}
+		void disable_free() {P = nullptr;}
 
 	private:
 		T* P;
@@ -200,16 +201,26 @@ _MISC_FUNC std::string implode(strings strs, std::string glue, bool skip_empty =
  * Explodes the passed string into a strings using the separator.
  * When skip_empty is true empty strings are ignored.
  */
-_MISC_FUNC strings explode(std::string str, std::string separator, bool skip_empty = false);
+_MISC_FUNC strings explode(const std::string& str, const std::string& separator, bool skip_empty = false);
 
 /**
  * Return a line from the input stream.
  */
 _MISC_FUNC std::string getline(std::istream& is);
+
+_MISC_FUNC std::string::value_type getDirectorySeparator();
 /**
- * Converts the passed string into a lower case one and returns it.
+ * Returns the working directory.
  */
-_MISC_FUNC std::string getcwdstr();
+_MISC_FUNC std::string getWorkingDirectory();
+/**
+ * Returns the executable filepath.
+ */
+_MISC_FUNC std::string getExecutableFilepath();
+/**
+ * Returns the executable directory.
+ */
+_MISC_FUNC std::string getExecutableDirectory();
 /**
  * Returns the timespec as function return value as clock_gettime().
  */
@@ -344,7 +355,7 @@ T round(T value, T rnd)
 template<typename T>
 T& null_ref()
 {
-	return (*((T*) nullptr));
+	return (*(static_cast<T*>(nullptr)));
 }
 
 template<typename T>
@@ -364,7 +375,7 @@ bool not_ref_null(T& r)
 template<typename T>
 char* itoa(T value, char* buffer, int base)
 {
-	const size_t buf_size = sizeof(T) * CHAR_BIT;
+	constexpr size_t buf_size = sizeof(T) * CHAR_BIT;
 	// Sanity check.
 	if (!value || base < 2 || base > 16)
 	{
@@ -384,9 +395,10 @@ char* itoa(T value, char* buffer, int base)
 	buffer[buf_size + 1] = 0;
 	// Reverse iterate in the character buffer.
 	int i;
-	for (i = buf_size; value && i; --i, value /= base)
+	for (i = buf_size; value && i; --i)
 	{
 		buffer[i] = "0123456789abcdef"[value % base];
+		value /= base;
 	}
 	// When negative in base 10 prepend the negative sign.
 	if (neg)
@@ -395,6 +407,13 @@ char* itoa(T value, char* buffer, int base)
 	}
 	// Return the pointer of the last written character.
 	return &buffer[i + 1];
+}
+
+template<typename T>
+std::string itostr(T value, int base = 10)
+{
+	DynamicBuffer buf(sizeof(T) * CHAR_BIT + 1);
+	return itoa<T>(value, buf.c_str(), base);
 }
 
 /**

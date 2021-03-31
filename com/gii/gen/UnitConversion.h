@@ -5,19 +5,12 @@
 
 #include "../global.h"
 
-/*
-  From -> To calculation:
-    new_value = (value * Multi) + Offset;
-
-  To -> From calculation:
-    new_value = (value - Offset) / Multi;
-*/
-
 namespace sf
 {
 
 /**
- * Type of the server callback function.
+ * @brief Type of the server callback function.
+ *
  * @param option Special conversion option code.
  * @param from_unit current unit string.
  * @param from_precision Decimals of current unit. (can be negative)
@@ -30,8 +23,8 @@ namespace sf
 typedef bool (* UnitConversionServerCallBack)
 	(
 		void* data,
-		std::string option,
-		std::string from_unit,
+		const std::string& option,
+		const std::string& from_unit,
 		int from_precision,
 		double& multiplier,
 		double& offset,
@@ -40,112 +33,150 @@ typedef bool (* UnitConversionServerCallBack)
 	);
 
 /**
- *  Sets the callback function for a security server.
- * @param func
- * @param data
+ * @brief Sets the callback function for a security server.
+ *
+ * @param func Callback function
+ * @param data Pointer passed to the callback (mainly for 'this' pointer of implementation class instance)
  */
-_MISC_FUNC void SetUnitConversionServer(UnitConversionServerCallBack func, void* data = nullptr);
+_GII_FUNC void setUnitConversionHandler(UnitConversionServerCallBack func, void* data = nullptr);
 /**
- * Returns true if a conversion could be made.
+ * @brief Returns true if a conversion could be made.
+ * <br>
+ * Calculation to convert are:<br>
+ *   From -> To calculation:<br>
+ *     new_value = (value * multiplier) + offset;<br>
+ *   To -> From calculation:<br>
+ *     new_value = (value - offset) / multiplier;<br>
+ *
  * @param option Special conversion option code.
  * @param from_unit current unit string.
  * @param from_precision Decimals of current unit. (can be negative)
  * @param multiplier Multiplication factor.
  * @param offset Offset value.
  * @param to_unit New unit string.
- * @param to_precision New from_precision after conversion.
+ * @param to_precision New precision after conversion.
  * @return True on success.
  */
-_MISC_FUNC bool
-GetUnitConversion(std::string option, std::string from_unit, int from_precision, double& multiplier, double& offset,
-	std::string& to_unit, int& to_precision);
+_GII_FUNC bool
+getUnitConversion
+	(
+		const std::string& option,
+		const std::string& from_unit,
+		int from_precision,
+		double& multiplier,
+		double& offset,
+		std::string& to_unit,
+		int& to_precision
+	);
 
 /**
+ * @brief Unit conversion class to easy the pain of conversions in dialogs.
  *
+ * Used dialogs to convert SI-unit's to be displayed as required and to store them as SI-units.<br>
+ * When performing scientific formula calculations in applications there is no need for obscure
+ * conversions since all values are in SI-units.
  */
 class _GII_CLASS UnitConverter
 {
 	public:
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		UnitConverter() = default;
 
 		/**
-		 * Initializing constructor.
-		 * @param unit
-		 * @param sig_digits
+		 * @brief Initializing constructor.
+		 *
+		 * @param unit Original unit.
+		 * @param sig_digits Original significant digits.
 		 */
 		UnitConverter(const std::string& unit, int sig_digits);
 
 		/**
-		 * Sets the conversion unit.
-		 * @param unit
-		 * @param sig_digits
-		 * @return
+		 * @brief Retrieves the unit conversion using the passed values.
+		 *
+		 * @param unit Original unit.
+		 * @param sig_digits Original significant digits.
+		 * @return True when successful.
 		 */
-		bool Set(const std::string& unit, int sig_digits);
+		bool set(const std::string& unit, int sig_digits);
 
 		/**
-		 * Sets the unit conversion using the current Set values.
-		 * @return
+		 * @brief Retrieves the unit conversion using the current set values<br>
+		 * and passes them to the global function #getUnitConversion
+		 *
+		 * @return True when successful.
 		 */
-		bool Set();
+		bool set();
 
 		/**
-		 * Returns the converted value.
+		 * @brief Gets the converted value from an original one.
+		 *
 		 * If not valid the passed value is returned in changed.
-		 * @param value
-		 * @return
+		 * @param value Original value.
+		 * @return Converted value of the passed value.
 		 */
-		[[nodiscard]] double GetValue(double value) const;
+		[[nodiscard]] double getValue(double value) const;
 
 		/**
-		 * Returns the converted value as a string.
-		 * @param value
-		 * @return
+		 * @brief Returns the converted value as a string using the digits.
+		 *
+		 * Used to display this value appropriately.
+		 * @param value Value to turn into string.
+		 * @return Value formatted into string using the digits.
 		 */
-		[[nodiscard]] std::string GetString(double value) const;
+		[[nodiscard]] std::string getString(double value) const;
 
 		/**
-		 * Returns the unit after conversion.
-		 * If not valid the original unit is returned.
-		 * @return
+		 * @brief Returns the unit after conversion.
+		 *
+		 * @return If no valid conversion the original unit is returned.
 		 */
-		[[nodiscard]] std::string GetUnit() const;
+		[[nodiscard]] std::string getUnit() const;
 
 		/**
-		 * Returns the significant digits after conversion.
-		 * If not valid the original significant digits are returned.
+		 * @brief Gets the significant digits after conversion.
+		 *
+		 * @return If no valid conversion the original unit is returned.
 		 */
-		[[nodiscard]] int GetSigDigits() const;
+		[[nodiscard]] int getSigDigits() const;
 
 		/**
-		 * Returns if there is a valid conversion present.
-		 * @return
+		 * @brief Returns if there is a valid conversion present.
+		 *
+		 * @return True when valid.
 		 */
-		[[nodiscard]] bool IsValid() const;
+		[[nodiscard]] bool isValid() const;
 
 		/**
-		 * Returns original value from the past value.
-		 * @param value
-		 * @return
+		 * @brief  Gets original value from the past converted value.
+		 *
+		 * Turns converted value into original one.
+		 * @param value Converted value.
+		 * @return Original non converted value.
 		 */
-		[[nodiscard]] double GetOrgValue(double value) const;
+		[[nodiscard]] double getOrgValue(double value) const;
 
 		/**
-		 * Returns original value from the past string value which may
-		 * contain functions and constants like: PI and sin(PI/2).
-		 * @param value
-		 * @param def
-		 * @return
+		 * @brief Gets the original value from the past string which may contain a calculation.
+		 *
+		 * Calculations like:
+		 *  * `"2*20+3"`
+		 *  * `"PI and sin(PI/2)"`
+		 *
+		 * This method parses the string and calls the other #getOrgValue().<br>
+		 * @param value String value to parse and to convert.
+		 * @param def Default value when parsing the string fails.
+		 * @return Original non converted value.
 		 */
-		[[nodiscard]] double GetOrgValue(const std::string& value, double def = 0.0) const;
+		[[nodiscard]] double getOrgValue(const std::string& value, double def = 0.0) const;
 
 		/**
-		 * Clear the conversion and make it invalid.
+		 * @brief Clear the conversion and make it invalid.
+		 *
+		 * Clearing makes this class pass through values unconverted.
 		 */
-		void Clear();
+		void clear();
 
 	private:
 		/**
@@ -185,29 +216,29 @@ class _GII_CLASS UnitConverter
 inline
 UnitConverter::UnitConverter(const std::string& unit, int sig_digits)
 {
-	Set(unit, sig_digits);
+	set(unit, sig_digits);
 }
 
 inline
-void UnitConverter::Clear()
+void UnitConverter::clear()
 {
 	_valid = false;
 }
 
 inline
-bool UnitConverter::IsValid() const
+bool UnitConverter::isValid() const
 {
 	return _valid;
 }
 
 inline
-std::string UnitConverter::GetUnit() const
+std::string UnitConverter::getUnit() const
 {
 	return _valid ? _unit : _originalUnit;
 }
 
 inline
-int UnitConverter::GetSigDigits() const
+int UnitConverter::getSigDigits() const
 {
 	return _valid ? _sigDigits : _originalSigDigits;
 }

@@ -326,7 +326,7 @@ class _GII_CLASS ResultDataStorage
 			/**
 			 * Lock type for multi threading safety.
 			 */
-			typedef CriticalSection::Lock MtLock;
+			typedef CriticalSection::lock MtLock;
 
 		} * _reference;
 

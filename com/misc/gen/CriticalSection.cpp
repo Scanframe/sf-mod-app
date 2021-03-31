@@ -32,7 +32,7 @@ CriticalSection::~CriticalSection()
 	}
 }
 
-CriticalSection::Lock::Lock(const CriticalSection& sec, bool try_lock)
+CriticalSection::lock::lock(const CriticalSection& sec, bool try_lock)
 	:_critSecObj(const_cast<CriticalSection&>(sec))
 {
 	#if !IS_WIN
@@ -44,36 +44,36 @@ CriticalSection::Lock::Lock(const CriticalSection& sec, bool try_lock)
 		return;
 	}
 	#endif
-	Acquire(try_lock);
+	acquire(try_lock);
 }
 
-CriticalSection::Lock::~Lock()
+CriticalSection::lock::~lock()
 {
-	Release();
+	release();
 }
 
-bool CriticalSection::Lock::Acquire(bool try_lock)
+bool CriticalSection::lock::acquire(bool try_lock)
 {
 	// Only when not locked.
-	if (!_locked && _critSecObj.IsMutexDestroyed())
+	if (!_locked && _critSecObj.isMutexDestroyed())
 	{
-		_locked = _critSecObj.Acquire(try_lock);
+		_locked = _critSecObj.acquire(try_lock);
 	}
 	return _locked;
 }
 
-bool CriticalSection::Lock::Release()
+bool CriticalSection::lock::release()
 {
-	if (_locked && _critSecObj.IsMutexDestroyed())
+	if (_locked && _critSecObj.isMutexDestroyed())
 	{
 		_locked = false;
-		_critSecObj.Release();
+		_critSecObj.release();
 		return true;
 	}
 	return false;
 }
 
-bool CriticalSection::IsMutexDestroyed()
+bool CriticalSection::isMutexDestroyed()
 {
 	for (size_t i = 0; i < sizeof(_mutex); i++)
 	{
@@ -85,12 +85,12 @@ bool CriticalSection::IsMutexDestroyed()
 	return true;
 }
 
-void CriticalSection::ClearMutex()
+void CriticalSection::clearMutex()
 {
 	memset(&_mutex, 0, sizeof(_mutex));
 }
 
-bool CriticalSection::Acquire(bool try_lock)
+bool CriticalSection::acquire(bool try_lock)
 {
 	bool locked = true;
 	// When try locking is requested.
@@ -128,7 +128,7 @@ bool CriticalSection::Acquire(bool try_lock)
 	return locked;
 }
 
-void CriticalSection::Release()
+void CriticalSection::release()
 {
 	int error = ::pthread_mutex_unlock(&_mutex);
 	if (error)

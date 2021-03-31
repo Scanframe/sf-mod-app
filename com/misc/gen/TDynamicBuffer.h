@@ -311,28 +311,28 @@ template <class Alloc>
 inline
 void* TDynamicBuffer<Alloc>::data()
 {
-	return (char*) _reference->_data + _reference->_offset;
+	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template <class Alloc>
 inline
 const void* TDynamicBuffer<Alloc>::data() const
 {
-	return (char*) _reference->_data + _reference->_offset;
+	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template <class Alloc>
 inline
 char* TDynamicBuffer<Alloc>::c_str()
 {
-	return (char*) _reference->_data + _reference->_offset;
+	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template <class Alloc>
 inline
 const char* TDynamicBuffer<Alloc>::c_str() const
 {
-	return (char*) _reference->_data + _reference->_offset;
+	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template <class Alloc>
@@ -341,7 +341,7 @@ void* TDynamicBuffer<Alloc>::data(size_t offset)
 {
 	// Compensate for the offset.
 	offset += _reference->_offset;
-	return &((char*) _reference->_data)[offset];
+	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
 template <class Alloc>
@@ -350,7 +350,7 @@ const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 {
 	// Compensate for the offset.
 	offset += _reference->_offset;
-	return &((char*) _reference->_data)[offset];
+	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
 template <class Alloc>
@@ -361,7 +361,7 @@ char TDynamicBuffer<Alloc>::operator[](size_t i) const
 	i += _reference->_offset;
 	COND_NORM_THROW(i > _reference->_size, "Index out of range!");
 	// Make sure that no data is accessed beyond its real size.
-	return ((char*) _reference->_data)[i];
+	return (static_cast<char*>(_reference->_data))[i];
 }
 
 template <class Alloc>
@@ -370,7 +370,7 @@ char& TDynamicBuffer<Alloc>::operator[](size_t i)
 {
 	_COND_NORM_THROW(i > _reference->_size, "Index out of range!")
 	// Make sure that no dta is accessed beyond its real size.
-	return ((char*) _reference->_data)[i];
+	return (static_cast<char*>(_reference->_data))[i];
 }
 
 template <class Alloc>
@@ -439,7 +439,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer()
 	_reference->_size = 0;
 	_reference->_allocated = 0;
 	_reference->_offset = 0;
-	_reference->_data = NULL;
+	_reference->_data = nullptr;
 	_reference->_usage = 1;
 }
 
@@ -574,7 +574,7 @@ void TDynamicBuffer<Alloc>::grow(size_t sz)
 			_reference->_size = 0;
 			_reference->_allocated = 0;
 			_reference->_offset = 0;
-			_reference->_data = NULL;
+			_reference->_data = nullptr;
 			// Make resize fill the ref again and also allocate the new larger
 			// block of memory.
 			resize(sz - _reference->_offset);

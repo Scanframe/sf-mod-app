@@ -106,11 +106,11 @@ void MainWindow::onLoadLib()
 	// clear the current entries.
 	ui->comboBoxClass->clear();
 	// Iterate through registered classes and fill
-	for (size_t i = 0; i < RuntimeIface::Interface().Size(); ++i)
+	for (size_t i = 0; i < RuntimeIface::Interface().size(); ++i)
 	{
-		QString name = QString("%1 (%2)").arg(RuntimeIface::Interface().Name(i)).arg(
+		QString name = QString("%1 (%2)").arg(RuntimeIface::Interface().getName(i)).arg(
 			QDir(QCoreApplication::applicationDirPath()).relativeFilePath(QString::fromStdString(file)));
-		ui->comboBoxClass->addItem(name, QVariant(QString(RuntimeIface::Interface().Name(i))));
+		ui->comboBoxClass->addItem(name, QVariant(QString(RuntimeIface::Interface().getName(i))));
 	}
 }
 
@@ -118,7 +118,7 @@ void MainWindow::onCreateInstance()
 {
 	// Delete the current instance.
 	delete _interfaceInstance;
-	_interfaceInstance = RuntimeIface::Interface().Create(ui->comboBoxClass->currentData().toString().toStdString(),
+	_interfaceInstance = RuntimeIface::Interface().create(ui->comboBoxClass->currentData().toString().toStdString(),
 		RuntimeIface::Parameters(123));
 }
 

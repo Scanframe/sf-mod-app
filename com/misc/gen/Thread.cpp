@@ -22,7 +22,7 @@
 namespace sf
 {
 
-int Thread::GetCurrentThreadId()
+int Thread::getCurrentThreadId()
 {
 #if IS_WIN
 	return (long)::GetCurrentThreadId();
@@ -31,7 +31,7 @@ int Thread::GetCurrentThreadId()
 #endif
 }
 
-int Thread::GetTerminationSignal()
+int Thread::getTerminationSignal()
 {
 #if IS_WIN
 	return SIGTERM;
@@ -54,7 +54,7 @@ Thread::Thread()
 
 Thread::~Thread()
 {
-	if (GetStatus() == tsRUNNING)
+	if (getStatus() == tsRUNNING)
 	{
 		//throw ThreadError(ThreadError::teDESTROYBEFOREEXIT, this);
 		//
@@ -62,28 +62,28 @@ Thread::~Thread()
 		// So only a notification and thread termination.
 		_RTTI_NOTIFY(DO_DEFAULT, "Thread ID ( " << _threadId << ") destroyed before termination.");
 		// Terminate the thread graceful using the TerminationTime period.
-		TerminateAndWait();
+		terminateAndWait();
 	}
 }
 
-Thread::handle_type Thread::Start(const Thread::Attributes& attr)
+Thread::handle_type Thread::start(const Thread::Attributes& attr)
 {
 	// If Start() has already been called for this thread, release the
 	// previously created system thread object before launching a new one.
-	if ((GetStatus() != tsCREATED) && _handle)
+	if ((getStatus() != tsCREATED) && _handle)
 	{
 		// Throw an error.
-		throw ThreadError(ThreadError::teCREATIONFAILURE, this);
+		throw threadError(threadError::teCREATIONFAILURE, this);
 	}
 	// Setting termination flag to false to enable restart of thread.
 	_terminationRequested = false;
 	// Reset the exit code.
 	_exitCode.Code = -1;
 	//
-	if (::pthread_create(&_handle, attr, &Thread::Execute, this) == 0)
+	if (::pthread_create(&_handle, attr, &Thread::execute, this) == 0)
 	{
 		_status = tsINVALID;
-		throw ThreadError(ThreadError::teCREATIONFAILURE, this);
+		throw threadError(threadError::teCREATIONFAILURE, this);
 	}
 	//
 	_status = tsRUNNING;
@@ -91,12 +91,12 @@ Thread::handle_type Thread::Start(const Thread::Attributes& attr)
 	return _handle;
 }
 
-void Thread::Terminate()
+void Thread::terminate()
 {
 	_terminationRequested = true;
 }
 
-void Thread::WaitForExit()
+void Thread::waitForExit()
 {
 	if (_status == tsRUNNING)
 	{
@@ -122,18 +122,18 @@ void Thread::WaitForExit()
 			if (1)
 			{
 				// Get the handle through a critical section lock.
-				handle_type handle = GetHandle();
+				handle_type handle = getHandle();
 				// Send user signal signal to thread to be handled.
 				if (handle)
 				{
-					error = ::pthread_kill(_handle, GetTerminationSignal());
+					error = ::pthread_kill(_handle, getTerminationSignal());
 				}
 			}
 				// Cancel calls the cleanup handler.
 			else
 			{
 				// Get the handle through a critical section lock.
-				handle_type handle = GetHandle();
+				handle_type handle = getHandle();
 				if (handle)
 				{
 					error = ::pthread_cancel(_handle);
@@ -143,7 +143,7 @@ void Thread::WaitForExit()
 			if (!error)
 			{
 				// Check if the handle is valid.
-				handle_type handle = GetHandle();
+				handle_type handle = getHandle();
 				if (handle)
 				{
 					error = ::pthread_join(_handle, &_exitCode.Ptr);
@@ -160,13 +160,13 @@ void Thread::WaitForExit()
 	}
 }
 
-void Thread::TerminateAndWait()
+void Thread::terminateAndWait()
 {
-	Terminate();
-	WaitForExit();
+	terminate();
+	waitForExit();
 }
 
-bool Thread::SetPriority(int pri, int sp)
+bool Thread::setPriority(int pri, int sp)
 {
 	// IMPL: Whats with this second param in ::sched_setscheduler()
 	struct sched_param param{};
@@ -179,7 +179,7 @@ bool Thread::SetPriority(int pri, int sp)
 	return !!error;
 }
 
-int Thread::GetPriority() const
+int Thread::getPriority() const
 {
 	int policy = 0;
 	struct sched_param param{};
@@ -192,32 +192,32 @@ int Thread::GetPriority() const
 	return param.sched_priority;
 }
 
-Thread::EStatus Thread::GetStatus() const
+Thread::EStatus Thread::getStatus() const
 {
-	CriticalSection::Lock lock(_critSec);
+	CriticalSection::lock lock(_critSec);
 	return _status;
 }
 
-bool Thread::IsSelf() const
+bool Thread::isSelf() const
 {
-	CriticalSection::Lock lock(_critSec);
+	CriticalSection::lock lock(_critSec);
 	//return _threadId == GetCurrentThreadId();
 	return pthread_equal(_handle, pthread_self()) == 0;
 }
 
-pid_t Thread::GetThreadId() const
+pid_t Thread::getThreadId() const
 {
-	CriticalSection::Lock lock(_critSec);
+	CriticalSection::lock lock(_critSec);
 	return _threadId;
 }
 
-Thread::handle_type Thread::GetHandle() const
+Thread::handle_type Thread::getHandle() const
 {
-	CriticalSection::Lock lock(_critSec);
+	CriticalSection::lock lock(_critSec);
 	return _handle;
 }
 
-bool Thread::ShouldTerminate() const
+bool Thread::shouldTerminate() const
 {
 	// Cancellation point.
 	::pthread_testcancel();
@@ -225,23 +225,23 @@ bool Thread::ShouldTerminate() const
 	return _terminationRequested;
 }
 
-int Thread::Run()
+int Thread::run()
 {
 	return -1;
 }
 
-void Thread::Cleanup()
+void Thread::cleanup()
 {
 	_RTTI_NOTIFY(DO_DEFAULT, "Called");
 }
 
-void Thread::DoCleanup(void* thread)
+void Thread::doCleanup(void* thread)
 {
 	auto* t(static_cast<Thread*>(thread));
 	try
 	{
 		// Call the non static and maybe derived function.
-		t->Cleanup();
+		t->cleanup();
 	}
 	catch (std::exception& e)
 	{
@@ -249,7 +249,7 @@ void Thread::DoCleanup(void* thread)
 			<< "' on Thread cleanup Intercepted!");
 	}
 	// Assignments of accessible members need a critical section.
-	CriticalSection::Lock lock(t->_critSec);
+	CriticalSection::lock lock(t->_critSec);
 	// Allow reclaim of storage.
 	//::pthread_detach(t->Handle);
 	// Clear the thread handle and thread ID.
@@ -259,22 +259,22 @@ void Thread::DoCleanup(void* thread)
 	t->_status = tsFINISHED;
 }
 
-Thread::TerminateException::TerminateException()
-	:Exception("ID(%d)", GetCurrentThreadId()) {}
+Thread::terminateException::terminateException()
+	:Exception("ID(%d)", getCurrentThreadId()) {}
 
-void* Thread::Execute(void* thread)
+void* Thread::execute(void* thread)
 {
 #if !IS_WIN
 	struct sigaction sa{};
 	sa.sa_handler = nullptr;
 	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void
 	{
-		throw Thread::TerminateException();
+		throw Thread::terminateException();
 	};
 	sa.sa_flags = SA_SIGINFO;
 	::sigemptyset(&sa.sa_mask);
 	// Install a signal handler which throws an exception.
-	if (::sigaction(GetTerminationSignal(), &sa, nullptr) < 0)
+	if (::sigaction(getTerminationSignal(), &sa, nullptr) < 0)
 	{
 		_NORM_NOTIFY(DO_DEFAULT, "sigaction()" << strerror(errno));
 		return (void*) -1;
@@ -288,16 +288,16 @@ void* Thread::Execute(void* thread)
 	//::pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	{
 		// Assignments of accessible members need a critical section.
-		CriticalSection::Lock lock(thrd->_critSec);
+		CriticalSection::lock lock(thrd->_critSec);
 		// Assign the thread first.
-		thrd->_threadId = GetCurrentThreadId();
+		thrd->_threadId = getCurrentThreadId();
 	}
 	// Install a cleanup handler.
 	//pthread_cleanup_push(&DoCleanup, thrd);
 	try
 	{
 		// Call the non static and overloaded function.
-		thrd->_exitCode.Code = thrd->Run();
+		thrd->_exitCode.Code = thrd->run();
 	}
 	catch (std::exception& e)
 	{
@@ -312,7 +312,7 @@ void* Thread::Execute(void* thread)
 	if (1)
 	{
 		// Assignments of accessible members need a critical section.
-		CriticalSection::Lock lock(thrd->_critSec);
+		CriticalSection::lock lock(thrd->_critSec);
 		// Clear the thread handle and thread ID.
 		thrd->_handle = 0;
 		thrd->_threadId = 0;
@@ -326,26 +326,26 @@ void* Thread::Execute(void* thread)
 	return thrd->_exitCode.Ptr;
 }
 
-void Thread::Exit(int code)
+void Thread::exit(int code)
 {
 	_exitCode.Code = code;
 	_status = tsFINISHED;
 	::pthread_exit(&_handle);
 }
 
-void Thread::Cancel()
+void Thread::cancel()
 {
 	// Accessing data members need a critical section lock.
-	CriticalSection::Lock lock(_critSec);
+	CriticalSection::lock lock(_critSec);
 	int error = ::pthread_cancel(_handle);
-	lock.Release();
+	lock.release();
 	if (error)
 	{
 		throw ExceptionSystemCall("pthread_cancel", error, typeid(*this).name(), __FUNCTION__);
 	}
 }
 
-const char* Thread::GetStatusText(Thread::EStatus status) const
+const char* Thread::getStatusText(Thread::EStatus status) const
 {
 	static const char* names[] =
 		{
@@ -357,7 +357,7 @@ const char* Thread::GetStatusText(Thread::EStatus status) const
 		};
 	if (status < 0)
 	{
-		status = GetStatus();
+		status = getStatus();
 	}
 	if (status >= 0 && (size_t) status < (sizeof(names) / sizeof(names[0])))
 	{
@@ -367,7 +367,7 @@ const char* Thread::GetStatusText(Thread::EStatus status) const
 
 }
 
-Thread::ThreadError::ThreadError(ThreadError::EErrorType type, const Thread* thread)
+Thread::threadError::threadError(threadError::EErrorType type, const Thread* thread)
 	:Exception()
 	 , _type(type)
 {
@@ -384,7 +384,7 @@ Thread::ThreadError::ThreadError(ThreadError::EErrorType type, const Thread* thr
 	FormatMsg("%s: %s", demangle(typeid(*thread).name()).c_str(), names[_type]);
 }
 
-bool Thread::Sleep(const TimeSpec& time, bool alertable)
+bool Thread::sleep(const TimeSpec& time, bool alertable)
 {
 	// For the remainder.
 	TimeSpec ts(time);
@@ -419,7 +419,7 @@ bool Thread::Sleep(const TimeSpec& time, bool alertable)
 	return true;
 }
 
-bool Thread::YieldToOther()
+bool Thread::yieldToOther()
 {
 #if IS_WIN
 	return ::SwitchToThread();
@@ -428,12 +428,12 @@ bool Thread::YieldToOther()
 #endif
 }
 
-int Thread::GetExitCode() const
+int Thread::getExitCode() const
 {
 	return _exitCode.Code;
 }
 
-Thread::handle_type Thread::GetCurrentThreadHandle()
+Thread::handle_type Thread::getCurrentThreadHandle()
 {
 	return pthread_self();
 }
@@ -457,10 +457,10 @@ Thread::Attributes::Attributes(Thread::handle_type th)
 		throw ExceptionSystemCall("pthread_attr_init", error, typeid(*this).name(), __FUNCTION__);
 	}
 	// Initialize the with the passed handle.
-	Setup(th);
+	setup(th);
 }
 
-void Thread::Attributes::Setup(Thread::handle_type th)
+void Thread::Attributes::setup(Thread::handle_type th)
 {
 #if IS_WIN
 	ULONG_PTR low, high;
@@ -494,7 +494,7 @@ Thread::Attributes::~Attributes()
 	delete _attributes;
 }
 
-size_t Thread::Attributes::GetStackSize() const
+size_t Thread::Attributes::getStackSize() const
 {
 	size_t sz = 0;
 	int error = ::pthread_attr_getstacksize(_attributes, &sz);
@@ -505,7 +505,7 @@ size_t Thread::Attributes::GetStackSize() const
 	return sz;
 }
 
-void Thread::Attributes::SetStackSize(size_t sz)
+void Thread::Attributes::setStackSize(size_t sz)
 {
 	// Assign the passed stack size.
 	int error = ::pthread_attr_setstacksize(_attributes, sz);
@@ -515,7 +515,7 @@ void Thread::Attributes::SetStackSize(size_t sz)
 	}
 }
 
-void Thread::Attributes::SetSchedulePolicy(Thread::Attributes::ESchedulePolicy policy)
+void Thread::Attributes::setSchedulePolicy(Thread::Attributes::ESchedulePolicy policy)
 {
 	// Assign the passed stack size.
 	int error = ::pthread_attr_setschedpolicy(_attributes, policy);
@@ -525,7 +525,7 @@ void Thread::Attributes::SetSchedulePolicy(Thread::Attributes::ESchedulePolicy p
 	}
 }
 
-Thread::Attributes::ESchedulePolicy Thread::Attributes::GetSchedulePolicy() const
+Thread::Attributes::ESchedulePolicy Thread::Attributes::getSchedulePolicy() const
 {
 	int policy = 0;
 	int error = ::pthread_attr_getschedpolicy(_attributes, &policy);

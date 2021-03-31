@@ -103,8 +103,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 			rfeSigBits,
 			/** Negative offset of values.
 			 * To get the real value clients must subtract this value from the read unsigned value.*/
-			rfeOffset,
-			rfeLastEntry
+			rfeOffset
 		};
 		/**
 		 * This enumerate is used to identify the type of data.
