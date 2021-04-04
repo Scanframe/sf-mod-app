@@ -13,6 +13,7 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <string>
 #include <fstream>
 #include <cstring>
+#include <mutex>
 
 #if IS_QT
 #include <QApplication>
@@ -25,16 +26,13 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <debugapi.h>
 #endif
 
-#include "CriticalSection.h"
+#include "Mutex.h"
 #include "dbgutils.h"
-
-//#define __DBG_MT_SAFEGUARD
-
 
 namespace sf
 {
 
-static sf::CriticalSection DbgCriticalSection;
+static std::mutex DbgMutex;
 
 // Raise signal SIGTRAP when debugger present otherwise the process crashes.
 void DebugBreak()
@@ -63,87 +61,27 @@ void DebugBreak()
 #endif
 }
 
-static unsigned int DefaultDebugOutputType = dotCLOG;
-
-class notify_exception :public std::exception
-{
-	public:
-
-		explicit notify_exception(const char* s) :msg(s) {}
-
-		[[nodiscard]] const char* what() const noexcept override;
-
-	private:
-		std::string msg;
-};
-
-const char* notify_exception::what() const noexcept
-{
-	return msg.c_str();
-}
-
-// Debug output stream for easy streaming of information.
-debug_ostream::debug_ostream(int type)
-	:std::ostream(std::cout.rdbuf())
-	 , std::streambuf()
-	 , Type(type)
-{
-	// Assign the buffer again because some times it is not enough
-	this->rdbuf(this);
-}
+static unsigned int DefaultDebugOutputType = dotStdLog;
 
 debug_ostream::~debug_ostream()
 {
-	// When the message was not output yet do it now.
-	if (msg.length())
+	if (str().length())
 	{
-		UserOutputDebugString(Type, msg.c_str());
+		UserOutputDebugString(_type, str().c_str());
 	}
 }
 
-std::size_t debug_ostream::do_sputn(const char* s, std::size_t count)
-{
-	msg.append(s, 0, static_cast<std::string::size_type>(count));
-	return count;
-}
-
-void debug_ostream::execute()
-{
-	UserOutputDebugString(Type, msg.c_str());
-	// Reset the buffer for another message
-	msg.resize(0);
-}
-
-int debug_ostream::overflow(int c)
-{
-	if (c != EOF)
-	{
-		char tc[2];
-		tc[0] = static_cast<char>(c);
-		tc[1] = 0;
-		if (c != END_OF_MSG)
-		{
-			do_sputn(tc, 1);
-		}
-		else
-		{
-			execute();
-		}
-	}
-	return 1;
-}
-
-void UserOutputDebugString(unsigned int type, const char* s)
+void UserOutputDebugString(unsigned int type, const char* s) noexcept
 {
 	// Critical section to prevent simultaneous modification of the Fifo.
-	CriticalSection::lock lock(DbgCriticalSection);
+	std::lock_guard<std::mutex> lock(DbgMutex);
 	// When default is specified Set the the bit.
-	if (type & dotDEFAULT)
+	if (type & dotDefault)
 	{
 		type |= DefaultDebugOutputType;
 	}
 	// If the debug string bit is enabled call 'OutputDebugString'.
-	if (type & dotDBGSTR)
+	if (type & dotDebugString)
 	{
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
@@ -153,10 +91,11 @@ void UserOutputDebugString(unsigned int type, const char* s)
 	tm /= 10;
 #endif
 	// If the log bit is enabled write the line as is.
-	if (type & dotCLOG)
+	if (type & dotStdLog)
 	{
-		std::clog.precision(3);
-		std::clog << std::fixed << tm << ' ' << s << '\n';
+		auto old = std::clog.precision(3);
+		std::clog << std::fixed << tm << ' ' << s << std::endl;
+		std::clog.precision(old);
 	}
 	// Find the file separator character '\x1C'.
 	char* sep = std::strchr(const_cast<char*>(s), '\x1C');
@@ -166,19 +105,19 @@ void UserOutputDebugString(unsigned int type, const char* s)
 		*sep = '\n';
 	}
 	// Execute functions according the bits.
-	if (type & dotCERR)
+	if (type & dotStdErr)
 	{
-		std::cerr << tm << ' ' << s << '\n';
+		std::cerr << tm << ' ' << s << std::endl;
 	}
-	if (type & dotCOUT)
+	if (type & dotStdOut)
 	{
-		std::cout << tm << ' ' << s << '\n';
+		std::cout << tm << ' ' << s << std::endl;
 	}
-	if (type & dotMSGBOX || type & dotTHROW)
+	if (type & dotMessageBox || type & dotThrow)
 	{
 		const char* caption = "Notification";
 		// Find caption separator in text
-		char* text = strchr(const_cast<char*>(s), _CLS_SEP);
+		char* text = strchr(const_cast<char*>(s), SF_CLS_SEP);
 		// When found Set caption pointer
 		if (text)
 		{
@@ -195,7 +134,7 @@ void UserOutputDebugString(unsigned int type, const char* s)
 			text = const_cast<char*>(s);
 		}
 		//
-		if (type & dotMSGBOX)
+		if (type & dotMessageBox)
 		{
 			static bool sentry = false;
 			// Prevent reentry so message boxes are not created in the background.
@@ -203,7 +142,7 @@ void UserOutputDebugString(unsigned int type, const char* s)
 			{
 				sentry = true;
 				// Release lock to prevent lockup multiple threads.
-				lock.release();
+				DbgMutex.unlock();
 #if IS_QT
 				if (QApplication::instance())
 				{
@@ -213,13 +152,9 @@ void UserOutputDebugString(unsigned int type, const char* s)
 				sentry = false;
 			}
 		}
-		if (type & dotTHROW)
-		{
-			throw notify_exception(text);
-		}
 	}
 	// If the debug break bit is enabled call.
-	if (type & dotDBGBRK)
+	if (type & dotDebugBreak)
 	{
 		// Raise signal SIGTRAP when debugger present otherwise the process crashes in Linux.
 		DebugBreak();
@@ -229,7 +164,7 @@ void UserOutputDebugString(unsigned int type, const char* s)
 void SetDefaultDebugOutput(unsigned int type)
 {
 	// Prevent throw from being Set.
-	DefaultDebugOutputType = type & unsigned(~dotTHROW);
+	DefaultDebugOutputType = type & unsigned(~dotThrow);
 }
 
 unsigned int GetDefaultDebugOutput()
@@ -314,7 +249,7 @@ void MessageHandler::_handler(QtMsgType type, const QMessageLogContext& ctx, con
 			_initial(type, ctx, msg);
 			break;
 
-		case QtDebugMsg:
+		case QtDebugMsg: // NOLINT(bugprone-branch-clone)
 			std::clog << text.constData() << std::endl;
 			//fprintf(stderr, "Debug: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
 			break;
@@ -338,7 +273,7 @@ void MessageHandler::_handler(QtMsgType type, const QMessageLogContext& ctx, con
 			//std::cerr << text.constData() << std::endl;
 			fprintf(stderr, "Fatal: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
 			abort();
-			break;
+			//break;
 	}
 }
 

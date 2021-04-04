@@ -17,8 +17,15 @@ TimeSpec& TimeSpec::setTimeOfDay()
 
 TimeSpec& TimeSpec::assign(double sec)
 {
-	tv_sec = sec;
-	tv_nsec = (sec - tv_sec) * 1000000000l;
+	tv_sec = floor(sec);
+	tv_nsec = floor((sec - (double)tv_sec) * 1e9);
+	return *this;
+}
+
+TimeSpec& TimeSpec::assign(const timespec& ts)
+{
+	this->tv_sec = ts.tv_sec;
+	this->tv_nsec = ts.tv_nsec;
 	return *this;
 }
 
@@ -40,7 +47,7 @@ TimeSpec& TimeSpec::randomize(double factor)
 	return assign(value);
 }
 
-TimeSpec& TimeSpec::add(long int sec, long int nsec)
+TimeSpec& TimeSpec::add(time_t sec, long nsec)
 {
 	tv_nsec += nsec;
 	if (tv_nsec >= 1000000000l)
@@ -59,7 +66,7 @@ TimeSpec& TimeSpec::add(long int sec, long int nsec)
 	return *this;
 }
 
-TimeSpec& TimeSpec::assign(long int sec, long int nsec)
+TimeSpec& TimeSpec::assign(time_t sec, long nsec)
 {
 	tv_sec = sec + nsec / 1000000000l;
 	tv_nsec = nsec % 1000000000l;
@@ -69,6 +76,12 @@ TimeSpec& TimeSpec::assign(long int sec, long int nsec)
 double TimeSpec::toDouble() const
 {
 	return double(tv_sec) + double(tv_nsec) / 1000000000l;
+}
+
+time_t TimeSpec::toMilliSecs() const
+{
+
+	return tv_sec * 3000 + tv_nsec / 1000000l;
 }
 
 std::string TimeSpec::toString() const

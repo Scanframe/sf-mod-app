@@ -60,45 +60,46 @@ class TDynamicBuffer
 {
 	public:
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		TDynamicBuffer();
 		/**
-		 * Copy constructor.
+		 * @brief Copy constructor.
 		 */
 		TDynamicBuffer(const TDynamicBuffer& db);
 		/**
-		 * Initializing constructor.
+		 * @brief Initializing constructor.
 		 */
 		explicit TDynamicBuffer(size_t sz);
 		/**
-		 *  Destructor
+		 *  @brief Destructor
 		 */
 		~TDynamicBuffer();
 		/**
-		 * Reserves the array but does leave the data in tact.
+		 * @brief Reserves the array but does leave the data in tact.
 		 */
 		void reserve(size_t sz, bool shrink = false);
 		/**
-		 * 	Resizes the array but does leave the data in tact.
+		 * @brief Resizes the array but does leave the data in tact.
+		 *
 		 * @param sz When 0 and shrink is true the underlying buffer is freed.
 		 * @param shrink
 		 */
 		void resize(size_t sz, bool shrink = false);
 		/**
-		 * Sets an virtual offset to the buffer.
+		 * @brief Sets an virtual offset to the buffer.
 		 */
 		void offset(size_t ofs);
 		/**
-		 * Returns the current offset.
+		 * @brief Returns the current offset.
 		 */
 		[[nodiscard]] size_t offset() const;
 		/**
-		 * Returns the byte size of the buffer.
+		 * @brief Returns the byte size of the buffer.
 		 */
 		size_t size();
 		/**
-		 * Returns the byte size of the buffer.
+		 * @brief Returns the byte size of the buffer.
 		 */
 		[[nodiscard]] size_t size() const;
 		/**
@@ -198,101 +199,6 @@ class TDynamicBuffer
 		} * _reference;
 };
 
-/**
- *
- */
-template <class T, class Alloc = Allocator>
-class TDynamicArray
-{
-	public:
-		/**
-		 * Default constructor.
-		 */
-		TDynamicArray() = default;
-
-		/**
-		 * Dynamic array constructor.
-		 */
-		explicit TDynamicArray(const TDynamicBuffer<Alloc>& buf)
-			: buffer(buf) {}
-
-		/**
-		 * Initialization constructor.
-		 */
-		explicit TDynamicArray(size_t sz)
-			: buffer(sizeof(T) * sz) {}
-
-		/**
-		 * Returns the size of the array.
-		 */
-		[[nodiscard]] size_t count() const
-		{
-			return buffer.size() / sizeof(T);
-		}
-
-		/**
-		 * Returns reference of the specified index.
-		 */
-		T& operator[](size_t i)
-		{
-			return *(T*) buffer.data(sizeof(T) * i);
-		}
-
-		/**
-		 * Returns reference of the specified index.
-		 */
-		explicit operator T*()
-		{
-			return (T*) buffer.data();
-		}
-
-		/**
-		 * Resizes the array but does leave the data in tact.
-		 */
-		void resize(size_t sz, bool shrink = false)
-		{
-			buffer.resize(sizeof(T) * sz, shrink);
-		}
-
-		/**
-		 * Grows the array to the specified size but keeps the current data intact.
-		 */
-		void grow(size_t sz)
-		{
-			buffer.grow(sizeof(T) * sz);
-		}
-
-		/**
-		 * Zeroes all data.
-		 */
-		void zero()
-		{
-			buffer.zero();
-		}
-
-		/**
-		 * Cast operator.
-		 */
-		explicit operator TDynamicBuffer<Alloc>()
-		{
-			return buffer;
-		}
-
-		/**
-		 * Function to get access to the underlying buffer.
-		 */
-		TDynamicBuffer<Alloc>& getBuffer()
-		{
-			return buffer;
-		}
-
-	protected:
-		/**
-		 * Holds the underlying storage buffer.
-		 */
-		TDynamicBuffer<Alloc> buffer;
-};
-
 template <class Alloc>
 inline
 size_t TDynamicBuffer<Alloc>::size()
@@ -359,7 +265,10 @@ char TDynamicBuffer<Alloc>::operator[](size_t i) const
 {
 	// Compensate for the offset.
 	i += _reference->_offset;
-	COND_NORM_THROW(i > _reference->_size, "Index out of range!");
+	if (i > _reference->_size)
+	{
+		throw std::out_of_range("Index out of range!");
+	}
 	// Make sure that no data is accessed beyond its real size.
 	return (static_cast<char*>(_reference->_data))[i];
 }
@@ -368,7 +277,10 @@ template <class Alloc>
 inline
 char& TDynamicBuffer<Alloc>::operator[](size_t i)
 {
-	_COND_NORM_THROW(i > _reference->_size, "Index out of range!")
+	if (i > _reference->_size)
+	{
+		throw std::out_of_range("Index out of range!");
+	}
 	// Make sure that no dta is accessed beyond its real size.
 	return (static_cast<char*>(_reference->_data))[i];
 }

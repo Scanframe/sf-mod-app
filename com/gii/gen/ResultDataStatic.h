@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ResultDataTypes.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -10,23 +9,27 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 {
 	public:
 		/**
-		 * Result that always exists in the system and is referenced if no other is available or applicable.
+		 * @brief Result that always exists in the system and is referenced if no other is available or applicable.
 		 */
 		static ResultData& zero();
 
 		/**
-		 * Called to initialize or deinitialize the variable system.
+		 * @brief Called to initialize or deinitialize the variable system.
 		 */
 		static void initialize(bool);
+		/**
+		 * @brief Gets the enumerate type from the passed type string.
+		 */
+		static EType getType(const char* type);
 
 	private:
 		/**
-		 * Holds the first created instance and place holder with ID zero.
+		 * @brief Holds the first created instance and place holder with id zero.
 		 */
 		static ResultData* _zero;
 
 		/**
-		 * Structure for storing information about a type.
+		 * @brief Structure for storing information about a type.
 		 */
 		struct TTypeInfo
 		{
@@ -34,36 +37,46 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 			long Size;
 		};
 		/**
-		 * Static list to hold all references.
+		 * @brief Static list to hold all references.
 		 */
-		static ReferenceVector* RefList;
+		static ReferenceVector _references;
 		/**
-		 * Array that holds information of the different types
+		 * @brief Array that holds information of the different types
 		 */
-		static const TTypeInfo TypeInfoArray[];
+		static const TTypeInfo _typeInfoArray[];
 		/**
-		 * Static this counter is increased if a global event is generated.
+		 * @brief Static this counter is increased if a global event is generated.
+		 *
 		 * It is decreased when it returns from the event handler.
 		 */
-		static int GlobalActive;
+		static int _globalActive;
 		/**
-		 * Each result data reference that is created with get an 'SeqId' assigned
+		 * @brief Each result data reference that is created with get an 'SeqId' assigned
 		 * which is the incremented value of 'SeqIdCounter'
 		 */
-		static size_type SeqIdCounter;
+		static size_type _sequenceIdCounter;
 		/**
-		 * Keeps the allocated data in this list if it may not be deleted yet
+		 * @brief Keeps the allocated data in this list if it may not be deleted yet
 		 * because it is obstructed by an event being handled.
 		 */
-		static TVector<void*>* DeleteWaitCache;
+		static TVector<void*> _deleteWaitCache;
 		/**
-		 * Amount of segments to recycle for each result data instance.
+		 * @brief Amount of segments to recycle for each result data instance.
 		 */
-		static size_type RecycleSize;
+		static size_type _recycleSize;
 		/**
-		 * Debugging value for the segment size.
+		 * @brief Debugging value for the segment size.
 		 */
-		static size_type DebugSegSize;
+		static size_type _debugSegmentSize;
+
+		/**
+		 * @brief Lookup list for flags.
+		 */
+		struct FlagLetters
+		{
+			char _letter;
+			int _flag;
+		} static _flagLetters[9];
 
 		friend class ResultData;
 

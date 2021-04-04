@@ -25,7 +25,7 @@ Add compiler definition flags:
 	#define _MISC_CLASS TARGET_EXPORT
 // Is used as an archive so no importing is needed.
 #elif defined(_MISC_ARC)
-#define _MISC_DATA
+	#define _MISC_DATA
 	#define _MISC_FUNC
 	#define _MISC_CLASS
 // When no flags are defined assume the package is imported.

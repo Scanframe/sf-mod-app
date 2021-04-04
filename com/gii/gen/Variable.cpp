@@ -17,8 +17,6 @@ namespace sf
 
 Variable::Variable()
 {
-	_COND_RTTI_THROW(!VariableStatic::zero()._reference,
-		"ZeroVariable has NOT been created yet! Library initialisation error!")
 	_global = true;
 	attachRef(VariableStatic::zero()._reference);
 }
@@ -88,7 +86,7 @@ bool Variable::setExport(bool global)
 		// When the id was found.
 		if (ref != VariableStatic::zero()._reference)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n"
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n"
 				<< stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n" << ref->_name << '!')
 			// If the ID already exist return false.
 			return false;
@@ -138,7 +136,7 @@ void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 {
 	if (VariableStatic::_globalActive)
 	{
-		_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting Instance During An Event!")
+		SF_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
 		// Do not free allocated data before end of global event remove
 		VariableStatic::_deleteWaitCache.add(p);
 	}
@@ -181,7 +179,7 @@ Variable::~Variable()
 	}
 }
 
-Variable::size_type Variable::getVariableCount()
+Variable::size_type Variable::getCount()
 {
 	ReferenceVector::size_type rv = 0;
 	for (auto ref: VariableStatic::_references)
@@ -207,9 +205,9 @@ Variable::size_type Variable::getInstanceCount(bool global_only)
 	return --rv;
 }
 
-Variable::Vector Variable::getVariables()
+Variable::Vector Variable::getList()
 {
-	// Reserve the minimum expected size.
+	// Return value.
 	Variable::Vector rv;
 	// Set the vector to reserve the maximum expected size.
 	rv.reserve(VariableStatic::_references.size());
@@ -240,7 +238,7 @@ VariableReference* Variable::getReferenceById(Variable::id_type id)
 	return VariableStatic::zero()._reference;
 }
 
-Variable& Variable::getVariableById(Variable::id_type id, Variable::Vector& list)
+Variable& Variable::getInstanceById(Variable::id_type id, Variable::Vector& list)
 {
 	for (auto i: list)
 	{
@@ -335,7 +333,7 @@ bool Variable::attachRef(VariableReference* ref)
 		{ // Just remove variable from list if it is not the owner.
 			if (!_reference->_list.detach(this))
 			{
-				_RTTI_NOTIFY(DO_DEFAULT, __FUNCTION__ << ": Could not remove instance from list!")
+				SF_RTTI_NOTIFY(DO_DEFAULT, __FUNCTION__ << ": Could not remove instance from list!")
 				rv = false;
 			}
 		}
@@ -402,7 +400,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		VariableReference* ref = _global ? getReferenceById(definition._id + id_ofs) : VariableStatic::zero()._reference;
 		if (ref && ref != VariableStatic::zero()._reference)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Tried to create duplicate ID: !\n"
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to create duplicate ID: !\n"
 				<< "(0x" << std::hex << (definition._id + id_ofs) << ") " << definition._name
 				<< "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!')
 			// If ref already exist return false.
@@ -527,7 +525,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: "
+	SF_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: "
 		<< definition._name << " (0x" << std::hex << (definition._id) << ") offset (0x" << id_ofs << ")!")
 	//
 	return ret_val;
@@ -858,7 +856,7 @@ void Variable::removeHandler(VariableHandler* handler)
 
 Variable::flags_type Variable::toFlags(const std::string& flags)
 {
-	Variable::flags_type rv{0};
+	flags_type rv{0};
 	for (auto f: flags)
 	{
 		for (auto fl: VariableStatic::_flagLetters)
@@ -997,7 +995,7 @@ bool Variable::loadCur(const Value& value) const
 	}
 	else
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, "Cannot load current value of non owning instance!")
+		SF_RTTI_NOTIFY(DO_DEFAULT, "Cannot load current value of non owning instance!")
 	}
 	// Signal failure or no change.
 	return false;
@@ -1253,7 +1251,7 @@ bool Variable::readUpdate(std::istream& is, bool skip_self, Vector& list)
 
 	if (!is.fail() && !is.bad() && value.isValid())
 	{ // GetReferenceById get reference to owner to be able to update readonly vars
-		auto& var(not_ref_null(list) ? getVariableById(id, list) : const_cast<Variable&>(getVariableById(id)));
+		auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
 		var.updateValue(value, skip_self);
 		var.updateFlags(toFlags(flags), skip_self);
 		return true;
@@ -1274,11 +1272,11 @@ bool Variable::read(std::istream& is, bool skip_self, Vector& list)
 	id_type id = 0;
 	char c = 0;
 	is >> c >> id >> c >> value >> c;
-	_COND_NORM_NOTIFY(!value.isValid(), DO_DEFAULT, "Variable: Stream format Corrupt!")
+	SF_COND_NORM_NOTIFY(!value.isValid(), DO_DEFAULT, "Variable: Stream format Corrupt!")
 	if (!is.fail() && !is.bad() && value.isValid())
 	{
 		// Check list for a NULL_REF and use
-		auto& var(not_ref_null(list) ? getVariableById(id, list) : const_cast<Variable&>(getVariableById(id)));
+		auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
 		var.updateValue(value, skip_self);
 		return true;
 	}
@@ -1604,7 +1602,7 @@ Value Variable::convert(const Value& value, bool to_org) const
 		// Abort the operation when conversion fails.
 		if (!ret_val.setType(Value::vitFloat))
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Convert" << ret_val << " for passed value failed!")
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Convert" << ret_val << " for passed value failed!")
 			return value;
 		}
 		if (to_org)
@@ -2047,7 +2045,7 @@ Value::EType Variable::getType() const
 	return _reference->_type;
 }
 
-const Variable& Variable::getVariableById(Variable::id_type id)
+const Variable& Variable::getInstanceById(Variable::id_type id)
 {
 	return *(getReferenceById(id)->_list[0]);
 }
@@ -2069,7 +2067,7 @@ const Variable::State::Vector& Variable::getStates() const
 
 Variable::Definition Variable::getDefinition(const std::string& str)
 {
-	Variable::Definition def;
+	Definition def;
 	// Flag to determine if the conversion went well.
 	bool ok = true;
 	// Pointer that points to the place where the conversion of the ID went wrong.
@@ -2087,7 +2085,7 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 	def._name = GetCsfField(vfName, str);
 	def._unit = GetCsfField(vfUnit, str);
 	def._convertOption = GetCsfField(vfConversionType, str);
-	def._description = escape(GetCsfField(vfDescription, str));
+	def._description = unescape(GetCsfField(vfDescription, str));
 	def._flags = toFlags(GetCsfField(vfFlags, str));
 	// Check for multi line string so the default value
 	Value::EType type = (Value::EType) Value::getType(GetCsfField(vfType, str).c_str());

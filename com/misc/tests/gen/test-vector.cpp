@@ -1,8 +1,17 @@
 #include <catch2/catch.hpp>
 
 #include <iostream>
-#include <sstream>
 #include <misc/gen/TVector.h>
+
+namespace
+{
+template<typename T>
+std::string toString(const sf::TVector<T>& v)
+{
+	std::ostringstream os;
+	return dynamic_cast<std::ostringstream&>(v.write(os, false)).str();
+}
+}
 
 SCENARIO("sf::TVector", "[generic][vector]")
 {
@@ -16,29 +25,32 @@ SCENARIO("sf::TVector", "[generic][vector]")
 		{
 			THEN("Content Check")
 			{
-				auto str = dynamic_cast<std::ostringstream&>(std::ostringstream() << v).str();
-				REQUIRE_THAT(str, Catch::Matchers::Equals("{5, 6, 7, 1, 2, 3, 4}"));
+				REQUIRE_THAT(toString(v), Catch::Matchers::Equals("{5, 6, 7, 1, 2, 3, 4}"));
 			}
 
 			THEN("Sorting")
 			{
 				std::sort(v.begin(), v.end());
-				auto str = dynamic_cast<std::ostringstream&>(std::ostringstream() << v).str();
-				REQUIRE_THAT(str, Catch::Matchers::Equals("{1, 2, 3, 4, 5, 6, 7}"));
+				REQUIRE_THAT(toString(v), Catch::Matchers::Equals("{1, 2, 3, 4, 5, 6, 7}"));
 			}
 
 			THEN("Add()")
 			{
 				v.add(8);
-				auto str = dynamic_cast<std::ostringstream&>(std::ostringstream() << v).str();
-				REQUIRE_THAT(str, Catch::Matchers::Equals("{5, 6, 7, 1, 2, 3, 4, 8}"));
+				REQUIRE_THAT(toString(v), Catch::Matchers::Equals("{5, 6, 7, 1, 2, 3, 4, 8}"));
 			}
 
 			THEN("AddAt()")
 			{
 				v.addAt(8, 4);
-				auto str = dynamic_cast<std::ostringstream&>(std::ostringstream() << v).str();
-				REQUIRE_THAT(str, Catch::Matchers::Equals("{5, 6, 7, 1, 8, 2, 3, 4}"));
+				REQUIRE_THAT(toString(v), Catch::Matchers::Equals("{5, 6, 7, 1, 8, 2, 3, 4}"));
+			}
+
+			THEN("Detach()")
+			{
+				REQUIRE(v.detachAt(3));
+				REQUIRE(v.detachAt(4));
+				REQUIRE_THAT(toString(v), Catch::Matchers::Equals("{5, 6, 7, 2, 4}"));
 			}
 
 			THEN("Find()")

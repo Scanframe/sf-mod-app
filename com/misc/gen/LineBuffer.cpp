@@ -14,7 +14,7 @@ LineBuffer::LineBuffer(unsigned max_lines)
 
 LineBuffer::~LineBuffer()
 {
-	if (_lineFifo.IsValid())
+	if (_lineFifo.isValid())
 	{
 		clear();
 	}
@@ -23,10 +23,10 @@ LineBuffer::~LineBuffer()
 void LineBuffer::clear()
 {
 	// Delete all string instances in the fifo
-	std::string* item;
-	while (_lineFifo.Get(item))
+	while (!_lineFifo.empty())
 	{
-		delete item;
+		// Pop a pointer and delete it.
+		delete _lineFifo.pop();
 	}
 }
 
@@ -34,7 +34,7 @@ void LineBuffer::clear()
 void LineBuffer::setMaxLines(unsigned max_lines)
 {
 	clear();
-	_lineFifo.Set(int(max_lines));
+	_lineFifo.set(int(max_lines));
 }
 
 std::string LineBuffer::getLine(unsigned line) const
@@ -50,7 +50,7 @@ std::string LineBuffer::getLine(unsigned line) const
 
 int LineBuffer::lineCount() const
 {
-	return _lineFifo.Size();
+	return _lineFifo.size();
 }
 
 int LineBuffer::overflow(int c)
@@ -74,12 +74,12 @@ int LineBuffer::overflow(int c)
 std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 {
 	// get latest string inserted in fifo
-	std::string* latest = _lineFifo.Latest();
+	std::string* latest = _lineFifo.latest();
 	std::string* cur;
 	// Put new string instance in the fifo if it is empty.
 	if (!latest)
 	{
-		_lineFifo.Put(latest = new std::string());
+		_lineFifo.push(latest = new std::string());
 	}
 	// TODO: This can be done a lot smarter.
 	// add characters
@@ -92,16 +92,16 @@ std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 				cur = latest;
 				_totalLineCount++;
 				// remove one line if Fifo is full
-				if (_lineFifo.IsFull())
+				if (_lineFifo.isFull())
 				{
-					latest = _lineFifo.Get();
+					latest = _lineFifo.pop();
 					*latest = "";
-					_lineFifo.Put(latest);
+					_lineFifo.push(latest);
 				}
 				else // Add a new line to the fifo
 				{
 					latest = new std::string();
-					_lineFifo.Put(latest);
+					_lineFifo.push(latest);
 				}
 				// Call handler on new line
 				if (_onOnNewLine.isAssigned())

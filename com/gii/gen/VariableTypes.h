@@ -2,11 +2,10 @@
 
 #include <utility>
 
-#include "misc/gen/TVector.h"
-#include "misc/gen/Value.h"
+#include <misc/gen/TVector.h>
+#include <misc/gen/Value.h>
 
 #include "InformationBase.h"
-#include "global.h"
 
 namespace sf
 {
@@ -268,57 +267,57 @@ class VariableTypes :public InformationTypes
 		struct Definition
 		{
 			/**
-			 * Flag indicating this structure is valid.
+			 * @brief Flag indicating this structure is valid.
 			 */
 			bool _valid{false};
 			/**
-			 * ID of the new global instance.
+			 * @brief Id of the new global instance.
 			 */
 			id_type _id{0};
 			/**
-			 * Name path separated using '|' characters.
+			 * @brief Name path separated using '|' characters.
 			 */
 			std::string _name;
 			/**
-			 * Combination of EFlag flags.
+			 * @brief Combination of EFlag flags.
 			 */
 			flags_type _flags{0};
 			/**
-			 * Description of the instance without comma's.
+			 * @brief Description of the instance without comma's.
 			 */
 			std::string _description;
 			/**
-			 * Unit preferably in SI units so conversion and calculations are simple.<br>
+			 * @brief Unit preferably in SI units so conversion and calculations are simple.<br>
 			 * Also used to Set the string filter type.
 			 */
 			std::string _unit;
 			/**
-			 * Additional option used during conversion. (not used yet)
+			 * @brief Additional option used during conversion. (not used yet)
 			 */
 			std::string _convertOption;
 			/**
-			 * Internal type of the instance.
+			 * @brief Internal type of the instance.
 			 */
 			Value::EType _type;
 			/**
-			 * Rounding value. The value is a multiple of this value.
+			 * @brief Rounding value. The value is a multiple of this value.
 			 */
 			Value _roundValue;
 			/**
-			 * This is the value this instance starts with.
+			 * @brief This is the value this instance starts with.
 			 */
 			Value _defaultValue;
 			/**
-			 * Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
+			 * @brief Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
 			 */
 			Value _minValue;
 			/**
-			 * Maximum limit of this instance.<br>
+			 * @brief Maximum limit of this instance.<br>
 			 * When the min and max limits are zero no limits are applied.
 			 */
 			Value _maxValue;
 			/**
-			 * A vector of VariableTypes::State` instances.
+			 * @brief A vector of VariableTypes::State` instances.
 			 */
 			State::Vector _states;
 		};

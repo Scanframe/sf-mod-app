@@ -1,3 +1,4 @@
+
 #include <cstdarg>
 #include <ctime>
 #include <utility>
@@ -9,6 +10,11 @@
 #include "Exception.h"
 #include "dbgutils.h"
 #include "gen_utils.h"
+#include "target.h"
+
+#if IS_WIN
+#include <windows.h>
+#endif
 
 namespace sf
 {
@@ -388,16 +394,17 @@ std::string getline(std::istream& is)
 
 std::string getWorkingDirectory()
 {
-	auto dir = get_current_dir_name();
-	std::string rv(dir);
-	free(dir);
-	return rv;
-/*
+#if IS_WIN
 	const size_t sz = 4096;
 	char* buf = (char*) malloc(sz);
 	scope_free<char> sf(buf);
 	return getcwd(buf, sz - 1);
-*/
+#else
+	auto dir = get_current_dir_name();
+	std::string rv(dir);
+	free(dir);
+	return rv;
+#endif
 }
 
 std::string::value_type getDirectorySeparator()
@@ -411,9 +418,15 @@ std::string::value_type getDirectorySeparator()
 
 std::string getExecutableFilepath()
 {
+#if IS_WIN
+	std::string rv(PATH_MAX, '\0');
+	rv.resize(::GetModuleFileNameA(NULL, rv.data(), rv.capacity()));
+	return rv;
+#else
 	std::string rv(PATH_MAX, '\0');
 	rv.resize(::readlink("/proc/self/exe", rv.data(), rv.capacity()));
 	return rv;
+#endif
 }
 
 std::string getExecutableDirectory()
@@ -422,6 +435,14 @@ std::string getExecutableDirectory()
 	auto pos = rv.find_last_of(getDirectorySeparator());
 	return rv.erase((pos != std::string::npos && pos > 0) ? pos : 0);
 }
+
+std::string getExecutableName()
+{
+	auto rv = getExecutableFilepath();
+	auto pos = rv.find_last_of(getDirectorySeparator());
+	return rv.erase(0, (pos != std::string::npos && pos > 0) ? pos + 1 : rv.length());
+}
+
 
 std::string demangle(const char* name)
 {
@@ -617,7 +638,7 @@ bool file_unlink(const std::string& path)
 {
 	if (::unlink(path.c_str()) == -1)
 	{
-		_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n" << strerror(errno))
+		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n" << strerror(errno))
 		return false;
 	}
 	return true;
@@ -627,7 +648,7 @@ bool file_rename(const std::string& old_path, const std::string& new_path)
 {
 	if (::rename(old_path.c_str(), new_path.c_str()) == -1)
 	{
-		_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << strerror(errno))
+		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << strerror(errno))
 		return false;
 	}
 	return true;

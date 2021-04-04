@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Exception.h"
-#include "misc/lnx/Sync.h"
-#include "misc/global.h"
+#include "Sync.h"
+#include "../global.h"
 
 namespace sf
 {
@@ -11,8 +11,8 @@ namespace sf
  * @brief TStaticSync provides a system-independent interface to build sets of classes
  * that act somewhat like monitors, i.e., classes in which only one member
  * function can execute at any one time regardless of which instance it is
- * being called on. TStaticSync uses CriticalSection, so it is portable to all
- * platforms that CriticalSection has been ported to.
+ * being called on. TStaticSync uses Mutex, so it is portable to all
+ * platforms that Mutex has been ported to.
  *
  * TStaticSync Public Interface
  *
@@ -21,15 +21,12 @@ namespace sf
  * TStaticSync Protected Interface
  *
  *     TStaticSync<T>(const TStaticSync<T>&);
- *                             Copy constructor. Does not copy the
- *                             CriticalSection object.
+ *                             Copy constructor. Does not copy the Mutex object.
  *
  *     const TStaticSync<T>& operator =(const TStaticSync<T>&);
- *                             Assignment operator. Does not copy the
- *                             CriticalSection object.
+ *                             Assignment operator. Does not copy the Mutex object.
  *
- *     class Lock;            Handles locking and unlocking of member
- *                             functions.
+ *     class Lock;            Handles locking and unlocking of member functions.
  *
  * Example:
  * ```c++
@@ -85,14 +82,14 @@ class TStaticSync
 		/**
 		 *
 		 */
-		class Lock :public CriticalSection::lock
+		class Lock :public Mutex::Lock
 		{
 			public:
 				/**
 				 * @brief Default constructor.
 				 */
 				Lock()
-					:CriticalSection::lock(*TStaticSync<T>::_critSec, false) {}
+					:Mutex::Lock(*TStaticSync<T>::_mutex, false) {}
 
 				/**
 				 * @brief Try constructor.
@@ -100,20 +97,18 @@ class TStaticSync
 				 * @param try_lock When true the constructor returns even when not locked.
 				 */
 				explicit Lock(bool try_lock)
-					:CriticalSection::lock(*TStaticSync<T>::_critSec, try_lock) {}
+					:Mutex::Lock(*TStaticSync<T>::_mutex, try_lock) {}
 		};
 
 	private:
 		/**
-		 * @brief Holds the singleton critical section for all instances.
+		 * @brief Holds the singleton mutex for all instances.
 		 */
-		static CriticalSection* _critSec;
+		static Mutex* _mutex;
 		/**
-		 * @brief Usage counter on which the critical section is created or deleted.
+		 * @brief Usage counter on which the mutex is created or deleted.
 		 */
 		static unsigned _count;
-
-		friend class TLock;
 };
 
 template<class T>
@@ -128,7 +123,7 @@ TStaticSync<T>::TStaticSync()
 	 */
 	if (_count++ == 0)
 	{
-		_critSec = new CriticalSection;
+		_mutex = new Mutex;
 	}
 }
 
@@ -146,7 +141,7 @@ TStaticSync<T>::~TStaticSync()
 	// If this is the only remaining TStaticSync<T> object, destroy the semaphore.
 	if (--_count == 0)
 	{
-		delete _critSec;
+		delete _mutex;
 	}
 }
 

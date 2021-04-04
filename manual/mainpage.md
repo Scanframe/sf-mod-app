@@ -15,15 +15,26 @@ Classes/Interfaces for exchanging information between application modules (dynam
 * `::sf::Variable`
 * `::sf::ResultData`
 
-### Classes :
+### General
 
-Classes needed for 
+Classes needed for general stuff.  
 
 * `::sf::Value`
 * `::sf::Range`
 * `::sf::RangeManager`
+* `::sf::FileMappedStorage`
+* `::sf::ThreadClosure`
+* `::sf::Thread`
+* `::sf::Mutex`
+* `::sf::Sync`
+* `::sf::TStaticSync`
+  
+### Script / Calculator
 
-### Unit Conversion:
+* `::sf::ScriptEngine`
+* `::sf::calculator()`
+
+### Unit Conversion
 
 Unit conversion related functions and classes.
 
@@ -38,7 +49,6 @@ Unit conversion related functions and classes.
 * `::sf::TClosure`
 * `::sf::TDynamicBuffer`
 * `::sf::TClassRegistration`
-
 
 ## Examples
 

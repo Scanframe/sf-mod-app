@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include "../gen/Exception.h"
 #include "FileMapper.h"
+#include "../gen/gen_utils.h"
 
 namespace sf::lnx
 {
@@ -28,8 +29,9 @@ FileMapper::~FileMapper()
 
 void FileMapper::initialize()
 {
-	// Open a file using a template.
-	_file.createTemporary(std::filesystem::temp_directory_path().append("temp-file-test-{}.tmp"));
+	// Open a file using a template
+	auto tpl = std::string("fm-").append(getExecutableName()).append("-{}.tmp");
+	_file.createTemporary(std::filesystem::temp_directory_path().append(tpl));
 	_temp = true;
 }
 

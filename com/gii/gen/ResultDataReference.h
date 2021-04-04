@@ -13,66 +13,69 @@ namespace sf
 struct ResultDataReference :ResultDataTypes
 {
 	/**
-	 * Default constructor.
+	 * @brief Default constructor.
 	 */
 	ResultDataReference();
 
 	/**
-	 * Destructor
+	 * @brief Destructor
 	 */
 	~ResultDataReference();
 
 	/**
-	 * Contains the ID of the result data.
+	 * @brief Contains the ID of the result data.
 	 */
-	long _id{0};
+	id_type _id{0};
 	/**
-	 * Contains the sequential ID of the result data.
+	 * @brief Contains the sequential ID of the result data.
 	 */
-	long _sequenceId{0};
+	id_type _sequenceId{0};
 	/**
-	 * Flag if this instance is valid.
+	 * @brief Flag if this instance is valid.
 	 */
 	bool _valid{false};
 	/**
-	 * Contains the type of data of the result.
+	 * @brief Contains the type of data of the result.
 	 */
-	EType _type;
+	EType _type{rtInvalid};
 	/**
-	 * Contains the correction offset for each value to get the real value.
+	 * @brief Contains the correction offset for each value to get the real value.
 	 */
-	size_type Offset;
+	data_type _offset{0};
 	/**
-	 * Contains the type of data of the result.
+	 * @brief Contains the type of data of the result.
 	 */
-	unsigned SignificantBits;
+	size_type _significantBits{0};
 	/**
-	 * Member that contains the initial flags of the setup.
+	 * @brief Member that contains the initial flags of the setup.
 	 */
-	flags_type _flags;
+	flags_type _flags{0};
 	/**
-	 * Member that contains the current flags of the setup.
+	 * @brief Member that contains the current flags of the setup.
 	 */
-	flags_type _curFlags;
+	flags_type _curFlags{rtInvalid};
 	/**
-	 * Contains the name string of the result data.
+	 * @brief Contains the name string of the result data.
 	 */
 	std::string _name;
 	/**
-	 * Contains the description string of the result data.
+	 * @brief Contains the description string of the result data.
 	 */
 	std::string _description;
 	/**
-	 * Container for segments of data.
+	 * @brief Flag for debugging output.
 	 */
-	ResultDataStorage* _data;
+	bool _debug{false};
 	/**
-	 * Range manager for accessible entries.
+	 * @brief Container for segments of data.
 	 */
-	RangeManager* _rangeManager;
+	FileMappedStorage* _data{nullptr};
 	/**
-	 * This Vector of ranges contains ranges that are validated
-	 * by writing to the memory by the owner of the result.
+	 * @brief Range manager for accessible entries.
+	 */
+	RangeManager* _rangeManager{nullptr};
+	/**
+	 * @brief Vector containing ranges which are validated by the owner.
 	 */
 	Range::Vector _validatedCache;
 	/**

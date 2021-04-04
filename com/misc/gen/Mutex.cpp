@@ -1,11 +1,11 @@
 #include <cstring>
-#include "CriticalSection.h"
+#include "Mutex.h"
 #include "gen/Exception.h"
 
 namespace sf
 {
 
-CriticalSection::CriticalSection()
+Mutex::Mutex()
 {
 	::pthread_mutexattr_t attr{};
 	int error = ::pthread_mutexattr_init(&attr);
@@ -22,7 +22,7 @@ CriticalSection::CriticalSection()
 			throw ExceptionSystemCall("pthread_mutexattr_destroy", error, typeid(*this).name(), __FUNCTION__);
 }
 
-CriticalSection::~CriticalSection()
+Mutex::~Mutex()
 {
 	int error = ::pthread_mutex_destroy(const_cast<pthread_mutex_t*>(&_mutex));
 	if (error)
@@ -32,13 +32,13 @@ CriticalSection::~CriticalSection()
 	}
 }
 
-CriticalSection::lock::lock(const CriticalSection& sec, bool try_lock)
-	:_critSecObj(const_cast<CriticalSection&>(sec))
+Mutex::Lock::Lock(const Mutex& sec, bool try_lock)
+	:_mutexRef(const_cast<Mutex&>(sec))
 {
 	#if !IS_WIN
-	// Check if the critical section has not been destroyed already.
+	// Check if the mutex has not been destroyed already.
 	// This could happen when a class is created statically.
-	if (_critSecObj._mutex.__data.__kind == -1)
+	if (_mutexRef._mutex.__data.__kind == -1)
 	{
 		_locked = false;
 		return;
@@ -47,33 +47,33 @@ CriticalSection::lock::lock(const CriticalSection& sec, bool try_lock)
 	acquire(try_lock);
 }
 
-CriticalSection::lock::~lock()
+Mutex::Lock::~Lock()
 {
 	release();
 }
 
-bool CriticalSection::lock::acquire(bool try_lock)
+bool Mutex::Lock::acquire(bool try_lock)
 {
 	// Only when not locked.
-	if (!_locked && _critSecObj.isMutexDestroyed())
+	if (!_locked && !_mutexRef.isMutexDestroyed())
 	{
-		_locked = _critSecObj.acquire(try_lock);
+		_locked = _mutexRef.acquire(try_lock);
 	}
 	return _locked;
 }
 
-bool CriticalSection::lock::release()
+bool Mutex::Lock::release()
 {
-	if (_locked && _critSecObj.isMutexDestroyed())
+	if (_locked && !_mutexRef.isMutexDestroyed())
 	{
 		_locked = false;
-		_critSecObj.release();
+		_mutexRef.release();
 		return true;
 	}
 	return false;
 }
 
-bool CriticalSection::isMutexDestroyed()
+bool Mutex::isMutexDestroyed()
 {
 	for (size_t i = 0; i < sizeof(_mutex); i++)
 	{
@@ -85,12 +85,12 @@ bool CriticalSection::isMutexDestroyed()
 	return true;
 }
 
-void CriticalSection::clearMutex()
+void Mutex::clearMutex()
 {
 	memset(&_mutex, 0, sizeof(_mutex));
 }
 
-bool CriticalSection::acquire(bool try_lock)
+bool Mutex::acquire(bool try_lock)
 {
 	bool locked = true;
 	// When try locking is requested.
@@ -128,7 +128,7 @@ bool CriticalSection::acquire(bool try_lock)
 	return locked;
 }
 
-void CriticalSection::release()
+void Mutex::release()
 {
 	int error = ::pthread_mutex_unlock(&_mutex);
 	if (error)

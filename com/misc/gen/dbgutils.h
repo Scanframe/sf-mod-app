@@ -1,6 +1,5 @@
-/*
-	Contains debuging macro's that are defined when define DEBUG_LEVEL is
-	defined as non-zero.
+/**
+	@brief Contains debugging macro's that are defined when define DEBUG_LEVEL is defined as non-zero.
 
 	Introduces macro's:
 	===================
@@ -41,7 +40,7 @@
 
 	Remarks
 	-------
-	CLASS_?? notifications use the classes NameOf() function.
+	CLASS_?? notifications use the classes nameOf() function.
 */
 
 #pragma once
@@ -51,6 +50,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+#include <utility>
 
 #if IS_QT
 	#include <QtGlobal>
@@ -59,25 +59,23 @@
 #endif
 
 // This define should be defined externally in the project or make file.
-#ifndef _DEBUG_LEVEL
-#  define _DEBUG_LEVEL 1
+#ifndef SF_DEBUG_LEVEL
+#  define SF_DEBUG_LEVEL 1
 #endif
 
 // Coverts the passed type into a name.
-#define _RTTI_NAME(self) sf::Demangle(typeid(self).name())
+#define SF_RTTI_NAME(self) sf::Demangle(typeid(self).name())
 // Define that converts a this pointer to the class type name.
-#define _RTTI_TYPENAME _RTTI_NAME(*this)
+#define SF_RTTI_TYPENAME SF_RTTI_NAME(*this)
 // Only the filename part of __FILE__.
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-// Equals end of page character 12.
-#define END_OF_MSG ('\f')
+#define SF_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #if IS_QT
 
 // Coverts the passed type into a name.
-#define _Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
+#define SF_Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
 // Define that converts a this pointer to the class type name.
-#define _Q_RTTI_TYPENAME _Q_RTTI_NAME(*this)
+#define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
 
 inline
 QDebug& operator<<(QDebug& qd, const std::string& ss)
@@ -121,94 +119,120 @@ class _MISC_CLASS MessageHandler
 
 namespace sf
 {
-//
-enum EDebugOutputType
+/**
+ * Debug output type flags which can be combined to create a set of flags.
+ */
+enum EDebugOutputType :int
 {
-	dotTHROW = 1U << 0U,  /** throw and exception.*/
-	dotMSGBOX = 1U << 1U,  /** Notify through a message box.*/
-	dotCLOG = 1U << 2U,  /** Notify through the clog output stream.*/
-	dotCOUT = 1U << 3U,  /** Notify through the cout output stream.*/
-	dotCERR = 1U << 4U,  /** Notify through the cerr output stream.*/
-	dotDBGSTR = 1U << 5U,  /** Notify through function OutputDebugString.*/
-	dotDBGBRK = 1U << 6U,  /** Call debug break function.*/
-	dotDEFAULT = 1U << 7U   /** Use default Set notify output type.*/
+	/** Throw an exception.*/
+	dotThrow = 1U << 0U,
+	/** Notify through a message box.*/
+	dotMessageBox = 1U << 1U,
+	/** Notify through the std::clog output stream.*/
+	dotStdLog = 1U << 2U,
+	/** Notify through the std::cout output stream.*/
+	dotStdOut = 1U << 3U,
+	/** Notify through the std::cerr output stream.*/
+	dotStdErr = 1U << 4U,
+	/** Notify through function OutputDebugString.*/
+	dotDebugString = 1U << 5U,
+	/** Call debug break function.*/
+	dotDebugBreak = 1U << 6U,
+	/** Use default set notify output type.*/
+	dotDefault = 1U << 7U
 };
 
-// Allows the passed string to be presented in various ways.
-_MISC_FUNC void UserOutputDebugString(unsigned int type, const char* s);
+/**
+ * @brief Allows the passed string to be presented in various ways.
+ * @param type Single or combined (or '|') value of #EDebugOutputType enumerate.
+ * @param str Notification string.
+ */
+_MISC_FUNC void UserOutputDebugString(unsigned int type, const char* str) noexcept;
 
-// Set and get function for the type of output when DO_DEFAULT is passed.
+/**
+ * @brief Set and get function for the type of output when DO_DEFAULT is passed.
+ *
+ * @param type Single or combined (or '|') value of #EDebugOutputType enumerate.
+ */
 _MISC_FUNC void SetDefaultDebugOutput(unsigned int type);
 
-// Returns the combination of EDebugOutputType which is the default output.
+/**
+ * @brief Returns the combination of EDebugOutputType which is the default output.
+ */
 _MISC_FUNC unsigned int GetDefaultDebugOutput();
 
-// Returns true if debugging is passed at the command line.
+/**
+ * @brief Returns true if debugging is passed at the command line.
+ */
 _MISC_FUNC bool IsDebug();
 
-// Demangle the passed rtti type name.
+/**
+ * @brief Demangles the passed rtti mangled type name.
+ *
+ * @param name Mangled name
+ * @return Demangled name.
+ */
 _MISC_FUNC std::string Demangle(const char* name);
 
-// Output stream used as
-class _MISC_CLASS debug_ostream
-	:public std::ostream, protected std::streambuf
+/**
+ * Exception thrown from a notification.
+ */
+class notify_exception :public std::exception
 {
 	public:
-		// Constructor
-		explicit debug_ostream(int type);
+		explicit notify_exception(std::string s) :msg(std::move(s)) {}
 
-		// Destructor.
-		~debug_ostream() override;
-
-		// Executes what is streamed and Set.
-		void execute();
+		[[nodiscard]] const char* what() const noexcept override
+		{
+			return msg.c_str();
+		}
 
 	private:
 		std::string msg;
-		int Type;
+};
 
-		int overflow(int c) override;
+/**
+ * @brief Debug output stream.
+ */
+class _MISC_CLASS debug_ostream :public std::ostringstream
+{
+	public:
+		explicit debug_ostream(int type)
+			:std::ostringstream(), _type(type) {}
 
-//		std::streamsize xsputn(const char *s, streamsize count);
-		std::size_t do_sputn(const char* s, std::size_t count);
+		~debug_ostream() override;
+
+	private:
+		int _type;
 };
 
 } // namespace sf
 
 // Defined types of debug output of which combinations are allowed.
-#define DO_DEFAULT sf::dotDEFAULT
-#define DO_COUT    sf::dotCOUT
-#define DO_CLOG    sf::dotCLOG
-#define DO_CERR    sf::dotCERR
-#define DO_MSGBOX  sf::dotMSGBOX
-#define DO_THROW   sf::dotTHROW
-#define DO_DBGSTR  sf::dotDBGSTR
-#define DO_DBGBRK  sf::dotDBGBRK
+#define DO_DEFAULT sf::dotDefault
+#define DO_COUT    sf::dotStdOut
+#define DO_CLOG    sf::dotStdLog
+#define DO_CERR    sf::dotStdErr
+#define DO_MSGBOX  sf::dotMessageBox
+#define DO_DBGSTR  sf::dotDebugString
+#define DO_DBGBRK  sf::dotDebugBreak
 
 // Class name and file name separator character
-#define _CLS_SEP '|'
+#define SF_CLS_SEP '|'
 
-// None conditional throw defines.
-#define _NORM_THROW(a) {sf::debug_ostream dbg_os(dotTHROW|dotDBGSTR); dbg_os << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '\x1C' << '\t' << a;}
-#define _CLASS_THROW(a) {sf::debug_ostream dbg_os(dotTHROW|dotDBGSTR); dbg_os << NameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '\x1C' << '\t' << a;}
-#define _RTTI_THROW(a) {sf::debug_ostream dbg_os(dotTHROW|dotDBGSTR); dbg_os << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '\x1C' << '\t' << a;}
-#define _COND_NORM_THROW(p, a) {if (p) _NORM_THROW(a);}
-#define _COND_CLASS_THROW(p, a) {if (p) _CLASS_THROW(a);}
-#define _COND_RTTI_THROW(p, a) {if (p) _RTTI_THROW(a);}
+#if (SF_DEBUG_LEVEL == 1)
 
-#if (_DEBUG_LEVEL == 1)
+#define SF_NORM_NOTIFY(f, a) {sf::debug_ostream(f) << a;}
+#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << a;}
+#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << a;}
+#define SF_COND_NORM_NOTIFY(p, f, a) {if (p) {SF_NORM_NOTIFY(f, a);}}
+#define SF_COND_CLASS_NOTIFY(p, f, a) {if (p) {SF_CLASS_NOTIFY(f, a);}}
+#define SF_COND_RTTI_NOTIFY(p, f, a) {if (p) {SF_RTTI_NOTIFY(f, a);}}
 
-#define _NORM_NOTIFY(f, a) {sf::debug_ostream dbg_os(f); dbg_os  << a;}
-#define _CLASS_NOTIFY(f, a) {sf::debug_ostream dbg_os(f); dbg_os << NameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << a;}
-#define _RTTI_NOTIFY(f, a) {sf::debug_ostream dbg_os(f); dbg_os << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << a;}
-#define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
-#define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}
-#define _COND_RTTI_NOTIFY(p, f, a) {if (p) {_RTTI_NOTIFY(f, a);}}
-
-#elif (_DEBUG_LEVEL == 2)
+#elif (SF_DEBUG_LEVEL == 2)
 
 #define _NORM_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _CLASS_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << NameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _CLASS_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
 #define _RTTI_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
 #define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
 #define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}

@@ -30,17 +30,23 @@ set(SOURCES
 	gen/ElapseTimer.h gen/ElapseTimer.cpp
 	gen/PerformanceTimer.h gen/PerformanceTimer.cpp
 	gen/Value.h	gen/Value.cpp
-	gen/ScriptCalc.h gen/ScriptCalc.cpp
-	gen/TDynamicBuffer.h gen/IniProfile.h
-	gen/IniProfile.cpp gen/DynamicLibraryInfo.h
-	gen/DynamicLibraryInfo.cpp gen/TClassRegistration.h
+	gen/ScriptEngine.h gen/ScriptEngine.cpp
+	gen/TDynamicBuffer.h
+	gen/TDynamicArray.h
+	gen/IniProfile.h gen/IniProfile.cpp
+	gen/DynamicLibraryInfo.h gen/DynamicLibraryInfo.cpp
+	gen/TClassRegistration.h
 	gen/LineBuffer.h gen/LineBuffer.cpp
 	gen/Exception.h gen/Exception.cpp
 	gen/Range.h	gen/Range.cpp
 	gen/RangeManager.h gen/RangeManager.cpp
 	gen/csf.h gen/csf.cpp
-	gen/CriticalSection.h	gen/CriticalSection.cpp
+	gen/Mutex.h gen/Mutex.cpp
 	gen/Thread.h gen/Thread.cpp
+	gen/Condition.h gen/Condition.cpp
+	gen/Sync.h
+	gen/TVector.h
+	gen/TDeque.h
 	gen/TFifoClass.h
 	gen/TStaticSync.h
 	gen/TEnvelope.h
@@ -55,7 +61,6 @@ find_package(OpenSSL REQUIRED)
 set(SOURCES_LNX
 	lnx/lnx_utils.h lnx/lnx_utils.cpp
 	lnx/EventCounter.h lnx/EventCounter.cpp
-	lnx/Condition.h lnx/Condition.cpp
 	lnx/File.h lnx/File.cpp
 	lnx/FileMapper.h lnx/FileMapper.cpp
 	lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
@@ -136,4 +141,5 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CM
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
+	add_subdirectory(tests/app)
 endif()

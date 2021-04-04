@@ -38,6 +38,7 @@ TEST_CASE("sf::RangeManager", "[generic][range]")
 	{
 		// Set the accessible ranges.
 		rm.unitTest(&accessibles);
+		REQUIRE(rm.isAccessible({2, 15}));
 		REQUIRE(rm.request({10, 100, -1}, results) == sf::RangeManager::rmOutOfRange);
 		REQUIRE(results.empty());
 	}

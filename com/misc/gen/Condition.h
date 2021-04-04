@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../gen/CriticalSection.h"
+#include "../gen/Mutex.h"
 #include "../gen/TimeSpec.h"
 #include "../global.h"
 
@@ -27,29 +27,29 @@ class _MISC_CLASS Condition
 		/**
 		 * Destructor.
 		 */
-		virtual ~Condition();
+		~Condition();
 
 		/**
 		 * Waits for a signal.
 		 */
-		bool Wait();
+		bool wait(Mutex& mutex);
 
 		/**
-		 * Waits for a signal with a timout.
+		 * Waits for a signal with a timeout.
 		 */
-		bool Wait(const TimeSpec& timeout);
+		bool wait(Mutex& mutex, const TimeSpec& timeout);
 
 		/**
 		 * Signals a single thread.
 		 * Returns the amount of waiting threads.
 		 */
-		int NotifyOne();
+		int notifyOne(Mutex& mutex);
 
 		/**
 		 * Signals all threads.
 		 * Returns the amount of waiting threads.
 		 */
-		int NotifyAll();
+		int notifyAll(Mutex& mutex);
 
 		/**
 		* Casting operator.
@@ -77,10 +77,6 @@ class _MISC_CLASS Condition
 		 * Holds the actual handle of the OS.
 		 */
 		::pthread_cond_t _cond{};
-		/*
-		 * Holds the critical section needed for the condition functions.
-		 */
-		CriticalSection _mutex;
 };
 
 }

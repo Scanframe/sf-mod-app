@@ -44,7 +44,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @brief Initialize using whole nano seconds.
 	 * @param nsec Nanoseconds.
 	 */
-	explicit TimeSpec(long int nsec)
+	explicit TimeSpec(long nsec)
 		:timespec()
 	{
 		assign(0, nsec);
@@ -64,7 +64,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @param sec  Seconds.
 	 * @param nsec Nanoseconds.
 	 */
-	explicit TimeSpec(long int sec, long int nsec) :timespec()
+	explicit TimeSpec(time_t sec, long nsec) :timespec()
 	{
 		assign(sec, nsec);
 	}
@@ -96,7 +96,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @param nsec Nanoseconds.
 	 * @return Itself
 	 */
-	TimeSpec& operator+=(long int nsec)
+	TimeSpec& operator+=(long nsec)
 	{
 		return add(0, nsec);
 	}
@@ -113,12 +113,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @param ts Instance.
 	 * @return Itself.
 	 */
-	TimeSpec& assign(const timespec& ts)
-	{
-		this->tv_sec = ts.tv_sec;
-		this->tv_nsec = ts.tv_nsec;
-		return *this;
-	}
+	TimeSpec& assign(const timespec& ts);
 
 	/**
 	 * @brief Modifies the current value using the passed factor where 0.1 is + or - 10%.
@@ -140,7 +135,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @param nsec Nanoseconds.
 	 * @return Itself.
 	 */
-	TimeSpec& add(long int sec, long int nsec);
+	TimeSpec& add(time_t sec, long nsec);
 
 	/**
 	 * @brief Adds a timespec base type to the current value.
@@ -162,13 +157,18 @@ struct _MISC_CLASS TimeSpec :public timespec
 	 * @param nsec Nanosecond
 	 * @return Itself.
 	 */
-	TimeSpec& assign(long int sec, long int nsec);
+	TimeSpec& assign(time_t sec, long nsec);
 
 	/**
 	 * @brief Gets the time value as a double.
 	 * @return Seconds.
 	 */
 	[[nodiscard]] double toDouble() const;
+	/**
+	 * @brief Gets the time value as a double.
+	 * @return Seconds.
+	 */
+	[[nodiscard]] time_t toMilliSecs() const;
 
 	/**
 	 * @brief Returns the time as #toDouble() result converted to a string.

@@ -7,16 +7,15 @@ namespace sf
 {
 
 /**
- * @brief
- * Class used to give a TResultData instance access to virtual member function of a derived class.
+ * @brief Class used to give a ResultData instance access to virtual method of a derived class.
  */
-class ResultDataHandler :public ResultDataTypes
+class _GII_CLASS ResultDataHandler :public ResultDataTypes
 {
 	public:
 		/**
-		 * Pure virtual function which must be overloaded in a derived class.
+		 * @brief Pure virtual function which must be overloaded in a derived class.
 		 */
-		virtual void ResultDataEventHandler
+		virtual void handleResultDataEvent
 			(
 				EEvent /*event*/,
 				const ResultData& /*caller*/,
@@ -26,22 +25,23 @@ class ResultDataHandler :public ResultDataTypes
 			) = 0;
 
 		/**
-		 * Destructor
+		 * @brief Destructor
+		 *
 		 * Clears the link with result instances so no errors occur when the link is destructed before the result.
 		 */
 		~ResultDataHandler();
 
 		friend class ResultDataTypes;
+
 		friend class ResultData;
 };
-
 
 template<class T>
 class TResultDataLinkHandler :public ResultDataHandler
 {
 	public:
 		/**
-		 * Required event handler type.
+		 * @brief Required event handler type.
 		 */
 		typedef void (T::*TPmf)
 			(
@@ -49,52 +49,51 @@ class TResultDataLinkHandler :public ResultDataHandler
 				const ResultData& caller,
 				ResultData& link,
 				const Range& rng,
-				bool sameinst
+				bool same_inst
 			);
 
 		/**
-		 * One and only constructor
+		 * @brief One and only template constructor.
 		 * @param _this
-		 * @param pmf
+		 * @param pmf Pointer to member function.
 		 */
 		inline
 		TResultDataLinkHandler(T* _this, TPmf pmf)
-			:This(_this)
-			 , Pmf(pmf) {}
+			:_self(_this), _pmf(pmf) {}
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		TResultDataLinkHandler(const TResultDataLinkHandler&) = delete;
 
 		/**
-		 * Prevent assignment.
+		 * @brief Prevent assignment.
 		 */
 		TResultDataLinkHandler& operator=(const ResultDataHandler&) = delete;
 
 	private:
 		/**
-		 * Pointer to member function.
+		 * @brief Pointer to member function.
 		 */
-		TPmf Pmf;
+		TPmf _pmf;
 		/**
-		 * Void pointer to class instance.
+		 * @brief Void pointer to class instance.
 		 */
-		T* This;
+		T* _self;
 
 		/**
 		 * Call the member function through virtual overloaded function from the base class.
 		 */
-		void ResultDataEventHandler
+		void handleResultDataEvent
 			(
 				EEvent event,
 				const ResultData& caller,
 				ResultData& link,
 				const Range& rng,
-				bool sameinst
+				bool same_inst
 			) override
 		{
-			(This->*Pmf)(event, caller, link, rng, sameinst);
+			(_self->*_pmf)(event, caller, link, rng, same_inst);
 		}
 };
 

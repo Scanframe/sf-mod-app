@@ -59,4 +59,14 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 		CHECK(sf::precision(double(123.0)) == 3);
 	}
 
+	SECTION("sf::getExecutableName", "Executable functions")
+	{
+#if IS_WIN
+		std::string name = "sf-misc-test.exe";
+#else
+		std::string name = "sf-misc-test.bin";
+#endif
+		REQUIRE(sf::getExecutableName() == name);
+	}
+
 }

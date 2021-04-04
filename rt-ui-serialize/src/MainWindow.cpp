@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget* parent)
 	timer->start(10000);
 	connect(timer, &QTimer::timeout, [this]()->void
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, "Lambda function .. Timer event...")
+		SF_RTTI_NOTIFY(DO_DEFAULT, "Lambda function .. Timer event...")
 		//qDebug() << _Q_RTTI_TYPENAME << "Timer event...";
 	});
 }
@@ -115,7 +115,7 @@ QString MainWindow::uiFilepath()
 
 void MainWindow::onCreateFormDialog()
 {
-	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
+	SF_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	qDebug() << "QCoreApplication::libraryPaths()" << QCoreApplication::libraryPaths();
 
 	auto dlg = new FormDialog(this);
@@ -158,7 +158,7 @@ void MainWindow::onCreateFormDialog()
 
 void MainWindow::onReadFromFile()
 {
-	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
+	SF_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	QFormBuilder builder;
 	// Add the application directory as the plugin directory to find custom plugins.
 	builder.addPluginPath(QCoreApplication::applicationDirPath());
@@ -182,7 +182,7 @@ void MainWindow::onReadFromFile()
 
 void MainWindow::onWriteToFile()
 {
-	_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
+	SF_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	if (QCoreApplication::instance()->property("SettingsFile").isValid())
 	{
 		// Setting file information.

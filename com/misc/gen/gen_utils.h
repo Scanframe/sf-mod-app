@@ -222,6 +222,10 @@ _MISC_FUNC std::string getExecutableFilepath();
  */
 _MISC_FUNC std::string getExecutableDirectory();
 /**
+ * Returns the executable name.
+ */
+_MISC_FUNC std::string getExecutableName();
+/**
  * Returns the timespec as function return value as clock_gettime().
  */
 _MISC_FUNC timespec gettime();

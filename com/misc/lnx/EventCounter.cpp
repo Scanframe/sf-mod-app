@@ -5,21 +5,21 @@
 namespace sf
 {
 
-TEventCounter::TEventCounter()
+EventCounter::EventCounter()
 	:_descriptor(-1)
 {
 }
 
-TEventCounter::~TEventCounter()
+EventCounter::~EventCounter()
 {
-	Destroy();
+	destroy();
 }
 
-void TEventCounter::Create(unsigned int initval, bool countdown, bool blocking)
+void EventCounter::create(unsigned int initval, bool countdown, bool blocking)
 {
 	Lock lock(this);
 	// Destroy any existing descriptor.
-	Destroy();
+	destroy();
 	// Assemble the flags.
 	int flags = 0;/* EFD_CLOEXEC */;
 	flags |= countdown ? EFD_SEMAPHORE : 0;
@@ -33,7 +33,7 @@ void TEventCounter::Create(unsigned int initval, bool countdown, bool blocking)
 	}
 }
 
-void TEventCounter::Destroy()
+void EventCounter::destroy()
 {
 	// Cannot destroy while Wait() is called.
 	Lock lock(this);
@@ -50,7 +50,7 @@ void TEventCounter::Destroy()
 	}
 }
 
-void TEventCounter::Set(unsigned int value)
+void EventCounter::set(unsigned int value)
 {
 	/*
 	TLock lock(this);
@@ -65,7 +65,7 @@ void TEventCounter::Set(unsigned int value)
 	}
 }
 
-bool TEventCounter::Get(unsigned int& value) const
+bool EventCounter::get(unsigned int& value) const
 {
 	// Initialize the return value.
 	value = 0;

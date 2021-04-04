@@ -1,4 +1,3 @@
-#include <string>
 #include "dbgutils.h"
 #include "Range.h"
 #include "RangeManager.h"
@@ -9,19 +8,19 @@ namespace sf
 bool RangeManager::isAccessible(const Range& r) const
 {
 	// Check if the requested range is within the managed range.
-	if (!_managedRange.isWithinOther(r))
+	if (!_managedRange.isWithinSelf(r))
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, "Request" << r << " Out of the managed range!" << _managedRange)
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Request" << r << " Out of the managed range!" << _managedRange)
 		return false;
 	}
 	// Check if the requested range is part of the accessible ranges.
 	Range::Iterator i(_accessibles);
 	while (i)
 	{
-		if (i++.isWithinOther(r))
+		if (i++.isWithinSelf(r))
 		{
 			// The passed range is accessible.
-			_RTTI_NOTIFY(DO_DEFAULT, "Request" << r << " Is accessible.")
+			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Request" << r << " Is accessible.")
 			return true;
 		}
 	}
@@ -55,12 +54,13 @@ bool RangeManager::flush()
 
 void RangeManager::flushRequests(Range::id_type id)
 {
+	// Iterate reverse to remove instances from the requests vector.
 	auto count = _requests.count();
 	while (count)
 	{
 		if (_requests[--count].getId() == id)
 		{
-			_requests.detach(count);
+			_requests.detachAt(count);
 		}
 	}
 }
@@ -70,7 +70,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the requested range is within the managed range first.
 	if (!_managedRange.isWithinSelf(r) || _managedRange.isEmpty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Out of the managed range " << _managedRange << "!")
+		SF_COND_RTTI_NOTIFY(_debug, DO_CLOG, r << " Out of the managed range " << _managedRange << "!")
 		return rmOutOfRange;
 	}
 	// Check if the requested range is part of the accessible ranges secondly.
@@ -78,7 +78,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	{
 		if (i.isWithinSelf(r))
 		{
-			_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is already accessible.")
+			SF_COND_RTTI_NOTIFY(_debug, DO_CLOG, r << " Is already accessible.")
 			// Request is accessible.
 			return rmAccessible;
 		}
@@ -90,7 +90,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the request resolved.
 	if (rl.empty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is accessible a second time!")
+		SF_COND_RTTI_NOTIFY(_debug, DO_CLOG, r << " Is accessible a second time!")
 		// Request is accessible.
 		return rmAccessible;
 	}
@@ -101,7 +101,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Check if the request was resolved.
 	if (rl.empty())
 	{
-		_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Is already requested in some way!")
+		SF_COND_RTTI_NOTIFY(_debug, DO_CLOG, r << " Is already requested in some way!")
 		return rmInaccessible;
 	}
 	// Add the real requests to the passed range vector.
@@ -109,7 +109,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 	// Also add the requested ranges to the return value.
 	rrl.add(rl);
 	// Log a notification.
-	_COND_RTTI_NOTIFY(_flagLog, DO_CLOG, r << " Generated Requests " << rl)
+	SF_COND_RTTI_NOTIFY(_debug, DO_CLOG, r << " Generated Requests " << rl)
 	// Execution went well.
 	return rmInaccessible;
 }

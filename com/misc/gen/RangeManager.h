@@ -174,7 +174,7 @@ class _MISC_CLASS RangeManager
 		/**
 		 * When true notify entries are produced in std::clog.
 		 */
-		bool _flagLog{false};
+		bool _debug{false};
 };
 
 inline

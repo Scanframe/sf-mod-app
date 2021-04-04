@@ -710,19 +710,19 @@ class _MISC_CLASS Value
 inline
 Value& Value::set(bool v)
 {
-	return set(long(v));
+	return set(int_type(v));
 }
 
 inline
 Value& Value::set(int v)
 {
-	return set(long(v));
+	return set(int_type(v));
 }
 
 inline
 Value& Value::set(unsigned v)
 {
-	return set(long(v));
+	return set(int_type(v));
 }
 
 inline
@@ -783,11 +783,13 @@ Value& Value::assign(const unsigned v)
 	return assign(long(v));
 }
 
+#if !IS_WIN
 inline
 Value& Value::assign(const long v)
 {
 	return assign(Value(v));
 }
+#endif
 
 inline
 Value& Value::assign(const flt_type v)

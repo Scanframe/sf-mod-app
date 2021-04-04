@@ -592,7 +592,7 @@ Value Value::mul(const Value& v) const
 			return _data._ref->mul(v);
 
 		default:
-			return Value(0L);
+			return Value(0);
 	}// switch
 }
 
@@ -635,7 +635,7 @@ Value Value::div(const Value& v) const
 			return *this;
 
 		default:
-			return Value(0L);
+			return Value(0);
 	}
 }
 
@@ -664,7 +664,7 @@ Value Value::add(const Value& v) const
 			return *this;
 
 		default:
-			return Value(0L);
+			return Value(0);
 	}// switch
 }
 
@@ -689,7 +689,7 @@ Value Value::sub(const Value& v) const
 			return *this;
 
 		default:
-			return Value(0L);
+			return Value(0);
 	}
 }
 
@@ -714,7 +714,7 @@ Value Value::mod(const Value& v) const
 			return *this;
 
 		default:
-			return Value(0L);
+			return Value(0);
 	}// switch
 }
 

@@ -1,7 +1,7 @@
 #include <cmath>
 #include <utility>
 #include "misc/gen/gen_utils.h"
-#include "misc/gen/ScriptCalc.h"
+#include "misc/gen/ScriptEngine.h"
 
 #include "UnitConversion.h"
 
@@ -82,7 +82,7 @@ double UnitConverter::getOrgValue(double value) const
 
 double UnitConverter::getOrgValue(const std::string& value, double def) const
 {
-	return getOrgValue(Calculator(value, def));
+	return getOrgValue(calculator(value, def));
 }
 
 } // namespace

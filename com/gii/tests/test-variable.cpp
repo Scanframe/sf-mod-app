@@ -434,7 +434,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Set the export flag and try again.
 		REQUIRE(v_server.setFlag(sf::Variable::flgExport));
 		//
-		REQUIRE(sf::Variable::getVariables().empty());
+		REQUIRE(sf::Variable::getList().empty());
 		// Server should not be exported yet.
 		REQUIRE_FALSE(v_server.isExported());
 		// Make the server available for referencing.
@@ -442,13 +442,13 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Server should be exported now.
 		REQUIRE(v_server.isExported());
 		// Check if server variable is now the only  available one.
-		REQUIRE(sf::Variable::getVariables() == sf::Variable::Vector{&v_server});
+		REQUIRE(sf::Variable::getList() == sf::Variable::Vector{&v_server});
 		//
 		REQUIRE(v_server.setCur(sf::Value(1.1), true));
 		// Make revert the export.
 		REQUIRE(v_server.setExport(false));
 		//
-		REQUIRE(sf::Variable::getVariables().empty());
+		REQUIRE(sf::Variable::getList().empty());
 		// Server should not be exported now.
 		REQUIRE_FALSE(v_server.isExported());
 

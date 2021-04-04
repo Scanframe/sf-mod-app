@@ -10,7 +10,7 @@ namespace sf
 
 /**
  * @brief Base class for all generic information objects to be able to put them in a typed list together.
- */
+*/
 class _GII_CLASS InformationBase
 {
 	public:
@@ -38,6 +38,14 @@ class _GII_CLASS InformationTypes
 		 * @brief Type used for size of vectors.
 		 */
 		typedef size_t size_type;
+		/**
+		 * @brief Type used for containing the a single data element which is the largest integer.
+		 */
+		typedef uint64_t data_type;
+		/**
+		 * @brief Type used for containing the a single data element which is the largest signed integer.
+		 */
+		typedef int64_t sdata_type;
 		/**
 		 * @brief Vector for lists of information ID's
 		 */

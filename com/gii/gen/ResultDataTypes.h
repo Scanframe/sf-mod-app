@@ -1,9 +1,8 @@
 #pragma once
 
-#include "misc/gen/TVector.h"
+#include <misc/gen/TVector.h>
 #include "InformationBase.h"
-#include "ResultDataStorage.h"
-#include "../global.h"
+#include "FileMappedStorage.h"
 
 namespace sf
 {
@@ -19,27 +18,24 @@ class ResultDataReference;
 class ResultData;
 
 /**
- * This base class contains all local types of used in the TVariable class.
- * Multiple inheritance makes these types local for other classes as well.
- * Making code more readable and also prevents name space problems.
+ * @brief This base class contains all local types of used in the TVariable class.<br>
+ * Multiple inheritance makes these types local for other classes as well.<br>
+ * Making code more readable and also prevents name space problems.<br>
  */
 class _GII_CLASS ResultDataTypes :public InformationTypes
 {
 	public:
 		/**
-		 * Vector for pointer to results.
+		 * @brief Vector for pointer to results.
 		 */
 		typedef TVector<ResultData*> Vector;
 		/**
-		 * Type for internal use.
+		 * @brief Type for internal use.
 		 */
 		typedef TVector<ResultDataReference*> ReferenceVector;
 
 		/**
-		 * For broadcast events the result parameter is not the result
-		 * who set the link with function 'setHandler()' and the param parameter
-		 * isn't also the one passed to function 'setHandler()' either
-		 * Global events have a negative value.
+		 * @brief Event enumerate values used in broadcasting where global events have a negative value.
 		 */
 		enum EEvent :int
 		{
@@ -88,16 +84,23 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 			reUserPrivate
 		};
 		/**
-		 * This enumerate is the order of fields in the setup string
+		 * @brief This enumerate is the order of fields in the setup string
 		 */
 		enum EField :int
 		{
+			/** Identifier field.*/
 			rfeId = 0,
+			/** Name field.*/
 			rfeName,
+			/** Flags field.*/
 			rfeFlags,
+			/** description field.*/
 			rfeDescription,
+			/** Type string field @see #EType */
 			rfeType,
+			/** Size of the block in amount of types.*/
 			rfeBlockSize,
+			/** Size of segment in blocks.*/
 			rfeSegmentSize,
 			/** Significant bits for this instance this can not be larger then the bit count of the type.*/
 			rfeSigBits,
@@ -106,20 +109,27 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 			rfeOffset
 		};
 		/**
-		 * This enumerate is used to identify the type of data.
+		 * @brief This enumerate is used to identify the type of data.
 		 */
 		enum EType :int
 		{
+			/** Invalid type indicating a faulty setup string represented by  'INVALID'.*/
 			rtInvalid = 0,
+			/** Type containing a text represented by  'STRING'.*/
 			rtString,
+			/** 8 bit integers represented by  'INT8'.*/
 			rtInt8,
+			/** 16 bit integers represented by  'INT16'.*/
 			rtInt16,
+			/** 32 bit integers represented by  'INT32'.*/
 			rtInt32,
+			/** 64 bit integers represented by  'INT64'.*/
 			rtInt64,
+			/** Used for iterations.*/
 			rtLastEntry
 		};
 		/**
-		 * Flags of the flags description field.
+		 * @brief Flags of the flags description field.
 		 */
 		enum EFlag :flags_type
 		{
@@ -133,7 +143,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 			flgHidden = 1 << 3
 		};
 		/**
-		 * Enumerate for range information bit values
+		 * @brief Enumerate for range information bit values
 		 */
 		enum ERangeInfo
 		{
@@ -152,48 +162,52 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		};
 
 		/**
-		 * Structure used to setup a result.
+		 * @brief Structure used to setup a result reference.
 		 */
 		struct Definition
 		{
 			/**
-			 * ID of the new global instance.
+			 * @brief Flag indicating this structure is valid.
+			 */
+			bool _valid{false};
+			/**
+			 * @brief ID of the new global instance.
 			 */
 			id_type _id{0};
 			/**
-			 * Name path separated using '|' characters.
+			 * @brief Name path separated using '|' characters.
 			 */
 			std::string _name;
 			/**
-			 * Combination of EFlag flags.
+			 * @brief Combination of EFlag flags.
 			 */
 			flags_type _flags{0};
 			/**
-			 * Description of the instance without comma's.
+			 * @brief Description of the instance without comma's.
 			 */
 			std::string _description;
 			/**
-			 * Type of a single the element.
+			 * @brief Type of a single the element.
 			 */
 			EType _type{rtInvalid};
 			/**
-			 * Amount of elements in a block.
+			 * @brief Amount of elements in a block.
 			 */
 			size_type _blockSize{0};
 			/**
-			 * Amount of segments in a block.
+			 * @brief Amount of segments in a block.
 			 */
 			size_type _segmentSize{0};
 			/**
-			 * Amount of significant bits in an element.
+			 * @brief Amount of significant bits in an element.
 			 */
-			int _significantBits{0};
+			size_t _significantBits{0};
 			/**
-			 * Offset to produce a negative value or better set the nul value.
+			 * @brief Offset to produce a negative value or better set the nul value base line.
 			 * Needed to produce an element value to calculate with.
 			 */
 			size_type _offset{0};
 		};
 };
 
-} // namespace
+}

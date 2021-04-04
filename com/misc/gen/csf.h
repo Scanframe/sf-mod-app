@@ -8,7 +8,7 @@ namespace sf
 {
 
 /**
- * Holds field position in the string.
+ * @brief Holds field position in the string.
  */
 struct CsfField
 {
@@ -17,14 +17,14 @@ struct CsfField
 };
 
 /**
- * Returns the locations of the fields int the character string in the
- * passed 'fld' array of size 'sz'. The size of the written fields is
- * returned as the function result.
+ * @brief Returns the locations of the fields int the character string in the passed 'fld' array of size 'sz'.
+ *
+ * The size of the written fields is returned as the function result.
  */
 _MISC_FUNC int GetCsfFields(const char* s, CsfField* fld, int sz, char sep = ',', char str_delim = '"');
 
 /**
- * Same but now a constant std::string class is passed.
+ * @brief Same #GetCsfFields() as but now a constant std::string class is passed.
  */
 inline
 int GetCsfFields(const std::string& s, CsfField* fld, int sz, char sep = ',', char str_delim = '"')
@@ -33,13 +33,13 @@ int GetCsfFields(const std::string& s, CsfField* fld, int sz, char sep = ',', ch
 }
 
 /**
- * Returns the comma separated string in a list.
+ * @brief Returns the comma separated string in a list.
  */
 _MISC_FUNC int
 GetCsfFields(const char* s, strings& strings, int max = 100, char sep = ',', char str_delim = '"');
 
 /**
- * Same but now a constant std::string class is passed.
+ * @brief Same but now a constant std::string class is passed.
  */
 inline
 int GetCsfFields(const std::string& s, strings& strings, int max = 100, char sep = ',', char str_delim = '"')
@@ -48,12 +48,12 @@ int GetCsfFields(const std::string& s, strings& strings, int max = 100, char sep
 }
 
 /**
- * Gets a field from string 's' according to the CSF rules.
+ * @brief Gets a field from string 's' according to the CSF rules.
  */
 _MISC_FUNC std::string GetCsfField(int fldnr, const std::string& s, char sep = ',', char strdelim = '"');
 
 /**
- * Gets a field from string 's' according to the CSF rules.
+ * @brief Gets a field from string 's' according to the CSF rules.
  */
 _MISC_FUNC std::string GetCsfField(int fldnr, const char* s, char sep = ',', char strdelim = '"');
 

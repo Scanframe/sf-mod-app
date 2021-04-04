@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../gen/Exception.h"
-#include "../gen/CriticalSection.h"
+#include "Exception.h"
+#include "Mutex.h"
 #include "../global.h"
 
 namespace sf
@@ -10,8 +10,8 @@ namespace sf
 /**
  * Sync provides a system-independent interface to build classes that act like
  * monitors, i.e., classes in which only one member can execute on a particular
- * instance at any one time. Sync uses CriticalSection, so it is portable to
- * all platforms that CriticalSection has been ported to.
+ * instance at any one time. Sync uses Mutex, so it is portable to
+ * all platforms that Mutex has been ported to.
  *
  * Sync Public Interface
  *
@@ -21,11 +21,11 @@ namespace sf
  *
  *     Sync(const Sync&);
  *                             Copy constructor. Does not copy the
- *                             CriticalSection object.
+ *                             Mutex object.
  *
  *     const Sync& operator =(const Sync&);
  *                             Assignment operator. Does not copy the
- *                             CriticalSection object.
+ *                             Mutex object.
  *
  *     class Lock;            Handles locking and unlocking of member
  *                             functions.
@@ -64,7 +64,7 @@ class _MISC_CLASS Sync
 		Sync() = default;
 
 		/**
-		 * Copy constructor does not copy the CriticalSection object,
+		 * Copy constructor does not copy the Mutex object,
 		 * since the new object is not being used in any of its own
 		 * member functions. This means that the new object must start
 		 * in an unlocked state.
@@ -72,7 +72,7 @@ class _MISC_CLASS Sync
 		Sync(const Sync&);
 
 		/**
-		 * Does not copy the CriticalSection object, since the new object is not
+		 * Does not copy the Mutex object, since the new object is not
 		 * being used in any of its own member functions.
 		 * This means that the new object must start in an unlocked state.
 		 */
@@ -82,19 +82,19 @@ class _MISC_CLASS Sync
 		}
 
 	public:
-		class Lock :public CriticalSection::lock
+		class Lock :public Mutex::Lock
 		{
 			public:
 				explicit Lock(const Sync*, bool try_sync = false);
 
 			private:
-				static const CriticalSection& GetRef(const Sync*);
+				static const Mutex& GetRef(const Sync*);
 		};
 
 		friend class Lock;
 
 	private:
-		CriticalSection _critSec;
+		Mutex _mutex;
 };
 
 inline
@@ -103,22 +103,22 @@ Sync::Sync(const Sync&)
 }
 
 /**
- * Locks the CriticalSection object in the Sync object.
+ * Locks the Mutex object in the Sync object.
  */
 inline
 Sync::Lock::Lock(const Sync* sync, bool try_sync)
-	:CriticalSection::lock(GetRef(sync), try_sync)
+	:Mutex::Lock(GetRef(sync), try_sync)
 {
 }
 
 /**
- * Returns a reference to the CriticalSection object contained in the Sync
+ * Returns a reference to the Mutex object contained in the Sync
  * object.
  */
 inline
-const CriticalSection& Sync::Lock::GetRef(const Sync* sync)
+const Mutex& Sync::Lock::GetRef(const Sync* sync)
 {
-	return sync->_critSec;
+	return sync->_mutex;
 }
 
 }

@@ -160,7 +160,7 @@ bool File::close(bool exceptions)
 		}
 		else
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Closing file '" << _path << "' failed!\n" << strerror(_errorNo))
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Closing file '" << _path << "' failed!\n" << strerror(_errorNo))
 		}
 		// Reset the descriptor anyway.
 		_descriptor = -1;

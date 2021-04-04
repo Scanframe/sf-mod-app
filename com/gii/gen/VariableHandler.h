@@ -2,8 +2,6 @@
 
 #include "VariableTypes.h"
 
-#include "global.h"
-
 namespace sf
 {
 

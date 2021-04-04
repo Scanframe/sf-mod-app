@@ -7,7 +7,7 @@
 #include "dbgutils.h"
 #include "gen_utils.h"
 #include "Value.h"
-#include "ScriptCalc.h"
+#include "ScriptEngine.h"
 
 namespace sf
 {
@@ -24,71 +24,71 @@ constexpr size_t MAX_STRING_LENGTH = (1024 * 4);
 
 //IMPLEMENT_REGISTERBASE(TScriptObject);
 
-const char* ScriptCalc::GetArithErrorText(EArithError error_value) const
+const char* ScriptEngine::getArithErrorText(EArithError error_value) const
 {
 	switch (error_value)
 	{
-		case aeSUCCESS:
+		case aeSuccess:
 			return "Success";
-		case aeEXPECTED_RIGHT_PARENTHESIS:
+		case aeExpectedRightParenthesis:
 			return "A right parenthesis was expected at the end";
-		case aeEXPECTED_LEFT_PARENTHESIS:
+		case aeExpectedLeftParenthesis:
 			return "A left parenthesis was expected at the end";
-		case aeEXPECTED_DELIMITER:
+		case aeExpectedDelimiter:
 			return "Expected delimiter ';'";
-		case aeUNEXPECTED_END:
+		case aeUnexpectedEnd:
 			return "Unexpected end";
-		case aeUNEXPECTED_CHARACTER:
+		case aeUnexpectedCharacter:
 			return "Unexpected character";
-		case aeSTRING_TOO_LONG:
-			return "String too long";
-		case aeDIVISION_BY_ZERO:
+		case aeStringTooLong:
+			return "String is too long";
+		case aeDivisionByZero:
 			return "Division by zero";
-		case aeUNKNOWN_FUNCTION:
+		case aeUnknownFunction:
 			return "Unknown function";
-		case aeUNKNOWN_CONSTANT:
+		case aeUnknownConstant:
 			return "Unknown constant";
-		case aeASSIGN_CONSTANT:
+		case aeAssignConstant:
 			return "Cannot assign a value to a constant";
-		case aeUNKNOWN_VARIABLE:
+		case aeUnknownVariable:
 			return "Unknown variable";
-		case aeUNKNOWN_SYMBOL:
+		case aeUnknownSymbol:
 			return "Unknown symbol";
-		case aeUNKNOWN_IDENTIFIER:
+		case aeUnknownIdentifier:
 			return "Unknown identifier";
-		case aeUNKNOWN_OBJECTMEMBER:
+		case aeUnknownObjectMember:
 			return "Unknown object member";
-		case aeMAX_IDENTIFIER_LENGTH:
+		case aeMaxIdentifierLength:
 			return "Identifier length exceeded";
-		case aeEXPECTED_FUNCTION:
-			return "Function expected";
-		case aeUNEXPECTED_KEYWORD:
+		case aeExpectedFunction:
+			return "Expected function";
+		case aeUnexpectedKeyword:
 			return "Unexpected keyword";
-		case aeUNEXPECTED_IDENTIFIER:
+		case aeUnexpectedIdentifier:
 			return "Unexpected identifier";
-		case aeEXPECTED_IDENTIFIER:
+		case aeExpectedIdentifier:
 			return "Expected identifier";
-		case aeMULTIPLE_DECLARATION:
+		case aeMultipleDeclaration:
 			return "Multiple declaration";
-		case aeTOO_MANY_PARAMS:
+		case aeTooManyParameters:
 			return "Too many parameters in function";
-		case aeTOO_FEW_PARAMS:
+		case aeTooFewParameters:
 			return "Too few parameters in function";
-		case aeLABEL_NOT_FOUND:
-			return "Label Not Found";
-		case aeIP_STACK:
-			return "IP Stack Error";
-		case aeEXTERNAL_KEYWORD:
-			return "Malformed Additional statement";
-		case aeSCRIPT_TIMEOUT:
+		case aeLabelNotFound:
+			return "Label not found";
+		case aeIpStack:
+			return "IP stack error";
+		case aeExternalKeyword:
+			return "Malformed additional statement";
+		case aeScriptTimeout:
 			return "Script took to long to execute";
-		case aeFUNCTION_ERROR:
+		case aeFunctionError:
 			return "Function error";
-		case aeNOT_LVALUE:
+		case aeNotLValue:
 			return "Not a left value";
-		case aeIS_NOT_AN_OBJECT:
-			return "Identifier references NOT a valid object";
-		case aeCOMPILER_IMPLEMENTATION_ERROR:
+		case aeNotObject:
+			return "Identifier references NOT an object";
+		case aeCompilerImplementationError:
 			return "Compiler implementation fault";
 		default:
 			return "Unknown error";
@@ -138,75 +138,75 @@ const char* ScriptCalc::GetArithErrorText(EArithError error_value) const
 #define SID_POW       (SID_SCRIPT_START - 54)
 #define SID_SQRT      (SID_SCRIPT_START - 55)
 
-ScriptCalc::TInfo ScriptCalc::Info[] =
+ScriptEngine::Info ScriptEngine::_info[] =
 	{
 		// Typedefs.
-		{SID_INT, idTYPEDEF, "int", Value::vitInteger, nullptr},
-		{SID_FLOAT, idTYPEDEF, "float", Value::vitFloat, nullptr},
-		{SID_STRING, idTYPEDEF, "string", Value::vitString, nullptr},
-		{SID_UNDEF, idTYPEDEF, "undef", Value::vitUndefined, nullptr},
-		{SID_OBJECT, idTYPEDEF, "object", Value::vitCustom, nullptr},
+		{SID_INT, idTypedef, "int", Value::vitInteger, nullptr},
+		{SID_FLOAT, idTypedef, "float", Value::vitFloat, nullptr},
+		{SID_STRING, idTypedef, "string", Value::vitString, nullptr},
+		{SID_UNDEF, idTypedef, "undef", Value::vitUndefined, nullptr},
+		{SID_OBJECT, idTypedef, "object", Value::vitCustom, nullptr},
 		// Constants
-		{SID_PI, idCONSTANT, "PI", 0, nullptr},
+		{SID_PI, idConstant, "PI", 0, nullptr},
 		// Functions
-		{SID_SIN, idFUNCTION, "sin", 1, nullptr},
-		{SID_COS, idFUNCTION, "cos", 1, nullptr},
-		{SID_TAN, idFUNCTION, "cos", 1, nullptr},
-		{SID_ACOS, idFUNCTION, "acos", 1, nullptr},
-		{SID_ASIN, idFUNCTION, "asin", 1, nullptr},
-		{SID_ATAN, idFUNCTION, "atan", 1, nullptr},
-		{SID_ATAN2, idFUNCTION, "atan2", 2, nullptr},
-		{SID_CMP, idFUNCTION, "cmp", 3, nullptr},
-		{SID_SIN, idFUNCTION, "sin", 1, nullptr},
-		{SID_ABS, idFUNCTION, "abs", 1, nullptr},
-		{SID_LOG, idFUNCTION, "log", 1, nullptr},
-		{SID_EXP, idFUNCTION, "exp", 1, nullptr},
-		{SID_LOGX, idFUNCTION, "logx", 2, nullptr},
-		{SID_LOG10, idFUNCTION, "log10", 1, nullptr},
-		{SID_POW, idFUNCTION, "pow", 2, nullptr},
-		{SID_SQRT, idFUNCTION, "sqrt", 1, nullptr},
-		{SID_CEIL, idFUNCTION, "ceil", 1, nullptr},
-		{SID_FLOOR, idFUNCTION, "floor", 1, nullptr},
-		{SID_ROUND, idFUNCTION, "round", 2, nullptr},
-		{SID_MOD, idFUNCTION, "mod", 2, nullptr},
-		{SID_STR, idFUNCTION, "str", 1, nullptr},
-		{SID_TO_INT, idFUNCTION, "to_int", 1, nullptr},
-		{SID_TO_FLOAT, idFUNCTION, "to_float", 1, nullptr},
-		{SID_SUBSTR, idFUNCTION, "substr", 3, nullptr},
-		{SID_STRLEN, idFUNCTION, "strlen", 1, nullptr},
-		{SID_FINDSTR, idFUNCTION, "findstr", 2, nullptr},
-		{SID_STRIP, idFUNCTION, "strip", 3, nullptr},
-		{SID_TO_UPPER, idFUNCTION, "to_upper", 1, nullptr},
-		{SID_TO_LOWER, idFUNCTION, "to_lower", 1, nullptr},
+		{SID_SIN, idFunction, "sin", 1, nullptr},
+		{SID_COS, idFunction, "cos", 1, nullptr},
+		{SID_TAN, idFunction, "cos", 1, nullptr},
+		{SID_ACOS, idFunction, "acos", 1, nullptr},
+		{SID_ASIN, idFunction, "asin", 1, nullptr},
+		{SID_ATAN, idFunction, "atan", 1, nullptr},
+		{SID_ATAN2, idFunction, "atan2", 2, nullptr},
+		{SID_CMP, idFunction, "cmp", 3, nullptr},
+		{SID_SIN, idFunction, "sin", 1, nullptr},
+		{SID_ABS, idFunction, "abs", 1, nullptr},
+		{SID_LOG, idFunction, "log", 1, nullptr},
+		{SID_EXP, idFunction, "exp", 1, nullptr},
+		{SID_LOGX, idFunction, "logx", 2, nullptr},
+		{SID_LOG10, idFunction, "log10", 1, nullptr},
+		{SID_POW, idFunction, "pow", 2, nullptr},
+		{SID_SQRT, idFunction, "sqrt", 1, nullptr},
+		{SID_CEIL, idFunction, "ceil", 1, nullptr},
+		{SID_FLOOR, idFunction, "floor", 1, nullptr},
+		{SID_ROUND, idFunction, "round", 2, nullptr},
+		{SID_MOD, idFunction, "mod", 2, nullptr},
+		{SID_STR, idFunction, "str", 1, nullptr},
+		{SID_TO_INT, idFunction, "to_int", 1, nullptr},
+		{SID_TO_FLOAT, idFunction, "to_float", 1, nullptr},
+		{SID_SUBSTR, idFunction, "substr", 3, nullptr},
+		{SID_STRLEN, idFunction, "strlen", 1, nullptr},
+		{SID_FINDSTR, idFunction, "findstr", 2, nullptr},
+		{SID_STRIP, idFunction, "strip", 3, nullptr},
+		{SID_TO_UPPER, idFunction, "to_upper", 1, nullptr},
+		{SID_TO_LOWER, idFunction, "to_lower", 1, nullptr},
 		//
 	};
 
-ScriptCalc::ScriptCalc()
-	:ScriptObject("ScriptCalc")
+ScriptEngine::ScriptEngine()
+	:ScriptObject("ScriptEngine")
 {
 }
 
-const ScriptObject::TInfo* ScriptObject::GetInfoUnknown()
+const ScriptObject::Info* ScriptObject::getInfoUnknown()
 {
-	static TInfo info = {0, idUNKNOWN, nullptr, 0, nullptr};
+	static Info info = {0, idUnknown, nullptr, 0, nullptr};
 	return &info;
 }
 
-const ScriptCalc::TInfo* ScriptCalc::GetInfo(const std::string& name) const
+const ScriptEngine::Info* ScriptEngine::getInfo(const std::string& name) const
 {
 	// Find the name of the identifier.
-	for (auto& i : Info)
+	for (auto& i : _info)
 	{
-		if (i.Name == name)
+		if (i._name == name)
 		{
 			return &i;
 		}
 	}
 	// Return the unknown Info entry of the static list.
-	return GetInfoUnknown();
+	return getInfoUnknown();
 }
 
-ScriptObject* ScriptCalc::CastToObject(const Value& value)
+ScriptObject* ScriptEngine::castToObject(const Value& value)
 {
 	// When the variable is of the special type an object is referenced.
 	if (value.getType() == Value::vitCustom && value.getSize() == sizeof(void*))
@@ -221,62 +221,68 @@ ScriptObject* ScriptCalc::CastToObject(const Value& value)
 	return nullptr;
 }
 
-std::string ScriptCalc::GetInfoNames() const
+std::string ScriptEngine::getInfoNames() const
 {
 	std::string s;
 	// Find the name of the identifier.
-	for (auto& i : Info)
+	for (auto& i : _info)
 	{
-		s += i.Name;
+		s += i._name;
 		s += "\n";
 	}
 	return s;
 }
 
-bool ScriptCalc::GetSetValue
+bool ScriptEngine::getSetValue
 	(
-		const TInfo* info,
+		const Info* info,
 		Value* result,
 		Value::vector_type* param,
 		bool flagset
 	)
 {
-	_COND_RTTI_THROW(!info, "GetSetValue() 'info' is nullptr")
-	// Check if the amount of parameters is correct.
-	if (info->Id == idFUNCTION) _COND_RTTI_THROW(!param, "GetSetValue() 'param' is nullptr")
-	// Check if the info is own info structure by checking the speed index.
-	if (info->Index <= SID_SCRIPT_START)
+	if (!info)
 	{
-		switch (info->Id)
+		throw std::invalid_argument(std::string(__FUNCTION__ ) + "() 'info' is nullptr!");
+	}
+	// Check if the amount of parameters is correct.
+	if (info->_id == idFunction && !param)
+	{
+		throw std::invalid_argument(std::string(__FUNCTION__ ) + "() 'param' is nullptr!");
+	}
+	// Check if the info is own info structure by checking the speed index.
+	if (info->_index <= SID_SCRIPT_START)
+	{
+		switch (info->_id)
 		{
 			default:
 				break;
 
-			case idCONSTANT:
+			case idConstant:
 			{
 				// Check if a constant is assigned or not.
 				if (flagset)
 				{
-					SetErrorValue(aeASSIGN_CONSTANT, info->Name);
+					setErrorValue(aeAssignConstant, info->_name);
 				}
 				else
 				{
-					switch (info->Index)
+					switch (info->_index)
 					{
 						case SID_PI:
 							result->assign(M_PI);
 							break;
 
 						default:
-							SetErrorValue(aeUNKNOWN_CONSTANT, info->Name);
+							setErrorValue(aeUnknownConstant, info->_name);
 					}
 				}
 			}
 				break;
 
-			case idFUNCTION:
+			case idFunction:
 			{
-				switch (info->Index)
+				switch (info->_index)
 				{
 					case SID_ABS:
 						if ((*param)[0].getType() == Value::vitInteger)
@@ -386,9 +392,9 @@ bool ScriptCalc::GetSetValue
 					case SID_FINDSTR:
 					{
 						size_t pos = (*param)[0].getString().find((*param)[1].getString());
-						result->set(long((pos == std::string::npos) ? -1 : pos));
-					}
+						result->set(Value::int_type((pos == std::string::npos) ? -1 : pos));
 						break;
+					}
 
 					case SID_STRIP:
 					{
@@ -527,25 +533,25 @@ bool ScriptCalc::GetSetValue
 						break;
 
 					default:
-						SetErrorValue(aeUNKNOWN_FUNCTION);
+						setErrorValue(aeUnknownFunction);
 				}
 			}
 				break;
 
-			case idVARIABLE:
-				SetErrorValue(aeUNKNOWN_VARIABLE, info->Name);
+			case idVariable:
+				setErrorValue(aeUnknownVariable, info->_name);
 				break;
 
-			case idTYPEDEF:
+			case idTypedef:
 			{
-				switch (info->Index)
+				switch (info->_index)
 				{
 					case SID_INT:
 					case SID_FLOAT:
 					case SID_STRING:
 					case SID_UNDEF:
 					case SID_OBJECT:
-						SetErrorValue(aeUNKNOWN_IDENTIFIER, info->Name);
+						setErrorValue(aeUnknownIdentifier, info->_name);
 				}
 			}
 
@@ -555,12 +561,12 @@ bool ScriptCalc::GetSetValue
 	return false;
 }
 
-void ScriptCalc::GetNumber(Value& result)
+void ScriptEngine::getNumber(Value& result)
 {
 	char* dp = nullptr;
 	char* lp = nullptr;
-	double d = strtod(&Cmd[Pos], &dp);
-	long l = strtol(&Cmd[Pos], &lp, 0);
+	double d = strtod(&_cmd[_pos], &dp);
+	Value::int_type l = strtol(&_cmd[_pos], &lp, 0);
 	// see which one converted the most characters
 	if (dp > lp)
 	{
@@ -572,58 +578,58 @@ void ScriptCalc::GetNumber(Value& result)
 		result.set(l);
 	}
 	// Give index 'Pos' the exact number
-	while (&Cmd[Pos] != dp && Cmd[Pos] != '\0')
+	while (&_cmd[_pos] != dp && _cmd[_pos] != '\0')
 	{
-		Pos++;
+		_pos++;
 	}
 }
 
-bool ScriptCalc::GetName(std::string& name)
+bool ScriptEngine::getName(std::string& name)
 {
 	name = "";
-	int p = 0;
-	while (IsAlpha(Cmd[Pos + p]) || isalnum(Cmd[Pos + p]))
+	std::string::size_type p = 0;
+	while (isAlpha(_cmd[_pos + p]) || isalnum(_cmd[_pos + p]))
 	{
 		if (++p > MAX_IDENT_LENGTH)
 		{
-			return SetErrorValue(aeMAX_IDENTIFIER_LENGTH);
+			return setErrorValue(aeMaxIdentifierLength);
 		}
 	}
 	//
-	name.append(Cmd, Pos, p);
-	Pos += p;
-	EatWhite();
+	name.append(_cmd, _pos, p);
+	_pos += p;
+	eatWhite();
 	return true;
 }
 
-bool ScriptCalc::IsAlpha(char ch)
+bool ScriptEngine::isAlpha(char ch)
 {
-	return (isalpha(ch) || strchr("_", ch) && ch);
+	return isalpha(ch) || (strchr("_", ch) && ch);
 }
 
-void ScriptCalc::EatWhite()
+void ScriptEngine::eatWhite()
 {
-	while (Cmd[Pos] && strchr("\r\n\t ", Cmd[Pos]))
+	while (_cmd[_pos] && strchr("\r\n\t ", _cmd[_pos]))
 	{
-		Pos++;
+		_pos++;
 	}
 }
 
-bool ScriptCalc::Operator(Value& result, TDataCode& left)
+bool ScriptEngine::operator_(Value& result, DataCode& left)
 {
 	// Get operator character
-	char oper1 = Cmd[Pos];
+	char oper1 = _cmd[_pos];
 	char oper2 = '\0';
 	// Skip if no operator character was found
 	if (!oper1 || !strchr("<>=&|^/*!%", oper1))
 	{
 		return false;
 	}
-	Pos++;
-	// Look for second charater of the operator
-	if (strchr(">=|^&", Cmd[Pos]))
+	_pos++;
+	// Look for second character of the operator
+	if (strchr(">=|^&", _cmd[_pos]))
 	{
-		oper2 = Cmd[Pos++];
+		oper2 = _cmd[_pos++];
 	}
 	// Get the next value to complete the operation
 	Value tmpres;
@@ -633,18 +639,18 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 		// are there.
 		do
 		{
-			if (!Partial(tmpres))
+			if (!partial(tmpres))
 			{
 				return false;
 			}
 		}
-		while (strchr("+-", Cmd[Pos]) && Cmd[Pos]);
+		while (strchr("+-", _cmd[_pos]) && _cmd[_pos]);
 	}
 	else
 	{
-		TDataCode lvalue(this);
+		DataCode lvalue(this);
 		//
-		if (!Arith(tmpres, lvalue))
+		if (!arith(tmpres, lvalue))
 		{
 			return false;
 		}
@@ -703,7 +709,7 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 			}
 			else
 			{
-				SetErrorValue(aeUNEXPECTED_CHARACTER);
+				setErrorValue(aeUnexpectedCharacter);
 			}
 			break;
 		}
@@ -723,18 +729,18 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 					{
 						// Assign also the value to the left variable.
 						// The result contains the current value of left info.
-						left.Object->GetSetValue(left.Info, &tmpres, nullptr, true);
+						left._object->getSetValue(left._info, &tmpres, nullptr, true);
 						// Assign the new value.
 						result.assign(tmpres);
 					}
 					else
 					{
-						SetErrorValue(aeNOT_LVALUE);
+						setErrorValue(aeNotLValue);
 					}
 				}
 				else
 				{
-					SetErrorValue(aeUNEXPECTED_CHARACTER);
+					setErrorValue(aeUnexpectedCharacter);
 				}
 			}
 			break;
@@ -777,8 +783,8 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 			{
 				result.set(result.getInteger() ^ tmpres.getInteger());
 			}
-		}
 			break;
+		}
 
 			// multiplication operator
 		case '*':
@@ -788,10 +794,11 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 		}
 
 		case '/':
-		{ // check for division by zero
+		{
+			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
-				SetErrorValue(aeDIVISION_BY_ZERO);
+				setErrorValue(aeDivisionByZero);
 			}
 			else
 			{
@@ -801,10 +808,11 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 		}
 
 		case '%':
-		{ // check for division by zero
+		{
+			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
-				SetErrorValue(aeDIVISION_BY_ZERO);
+				setErrorValue(aeDivisionByZero);
 			}
 			else
 			{
@@ -812,6 +820,9 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 			}
 			break;
 		}
+
+		default:
+			break;
 	}
 	// Clear left value if an operator has passed.
 	left.Clear(this);
@@ -819,16 +830,16 @@ bool ScriptCalc::Operator(Value& result, TDataCode& left)
 	return true;
 }
 
-bool ScriptCalc::Partial(Value& result)
+bool ScriptEngine::partial(Value& result)
 {
 	Value locres;
-	TDataCode left(this);
-	if (!Arith(locres, left))
+	DataCode left(this);
+	if (!arith(locres, left))
 	{
 		return false;
 	}
-	while (Operator(locres, left) && !ErrorValue) {}
-	if (ErrorValue)
+	while (operator_(locres, left) && !_errorValue) {}
+	if (_errorValue)
 	{
 		return false;
 	}
@@ -836,19 +847,19 @@ bool ScriptCalc::Partial(Value& result)
 	return true;
 }
 
-bool ScriptCalc::Arith(Value& result, TDataCode& left)
+bool ScriptEngine::arith(Value& result, DataCode& left)
 {
-	EatWhite();
-	if (Cmd[Pos] == '(')
+	eatWhite();
+	if (_cmd[_pos] == '(')
 	{
-		Pos++;
-		while (!ErrorValue && Cmd[Pos] != ')')
+		_pos++;
+		while (!_errorValue && _cmd[_pos] != ')')
 		{
-			if (!Partial(result))
+			if (!partial(result))
 			{
-				if (ErrorValue == aeUNEXPECTED_END)
+				if (_errorValue == aeUnexpectedEnd)
 				{
-					return SetErrorValue(aeEXPECTED_RIGHT_PARENTHESIS);
+					return setErrorValue(aeExpectedRightParenthesis);
 				}
 				else
 				{
@@ -857,32 +868,32 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 			}
 		}
 		//
-		if (Cmd[Pos] == ')')
+		if (_cmd[_pos] == ')')
 		{
-			Pos++;
+			_pos++;
 		}
-		EatWhite();
+		eatWhite();
 		return true;
 	}
 	//
-	if (Cmd[Pos] == '!')
+	if (_cmd[_pos] == '!')
 	{
 		Value tmpres;
-		TDataCode left(this);
-		Pos++;
-		Arith(tmpres, left);
+		DataCode left_(this);
+		_pos++;
+		arith(tmpres, left_);
 		tmpres.set(tmpres.isZero());
 		result += tmpres;
 		return true;
 	}
 	//
-	if (Cmd[Pos] == '+' || Cmd[Pos] == '-')
+	if (_cmd[_pos] == '+' || _cmd[_pos] == '-')
 	{
 		Value tmpres;
-		TDataCode left(this);
-		char posneg = Cmd[Pos];
-		Pos++;
-		if (!Arith(tmpres, left))
+		DataCode left_(this);
+		char posneg = _cmd[_pos];
+		_pos++;
+		if (!arith(tmpres, left_))
 		{
 			return false;
 		}
@@ -891,13 +902,13 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 		return true;
 	}
 	//
-	if (isdigit(Cmd[Pos]))
+	if (isdigit(_cmd[_pos]))
 	{
 		Value locres;
-		GetNumber(locres);
-		EatWhite();
-		Operator(locres, left);
-		if (ErrorValue)
+		getNumber(locres);
+		eatWhite();
+		operator_(locres, left);
+		if (_errorValue)
 		{
 			return false;
 		}
@@ -905,65 +916,67 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 		return true;
 	}
 	//
-	if (IsAlpha(Cmd[Pos]))
+	if (isAlpha(_cmd[_pos]))
 	{
 		std::string name;
-		if (!GetName(name))
+		if (!getName(name))
 		{
 			return false;
 		}
 		// Local storage of data and code.
-		TDataCode datacode(this);
+		DataCode datacode(this);
 		// Get identifier info and number of parameters in case of a function
-		datacode.Info = GetInfo(name);
+		datacode._info = getInfo(name);
 		// When a value had a member that was dereferenced.
-		bool startover;
+		bool startover = true;
 		do
 		{
 			startover = false;
 			//
-			switch (datacode.Info->Id)
+			switch (datacode._info->_id)
 			{
-				case idUNKNOWN:
-					SetErrorValue(aeUNKNOWN_SYMBOL, name);
+				case idUnknown:
+				{
+					setErrorValue(aeUnknownSymbol, name);
 					break;
+				}
 
-				case idCONSTANT:
-				case idVARIABLE:
+				case idConstant:
+				case idVariable:
 				{
 					// Check the next character
-					if (strchr("<>^&|= +-/*)!,%;", Cmd[Pos]))
+					if (strchr("<>^&|= +-/*)!,%;", _cmd[_pos]))
 					{
-						datacode.Object->GetSetValue(datacode.Info, &result, nullptr, false);
+						datacode._object->getSetValue(datacode._info, &result, nullptr, false);
 						// Set the left value.
 						left = datacode;
 					}
 					else
 						// Check for dereferenced object.
-					if (Cmd[Pos] == '.')
+					if (_cmd[_pos] == '.')
 					{
 						// Skip the dot character.
-						Pos++;
-						EatWhite();
+						_pos++;
+						eatWhite();
 						// Get 'self' pointer from the object.
 						Value objself;
 						// Is the current info structure already derived.
-						datacode.Object->GetSetValue(datacode.Info, &objself, nullptr, false);
+						datacode._object->getSetValue(datacode._info, &objself, nullptr, false);
 						// Cast the value to a info pointer type.
-						datacode.Object = CastToObject(objself);
+						datacode._object = castToObject(objself);
 						// Generate an error when the object is not valid.
 						if (!datacode)
 						{
-							return SetErrorValue(aeIS_NOT_AN_OBJECT, name);
+							return setErrorValue(aeNotObject, name);
 						}
 						// Get the member name.
-						GetName(name);
+						getName(name);
 						// Get the info struture of the passed object member name.
-						datacode.Info = datacode.Object->GetInfo(name);
+						datacode._info = datacode._object->getInfo(name);
 						// Check for an error and an unknown ID.
-						if (!datacode.Info || datacode.Info->Id == idUNKNOWN)
+						if (!datacode._info || datacode._info->_id == idUnknown)
 						{
-							return SetErrorValue(aeUNKNOWN_OBJECTMEMBER, name);
+							return setErrorValue(aeUnknownObjectMember, name);
 						}
 						else
 						{
@@ -973,56 +986,56 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 					}
 					else
 					{
-						return SetErrorValue(aeUNEXPECTED_CHARACTER, std::string(1, Cmd[Pos]));
+						return setErrorValue(aeUnexpectedCharacter, std::string(1, _cmd[_pos]));
 					}
-				}
 					break;
+				}
 
-				case idFUNCTION:
+				case idFunction:
 				{
 					// Check if the next character is a '(' one
-					if (Cmd[Pos] == '(')
+					if (_cmd[_pos] == '(')
 					{
 						// Create an array of Value for parameter storage.
 						Value::vector_type params;
 						// Check if there are more then one parameters
-						if (Cmd[Pos + 1] != ')')
+						if (_cmd[_pos + 1] != ')')
 						{
 							// Get parameters in the array.
 							do
 							{
-								Pos++;
+								_pos++;
 								Value loc_res;
-								GetParameter(loc_res);
-								if (ErrorValue)
+								getParameter(loc_res);
+								if (_errorValue)
 								{
 									return false;
 								}
 								params.add(loc_res);
 							}
-							while (Cmd[Pos] != ')');
+							while (_cmd[_pos] != ')');
 						}
 						else
 						{
 							// Skip ')' character in case of function having no parameters.
-							Pos++;
+							_pos++;
 						}
 						// Check if there are limits to the amount of parameters passed to the function.
-						if (datacode.Info->ParamCount != INT_MAX)
+						if (datacode._info->_paramCount != std::numeric_limits<int>::max())
 						{
 							// Get the minimum amount of parameters needed for this function
-							unsigned n = abs(datacode.Info->ParamCount);
+							unsigned n = abs(datacode._info->_paramCount);
 							// Check in any case if there are sufficient parameters passed
-							if (params.count() > n && datacode.Info->ParamCount > 0)
+							if (params.count() > n && datacode._info->_paramCount > 0)
 							{
-								SetErrorValue(aeTOO_MANY_PARAMS, datacode.Info->Name);
+								setErrorValue(aeTooManyParameters, datacode._info->_name);
 							}
 							// Check the minimum amount of parameters needed
 							if (params.count() < n)
 							{
-								SetErrorValue(aeTOO_FEW_PARAMS, datacode.Info->Name);
+								setErrorValue(aeTooFewParameters, datacode._info->_name);
 							}
-							if (GetErrorValue() != aeSUCCESS)
+							if (getErrorValue() != aeSuccess)
 							{
 								return true;
 							}
@@ -1031,7 +1044,7 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 						bool berr = false;
 						try
 						{
-							datacode.Object->GetSetValue(datacode.Info, &result, &params, false);
+							datacode._object->getSetValue(datacode._info, &result, &params, false);
 						}
 						catch (...) //(Exception& e)
 						{
@@ -1040,32 +1053,32 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 						//
 						if (berr)
 						{
-							_RTTI_NOTIFY(DO_DEFAULT, "Error in function ' " << datacode.Info->Name << " ' !")
-							return SetErrorValue(aeFUNCTION_ERROR, datacode.Info->Name);
+							SF_RTTI_NOTIFY(DO_DEFAULT, "Error in function ' " << datacode._info->_name << " ' !")
+							return setErrorValue(aeFunctionError, datacode._info->_name);
 						}
 						else
 						{
-							Pos++;
-							if (Cmd[Pos] == '.')
+							_pos++;
+							if (_cmd[_pos] == '.')
 							{
 								// Skip the dot character.
-								Pos++;
-								EatWhite();
+								_pos++;
+								eatWhite();
 								// Cast the value to a info pointer type.
-								datacode.Object = CastToObject(result);
+								datacode._object = castToObject(result);
 								// Generate an error when the object is not valid.
 								if (!datacode)
 								{
-									return SetErrorValue(aeIS_NOT_AN_OBJECT, name);
+									return setErrorValue(aeNotObject, name);
 								}
 								// Get the member name.
-								GetName(name);
+								getName(name);
 								// Get the info struture of the passed object member name.
-								datacode.Info = datacode.Object->GetInfo(name);
+								datacode._info = datacode._object->getInfo(name);
 								// Check for an error and an unknown ID.
-								if (!datacode.Info || datacode.Info->Id == idUNKNOWN)
+								if (!datacode._info || datacode._info->_id == idUnknown)
 								{
-									return SetErrorValue(aeUNKNOWN_OBJECTMEMBER, name);
+									return setErrorValue(aeUnknownObjectMember, name);
 								}
 								else
 								{
@@ -1079,36 +1092,36 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 					}
 					else
 					{
-						return SetErrorValue(aeEXPECTED_FUNCTION, datacode.Info->Name);
+						return setErrorValue(aeExpectedFunction, datacode._info->_name);
 					}
-				}
 					break;
+				}
 
 				default:
-					return SetErrorValue(aeUNEXPECTED_IDENTIFIER, name);
+					return setErrorValue(aeUnexpectedIdentifier, name);
 			} // switch
 			//
-			EatWhite();
+			eatWhite();
 		}
 		while (startover);
 		//
 		return true;
 	}
 	// Start of string parameter i.e. "\"mijn naam\"" " is haas\n" .
-	if (Cmd[Pos] == '"')
+	if (_cmd[_pos] == '"')
 	{
 		// Holds the characters.
 		std::string s;
 		// Flag to indicate regular expression.
 		bool escaped = false;
 		// Iterate as long as double quoted regions are available.
-		while (Cmd[Pos] == '"')
+		while (_cmd[_pos] == '"')
 		{
-			int pos = Pos++;
+			int pos = _pos++;
 			// As long as the end of the script is not reached.
 			do
 			{ // Check for escaped expression sequence.
-				if (Cmd[pos++] == '\\')
+				if (_cmd[pos++] == '\\')
 				{
 					// Set the flag that a escaped expression has passed.
 					escaped = true;
@@ -1116,18 +1129,18 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 					pos++;
 				}
 			}
-			while (Cmd[pos] && Cmd[pos] != '\"');
+			while (_cmd[pos] && _cmd[pos] != '\"');
 			// Add the string to the resulting string.
-			s.append(Cmd, Pos, pos - Pos);
+			s.append(_cmd, _pos, pos - _pos);
 			// Update the position index.
-			Pos = pos + 1;
+			_pos = pos + 1;
 			// Eat the white between the succesive double quoted regions.
-			EatWhite();
+			eatWhite();
 		}
 		// Check the max length.
 		if (s.length() > MAX_STRING_LENGTH)
 		{
-			return SetErrorValue(aeSTRING_TOO_LONG, std::string(Cmd, Pos, MAX_STRING_LENGTH));
+			return setErrorValue(aeStringTooLong, std::string(_cmd, _pos, MAX_STRING_LENGTH));
 		}
 		// Convert the string if needed.
 		if (escaped)
@@ -1141,158 +1154,165 @@ bool ScriptCalc::Arith(Value& result, TDataCode& left)
 		return true;
 	}
 	//
-	return SetErrorValue(aeUNEXPECTED_CHARACTER);
+	return setErrorValue(aeUnexpectedCharacter);
 }
 
-bool ScriptCalc::GetParameter(Value& value)
+bool ScriptEngine::getParameter(Value& value)
 {
 	value.setType(value.vitUndefined);
 	do
 	{
-		if (!Partial(value))
+		if (!partial(value))
 		{
 			return false;
 		}
-		if (')' == Cmd[Pos])
+		if (')' == _cmd[_pos])
 		{
 			return true;
 		}
-		if (',' == Cmd[Pos])
+		if (',' == _cmd[_pos])
 		{
 			break;
 		}
 	}
-	while (!ErrorValue && Cmd[Pos]);
+	while (!_errorValue && _cmd[_pos]);
 	//
 	return false;
 }
 
-bool ScriptCalc::Calculate(const std::string& script, Value& result)
+bool ScriptEngine::calculate(const std::string& script, Value& result)
 {
-	const char* prev_cmd = Cmd;
-	int prev_pos = Pos;
-	Cmd = script.c_str();
-	Pos = 0;
-	SetErrorValue(aeSUCCESS);
+	const char* prev_cmd = _cmd;
+	int prev_pos = _pos;
+	_cmd = script.c_str();
+	_pos = 0;
+	setErrorValue(aeSuccess);
 	result.setType(result.vitUndefined);
 	// execute until character '\0'
-	while (Cmd[Pos])
+	while (_cmd[_pos])
 	{
-		Partial(result);
+		partial(result);
 		// check for error so far
-		if (ErrorValue)
+		if (_errorValue)
 		{
 			break;
 		}
 		// Check for unwanted ending characters.
-		if (!strchr("+-/*&|^=<>!%", Cmd[Pos]))
+		if (!strchr("+-/*&|^=<>!%", _cmd[_pos]))
 		{ // report an error
-			SetErrorValue(aeEXPECTED_DELIMITER);
+			setErrorValue(aeExpectedDelimiter);
 			return false;
 		}
 
 	}
 	// If there is an error return flase whithout restoring the previous situation.
-	if (ErrorValue)
+	if (_errorValue)
 	{
 		return false;
 	}
 	// Restore previous command string and position when there is no error.
-	Cmd = prev_cmd;
-	Pos = prev_pos;
+	_cmd = prev_cmd;
+	_pos = prev_pos;
 	return true;
 }
 
-bool ScriptCalc::SetErrorValue(EArithError error_value, std::string reason)
+bool ScriptEngine::setErrorValue(EArithError error_value, std::string reason)
 {
-	bool retval = error_value == aeSUCCESS;
-	if (ErrorValue != error_value)
+	bool retval = error_value == aeSuccess;
+	if (_errorValue != error_value)
 	{
-		ErrorValue = error_value;
-		ErrorReason = std::move(reason);
-		_COND_RTTI_NOTIFY(!retval, DO_DEFAULT,
-			"Error in script: '" << ErrorReason << "' " << GetArithErrorText(ErrorValue));
+		_errorValue = error_value;
+		_errorReason = std::move(reason);
+		SF_COND_RTTI_NOTIFY(!retval, DO_DEFAULT,
+			"Error in script: '" << _errorReason << "' " << getArithErrorText(_errorValue));
 	}
 	return retval;
 }
 
-std::string ScriptCalc::GetErrorReason() const
+std::string ScriptEngine::getErrorReason() const
 {
-	return ErrorReason;
+	return _errorReason;
 }
 
-class TFunctionScriptCalc :public ScriptCalc
+class ScriptCalcFunction :public ScriptEngine
 {
 	public:
-		TFunctionScriptCalc()
+		ScriptCalcFunction()
 		{
-			memset(FValue, 0, sizeof(FValue));
+			memset(_value, 0, sizeof(_value));
 		}
 
 		//
-		void SetValue(int index, double value) {FValue[index] = value;}
+		void SetValue(int index, double value) {_value[index] = value;}
 
 	protected:
 		// Gets identifier information.
-		[[nodiscard]] const TInfo* GetInfo(const std::string& name) const override;
+		[[nodiscard]] const Info* getInfo(const std::string& name) const override;
 
 		// Overloaded from base class.
-		bool GetSetValue(const TInfo*, Value*, Value::vector_type*, bool) override;
+		bool getSetValue(const Info*, Value*, Value::vector_type*, bool) override;
 
 	private:
 		enum {MAX_VALUES = 3};
 		// Holds the level passed in the GetLevelIntensity().
-		double FValue[MAX_VALUES]{};
+		double _value[MAX_VALUES]{};
 };
 
-bool TFunctionScriptCalc::GetSetValue(const TInfo* info, Value* result,
+bool ScriptCalcFunction::getSetValue(const Info* info, Value* result,
 	Value::vector_type* param, bool flag_set)
 {
-	if (info->Index > 0 && info->Index < MAX_VALUES)
+	if (info->_index > 0 && info->_index < MAX_VALUES)
 	{
-		result->set(FValue[info->Index - 1]);
+		result->set(_value[info->_index - 1]);
 		return true;
 	}
-	return ScriptCalc::GetSetValue(info, result, param, flag_set);
+	return ScriptEngine::getSetValue(info, result, param, flag_set);
 }
 
-double Calculator(const std::string& script, double def)
+Value calculator(const std::string& script, const Value& def)
+{
+	Value result;
+	return ScriptCalcFunction().calculate(script, result) ? result : def;
+}
+
+Value::flt_type calculator(const std::string& script, Value::flt_type def)
 {
 	Value result(0.0);
-	TFunctionScriptCalc fsc;
-	if (fsc.Calculate(script, result) && result.isNumber())
+	ScriptCalcFunction fsc;
+	if (fsc.calculate(script, result) && result.isNumber())
 	{
 		return result.getFloat();
 	}
 	return def;
 }
 
-const TFunctionScriptCalc::TInfo* TFunctionScriptCalc::GetInfo(const std::string& name) const
+const ScriptCalcFunction::Info* ScriptCalcFunction::getInfo(const std::string& name) const
 {
-	static ScriptCalc::TInfo Info[] =
+	static ScriptEngine::Info Info[] =
 		{
-			{1, idCONSTANT, "x", 0, nullptr},
-			{2, idCONSTANT, "y", 0, nullptr},
-			{3, idCONSTANT, "z", 0, nullptr}
+			{1, idConstant, "x", 0, nullptr},
+			{2, idConstant, "y", 0, nullptr},
+			{3, idConstant, "z", 0, nullptr}
 		};
 	for (auto& i : Info)
 	{
-		if (i.Name == name)
+		if (i._name == name)
 		{
 			return &i;
 		}
 	}
-	return ScriptCalc::GetInfo(name);
+	return ScriptEngine::getInfo(name);
 }
 
-double Calculator(const std::string& script, double def, double x, double y, double z)
+Value::flt_type calculator(const std::string& script, Value::flt_type def,
+	Value::flt_type x, Value::flt_type y, Value::flt_type z)
 {
 	Value result(0.0);
-	TFunctionScriptCalc fsc;
+	ScriptCalcFunction fsc;
 	fsc.SetValue(0, x);
 	fsc.SetValue(1, y);
 	fsc.SetValue(2, z);
-	if (fsc.Calculate(script, result) && result.isNumber())
+	if (fsc.calculate(script, result) && result.isNumber())
 	{
 		return result.getFloat();
 	}

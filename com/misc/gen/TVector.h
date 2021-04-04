@@ -106,6 +106,7 @@ class TVector :public std::vector<T>
 		/**
 		 * @brief Removes specific item from the list by instance.
 		 *
+		 * Uses the compare operator from type T to find it.
 		 * @param t Reference of instance to detach.
 		 * @return True on success.
 		 */
@@ -117,7 +118,7 @@ class TVector :public std::vector<T>
 		 * @param index Index of the item.
 		 * @return True on success.
 		 */
-		bool detach(size_type index);
+		bool detachAt(size_type index);
 
 		/**
 		 * @brief Returns true when empty false otherwise.
@@ -239,15 +240,39 @@ class TVector :public std::vector<T>
 
 #pragma clang diagnostic pop
 
+		/**
+		 * Writes the content to an output stream.
+		 * @param os Output stream.
+		 * @param inc_hex Include hex notation when an integer type.
+		 * @return The passed output stream.
+		 */
+		std::ostream& write(std::ostream& os, bool inc_hex) const;
+
 };
 
-inline
-std::string getLabeledPointsString(const std::string& delimiter)
+template<typename T>
+std::ostream& TVector<T>::write(std::ostream& os, bool inc_hex) const
 {
-	std::vector<int> x;
-	std::stringstream os;
-	std::copy(x.begin(), x.end(), std::ostream_iterator<int>(os, delimiter.c_str()));
-	return os.str();
+	os << '{';
+	for (const auto& x: *this)
+	{
+		os << std::dec << x;
+		if (inc_hex && std::numeric_limits<T>::is_integer)
+		{
+			uint64_t _x{0};
+			for (int i = 0; i < sizeof(T); i++)
+			{
+				((uint8_t*)&_x)[i] = ((uint8_t*)&x)[i];
+			}
+			os << " (" << std::hex << "0x" << _x << ')';
+		}
+		// Check if this is the last entry in the list using pointer comparison instead of value.
+		if (&(*(base_type::end() - 1)) != &x)
+		{
+			os << ", ";
+		}
+	}
+	return os << std::dec << '}';
 }
 
 /**
@@ -261,17 +286,7 @@ std::string getLabeledPointsString(const std::string& delimiter)
 template<typename T>
 std::ostream& operator<<(std::ostream& os, TVector<T> const& v)
 {
-	os << '{';
-	for (const auto& x: v)
-	{
-		os << x;
-		// Check if this is the last entry in the list using pointer comparison instead of value.
-		if (&(*(v.end() - 1)) != &x)
-		{
-			os << ", ";
-		}
-	}
-	return os << '}';
+	return v.write(os, true);
 }
 
 /**
@@ -376,7 +391,7 @@ bool TVector<T>::addAt(const T& t, size_type index)
 }
 
 template<typename T>
-bool TVector<T>::detach(size_type index)
+bool TVector<T>::detachAt(size_type index)
 {
 	// Check if index is in range.
 	if (index >= base_type::size())

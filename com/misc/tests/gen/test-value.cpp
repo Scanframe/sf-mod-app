@@ -1,7 +1,6 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <cstring>
-#include <sstream>
 #include <misc/gen/Value.h>
 
 namespace
@@ -38,7 +37,7 @@ TEST_CASE("sf::Value", "[generic][value]")
 		// Integer
 		CHECK_THAT(Helper(sf::Value(int(1234567890))), Equals("(INTEGER,\"1234567890\")"));
 		// Long Integer
-		CHECK_THAT(Helper(sf::Value(long(1234567890))), Equals("(INTEGER,\"1234567890\")"));
+		CHECK_THAT(Helper(sf::Value(sf::Value::int_type(1234567890))), Equals("(INTEGER,\"1234567890\")"));
 		// Boolean
 		CHECK_THAT(Helper(sf::Value(true)), Equals("(INTEGER,\"1\")"));
 		// Const character string type.

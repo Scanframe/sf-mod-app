@@ -15,6 +15,11 @@ set(SF_BUILD_TESTING ON)
 # Enables including Qt libraries when building (libraries).
 set(SF_BUILD_QT ON)
 
+# Use faster linker fro windows.
+if (WIN32)
+	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=bfd")
+endif(WIN32)
+
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
 # Make sure builds do not wind up in the source directory.
@@ -34,3 +39,4 @@ add_subdirectory(script-engine)
 add_subdirectory(multi-docs)
 add_subdirectory(unit-test)
 add_subdirectory(manual)
+

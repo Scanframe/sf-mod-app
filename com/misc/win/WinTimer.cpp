@@ -10,7 +10,7 @@ WinTimer::WinTimer()
 {
 	if (_winTimer)
 	{
-		_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Cannot create more the one instance yet!")
+		SF_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Cannot create more the one instance yet!")
 	}
 	else
 	{
@@ -22,7 +22,7 @@ WinTimer::WinTimer(unsigned interval)
 {
 	if (_winTimer)
 	{
-		_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Cannot create more the one instance yet!")
+		SF_RTTI_NOTIFY(DO_DEFAULT | DO_MSGBOX, "Cannot create more the one instance yet!")
 	}
 	else
 	{
@@ -51,7 +51,7 @@ bool WinTimer::Set(unsigned interval)
 		if (_timerId)
 		{
 			bool result = ::KillTimer(NULL, _timerId);
-			_COND_NORM_NOTIFY(!result, DO_DEFAULT, "SetSustainTimer(): Failed to Kill Timer!" << _timerId)
+			SF_COND_NORM_NOTIFY(!result, DO_DEFAULT, "SetSustainTimer(): Failed to Kill Timer!" << _timerId)
 			// Clear the member which is also used as a flag.
 			_timerId = 0;
 			_interval = 0;
@@ -67,7 +67,7 @@ bool WinTimer::Set(unsigned interval)
 	{
 		_interval = interval;
 		_timerId = ::SetTimer(NULL, 0, _interval, (TIMERPROC) Callback);
-		_COND_NORM_NOTIFY(!_timerId, DO_DEFAULT, "SetSustainTimer(): Failed to Set Timer!" << _timerId)
+		SF_COND_NORM_NOTIFY(!_timerId, DO_DEFAULT, "SetSustainTimer(): Failed to Set Timer!" << _timerId)
 		// Signal success or failure
 		return !_timerId;
 	}

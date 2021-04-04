@@ -1,5 +1,5 @@
-#include "../gen/dbgutils.h"
-#include "../gen/Exception.h"
+#include "dbgutils.h"
+#include "Exception.h"
 #include "Condition.h"
 #include "gen/Thread.h"
 
@@ -34,19 +34,17 @@ Condition::~Condition()
 	int error = ::pthread_cond_destroy(&_cond);
 	if (error)
 	{
-		// TODO: weird error.
 		//throw ExceptionSystemCall("pthread_cond_destroy", error, typeid(*this).name(), __FUNCTION__);
 	}
 }
 
-bool Condition::Wait()
+bool Condition::wait(Mutex& mutex)
 {
-	CriticalSection::lock lock(_mutex);
 	bool rv = true;
 	//
 	_waiting++;
 	//
-	int error = ::pthread_cond_wait(&_cond, _mutex);
+	int error = ::pthread_cond_wait(&_cond, mutex);
 	// In case of an error throw an exception.
 	if (error)
 	{
@@ -76,9 +74,10 @@ bool Condition::Wait()
 	return rv;
 }
 
-bool Condition::Wait(const TimeSpec& timeout)
+bool Condition::wait(Mutex& mutex, const TimeSpec& timeout)
 {
-	CriticalSection::lock lock(_mutex);
+	//
+	// lock(mutex);
 	//
 	bool rv = true;
 	//
@@ -89,7 +88,7 @@ bool Condition::Wait(const TimeSpec& timeout)
 		TimeSpec ts;
 		ts.setTimeOfDay().add(timeout);
 		//
-		int error = ::pthread_cond_timedwait(&_cond, _mutex, &ts);
+		int error = ::pthread_cond_timedwait(&_cond, mutex, &ts);
 		if (error == ETIMEDOUT)
 		{
 			rv = false;
@@ -100,9 +99,9 @@ bool Condition::Wait(const TimeSpec& timeout)
 			throw ExceptionSystemCall("pthread_cond_timedwait", error, typeid(*this).name(), __FUNCTION__);
 		}
 	}
-	catch (Thread::terminateException& tt)
+	catch (Thread::TerminateException& tt)
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, tt.what());
+		SF_RTTI_NOTIFY(DO_DEFAULT, tt.what());
 		rv = false;
 	}
 	//
@@ -113,9 +112,8 @@ bool Condition::Wait(const TimeSpec& timeout)
 	return rv;
 }
 
-int Condition::NotifyOne()
+int Condition::notifyOne(Mutex& mutex)
 {
-	CriticalSection::lock lock(_mutex);
 	// Set the work member.
 	_work++;
 	//
@@ -131,9 +129,8 @@ int Condition::NotifyOne()
 	return rv;
 }
 
-int Condition::NotifyAll()
+int Condition::notifyAll(Mutex& mutex)
 {
-	CriticalSection::lock lock(_mutex);
 	// Set the work the same as the amount of threads waiting.
 	int retval = _work = _waiting;
 	//

@@ -75,7 +75,7 @@ void ResultDataRequester::attachIndex(ResultData* rd)
 		if (_rdIndex)
 		{
 			// Check if the result is already hooked to a handler.
-			_COND_RTTI_NOTIFY(rd->getHandler(), DO_THROW | DO_DEFAULT, "Index result is already linked to a handler!")
+			SF_COND_RTTI_NOTIFY(rd->getHandler(), DO_DEFAULT, "Index result is already linked to a handler!")
 			// Link the handler.
 			rd->setHandler(&_dataHandler);
 		}
@@ -91,7 +91,7 @@ void ResultDataRequester::attachData(ResultData* rd)
 		// Remove
 		if (_rdDataList.find(rd) != UINT_MAX)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "Tried to assign data result twice!")
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to assign data result twice!")
 			return;
 		}
 		// Add to the list of data results.
@@ -116,11 +116,11 @@ void ResultDataRequester::detachData(ResultData* rd)
 	if (idx != UINT_MAX)
 	{
 		// Check if the handler was reassigned.
-		_COND_RTTI_NOTIFY(rd->getHandler() != &_dataHandler, DO_DEFAULT, "Linked handler was reassigned!")
+		SF_COND_RTTI_NOTIFY(rd->getHandler() != &_dataHandler, DO_DEFAULT, "Linked handler was reassigned!")
 		// Unlink the the handler.
 		rd->setHandler(nullptr);
 		// Remove result pointer from the list.
-		_rdDataList.detach(idx);
+		_rdDataList.detachAt(idx);
 		// Reset the state machine when a change was eminent.
 		reset();
 	}
@@ -212,7 +212,7 @@ void ResultDataRequester::resultCallback
 	// Emit the event.
 	if (_handler)
 	{
-		_handler->ResultDataEventHandler(event, caller, link, rng, same_inst);
+		_handler->handleResultDataEvent(event, caller, link, rng, same_inst);
 	}
 }
 
@@ -220,7 +220,7 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 {
 	if (_handler)
 	{
-		_handler->ResultDataEventHandler
+		_handler->handleResultDataEvent
 			(
 				(ResultData::EEvent) event,
 				*_rdIndex,
@@ -293,11 +293,11 @@ bool ResultDataRequester::setError(const std::string& txt)
 	// Assign the new state first so that msg boxes can appear.
 	_state = drsError;
 	// Do some debug printing in case of an error.
-	_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '"
+	SF_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '"
 		<< txt << "'. SetState(" << getStateName(old_prev) << "=>"
 		<< getStateName(_previousState) << "=>" << getStateName(_state)	<< ")" << _work._index << _work._range << '!')
 	//
-	_RTTI_NOTIFY(DO_DEFAULT, "Resetting the state machine.")
+	SF_RTTI_NOTIFY(DO_DEFAULT, "Resetting the state machine.")
 	// Reset the state machine after each error.
 	reset();
 	// Always return false for being able to use it as a return value.
@@ -500,9 +500,9 @@ bool ResultDataRequester::process()
 				// Check which result caused the timeout.
 				for (unsigned i = 0; i < _rdDataList.count(); i++)
 				{
-					if (_work._dataRequest.Has(i)) _RTTI_NOTIFY(DO_DEFAULT, "Data Req " << _work._range
+					if (_work._dataRequest.Has(i)) SF_RTTI_NOTIFY(DO_DEFAULT, "Data Req " << _work._range
 						<< " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
-					if (_work._dataAccess.Has(i)) _RTTI_NOTIFY(DO_DEFAULT, "Data Access " << _work._range
+					if (_work._dataAccess.Has(i)) SF_RTTI_NOTIFY(DO_DEFAULT, "Data Access " << _work._range
 						<< " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
 				}
 				// Set error state.

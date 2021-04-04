@@ -19,9 +19,10 @@ Variable* VariableStatic::_zero = nullptr;
 
 Variable& VariableStatic::zero()
 {
-	if (!VariableStatic::_zero)
+	if (!_zero)
 	{
-		_NORM_THROW("VariableStatic::" << __FUNCTION__ << "() Zero variable is NOT present yet or NOT anymore!")
+		throw notify_exception(SF_RTTI_NAME(_zero).append("::").append(__FUNCTION__)
+			.append("() Zero variable is NOT present yet or NOT anymore!"));
 	}
 	return *_zero;
 }
@@ -34,8 +35,6 @@ void sf::VariableStatic::initialize(bool init)
 		{
 			// Call special private constructor to create the Zero variable.
 			new Variable(nullptr, nullptr);
-			_COND_NORM_THROW(!VariableStatic::_zero,
-				"VariableStatic::" << __FUNCTION__ << "() Zero should have been set by now!")
 		}
 	}
 	else
@@ -52,14 +51,12 @@ void sf::VariableStatic::initialize(bool init)
 				auto k = _references.at(i);
 				os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 			}
-			_NORM_NOTIFY(DO_CERR, "VariableStatic::" << __FUNCTION__ << "(false) Unable to perform, ("
+			SF_NORM_NOTIFY(DO_CERR, "VariableStatic::" << __FUNCTION__ << "(false) Unable to perform, ("
 				<< (sz - 1) << ") references still remain!" << std::endl << '\t' << os.str())
 		}
 		else
 		{
 			delete VariableStatic::_zero;
-			_COND_NORM_THROW(VariableStatic::_zero,
-				__FUNCTION__ << "VariableStatic: Zero variable should have been removed by now!")
 		}
 	}
 }

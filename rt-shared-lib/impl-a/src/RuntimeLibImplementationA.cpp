@@ -19,13 +19,13 @@ SF_REG_CLASS
 RuntimeLibImplementationA::RuntimeLibImplementationA(const RuntimeIface::Parameters& params)
 	: RuntimeIface(params)
 {
-	_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
+	SF_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
 }
 
 const char* RuntimeLibImplementationA::getString()
 {
-	_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().getRegisterName(this) << "): " << __FUNCTION__)
-	FMessage = sf::string_format("Greetings from Class '%s' created by name '%s' ", _RTTI_TYPENAME.c_str(),
+	SF_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().getRegisterName(this) << "): " << __FUNCTION__)
+	FMessage = sf::string_format("Greetings from Class '%s' created by name '%s' ", SF_RTTI_TYPENAME.c_str(),
 		Interface().getRegisterName(this).c_str());
 	return FMessage.c_str();
 }

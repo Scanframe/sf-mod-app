@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <cxxabi.h>
 #include "Exception.h"
+#if IS_WIN
+#  include "../win/win_utils.h"
+#endif
 
 namespace sf
 {
@@ -31,7 +34,7 @@ const char* ExceptionBase::what() const noexcept
 }
 
 ExceptionBase::ExceptionBase(const char* fmt, ...)
-	:_msg(nullptr)
+	:_msg(new char[BUF_SIZE])
 {
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
@@ -41,7 +44,6 @@ ExceptionBase::ExceptionBase(const char* fmt, ...)
 
 void ExceptionBase::FormatMsg(const char* fmt, ...)
 {
-	_msg = new char[BUF_SIZE];
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
 	vsnprintf(_msg, BUF_SIZE, fmt, arg_ptr);
@@ -49,12 +51,12 @@ void ExceptionBase::FormatMsg(const char* fmt, ...)
 }
 
 Exception::Exception()
-	: ExceptionBase() {}
+	:ExceptionBase() {}
 
 Exception::Exception(const Exception& ex) = default;
 
 Exception::Exception(const char* fmt, ...)
-	: ExceptionBase()
+	:ExceptionBase()
 {
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
@@ -66,7 +68,7 @@ Exception Exception::Function(const char* mangled_name, const char* func, const 
 {
 	char* Fmt = new char[BUF_SIZE];
 	int status;
-	char* nm = abi::__cxa_demangle(mangled_name, 0, nullptr, &status);
+	char* nm = abi::__cxa_demangle(mangled_name, nullptr, nullptr, &status);
 	snprintf(Fmt, BUF_SIZE, "%s::%s() %s", nm, func, fmt);
 	free(nm);
 	va_list argptr;
@@ -84,9 +86,10 @@ ExceptionSystemCall::ExceptionSystemCall(const char* syscall, int error, const c
 	char* nm = (char*) "";
 	if (mangled_name)
 	{
-		nm = abi::__cxa_demangle(mangled_name, 0, nullptr, &status);
+		nm = abi::__cxa_demangle(mangled_name, nullptr, nullptr, &status);
 	}
-	snprintf(_msg, BUF_SIZE, "%s::%s() %s (%i) %s", nm, func, syscall, error, strerror(error));
+	char buf[BUF_SIZE];
+	snprintf(_msg, BUF_SIZE, "%s::%s() %s (%i) %s", nm, func, syscall, error, strerror_r(error, buf, sizeof(buf)));
 	if (mangled_name)
 	{
 		free(nm);

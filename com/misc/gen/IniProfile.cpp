@@ -377,7 +377,7 @@ bool IniProfile::removeSection(IniProfile::size_type p)
 	{ // delete instance
 		delete_null(_sections[p]);
 		// remove from list
-		_sections.detach(p);
+		_sections.detachAt(p);
 		// correct current section index pointer
 		if (p < _sectionIndex)
 		{
@@ -555,7 +555,7 @@ bool IniProfile::Section::removeEntry(EntryVector::size_type p)
 		// delete entry instance
 		delete_null(_entries[p]);
 		// remove from list
-		_entries.detach(p);
+		_entries.detachAt(p);
 		// return true on success
 		return true;
 	}

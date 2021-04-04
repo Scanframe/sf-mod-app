@@ -24,7 +24,7 @@ struct RANGE
 	/**
 	 * @brief Integer type used for start and stop.
 	 */
-	typedef int64_t size_type;
+	typedef uint64_t size_type;
 	/**
 	 * @brief Integer type used for the ID.
 	 */

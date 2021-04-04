@@ -60,12 +60,12 @@ TEST_CASE("sf::Closure", "[generic]")
 		//
 		my_closure_type c1, c2;
 		//
-		c2.Assign(c1.Assign(fn));
+		c2.assign(c1.assign(fn));
 		//
 		REQUIRE_THAT(c1("format (%d)", 123), Equals("format (123)"));
 		REQUIRE_THAT(c2("format (%d)", 123), Equals("format (123)"));
 		//
-		c2.Unassign();
+		c2.unassign();
 		// Closure is not assigned using bool operator.
 		REQUIRE(!c2);
 	}

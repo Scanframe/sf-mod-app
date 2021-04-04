@@ -25,23 +25,23 @@ class TClosure
 		 */
 		TClosure(const TClosure& c)
 		{
-			Func = c ? c.Func : nullptr;
+			_func = c ? c._func : nullptr;
 		}
 
 		/**
 		 * Function assignment constructor.
 		 * @param fn
 		 */
-		explicit TClosure(const func_type fn)
-			:Func(fn) {}
+		explicit TClosure(const func_type& fn)
+			:_func(fn) {}
 
 		/**
 		 * Function assignment member.
 		 * @param fn
 		 */
-		TClosure& Assign(const func_type fn)
+		TClosure& assign(const func_type& fn)
 		{
-			Func = fn;
+			_func = fn;
 			return *this;
 		}
 
@@ -49,9 +49,9 @@ class TClosure
 		 * Function assignment member.
 		 * @param fn
 		 */
-		TClosure& Unassign()
+		TClosure& unassign()
 		{
-			Func = nullptr;
+			_func = nullptr;
 			return *this;
 		}
 
@@ -61,7 +61,17 @@ class TClosure
 		 */
 		TClosure& operator=(TClosure c)
 		{
-			Func = c.Func;
+			_func = c._func;
+			return *this;
+		}
+
+		/**
+		 * Closure assignment operator.
+		 * @param f
+		 */
+		TClosure& operator=(func_type f)
+		{
+			_func = f;
 			return *this;
 		}
 
@@ -70,14 +80,17 @@ class TClosure
 		 * @param args List of arguments specified by the template.
 		 * @return Result type
 		 */
-		Result operator()(Args... args);
+		Result operator()(Args... args)
+		{
+			return call(args...);
+		}
 
 		/**
 		 * Checks if the closure is valid for calling.
 		 */
 		[[nodiscard]] inline bool isAssigned() const
 		{
-			return Func != nullptr;
+			return _func != nullptr;
 		}
 
 		/**
@@ -88,16 +101,23 @@ class TClosure
 			return isAssigned();
 		}
 
+	protected:
+		/**
+		 * Makes the call to the member function.
+		 * @param args List of arguments specified by the template.
+		 * @return Result type
+		 */
+		Result call(Args... args);
+
 	private:
 		/**
 		 * Member holding the function.
 		 */
-		func_type Func{nullptr};
-
+		func_type _func{nullptr};
 };
 
 template<typename Result, typename... Args>
-Result TClosure<Result, Args...>::operator()(Args... args)
+Result TClosure<Result, Args...>::call(Args... args)
 {
 	// Bail out when called and not assigned.
 	if (!isAssigned())
@@ -105,7 +125,7 @@ Result TClosure<Result, Args...>::operator()(Args... args)
 		throw std::bad_function_call();
 	}
 	// Call the assigned function.
-	return Func(args...);
+	return _func(args...);
 }
 
 } // namespace

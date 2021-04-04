@@ -308,7 +308,7 @@ Range::Vector Range::Vector::extract(const Range::Vector& rl, Range::Vector& rl_
 	// Second time iteration to remove the entries from the vector in reverse order to not mess up the index.
 	for (auto k = il.rbegin(); k != il.rend(); k++)
 	{
-		rv.detach(*k);
+		rv.detachAt(*k);
 	}
 	//_RTTI_NOTIFY(DO_CLOG, __FUNCTION__ << " Extracted: " << rl_ex)
 	//_RTTI_NOTIFY(DO_CLOG, __FUNCTION__ << " Left over: " << rv)
@@ -345,7 +345,7 @@ Range::Vector& Range::Vector::rearrange()
 			// Combine the 2 successive ranges to 1.
 			at(k) += at(k + 1);
 			// Remove the next now obsolete range of the vector.
-			detach(k + 1);
+			detachAt(k + 1);
 			// Do not increment 'k' here because the range [k+1]
 			// has changed because of the detachment of the previous range [k+1]
 		}

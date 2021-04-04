@@ -94,7 +94,7 @@ bool FileMapper::closeFile()
 	{ // Check for an error.
 		if (!::CloseHandle(_data->FileHandle))
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle On File Failed!" << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle On File Failed!" << GetLastErrorString())
 			rv = false;
 		}
 		// Assign zero so this handle cannot be closed again.
@@ -115,7 +115,7 @@ void FileMapper::initialize()
 	}
 	else
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, "PageFile file handle already created!")
+		SF_RTTI_NOTIFY(DO_DEFAULT, "PageFile file handle already created!")
 	}
 }
 
@@ -140,7 +140,7 @@ bool FileMapper::createMapFile(const char* filename)
 		// Check for an error.
 		if (_data->FileHandle == INVALID_HANDLE_VALUE)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "CreateFile(\"" << filename << "\") Failed!" << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "CreateFile(\"" << filename << "\") Failed!" << GetLastErrorString())
 			_data->FileHandle = nullptr;
 			return false;
 		}
@@ -179,17 +179,17 @@ bool FileMapper::createMap(const char* map_name, size_t map_size, bool unique , 
 		// Check for a valid file handle
 		if (_data->MapHandle == nullptr)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString())
 		}
 		else
 		{ // Check if map name already exists
 			if (unique && ::GetLastError() == ERROR_ALREADY_EXISTS)
 			{
-				_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString(ERROR_ALREADY_EXISTS))
+				SF_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString(ERROR_ALREADY_EXISTS))
 				// Check for error on closing this unwanted handle.
 				if (!::CloseHandle(_data->MapHandle))
 				{
-					_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle Of Mapping Failed! " << GetLastErrorString())
+					SF_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle Of Mapping Failed! " << GetLastErrorString())
 				}
 				_data->MapHandle = nullptr;
 			}
@@ -219,7 +219,7 @@ bool FileMapper::openMap(const char* map_name, unsigned long map_size, bool read
 		// Check for error.
 		if (_data->MapHandle == nullptr)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "OpenFileMapping(\"" << _data->MapName << "\") Failed! " << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "OpenFileMapping(\"" << _data->MapName << "\") Failed! " << GetLastErrorString())
 			return false;
 		}
 
@@ -240,7 +240,7 @@ bool FileMapper::closeMap()
 		// Check for error.
 		if (!::CloseHandle(_data->MapHandle))
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle Of Mapping Failed! " << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle Of Mapping Failed! " << GetLastErrorString())
 			rv = false;
 		}
 	}
@@ -275,7 +275,7 @@ bool FileMapper::mapView()
 		// Check if an error occurred.
 		if (_data->Data == nullptr)
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "MapViewOfFile Failed! " << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "MapViewOfFile Failed! " << GetLastErrorString())
 			return false;
 		}
 	}
@@ -290,7 +290,7 @@ bool FileMapper::unmapView()
 		// Unmap the view into memory.
 		if (!::UnmapViewOfFile(_data->Data))
 		{
-			_RTTI_NOTIFY(DO_DEFAULT, "UnmapViewOfFile Failed!" << GetLastErrorString())
+			SF_RTTI_NOTIFY(DO_DEFAULT, "UnmapViewOfFile Failed!" << GetLastErrorString())
 			return false;
 		}
 		// Assign null to the data member to make unmapping impossible twice
@@ -304,7 +304,7 @@ bool FileMapper::flushView()
 {
 	if (!::FlushViewOfFile(_data->Data, _data->MapSize))
 	{
-		_RTTI_NOTIFY(DO_DEFAULT, "FlushViewOfFile Failed!" << GetLastErrorString())
+		SF_RTTI_NOTIFY(DO_DEFAULT, "FlushViewOfFile Failed!" << GetLastErrorString())
 		return false;
 	}
 	return true;

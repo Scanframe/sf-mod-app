@@ -1,11 +1,3 @@
-/**
- * General interface to controls.
- * This class contains the name, unit and value of a variable in the system.
- * It also contains the default, maximum, minimum, current and round values.
- * These values are stored in a reference class.
- * It has several triggers on changes to fields of a reference instance
-*/
-
 #pragma once
 
 #include "VariableHandler.h"
@@ -43,10 +35,11 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 
 		/**
 		 * @brief Creates an instance having a reference with 'id'.
-		 * @param id Variable identifier.
-		 * @param set_did When true the 'DesiredID' data member is set to the passed 'id'.
+		 *
+		 * @param id Identifying number.
+		 * @param set_desired When true the desired id data member is set to the passed id as well.
 		 */
-		Variable(id_type id, bool set_did);
+		Variable(id_type id, bool set_desired);
 
 		/**
 		 * @brief Creates a variable according to the definition std::string passed to it.
@@ -99,14 +92,14 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		bool setup(const Variable& v);
 
 		/**
-		 * @brief Sets reference to other variable by id.
+		 * @brief Sets reference to other by id.
 		 *
 		 * The global list of references is searched for the passed id and referenced when found.
 		 * When found event #veIdChanged is emitted.
 		 * When the desired id was set and changed the #veDesiredId event is emitted.
 		 * Cannot be used for local variables.
-		 * @param id Variable identifier.
-		 * @param set_did When true the 'DesiredID' data member is set to the passed 'id'.
+		 * @param id Identifier.
+		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
 		bool setup(id_type id, bool set_did = false);
@@ -685,7 +678,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 *
 		 * @return Amount of instances.
 		 */
-		static size_type getVariableCount();
+		static size_type getCount();
 
 		/**
 		 * @brief Gets the total amount of variable instances in the system.
@@ -696,12 +689,12 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		static size_type getInstanceCount(bool global_only = true);
 
 		/**
-		 * @brief Retrieves a list of variables available (global + exported).
+		 * @brief Retrieves a list of instances available (global + exported).
 		 *
 		 * Useful in populating a selection dialog.
-		 * @return Vector with all global variables.
+		 * @return Vector of instance pointers.
 		 */
-		static Vector getVariables();
+		static Vector getList();
 
 		/**
 		 * @brief Returns variable with the given id.
@@ -710,17 +703,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param id Variable id to seek.
 		 * @return When not found always zero variable.
 		 */
-		static const Variable& getVariableById(id_type id);
-
-		/**
-		 * @brief Returns variable with the given id.
-		 *
-		 * When not found it returns the zero variable.
-		 * @param id Variable id to seek.
-		 * @param list Vector to use for lookup.
-		 * @return When not found always zero variable.
-		 */
-		static Variable& getVariableById(id_type id, Vector& list);
+		static const Variable& getInstanceById(id_type id);
 
 		/**
 		 * @brief Returns variable with the given id.
@@ -730,7 +713,17 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param list Vector to use for lookup.
 		 * @return When not found always zero variable.
 		 */
-		static const Variable& getVariableById(id_type id, const Vector& list);
+		static Variable& getInstanceById(id_type id, Vector& list);
+
+		/**
+		 * @brief Returns variable with the given id.
+		 *
+		 * When not found it returns the zero variable.
+		 * @param id Variable id to seek.
+		 * @param list Vector to use for lookup.
+		 * @return When not found always zero variable.
+		 */
+		static const Variable& getInstanceById(id_type id, const Vector& list);
 
 		/**
 		 * @brief Assignment operator that attaches this instance to the same VariableReference as 'v'.
@@ -801,7 +794,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param str Definition string
 		 * @return Definition structure
 		 */
-		static Variable::Definition getDefinition(const std::string& str);
+		static Definition getDefinition(const std::string& str);
 
 		/**
 		 * Read single current values from stream.
@@ -938,32 +931,31 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		size_type attachDesired();
 
 		/**
-		 * Holds the data to the reference caring the common data.
+		 * @brief Holds the data to the reference caring the common data.
 		 */
 		VariableReference* _reference{nullptr};
 		/**
-		 * Holds the instance data for user purposes Set with setData() and got with getData().
+		 * @brief Holds the instance data for user purposes Set with setData() and got with getData().
 		 */
 		uint64_t _data{0};
 		/**
-		 * If flag is true the float values must be converted if possible.
+		 * @brief When this flag is true the float values must be converted if possible.
 		 */
 		bool _converted{false};
 		/**
-		 * Hold when this pointer is non null this value is changed instead of the current.
+		 * @brief Hold when this pointer is non null this value is changed instead of the current.
 		 */
 		Value* _temporary{nullptr};
 		/**
-		 * Pointer to object with VariableEventHandler function.
+		 * @brief Pointer to object with VariableEventHandler function.
 		 */
 		VariableHandler* _handler{nullptr};
 		/**
-		 * If this data member is non-zero it will be automatically re-attached to
-		 * the reference when it is created.
+		 * @brief When this data member is non-zero it will be automatically re-attached to the reference when it is created.
 		 */
 		id_type _desiredId{0};
 		/**
-		 * This instance is a global variable and is default 'true' for Variable.
+		 * @brief When true this instance is global and is by default set to true in the constructor.
 		 */
 		bool _global{false};
 
@@ -989,10 +981,10 @@ Variable::Variable(const Definition& def, id_type id_ofs)
 }
 
 inline
-Variable::Variable(Variable::id_type id, bool set_did)
+Variable::Variable(Variable::id_type id, bool set_desired)
 {
 	_global = true;
-	setup(id, set_did);
+	setup(id, set_desired);
 }
 
 inline
@@ -1011,9 +1003,8 @@ Variable::Variable(const std::string& definition, Variable::id_type id_ofs)
 inline
 bool Variable::setup(const Variable& v)
 {
-	auto* p = &v;
-	setDesiredId(p ? v._desiredId : 0);
-	return attachRef(p ? v._reference : nullptr);
+	setDesiredId(v._desiredId);
+	return attachRef(v._reference);
 }
 
 inline
@@ -1069,9 +1060,9 @@ const char* Variable::getType(Value::EType type)
 }
 
 inline
-const Variable& Variable::getVariableById(Variable::id_type id, const Vector& list)
+const Variable& Variable::getInstanceById(Variable::id_type id, const Vector& list)
 {
-	return Variable::getVariableById(id, (Vector&) list);
+	return Variable::getInstanceById(id, (Vector&) list);
 }
 
 inline
@@ -1104,12 +1095,12 @@ int Variable::operator==(const Variable& v) const
 _GII_FUNC std::ostream& operator<<(std::ostream& os, const Variable& v);
 
 /**
- * Class std::istream operator
+ * @brief Stream operator for the setup std::string.
  */
 _GII_FUNC std::istream& operator>>(std::istream& is, Variable& v);
 
 /**
- * Class std::ostream operator
+ * @brief Stream operator for setting up this instance with a setup std::string.
  */
 _GII_FUNC std::ostream& operator<<(std::ostream& os, const Variable::State::Vector& v);
 

@@ -38,7 +38,10 @@ class TPointerBase
 		void* operator new(size_t) noexcept {return nullptr;}
 
 		// Delete only sets pointer to null.
-		void operator delete(void* p) {((TPointerBase<T>*) p)->P = 0;}
+		void operator delete(void* p)
+		{
+			static_cast<TPointerBase<T>*>(p)->P = nullptr;
+		}
 };
 
 /**
@@ -65,7 +68,10 @@ class TPointer :public TPointerBase<T>
 		}
 
 		// Could throw exception if P==0
-		T* operator->() {return TBase::P;}
+		T* operator->()
+		{
+			return TBase::P;
+		}
 };
 
 /**
@@ -82,7 +88,10 @@ class TAPointer :public TPointerBase<T>
 
 		explicit TAPointer(T array[]) :TBase(array) {}
 
-		~TAPointer() {delete[] TBase::P;}
+		~TAPointer()
+		{
+			delete[] TBase::P;
+		}
 
 		TAPointer<T>& operator=(T src[])
 		{
@@ -91,8 +100,11 @@ class TAPointer :public TPointerBase<T>
 			return *this;
 		}
 
-		T& operator[](int i) {return TBase::P[i];}  // Could throw exception if P==0
+		T& operator[](int i)
+		{
+			// Could throw exception if P==0
+			return TBase::P[i];
+		}
 };
-
 
 }

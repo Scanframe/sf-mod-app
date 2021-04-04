@@ -4,11 +4,9 @@
 #include <misc/gen/TimeSpec.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/PerformanceTimer.h>
-#include <iostream>
 
 TEST_CASE("sf::TimeSpec", "[generic][timers]")
 {
-	using Catch::Approx;
 
 	SECTION("Construct(double)", "Constructing from 'double' type")
 	{
@@ -61,9 +59,9 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		//
 		CHECK_THAT(et.getElapseTime().toString(), Equals("1.234s"));
 		// Check if the timer is enabled by default.
-		CHECK(et.isEnabled());
+		REQUIRE(et.isEnabled());
 		// Check if the timer has not elapsed yet.
-		CHECK(!et.isActive());
+		REQUIRE(!et.isActive());
 		// The maximum loops for this test is 2 seconds.
 		int max_loops = 2000000 / 1000;
 		// Wait for the timer to elapse or for the counter.
@@ -71,21 +69,22 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		{
 			::usleep(1000);
 		}
-		CHECK(pt.elapse().toDouble() == Approx(1.2345).margin(0.05));
+		REQUIRE(pt.elapse().toDouble() == Approx(1.2345).margin(0.05));
 		// Check if the timer has elapsed.
-		CHECK(et.isActive());
+		REQUIRE(et.isActive());
 		// Reset the timer.
 		et.reset();
 		// Disable the timer.
 		et.disable();
 		// The maximum loops for this test is 2 seconds.
-		max_loops = 1500000 / 1000;
+		max_loops = 1500000 / 150000;
 		// Reset the performance timer.
 		pt.reset();
 		// Wait for the timer to elapse or for the counter.
 		while (!et && max_loops-- > 0)
 		{
-			::usleep(1000);
+			// Minimum value for windows.
+			::usleep(150000);
 		}
 		// Since the timer is disabled it will never be activated/elapsed.
 		CHECK(pt.elapse().toDouble() >= 1.5);

@@ -4,27 +4,35 @@ namespace sf
 {
 
 /**
- * @brief Fifo template for classes and structures.
+ * @brief Fifo template for classes and structure pointers.
+ *
+ * Provides an array operator to iterate through the fifo.
+ * Allows peeking for the next without popping the item.
  */
 template<class T>
 class TFifoClass
 {
 	public:
 		/**
+		 * Type used for size and position.
+		 */
+		typedef int size_type;
+
+		/**
 		 * @brief Default constructor which needs Set() to validate object
 		 */
 		TFifoClass()
 		{
-			Init();
+			initialize();
 		}
 
 		/**
 		 * @brief Constructor that will setup the object immediately
 		 */
-		explicit TFifoClass(int size)
+		explicit TFifoClass(size_type size)
 		{
-			Init();
-			Set(size);
+			initialize();
+			set(size);
 		}
 
 		/**
@@ -32,88 +40,91 @@ class TFifoClass
 		 */
 		~TFifoClass();
 
-		/*
-		 * @brief Put item in buffer if successful it returns '1' else '0'
+		/**
+		 * @brief Pushes item into buffer.
+		 * @param item Item pushed.
+		 * @return True when successful (not full).
 		 */
-		int Put(const T& item);
+		bool push(const T& item);
 
 		/**
-		 * @brief Put item of zero in fifo
+		 * @brief Push item of zero in fifo
 		 */
-		inline
-		int Put()
-		{
-			return Put(Zero);
-		}
+		bool push();
 
 		/**
-		 * @brief Put multiple items if possible else it returns '0' and no items are inserted at all
+		 * @brief Pushes multiple items if possible else it returns '0' and no items are inserted at all
 		 */
-		int Put(const T* item, int count);
+		bool push(const T* item, size_type count);
 
 		/**
 		 * @brief Returns next item without removing it.
 		 */
-		const T& Peek() const;
+		const T& peek() const;
 
 		/**
-		 * @brief Gives latest item put into the fifo.
+		 * @brief Gives latest item pushed into the fifo.
 		 */
-		const T& Latest() const;
+		const T& latest() const;
 
 		/**
-		 * @brief Read item at head of buffer.
+		 * @brief Read item at head of buffer and removes it.
 		 */
-		T Get();
+		T pop();
 
 		/**
-		 * @brief Same as Read(void) this time '0' is return when buffer is empty.
+		 * @brief Same as pop(void) but returns 'false' when the buffer is empty.
 		 */
-		int Get(T& item);
+		bool pop(T& item);
 
 		/**
-		 * @brief Returns current buffer data size.
+		 * @brief Returns if current contained buffer data size is zero.
 		 */
-		int Size() const;
+		bool empty() const;
+
+		/**
+		 * @brief Returns current buffer contained data size.
+		 */
+		size_type size() const;
 
 		/**
 		 * @brief Returns maximum containable size.
 		 */
-		int SizeMax() const
+		size_type sizeMax() const
 		{
-			return (Valid) ? (BufSize - 1) : 0;
+			return (_valid) ? (_bufSize - 1) : 0;
 		}
 
 		/**
 		 * @brief Returns remaining available size.
 		 */
-		int SizeRemain() const
+		size_type sizeRemain() const
 		{
-			return Valid ? (SizeMax() - Size()) : 0;
+			return _valid ? (sizeMax() - size()) : 0;
 		}
 
 		/**
 		 * @brief Returns 1 if object is valid else 0
 		 */
-		int IsValid() const
+		bool isValid() const
 		{
-			return Valid;
+			return _valid;
 		}
 
 		/**
 		 * @brief Returns '1' if object is full else 0
 		 */
-		int IsFull() const
+		bool isFull() const
 		{
-			return SizeRemain() ? 0 : 1;
+			return sizeRemain() ? 0 : 1;
 		}
 
 		/**
 		 * @brief Resets instance to the initial state.
 		 */
-		void Clear()
+		void clear()
 		{
-			Head = Tail = 0;
+			_head = _tail = 0;
 		}
 
 		/**
@@ -121,185 +132,206 @@ class TFifoClass
 		 *
 		 * @return 1 if valid else 0.
 		 */
-		int Set(int size);
+		bool set(size_type size);
 
 		/**
 		 * @brief Array operator offset from head of buffer.
 		 */
-		T& operator[](int pos);
+		T& operator[](size_type pos);
 
 		/**
 		 * @brief Const array operator offset from head of buffer.
 		 */
-		const T& operator[](int pos) const;
+		const T& operator[](size_type pos) const;
 
 		/**
 		 * @brief Access function for private member.
 		 */
-		int GetTail() const;
+		size_type getTail() const;
 
 		/**
 		 * @brief Access function for private member.
 		 */
-		int GetHead() const;
+		size_type getHead() const;
 
 		/**
 		 * @brief Access function for private member.
 		 */
-		const T* GetBuffer(int pos = 0) const;
+		const T* getBuffer(size_type pos = 0) const;
 
 	private:
-		int Tail{};
-		int Head{};
-		T* Buffer;
+		void initialize();
 
-		void Init();
-
-		int Valid{};
-		int BufSize{};
-		T Zero;
+		size_type _tail{0};
+		size_type _head{0};
+		T* _buffer{nullptr};
+		size_type _valid{0};
+		size_type _bufSize{0};
+		T _zero;
 };
+
+/**
+ * @cond Doxygen_ignore
+ * Doxygen 1.8.17 breaks on the functions having 'typename TFifoClass<T>::size_type' in it.
+ */
 
 template<class T>
 TFifoClass<T>::~TFifoClass()
 {
-	if (Valid)
+	if (_valid)
 	{
-		delete[] Buffer;
+		delete[] _buffer;
 	}
 }
 
 template<class T>
-void TFifoClass<T>::Init()
+void TFifoClass<T>::initialize()
 {
-	Valid = 0;
-	BufSize = 0;
-	Head = Tail = 0;
-	Buffer = nullptr;
-	memset(&Zero, 0, sizeof(T));
+	_valid = 0;
+	_bufSize = 0;
+	_head = 0;
+	_tail = 0;
+	_buffer = nullptr;
+	memset(&_zero, 0, sizeof(T));
 }
 
 template<class T>
-int TFifoClass<T>::Set(int size)
+bool TFifoClass<T>::set(TFifoClass<T>::size_type size)
 {
 	if (size < 1)
 	{
-		return 0;
+		return false;
 	}
-	BufSize = size + 1;
-	Head = Tail = 0;
-	if (Buffer)
+	_bufSize = size + 1;
+	_head = _tail = 0;
+	if (_buffer)
 	{
-		delete[] Buffer;
+		delete[] _buffer;
 	}
-	Buffer = new T[BufSize];
-	memset(Buffer, 0, sizeof(T) * BufSize);
-	Valid = Buffer ? 1 : 0;
-	return Valid;
+	_buffer = new T[_bufSize];
+	memset(_buffer, 0, sizeof(T) * _bufSize);
+	_valid = true;
+	return true;
 }
 
 template<class T>
-int TFifoClass<T>::Put(const T& item)
+bool TFifoClass<T>::push(const T& item)
 {
-	if ((((Tail + 1) % BufSize)) == Head)
+	if ((((_tail + 1) % _bufSize)) == _head)
 	{
-		return 0;
+		return false;
 	}
-	Buffer[Tail++] = item;
-	Tail %= BufSize;
-	return 1;
+	_buffer[_tail++] = item;
+	_tail %= _bufSize;
+	return true;
 }
 
 template<class T>
-int TFifoClass<T>::Put(const T* item, int count)
+bool TFifoClass<T>::push(const T* item, TFifoClass<T>::size_type count)
 {
-	if (SizeRemain() < count)
+	if (sizeRemain() < count)
 	{
-		return 0;
+		return true;
 	}
-	for (int i = 0; i < count; Put(item[i++])) {}
-	return 1;
+	for (size_type i = 0; i < count; push(item[i++])) {}
+	return false;
 }
 
 template<class T>
-const T& TFifoClass<T>::Peek() const
+bool TFifoClass<T>::push()
 {
-	if (Head == Tail)
-	{
-		return Zero;
-	}
-	return Buffer[Head];
+	return push(_zero);
 }
 
 template<class T>
-const T& TFifoClass<T>::Latest() const
+const T& TFifoClass<T>::peek() const
 {
-	if (Head == Tail)
+	if (_head == _tail)
 	{
-		return Zero;
+		return _zero;
 	}
-	return Buffer[(((Tail + BufSize - 1) % BufSize))];
+	return _buffer[_head];
 }
 
 template<class T>
-T TFifoClass<T>::Get()
+const T& TFifoClass<T>::latest() const
 {
-	if (Tail == Head)
+	if (_head == _tail)
 	{
-		return Zero;
+		return _zero;
 	}
-	T tmp = Buffer[Head++];
-	Head %= BufSize;
+	return _buffer[(((_tail + _bufSize - 1) % _bufSize))];
+}
+
+template<class T>
+T TFifoClass<T>::pop()
+{
+	if (_tail == _head)
+	{
+		return _zero;
+	}
+	T tmp = _buffer[_head++];
+	_head %= _bufSize;
 	return tmp;
 }
 
 template<class T>
-int TFifoClass<T>::Get(T& item)
+bool TFifoClass<T>::pop(T& item)
 {
-	if (Tail == Head)
+	if (_tail == _head)
 	{
-		item = Zero;
-		return 0;
+		item = _zero;
+		return false;
 	}
-	item = Buffer[Head++];
-	Head %= BufSize;
-	return 1;
+	item = _buffer[_head++];
+	_head %= _bufSize;
+	return true;
 }
 
 template<class T>
-int TFifoClass<T>::Size() const
+bool TFifoClass<T>::empty() const
 {
-	return (Tail < Head) ? (BufSize + (Tail - Head)) : (Tail - Head);
+	return size() == 0;
 }
 
 template<class T>
-T& TFifoClass<T>::operator[](int pos)
+typename TFifoClass<T>::size_type TFifoClass<T>::size() const
 {
-	return Buffer[(pos + Head) % BufSize];
+	return (_tail < _head) ? (_bufSize + (_tail - _head)) : (_tail - _head);
 }
 
 template<class T>
-const T& TFifoClass<T>::operator[](int pos) const
+T& TFifoClass<T>::operator[](TFifoClass<T>::size_type pos)
 {
-	return Buffer[(pos + Head) % BufSize];
+	return _buffer[(pos + _head) % _bufSize];
 }
 
 template<class T>
-const T* TFifoClass<T>::GetBuffer(int pos) const
+const T& TFifoClass<T>::operator[](TFifoClass<T>::size_type pos) const
 {
-	return &Buffer[pos];
+	return _buffer[(pos + _head) % _bufSize];
 }
 
 template<class T>
-int TFifoClass<T>::GetTail() const
+inline
+const T* TFifoClass<T>::getBuffer(TFifoClass<T>::size_type pos) const
 {
-	return Tail;
+	return &_buffer[pos];
 }
 
 template<class T>
-int TFifoClass<T>::GetHead() const
+inline
+typename TFifoClass<T>::size_type TFifoClass<T>::getTail() const
 {
-	return Head;
+	return _tail;
 }
 
-} // namespace
+template<class T>
+inline
+typename TFifoClass<T>::size_type TFifoClass<T>::getHead() const
+{
+	return _head;
+}
+
+/** @endcond Doxygen_ignore */
+}

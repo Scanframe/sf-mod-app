@@ -3,16 +3,17 @@
 #include <string>
 #include <pthread.h>
 
-#include "global.h"
+#include "../global.h"
 
 namespace sf
 {
 
 /**
- * Lightweight intra process thread synchronization.
- * Can only be used with other critical sections, and only within the same process.
+ * @brief Lightweight intra process thread synchronization.
+ *
+ * Can only be used with other mutex, and only within the same process.
  */
-class _MISC_CLASS CriticalSection
+class _MISC_CLASS Mutex
 {
 	public:
 		/**
@@ -23,12 +24,12 @@ class _MISC_CLASS CriticalSection
 		/**
 		 * @brief Default constructor.
 		 */
-		CriticalSection();
+		Mutex();
 
 		/**
 		 * @brief Destructor.
 		 */
-		~CriticalSection();
+		~Mutex();
 
 		/**
 		 * Casting operator.
@@ -41,18 +42,18 @@ class _MISC_CLASS CriticalSection
 		/**
 		 * Locking class for easy locking and unlocking by destructor.
 		 */
-		class lock
+		class Lock
 		{
 			public:
 				/**
 				 * Constructor.
 				 */
-				explicit lock(const CriticalSection& crit_sec, bool try_lock = false);
+				explicit Lock(const Mutex& mutex, bool try_lock = false);
 
 				/**
 				 * Destructor.
 				 */
-				~lock();
+				~Lock();
 
 				/**
 				 * Returns true when if it was acquired.
@@ -60,7 +61,7 @@ class _MISC_CLASS CriticalSection
 				bool acquire(bool try_lock = false);
 
 				/**
-				 * Releases the critical section.
+				 * Releases the mutex.
 				 * @return True if actually released.
 				 */
 				bool release();
@@ -77,12 +78,12 @@ class _MISC_CLASS CriticalSection
 				/**
 				 * Copy constructor to prevent copying.
 				 */
-				lock(const lock& lock);
+				Lock(const Lock& lock);
 
 				/**
-				 * Holds the critical section reference.
+				 * Holds the mutex reference.
 				 */
-				CriticalSection& _critSecObj;
+				Mutex& _mutexRef;
 				/**
 				 * Holds the state of the lock for the destructor.
 				 */
@@ -100,12 +101,12 @@ class _MISC_CLASS CriticalSection
 		/**
 		 * Copy Destructor.
 		 */
-		CriticalSection(const CriticalSection&);
+		Mutex(const Mutex&);
 
 		/**
 		 * Copy operator.
 		 */
-		const CriticalSection& operator=(const CriticalSection&);
+		const Mutex& operator=(const Mutex&);
 
 		/**
 		 * Arbitrary test whether the mutex is destroyed or not.
@@ -123,7 +124,7 @@ class _MISC_CLASS CriticalSection
 		bool acquire(bool try_lock);
 
 		/**
-		* Releases the critical section.
+		* Releases the mutex.
 		*/
 		void release();
 };

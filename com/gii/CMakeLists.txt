@@ -44,8 +44,8 @@ set(SOURCES
 	gen/ResultDataHandler.h
 	gen/ResultDataRequester.h
 	gen/ResultDataRequester.cpp
-	gen/ResultDataStorage.h
-	gen/ResultDataStorage.cpp
+	gen/FileMappedStorage.h
+	gen/FileMappedStorage.cpp
 	gen/ResultDataStatic.cpp
 	gen/ResultDataStatic.h
 	gen/VariableReference.cpp

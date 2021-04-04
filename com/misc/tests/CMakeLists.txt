@@ -1,7 +1,6 @@
 # Set the target name using the project name as a base name.
 set(TEST_TARGET "${PROJECT_NAME}-test")
 
-
 # Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
 # When SF_BUILD_QT is Set link the Qt libraries.

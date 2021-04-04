@@ -17,7 +17,7 @@ VariableReference::VariableReference(bool global)
 
 void VariableReference::copy(const VariableReference& ref)
 {
-	_COND_RTTI_NOTIFY(this == VariableStatic::zero()._reference, DO_CLOG, "Cannot assign a ref to Zero Ref!")
+	SF_COND_RTTI_NOTIFY(this == VariableStatic::zero()._reference, DO_CLOG, "Cannot assign a ref to Zero Ref!")
 	_valid = ref._valid;
 	_id = ref._id;
 	_flags = ref._flags;
@@ -70,24 +70,24 @@ VariableReference::~VariableReference()
 					if (ref->_list[idx])
 					{
 						// Notification of warning
-						_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x" << std::hex
+						SF_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x" << std::hex
 							<< ref->_list[idx]->_desiredId << " in this process!")
 					}
 					// Limit the amount shown to a maximum of 3.
 					if (idx >= 3)
 					{
-						_NORM_NOTIFY(DO_MSGBOX | DO_DEFAULT,
-							_RTTI_TYPENAME << ": Too many [" << count << "] dangling instances to be shown!")
+						SF_NORM_NOTIFY(DO_MSGBOX | DO_DEFAULT,
+							SF_RTTI_TYPENAME << ": Too many [" << count << "] dangling instances to be shown!")
 						break;
 					}
 				}
 			}
 			else
 			{
-				_NORM_NOTIFY
+				SF_NORM_NOTIFY
 				(
 					DO_MSGBOX | DO_DEFAULT,
-					_RTTI_TYPENAME
+					SF_RTTI_TYPENAME
 						<< ": Dangling reference owning instance with ID "
 						<< stringf("0x%lX", ref->_id)
 						<< " in this process!"
@@ -98,11 +98,11 @@ VariableReference::~VariableReference()
 		// There should only be one left in the list
 		total_count--;
 		// Notification of warning
-		_COND_NORM_NOTIFY
+		SF_COND_NORM_NOTIFY
 		(
 			total_count,
 			DO_MSGBOX | DO_DEFAULT,
-			_RTTI_TYPENAME
+			SF_RTTI_TYPENAME
 				<< ": Total of " << total_count
 				<< " dangling Variable instances in this process!"
 		)

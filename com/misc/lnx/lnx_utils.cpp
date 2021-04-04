@@ -16,7 +16,7 @@ namespace sf
 
 pid_t gettid() noexcept
 {
-	return ::syscall(SYS_gettid);
+	return (pid_t)::syscall(SYS_gettid);
 }
 
 bool kb_hit()
@@ -374,7 +374,7 @@ bool file_write(const char* path, const void* buf, size_t sz, bool append)
 	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode); // NOLINT(hicpp-signed-bitwise)
 	if (fd == -1)
 	{
-		_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n" << strerror(errno))
+		SF_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n" << strerror(errno))
 		return false;
 	}
 	//
@@ -459,7 +459,7 @@ bool file_mkdir(const char* path, __mode_t mode)
 				// Create the sub directory.
 				if (::mkdir(tmp.c_str(), mode))
 				{
-					_NORM_NOTIFY(DO_DEFAULT, "Creating direcory '" << tmp << "' failed!\n" << strerror(errno))
+					SF_NORM_NOTIFY(DO_DEFAULT, "Creating direcory '" << tmp << "' failed!\n" << strerror(errno))
 					// return false in case of an error.
 					return false;
 				}
