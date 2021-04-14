@@ -257,7 +257,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @brief Gets the sequential Id of this instance.
 		 * @return Sequential Id
 		 */
-		[[nodiscard]] id_type getSeqId() const;
+		[[nodiscard]] id_type getSequenceId() const;
 
 		/**
 		 * @brief Gets the result data name which is default the full result data path name.
@@ -938,7 +938,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * event is generated for a specific result as a result of a request made by this specific result.
 		 * This value is set and reset  by the 'setHandler' member function.
 		 */
-		Range::id_type _transId{0};
+		Range::id_type _transactionId{0};
 		/**
 		 * @brief If this data member is non-zero it will be automatically re-attached to the reference when it is created.
 		 */
@@ -1109,7 +1109,7 @@ bool ResultData::blockWrite(const Range& rng, const void* src, bool auto_reserve
 inline
 Range::id_type ResultData::getTransId() const
 {
-	return _transId;
+	return _transactionId;
 }
 
 inline

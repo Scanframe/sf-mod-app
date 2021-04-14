@@ -3,48 +3,48 @@
 namespace sf
 {
 
-TIntervalTimer::TIntervalTimer()
+IntervalTimer::IntervalTimer()
 {
-	Target = clock();
+	_target = clock();
 }
 
-void TIntervalTimer::Set(clock_t t)
+void IntervalTimer::set(clock_t t)
 {
-	FlagEnable = true;
-	Interval = (t * (clock_t) CLOCKS_PER_SEC) / 1000L;
-	Target = clock() + Interval;
+	_enabled = true;
+	_interval = (t * (clock_t) CLOCKS_PER_SEC) / 1000L;
+	_target = clock() + _interval;
 }
 
-bool TIntervalTimer::Active() const
+bool IntervalTimer::active() const
 {
-	return FlagEnable && Active(clock());
+	return _enabled && active(clock());
 }
 
-bool TIntervalTimer::Active(clock_t t) const
+bool IntervalTimer::active(clock_t t) const
 {
-	if (FlagEnable && t > Target)
+	if (_enabled && t > _target)
 	{
-		if (!Interval)
+		if (!_interval)
 		{
 			return true;
 		}
 		// Set new interval target
-		*(clock_t*) &Target = (clock() / Interval + 1) * Interval;
+		*(clock_t*) &_target = (clock() / _interval + 1) * _interval;
 		return true;
 	}
 	return false;
 }
 
-clock_t TIntervalTimer::GetTimeLeft() const
+clock_t IntervalTimer::getTimeLeft() const
 {
-	return GetTimeLeft(clock());
+	return getTimeLeft(clock());
 }
 
-clock_t TIntervalTimer::GetTimeLeft(clock_t clk) const
+clock_t IntervalTimer::getTimeLeft(clock_t clk) const
 {
-	if (FlagEnable)
+	if (_enabled)
 	{
-		clock_t retval = ((Target - clk) * 1000L) / (clock_t) CLOCKS_PER_SEC;
+		clock_t retval = ((_target - clk) * 1000L) / (clock_t) CLOCKS_PER_SEC;
 		if (retval > 0L)
 		{
 			return retval;
@@ -53,16 +53,16 @@ clock_t TIntervalTimer::GetTimeLeft(clock_t clk) const
 	return 0L;
 }
 
-clock_t TIntervalTimer::GetTimeOver() const
+clock_t IntervalTimer::getTimeOver() const
 {
-	return GetTimeOver(clock());
+	return getTimeOver(clock());
 }
 
-clock_t TIntervalTimer::GetTimeOver(clock_t clk) const
+clock_t IntervalTimer::getTimeOver(clock_t clk) const
 {
-	if (FlagEnable)
+	if (_enabled)
 	{
-		return ((clk - Target) * 1000L) / (clock_t) CLOCKS_PER_SEC;
+		return ((clk - _target) * 1000L) / (clock_t) CLOCKS_PER_SEC;
 	}
 	return 0L;
 }

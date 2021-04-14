@@ -20,8 +20,8 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 	// clear the structure members.
 	reset();
 	// Get the markers to look for.
-	const uint64_t mark_beg = *((uint64_t*) (_DL_MARKER_BEGIN));
-	const uint64_t mark_end = *((uint64_t*) (_DL_MARKER_END));
+	const uint64_t mark_beg = *((uint64_t*) (SF_DL_MARKER_BEGIN));
+	const uint64_t mark_end = *((uint64_t*) (SF_DL_MARKER_END));
 	// Set to 1 when the begin marker has been found and to 2 when both are found.
 	int flag = 0;
 	// Sanity check.
@@ -115,13 +115,13 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 			// Terminate the character string.
 			buf[buf.size()] = '\0';
 			//
-			char* sep = strstr(buf.c_str(), _DL_NAME_SEPARATOR);
+			char* sep = strstr(buf.c_str(), SF_DL_NAME_SEPARATOR);
 			if (sep != nullptr)
 			{
 				// Terminate the name.
 				*sep = '\0';
 				// Move the pointer to the start of the description.
-				sep += strlen(_DL_NAME_SEPARATOR);
+				sep += strlen(SF_DL_NAME_SEPARATOR);
 				// Assign the name part.
 				Name = buf.c_str();
 				// Assign the description part.

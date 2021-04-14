@@ -28,7 +28,7 @@ bool PushButtonPlugin::isInitialized() const
 
 QWidget* PushButtonPlugin::createWidget(QWidget* parent)
 {
-	return new sf::PushButton(parent);
+	return new PushButton(parent);
 }
 
 QString PushButtonPlugin::name() const

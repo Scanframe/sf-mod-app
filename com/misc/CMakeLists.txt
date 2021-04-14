@@ -17,6 +17,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Include pthread library.
 set(LIBRARIES pthread)
+
 # Generic sources only STL dependent.
 set(SOURCES
 	global.h
@@ -69,7 +70,7 @@ set(SOURCES_LNX
 list(APPEND SOURCES ${SOURCES_LNX})
 list(APPEND LIBRARIES OpenSSL::Crypto)
 
-else ()
+else (NOT WIN32)
 
 set(SOURCES_WIN
 	win/win_utils.cpp win/win_utils.h
@@ -78,14 +79,14 @@ set(SOURCES_WIN
 	)
 list(APPEND SOURCES ${SOURCES_WIN})
 
-endif ()
+endif (NOT WIN32)
 
 # When SF_BUILD_QT is Set link the Qt libraries.
 if (SF_BUILD_QT)
 
-# Find the needed packages.
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+	# Find the needed packages.
+	find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+	find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
 	set(CMAKE_AUTOUIC ON)
 	set(CMAKE_AUTOMOC ON)
@@ -142,4 +143,4 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CM
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
 	add_subdirectory(tests/app)
-endif()
+endif(SF_BUILD_TESTING)

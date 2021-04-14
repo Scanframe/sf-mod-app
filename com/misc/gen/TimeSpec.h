@@ -12,6 +12,7 @@ namespace sf
  */
 struct _MISC_CLASS TimeSpec :public timespec
 {
+
 	/**
 	 * Default constructor.
 	 */
@@ -19,6 +20,11 @@ struct _MISC_CLASS TimeSpec :public timespec
 	{
 		assign(0, 0);
 	}
+
+	/**
+	 * @brief Move assignment operator is default.
+	 */
+	TimeSpec& operator= (TimeSpec&&) = default;
 
 	/**
 	 * @brief Copy constructor.

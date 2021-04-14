@@ -6,118 +6,123 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>243</height>
+    <width>474</width>
+    <height>336</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="sf::AnalogClock" name="sfAnalogClock">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>171</width>
-     <height>181</height>
-    </rect>
+  <layout class="QGridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
    </property>
-   <property name="toolTip">
-    <string>The current time</string>
-   </property>
-   <property name="whatsThis">
-    <string>The analog clock widget displays the current time.</string>
-   </property>
-  </widget>
-  <widget class="sf::PushButton" name="sfPushButton">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>20</y>
-     <width>141</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>A inherited push button</string>
-   </property>
-   <property name="whatsThis">
-    <string>The a button for testing properties.</string>
-   </property>
-   <property name="text">
-    <string>SfPushButton</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-   <property name="iconSource">
-    <string notr="true">:/logo/scanframe</string>
-   </property>
-  </widget>
-  <widget class="sf::PushButton" name="sfPushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>70</y>
-     <width>141</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>A inherited push button</string>
-   </property>
-   <property name="whatsThis">
-    <string>The a button for testing properties.</string>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: green;
-     qproperty-iconSource: ":/action/clear";
+   <item row="1" column="1">
+    <widget class="sf::PushButton" name="sfPushButton_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>A inherited push button</string>
+     </property>
+     <property name="whatsThis">
+      <string>The a button for testing properties.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: green;
+     qproperty-iconSource: &quot;:/action/clear&quot;;
     </string>
-   </property>
-   <property name="text">
-    <string>SfPushButton</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-   <property name="iconSource">
-    <string>:/logo/scanframe</string>
-   </property>
-  </widget>
-  <widget class="sf::PushButton" name="sfPushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>120</y>
-     <width>141</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>A inherited push button</string>
-   </property>
-   <property name="whatsThis">
-    <string>The a button for testing properties.</string>
-   </property>
-   <property name="text">
-    <string>SfPushButton</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-   <property name="iconSource">
-    <string notr="true">:/action/reload</string>
-   </property>
-  </widget>
+     </property>
+     <property name="text">
+      <string>SfPushButton</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="iconSource">
+      <string>:/action/clear</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="4">
+    <widget class="sf::AnalogClock" name="sfAnalogClock">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>The current time</string>
+     </property>
+     <property name="whatsThis">
+      <string>The analog clock widget displays the current time.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="sf::PushButton" name="sfPushButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>A inherited push button</string>
+     </property>
+     <property name="whatsThis">
+      <string>The a button for testing properties.</string>
+     </property>
+     <property name="text">
+      <string>SfPushButton</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="iconSource">
+      <string notr="true">:/logo/scanframe</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="sf::PushButton" name="sfPushButton_3">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>A inherited push button</string>
+     </property>
+     <property name="whatsThis">
+      <string>The a button for testing properties.</string>
+     </property>
+     <property name="text">
+      <string>SfPushButton</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="iconSource">
+      <string notr="true">:/action/reload</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
@@ -128,11 +133,11 @@
   <customwidget>
    <class>sf::PushButton</class>
    <extends>QPushButton</extends>
-   <header>sfpushbutton.h</header>
+   <header>SfPushButton.h</header>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../com/misc/resource/resource.qrc"/>
+  <include location="../com/misc/qt/res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

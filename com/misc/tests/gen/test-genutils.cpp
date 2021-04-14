@@ -59,6 +59,21 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 		CHECK(sf::precision(double(123.0)) == 3);
 	}
 
+	SECTION("sf::null_ref", "null_ref, not_null_ref")
+	{
+		// Check if not_ref_null reports right value.
+		{
+			auto& sz(sf::null_ref<size_t>());
+			CHECK(sf::not_ref_null(sz));
+		}
+		// Check if not_ref_null.
+		{
+			size_t size;
+			auto& sz(size);
+			CHECK_FALSE(sf::not_ref_null(sz));
+		}
+	}
+
 	SECTION("sf::getExecutableName", "Executable functions")
 	{
 #if IS_WIN

@@ -28,15 +28,17 @@ class _MISC_CLASS ObjectExtension
 		 */
 		virtual bool isRequiredProperty(const QString& name) = 0;
 
+		/**
+		 * Gets the designer status.
+		 * @return True when in the designer application.
+		 */
+		static bool inDesigner();
+
 	private:
 		/**
 		 * Holds the concerned base object which this class is extending.
  		 */
-		QObject& _object;
+		QObject* _object;
 };
-
-inline
-ObjectExtension::ObjectExtension(QObject* object)
-	:_object(*object) {}
 
 } // namespace

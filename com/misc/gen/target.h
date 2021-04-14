@@ -55,9 +55,17 @@ Defines these defines with true (1) or false (0):
 	#define IS_QT 0
 #endif
 
+#if IS_WIN
+//#define TARGET_EXPORT __declspec(dllexport)
+//#define TARGET_IMPORT __declspec(dllimport)
+#define TARGET_EXPORT __attribute__ ((dllexport))
+#define TARGET_IMPORT __attribute__ ((dllimport))
+#define TARGET_HIDDEN __attribute__((visibility("hidden")))
+#else
 #define TARGET_EXPORT __attribute__((visibility("default")))
 #define TARGET_IMPORT
-#define TARGET_HIDDEN  __attribute__((visibility("hidden")))
+#define TARGET_HIDDEN __attribute__((visibility("hidden")))
+#endif
 
 // Report current targeted result.
 #if defined(REPORT_TARGET)
@@ -69,15 +77,15 @@ Defines these defines with true (1) or false (0):
 		#pragma message ("Windows build")
 	#endif
 // Report the QT is linked.
-	#ifdef IS_QT
+	#if IS_QT
 		#pragma message ("Target: QT")
 	#endif
 // Report the target is a dynamically library.
-	#ifdef IS_DL_TARGET
+	#if IS_DL_TARGET
 		#pragma message ("Target: Shared Library")
 	#endif
 // Report the target is a static library (archive).
-	#ifdef IS_SL_TARGET
+	#if IS_SL_TARGET
 		#pragma message ("Target: Static Library")
 	#endif
 #endif // REPORT_TARGET

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TestWidget</class>
+ <widget class="QWidget" name="TestWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>349</width>
+    <height>211</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../../misc/qt/res/resource.qrc">
+    <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <item row="9" column="1">
+    <widget class="QPushButton" name="btnClose">
+     <property name="text">
+      <string>&amp;Close</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="placeholderText">
+      <string>This is an empty space.</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="sf::VariableEdit" name="VariableEdit_1">
+     <property name="toolTip">
+      <string>Tool tip info?</string>
+     </property>
+     <property name="whatsThis">
+      <string>Special edit having name and unit label.</string>
+     </property>
+     <property name="variableId">
+      <string>0x1</string>
+     </property>
+     <property name="converted">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QPushButton" name="btnTest">
+     <property name="text">
+      <string>&amp;Test</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="sf::VariableEdit" name="VariableEdit_3">
+     <property name="whatsThis">
+      <string>Special edit having name and unit label.</string>
+     </property>
+     <property name="variableId">
+      <string notr="true">0x1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QFrame" name="frameVacant">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="sf::VariableBar" name="variableBar">
+     <property name="toolTip">
+      <string>The current time</string>
+     </property>
+     <property name="whatsThis">
+      <string>Variable bar used for progress or level indication.</string>
+     </property>
+     <property name="variableId">
+      <string notr="true">0x1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QToolButton" name="toolButton">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../../misc/qt/res/resource.qrc">
+       <normaloff>:/logo/scanframe2</normaloff>:/logo/scanframe2</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="sf::VariableEdit" name="VariableEdit_2">
+     <property name="whatsThis">
+      <string>Special edit having name and unit label.</string>
+     </property>
+     <property name="variableId">
+      <string notr="true">0x1</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="sf::VariableBar" name="variableBar_2">
+     <property name="toolTip">
+      <string>The current time</string>
+     </property>
+     <property name="whatsThis">
+      <string>Variable bar used for progress or level indication.</string>
+     </property>
+     <property name="variableId">
+      <string notr="true">0x1</string>
+     </property>
+     <property name="converted">
+      <bool>true</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::VariableEdit</class>
+   <extends>QWidget</extends>
+   <header>com/gii/qt/VariableEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::VariableBar</class>
+   <extends>QWidget</extends>
+   <header>VariableBar.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>variableBar</tabstop>
+  <tabstop>variableBar_2</tabstop>
+  <tabstop>VariableEdit_1</tabstop>
+  <tabstop>VariableEdit_2</tabstop>
+  <tabstop>VariableEdit_3</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>toolButton</tabstop>
+  <tabstop>btnTest</tabstop>
+  <tabstop>btnClose</tabstop>
+ </tabstops>
+ <resources>
+  <include location="test-resource.qrc"/>
+  <include location="../../../misc/qt/res/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

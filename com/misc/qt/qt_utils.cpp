@@ -5,8 +5,9 @@
 #include <QMetaEnum>
 #include <QDir>
 #include <QFileInfo>
+#include <QWidget>
 #include <QFileSystemWatcher>
-#include <QDebug>
+#include <gen/dbgutils.h>
 
 #include "qt_utils.h"
 
@@ -45,9 +46,12 @@ void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 			_watcher->addPath(_fileInfo.absoluteFilePath());
 		}
 	}
-	for (auto& file: _watcher->files())
+	if (IsDebug())
 	{
-		qDebug() << "Watching:" << file;
+		for (auto& file: _watcher->files())
+		{
+			qDebug() << "Watching:" << file;
+		}
 	}
 }
 
@@ -174,31 +178,37 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	settings.sync();
 }
 
-QMetaObject::Connection QObject_connect
+QMetaObject::Connection connectByName
 	(
-		const QObject* sender,
+		const QWidget* widget,
+		const QString& sender_name,
 		const char* signal_name,
 		const QObject* receiver,
 		const char* method_name,
-		Qt::ConnectionType
+		Qt::ConnectionType ct
 	)
 {
-	std::string signal(SIGNAL(__s__()));
-	std::string slot(SLOT(__m__()));
-	//
-	std::string::size_type pos = signal.find("__s__");
-	//
-	if (pos != std::string::npos)
+	auto sender = widget->findChild<QObject*>(sender_name);
+	if (sender)
 	{
-		signal.replace(pos, 5, signal_name);
+		std::string signal(SIGNAL(__s__()));
+		std::string slot(SLOT(__m__()));
+		//
+		std::string::size_type pos = signal.find("__s__");
+		//
+		if (pos != std::string::npos)
+		{
+			signal.replace(pos, 5, signal_name);
+		}
+		pos = slot.find("__m__");
+		if (pos != std::string::npos)
+		{
+			slot.replace(pos, 5, method_name);
+		}
+		//
+		return QObject::connect(sender, signal.c_str(), receiver, slot.c_str(), ct);
 	}
-	pos = slot.find("__m__");
-	if (pos != std::string::npos)
-	{
-		slot.replace(pos, 5, method_name);
-	}
-	//
-	return QObject::connect(sender, signal.c_str(), receiver, slot.c_str());
+	return QMetaObject::Connection();
 }
 
 }

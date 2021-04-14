@@ -10,47 +10,47 @@ namespace sf
 {
 
 /**
- * Base class of the Variable having all global static data members.
+ * @brief Base class of the #sf::Variable having all global static data members.
  */
 class _GII_DATA VariableStatic :public VariableTypes
 {
 	public:
 		/**
-		 * Returns Variable instance that always exists in the system and is referenced if no other is available or applicable.
+		 * @brief Returns Variable instance that always exists in the system and is referenced if no other is available or applicable.
 		 */
 		static Variable& zero();
 
 		/**
-		 * Called to initialize or deinitialize the variable system.
+		 * @brief Called to initialize or deinitialize the variable system.
 		 */
 		static void initialize(bool);
 
 	private:
 		/**
-		 * Holds the first created instance and place holder with ID zero.
+		 * @brief Holds the first created instance and place holder with ID zero.
 		 */
 		static Variable* _zero;
 		/**
-		 * Static reference list to all global references.
+		 * @brief Static reference list to all global references.
 		 */
-		static ReferenceVector _references;
+		static ReferenceVector* _references;
 		/**
-		 * Static this counter is increased if a global event is generated.
+		 * @brief Static this counter is increased if a global event is generated.
 		 * It is decreased when it returns from the event handler.
 		 */
 		static int _globalActive;
 		/**
-		 * Keeps the allocated data in this list if it may not be deleted yet
+		 * @brief Keeps the allocated data in this list if it may not be deleted yet
 		 * because it is obstructed by an event being handled.
 		 */
-		static TVector<void*> _deleteWaitCache;
+		static TVector<void*>* _deleteWaitCache;
 		/**
-		 * Holds the link to the global conversion handler.
+		 * @brief Holds the link to the global conversion handler.
 		 */
 		static VariableHandler* _convertHandler;
 
 		/**
-		 * Lookup list for flags.
+		 * @brief Lookup list for flags.
 		 */
 		struct FlagLetters
 		{

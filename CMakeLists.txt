@@ -14,11 +14,14 @@ set(SF_BUILD_TESTING ON)
 
 # Enables including Qt libraries when building (libraries).
 set(SF_BUILD_QT ON)
+#set(SF_BUILD_QT OFF)
 
-# Use faster linker fro windows.
+# Use faster linker for Windows maybe?
 if (WIN32)
+	# Adding option '-mwindows' as a linker flag will remove the console.
+
 	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=bfd")
-endif(WIN32)
+endif (WIN32)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
@@ -32,11 +35,13 @@ _SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
-add_subdirectory(rt-ui-serialize)
-add_subdirectory(custom-ui-plugin)
-add_subdirectory(rt-shared-lib)
-add_subdirectory(script-engine)
-add_subdirectory(multi-docs)
+if (SF_BUILD_QT)
+	add_subdirectory(rt-ui-serialize)
+	add_subdirectory(custom-ui-plugin)
+	add_subdirectory(rt-shared-lib)
+	add_subdirectory(script-engine)
+	add_subdirectory(multi-docs)
+endif (SF_BUILD_QT)
 add_subdirectory(unit-test)
 add_subdirectory(manual)
 

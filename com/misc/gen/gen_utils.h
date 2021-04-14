@@ -29,7 +29,7 @@ S calc_offset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;
-	S temp = ((max) && (value)) ? S((value * len) / max) : S(0);
+	S temp = ((max) && (value)) ? S((value * T(len)) / max) : S(0);
 	return (clip) ? ((temp > len) ? len : (temp < S(0)) ? S(0) : temp) : temp;
 }
 
@@ -368,6 +368,7 @@ bool not_ref_null(T& r)
 	return &r == nullptr;
 }
 
+
 /**
  * Converts an integer to a buffer.<br>
  * itoa converts value to a null-terminated buffer and stores the result
@@ -416,8 +417,8 @@ char* itoa(T value, char* buffer, int base)
 template<typename T>
 std::string itostr(T value, int base = 10)
 {
-	DynamicBuffer buf(sizeof(T) * CHAR_BIT + 1);
-	return itoa<T>(value, buf.c_str(), base);
+	char buf[sizeof(T) * CHAR_BIT + 1];
+	return itoa<T>(value, buf, base);
 }
 
 /**

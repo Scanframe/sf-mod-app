@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="ui/">
+    <file alias="test-formdialog">test-formdialog.ui</file>
+  </qresource>
+</RCC>

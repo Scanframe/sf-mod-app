@@ -8,73 +8,74 @@ namespace sf
 {
 
 /**
-* Class 'Condition' is a wrapper for the pthread_cond mechanism.
+* @brief Wrapper for the pthread_cond mechanism.
+ *
 * The condition is a single or all thread notification mechanism.
 */
 class _MISC_CLASS Condition
 {
 	public:
 		/**
-		 * Handle type.
+		 * @brief Handle type.
 		 */
 		typedef ::pthread_cond_t* handle_type;
 
 		/**
-		 * Constructor.
+		 * @brief Constructor.
 		 */
 		Condition();
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~Condition();
 
 		/**
-		 * Waits for a signal.
+		 * @brief Waits for a signal.
 		 */
 		bool wait(Mutex& mutex);
 
 		/**
-		 * Waits for a signal with a timeout.
+		 * @brief Waits for a signal with a timeout.
 		 */
 		bool wait(Mutex& mutex, const TimeSpec& timeout);
 
 		/**
-		 * Signals a single thread.
-		 * Returns the amount of waiting threads.
+		 * @brief Signals a single thread.
+		 * @return Amount of waiting threads.
 		 */
 		int notifyOne(Mutex& mutex);
 
 		/**
-		 * Signals all threads.
-		 * Returns the amount of waiting threads.
+		 * @brief Signals all threads.
+		 * @return Amount of waiting threads.
 		 */
 		int notifyAll(Mutex& mutex);
 
 		/**
-		* Casting operator.
+		* @brief Casting operator.
 		*/
 		operator handle_type() // NOLINT(google-explicit-constructor)
 		{
 			return &_cond;
 		}
 
+		/**
+		 * @brief Prevent copying.
+		 */
+		const Condition& operator=(const Condition&) = delete;
+
 	private:
 		/**
-		 * Prevent copying.
-		 */
-		const Condition& operator=(const Condition&);
-
-		/**
-		 * Work to be done and is counted down when the wait function is released.
+		 * @brief Work to be done and is counted down when the wait function is released.
 		 */
 		int _work{0};
 		/**
-		 * Amount of threads waiting.
+		 * @brief Amount of threads waiting.
 		 */
 		int _waiting{0};
 		/**
-		 * Holds the actual handle of the OS.
+		 * @brief Holds the actual handle of the OS.
 		 */
 		::pthread_cond_t _cond{};
 };

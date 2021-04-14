@@ -84,7 +84,7 @@ class _MISC_CLASS SustainBase
 		 */
 		void setInterval(clock_t interval)
 		{
-			_timer.Set(interval);
+			_timer.set(interval);
 		}
 
 		/**
@@ -94,7 +94,7 @@ class _MISC_CLASS SustainBase
 		 */
 		[[nodiscard]] clock_t getInterval() const
 		{
-			return _timer.GetIntervalTime();
+			return _timer.getIntervalTime();
 		}
 
 		/**
@@ -102,7 +102,7 @@ class _MISC_CLASS SustainBase
 		 */
 		void enable()
 		{
-			_timer.Enable();
+			_timer.enable();
 		}
 
 		/**
@@ -110,7 +110,7 @@ class _MISC_CLASS SustainBase
 		 */
 		void disable()
 		{
-			_timer.Disable();
+			_timer.disable();
 		}
 
 		/**
@@ -120,7 +120,7 @@ class _MISC_CLASS SustainBase
 		 */
 		[[nodiscard]] bool isEnabled() const
 		{
-			return _timer.IsEnabled();
+			return _timer.isEnabled();
 		}
 
 		/**
@@ -164,7 +164,7 @@ class _MISC_CLASS SustainBase
 		/**
 		 * @brief Timer for when priority #spTimer has been set.
 		 */
-		TIntervalTimer _timer;
+		IntervalTimer _timer;
 };
 
 template<class T>

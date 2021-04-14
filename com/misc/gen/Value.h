@@ -55,6 +55,11 @@ class _MISC_CLASS Value
 		Value() = default;
 
 		/**
+		 * @brief Move assignment operator is default.
+		 */
+		Value& operator= (Value&&) = default;
+
+		/**
 		 * @brief Copy constructor.
 		 *
 		 * Copies the content and type of the passed instance.
@@ -587,6 +592,22 @@ class _MISC_CLASS Value
 		Value& operator=(Value* v);
 
 		/**
+		* @brief Calculates the offset for a given range and set point.
+		*/
+		static Value calculateOffset(Value value, Value min, Value max, const Value& len, bool clip)
+		{
+			Value z(0);
+			// Sync the types.
+			z.setType(len.getType());
+			min.setType(value.getType());
+			max.setType(value.getType());
+			max -= min;
+			value -= min;
+			Value temp = (max && value) ? (value * Value(len) / max) : z;
+			return (clip) ? ((temp > len) ? len : (temp < z) ? z : temp) : temp;
+		}
+
+		/**
 		 * @brief Limits on content sizes.
 		 */
 		enum
@@ -768,19 +789,22 @@ Value& Value::set(const void* v, size_t size)
 inline
 Value& Value::assign(const bool v)
 {
-	return assign(long(v));
+	int_type i = v;
+	return assign(&i, sizeof(int_type));
 }
 
 inline
 Value& Value::assign(const int v)
 {
-	return assign(long(v));
+	int_type i = v;
+	return assign(&i, sizeof(int_type));
 }
 
 inline
 Value& Value::assign(const unsigned v)
 {
-	return assign(long(v));
+	int_type i = v;
+	return assign(&i, sizeof(int_type));
 }
 
 #if !IS_WIN

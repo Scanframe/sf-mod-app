@@ -152,8 +152,8 @@ void MainWindow::onCreateFormDialog()
 	{
 		scrollArea->setGeometry(QRect(QPoint(), event->size()));
 	});
-	dlg->show();
 	dlg->adjustSize();
+	dlg->show();
 }
 
 void MainWindow::onReadFromFile()

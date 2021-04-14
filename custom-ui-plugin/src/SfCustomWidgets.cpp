@@ -9,8 +9,8 @@ CustomWidgets::CustomWidgets(QObject* parent)
 	:QObject(parent)
 {
 	// Add the implemented widgets to the list.
-	widgets.append(new sf::AnalogClockPlugin(this));
-	widgets.append(new sf::PushButtonPlugin(this));
+	widgets.append(new AnalogClockPlugin(this));
+	widgets.append(new PushButtonPlugin(this));
 }
 
 QList<QDesignerCustomWidgetInterface*> CustomWidgets::customWidgets() const

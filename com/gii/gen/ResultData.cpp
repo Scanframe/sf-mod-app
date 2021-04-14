@@ -14,10 +14,8 @@ namespace sf
 
 void ResultData::setDebug(bool debug)
 {
-	if (_reference)
-	{
-		_reference->_debug = debug;
-	}
+	_reference->_debug = debug;
+	_reference->_rangeManager->setDebug(debug);
 }
 
 void ResultData::initialize()
@@ -203,7 +201,7 @@ const ResultData& ResultData::getInstanceBySequenceId(ResultData::id_type seq_id
 {
 	for (auto rd: list)
 	{
-		if (rd->getSeqId() == seq_id)
+		if (rd->getSequenceId() == seq_id)
 		{
 			return *rd;
 		}
@@ -326,16 +324,17 @@ bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_
 	// The default return value is true.
 	bool rv = true;
 	// Check if instances other then the zero result have an ID of zero.
-	if (_reference != ResultDataStatic::zero()._reference && definition._id == 0)
+	if (_reference != ResultDataStatic::zero()._reference && (definition._id + id_ofs) == 0)
 	{
 		rv = false;
 	}
 	// Don' bother to go on if an error occurred so far.
 	if (rv)
-	{ // check if the id already exist
-		// GetResultRefById returns ResultDataStatic::zero() if not found
-		ResultDataReference* ref = getReferenceById(definition._id);
-		if (ref && ref != ResultDataStatic::zero()._reference)
+	{
+		// Check if a reference with this id already exists.
+		ResultDataReference* ref = getReferenceById(definition._id + id_ofs);
+		// Check if the the returned reference pointer is not the zero reference.
+		if (ref != ResultDataStatic::zero()._reference)
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
 				<< stringf("0x%lX,%s", definition._id, definition._name.c_str()) << "\nover!\n"
@@ -353,14 +352,16 @@ bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_
 		// Read all std::string field values into the reference fields
 		ref->_id = definition._id + id_ofs;
 		// First one to get id zero is the ResultDataStatic::zero() result.
-		ref->_sequenceId = ResultDataStatic::_sequenceIdCounter++;
+		ref->_sequenceId = ResultDataStatic::getUniqueId();
 		ref->_name = definition._name;
 		ref->_flags = definition._flags;
 		// copy of original flags
 		ref->_curFlags = ref->_flags;
 		ref->_description = definition._description;
 		ref->_type = definition._type;
-		ref->_significantBits = sf::clip<size_type>(definition._significantBits, 1, getTypeSize(definition._type) * 8);
+		ref->_significantBits = sf::clip<size_type>(definition._significantBits ?
+			definition._significantBits :
+			getTypeSize(definition._type) * 8, 1, getTypeSize(definition._type) * 8);
 		ref->_offset = definition._offset;
 		//
 		auto block_size = definition._blockSize;
@@ -525,7 +526,8 @@ void ResultData::setHandler(ResultDataHandler* handler)
 			// Notify instance getting event link
 			_handler = handler;
 			emitEvent(reLinked, *this, _reference->_rangeManager->getManaged());
-			_transId = (Range::id_type) this;
+			// Use a unique predictable id as transaction id so it can be checked in a unit test.
+			_transactionId = (Range::id_type) ResultDataStatic::getUniqueId();
 		}
 		else
 		{ // Notify instance losing event link in the was already a link
@@ -533,7 +535,7 @@ void ResultData::setHandler(ResultDataHandler* handler)
 			{
 				emitEvent(reUnlinked, *this, _reference->_rangeManager->getManaged());
 				_handler = nullptr;
-				_transId = 0;
+				_transactionId = 0;
 			}
 		}
 	}
@@ -622,8 +624,8 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 				}
 				// Generate an event to notify users of the change in reserved blocks.
 				// The new value is passed in the 'Stop' Value of the passed 'Range' argument.
-				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(), (Range::id_type) _reference->_id),
-					skip_self);
+				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(),
+					(Range::id_type) _reference->_id), skip_self);
 			}
 			// Set the new managed range.
 			_reference->_rangeManager->setManaged(nr);
@@ -644,7 +646,7 @@ ResultData::EType ResultData::getType(const char* type)
 
 const char* ResultData::getType(ResultData::EType type)
 {
-	return ResultDataStatic::_typeInfoArray[(type >= rtLastEntry || type < 0) ? rtInvalid : type].Name;
+	return ResultDataStatic::_typeInfoArray[(type < 0 ||type >= rtLastEntry) ? rtInvalid : type].Name;
 }
 
 ResultData::size_type ResultData::getTypeSize(ResultData::EType type)
@@ -1003,7 +1005,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 				{
 					// Check if the pointer is valid Check if the transaction id is
 					// non-zero and equal to the current in the list.
-					if (rd && rd->_transId && rd->_transId == rng.getId())
+					if (rd && rd->_transactionId && rd->_transactionId == rng.getId())
 					{
 						// Generate an event for one of the result that requested it.
 						rv += rd->emitEvent(reGotRange, *this, rng);
@@ -1191,7 +1193,7 @@ ResultData::data_type ResultData::getValueU(const void* data) const
 void ResultData::clearRequests()
 {
 	// Remove all requests of this client.
-	_reference->_rangeManager->flushRequests(_transId);
+	_reference->_rangeManager->flushRequests(_transactionId);
 }
 
 bool ResultData::requestRange(const Range& rng)
@@ -1457,7 +1459,6 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 
 bool ResultData::create(std::istream& is, Vector& list, int& err_line)
 {
-	// TODO: Use Definition structure as intermediate list and for checking stream content.
 	bool ret_val = true;
 	// result keeps track of the lines read
 	if (not_ref_null(err_line))
@@ -1516,30 +1517,25 @@ bool ResultData::create(std::istream& is, Vector& list, int& err_line)
 std::string ResultData::getSetupString() const
 {
 	const char sep = ',';
-	char buf[32];
 	//  vfeID,
-	std::string ret_val = "0x";
-	ret_val += itoa(getId(), buf, 16);
-	ret_val += sep;
+	std::string rv = "0x" + itostr(getId(), 16) + sep;
 	//  vfeName,
-	ret_val += getName() + sep;
+	rv += escape(getName()) + sep;
 	//  vfeFLAGS,
-	ret_val += getFlagsString() + sep;
+	rv += getFlagsString() + sep;
 	//  vfeDescription,
-	ret_val += unescape(getDescription()) + sep;
+	rv += escape(getDescription()) + sep;
 	//  vfeType,
-	ret_val += getType(getType());
-	ret_val += sep;
+	rv += std::string(getType(getType())) + sep;
 	// rfeBlockSize,
-	ret_val += itoa(getBlockSize(), buf, 10);
-	ret_val += sep;
+	rv += itostr(getBlockSize(), 10) + sep;
 	// rfeSegmentSize,
-	ret_val += itoa(getSegmentSize(), buf, 10);
-	ret_val += sep;
-	ret_val += itoa(getSignificantBits(), buf, 10);
-	ret_val += sep;
-	ret_val += itoa(getValueOffset(), buf, 10);
-	return ret_val;
+	rv += itostr(getSegmentSize(), 10) + sep;
+	// rfeSigBits,
+	rv += itostr(getSignificantBits(), 10) + sep;
+	// rfeOffset
+	rv += itostr(getValueOffset(), 10);
+	return rv;
 }
 
 ResultData& ResultData::getOwner()
@@ -1573,7 +1569,7 @@ ResultDataTypes::id_type ResultData::getId() const
 	return _reference->_id;
 }
 
-ResultDataTypes::id_type ResultData::getSeqId() const
+ResultDataTypes::id_type ResultData::getSequenceId() const
 {
 	return _reference->_sequenceId;
 }

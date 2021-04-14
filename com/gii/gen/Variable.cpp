@@ -138,22 +138,22 @@ void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 	{
 		SF_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
 		// Do not free allocated data before end of global event remove
-		VariableStatic::_deleteWaitCache.add(p);
+		VariableStatic::_deleteWaitCache->add(p);
 	}
 	else
 	{
 		// Call real destructor.
 		::operator delete(p);
 		// If deletion is allowed again delete the wait cache too.
-		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache.size();
+		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache->size();
 		if (count)
 		{
 			while (count--)
 			{
-				delete (char*) VariableStatic::_deleteWaitCache[count];
+				delete (char*) VariableStatic::_deleteWaitCache->at(count);
 			}
 			// Flush the entries from the list.
-			VariableStatic::_deleteWaitCache.flush();
+			VariableStatic::_deleteWaitCache->flush();
 		}
 	}
 }
@@ -182,7 +182,7 @@ Variable::~Variable()
 Variable::size_type Variable::getCount()
 {
 	ReferenceVector::size_type rv = 0;
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		rv += (ref->_global || ref->_exported) ? 1 : 0;
 	}
@@ -194,7 +194,7 @@ Variable::size_type Variable::getInstanceCount(bool global_only)
 {
 	ReferenceVector::size_type rv = 0;
 	// Iterate through all variable references and count the usage count.
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		if (!global_only || ref->_global)
 		{
@@ -210,9 +210,9 @@ Variable::Vector Variable::getList()
 	// Return value.
 	Variable::Vector rv;
 	// Set the vector to reserve the maximum expected size.
-	rv.reserve(VariableStatic::_references.size());
+	rv.reserve(VariableStatic::_references->size());
 	// Iterate through the references.
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		// Only globals and exclude zero variable which has id of zero.
 		if ((ref->_global || ref->_exported) && ref->_id)
@@ -227,7 +227,7 @@ VariableReference* Variable::getReferenceById(Variable::id_type id)
 {
 	if (id)
 	{
-		for (auto ref: VariableStatic::_references)
+		for (auto ref: *VariableStatic::_references)
 		{
 			if (ref->_id == id && ref->_global && ref != VariableStatic::zero()._reference)
 			{
@@ -742,7 +742,7 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 	// Declare event list for instance pointers.
 	Vector ev_list;
 	// Iterate through all references.
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		// Only global references are considered.
 		if (ref->_global)
@@ -779,7 +779,7 @@ Variable::size_type Variable::attachDesired()
 	// Signal other event handler functions are called using a global predefined list.
 	Vector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		// Only applies for globals.
 		if (ref->_global)
@@ -839,7 +839,7 @@ void Variable::setHandler(VariableHandler* handler)
 
 void Variable::removeHandler(VariableHandler* handler)
 {
-	for (auto ref: VariableStatic::_references)
+	for (auto ref: *VariableStatic::_references)
 	{
 		// Iterate through the variables.
 		for (auto v: ref->_list)
@@ -939,7 +939,7 @@ bool Variable::setCur(const Value& value, bool skip_self)
 		return updateTempValue(value, skip_self);
 	}
 	// If this instance uses the converted value it must be converted first to the real value.
-	return updateValue(convert(value, true), skip_self);
+	return updateValue(_converted ? convert(value, true): value, skip_self);
 }
 
 bool Variable::isReadOnly() const
@@ -948,14 +948,13 @@ bool Variable::isReadOnly() const
 	// Only the owner can change a readonly instance.
 	if (!isOwner())
 	{
-		// If the flag READONLY is Set the not owned variable is
-		// read only by default.
+		// If the flag READONLY is set the not owned variable is read only by default.
 		if (isFlag(flgReadonly))
 		{
 			return true;
 		}
 		// When the variable is a local exported one and this instance is
-		// globally referencing it is also read only because only
+		// globally referencing it is also read-only because only
 		// local referencing variables may change the current value or flags.
 		if (!const_cast<Variable*>(this)->getOwner()._global && _global)
 		{
@@ -1133,11 +1132,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 	// Check if there was a change of the current value.
 	if (changed)
 	{
-		// Update the Converted value if the unit is filled in.
-		if (_reference->_convertUnit.length())
-		{
-			_reference->_convertCurValue = convert(_reference->_curValue, false);
-		}
+		// Update the converted value
+		_reference->_convertCurValue = convert(_reference->_curValue, false);
 		// Notify all variables referencing this variable that the current value has changed.
 		emitLocalEvent(veValueChange, skip_self);
 	}
@@ -1332,16 +1328,15 @@ std::string Variable::getSetupString() const
 {
 	const char sep = ',';
 	//  vfId,
-	std::string rv = stringf("0x%llX", getId());
-	rv += sep;
+	std::string rv = "0x" + itostr(getId(), 16) + sep;
 	//  vfName,
-	rv += getName() + sep;
+	rv += escape(getName()) + sep;
 	//  vfUnit,
 	rv += _reference->_unit + sep;
 	//  vfFlags,
 	rv += getFlagsString() + sep;
 	//  vfDescription,
-	rv += unescape(getDescription()) + sep;
+	rv += escape(getDescription()) + sep;
 	//  vfType,
 	const char* tmp = getType(getType());
 	rv += tmp;
@@ -1655,7 +1650,7 @@ bool Variable::applyTemporary(bool skip_self)
 	if (_temporary)
 	{
 		// Update using the straight value when not converted.
-		return updateValue(convert(*_temporary, true), skip_self);
+		return updateValue(_converted ? convert(*_temporary, true) : *_temporary, skip_self);
 	}
 	return false;
 }

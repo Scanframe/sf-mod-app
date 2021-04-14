@@ -9,7 +9,7 @@ namespace sf
 {
 
 AnalogClock::AnalogClock(QWidget* parent)
-	:ObjectExtension(this), QWidget(parent)
+	:QWidget(parent), ObjectExtension(this)
 {
 	auto* timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&QWidget::update));
@@ -22,12 +22,11 @@ AnalogClock::AnalogClock(QWidget* parent)
 bool AnalogClock::isRequiredProperty(const QString& name)
 {
 	static const char* keys[] = {"geometry", "toolTip", "whatsThis", "text"};
-	for (auto key: keys)
+	// Check if passed property name is in the keys list.
+	return std::any_of(&keys[0], &keys[sizeof(keys) / sizeof(keys[0])], [name](const char* prop)
 	{
-		if (name == key)
-			return true;
-	}
-	return false;
+		return name == prop;
+	});
 }
 
 void AnalogClock::paintEvent(QPaintEvent*)

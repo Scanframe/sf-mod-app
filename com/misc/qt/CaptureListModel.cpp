@@ -51,15 +51,6 @@ void CaptureListModel::onClear()
 
 }
 
-void CaptureListModel::onFill()
-{
-	static int idx = 0;
-	for (int i = 0; i < 6; ++i)
-	{
-		std::clog << sf::string_format("This is line %03d", idx++) << std::endl;
-	}
-}
-
 void CaptureListModel::contextMenuRequested(QPoint pos)
 {
 	// When the parent is a listView.

@@ -18,7 +18,7 @@ class ResultDataReference;
 class ResultData;
 
 /**
- * @brief This base class contains all local types of used in the TVariable class.<br>
+ * @brief This base class contains all local types of used in the #sf::ResultData class.<br>
  * Multiple inheritance makes these types local for other classes as well.<br>
  * Making code more readable and also prevents name space problems.<br>
  */

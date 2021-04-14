@@ -42,7 +42,7 @@ class _MISC_CLASS Mutex
 		/**
 		 * Locking class for easy locking and unlocking by destructor.
 		 */
-		class Lock
+		class _MISC_CLASS Lock
 		{
 			public:
 				/**

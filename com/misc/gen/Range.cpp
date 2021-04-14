@@ -1,6 +1,6 @@
 #include <string>
+#include <algorithm>
 #include "gen_utils.h"
-#include "dbgutils.h"
 #include "Range.h"
 
 namespace sf

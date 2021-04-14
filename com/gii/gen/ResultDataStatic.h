@@ -5,6 +5,9 @@
 namespace sf
 {
 
+/**
+ * @brief Base class of the #sf::ResultData having all global static data members.
+ */
 class _GII_CLASS ResultDataStatic :public ResultDataTypes
 {
 	public:
@@ -21,6 +24,12 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		 * @brief Gets the enumerate type from the passed type string.
 		 */
 		static EType getType(const char* type);
+
+		/**
+		 * Gets a number which is unique because it is incremented at each call.
+		 * @return Unique id number.
+		 */
+		static size_type getUniqueId();
 
 	private:
 		/**
@@ -51,10 +60,10 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		 */
 		static int _globalActive;
 		/**
-		 * @brief Each result data reference that is created with get an 'SeqId' assigned
-		 * which is the incremented value of 'SeqIdCounter'
+		 * @brief Counter used to generate a predictable unique id.
+		 * @see #getUniqueId()
 		 */
-		static size_type _sequenceIdCounter;
+		static size_type _uniqueIdCounter;
 		/**
 		 * @brief Keeps the allocated data in this list if it may not be deleted yet
 		 * because it is obstructed by an event being handled.

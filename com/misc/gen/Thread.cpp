@@ -180,7 +180,7 @@ void Thread::waitForExit()
 		}
 		else if (result == WAIT_TIMEOUT)
 		{
-			_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Graceful termination period has passed on " << getCurrentId())
+			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Graceful termination period has passed on " << getCurrentId())
 			lock.acquire();
 			// Send user signal signal to thread to be handled.
 			if (_handle)
@@ -189,12 +189,12 @@ void Thread::waitForExit()
 				if (error)
 				{
 					char buffer[BUFSIZ];
-					_NORM_NOTIFY(DO_DEFAULT, "pthread_join()" << ::strerror_r(errno, buffer, sizeof(buffer)))
+					SF_NORM_NOTIFY(DO_DEFAULT, "pthread_join()" << ::strerror_r(errno, buffer, sizeof(buffer)))
 				}
 			}
 		}
 		//
-		_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "ExitCode (" << _exitCode.Code << ")")
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "ExitCode (" << _exitCode.Code << ")")
 	}
 #else
 	Mutex::Lock lock(_mutex);

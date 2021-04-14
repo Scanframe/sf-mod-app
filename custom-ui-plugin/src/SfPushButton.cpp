@@ -1,6 +1,4 @@
-#include <misc/gen/dbgutils.h>
 #include <misc/gen/gen_utils.h>
-#include <misc/qt/qt_utils.h>
 #include "SfPushButton.h"
 
 /*
@@ -43,7 +41,7 @@ bool PushButton::isRequiredProperty(const QString& name)
 
 void PushButton::mousePressEvent(QMouseEvent* event)
 {
-	std::clog << __FUNCTION__ << " IconSource: " << IconSource << std::endl;
+	qDebug() << __FUNCTION__ << " IconSource: " << IconSource;
 	// Call overridden method.
 	QPushButton::mousePressEvent(event);
 }

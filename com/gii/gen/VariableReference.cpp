@@ -12,7 +12,7 @@ VariableReference::VariableReference(bool global)
 	_name = Value::_invalidStr;
 	_unit = Value::_invalidStr;
 	// Add to static reference list declared in VariableStatic
-	VariableStatic::_references.add(this);
+	VariableStatic::_references->add(this);
 }
 
 void VariableReference::copy(const VariableReference& ref)
@@ -50,66 +50,60 @@ VariableReference::~VariableReference()
 	// If Variables are still referenced these must be removed first except if it is ZeroVariable itself.
 	if (VariableStatic::zero()._reference == this)
 	{
-		// Check if there are still variables in the system when zero variable is destructed
-		size_t total_count = 0;
-		VariableStatic::ReferenceVector::iter_type i(VariableStatic::_references);
-		// Iterate through all variable references and count the usage count
-		while (i)
+		// Qt Designer has something weird going on. Memory seems to be garbled.
+		if (!VariableStatic::_references->empty() && VariableStatic::_references->at(0) != this)
 		{
-			VariableReference* ref = i++;
-			total_count += ref->_list.count();
 			// Notification of warning
-			// Check if current ref is the ZeroVariable reference.
-			if (ref == VariableStatic::zero()._reference)
+			SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT, "Unexpected zero variable pointer not as first in list!");
+		}
+		else
+		{
+			// Check if there are still variables in the system when zero variable is destructed
+			size_t total_count = 0;
+			// Iterate through all variable references and count the usage count
+			for (auto ref: *VariableStatic::_references)
 			{
-				// Iterate through each variable entry in the list.
-				size_type count = ref->_list.count();
-				// Skip the first one because there is always Zero Variable itself.
-				for (size_type idx = 1; idx < count; idx++)
+				total_count += ref->_list.size();
+				// Notification of warning
+				// Check if current ref is the ZeroVariable reference.
+				if (ref == VariableStatic::zero()._reference)
 				{
-					if (ref->_list[idx])
+					// Iterate through each variable entry in the list.
+					size_type count = ref->_list.count();
+					// Skip the first one because there is always Zero Variable itself.
+					for (size_type idx = 1; idx < count; idx++)
 					{
-						// Notification of warning
-						SF_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x" << std::hex
-							<< ref->_list[idx]->_desiredId << " in this process!")
-					}
-					// Limit the amount shown to a maximum of 3.
-					if (idx >= 3)
-					{
-						SF_NORM_NOTIFY(DO_MSGBOX | DO_DEFAULT,
-							SF_RTTI_TYPENAME << ": Too many [" << count << "] dangling instances to be shown!")
-						break;
+						if (ref->_list[idx])
+						{
+							// Notification of warning
+							SF_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x"
+								<< std::hex << ref->_list[idx]->_desiredId << " in this process!")
+						}
+						// Limit the amount shown to a maximum of 3.
+						if (idx >= 3)
+						{
+							SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT, ": Too many [" << count << "] dangling instances to be shown!")
+							break;
+						}
 					}
 				}
+				else
+				{
+					SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT,
+						": Dangling reference owning instance with ID 0x" << std::hex << ref->_id << " in this process!")
+				}
 			}
-			else
-			{
-				SF_NORM_NOTIFY
-				(
-					DO_MSGBOX | DO_DEFAULT,
-					SF_RTTI_TYPENAME
-						<< ": Dangling reference owning instance with ID "
-						<< stringf("0x%lX", ref->_id)
-						<< " in this process!"
-				)
-			}
-		}
-		// Subtract 1 for zero variable itself.
-		// There should only be one left in the list
-		total_count--;
-		// Notification of warning
-		SF_COND_NORM_NOTIFY
-		(
-			total_count,
-			DO_MSGBOX | DO_DEFAULT,
-			SF_RTTI_TYPENAME
-				<< ": Total of " << total_count
+			// Subtract 1 for zero variable itself. There should only be one left in the list
+			total_count--;
+			// Notification of warning
+			SF_COND_RTTI_NOTIFY(total_count, DO_MSGBOX | DO_DEFAULT, "Total of " << total_count
 				<< " dangling Variable instances in this process!"
-		)
+			)
+		}
 	}
 	else
 	{
-		size_type count = _list.count();
+		size_type count = _list.size();
 		while (count--)
 		{
 			// Attach variable to Zero which is the default and the invalid one
@@ -120,7 +114,7 @@ VariableReference::~VariableReference()
 		}
 	}
 	// Remove from reference from the vector.
-	VariableStatic::_references.detach(this);
+	VariableStatic::_references->detach(this);
 }
 
 }

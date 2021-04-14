@@ -16,17 +16,17 @@ namespace sf
 {
 
 /**
- * Memory allocator class.
+ * @brief Memory allocator class.
  */
 struct Allocator
 {
 	/**
-	 * Dummy type for allocators which need handles.
+	 * @brief Dummy type for allocators which need handles.
 	 */
 	typedef int handle_t;
 
 	/**
-	 * Allocates the memory for a dynamic buffer.
+	 * @brief Allocates the memory for a dynamic buffer.
 	 */
 	static void* allocmem(handle_t&, size_t sz)
 	{
@@ -36,7 +36,7 @@ struct Allocator
 	}
 
 	/**
-	 * Reallocates the memory for a dynamic buffer.
+	 * @brief Reallocates the memory for a dynamic buffer.
 	 */
 	static void* reallocmem(handle_t&, void* p, size_t sz)
 	{
@@ -46,7 +46,7 @@ struct Allocator
 	}
 
 	/**
-	 * Frees the memory for a dynamic buffer.
+	 * @brief Frees the memory for a dynamic buffer.
 	 */
 	static void freemem(handle_t, void*& p)
 	{
@@ -55,7 +55,12 @@ struct Allocator
 	}
 };
 
-template <class Alloc>
+/**
+ * @brief Template for creating a dynamic buffer using an allocator.
+ *
+ * @tparam Alloc Allocator type.
+ */
+template <class Alloc=Allocator>
 class TDynamicBuffer
 {
 	public:
@@ -523,7 +528,7 @@ size_t TDynamicBuffer<Alloc>::reserved() const
 }
 
 /**
- * Actual specialized dynamic buffer type.
+ * @brief Actual specialized dynamic buffer type using the default allocator.
  */
 typedef TDynamicBuffer<Allocator> DynamicBuffer;
 

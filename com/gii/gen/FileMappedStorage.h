@@ -348,7 +348,7 @@ class _GII_CLASS FileMappedStorage
 		/**
 		 * @brief Provides easy way to lock a pointer to the memory.
 		 */
-		class Lock
+		class _GII_CLASS Lock
 		{
 			public:
 				/**

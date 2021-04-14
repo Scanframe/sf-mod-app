@@ -6,112 +6,167 @@
 namespace sf
 {
 /**
- * Timer class that has fixed time intervals at which it becomes true.
+ * @brief Timer class that has fixed time intervals at which it becomes true.
+ *
  * If one ore several intervals are missed, this timer will not catch up.
  */
-class _MISC_CLASS TIntervalTimer
+class _MISC_CLASS IntervalTimer
 {
 	public:
-		// Default constructor is by default disabled until Set() is called.
-		TIntervalTimer();
+		/**
+		 * @brief Default constructor is by default disabled until Set() is called.
+		 */
+		IntervalTimer();
 
-		// Initializing constructor setting the timers interval time in msec.
-		// Is by default enabled.
-		explicit TIntervalTimer(clock_t t);
+		/**
+		 * @brief Initializing constructor setting the timers interval time in msec.
+		 *
+		 * Is by default enabled.
+		 */
+		explicit IntervalTimer(clock_t t);
 
-		// Sets the timers interval time in msec.
-		// When zero is passed it is always active.
-		//
-		void Set(clock_t t);
+		/**
+		 * @brief Sets the timers interval time in msec.
+		 * When zero is passed it is always active.
+		 */
+		void set(clock_t t);
 
-		// Tests if the timer is active if it is active it returns non-zero
-		// and resets the timer to a new event.
-		[[nodiscard]] bool Active() const;
+		/**
+		 * @brief Tests if the timer is active if it is active it returns non-zero and resets the timer to a new event.
+		 *
+		 * @return True when active.
+		 */
+		[[nodiscard]] bool active() const;
 
-		// Passes clock() value ourself to reduce overhead in case of
-		// multiple timers.
-		[[nodiscard]] bool Active(clock_t) const;
+		/**
+		 * @brief Allows passing clock() value ourself to reduce overhead in case of multiple timers.
+		 *
+		 * @param time Clock() value.
+		 * @return True when active.
+		 */
+		[[nodiscard]] bool active(clock_t time) const;
 
-		// Enables the timer with the current interval time.
-		void Enable();
+		/**
+		 * @brief Enables the timer with the current interval time.
+		 */
+		void enable();
 
-		// Disables the timer.
-		void Disable();
+		/**
+		 * @brief Disables the timer.
+		 */
+		void disable();
 
-		// returns non-zero is the timer is enabled.
-		[[nodiscard]] bool IsEnabled() const;
+		/**
+		 * @brief Gets timer enabled.
+		 *
+		 * @return True on enabled.
+		 */
+		[[nodiscard]] bool isEnabled() const;
 
-		// Returns the set interval time in msec.
-		[[nodiscard]] clock_t GetIntervalTime() const;
+		/**
+		 * @brief Gets the set interval time in msec.
+		 * @return Interval time.
+		 */
+		[[nodiscard]] clock_t getIntervalTime() const;
 
-		// Returns the time left in msec before function active becomes true.
-		[[nodiscard]] clock_t GetTimeLeft() const;
+		/**
+		 * @brief Gets the time left in msec before function active becomes true.
+		 * @return Time left.
+		 */
+		[[nodiscard]] clock_t getTimeLeft() const;
 
-		[[nodiscard]] clock_t GetTimeLeft(clock_t) const;
+		/**
+		 * @brief Gets the time left in msec before function active becomes true.
+		 * @param time Clock() value.
+		 * @return Time left.
+		 */
+		[[nodiscard]] clock_t getTimeLeft(clock_t time) const;
 
-		// Same as time left but it also gives the time passed the target time
-		// and before that as a negative value.
-		[[nodiscard]] clock_t GetTimeOver() const;
+		/**
+		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
+		 *
+		 * @return Time over value.
+		 */
+		[[nodiscard]] clock_t getTimeOver() const;
 
-		[[nodiscard]] clock_t GetTimeOver(clock_t) const;
+		/**
+		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
+		 *
+		 * @param t Clock() value.
+		 * @return Time over value.
+		 */
+		[[nodiscard]] clock_t getTimeOver(clock_t t) const;
 
-		// Test operator. Used in if and while statements.
+		/**
+		 * @brief Test operator.
+		 *
+		 * Used in if and while statements.
+		 */
 		explicit operator bool() const;
 
-		// This operator is used to minimize clock() calls.
-		// Return non zero if timer is active.
-		int operator()(clock_t t) const;
+		 /**
+		  * This operator is used to minimize clock() calls by passing the value itself.
+		  *
+		 * @param t Clock() value.
+		  * @return True if timer is active.
+		  */
+		bool operator()(clock_t t) const;
 
 	private:
-		// Data member holding the interval time with which the target time is set.
-		// time is set
-		clock_t Interval{0};
-		// Holds the target time at which the timer should active.
-		clock_t Target{0};
-		// Enable flag
-		bool FlagEnable{false};
+		/**
+		 * @brief Holds the interval time with which the target time is set.
+		 */
+		clock_t _interval{0};
+		/**
+		 * @brief Holds the target time at which the timer should active.
+		 */
+		clock_t _target{0};
+		/**
+		 * @brief Holds the enable flag
+		 */
+		bool _enabled{false};
 };
 
 inline
-TIntervalTimer::TIntervalTimer(clock_t t)
+IntervalTimer::IntervalTimer(clock_t t)
 {
-	Set(t);
+	set(t);
 }
 
 inline
-void TIntervalTimer::Enable()
+void IntervalTimer::enable()
 {
-	FlagEnable = true;
+	_enabled = true;
 }
 
 inline
-void TIntervalTimer::Disable()
+void IntervalTimer::disable()
 {
-	FlagEnable = false;
+	_enabled = false;
 }
 
 inline
-bool TIntervalTimer::IsEnabled() const
+bool IntervalTimer::isEnabled() const
 {
-	return FlagEnable;
+	return _enabled;
 }
 
 inline
-clock_t TIntervalTimer::GetIntervalTime() const
+clock_t IntervalTimer::getIntervalTime() const
 {
-	return Interval;
+	return _interval;
 }
 
 inline
-TIntervalTimer::operator bool() const
+IntervalTimer::operator bool() const
 {
-	return Active();
+	return active();
 }
 
 inline
-int TIntervalTimer::operator()(clock_t t) const
+bool IntervalTimer::operator()(clock_t t) const
 {
-	return Active(t);
+	return active(t);
 }
 
 }

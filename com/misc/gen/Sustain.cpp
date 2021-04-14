@@ -105,7 +105,7 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 			}
 			// Check if entry was disabled. This may look strange but the timers
 			// enable disable is also used for non timer entries.
-			if (entry->_timer.IsEnabled())
+			if (entry->_timer.isEnabled())
 			{ // IF the hooked function returns false disable this entry.
 				if (!entry->call(time))
 				{
@@ -145,7 +145,7 @@ class SustainWinTimer :public WinTimer
 			}
 			else
 			{
-				_NORM_NOTIFY(DO_DEFAULT, "SustainTimerProc(): Skipped: Maximum re-entries reached!");
+				SF_NORM_NOTIFY(DO_DEFAULT, "SustainTimerProc(): Skipped: Maximum re-entries reached!");
 			}
 		}
 

@@ -6,14 +6,15 @@ namespace sf
 {
 
 /**
- * Base class used for giving a Variable instance access to a member functions
+ * @brief Base class used for giving a Variable instance access to a member functions
  * of a derived class. This class is not used directly and is used a base class
  * for the TVariableHandler<T> template class.
  */
 struct _GII_CLASS VariableHandler :public VariableTypes
 {
 	/**
-	 * Pure virtual function which must be implemented when used in a polymorphic setting.
+	 * @brief Pure virtual function which must be implemented when used in a polymorphic setting.
+	 *
 	 * @param event Type of the event
 	 * @param call_var Calling variable instance
 	 * @param link_var Linked variable instance
@@ -28,15 +29,15 @@ struct _GII_CLASS VariableHandler :public VariableTypes
 		) = 0;
 
 	/**
-	 * Destructor clears the link with variable instances
-	 * so no errors occur when the link is destructed before
-	 * the variable is.
+	 * @brief Destructor clears the link with variable instances so no errors occur
+	 * when the link is destructed before the variable is.
 	 */
-	~VariableHandler();
+	virtual ~VariableHandler();
 };
 
 /**
- * Template for linking pointers of member function to Variable instances.
+ * @brief Template for linking pointers of member function to Variable instances.
+ *
  * @tparam T
  */
 template<class T>
@@ -44,37 +45,37 @@ class TVariableHandler :public VariableHandler
 {
 	public:
 		/**
-		 * Required event handler type.
+		 * @brief Required event handler type.
 		 */
 		typedef void (T::*TPmf)(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst);
 
 		/**
-		 * Constructor for assigning the pointer of the member function.
+		 * @brief Constructor for assigning the pointer of the member function.
 		 */
 		TVariableHandler(T* self, TPmf pmf);
 
 		/**
-		 * Prevent copying by not implementing copy constructor.
+		 * @brief Prevent copying by not implementing copy constructor.
 		 */
 		TVariableHandler(const TVariableHandler&) = delete;
 
 		/**
-		 * Prevent copying by not implementing assignment operator.
+		 * @brief Prevent copying by not implementing assignment operator.
 		 */
 		TVariableHandler& operator=(const VariableHandler&) = delete;
 
 	private:
 		/**
-		 * void pointer to member function.
+		 * @brief Pointer to member function.
 		 */
 		TPmf _pmf;
 		/**
-		 * void pointer to class instance.
+		 * @brief Pointer to class instance.
 		 */
 		T* _self;
 
 		/**
-		 * Call the member function through virtual overloaded function from the base class.
+		 * @brief Call the member function through virtual overloaded function from the base class.
 		 *
 		 * @param event
 		 * @param call_var
@@ -97,6 +98,8 @@ template<class T>
 inline
 TVariableHandler<T>::TVariableHandler(T* self, TVariableHandler::TPmf pmf)
 	:_self(self)
-	 , _pmf(pmf) {}
+	 , _pmf(pmf)
+{
+}
 
 }

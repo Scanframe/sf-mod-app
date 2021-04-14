@@ -4,6 +4,39 @@ sf--PushButton:hover
 	border: 1px solid green;
 }
 
+/*
+sf--VariableEdit QLineEdit
+{
+	border: 4px solid yellow;
+}
+
+sf--VariableEdit QLineEdit
+{
+	background-color: darkgreen;
+	border-width: 10px;
+}
+
+sf--VariableEdit QLabel#unit
+{
+	background-color: red;
+}
+
+sf--VariableEdit QLabel#name
+{
+	background-color: blue;
+}
+
+sf--VariableBar
+{
+	border: 12px solid cyan;
+	font-size: 15px;
+}
+sf--VariableBar:focus
+{
+	border-color: yellow;
+}
+*/
+
 QPushButton
 {
 	/*
@@ -31,13 +64,37 @@ QComboBox QAbstractItemView::item:enabled
 {
 /*
 	color:red;
-*/
 	padding: 6px;
+*/
 }
 
 QLineEdit
 {
+/*
 	background-color:red;
+*/
+}
+
+QFrame:focus
+{
+/*
+	background-color:red;
+*/
+}
+
+QPlainTextEdit
+{
+/*
+	border: 1px solid transparent;
+	border-radius: 3px;
+	padding: 1px;
+*/
+}
+QPlainTextEdit:focus
+{
+/*
+	border-color: #ff3daee9;
+*/
 }
 
 QMdiArea

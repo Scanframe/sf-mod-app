@@ -37,6 +37,8 @@ if (Doxygen_FOUND)
 	file(GLOB DOXYGEN_SOURCES RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md")
 	# Get all the header files in the ../com module.
 	file(GLOB_RECURSE DOXYGEN_SOURCES_TMP RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../com/*.h" "../com/*.md")
+	# Remove unwanted header file(s) ending on 'Private.h'.
+	list(FILTER DOXYGEN_SOURCES_TMP EXCLUDE REGEX ".*Private\\.h$")
 	list(APPEND DOXYGEN_SOURCES ${DOXYGEN_SOURCES_TMP})
 	# Replace the list separator ';' with space in the list.
 	list(JOIN DOXYGEN_SOURCES " " DOXYGEN_SRC)

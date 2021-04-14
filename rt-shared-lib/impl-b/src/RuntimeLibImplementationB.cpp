@@ -3,7 +3,7 @@
 #include "misc/gen/gen_utils.h"
 
 // Declaration of the dynamic library information.
-_DL_INFORMATION("Implementation Library B",
+SF_DL_INFORMATION("Implementation Library B",
 	R"(Second  implementation of the same class)"
 )
 

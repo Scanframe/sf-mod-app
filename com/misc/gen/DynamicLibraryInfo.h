@@ -5,16 +5,16 @@
 /**
  * Separator between name and description.
  */
-#define _DL_NAME_SEPARATOR "\n\n"
+#define SF_DL_NAME_SEPARATOR "\n\n"
 
 /**
  * Defines marker string used to find the start of a naming and description block in a compiled binary
  */
-#define _DL_MARKER_BEGIN "\n#@$!*^\n"
+#define SF_DL_MARKER_BEGIN "\n#@$!*^\n"
 /**
  * End marker
  */
-#define _DL_MARKER_END "\n^*!$@#\n"
+#define SF_DL_MARKER_END "\n^*!$@#\n"
 
 namespace sf
 {

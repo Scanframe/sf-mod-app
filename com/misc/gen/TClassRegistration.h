@@ -6,15 +6,15 @@
 #include "TClosure.h"
 #include "../global.h"
 
-#define _DL_INFORMATION(name, description) \
+#define SF_DL_INFORMATION(name, description) \
 namespace \
 { \
 const char* _dl_ = \
-  _DL_MARKER_BEGIN \
+  SF_DL_MARKER_BEGIN \
   name \
-  _DL_NAME_SEPARATOR \
+  SF_DL_NAME_SEPARATOR \
   description \
-  _DL_MARKER_END; \
+  SF_DL_MARKER_END; \
 }
 
 /**

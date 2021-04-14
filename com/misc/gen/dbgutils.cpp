@@ -24,6 +24,7 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 
 #if IS_WIN
 #include <debugapi.h>
+#include <processenv.h>
 #endif
 
 #include "Mutex.h"
@@ -177,13 +178,22 @@ bool IsDebug()
 	static int flag = -1;
 	if (flag < 0)
 	{
-		std::ifstream cls("/proc/self/cmdline");
-		std::string cmd_line((std::istreambuf_iterator<char>(cls)), std::istreambuf_iterator<char>());
+#if IS_WIN
 		flag = 0;
-		if (cmd_line.find(" --debug") != std::string::npos)
+		std::string cmd_line(::GetCommandLineA());
+		if (cmd_line.find("--debug") != std::string::npos)
 		{
 			flag = 1;
 		}
+#else
+		flag = 0;
+		std::ifstream cls("/proc/self/cmdline");
+		std::string cmd_line((std::istreambuf_iterator<char>(cls)), std::istreambuf_iterator<char>());
+		if (cmd_line.find("--debug") != std::string::npos)
+		{
+			flag = 1;
+		}
+#endif
 	}
 	return flag > 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VariableHandler.h"
+#include "VariableStatic.h"
 
 namespace sf
 {

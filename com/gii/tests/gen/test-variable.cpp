@@ -488,7 +488,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		v_server.setHandler(&handler_server);
 		v_server.setup(
 			sf::Variable::getDefinition("0x1,Outside Temperature,°C,A,Temperature measure outside,FLOAT,DOUBLE,0.1,18,-30,50"), 0x100);
-		// Retrieves the
+		// Makes the server instance retrieve new conversion values.
 		REQUIRE(v_server.setConvertValues(true));
 		// Create local variable.
 		sf::Variable v_client;
@@ -531,7 +531,11 @@ TEST_CASE("sf::Variable", "[variable]")
 */
 	}
 
+	SECTION("Zero destruct")
+	{
+		sf::Variable var;
+	}
+
 	sf::Variable::deinitialize();
 
 }
-

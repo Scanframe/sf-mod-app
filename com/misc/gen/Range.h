@@ -63,7 +63,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Type to contain and manipulate range lists.
 		 */
-		class Vector :public TVector<Range>
+		class _MISC_CLASS Vector :public TVector<Range>
 		{
 			public:
 				/**
@@ -122,6 +122,11 @@ class _MISC_CLASS Range :private RANGE
 		 * @brief Default constructor.
 		 */
 		Range();
+
+		/**
+		 * @brief Move assignment operator is default.
+		 */
+		Range& operator= (Range&&) = default;
 
 		/**
 		 * @brief Copy constructor.

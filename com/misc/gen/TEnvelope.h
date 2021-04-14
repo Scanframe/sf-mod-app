@@ -4,23 +4,23 @@ namespace sf
 {
 
 /**
-* Envelope-letter type of smart pointers. In this implementation the envelope
-* acts as a smart pointer to a reference-counted internal letter. This allows
-* a lot of flexibility & safety in working with a single object (associated
-* with the letter) being assigned to numerous envelopes in many scopes. An 'A'
-* version is provided for use with arrays.
-*<pre>
-* Use like:
-*  TEnvelope<T> e1 = new T(x,y,x);  // e1 now owns a T in a letter
-*  e1->Func();                      // invokes Func() on the new T
-*  Func(*e1);                       // passing a T& or a T this way
-*  TEnvelope<T> e2 = e1;            // e2 safely shares the letter with e1
-*
-*  TAEnvelope<T> e1 = new T[99];    // e1 now owns T[] in a letter
-*  e1[i].Func();                    // invokes Func() on a T element
-*  Func(e1[i]);                     // passing a T& or a T this way
-*  TAEnvelope<T> e2 = e1;           // e2 safely shares the letter with e1
-*</pre>
+ * @brief Envelope-letter type of smart pointers.
+ *
+ * In this implementation the envelope acts as a smart pointer to a reference-counted internal letter.
+ * This allows a lot of flexibility & safety in working with a single object (associated with the letter)
+ * being assigned to numerous envelopes in many scopes. An 'A' version is provided for use with arrays.
+ * Use like:
+ * <code>
+ *  TEnvelope<T> e1 = new T(x,y,x);  // e1 now owns a T in a letter
+ *  e1->Func();                      // invokes Func() on the new T
+ *  Func(*e1);                       // passing a T& or a T this way
+ *  TEnvelope<T> e2 = e1;            // e2 safely shares the letter with e1
+ *
+ *  TAEnvelope<T> e1 = new T[99];    // e1 now owns T[] in a letter
+ *  e1[i].Func();                    // invokes Func() on a T element
+ *  Func(e1[i]);                     // passing a T& or a T this way
+ *  TAEnvelope<T> e2 = e1;           // e2 safely shares the letter with e1
+ * </code>
 */
 template<class T>
 class TEnvelope
@@ -89,7 +89,6 @@ TEnvelope<T>& TEnvelope<T>::operator=(const TEnvelope<T>& src)
 	return *this;
 }
 
-//
 template<class T>
 TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 {
@@ -99,7 +98,7 @@ TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 }
 
 /**
-* class TAEnvelope
+* @brief class TAEnvelope
 */
 template<class T>
 class TAEnvelope
@@ -140,7 +139,6 @@ class TAEnvelope
 		TLetter* _letter;
 };
 
-//
 template<class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 {
@@ -153,7 +151,6 @@ TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 	return *this;
 }
 
-//
 template<class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(T array[])
 {

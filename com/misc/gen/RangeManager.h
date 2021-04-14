@@ -147,8 +147,16 @@ class _MISC_CLASS RangeManager
 		/**
 		 * @brief Test function for set privates during a unit test.
 		 */
-		void
-		unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr, Range::Vector* requests = nullptr);
+		void unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr,
+			Range::Vector* requests = nullptr);
+
+		/**
+		 * @brief Sets the debug flag for this instance.
+		 *
+		 * @param debug True to enable.
+		 */
+		void setDebug(bool debug);
+
 
 	private:
 		/**
@@ -176,6 +184,12 @@ class _MISC_CLASS RangeManager
 		 */
 		bool _debug{false};
 };
+
+inline
+void RangeManager::setDebug(bool debug)
+{
+	_debug = debug;
+}
 
 inline
 bool RangeManager::setAutoManaged(bool flag)

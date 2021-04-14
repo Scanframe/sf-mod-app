@@ -8,6 +8,10 @@ int debug_level = 0;
 
 int main(int argc, char* argv[])
 {
+#if 0
+	return  Catch::Session().run(argc, argv);
+#else
+
 	Catch::Session session; // There must be exactly one instance
 	int debug = 0;
 	// Build a new parser on top of Catch's
@@ -20,7 +24,7 @@ int main(int argc, char* argv[])
 			// the option names it will respond to
 		["--debug"]
 			// description string for the help output
-			("Custom option for a debug level	");
+			("Custom option for a debug level.");
 	// Now pass the new composite back to Catch so it uses that
 	session.cli(cli);
 	// Let Catch (using Clara) parse the command line
@@ -35,5 +39,5 @@ int main(int argc, char* argv[])
 		std::cout << "Debug: " << debug << std::endl;
 	}
 	return session.run();
-	//return  Catch::Session().run(argc, argv);
+#endif
 }

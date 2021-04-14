@@ -40,7 +40,7 @@ ResultDataStatic::FlagLetters ResultDataStatic::_flagLetters[] =
 
 int ResultDataStatic::_globalActive = 0;
 
-ResultDataTypes::size_type ResultDataStatic::_sequenceIdCounter = 0;
+ResultDataTypes::size_type ResultDataStatic::_uniqueIdCounter = 0;
 
 ResultData& ResultDataStatic::zero()
 {
@@ -52,12 +52,19 @@ ResultData& ResultDataStatic::zero()
 	return *_zero;
 }
 
+ResultDataStatic::size_type ResultDataStatic::getUniqueId()
+{
+	return ++ResultDataStatic::_uniqueIdCounter;
+}
+
 void sf::ResultDataStatic::initialize(bool init)
 {
 	if (init)
 	{
 		if (!ResultDataStatic::_zero)
 		{
+			// Reset the sequence ID counter.
+			ResultDataStatic::_uniqueIdCounter = 0;
 			// Call special private constructor to create the Zero instance.
 			new ResultData(nullptr, nullptr);
 		}

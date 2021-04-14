@@ -38,8 +38,9 @@ namespace sf
 {
 
 /**
- * Keeps the application up-to-date with changes in the settings file.
+ * @brief Keeps the application up-to-date with changes in the settings file.
  * Sets the styling and the color from an ini file.
+ * Used to quickly create test applications.
  */
 class _MISC_CLASS ApplicationSettings :public QObject
 {
@@ -77,15 +78,36 @@ class _MISC_CLASS ApplicationSettings :public QObject
 };
 
 /**
- * Connects void signal(void) functions and handlers by their string.
+ * @brief Connects signals by name of sender and name of signal.
+ *
+ * @param widget Widget having the child with the passed sender_name
+ * @param sender_name Name of sender widget.
+ * @param signal_name Name of signal.
+ * @param receiver Receiver object
+ * @param method_name Name of receiver method.
+ * @param ct Connection Type.
+ * @return Connection object.
  */
-_MISC_FUNC QMetaObject::Connection QObject_connect
+_MISC_FUNC  QMetaObject::Connection connectByName
 	(
-		const QObject* sender,
+		const QWidget* widget,
+		const QString& sender_name,
 		const char* signal_name,
 		const QObject* receiver,
 		const char* method_name,
-		Qt::ConnectionType = Qt::AutoConnection
+		Qt::ConnectionType ct = Qt::AutoConnection
 	);
+
+inline
+void inflate(QRect& r, int sz)
+{
+	r.adjust(-sz, -sz, sz, sz);
+}
+
+inline
+QRect inflated(const QRect& r, int sz)
+{
+	return r.adjusted(-sz, -sz, sz, sz);
+}
 
 } // namespace
