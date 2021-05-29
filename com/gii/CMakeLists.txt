@@ -72,6 +72,8 @@ set(SOURCES_QT
 	qt/VariableBarPlugin.cpp qt/VariableBarPlugin.h
 	qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
 	qt/VariableEditPlugin.cpp qt/VariableEditPlugin.h
+	qt/AscanGraph.cpp qt/AscanGraph.h
+	qt/AscanGraphPlugin.cpp qt/AscanGraphPlugin.h
 	)
 
 list(APPEND SOURCES ${SOURCES_QT})

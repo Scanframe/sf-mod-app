@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("rt-impl-b" LANGUAGES CXX)
+project("rsa-iface" LANGUAGES CXX)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../com/cmake")
@@ -15,22 +15,26 @@ _SetOutputDirs()
 
 # Uses directory Set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
+find_package(SfGii REQUIRED)
 
+#[[
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+]]
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-	src/RuntimeLibImplementationB.h
-	src/RuntimeLibImplementationB.cpp
+	global.h
+	RsaInterface.h
+	RsaInterface.cpp
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc rt-iface)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gii)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
@@ -45,11 +49,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
 # Tell the code the library is used as an archive. (So no imports or exports)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_B_ARC)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE _IFACE_ARC)
 
 # Tell the code the library is used as dynamic library. (So imports needed)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _IMPL_B_PKG)
+target_compile_definitions(${PROJECT_NAME} PRIVATE _RSA_PKG)
 
-
-
-
+# Set the include directory for this library when it is imported by another sub project.
+#set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/")

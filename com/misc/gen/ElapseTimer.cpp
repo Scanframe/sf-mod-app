@@ -15,7 +15,7 @@ ElapseTimer::ElapseTimer(unsigned long usec)
 	set(usec);
 }
 
-int ElapseTimer::operator()(const timespec& t) const
+bool ElapseTimer::operator()(const timespec& t) const
 {
 	return _enabled && timespeccmp(t, _target) >= 0;
 }

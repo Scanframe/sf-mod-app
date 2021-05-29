@@ -61,6 +61,10 @@ class _MISC_CLASS Thread
 		class Attributes
 		{
 			public:
+
+				/**
+				 * Handle type of a thread.
+				 */
 				typedef ::pthread_attr_t* handle_type;
 
 				/**

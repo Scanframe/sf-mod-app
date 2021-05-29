@@ -20,10 +20,16 @@ _SetBinarySuffix("${TEST_APP_TARGET}")
 target_compile_features(${TEST_APP_TARGET} PRIVATE cxx_std_17)
 
 # Should be linked to the main library, as well as the Catch2 testing library.
-target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Designer pthread sf-misc sf-gii)
+target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Designer pthread sf-misc sf-gii #[[custom-ui-plugin]])
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
 add_test(NAME ${TEST_APP_TARGET}-test${_TestBinSuffix} COMMAND ${TEST_APP_TARGET})
 
+#[[
+# Add custom-ui-plugin root location.
+get_filename_component(_location "${CMAKE_CURRENT_LIST_DIR}/../../../../" REALPATH)
+message("${_location}")
+target_include_directories(${TEST_APP_TARGET} PRIVATE ${_location})
+]]

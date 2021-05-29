@@ -5,6 +5,7 @@
 #include <QDataStream>
 #include <QPoint>
 #include <QSize>
+#include <QRect>
 #include <QFileSystemWatcher>
 
 // Import of shared library export defines.
@@ -34,6 +35,81 @@ QPoint operator+(const QPoint& pt, const QSize& sz)
 	return {pt.x() + sz.width(), pt.y() + sz.height()};
 }
 
+/**
+ * Allows adjusting the QRect size using a QSize.
+ */
+inline
+QRect operator+(const QRect& rc, const QSize& sz)
+{
+	return {rc.topLeft(), rc.size() + sz};
+}
+
+/**
+ * Allows adjusting the QRect size using a QSize.
+ */
+inline
+QRect operator-(const QRect& rc, const QSize& sz)
+{
+	return {rc.topLeft(), rc.size() - sz};
+}
+
+/**
+ * Allows adjusting the QRect position using a QPoint.
+ */
+inline
+QRect operator+(const QRect& rc, const QPoint& pt)
+{
+	return {rc.topLeft() + pt, rc.size()};
+}
+
+/**
+ * Allows adjusting the QRect position using a QPoint.
+ */
+inline
+QRect operator+=(QRect& rc, const QPoint& pt)
+{
+	rc = {rc.topLeft() + pt, rc.size()};
+	return rc;
+}
+
+/**
+ * Allows adjusting the QRect position using a QPoint.
+ */
+inline
+QRect operator-(const QRect& rc, const QPoint& pt)
+{
+	return {rc.topLeft() - pt, rc.size()};
+}
+
+/**
+ * Allows adjusting the QRect position using a QPoint.
+ */
+inline
+QRect operator-=(QRect& rc, const QPoint& pt)
+{
+	rc = {rc.topLeft() - pt, rc.size()};
+	return rc;
+}
+
+
+/**
+ * Inflates the passed rect on all sides using an integer.
+ */
+inline
+void inflate(QRect& r, int sz)
+{
+	r.adjust(-sz, -sz, sz, sz);
+}
+
+/**
+ * Inflates a copy the rectangle an integer and returns it.
+ */
+inline
+QRect inflated(const QRect& r, int sz)
+{
+	return r.adjusted(-sz, -sz, sz, sz);
+}
+
 namespace sf
 {
 
@@ -56,9 +132,23 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		 */
 		void setFilepath(const QString& filepath, bool watch = false);
 		/**
-		 * Sets the fileInfo
+		 * Gets the fileInfo.
 		 */
 		[[nodiscard]] const QFileInfo& fileInfo() const;
+
+		/**
+		 * Sets the window position and size from the settings file onto the passed widget.
+		 * @param win_name Name of the window.
+		 * @param window Window widget.
+		 */
+		void restoreWindowRect(const QString& win_name, QWidget* window);
+
+		/**
+		 * Sets the window position and size from the settings file onto the passed widget.
+		 * @param win_name Name of the window.
+		 * @param window Window widget.
+		 */
+		void saveWindowRect(const QString& win_name, QWidget* window);
 
 	private slots:
 
@@ -68,13 +158,28 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		void onFileChance(const QString& file);
 
 	private:
-		// Called from setFilepath and the event handler.
+		/**
+		 * Called from setFilepath and the event handler.
+		 * @param watch
+		 */
 		void doStyleApplication(bool watch);
 
-		// File watcher instance.
+		/**
+		 * File watcher instance.
+		 */
 		QFileSystemWatcher* _watcher;
-		// File info structure of the ini-file.
+		/**
+		 * File info structure of the ini-file.
+		 */
 		QFileInfo _fileInfo;
+
+		/**
+		 * Save and restores the window state of the passed widget.
+		 * @param name Name of the window widget.
+		 * @param widget The window widget.
+		 * @param save True for saving and false for restoring.
+		 */
+		void windowState(const QString& name, QWidget* widget, bool save);
 };
 
 /**
@@ -97,17 +202,5 @@ _MISC_FUNC  QMetaObject::Connection connectByName
 		const char* method_name,
 		Qt::ConnectionType ct = Qt::AutoConnection
 	);
-
-inline
-void inflate(QRect& r, int sz)
-{
-	r.adjust(-sz, -sz, sz, sz);
-}
-
-inline
-QRect inflated(const QRect& r, int sz)
-{
-	return r.adjusted(-sz, -sz, sz, sz);
-}
 
 } // namespace

@@ -4,6 +4,7 @@
 #include "GiiCustomWidgets.h"
 #include "VariableEditPlugin.h"
 #include "VariableBarPlugin.h"
+#include "AscanGraphPlugin.h"
 
 namespace sf
 {
@@ -18,6 +19,7 @@ GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 	// Add the implemented widgets to the list.
 	widgets.append(new VariableEditPlugin(this));
 	widgets.append(new VariableBarPlugin(this));
+	widgets.append(new AscanGraphPlugin(this));
 }
 
 GiiCustomWidgets::~GiiCustomWidgets()

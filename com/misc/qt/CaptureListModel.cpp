@@ -68,18 +68,8 @@ void CaptureListModel::handleNewLine(LineBuffer* sender, const QString& line)
 
 CaptureListModel::~CaptureListModel()
 {
-	if (_coutSaved)
-	{
-		std::cout.rdbuf(_coutSaved);
-	}
-	if (_clogSaved)
-	{
-		std::clog.rdbuf(_clogSaved);
-	}
-	if (_cerrSaved)
-	{
-		std::cerr.rdbuf(_cerrSaved);
-	}
+	// Restore initial status.
+	setSource(0);
 	delete _streamBuf;
 }
 
@@ -108,8 +98,7 @@ QVariant CaptureListModel::data(const QModelIndex& index, int role) const
 	}
 }
 
-QVariant CaptureListModel::headerData(int section, Qt::Orientation orientation,
-																			int role) const
+QVariant CaptureListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (role != Qt::DisplayRole)
 	{
@@ -151,7 +140,14 @@ unsigned CaptureListModel::source() const
 
 unsigned CaptureListModel::setSource(unsigned ss)
 {
+	// Only perform when there is a change.
+	if (ss == _source)
+	{
+		return _source;
+	}
+	// Assign the value.
 	_source = ss;
+	//
 	if (_source & ssCout)
 	{
 		if (!_coutSaved)
@@ -160,6 +156,14 @@ unsigned CaptureListModel::setSource(unsigned ss)
 		}
 		std::cout.rdbuf(_streamBuf);
 	}
+	else
+	{
+		if (_coutSaved)
+		{
+			std::cout.rdbuf(_coutSaved);
+		}
+	}
+	//
 	if (_source & ssClog)
 	{
 		if (!_clogSaved)
@@ -168,6 +172,14 @@ unsigned CaptureListModel::setSource(unsigned ss)
 		}
 		std::clog.rdbuf(_streamBuf);
 	}
+	else
+	{
+		if (_clogSaved)
+		{
+			std::clog.rdbuf(_clogSaved);
+		}
+	}
+	//
 	if (_source & ssCerr)
 	{
 		if (!_cerrSaved)
@@ -176,7 +188,15 @@ unsigned CaptureListModel::setSource(unsigned ss)
 		}
 		std::cerr.rdbuf(_streamBuf);
 	}
+	else
+	{
+		if (_cerrSaved)
+		{
+			std::cerr.rdbuf(_cerrSaved);
+		}
+	}
+	//
 	return _source;
 }
 
-} // namespace sf
+}

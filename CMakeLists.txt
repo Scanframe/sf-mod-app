@@ -35,6 +35,7 @@ _SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
+add_subdirectory(rsa)
 if (SF_BUILD_QT)
 	add_subdirectory(rt-ui-serialize)
 	add_subdirectory(custom-ui-plugin)

@@ -28,6 +28,12 @@ Classes needed for general stuff.
 * `::sf::Mutex`
 * `::sf::Sync`
 * `::sf::TStaticSync`
+
+Classes needed for graphs.
+
+* `::sf::Draw`
+* `::sf::Graph`
+
   
 ### Script / Calculator
 

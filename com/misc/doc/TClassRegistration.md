@@ -78,7 +78,7 @@ See `::sf::DynamicLibraryInfo`
 
 ```c++
 // Declaration of the dynamic library information.
-_DL_INFORMATION("Implementation Library A",
+SF_DL_INFORMATION("Implementation Library A",
 	R"(This is the description of the library and what it contains.
 	A second line of a multi lined description.)"
 )
@@ -93,12 +93,12 @@ SF_REG_CLASS
 RuntimeLibImplementationA::RuntimeLibImplementationA(const RuntimeIface::Parameters& params)
 	: RuntimeIface(params)
 {
-	_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
+	SF_RTTI_NOTIFY(DO_CLOG, "Constructed: " << sf::string_format("Handle(%d)", params.Handle))
 }
 
 const char* RuntimeLibImplementationA::getString()
 {
-	_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().RegisterName(this) << "): " << __FUNCTION__)
+	SF_RTTI_NOTIFY(DO_CLOG, "Calling(" << Interface().RegisterName(this) << "): " << __FUNCTION__)
 	FMessage = sf::string_format("Greetings from Class '%s' created by name '%s' ", _RTTI_TYPENAME.c_str(),
 		Interface().RegisterName(this).c_str());
 	return FMessage.c_str();

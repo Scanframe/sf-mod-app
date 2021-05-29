@@ -178,6 +178,44 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	settings.sync();
 }
 
+void ApplicationSettings::restoreWindowRect(const QString& win_name, QWidget* window)
+{
+	windowState(win_name, window, false);
+}
+
+void ApplicationSettings::saveWindowRect(const QString& win_name, QWidget* window)
+{
+	windowState(win_name, window, true);
+}
+
+void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool save)
+{
+	// Form the ini's directory to relate too.
+	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
+	// Create the settings instance.
+	QSettings settings(_fileInfo.absoluteFilePath(), QSettings::IniFormat);
+	// Start the ini section.
+	settings.beginGroup("WindowState");
+	// Form the key.
+	QString key = name + "-rectangle";
+	//
+	if (save)
+	{
+		settings.setValue(key, widget->geometry());
+	}
+	else
+	{
+		// Get the keys in the section to check existence in the ini-section.
+		auto keys = settings.childKeys();
+		if (keys.contains(key))
+		{
+			widget->setGeometry(settings.value(key).toRect());
+		}
+	}
+	// End the section.
+	settings.endGroup();
+}
+
 QMetaObject::Connection connectByName
 	(
 		const QWidget* widget,

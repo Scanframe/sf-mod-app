@@ -53,7 +53,7 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
-)
+	qt/Graph.cpp qt/Graph.h)
 
 if (NOT WIN32)
 
@@ -100,7 +100,9 @@ if (SF_BUILD_QT)
 		qt/FormWriter.cpp	qt/FormWriter.h
 		qt/ObjectExtension.cpp qt/ObjectExtension.h
 		qt/FileMapper.cpp qt/FileMapper.h
-		qt/ObjectExtension.h
+		qt/MiscCustomWidgets.cpp qt/MiscCustomWidgets.h
+		qt/DrawWidgetPlugin.cpp qt/DrawWidgetPlugin.h
+		qt/Draw.cpp qt/Draw.h
 		qt/res/resource.qrc
 		)
 
@@ -110,7 +112,7 @@ if (SF_BUILD_QT)
 endif (SF_BUILD_QT)
 
 # Add the library to create.
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${SOURCES} qt/DrawWidget.cpp qt/DrawWidget.h)
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.

@@ -1,27 +1,3 @@
-/*
- * @brief
- * Purpose:
- *   Enables calling of sustain member functions of classes.
- *   The member functions must be of the type 'bool A_Name(int)'.
- *   This function is hooked into a table using class template 'TSustainTableEntry'.
- *
- * Usage:
- *   // In class declaration.
- *   TSustainTableEntry< cls > Entry;
- *   // Function must return true if it wants to be called again.
- *   bool Sustain(clock_t);
- *
- *   // Line in constructor
- *   Entry(this, &cls::MySustainFunction, priority, NULL)
- *
- *   // To set the freq of the timer, use
- *   Entry.SetInterval(int ms);
- *
- *   // To enable all this, do once, at program startup...
- *   // (this timer determines the maximum freq of sustained functions
- *   SetSustainTimer(unsigned int ms);
- */
-
 #pragma once
 
 #include "TVector.h"
@@ -32,6 +8,30 @@
 namespace sf
 {
 
+/*
+ * @brief Base class for template `TSustain` which enables repetitive calls from the main thread with a set frequency.
+ *
+ * Purpose:
+ *   Enables calling of sustain member functions of classes.
+ *   The member functions must be of the type 'bool A_Name(int)'.
+ *   This function is hooked into a table using class template 'TSustain'.
+ *
+ * Usage:
+ *   // In class declaration.
+ *   TSustain< cls > Entry;
+ *   // Function must return true if it wants to be called again.
+ *   bool call(clock_t);
+ *
+ *   // Line in constructor
+ *   Entry(this, &cls::MySustainFunction, priority, nullptr)
+ *
+ *   // To set the freq of the timer, use
+ *   Entry.setInterval(int ms);
+ *
+ *   // To enable all this, do once, at program startup...
+ *   // (this timer determines the maximum freq of sustained functions
+ *   setSustainTimer(unsigned int ms);
+ */
 class _MISC_CLASS SustainBase
 {
 	public:
@@ -39,9 +39,11 @@ class _MISC_CLASS SustainBase
 		/**
 		 * @brief Do not use an iterator because the sustain function could affect the vector itself.
 		 */
-		enum ESustainPriority
+		enum ESustainPriority: int
 		{
+			/** Default priority **/
 			spDefault = 100,
+			/** Maximum priority **/
 			spTimer = INT_MAX
 		};
 
@@ -167,6 +169,11 @@ class _MISC_CLASS SustainBase
 		IntervalTimer _timer;
 };
 
+/**
+ * @brief Template to make the sustain system call a class method regularly.
+ *
+ * @tparam T Class containing the method.
+ */
 template<class T>
 class TSustain :public SustainBase
 {
@@ -174,7 +181,7 @@ class TSustain :public SustainBase
 		/**
 		 * @brief Required type.
 		 */
-		typedef bool (T::*TPmf)(clock_t);
+		typedef bool (T::*Pmf)(clock_t);
 
 		/**
 		 * @brief One and only initializing constructor.
@@ -184,7 +191,7 @@ class TSustain :public SustainBase
 		 * @param priority The priority.
 		 * @param vector Optional pointer to vector keeping the instance.
 		 */
-		TSustain(T* self, TPmf pmf, int priority = spDefault, PtrVector* vector = nullptr);
+		TSustain(T* self, Pmf pmf, int priority = spDefault, PtrVector* vector = nullptr);
 
 		/**
 		 * @brief Prevent copying.
@@ -200,7 +207,7 @@ class TSustain :public SustainBase
 		/**
 		 * @brief Pointer to member function.
 		 */
-		TPmf _pmf;
+		Pmf _pmf;
 		/**
 		 * @brief To class instance.
 		 */
@@ -219,20 +226,23 @@ class TSustain :public SustainBase
 };
 
 template<class T>
-TSustain<T>::TSustain(T* self, TPmf pmf, int priority, PtrVector* vector)
+TSustain<T>::TSustain(T* self, Pmf pmf, int priority, PtrVector* vector)
 	:SustainBase(vector, priority)
 	 , _self(self)
 	 , _pmf(pmf)
 {
 }
 
+/**
+ * @brief
+ */
 class _MISC_CLASS StaticSustain :public SustainBase
 {
 	public:
 		/**
 		 * Required type for the callback function.
 		 */
-		typedef bool (* TPf)(clock_t);
+		typedef bool (* Pf)(clock_t);
 
 		/**
 		 * One and only constructor
@@ -240,7 +250,7 @@ class _MISC_CLASS StaticSustain :public SustainBase
 		 * @param priority
 		 * @param vector
 		 */
-		explicit StaticSustain(TPf pf, int priority = spDefault, PtrVector* vector = _defaultVector)
+		explicit StaticSustain(Pf pf, int priority = spDefault, PtrVector* vector = _defaultVector)
 			:SustainBase(vector, priority)
 			 , _pf(pf) {}
 
@@ -258,7 +268,7 @@ class _MISC_CLASS StaticSustain :public SustainBase
 		/**
 		 * @brief Pointer to static function.
 		 */
-		TPf _pf{};
+		Pf _pf{};
 
 		/**
 		 * @brief Call the static function.

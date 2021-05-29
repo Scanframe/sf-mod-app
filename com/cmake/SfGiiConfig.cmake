@@ -1,5 +1,5 @@
 # Create variable holding the libraries filename.
-set(TargetName "sf-misc")
+set(TargetName "sf-gii")
 # When the target exists ignore it.
 if (TARGET ${TargetName})
 	#message(STATUS "Target '${PROJECT_NAME}': Library '${TargetName}' is already part of build.")

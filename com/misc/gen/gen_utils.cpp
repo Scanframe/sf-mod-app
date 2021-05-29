@@ -1,6 +1,7 @@
 
 #include <cstdarg>
 #include <ctime>
+#include <random>
 #include <utility>
 #include <cxxabi.h>
 #include <dirent.h>
@@ -442,7 +443,6 @@ std::string getExecutableName()
 	auto pos = rv.find_last_of(getDirectorySeparator());
 	return rv.erase(0, (pos != std::string::npos && pos > 0) ? pos + 1 : rv.length());
 }
-
 
 std::string demangle(const char* name)
 {

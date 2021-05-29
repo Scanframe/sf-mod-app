@@ -157,7 +157,6 @@ class _MISC_CLASS RangeManager
 		 */
 		void setDebug(bool debug);
 
-
 	private:
 		/**
 		 * Determines if the Manged range is automatically incremented when setAccessibleRange is called.

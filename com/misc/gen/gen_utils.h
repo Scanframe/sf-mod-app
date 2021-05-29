@@ -11,6 +11,7 @@ make C++ programming easier.
 #include <cmath>
 #include <string>
 #include <memory>
+#include <random>
 #include <sys/types.h>
 #include "TVector.h"
 #include "TDynamicBuffer.h"
@@ -266,6 +267,17 @@ _MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
 _MISC_FUNC std::string unique(const std::string& s);
 
 /**
+ * Generates random numbers within a specified integer range.
+ */
+template<typename T>
+T random(T start, T stop)
+{
+	static std::default_random_engine generator;
+	std::uniform_int_distribution<T> distribution(start, stop);
+	return distribution(generator);
+}
+
+/**
  * Returns the precision of the passed floating point value.
  * This is the amount of characters after the point without the trailing zeros.
  * When the value is 12300.00 the value returned is 3.
@@ -336,6 +348,42 @@ int magnitude(T value)
 }
 
 /**
+ * Fast integer power-of function.
+ * @tparam T Integer type.
+ * @param base
+ * @param exponent
+ * @return
+ */
+template<typename T>
+T ipow(T base, int exponent)
+{
+	// Initialize the integer.
+	T rv = 0;
+	if (std::numeric_limits<T>::is_integer)
+	{
+		rv = 1;
+		for (;;)
+		{
+			// Check if the first bit is set.
+			if (exponent & 1)
+			{
+				rv *= base;
+			}
+			// Shift the bits right.
+			exponent >>= 1;
+			// When no bits are standing of the exponent done break th loop.
+			if (!exponent)
+			{
+				break;
+			}
+			// Squaring the values so far.
+			base *= base;
+		}
+	}
+	return rv;
+}
+
+/**
  * Rounds the passed value to a multiple of the rnd value.
  */
 template<typename T>
@@ -367,7 +415,6 @@ bool not_ref_null(T& r)
 {
 	return &r == nullptr;
 }
-
 
 /**
  * Converts an integer to a buffer.<br>
@@ -419,6 +466,90 @@ std::string itostr(T value, int base = 10)
 {
 	char buf[sizeof(T) * CHAR_BIT + 1];
 	return itoa<T>(value, buf, base);
+}
+
+/**
+ * String formats a floating point or integer value using scientific notation where the exponent is always a multiple of 3.
+ * @tparam T Type of the template function.
+ * @param value Value to be converted to a string.
+ * @param digits Resolution in significant digits to represent the value.
+ * @param sign_on When true the '+' sign is added.
+ * @return String
+ */
+template<typename T>
+std::string numberString(T value, unsigned digits, bool sign_on = true)
+{
+	std::string rv;
+	// Initialize some
+	int dec{0}, sign{0};
+	//
+	if (std::numeric_limits<T>::is_iec559)
+	{
+		// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
+		rv.resize(std::numeric_limits<T>::max_digits10 + 1);
+		// Check if this is a long double.
+		if (sizeof(T) == sizeof(long double))
+		{
+			qecvt_r(value, std::numeric_limits<T>::digits10, &dec, &sign, rv.data(), rv.size());
+		}
+		else
+		{
+			ecvt_r(value, std::numeric_limits<T>::digits10, &dec, &sign, rv.data(), rv.size());
+		}
+		rv.resize(std::numeric_limits<T>::digits10);
+	}
+	else
+	{
+		if (std::numeric_limits<T>::is_integer)
+		{
+			// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
+			rv.resize(std::numeric_limits<long double>::max_digits10 + 1);
+			qecvt_r(value, std::numeric_limits<T>::digits10, &dec, &sign, rv.data(), rv.size());
+			rv.resize(std::numeric_limits<long double>::digits10);
+		}
+	}
+	// Round the integer value up to its required digits.
+	auto rnd = ipow(10ull, (int) ((int) rv.length() - digits));
+	rv = itostr(round(std::stoull(rv), rnd) / rnd);
+	// Calculate the exponent floored to a multiple of 3 when not a multiple of 3.
+	int exp = (dec % 3) ? (dec - 3) / 3 * 3 : dec;
+	// Correct the decimal position using the new exponent.
+	dec -= exp;
+	// Correction to avoid '0.' at the start when having enough resolution.
+	if (exp > 0 && !dec && rv.length() > 3)
+	{
+		dec += 3;
+		exp -= 3;
+	}
+	// When the floating point before the number string.
+	if (dec <= 0)
+	{
+		rv.insert(0, -dec, '0').insert(0, "0.");
+	}
+	else
+	{
+		// When the floating point is within number string.
+		if (dec < rv.length())
+		{
+			rv.insert(dec, ".");
+		}
+		else if (dec > rv.length())
+		{
+			rv.append(dec - rv.length() - 1, '0');
+		}
+	}
+	// Only add a exponent value when non zero.
+	if (exp)
+	{
+		rv.append(stringf(sign_on ? "e%+-d" : "e%d", exp));
+	}
+	// Prepend always the '-' sign but the plus sign only when sign_on is true.
+	if (sign || sign_on)
+	{
+		rv.insert(0, 1, sign ? '-' : '+');
+	}
+	//
+	return rv;
 }
 
 /**

@@ -7,10 +7,8 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QPainter>
-#include <QTime>
 #include <QTimer>
 #include <misc/qt/qt_utils.h>
-#include <misc/gen/dbgutils.h>
 #include "VariableWidgetBasePrivate.h"
 
 namespace sf
@@ -77,7 +75,7 @@ struct VariableBarPrivate :VariableWidgetBasePrivate
 		QRect r = _widget->rect();
 		int ox = 0;
 		int oy = 0;
-		while (w != nullptr && w->isVisible() && !w->isWindow() && w->parentWidget())
+		while (w->isVisible() && !w->isWindow() && w->parentWidget())
 		{
 			ox -= w->x();
 			oy -= w->y();
@@ -170,14 +168,14 @@ void VariableBar::paintEvent(QPaintEvent* ev)
 	p.drawRect(rc);
 	p.setClipRect(rc);
 	p.setPen(QPen(palette().color(QPalette::HighlightedText)));
-	p.drawText(QRectF(rc), Qt::AlignCenter, text);
+	p.drawText(rc, Qt::AlignCenter, text);
 	// Second part.
 	p.setClipRect(QRect(QPoint(pos, 0), rc.bottomRight()));
 	p.setBrush(palette().color(QPalette::Base));
 	p.setPen(Qt::NoPen);
 	p.drawRect(rc);
 	p.setPen(QPen(palette().color(QPalette::Text)));
-	p.drawText(QRectF(rc), Qt::AlignCenter, text);
+	p.drawText(rc, Qt::AlignCenter, text);
 }
 
 void VariableBar::keyPressEvent(QKeyEvent* event)

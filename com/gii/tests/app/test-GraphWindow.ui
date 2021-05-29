@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GraphWindow</class>
+ <widget class="QMainWindow" name="GraphWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>492</width>
+    <height>456</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>GII Test Application</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_1">
+       <attribute name="title">
+        <string>&amp;Ascan Graph</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutTab_1">
+        <item>
+         <widget class="sf::AscanGraph" name="ascanGraph">
+          <property name="toolTip">
+           <string>A-scan graph</string>
+          </property>
+          <property name="whatsThis">
+           <string>A-scan graph using GII interface.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>&amp;Draw Graph</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutTab_2">
+        <item>
+         <widget class="sf::DrawWidget" name="drawWidget">
+          <property name="toolTip">
+           <string>Widget for drawing</string>
+          </property>
+          <property name="whatsThis">
+           <string>Widget for drawing stuff into.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListView" name="listViewLog">
+      <property name="toolTip">
+       <string>Clog captured stream.</string>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>492</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionAction_1"/>
+    <addaction name="actionAction_2"/>
+   </widget>
+   <addaction name="menuActions"/>
+  </widget>
+  <action name="actionAction_1">
+   <property name="icon">
+    <iconset resource="../../../misc/qt/res/resource.qrc">
+     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+   </property>
+   <property name="text">
+    <string>Action &amp;1</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+1</string>
+   </property>
+  </action>
+  <action name="actionAction_2">
+   <property name="icon">
+    <iconset resource="../../../misc/qt/res/resource.qrc">
+     <normaloff>:/action/reload</normaloff>:/action/reload</iconset>
+   </property>
+   <property name="text">
+    <string>Action &amp;2</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+2</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::AscanGraph</class>
+   <extends>QWidget</extends>
+   <header>gii/qt/AscanGraph.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::DrawWidget</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/DrawWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../../misc/qt/res/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

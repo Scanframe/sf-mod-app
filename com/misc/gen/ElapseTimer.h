@@ -85,7 +85,7 @@ class _MISC_CLASS ElapseTimer
 		 * @brief This operator is used to minimize clock() calls.
 		 * Return non zero if timer is active.
 		 */
-		int operator()(const timespec& t) const;
+		bool operator()(const timespec& t) const;
 
 	private:
 		/**

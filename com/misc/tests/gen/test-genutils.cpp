@@ -1,5 +1,11 @@
 #include <catch2/catch.hpp>
 #include <misc/gen/gen_utils.h>
+#include <unistd.h>
+
+namespace sf
+{
+
+}
 
 TEST_CASE("sf::General-Utils", "[generic][utils]")
 {
@@ -16,6 +22,42 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 	}
 #endif
 
+	SECTION("sf::random", "Random range number.")
+	{
+		sf::TVector<int> results(2);
+		for (auto& i: results)
+		{
+			i = sf::_random(-100, 100);
+		}
+		std::clog << "Results: " << results << std::endl;
+		CHECK(results[0] != results[1]);
+	}
+
+
+	SECTION("sf::numberString", "Numeric value to std string.")
+	{
+		CHECK(sf::ipow(29, 0) == 1);
+		CHECK(sf::ipow(27, 1) == 27);
+		CHECK(sf::ipow(24l, 5) == 7962624);
+
+
+		CHECK(sf::numberString(299.996e1l, 2) == "+300");
+
+		CHECK(sf::numberString(1e-2L, 4) == "+10.00e-3");
+		CHECK(sf::numberString(123e-1L, 2) == "+12");
+		CHECK(sf::numberString(-1234567890e-7L, 6) == "-123.457");
+		CHECK(sf::numberString(1234567890e-10L, 6) == "+0.123457");
+		CHECK(sf::numberString(-1234567890e-10L, 6) == "-0.123457");
+		CHECK(sf::numberString(1234567890e10L, 6) == "+12345.7e+15");
+		CHECK(sf::numberString(1234567890e12l, 4) == "+1235e+18");
+		CHECK(sf::numberString(0.299996e1l, 4) == "+3.000");
+		CHECK(sf::numberString(299.996e1l, 4) == "+3000");
+		CHECK(sf::numberString(45.67890e-6L, 2) == "+46e-6");
+		CHECK(sf::numberString(782.3e-7L, 4) == "+78.23e-6");
+		CHECK(sf::numberString(782.3e-7L, 5) == "+78.230e-6");
+		CHECK(sf::numberString(782.3e-7L, 6) == "+78.2300e-6");
+		CHECK(sf::numberString(299.996e-7L, 4) == "+30.00e-6");
+	}
 
 	SECTION("sf::itoa", "Template function itoa<T>()")
 	{
@@ -28,6 +70,12 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 		CHECK_THAT(sf::itoa(0x123456789abcdefL, buf, 16), Equals("123456789abcdef"));
 
 		CHECK_THAT(sf::itostr(0x123456789abcdefL, 16), Equals("123456789abcdef"));
+	}
+
+	SECTION("sf::round", "Template function round<T>()")
+	{
+		CHECK(sf::round(13l, 3l) == 12);
+		CHECK(sf::round(14l, 3l) == 15);
 	}
 
 	SECTION("sf::escape,unescape", "C escaping strings")
@@ -44,10 +92,10 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 	{
 		// Magnitude of a floating .
 		CHECK(sf::magnitude(double(0.001234)) == -2);
-		CHECK(sf::magnitude((long double)(-0.001234)) == -2);
+		CHECK(sf::magnitude((long double) (-0.001234)) == -2);
 		CHECK(sf::magnitude(double(0.123400)) == 0);
 		CHECK(sf::magnitude(double(1.23400)) == 1);
-		CHECK(sf::magnitude((long double)(123400.0)) == 6);
+		CHECK(sf::magnitude((long double) (123400.0)) == 6);
 		CHECK(sf::magnitude(double(-123400.0)) == 6);
 		// Digits.
 		CHECK(sf::digits(double(12300.0)) == -2);

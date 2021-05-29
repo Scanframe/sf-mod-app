@@ -73,7 +73,7 @@ QString VariableBarPlugin::domXml() const
    </rect>
   </property>
   <property name="toolTip" >
-   <string>The current time</string>
+   <string>Progress bar</string>
   </property>
   <property name="whatsThis">
    <string>Variable bar used for progress or level indication.</string>
@@ -82,7 +82,7 @@ QString VariableBarPlugin::domXml() const
  <!-- Propery specification part -->
  <customwidgets>
   <customwidget>
-   <class>sf::VariableEdit</class>
+   <class>sf::VariableBar</class>
    <propertyspecifications>
     <stringpropertyspecification name="variableId" notr="true" type="singleline" />
    </propertyspecifications>
@@ -94,7 +94,7 @@ QString VariableBarPlugin::domXml() const
 
 QString VariableBarPlugin::includeFile() const
 {
-	return QStringLiteral("VariableBar.h");
+	return QStringLiteral("gii/qt/VariableBar.h");
 }
 
 } // namespace
