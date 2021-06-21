@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include "../global.h"
 
 /**
  * Separator between name and description.
@@ -25,39 +26,50 @@ namespace sf
 struct _MISC_CLASS DynamicLibraryInfo
 {
 	/**
-	 * Default constructor.
+	 * @brief Default constructor.
 	 */
 	DynamicLibraryInfo() = default;
 
 	/**
-	 * Copy constructor.
+	 * @brief Copy constructor.
 	 */
 	DynamicLibraryInfo(const DynamicLibraryInfo&);
 
 	/**
-	 * Path of the dynamic library.
+	 * @brief Directory of the dynamic library.
 	 */
-	std::string Path;
+	std::string directory{};
 	/**
-	 * Name of the dynamic library.
+	 * @brief Filename of the dynamic library.
 	 */
-	std::string Name;
+	std::string filename{};
 	/**
-	 * Description of the dynamic library.
+	 * @brief Name of the dynamic library.
 	 */
-	std::string Description;
+	std::string name{};
+	/**
+	 * @brief Description of the dynamic library.
+	 */
+	std::string description{};
 
 	/**
-	 * Reads the information from the file.
-	 * @param filepath Location of the dynamic library file.
+	 * @brief PAth to the library. Combines directory and filename.
+	 */
+	[[nodiscard]] std::string path() const;
+
+	/**
+	 * @brief Reads the information from the file.
+	 *
+	 * @param dir Directory of the
+	 * @param filename Location of the dynamic library file relative to the directory.
 	 * @return  True on success.
 	 */
-	bool read(const std::string& filepath);
+	bool read(const std::string& dir, const std::string& filename);
 
 	/**
-	 * Clears the members.
+	 * @brief Clears all the members.
 	 */
-	void reset();
+	void clear();
 };
 
 }

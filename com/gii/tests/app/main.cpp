@@ -4,7 +4,7 @@
 #include <misc/qt/qt_utils.h>
 #include <gen/Variable.h>
 #include <gen/UnitConversionServer.h>
-#include <qt/FormDialog.h>
+#include <misc/qt/FormDialog.h>
 #include <test-GraphWindow.h>
 #if IS_WIN
 #include <Windows.h>

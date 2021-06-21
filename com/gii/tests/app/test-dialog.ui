@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../../misc/qt/res/resource.qrc">
-    <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+    <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -133,7 +133,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../../misc/qt/res/resource.qrc">
-       <normaloff>:/logo/scanframe2</normaloff>:/logo/scanframe2</iconset>
+       <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
      </property>
     </widget>
    </item>

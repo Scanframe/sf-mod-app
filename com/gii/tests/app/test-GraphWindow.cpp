@@ -17,7 +17,7 @@ GraphWindow::GraphWindow(QWidget* parent)
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
-	setWindowIcon(QIcon(":logo/scanframe"));
+	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	centralWidget()->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 	// Assign the model to the listView.
 	auto clm = new sf::CaptureListModel(ui->listViewLog);

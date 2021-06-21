@@ -22,17 +22,27 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 	}
 #endif
 
+	SECTION("sf::calc_offset", "Offset calculation.")
+	{
+		CHECK(sf::calc_offset(10000000ll, -1000000000ll, 1000000000ll, 1000ll, true) == 505ll);
+		CHECK(sf::calc_offset(10, -1000, 1000, 1000ll, true) == 505ll);
+
+		CHECK(sf::calc_offset(10000000ll, -1000000000ll, 1000000000ll, 1000.0f, true) == 505.0f);
+		CHECK(sf::calc_offset(10, -1000, 1000, 1000.0f, true) == 505.0f);
+
+		CHECK(sf::calc_offset(10e6, -1e9, 1e9, 1000000000000ll, true) == 505000000000ll);
+	}
+
 	SECTION("sf::random", "Random range number.")
 	{
 		sf::TVector<int> results(2);
 		for (auto& i: results)
 		{
-			i = sf::_random(-100, 100);
+			i = sf::random(-100, 100);
 		}
-		std::clog << "Results: " << results << std::endl;
+		//std::clog << "Results: " << results << std::endl;
 		CHECK(results[0] != results[1]);
 	}
-
 
 	SECTION("sf::numberString", "Numeric value to std string.")
 	{
@@ -40,9 +50,8 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 		CHECK(sf::ipow(27, 1) == 27);
 		CHECK(sf::ipow(24l, 5) == 7962624);
 
-
+		CHECK(sf::numberString(-0.99999l, 2) == "-1.0");
 		CHECK(sf::numberString(299.996e1l, 2) == "+300");
-
 		CHECK(sf::numberString(1e-2L, 4) == "+10.00e-3");
 		CHECK(sf::numberString(123e-1L, 2) == "+12");
 		CHECK(sf::numberString(-1234567890e-7L, 6) == "-123.457");

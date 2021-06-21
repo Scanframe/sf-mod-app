@@ -273,7 +273,7 @@ class _MISC_CLASS IniProfile
 		/**
 		* @brief Internal storage class for keys.
 		*/
-		class Entry
+		class _MISC_CLASS Entry
 		{
 			public:
 				Entry() = default;
@@ -305,7 +305,7 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Internal storage class for sections.
 		 */
-		class Section
+		class _MISC_CLASS Section
 		{
 			public:
 				/**

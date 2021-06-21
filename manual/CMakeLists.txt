@@ -26,7 +26,7 @@ if (Doxygen_FOUND)
 		endif ()
 	]]
 	# For cygwin only relative path are working.
-	file(RELATIVE_PATH LOGO_FILE "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/com/misc/qt/res/icon/scanframe.ico")
+	file(RELATIVE_PATH LOGO_FILE "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/com/misc/qt/res/logo/scanframe.ico")
 	# Path to images.
 	file(RELATIVE_PATH IMAGE_PATH "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
 	# Enable when to change the output directory.

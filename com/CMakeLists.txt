@@ -5,3 +5,4 @@ project("sf-com")
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(misc)
 add_subdirectory(gii)
+add_subdirectory(ami)

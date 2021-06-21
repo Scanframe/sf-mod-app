@@ -1,10 +1,16 @@
 #include <iostream>
+#include <misc/gen/gen_utils.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Thread.h>
 #include <csignal>
 #include <thread>
 #include <chrono>
+
+void TestNumberString()
+{
+	std::clog << sf::numberString(double(-0.99999), 2) << std::endl;
+}
 
 void TestStdSignal()
 {
@@ -126,6 +132,7 @@ void TestThreads(int how = 0)
 
 int main(/*int argc, char* argv[]*/)
 {
+	TestNumberString();
 #if !IS_WIN
 	TestThreads(1);
 	TestThreads(0);

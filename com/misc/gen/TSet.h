@@ -17,7 +17,7 @@ struct TSet
 	TSet() :Bits(0) {}
 
 	/**
-	 * @brief Initialize constructor.
+	 * @brief initialize constructor.
 	 */
 	explicit TSet(int bits) :Bits(bits) {}
 

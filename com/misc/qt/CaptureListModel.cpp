@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QListView>
+#include <QApplication>
 
 #include "CaptureListModel.h"
 #include "gen/gen_utils.h"
@@ -25,13 +26,13 @@ CaptureListModel::CaptureListModel(QObject* parent)
 		append(line.c_str());
 	}));
 	// When the parent is a widget.
-	if (auto avi = dynamic_cast<QAbstractItemView*>(parent))
+	if (auto avi = qobject_cast<QAbstractItemView*>(parent))
 	{
 		avi->setContextMenuPolicy(Qt::CustomContextMenu);
 		connect(avi, &QWidget::customContextMenuRequested, this, &CaptureListModel::contextMenuRequested);
 		_contextMenu = new QMenu(avi);
 		//
-		auto action = new QAction(Resource::getIcon(Resource::Icon::Clear), "Clear", this);
+		auto action = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Clear), QApplication::palette(), QPalette::ColorRole::ButtonText), "Clear", this);
 		_contextMenu->addAction(action);
 		connect(action, &QAction::triggered, this, &CaptureListModel::onClear);
 
@@ -48,13 +49,12 @@ void CaptureListModel::onClear()
 	beginRemoveColumns(QModelIndex(), 0, _streamBuf->lineCount());
 	_streamBuf->clear();
 	endRemoveColumns();
-
 }
 
 void CaptureListModel::contextMenuRequested(QPoint pos)
 {
 	// When the parent is a listView.
-	if (auto aiv = dynamic_cast<QAbstractItemView*>(parent()))
+	if (auto aiv = qobject_cast<QAbstractItemView*>(parent()))
 	{
 		//QModelIndex index = aiv->indexAt(pos);
 		_contextMenu->popup(aiv->viewport()->mapToGlobal(pos));
@@ -126,7 +126,7 @@ bool CaptureListModel::append(const QString& str)
 */
 
 	// Automatically scroll to bottom.
-	if (auto lv = dynamic_cast<QListView*>(parent()))
+	if (auto lv = qobject_cast<QListView*>(parent()))
 	{
 		lv->scrollToBottom();
 	}

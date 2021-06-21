@@ -23,7 +23,7 @@ class _MISC_CLASS IFileMapper
 		virtual ~IFileMapper() = default;
 
 		/**
-		 * @brief Initialize and prepare the underlying system when needed.
+		 * @brief initialize and prepare the underlying system when needed.
 		 *
 		 */
 		virtual void initialize() = 0;

@@ -2,6 +2,7 @@
 #include "ObjectExtension.h"
 #include "MiscCustomWidgets.h"
 #include "DrawWidgetPlugin.h"
+#include "ActionButtonPlugin.h"
 
 namespace sf
 {
@@ -14,6 +15,7 @@ MiscCustomWidgets::MiscCustomWidgets(QObject* parent)
 	}
 	// Add the implemented widgets to the list.
 	widgets.append(new DrawWidgetPlugin(this));
+	widgets.append(new ActionButtonPlugin(this));
 }
 
 MiscCustomWidgets::~MiscCustomWidgets()

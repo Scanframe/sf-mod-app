@@ -103,7 +103,11 @@ if (SF_BUILD_QT)
 		qt/MiscCustomWidgets.cpp qt/MiscCustomWidgets.h
 		qt/DrawWidgetPlugin.cpp qt/DrawWidgetPlugin.h
 		qt/Draw.cpp qt/Draw.h
+		qt/FormDialog.cpp qt/FormDialog.h
+		qt/ActionButton.cpp qt/ActionButton.h
+		qt/ActionButtonPlugin.cpp qt/ActionButtonPlugin.h
 		qt/res/resource.qrc
+		qt/res/icons.qrc
 		)
 
 	list(APPEND SOURCES ${SOURCES_QT})
@@ -124,6 +128,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
+
+# Tell the compiled code a dynamic library (DL) is being build.
+target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
 
 # Tell the code the 'sf-misc' library is used as an archive. (So no imports or exports)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE _MISC_ARC)
@@ -146,3 +153,6 @@ if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
 	add_subdirectory(tests/app)
 endif(SF_BUILD_TESTING)
+
+# Install designer plugin in plugins directory of current compiler.
+install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

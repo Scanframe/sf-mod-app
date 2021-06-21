@@ -7,10 +7,14 @@
 #include <QSize>
 #include <QRect>
 #include <QFileSystemWatcher>
+#include <QPalette>
+#include <QFileDialog>
 
-// Import of shared library export defines.
 #include "../global.h"
 
+/**
+ * @brief Operator stream a QString instance to ans std ostream.
+ */
 inline
 std::ostream& operator<<(std::ostream& os, const QString& qs)
 {
@@ -18,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, const QString& qs)
 }
 
 /**
- * Allows moving a QPoint using a QSize.
+ * @brief Allows moving a QPoint using a QSize.
  */
 inline
 QPoint operator-(const QPoint& pt, const QSize& sz)
@@ -27,7 +31,7 @@ QPoint operator-(const QPoint& pt, const QSize& sz)
 }
 
 /**
- * Allows moving a QPoint using a QSize.
+ * @brief Allows moving a QPoint using a QSize.
  */
 inline
 QPoint operator+(const QPoint& pt, const QSize& sz)
@@ -36,7 +40,7 @@ QPoint operator+(const QPoint& pt, const QSize& sz)
 }
 
 /**
- * Allows adjusting the QRect size using a QSize.
+ * @brief Allows adjusting the QRect size using a QSize.
  */
 inline
 QRect operator+(const QRect& rc, const QSize& sz)
@@ -45,7 +49,7 @@ QRect operator+(const QRect& rc, const QSize& sz)
 }
 
 /**
- * Allows adjusting the QRect size using a QSize.
+ * @brief Allows adjusting the QRect size using a QSize.
  */
 inline
 QRect operator-(const QRect& rc, const QSize& sz)
@@ -54,7 +58,7 @@ QRect operator-(const QRect& rc, const QSize& sz)
 }
 
 /**
- * Allows adjusting the QRect position using a QPoint.
+ * @brief Allows adjusting the QRect position using a QPoint.
  */
 inline
 QRect operator+(const QRect& rc, const QPoint& pt)
@@ -63,7 +67,7 @@ QRect operator+(const QRect& rc, const QPoint& pt)
 }
 
 /**
- * Allows adjusting the QRect position using a QPoint.
+ * @brief Allows adjusting the QRect position using a QPoint.
  */
 inline
 QRect operator+=(QRect& rc, const QPoint& pt)
@@ -73,7 +77,7 @@ QRect operator+=(QRect& rc, const QPoint& pt)
 }
 
 /**
- * Allows adjusting the QRect position using a QPoint.
+ * @brief Allows adjusting the QRect position using a QPoint.
  */
 inline
 QRect operator-(const QRect& rc, const QPoint& pt)
@@ -82,7 +86,7 @@ QRect operator-(const QRect& rc, const QPoint& pt)
 }
 
 /**
- * Allows adjusting the QRect position using a QPoint.
+ * @brief Allows adjusting the QRect position using a QPoint.
  */
 inline
 QRect operator-=(QRect& rc, const QPoint& pt)
@@ -93,7 +97,7 @@ QRect operator-=(QRect& rc, const QPoint& pt)
 
 
 /**
- * Inflates the passed rect on all sides using an integer.
+ * @brief Inflates the passed rect on all sides using an integer.
  */
 inline
 void inflate(QRect& r, int sz)
@@ -102,7 +106,7 @@ void inflate(QRect& r, int sz)
 }
 
 /**
- * Inflates a copy the rectangle an integer and returns it.
+ * @brief Inflates a copy the rectangle an integer and returns it.
  */
 inline
 QRect inflated(const QRect& r, int sz)
@@ -110,11 +114,38 @@ QRect inflated(const QRect& r, int sz)
 	return r.adjusted(-sz, -sz, sz, sz);
 }
 
+
 namespace sf
 {
 
 /**
+ * @brief Type to hold
+ */
+class _MISC_CLASS PaletteColors
+{
+	public:
+
+		explicit PaletteColors() = default;
+
+		explicit PaletteColors(const QPalette& palette);
+
+		[[nodiscard]] QPalette getPalette() const;
+
+		void setColors(const QPalette& palette);
+
+		[[nodiscard]] bool isEmpty() const;
+
+		void styleFileDialog(QFileDialog& fd) const;
+
+	private:
+		typedef QPair<QPalette::ColorRole, QColor> Pair;
+		QList<Pair> _colors;
+};
+
+
+/**
  * @brief Keeps the application up-to-date with changes in the settings file.
+ *
  * Sets the styling and the color from an ini file.
  * Used to quickly create test applications.
  */
@@ -124,27 +155,31 @@ class _MISC_CLASS ApplicationSettings :public QObject
 
 	public:
 		/**
-		 * Constructor
+		 * @brief Constructor.
 		 */
 		explicit ApplicationSettings(QObject* parent = nullptr);
 		/**
-		 * Sets the fileInfo
+		 * @brief Destructor.
+		 */
+		~ApplicationSettings() override;
+		/**
+		 * @brief Sets the fileInfo
 		 */
 		void setFilepath(const QString& filepath, bool watch = false);
 		/**
-		 * Gets the fileInfo.
+		 * @brief Gets the fileInfo.
 		 */
 		[[nodiscard]] const QFileInfo& fileInfo() const;
 
 		/**
-		 * Sets the window position and size from the settings file onto the passed widget.
+		 * @brief Sets the window position and size from the settings file onto the passed widget.
 		 * @param win_name Name of the window.
 		 * @param window Window widget.
 		 */
 		void restoreWindowRect(const QString& win_name, QWidget* window);
 
 		/**
-		 * Sets the window position and size from the settings file onto the passed widget.
+		 * @brief Sets the window position and size from the settings file onto the passed widget.
 		 * @param win_name Name of the window.
 		 * @param window Window widget.
 		 */
@@ -153,25 +188,34 @@ class _MISC_CLASS ApplicationSettings :public QObject
 	private slots:
 
 		/**
-		 * Triggered when a watched files changes.
+		 * @brief Triggered when a watched files changes.
 		 */
 		void onFileChance(const QString& file);
 
 	private:
 		/**
-		 * Called from setFilepath and the event handler.
+		 * @brief Called from setFilepath and the event handler.
 		 * @param watch
 		 */
 		void doStyleApplication(bool watch);
 
 		/**
-		 * File watcher instance.
+		 * @brief File watcher instance.
 		 */
 		QFileSystemWatcher* _watcher;
 		/**
-		 * File info structure of the ini-file.
+		 * @brief File info structure of the ini-file.
 		 */
 		QFileInfo _fileInfo;
+
+		/**
+		 * @brief Holds system colors from startup.
+		 *
+		 * When having a different palette then the default one the icons in the file open dialog
+		 * do not have the right color.
+		 * This class provides a solution to store the initial palette for example.
+		 */
+		PaletteColors _systemColors;
 
 		/**
 		 * Save and restores the window state of the passed widget.

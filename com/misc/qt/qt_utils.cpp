@@ -14,11 +14,91 @@
 namespace sf
 {
 
+PaletteColors::PaletteColors(const QPalette& palette)
+{
+	setColors(palette);
+}
+
+QPalette PaletteColors::getPalette() const
+{
+	QPalette palette;
+	for (auto& i: _colors)
+	{
+		palette.setColor(i.first, i.second);
+	}
+	return palette;
+}
+
+void PaletteColors::setColors(const QPalette& palette)
+{
+	_colors.clear();
+	for (int i = 0; i < QPalette::ColorRole::NColorRoles; i++)
+	{
+		auto role = (QPalette::ColorRole) i;
+		_colors.append(Pair(role, palette.color(role)));
+	}
+}
+
+bool PaletteColors::isEmpty() const
+{
+	return _colors.isEmpty();
+}
+
+void PaletteColors::styleFileDialog(QFileDialog& fd) const
+{
+	auto pal = getPalette();
+	//pal.setColor(QPalette::ColorRole::Button, QColorConstants::DarkCyan);
+	fd.setStyleSheet(QString(R"(
+QLabel
+{
+color: %1;
+}
+QToolButton:open
+{
+	background-color: %2;
+}
+QPushButton, QComboBox, QHeaderView
+{
+	background-color: %2;
+	color: %3;
+}
+QScrollBar
+{
+	background-color: %4;
+}
+QScrollBar::handle
+{
+	background-color: %2;
+}
+QLineEdit
+{
+	color: %1;
+	background-color: %4;
+}
+QListView, QTreeView
+{
+	background-color: %4;
+	color: %1;
+}
+)")
+		.arg(pal.color(QPalette::ColorRole::WindowText).name(QColor::HexArgb))
+		.arg(pal.color(QPalette::ColorRole::Button).name(QColor::HexArgb))
+		.arg(pal.color(QPalette::ColorRole::ButtonText).name(QColor::HexArgb))
+		.arg(pal.color(QPalette::ColorRole::Window).darker(130).name(QColor::HexArgb))
+	);
+	fd.setPalette(pal);
+}
+
 ApplicationSettings::ApplicationSettings(QObject* parent)
 	:QObject(parent)
 	 , _watcher(new QFileSystemWatcher(this))
 {
 	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &ApplicationSettings::onFileChance);
+}
+
+ApplicationSettings::~ApplicationSettings()
+{
+	(void) _fileInfo;
 }
 
 void ApplicationSettings::onFileChance(const QString& file)
@@ -50,7 +130,7 @@ void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 	{
 		for (auto& file: _watcher->files())
 		{
-			qDebug() << "Watching:" << file;
+			qDebug() << "Watching:" << QString("file://%1").arg(file);
 		}
 	}
 }
@@ -86,7 +166,13 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	{
 		settings.setValue(key, QApplication::style()->objectName());
 	}
-	QApplication::setStyle(settings.value(key, QApplication::style()->objectName()).toString());
+	auto app_style = QApplication::setStyle(settings.value(key, QApplication::style()->objectName()).toString())->name();
+	// Sentry and also the instance.
+	if (_systemColors.isEmpty())
+	{
+		_systemColors.setColors(QApplication::palette());
+		QApplication::instance()->setProperty("systemColors", QVariant::fromValue<PaletteColors*>(&_systemColors));
+	}
 	// Same as above.
 	if (settings.isWritable() && !keys.contains(key = "Font-Family"))
 	{
@@ -124,44 +210,14 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	// End the section.
 	settings.endGroup();
 	// Start the Palette ini section.
-	settings.beginGroup("Palette");
+	settings.beginGroup("Palette-" + app_style);
 	// Keys to see which ones are missing.
 	keys = settings.childKeys();
 	QPalette palette = QApplication::palette();
 	QMetaEnum metaEnum = QMetaEnum::fromType<QPalette::ColorRole>();
-	// List all the color enums to write to file.
-	for (auto role:
-		{
-			QPalette::WindowText,
-			QPalette::Button,
-			QPalette::Light,
-			QPalette::Midlight,
-			QPalette::Dark,
-			QPalette::Mid,
-			QPalette::Text,
-			QPalette::BrightText,
-			QPalette::ButtonText,
-			QPalette::Base,
-			QPalette::Window,
-			QPalette::Shadow,
-			QPalette::Highlight,
-			QPalette::HighlightedText,
-			QPalette::Link,
-			QPalette::LinkVisited,
-			QPalette::AlternateBase,
-			QPalette::NoRole,
-			QPalette::ToolTipBase,
-			QPalette::ToolTipText,
-			QPalette::PlaceholderText,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
-			QPalette::WindowText,
-			QPalette::Window
-#else
-			QPalette::Foreground,
-			QPalette::Background
-#endif
-		})
+	for (int i = 0; i < QPalette::ColorRole::NColorRoles; i++)
 	{
+		auto role = (QPalette::ColorRole) i;
 		// When the key does not exist write it with the current value.
 		if (settings.isWritable() && !keys.contains(key = metaEnum.valueToKey(role)))
 		{

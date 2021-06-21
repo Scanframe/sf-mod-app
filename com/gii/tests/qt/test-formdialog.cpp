@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QCoreApplication>
 #include <QTimer>
-#include <gii/qt/FormDialog.h>
+#include <misc/qt/FormDialog.h>
 #include <QTemporaryDir>
 #include <QStandardPaths>
 #include <gen/Variable.h>
@@ -31,7 +31,7 @@ m/s|2="/s,39.37007874015748031496062992126,0,2
 
 }
 
-TEST_CASE("sf::FormDailog", "[debug]")
+TEST_CASE("sf::FormDialog", "[debug]")
 {
 
 	sf::Variable::initialize();

@@ -10,15 +10,36 @@ namespace sf
 
 DynamicLibraryInfo::DynamicLibraryInfo(const DynamicLibraryInfo& dld) = default;
 
-void DynamicLibraryInfo::reset()
+void DynamicLibraryInfo::clear()
 {
-	Path = Name = Description = "";
+	directory.clear();
+	filename.clear();
+	name.clear();
+	description.clear();
 }
 
-bool DynamicLibraryInfo::read(const std::string& filepath)
+std::string DynamicLibraryInfo::path() const
 {
+	std::string::value_type dir_sep;
+#if IS_WIN
+	dir_sep = '\\';
+#else
+	dir_sep = '/';
+#endif
+	return directory + dir_sep + filename;
+}
+
+bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
+{
+	std::string::value_type dir_sep;
+	#if IS_WIN
+	dir_sep = '\\';
+#else
+	dir_sep = '/';
+#endif
+	std::string filepath = dir + dir_sep + fn;
 	// clear the structure members.
-	reset();
+	clear();
 	// Get the markers to look for.
 	const uint64_t mark_beg = *((uint64_t*) (SF_DL_MARKER_BEGIN));
 	const uint64_t mark_end = *((uint64_t*) (SF_DL_MARKER_END));
@@ -38,14 +59,14 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 	{
 		return false;
 	}
-	size_t beg_idx = 0, end_idx = 0;
+	std::ifstream::off_type beg_idx = 0, end_idx = 0;
 	// get length of file:
 	is.seekg(0, std::ifstream::end);
-	size_t len = is.tellg();
+	std::size_t len = is.tellg();
 	// Move reading pointer to the start in the stream.
 	is.seekg(0, std::ifstream::beg);
 	// Holds end read index .
-	size_t ofs_idx = 0;
+	std::size_t ofs_idx = 0;
 	// Buffer can not be bigger then the filesize.
 	if (buf.size() > len)
 	{
@@ -65,7 +86,7 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 		// Set the virtual size of the buffer so the last 64 bit integer can be compared.
 		buf.resize(1 + is.tellg() - ofs_idx - sizeof(uint64_t));
 		// Iterate through the buffer comparing markers.
-		for (size_t i = 0; i < buf.size(); i++)
+		for (std::size_t i = 0; i < buf.size(); i++)
 		{
 			// When the begin or end marker matches.
 			if (*(uint64_t*) buf.data(i) == (flag ? mark_end : mark_beg))
@@ -123,11 +144,13 @@ bool DynamicLibraryInfo::read(const std::string& filepath)
 				// Move the pointer to the start of the description.
 				sep += strlen(SF_DL_NAME_SEPARATOR);
 				// Assign the name part.
-				Name = buf.c_str();
+				name = buf.c_str();
 				// Assign the description part.
-				Description = sep;
+				description = sep;
+				// Assign the directory.
+				directory = dir;
 				// Assign the name.
-				Path = filepath;
+				filename = fn;
 			}
 		}
 	}

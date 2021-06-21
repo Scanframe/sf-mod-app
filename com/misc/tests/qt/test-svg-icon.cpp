@@ -1,0 +1,74 @@
+#include <catch2/catch.hpp>
+
+#include <QApplication>
+#include <QTimer>
+#include <QTemporaryDir>
+#include <QStandardPaths>
+#include <QPainter>
+#include <QIcon>
+#include <QPushButton>
+#include <misc/qt/FormDialog.h>
+#include <misc/qt/DrawWidget.h>
+#include <misc/qt/Resource.h>
+#include <QStyleFactory>
+
+extern int debug_level;
+
+TEST_CASE("sf::SvgIcon", "[debug][qt]")
+{
+	SECTION("Create QIcon from SVG resource")
+	{
+		// Set the file location to the resource.
+		QFileInfo fi(":/ui/dialog");
+		REQUIRE(fi.exists());
+		//
+		sf::FormDialog dlg;
+		dlg.Load(QFile(fi.absoluteFilePath()));
+		// Find the draw widgets.
+		auto widgets = dlg.findChildren<sf::DrawWidget*>();
+		// Sort them using their object names.
+		std::sort(widgets.begin(), widgets.end(), [](const sf::DrawWidget* a, const sf::DrawWidget* b) -> bool
+		{
+			return a->objectName() < b->objectName();
+		});
+		//
+		QIcon::Mode modes[] = {QIcon::Mode::Normal, QIcon::Mode::Active, QIcon::Mode::Disabled, QIcon::Mode::Selected};
+		//
+		//auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QApplication::palette(), QPalette::ColorRole::ButtonText, 100);
+		//auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColorConstants::Red, -1);
+		auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColor(255, 0, 255, 100), QSize(64, 64));
+		//
+		for (auto widget: widgets)
+		{
+			auto idx = widgets.indexOf(widget);
+			QObject::connect(widget, &sf::DrawWidget::paint, [modes, icon, idx, widget](QPaintEvent* event) -> void
+			{
+				QPainter painter(widget);
+				painter.fillRect(painter.window(), QApplication::palette().color(QPalette::ColorRole::Button));
+				icon.paint(&painter, painter.window(), Qt::AlignmentFlag::AlignCenter, modes[idx]);
+			});
+		}
+		// Set the Icon for each button in the dialog.
+		for (auto btn: dlg.findChildren<QPushButton*>())
+		{
+			auto ico = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColor(255, 255, 0), btn->iconSize());
+			btn->setIcon(ico);
+		}
+		//
+		QTimer::singleShot(2000, [&]
+		{
+			QString fp = QDir::temp().filePath(QFileInfo(__FILE__).baseName() + ".png");
+			if (debug_level)
+			{
+				qDebug() << "Saving grabbed content to: " << "file://" + fp;
+			}
+			CHECK(dlg.grab().save(fp));
+			if (!debug_level)
+			{
+				dlg.close();
+			}
+		});
+		dlg.exec();
+	}
+
+}

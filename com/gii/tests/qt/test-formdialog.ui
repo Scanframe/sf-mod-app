@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../../misc/qt/res/resource.qrc">
-    <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+    <normaloff>:/logo/ico/scanframe</normaloff>:/logo/ico/scanframe</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -224,9 +224,6 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
      <property name="variableId">
       <string>0x1</string>
      </property>
@@ -240,8 +237,8 @@
  <customwidgets>
   <customwidget>
    <class>sf::VariableEdit</class>
-   <extends>QFrame</extends>
-   <header>com/gii/VariableId.h</header>
+   <extends>QWidget</extends>
+   <header>com/gii/qt/VariableEdit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

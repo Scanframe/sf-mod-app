@@ -6,7 +6,7 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::VariableEdit custom widget.
+ * @brief Interface class to create a #sf::DrawWidget custom widget.
  */
 class DrawWidgetPlugin :public QObject, public QDesignerCustomWidgetInterface
 {

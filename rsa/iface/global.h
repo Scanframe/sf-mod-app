@@ -18,7 +18,7 @@ Add compiler definition flags:
 // Import of defines for this target.
 #include <misc/gen/target.h>
 
-// When DL target and the misc PKG is not used the misc DL is being build.
+// When DL target and the PKG is not used the DL is being build.
 #if IS_DL_TARGET && defined(_RSA_PKG)
 	#define _RSA_DATA TARGET_EXPORT
 	#define _RSA_FUNC TARGET_EXPORT

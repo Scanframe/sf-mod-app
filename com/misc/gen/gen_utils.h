@@ -30,7 +30,8 @@ S calc_offset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;
-	S temp = ((max) && (value)) ? S((value * T(len)) / max) : S(0);
+	S temp = (max && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max) : (len * value) / max) : 0;
+	// Clip when needed required.
 	return (clip) ? ((temp > len) ? len : (temp < S(0)) ? S(0) : temp) : temp;
 }
 
@@ -482,6 +483,11 @@ std::string numberString(T value, unsigned digits, bool sign_on = true)
 	std::string rv;
 	// Initialize some
 	int dec{0}, sign{0};
+#if IS_WIN
+	rv.resize( _CVTBUFSIZE + 1);
+	_ecvt_s(rv.data(), rv.size(), value, std::numeric_limits<double>::digits10, &dec, &sign);
+	rv.resize(strlen(rv.c_str()));
+#else
 	//
 	if (std::numeric_limits<T>::is_iec559)
 	{
@@ -508,9 +514,16 @@ std::string numberString(T value, unsigned digits, bool sign_on = true)
 			rv.resize(std::numeric_limits<long double>::digits10);
 		}
 	}
+#endif
 	// Round the integer value up to its required digits.
 	auto rnd = ipow(10ull, (int) ((int) rv.length() - digits));
 	rv = itostr(round(std::stoull(rv), rnd) / rnd);
+	// Check if rounding added a decimal.
+	if (rv.length() != digits)
+	{
+		dec += 1;
+		rv.resize(digits);
+	}
 	// Calculate the exponent floored to a multiple of 3 when not a multiple of 3.
 	int exp = (dec % 3) ? (dec - 3) / 3 * 3 : dec;
 	// Correct the decimal position using the new exponent.

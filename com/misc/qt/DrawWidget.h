@@ -3,7 +3,6 @@
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <QWidget>
 #include <QPaintEvent>
-/*#include "ObjectExtension.h"*/
 
 namespace sf
 {

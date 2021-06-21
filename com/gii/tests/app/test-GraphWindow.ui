@@ -108,7 +108,7 @@
   <action name="actionAction_1">
    <property name="icon">
     <iconset resource="../../../misc/qt/res/resource.qrc">
-     <normaloff>:/logo/scanframe</normaloff>:/logo/scanframe</iconset>
+     <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
    </property>
    <property name="text">
     <string>Action &amp;1</string>

@@ -65,7 +65,6 @@ set(CMAKE_AUTORCC ON)
 
 # Qt dependent sources.
 set(SOURCES_QT
-	qt/FormDialog.cpp qt/FormDialog.h
 	qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h	qt/VariableWidgetBasePrivate.h
 	qt/VariableEdit.cpp qt/VariableEdit.h
 	qt/VariableBar.cpp qt/VariableBar.h
