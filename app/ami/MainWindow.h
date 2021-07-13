@@ -4,10 +4,11 @@
 #include <ami/iface/MultiDocInterface.h>
 #include <ami/iface/AppModuleInterface.h>
 
-
 class QAction;
 
 class QMenu;
+
+class QSettings;
 
 class QMdiArea;
 
@@ -16,19 +17,19 @@ class QMdiSubWindow;
 namespace sf
 {
 
+class ModuleConfiguration;
+
 class MainWindow :public QMainWindow
 {
 	Q_OBJECT
 
 	public:
-		explicit MainWindow(QSettings& settings);
+		explicit MainWindow(QSettings* settings);
 
 		bool openFile(const QString& fileName);
 
 	protected:
 		void closeEvent(QCloseEvent* event) override;
-
-		void showEvent(QShowEvent* event) override;
 
 	private slots:
 
@@ -50,6 +51,10 @@ class MainWindow :public QMainWindow
 
 		void paste();
 
+		void undo();
+
+		void redo();
+
 		void about();
 
 		void configModules();
@@ -64,6 +69,8 @@ class MainWindow :public QMainWindow
 
 	private:
 		enum {MaxRecentFiles = 5};
+
+		void closeDocument();
 
 		void createActions();
 
@@ -81,32 +88,39 @@ class MainWindow :public QMainWindow
 
 		void setRecentFilesVisible(bool visible);
 
-		[[nodiscard]] sf::MultiDocInterface* activeMdiChild() const;
+		[[nodiscard]] MultiDocInterface* activeMdiChild() const;
 
 		[[nodiscard]] QMdiSubWindow* findMdiChild(const QString& filename) const;
 
-		QMdiArea* _mdiArea;
+		ModuleConfiguration* _moduleConfiguration{nullptr};
 
-		QSettings& _settings;
+		QMdiArea* _mdiArea{};
+
+		QSettings* _settings;
 
 		QMenu* _windowMenu{};
-		QAction* _newAct{};
-		QAction* _saveAct{};
-		QAction* _saveAsAct{};
-		QAction* _recentFileActs[MaxRecentFiles]{};
+
+		QAction* _newAction{};
+		QAction* _openAction{};
+		QAction* _saveAction{};
+		QAction* _saveAsAction{};
+		QAction* _recentFileActions[MaxRecentFiles]{};
 		QAction* _recentFileSeparator{};
-		QAction* _recentFileSubMenuAct{};
-		QAction* _cutAct{};
-		QAction* _copyAct{};
-		QAction* _pasteAct{};
-		QAction* _closeAct{};
-		QAction* _closeAllAct{};
-		QAction* _tileAct{};
-		QAction* _cascadeAct{};
-		QAction* _nextAct{};
-		QAction* _previousAct{};
-		QAction* _windowMenuSeparatorAct{};
-		QAction* _moduleConfigAct{};
+		QAction* _recentFileSubMenuAction{};
+		QAction* _cutAction{};
+		QAction* _copyAction{};
+		QAction* _pasteAction{};
+		QAction* _undoAction{};
+		QAction* _redoAction{};
+		QAction* _closeWindowAction{};
+		QAction* _closeWindowsAction{};
+		QAction* _tileAction{};
+		QAction* _cascadeAction{};
+		QAction* _nextAction{};
+		QAction* _previousAction{};
+		QAction* _windowMenuSeparatorAction{};
+		QAction* _moduleConfigAction{};
+
 };
 
 }

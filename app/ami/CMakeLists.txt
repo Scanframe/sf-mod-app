@@ -28,7 +28,7 @@ set(SOURCES
 	main.cpp
 	MainWindow.cpp MainWindow.h
 	res/resource.qrc
-)
+	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

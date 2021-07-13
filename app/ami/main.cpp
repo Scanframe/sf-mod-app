@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QSettings>
 #include <QDir>
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -7,14 +8,17 @@
 #include <misc/qt/qt_utils.h>
 #include "MainWindow.h"
 
+using namespace sf;
+
 int main(int argc, char* argv[])
 {
 	Q_INIT_RESOURCE(resource);
-
 	QApplication app(argc, argv);
 	QApplication::setOrganizationName("ScanFrame");
 	QApplication::setApplicationName("Modular Base Application");
 	QApplication::setApplicationVersion(QT_VERSION_STR);
+	QApplication::setWindowIcon(QIcon(":logo/ico/scanframe"));
+	QApplication::setDesktopSettingsAware(false);
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.
@@ -22,7 +26,7 @@ int main(int argc, char* argv[])
 	// Make settings file available through a property..
 	QApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
 	// Create instance to handle settings.
-	sf::ApplicationSettings app_settings;
+	ApplicationSettings app_settings;
 	// Set the file path to the settings instance and make it watch changes.
 	app_settings.setFilepath(fi.absoluteFilePath(), true);
 	//
@@ -33,9 +37,10 @@ int main(int argc, char* argv[])
 	parser.addPositionalArgument("file", "The file to open.");
 	parser.process(app);
 	//
-	QSettings settings(fi.absoluteFilePath(), QSettings::IniFormat);
+	auto settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, QApplication::instance());
+	//auto settings = new QSettings(QSettings::Scope::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	//
-	sf::MainWindow win(settings);
+	MainWindow win(settings);
 	const QStringList posArgs = parser.positionalArguments();
 	for (const QString& fileName: posArgs)
 	{

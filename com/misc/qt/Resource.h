@@ -27,11 +27,16 @@ class _MISC_CLASS Resource
 				Cut,
 				Copy,
 				Paste,
+				Undo,
+				Redo,
 				Save,
 				Close,
 				Check,
 				Okay,
 				Exit,
+				CloseWindow,
+				CloseWindows,
+				Config,
 		};
 
 		/**
@@ -141,4 +146,3 @@ class _MISC_CLASS Resource
 };
 
 } // namespace
-

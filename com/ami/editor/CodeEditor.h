@@ -23,38 +23,56 @@ class CodeEditor :public QPlainTextEdit, public MultiDocInterface
 		// Constructor.
 		explicit CodeEditor(QWidget* parent = nullptr);
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		void newFile() override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		bool loadFile(const QString& fileName) override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		bool save() override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		bool saveAs() override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		bool saveFile(const QString& fileName) override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
+		[[nodiscard]] bool isModified() const override;
+
+		// MultiDocInterface interface method.
 		[[nodiscard]] QString userFriendlyCurrentFile() const override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		[[nodiscard]] QString currentFile() const override;
 
-		// MdiChild interface method.
-		bool hasSelection() const override;
+		// MultiDocInterface interface method.
+		[[nodiscard]] bool hasSelection() const override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
+		[[nodiscard]] bool isUndoRedoEnabled() const override;
+
+		// MultiDocInterface interface method.
+		[[nodiscard]] bool isUndoAvailable() const override;
+
+		// MultiDocInterface interface method.
+		[[nodiscard]] bool isRedoAvailable() const override;
+
+		// MultiDocInterface interface method.
 		void cut() override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		void copy() override;
 
-		// MdiChild interface method.
+		// MultiDocInterface interface method.
 		void paste() override;
+
+		// MultiDocInterface interface method.
+		void undo() override;
+
+		// MultiDocInterface interface method.
+		void redo() override;
 
 		void lineNumberAreaPaintEvent(QPaintEvent* event);
 
@@ -62,6 +80,8 @@ class CodeEditor :public QPlainTextEdit, public MultiDocInterface
 
 	protected:
 		void resizeEvent(QResizeEvent* event) override;
+
+		void closeEvent(QCloseEvent* event) override;
 
 	private slots:
 

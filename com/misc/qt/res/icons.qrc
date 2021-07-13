@@ -1,5 +1,6 @@
-<!-- Generated at: 2021-07-09T15:56:43CEST:::z -->
-<RCC>
+<!DOCTYPE RCC>
+<!-- Generated at: 2021-07-12T18:53:43CEST:::z -->
+<RCC version="1.0">
 	<qresource prefix="icon/png/">
 		<file alias="warning">icon/warning.png</file>
 	</qresource>
@@ -8,6 +9,8 @@
 		<file alias="check">icon/check.svg</file>
 		<file alias="clear">icon/clear.svg</file>
 		<file alias="close">icon/close.svg</file>
+		<file alias="close-windows">icon/close-windows.svg</file>
+		<file alias="close-window">icon/close-window.svg</file>
 		<file alias="config">icon/config.svg</file>
 		<file alias="control-panel">icon/control-panel.svg</file>
 		<file alias="copy">icon/copy.svg</file>
@@ -21,6 +24,7 @@
 		<file alias="okay">icon/okay.svg</file>
 		<file alias="open">icon/open.svg</file>
 		<file alias="paste">icon/paste.svg</file>
+		<file alias="redo">icon/redo.svg</file>
 		<file alias="reload">icon/reload.svg</file>
 		<file alias="save">icon/save.svg</file>
 		<file alias="status">icon/status.svg</file>

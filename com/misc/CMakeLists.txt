@@ -106,6 +106,9 @@ if (SF_BUILD_QT)
 		qt/FormDialog.cpp qt/FormDialog.h
 		qt/ActionButton.cpp qt/ActionButton.h
 		qt/ActionButtonPlugin.cpp qt/ActionButtonPlugin.h
+		qt/DrawWidget.cpp qt/DrawWidget.h
+		qt/ModuleConfiguration.cpp qt/ModuleConfiguration.h
+		qt/ModuleConfigurationDialog.cpp qt/ModuleConfigurationDialog.h qt/ModuleConfigurationDialog.ui
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)
@@ -116,7 +119,7 @@ if (SF_BUILD_QT)
 endif (SF_BUILD_QT)
 
 # Add the library to create.
-add_library(${PROJECT_NAME} SHARED ${SOURCES} qt/DrawWidget.cpp qt/DrawWidget.h)
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.

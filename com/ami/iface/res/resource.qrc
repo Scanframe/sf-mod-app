@@ -1,0 +1,6 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+	<qresource prefix="icon/svg">
+		<file alias="default-app-module">module.svg</file>
+	</qresource>
+</RCC>

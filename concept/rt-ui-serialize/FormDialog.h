@@ -4,28 +4,31 @@
 
 class FormDialog :public QDialog
 {
+	Q_OBJECT
+
 	public:
 		/**
-		 * Constructor
+		 * @brief Constructor
 		 */
 		explicit FormDialog(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
 		/**
 		 * Overridden to return the size of the contained UI file.
 		 */
-		QSize sizeHint() const override;
+		[[nodiscard]] QSize sizeHint() const override;
 
-	Q_OBJECT
-
-	signals:
+	Q_SIGNALS:
 
 		/**
-		 * Signal to resize content.
+		 * @brief Signal to resize content.
 		 */
 		void resizing(QResizeEvent* event);
 
 	protected:
-		// Overridden to emit resizing signal.
+		/**
+		 * @brief Overridden to emit resizing signal.
+		 */
+
 		void resizeEvent(QResizeEvent* event) override;
 
 };

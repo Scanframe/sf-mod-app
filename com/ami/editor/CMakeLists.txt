@@ -25,10 +25,14 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
+	res/resource.qrc
+	ModuleMain.cpp
 	Highlighter.cpp Highlighter.h
 	CodeEditor.cpp CodeEditor.h
 	TextEditor.cpp TextEditor.h
-	EditorAppModule.cpp EditorAppModule.h)
+	TextEditorAppModule.cpp TextEditorAppModule.h
+	CodeEditorAppModule.cpp CodeEditorAppModule.h
+	)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-ami)

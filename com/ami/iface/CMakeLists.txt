@@ -25,13 +25,14 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
+	res/resource.qrc
 	global.h
 	AppModuleInterface.cpp AppModuleInterface.h
 	AppModuleAction.cpp AppModuleAction.h
 	AppModuleActions.cpp AppModuleActions.h
 	MultiDocInterface.cpp MultiDocInterface.h
-	ModuleSelectionDialog.cpp ModuleSelectionDialog.h ModuleSelectionDialog.ui
-	)
+	SelectImplementationDialog.cpp SelectImplementationDialog.h SelectImplementationDialog.ui
+	AppModuleFileType.cpp AppModuleFileType.h)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc)

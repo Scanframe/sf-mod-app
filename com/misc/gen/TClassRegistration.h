@@ -4,17 +4,61 @@
 #include "dbgutils.h"
 #include "DynamicLibraryInfo.h"
 #include "TClosure.h"
+#include "TVector.h"
 #include "../global.h"
 
+
+/**
+ * @brief Name of the function to resolve from a library to be able to set the library filename when dynamically loaded.
+ */
+#define SF_DL_NAME_FUNC_NAME "_dl_name_"
+#define SF_DL_NAME_FUNC _dl_name_
+
+/**
+ * Declaration of dynamically loadable library information and and function for set/get the library filename.
+ */
 #define SF_DL_INFORMATION(name, description) \
 namespace \
 { \
-const char* _dl_ = \
-  SF_DL_MARKER_BEGIN \
-  name \
-  SF_DL_NAME_SEPARATOR \
-  description \
-  SF_DL_MARKER_END; \
+  const char* _dl_ = \
+    SF_DL_MARKER_BEGIN \
+    name \
+    SF_DL_NAME_SEPARATOR \
+    description \
+    SF_DL_MARKER_END; \
+  \
+  extern "C" TARGET_EXPORT const char* SF_DL_NAME_FUNC(const char* nm) \
+  { \
+    static char storage[256]; \
+    if (nm) \
+      strncpy(storage, nm, sizeof(storage)); \
+    return storage; \
+  } \
+}
+
+/**
+ * @brief Declaration of function to set and get the dynamic library name when loading.
+ */
+extern "C" const char* SF_DL_NAME_FUNC(const char* name);
+
+/**
+ * @brief Type for casting a resolved function pointer to.
+ */
+#define SF_DL_NAME_FUNC_TYPE \
+	const char* (*)(const char*)
+
+namespace sf
+{
+
+/**
+ * @brief function to get the library filename this function is called from.
+ */
+inline
+std::string getLibraryName()
+{
+	return SF_DL_NAME_FUNC(nullptr);
+}
+
 }
 
 /**
@@ -31,7 +75,7 @@ const char* _dl_ = \
     std::string _Register_Name_; \
   public: \
     static sf::TClassRegistration<InterfaceType, ParamType> FuncName(); \
- 	friend class sf::TClassRegistration<InterfaceType, ParamType>;
+  friend class sf::TClassRegistration<InterfaceType, ParamType>;
 
 /**
  * @brief Implements the public static function in the class where it is used.
@@ -79,7 +123,7 @@ namespace sf
  * @tparam F Callback function to create the instance.
  *
  */
-template <typename T, typename P>
+template<typename T, typename P>
 class TClassRegistration
 {
 	public:
@@ -88,6 +132,7 @@ class TClassRegistration
 		typedef TClosure<T*, const P&> callback_t;
 		struct entry_t;
 		typedef std::vector<entry_t> entries_t;
+		typedef TVector<std::string> strings_t;
 
 		/**
 		 * @brief Constructor for the base class.
@@ -119,6 +164,7 @@ class TClassRegistration
 		 * @param callback Callback function to create instance of the class.
 		 */
 		size_t registerClass(const char* name, const char* description, const callback_t& callback);
+
 		/**
 		 * @brief Find a registered class structure index.
 		 *
@@ -126,6 +172,7 @@ class TClassRegistration
 		 * @return Non zero index/position of the class in the registration list where Zero means not found.
 		 */
 		[[nodiscard]] size_t indexOf(const std::string& name) const;
+
 		/**
 		 * @brief Find and create registered class by name.
 		 *
@@ -134,6 +181,7 @@ class TClassRegistration
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
 		T* create(const std::string& name, const P& params) const;
+
 		/**
 		 * @brief Function create registered class by index.
 		 *
@@ -142,12 +190,14 @@ class TClassRegistration
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
 		T* create(size_t index, const P& params) const;
+
 		/**
 		 * @brief Returns the amount of registered entries.
 		 *
 		 * @return Derived instance of type T.
 		 */
 		[[nodiscard]] size_t size() const;
+
 		/**
 		 * @brief Sets the register name on the passed instance.
 		 *
@@ -157,6 +207,7 @@ class TClassRegistration
 		{
 			inst->_Register_Name_ = name;
 		}
+
 		/**
 		 * @brief Gets the register name of the passed.
 		 */
@@ -164,10 +215,17 @@ class TClassRegistration
 		{
 			return inst->_Register_Name_;
 		}
+
 		/**
-		 * @brief Returns the name of the class from the passed index.
+		 * @brief Gets the name of the class from the passed index.
 		 */
 		[[nodiscard]] const char* getName(size_t index) const;
+
+		/**
+		 * @brief Gets the all the registered names.
+		 */
+		[[nodiscard]] strings_t getNames() const;
+
 		/**
 		 * @brief Returns the description of the class from the passed index.
 		 */
@@ -180,9 +238,6 @@ class TClassRegistration
 		{
 			/**
 			 * @brief Constructor.
-			 * @param name
-			 * @param description
-			 * @param callback
 			 */
 			inline
 			entry_t(const char* name, const char* description, const callback_t& callback)
@@ -190,7 +245,6 @@ class TClassRegistration
 
 			/**
 			 * @brief Copy constructor.
-			 * @param e
 			 */
 			inline
 			entry_t(const entry_t& e)
@@ -218,38 +272,40 @@ class TClassRegistration
 		 * @return Entry pointer of the found class or nullptr on not found.
 		 */
 		const entry_t* find(const std::string& name) const;
+
 		/**
 		 * @brief Pointer to list where instances are registered.
 		 */
 		entries_t* _entries;
+
 		/**
 		 * @brief Returns the found const iterator.
 		 */
 		typename entries_t::const_iterator lookup(const std::string& name) const;
 };
 
-template <typename T, typename P>
+template<typename T, typename P>
 TClassRegistration<T, P>::TClassRegistration(entries_t& entries)
 	: _entries(&entries) {}
 
-template <typename T, typename P>
+template<typename T, typename P>
 TClassRegistration<T, P>::TClassRegistration(const TClassRegistration<T, P>& inst)
 	: _entries(inst._entries) {}
 
-template <typename T, typename P>
+template<typename T, typename P>
 size_t TClassRegistration<T, P>::size() const
 {
 	return _entries->size();
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 size_t TClassRegistration<T, P>::registerClass(const char* name, const char* description,
 	const typename TClassRegistration<T, P>::callback_t& callback)
 {
 	return std::distance(_entries->begin(), _entries->insert(_entries->end(), entry_t(name, description, callback)));
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 typename TClassRegistration<T, P>::entries_t::const_iterator
 TClassRegistration<T, P>::lookup(const std::string& name) const
 {
@@ -270,7 +326,7 @@ TClassRegistration<T, P>::lookup(const std::string& name) const
 	return _entries->end();
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 size_t TClassRegistration<T, P>::indexOf(const std::string& name) const
 {
 	auto it = lookup(name);
@@ -284,7 +340,7 @@ size_t TClassRegistration<T, P>::indexOf(const std::string& name) const
 	return std::distance(const_cast<const entries_t*>(_entries)->begin(), it) + 1;
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 const typename TClassRegistration<T, P>::entry_t* TClassRegistration<T, P>::find(const std::string& name) const
 {
 	auto it = lookup(name);
@@ -297,7 +353,7 @@ const typename TClassRegistration<T, P>::entry_t* TClassRegistration<T, P>::find
 	return &(*it);
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 T* TClassRegistration<T, P>::create(const std::string& name, const P& params) const
 {
 	auto entry = find(name);
@@ -308,19 +364,33 @@ T* TClassRegistration<T, P>::create(const std::string& name, const P& params) co
 	return const_cast<entry_t*>(entry)->_callback(params);
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 T* TClassRegistration<T, P>::create(size_t index, const P& params) const
 {
 	return _entries->at(index)._callback(params);
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
 const char* TClassRegistration<T, P>::getName(size_t index) const
 {
 	return _entries->at(index)._name;
 }
 
-template <typename T, typename P>
+template<typename T, typename P>
+typename TClassRegistration<T, P>::strings_t TClassRegistration<T, P>::getNames() const
+{
+	strings_t rv;
+	if (_entries)
+	{
+		for (entry_t& i: *_entries)
+		{
+			rv.add(i._name);
+		}
+	}
+	return rv;
+}
+
+template<typename T, typename P>
 const char* TClassRegistration<T, P>::getDescription(size_t index) const
 {
 	return _entries->at(index)._description;

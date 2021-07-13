@@ -17,7 +17,7 @@ class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget/*, public ObjectExtensi
 
 		void paintEvent(QPaintEvent* event) override;
 
-	signals:
+	Q_SIGNALS:
 		void paint(QPaintEvent* event);
 
 };

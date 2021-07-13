@@ -1,3 +1,6 @@
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/TClassRegistration.h>
+
 #include "CodeEditor.h"
 
 #include <QtWidgets>
@@ -15,11 +18,12 @@ namespace sf
 
 CodeEditor::CodeEditor(QWidget* parent)
 	:QPlainTextEdit(parent)
-	,isUntitled(true)
-	,spacingNumber(1)
+	 , MultiDocInterface(this)
+	 , isUntitled(true)
+	 , spacingNumber(1)
 {
+	setWindowIcon(QIcon(":icon/svg/code-editor"));
 	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	// Assign highlighter to the underlying document.
 	new Highlighter(document());
 
@@ -51,7 +55,7 @@ CodeEditor::CodeEditor(QWidget* parent)
 	setTabStopDistance(fm.horizontalAdvance(' ') * 2);
 	// Use the average width of a character.
 	//setTabStopDistance(fm.averageCharWidth() * 2);
-
+	setUndoRedoEnabled(true);
 }
 
 int CodeEditor::lineNumberAreaWidth()
@@ -141,7 +145,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
 		{
 			QString number = QString::number(blockNumber + 1);
 			painter.setPen(Qt::lightGray);
-			painter.drawText(-spacingNumber, top, lineNumberArea->width(), fontMetrics().height(),Qt::AlignRight, number);
+			painter.drawText(-spacingNumber, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignRight, number);
 		}
 		block = block.next();
 		top = bottom;
@@ -165,9 +169,39 @@ void CodeEditor::paste()
 	QPlainTextEdit::paste();
 }
 
+void CodeEditor::undo()
+{
+	QPlainTextEdit::undo();
+}
+
+void CodeEditor::redo()
+{
+	QPlainTextEdit::redo();
+}
+
 bool CodeEditor::hasSelection() const
 {
 	return textCursor().hasSelection();
+}
+
+bool CodeEditor::isUndoRedoEnabled() const
+{
+	return QPlainTextEdit::isUndoRedoEnabled();
+}
+
+bool CodeEditor::isUndoAvailable() const
+{
+	return document()->isUndoAvailable();
+}
+
+bool CodeEditor::isRedoAvailable() const
+{
+	return document()->isUndoAvailable();
+}
+
+bool CodeEditor::isModified() const
+{
+	return document()->isModified();
 }
 
 QString CodeEditor::currentFile() const
@@ -198,7 +232,7 @@ void CodeEditor::newFile()
 {
 	static int sequenceNumber = 1;
 	isUntitled = true;
-	curFile = tr("document%1.txt").arg(sequenceNumber++);
+	curFile = tr("document-%1.js").arg(sequenceNumber++);
 	setWindowTitle(curFile + "[*]");
 	connect(document(), &QTextDocument::contentsChanged, this, &CodeEditor::documentWasModified);
 }
@@ -232,7 +266,7 @@ bool CodeEditor::save()
 
 bool CodeEditor::saveAs()
 {
-	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile);
+	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile, getFileTypeFilters());
 	return !fileName.isEmpty() && saveFile(fileName);
 }
 
@@ -266,6 +300,18 @@ bool CodeEditor::saveFile(const QString& fileName)
 
 	setCurrentFile(fileName);
 	return true;
+}
+
+void CodeEditor::closeEvent(QCloseEvent* event)
+{
+	if (canClose())
+	{
+		event->accept();
+	}
+	else
+	{
+		event->ignore();
+	}
 }
 
 }

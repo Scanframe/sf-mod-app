@@ -1,10 +1,13 @@
 #include <QToolBar>
 #include <QDirIterator>
-#include <misc/gen/DynamicLibraryInfo.h>
-#include <misc/qt/Resource.h>
-#include <misc/gen/gen_utils.h>
-#include "ModuleSelectionDialog.h"
-#include "ui_ModuleSelectionDialog.h"
+#include <QLibrary>
+#include "Resource.h"
+#include "../gen/DynamicLibraryInfo.h"
+#include "../gen/gen_utils.h"
+
+#include "ModuleConfiguration.h"
+#include "ModuleConfigurationDialog.h"
+#include "ui_ModuleConfigurationDialog.h"
 
 namespace sf
 {
@@ -12,7 +15,7 @@ namespace sf
 class AppModuleList :public QAbstractListModel
 {
 	public:
-		explicit AppModuleList(QObject* parent = nullptr);
+		explicit AppModuleList(ModuleConfiguration* config, QObject* parent = nullptr);
 
 		~AppModuleList() override;
 
@@ -32,6 +35,8 @@ class AppModuleList :public QAbstractListModel
 
 		void clicked(const QModelIndex& index);
 
+		bool submit() override;
+
 		enum EColumn
 		{
 			cCheckBox = 0,
@@ -45,14 +50,20 @@ class AppModuleList :public QAbstractListModel
 
 		struct ListItem :public DynamicLibraryInfo
 		{
-			Qt::CheckState state{Qt::CheckState::PartiallyChecked};
+			Qt::CheckState state{Qt::CheckState::Unchecked};
 		};
+
+		// Holds the configuration structure.
+		ModuleConfiguration* _config;
 		// Holds the list library information.
 		QList<ListItem> _libraryInfoList;
+		// Holds the flag if a change occurred.
+		bool _dirty{false};
 };
 
-AppModuleList::AppModuleList(QObject* parent)
+AppModuleList::AppModuleList(ModuleConfiguration* config, QObject* parent)
 	:QAbstractListModel(parent)
+	,_config(config)
 {
 }
 
@@ -63,25 +74,50 @@ AppModuleList::~AppModuleList()
 
 void AppModuleList::refresh()
 {
-	_libraryInfoList.clear();
-	beginRemoveRows(QModelIndex(), 0, (int) _libraryInfoList.length() - 1);
-	removeRows(0, (int) _libraryInfoList.length());
-	endRemoveRows();
-	//
-	QDirIterator it(QCoreApplication::applicationDirPath(), {"*.so", "*.dll"}, QDir::Files);
+	if (!_libraryInfoList.isEmpty())
+	{
+		beginRemoveRows(QModelIndex(), 0, (int) _libraryInfoList.length() - 1);
+		removeRows(0, (int) _libraryInfoList.length());
+		_libraryInfoList.clear();
+		endRemoveRows();
+	}
+	// Get the current list of modules.
+	auto list = _config->getList();
+	// Iterate through the list module file in the module directory.
+	QDirIterator it(_config->getModuleDir(), QDir::Filter::Files);
 	while (it.hasNext())
 	{
-		qInfo() << "Checking: " << it.next();
-		ListItem dld;
-		dld.read(it.fileInfo().absoluteDir().absolutePath().toStdString(), it.fileName().toStdString());
-		if (dld.filename.length())
+		// Check if the file is a library.
+		if (QLibrary::isLibrary(it.next()))
 		{
-			_libraryInfoList.append(dld);
-			qDebug() << "Filename:" << dld.filename;
-			qDebug() << "Name: " << dld.name;
-			qDebug() << "Description: " << dld.description;
-			//QDir(QCoreApplication::applicationDirPath()).relativeFilePath(it.fileName());
+			qInfo() << "Checking: " << it.fileName();
+			ListItem dld;
+			dld.read(it.fileInfo().absoluteDir().absolutePath().toStdString(), it.fileName().toStdString());
+			if (dld.filename.length())
+			{
+				// Check if the list is in the to be loaded modules.
+				if (list.contains(it.fileName()))
+				{
+					// When it exists set the state (makes it be loaded)
+					dld.state = Qt::CheckState::Checked;
+					// Remove the filename from the list when found to keep only the ones that are not available right now.
+					list.remove(it.fileName());
+				}
+				_libraryInfoList.append(dld);
+			}
 		}
+	}
+	// For all entries which were not present add an entry.
+	for (auto i = list.begin(); i != list.constEnd(); ++i)
+	{
+		ListItem dld;
+		// Assign the name of filename of the entry.
+		dld.name = i.value().toStdString();
+		// Assign the name of filename of the entry.
+		dld.filename = i.key().toStdString();
+		// Indicates the module should have been loaded but is not available at this moment.
+		dld.state = Qt::CheckState::PartiallyChecked;
+			_libraryInfoList.append(dld);
 	}
 	// Sort the list of libraries by name.
 	std::sort(_libraryInfoList.begin(), _libraryInfoList.end(),
@@ -103,13 +139,13 @@ QVariant AppModuleList::headerData(int section, Qt::Orientation orientation, int
 		switch (section)
 		{
 			case cCheckBox:
-				return QString("Load");
+				return QString(tr("Load"));
 			case cName:
-				return QString("Name");
+				return QString(tr("Name"));
 			case cDescription:
-				return QString("Description");
+				return QString(tr("Description"));
 			case cFilename:
-				return QString("Filename");
+				return QString(tr("Filename"));
 			default:
 				return QString("Column %1").arg(section);
 		}
@@ -211,32 +247,53 @@ void AppModuleList::toggleSelection(const QModelIndex& index)
 				break;
 		}
 		emit dataChanged(index, QModelIndex());
+		_dirty = true;
 	}
 }
 
-ModuleSelectionDialog* ModuleSelectionDialog::_singleton = nullptr;
-
-ModuleSelectionDialog* ModuleSelectionDialog::getDialog(QSettings* settings, QWidget* parent)
+bool AppModuleList::submit()
 {
-	return _singleton ? _singleton : new ModuleSelectionDialog(settings, parent);
+	if (_dirty)
+	{
+		ModuleConfiguration::ModuleListType ml;
+		// Fill the module list.
+		for (auto& i: _libraryInfoList)
+		{
+			// Disregard unchecked entries.
+			if (i.state == Qt::CheckState::PartiallyChecked || i.state == Qt::CheckState::Checked)
+			{
+				ml[QString::fromStdString(i.filename)] = QString::fromStdString(i.name);
+			}
+		}
+		// Save the module list.
+		_config->save(ml);
+		// Reset the dirty flag.
+		_dirty = false;
+		// Load the modules if the haven't already.
+		_config->load();
+	}
+	return true;
 }
 
-ModuleSelectionDialog::ModuleSelectionDialog(QSettings* settings, QWidget* parent)
+ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config, QWidget* parent)
 	:QDialog(parent)
-	 , ui(new Ui::ModuleSelectionDialog)
-	 , _settings(settings)
-	 , _moduleList(new AppModuleList(this))
+	 , ui(new Ui::ModuleConfigurationDialog)
+	 , _moduleList(new AppModuleList(config, this))
 {
-	setAttribute(Qt::WA_DeleteOnClose);
-	_singleton = this;
 	ui->setupUi(this);
-	connect(ui->btnClose, &QPushButton::clicked, this, &ModuleSelectionDialog::close);
-	connect(ui->btnOkay, &QPushButton::clicked, this, &ModuleSelectionDialog::applyClose);
+	// Hook the needed signals.
+	connect(ui->btnClose, &QPushButton::clicked, this, &ModuleConfigurationDialog::close);
+	connect(ui->btnOkay, &QPushButton::clicked, this, &ModuleConfigurationDialog::applyClose);
+	connect(ui->btnApply, &QPushButton::clicked, _moduleList, &AppModuleList::submit);
+	connect(ui->btnRefresh, &QPushButton::clicked, _moduleList, &AppModuleList::refresh);
 	connect(ui->listAvailable, &QAbstractItemView::clicked, _moduleList, &AppModuleList::clicked);
 	connect(ui->listAvailable, &QAbstractItemView::doubleClicked, _moduleList, &AppModuleList::doubleClicked);
+	// Assign the model to the view.
 	ui->listAvailable->setModel(_moduleList);
+/*
 	//ui->listAvailable->setColumnHidden(0, true);
 	auto toolBar = new QToolBar("Mine", this);
+	// Add a toolbar for some buttons when a box layout is present.
 	auto lo = qobject_cast<QBoxLayout*>(layout());
 	if (lo)
 	{
@@ -247,32 +304,33 @@ ModuleSelectionDialog::ModuleSelectionDialog(QSettings* settings, QWidget* paren
 		connect(act, &QAction::triggered, _moduleList, &AppModuleList::refresh);
 		toolBar->addAction(act);
 	}
+*/
+	// Populate the list.
 	_moduleList->refresh();
-	//
-	ui->listAvailable->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+	// Resize the columns.
 	for (int i = 0; i < _moduleList->columnCount(QModelIndex()); i++)
 	{
 		ui->listAvailable->resizeColumnToContents(i);
 	}
-	for (auto& i: QList<QPair<QAbstractButton*, Resource::Icon>>
-	{
+	// Assign svg icons to the buttons.
+	for (auto& i: QList<QPair<QAbstractButton*, Resource::Icon>>{
 		{ui->btnOkay, Resource::Icon::Okay},
 		{ui->btnClose, Resource::Icon::Close},
-		{ui->btnApply, Resource::Icon::Check}
+		{ui->btnApply, Resource::Icon::Check},
+		{ui->btnRefresh, Resource::Icon::Reload}
 	})
 	{
 		i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ColorRole::ButtonText));
 	}
 }
 
-ModuleSelectionDialog::~ModuleSelectionDialog()
+ModuleConfigurationDialog::~ModuleConfigurationDialog()
 {
 	delete ui;
 	delete _moduleList;
-	_singleton = nullptr;
 }
 
-void ModuleSelectionDialog::applyClose()
+void ModuleConfigurationDialog::applyClose()
 {
 	_moduleList->submit();
 	close();

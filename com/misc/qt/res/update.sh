@@ -10,11 +10,12 @@ function WriteLn()
 	echo -e "${@}" >> "${FILE_OUT}"
 }
 
-# Create file using a time stamp.
-echo -e "<!-- Generated at: $(date +%Y-%m-%dT%T%Z:::z) -->" > "${FILE_OUT}"
+# Opening root tag and create file.
+echo -e "<!DOCTYPE RCC>" > "${FILE_OUT}"
 
-# Opening root tag.
-WriteLn '<RCC>'
+# Create file using a time stamp.
+WriteLn "<!-- Generated at: $(date +%Y-%m-%dT%T%Z:::z) -->"
+WriteLn '<RCC version="1.0">'
 
 # Generate the resource for PNG icons.
 WriteLn '	<qresource prefix="icon/png/">'

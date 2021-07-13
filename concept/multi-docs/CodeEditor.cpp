@@ -167,6 +167,11 @@ bool CodeEditor::hasSelection() const
 	return textCursor().hasSelection();
 }
 
+bool CodeEditor::isUndoRedoEnabled() const
+{
+	return isUndoRedoEnabled()
+}
+
 QString CodeEditor::currentFile() const
 {
 	return curFile;

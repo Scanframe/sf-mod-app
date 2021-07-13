@@ -11,6 +11,8 @@ namespace sf
 
 class _MISC_CLASS FormDialog :public QDialog
 {
+	Q_OBJECT
+
 	public:
 		/**
 		 * Constructor
@@ -28,10 +30,7 @@ class _MISC_CLASS FormDialog :public QDialog
 		void Load(QFile file);
 		void Load2(QFile file);
 
-	Q_OBJECT
-
-	signals:
-
+	Q_SIGNALS:
 		/**
 		 * Signal to resize content.
 		 */

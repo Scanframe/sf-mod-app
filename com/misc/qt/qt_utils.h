@@ -9,6 +9,7 @@
 #include <QFileSystemWatcher>
 #include <QPalette>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "../global.h"
 
@@ -140,6 +141,8 @@ class _MISC_CLASS PaletteColors
 	private:
 		typedef QPair<QPalette::ColorRole, QColor> Pair;
 		QList<Pair> _colors;
+
+		void styleMessageBox(QMessageBox& mb) const;
 };
 
 

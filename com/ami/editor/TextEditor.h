@@ -11,7 +11,7 @@ class TextEditor :public QTextEdit, public MultiDocInterface
 	Q_OBJECT
 
 	public:
-		TextEditor();
+		explicit TextEditor(QWidget* parent);
 
 		void newFile() override;
 
@@ -23,17 +23,29 @@ class TextEditor :public QTextEdit, public MultiDocInterface
 
 		bool saveFile(const QString& fileName) override;
 
+		[[nodiscard]] bool isModified() const override;
+
 		[[nodiscard]] QString userFriendlyCurrentFile() const override;
 
 		[[nodiscard]] QString currentFile() const override;
 
 		[[nodiscard]] bool hasSelection() const override;
 
+		[[nodiscard]] bool isUndoRedoEnabled() const override;
+
+		[[nodiscard]] bool isUndoAvailable() const override;
+
+		[[nodiscard]] bool isRedoAvailable() const override;
+
 		void cut() override;
 
 		void copy() override;
 
 		void paste() override;
+
+		void undo() override;
+
+		void redo() override;
 
 	protected:
 		void closeEvent(QCloseEvent* event) override;
@@ -43,7 +55,6 @@ class TextEditor :public QTextEdit, public MultiDocInterface
 		void documentWasModified();
 
 	private:
-		bool maybeSave();
 
 		void setCurrentFile(const QString& fileName);
 

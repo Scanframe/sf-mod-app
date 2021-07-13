@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+	<qresource prefix="icon/svg">
+		<file alias="text-editor">text-editor.svg</file>
+	</qresource>
+	<qresource prefix="icon/svg">
+		<file alias="code-editor">code-editor.svg</file>
+	</qresource>
+</RCC>

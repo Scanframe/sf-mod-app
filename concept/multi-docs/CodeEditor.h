@@ -39,13 +39,15 @@ class CodeEditor :public QPlainTextEdit, public MdiChild
 		bool saveFile(const QString& fileName) override;
 
 		// MdiChild interface method.
-		QString userFriendlyCurrentFile() const override;
+		[[nodiscard]] QString userFriendlyCurrentFile() const override;
 
 		// MdiChild interface method.
-		QString currentFile() const override;
+		[[nodiscard]] QString currentFile() const override;
 
 		// MdiChild interface method.
-		bool hasSelection() const override;
+		[[nodiscard]] bool hasSelection() const override;
+
+		[[nodiscard]] bool isUndoRedoEnabled() const override;
 
 		// MdiChild interface method.
 		void cut() override;
@@ -76,7 +78,7 @@ class CodeEditor :public QPlainTextEdit, public MdiChild
 	private:
 		void setCurrentFile(const QString& fileName);
 
-		QString strippedName(const QString& fullFileName) const;
+		[[nodiscard]] QString strippedName(const QString& fullFileName) const;
 
 		QString curFile;
 		bool isUntitled;

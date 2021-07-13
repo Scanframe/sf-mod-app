@@ -7,10 +7,11 @@
 namespace sf
 {
 
-TextEditor::TextEditor()
-	:isUntitled(true)
+TextEditor::TextEditor(QWidget* parent)
+	:QTextEdit(parent)
+	 , MultiDocInterface(this)
+	 , isUntitled(true)
 {
-	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	// Make the widget delete on close.
 	setAttribute(Qt::WA_DeleteOnClose);
 	// Assign highlighter to the underlying document.
@@ -33,13 +34,14 @@ TextEditor::TextEditor()
 	setTabStopDistance(fm.horizontalAdvance(' ') * 2);
 	// Use the average width of a character.
 	//setTabStopDistance(fm.averageCharWidth() * 2);
+	setUndoRedoEnabled(true);
 }
 
 void TextEditor::newFile()
 {
 	static int sequenceNumber = 1;
 	isUntitled = true;
-	curFile = tr("document%1.txt").arg(sequenceNumber++);
+	curFile = tr("document-%1.txt").arg(sequenceNumber++);
 	setWindowTitle(curFile + "[*]");
 	connect(document(), &QTextDocument::contentsChanged, this, &TextEditor::documentWasModified);
 }
@@ -68,7 +70,7 @@ bool TextEditor::save()
 
 bool TextEditor::saveAs()
 {
-	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile);
+	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile, getFileTypeFilters());
 	return !fileName.isEmpty() && saveFile(fileName);
 }
 
@@ -106,7 +108,7 @@ bool TextEditor::saveFile(const QString& fileName)
 
 void TextEditor::closeEvent(QCloseEvent* event)
 {
-	if (maybeSave())
+	if (canClose())
 	{
 		event->accept();
 	}
@@ -118,28 +120,7 @@ void TextEditor::closeEvent(QCloseEvent* event)
 
 void TextEditor::documentWasModified()
 {
-	setWindowModified(document()->isModified());
-}
-
-bool TextEditor::maybeSave()
-{
-	if (!document()->isModified())
-	{
-		return true;
-	}
-	const QMessageBox::StandardButton ret = QMessageBox::warning(this, tr("MDI"),
-		tr("'%1' has been modified.\nDo you want to save your changes?").arg(userFriendlyCurrentFile()),
-		QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-	switch (ret)
-	{
-		case QMessageBox::Save:
-			return save();
-		case QMessageBox::Cancel:
-			return false;
-		default:
-			break;
-	}
-	return true;
+	setWindowModified(isModified());
 }
 
 QString TextEditor::currentFile() const
@@ -171,6 +152,26 @@ bool TextEditor::hasSelection() const
 	return textCursor().hasSelection();
 }
 
+bool TextEditor::isUndoRedoEnabled() const
+{
+	return QTextEdit::isUndoRedoEnabled();
+}
+
+bool TextEditor::isUndoAvailable() const
+{
+	return document()->isUndoAvailable();
+}
+
+bool TextEditor::isRedoAvailable() const
+{
+	return document()->isUndoAvailable();
+}
+
+bool TextEditor::isModified() const
+{
+	return document()->isModified();
+}
+
 void TextEditor::cut()
 {
 	QTextEdit::cut();
@@ -184,6 +185,16 @@ void TextEditor::copy()
 void TextEditor::paste()
 {
 	QTextEdit::paste();
+}
+
+void TextEditor::undo()
+{
+	QTextEdit::undo();
+}
+
+void TextEditor::redo()
+{
+	QTextEdit::redo();
 }
 
 }
