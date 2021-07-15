@@ -14,7 +14,7 @@ class Highlighter :public QSyntaxHighlighter
 	Q_OBJECT
 
 	public:
-		explicit Highlighter(QTextDocument* parent = nullptr);
+		explicit Highlighter(QTextDocument* parent = nullptr, bool dark_mode = false);
 
 	protected:
 		void highlightBlock(const QString& text) override;

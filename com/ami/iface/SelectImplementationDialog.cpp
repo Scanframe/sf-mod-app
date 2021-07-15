@@ -1,11 +1,15 @@
+#include <misc/qt/qt_utils.h>
+#include <misc/qt/Resource.h>
 #include "SelectImplementationDialog.h"
 #include "ui_SelectImplementationDialog.h"
 
 namespace sf
 {
 
-SelectImplementationDialog::SelectImplementationDialog(QWidget* parent) :
-	QDialog(parent), ui(new Ui::SelectImplementationDialog)
+SelectImplementationDialog::SelectImplementationDialog(QSettings* settings, QWidget* parent)
+	:QDialog(parent)
+	 , _settings(settings)
+	 , ui(new Ui::SelectImplementationDialog)
 {
 	ui->setupUi(this);
 	// Attach the model to9 the view.
@@ -19,11 +23,38 @@ SelectImplementationDialog::SelectImplementationDialog(QWidget* parent) :
 	connect(ui->listAvailable, &QTreeView::doubleClicked, this, &SelectImplementationDialog::doubleClicked);
 	connect(ui->btnCancel, &QPushButton::clicked, this, &SelectImplementationDialog::close);
 	connect(ui->btnOkay, &QPushButton::clicked, this, &SelectImplementationDialog::okay);
+	// Assign svg icons to the buttons.
+	for (auto& i: QList<QPair<QAbstractButton*, Resource::Icon >>
+		{
+			{ui->btnOkay, Resource::Icon::Okay},
+			{ui->btnCancel, Resource::Icon::Cancel},
+		})
+	{
+		i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ButtonText));
+	}
+	//
+	stateSaveRestore(false);
 }
 
 SelectImplementationDialog::~SelectImplementationDialog()
 {
+	stateSaveRestore(true);
 	delete ui;
+}
+
+void SelectImplementationDialog::stateSaveRestore(bool save)
+{
+	_settings->beginGroup(getObjectNamePath(this).join('.'));
+	QString key("State");
+	if (save)
+	{
+		_settings->setValue(key, saveGeometry());
+	}
+	else
+	{
+		restoreGeometry(_settings->value(key).toByteArray());
+	}
+	_settings->endGroup();
 }
 
 AppModuleInterface* SelectImplementationDialog::getSelected() const
@@ -42,7 +73,7 @@ void SelectImplementationDialog::okay()
 	close();
 }
 
-void SelectImplementationDialog::doubleClicked(const QModelIndex &index)
+void SelectImplementationDialog::doubleClicked(const QModelIndex& index)
 {
 	_selected = qvariant_cast<AppModuleInterface*>(ui->listAvailable->model()->data(index, Qt::ItemDataRole::UserRole));
 	close();

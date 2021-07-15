@@ -14,8 +14,6 @@ TextEditor::TextEditor(QWidget* parent)
 {
 	// Make the widget delete on close.
 	setAttribute(Qt::WA_DeleteOnClose);
-	// Assign highlighter to the underlying document.
-	new Highlighter(document());
 	// Change the default editor colors.
 	QPalette pal(palette());
 	pal.setColor(QPalette::Base, Qt::white);
@@ -164,7 +162,7 @@ bool TextEditor::isUndoAvailable() const
 
 bool TextEditor::isRedoAvailable() const
 {
-	return document()->isUndoAvailable();
+	return document()->isRedoAvailable();
 }
 
 bool TextEditor::isModified() const

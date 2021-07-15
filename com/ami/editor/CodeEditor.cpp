@@ -1,52 +1,54 @@
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/TClassRegistration.h>
-
-#include "CodeEditor.h"
-
 #include <QtWidgets>
 #include <QPainter>
 #include <QTextBlock>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QLabel>
 #include <QMessageBox>
 #include <QGuiApplication>
 #include <QFileDialog>
 #include <QSaveFile>
 
+#include "CodeEditor.h"
+
 namespace sf
 {
 
-CodeEditor::CodeEditor(QWidget* parent)
+CodeEditor::CodeEditor(const CodeEditorConfiguration& cfg, QWidget* parent)
 	:QPlainTextEdit(parent)
 	 , MultiDocInterface(this)
 	 , isUntitled(true)
 	 , spacingNumber(1)
+	 , lineNumberArea(nullptr)
+	 , curLineColor(cfg.darkMode ? QColorConstants::DarkYellow.darker() : QColor(255, 250, 227))
 {
 	setWindowIcon(QIcon(":icon/svg/code-editor"));
 	setAttribute(Qt::WA_DeleteOnClose);
 	// Assign highlighter to the underlying document.
-	new Highlighter(document());
-
-	lineNumberArea = new LineNumberArea(this);
-
-	connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateLineNumberAreaWidth);
-	connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateLineNumberArea);
+	if (cfg.useHighLighting)
+	{
+		new Highlighter(document(), cfg.darkMode);
+	}
+	//
+	if (cfg.showGutter)
+	{
+		lineNumberArea = new LineNumberArea(this);
+		connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateLineNumberAreaWidth);
+		connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateLineNumberArea);
+		updateLineNumberAreaWidth(0);
+	}
 	connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
-
-	updateLineNumberAreaWidth(0);
-	//
 	highlightCurrentLine();
-	//
 	// Change the default editor colors.
 	QPalette pal(palette());
-	pal.setColor(QPalette::Base, Qt::white);
-	pal.setColor(QPalette::Text, Qt::black);
+	pal.setColor(QPalette::Base, cfg.darkMode ? Qt::black : Qt::white);
+	pal.setColor(QPalette::Text, cfg.darkMode ? Qt::white : Qt::black);
 	setPalette(pal);
 	// Set monospaced font.
-	QFont font("Monospace");
+	QFont font(cfg.fontType);
 	font.setStyleHint(QFont::StyleHint::Monospace);
 	// Make the new font the same size as the current one.
-	font.setPointSizeF(document()->defaultFont().pointSizeF());
+	font.setPointSizeF(cfg.fontSize ? cfg.fontSize : document()->defaultFont().pointSizeF());
 	//qDebug("%-15s %-15s %-20s %s", "QFont(\"\")", "setFixedPitch", qPrintable(QFontInfo(font).family()), QFontInfo(font).fixedPitch() ? "fixed-width" : "variable");
 	document()->setDefaultFont(font);
 	// Set tab stop the width of 2 space characters.
@@ -84,13 +86,16 @@ void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
 
 void CodeEditor::updateLineNumberArea(const QRect& rect, int dy)
 {
-	if (dy)
+	if (lineNumberArea)
 	{
-		lineNumberArea->scroll(0, dy);
-	}
-	else
-	{
-		lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+		if (dy)
+		{
+			lineNumberArea->scroll(0, dy);
+		}
+		else
+		{
+			lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+		}
 	}
 	if (rect.contains(viewport()->rect()))
 	{
@@ -103,7 +108,10 @@ void CodeEditor::resizeEvent(QResizeEvent* e)
 	QPlainTextEdit::resizeEvent(e);
 
 	QRect cr = contentsRect();
-	lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+	if (lineNumberArea)
+	{
+		lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+	}
 }
 
 void CodeEditor::highlightCurrentLine()
@@ -113,11 +121,7 @@ void CodeEditor::highlightCurrentLine()
 	if (!isReadOnly())
 	{
 		QTextEdit::ExtraSelection selection;
-
-		//QColor lineColor = QColor(Qt::yellow).lighter(170);
-		QColor lineColor = QColor(255, 250, 227);
-
-		selection.format.setBackground(lineColor);
+		selection.format.setBackground(curLineColor);
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
 		selection.cursor = textCursor();
 		selection.cursor.clearSelection();
@@ -196,7 +200,7 @@ bool CodeEditor::isUndoAvailable() const
 
 bool CodeEditor::isRedoAvailable() const
 {
-	return document()->isUndoAvailable();
+	return document()->isRedoAvailable();
 }
 
 bool CodeEditor::isModified() const

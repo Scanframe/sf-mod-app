@@ -21,7 +21,7 @@ class TextEditor :public QTextEdit, public MultiDocInterface
 
 		bool saveAs() override;
 
-		bool saveFile(const QString& fileName) override;
+		bool saveFile(const QString& fileName);
 
 		[[nodiscard]] bool isModified() const override;
 

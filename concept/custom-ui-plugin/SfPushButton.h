@@ -25,7 +25,7 @@ class QDESIGNER_WIDGET_EXPORT PushButton :public QPushButton, public ObjectExten
 		[[nodiscard]] QString iconSource() const;
 
 	private:
-		QString IconSource;
+		QString _iconSource;
 };
 
 } // namespace

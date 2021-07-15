@@ -14,14 +14,18 @@ AnalogClock::AnalogClock(QWidget* parent)
 	auto* timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&QWidget::update));
 	timer->start(1000);
-
 	setWindowTitle(tr("Analog Clock"));
-	resize(200, 200);
 }
 
 bool AnalogClock::isRequiredProperty(const QString& name)
 {
-	static const char* keys[] = {"geometry", "toolTip", "whatsThis", "text"};
+	static const char* keys[] = {
+		"geometry",
+		"toolTip",
+		"whatsThis",
+		"text"
+		"sizePolicy"
+	};
 	// Check if passed property name is in the keys list.
 	return std::any_of(&keys[0], &keys[sizeof(keys) / sizeof(keys[0])], [name](const char* prop)
 	{
@@ -89,4 +93,4 @@ void AnalogClock::paintEvent(QPaintEvent*)
 	}
 }
 
-} //namespace
+}

@@ -135,12 +135,13 @@ AppModuleInterface::Map AppModuleInterface::_map;
 
 AppModuleInterface::AppModuleInterface(const AppModuleInterface::Parameters& parameters)
 	:QObject(parameters._parent)
+	 , _settings(*parameters._settings)
 {
 }
 
 AppModuleInterface::~AppModuleInterface() = default;
 
-void AppModuleInterface::instantiate(QObject* parent)
+void AppModuleInterface::instantiate(QSettings* settings, QObject* parent)
 {
 	// Iterate through the available registered implementation names.
 	for (auto& nm: Interface().getNames())
@@ -149,7 +150,7 @@ void AppModuleInterface::instantiate(QObject* parent)
 		// Check if not created yet.
 		if (!_map.contains(name))
 		{
-			_map[name] = AppModuleInterface::Interface().create(nm, Parameters(parent));
+			_map[name] = AppModuleInterface::Interface().create(nm, Parameters(settings, parent));
 		}
 	}
 }
@@ -159,9 +160,9 @@ const AppModuleInterface::Map& AppModuleInterface::getMap()
 	return _map;
 }
 
-AppModuleInterface* AppModuleInterface::selectDialog(const QString& title, QWidget* parent)
+AppModuleInterface* AppModuleInterface::selectDialog(const QString& title, QSettings* settings, QWidget* parent)
 {
-	SelectImplementationDialog dlg(parent);
+	SelectImplementationDialog dlg(settings, parent);
 	dlg.setWindowTitle(title);
 	dlg.exec();
 	return dlg.getSelected();
@@ -282,6 +283,20 @@ MultiDocInterface* AppModuleInterface::createChild(QWidget* parent) const
 		widget->_module = this;
 	}
 	return widget;
+}
+
+void AppModuleInterface::addAllPropertyPages(PropertySheetDialog* sheet)
+{
+	// Iterate through the modules and add
+	for (auto m: _map)
+	{
+		m->addPropertyPages(sheet);
+	}
+}
+
+QSettings& AppModuleInterface::getSettings()
+{
+	return _settings;
 }
 
 }

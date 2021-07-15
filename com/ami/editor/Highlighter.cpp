@@ -3,13 +3,19 @@
 namespace sf
 {
 
-Highlighter::Highlighter(QTextDocument* parent)
+Highlighter::Highlighter(QTextDocument* parent, bool dark_mode)
 	:QSyntaxHighlighter(parent)
 {
 	// The order of appending rules is important otherwise functions in commented lines are highlighted too.
-
 	HighlightingRule rule;
-	keywordFormat.setForeground(QColor(Qt::blue).darker());
+	if (dark_mode)
+	{
+		keywordFormat.setForeground(QColor(QColorConstants::Blue).lighter());
+	}
+	else
+	{
+		keywordFormat.setForeground(QColor(QColorConstants::DarkBlue));
+	}
 	keywordFormat.setFontWeight(QFont::Bold);
 	auto keywords = R"(
 let

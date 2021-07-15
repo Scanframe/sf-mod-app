@@ -10,8 +10,11 @@ namespace Ui {class ModuleConfigurationDialog;}
 namespace sf
 {
 
-class AppModuleList;
+// Forward definition.
 class ModuleConfiguration;
+
+// Forward definition.
+class AppModuleList;
 
 class _MISC_CLASS ModuleConfigurationDialog :public QDialog
 {
@@ -20,6 +23,8 @@ class _MISC_CLASS ModuleConfigurationDialog :public QDialog
 	public:
 
 		explicit ModuleConfigurationDialog(ModuleConfiguration* config, QWidget* parent = nullptr);
+
+		void stateSaveRestore(bool save);
 
 		~ModuleConfigurationDialog() override;
 
@@ -30,6 +35,8 @@ class _MISC_CLASS ModuleConfigurationDialog :public QDialog
 		Ui::ModuleConfigurationDialog* ui;
 
 		AppModuleList* _moduleList;
+
+		ModuleConfiguration* _config;
 };
 
 }

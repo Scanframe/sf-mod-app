@@ -17,7 +17,7 @@ class _MISC_CLASS Resource
 		/**
 		 * @brief List of available icons which is easy wen using auto complete.
 		 */
-		enum class Icon :int
+		enum Icon: int
 		{
 				Clear,
 				Reload,
@@ -30,13 +30,17 @@ class _MISC_CLASS Resource
 				Undo,
 				Redo,
 				Save,
+				Cancel,
 				Close,
 				Check,
 				Okay,
 				Exit,
 				CloseWindow,
 				CloseWindows,
-				Config,
+				Configuration,
+				Settings,
+				Application,
+				Development
 		};
 
 		/**

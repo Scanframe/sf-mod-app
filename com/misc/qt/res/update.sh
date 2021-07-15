@@ -19,7 +19,7 @@ WriteLn '<RCC version="1.0">'
 
 # Generate the resource for PNG icons.
 WriteLn '	<qresource prefix="icon/png/">'
-for file in icon/*.png ; do
+for file in ${SCRIPT_DIR}/icon/*.png ; do
 	file=$(basename "$(echo "${file}" | sed -e 's/\.[^.]*$//')")
 	WriteLn "		<file alias=\"${file}\">icon/${file}.png</file>"
 done
@@ -28,7 +28,7 @@ WriteLn '	</qresource>'
 
 # Generate the resource for SVG icons.
 WriteLn '	<qresource prefix="icon/svg/">'
-for file in icon/*.svg ; do
+for file in ${SCRIPT_DIR}/icon/*.svg ; do
 	file=$(basename "$(echo "${file}" | sed -e 's/\.[^.]*$//')")
 	WriteLn "		<file alias=\"${file}\">icon/${file}.svg</file>"
 done

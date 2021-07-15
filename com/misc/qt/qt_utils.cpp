@@ -305,4 +305,15 @@ QMetaObject::Connection connectByName
 	return QMetaObject::Connection();
 }
 
+QStringList getObjectNamePath(const QObject* object)
+{
+	QStringList sl;
+	while (object)
+	{
+		sl.prepend(object->objectName());
+		object = object->parent();
+	}
+	return sl;
+}
+
 }

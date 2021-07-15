@@ -30,6 +30,7 @@ bool PushButton::isRequiredProperty(const QString& name)
 			"text",
 			"iconSize",
 			"styleSheet",
+			"sizePolicy",
 			"iconSource"
 		};
 	// Check if passed property name is in the keys list.
@@ -41,19 +42,19 @@ bool PushButton::isRequiredProperty(const QString& name)
 
 void PushButton::mousePressEvent(QMouseEvent* event)
 {
-	qDebug() << __FUNCTION__ << " IconSource: " << IconSource;
+	qDebug() << __FUNCTION__ << " IconSource: " << _iconSource;
 	// Call overridden method.
 	QPushButton::mousePressEvent(event);
 }
 
 void PushButton::setIconSource(const QString& text)
 {
-	setIcon(QIcon(IconSource = text));
+	setIcon(QIcon(_iconSource = text));
 }
 
 QString PushButton::iconSource() const
 {
-	return IconSource;
+	return _iconSource;
 }
 
 } // namespace

@@ -67,7 +67,7 @@ QString PushButtonPlugin::domXml() const
 	// The XML part starting with 'propertyspecifications' prevents the 'iconSource' QString property from being translated or
 	// having those options in the designer.
 	return R"(<ui language="c++">
- <widget class="sf::PushButton" name="sf::PushButton">
+ <widget class="sf::PushButton" name="SfPushButton">
   <property name="geometry">
    <rect>
     <x>0</x>

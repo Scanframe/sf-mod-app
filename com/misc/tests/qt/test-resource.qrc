@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="ui/">
+    <file alias="svg-icon">test-svg-icon.ui</file>
+    <file alias="action-button">test-action-button.ui</file>
+  </qresource>
+</RCC>

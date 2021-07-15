@@ -24,7 +24,7 @@ QString TextEditorAppModule::getDescription() const
 	return tr("Simple text editor.");
 }
 
-void TextEditorAppModule::addPropertySheets(QWidget*)
+void TextEditorAppModule::addPropertyPages(PropertySheetDialog* sheet)
 {
 }
 

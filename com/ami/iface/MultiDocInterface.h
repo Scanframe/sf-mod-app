@@ -73,11 +73,6 @@ class _AMI_CLASS MultiDocInterface
 		/**
 		 * @brief Pure virtual needs to be implemented.
 		 */
-		virtual bool saveFile(const QString& fileName) = 0;
-
-		/**
-		 * @brief Pure virtual needs to be implemented.
-		 */
 		[[nodiscard]] virtual QString userFriendlyCurrentFile() const = 0;
 
 		/**
@@ -154,6 +149,12 @@ class _AMI_CLASS MultiDocInterface
 		 * @brief Instance to connect signal handlers onto.
 		 */
 		MultiDocInterfaceSignals mdiSignals;
+		/**
+		 * @brief Virtual function which is called during development only fro an action.
+		 *
+		 * Allows to do stuff with reduced the repetitive clicking in the GUI.
+		 */
+		virtual void develop();
 
 	private:
 		/**

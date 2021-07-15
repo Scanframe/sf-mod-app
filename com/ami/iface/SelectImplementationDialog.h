@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QDialog>
-#include "global.h"
+#include <QSettings>
 #include "AppModuleInterface.h"
+#include "global.h"
 
 namespace sf
 {
@@ -14,20 +15,24 @@ class _AMI_CLASS SelectImplementationDialog :public QDialog
 	Q_OBJECT
 
 	public:
-		explicit SelectImplementationDialog(QWidget* parent = nullptr);
+		explicit SelectImplementationDialog(QSettings* settings, QWidget* parent = nullptr);
 
 		~SelectImplementationDialog() override;
 
 		[[nodiscard]] AppModuleInterface* getSelected() const;
 
 	private:
+		void okay();
+
+		void doubleClicked(const QModelIndex& index);
+
+		void stateSaveRestore(bool save);
+
 		Ui::SelectImplementationDialog* ui;
 
 		AppModuleInterface* _selected{};
 
-		void okay();
-
-		void doubleClicked(const QModelIndex& index);
+		QSettings* _settings;
 };
 
 }

@@ -3,6 +3,7 @@
 #include <QMap>
 #include <ami/iface/AppModuleInterface.h>
 #include <ami/iface/MultiDocInterface.h>
+#include <misc/qt/PropertySheetDialog.h>
 
 namespace sf
 {
@@ -13,7 +14,7 @@ class [[maybe_unused]] TextEditorAppModule :public AppModuleInterface
 
 		explicit TextEditorAppModule(const Parameters& params);
 
-		void addPropertySheets(QWidget*) override;
+		void addPropertyPages(PropertySheetDialog*) override;
 
 		MultiDocInterface* createWidget(QWidget* parent) const override;
 

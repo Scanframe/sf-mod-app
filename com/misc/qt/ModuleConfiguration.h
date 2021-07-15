@@ -11,8 +11,12 @@ namespace sf
 
 class _MISC_CLASS ModuleConfiguration :public QObject
 {
-	public:
+	Q_OBJECT
 
+	Q_SIGNALS:
+			void libraryLoaded();
+
+	public:
 		/**
 		 * @brief Constructor.
 		 *
@@ -50,18 +54,25 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 
 		/**
 		 * @brief Loads the module configuration from the settings.
+		 *
+		 * @return True when at least a library was loaded.
 		 */
-		void load();
+		bool load();
 
 		/**
 		 * @brief Saves the module configuration to the settings.
 		 */
 		void save(const ModuleListType& list);
 
-		/**\
+		/**
 		 * @brief Gets the module library directory.
 		 */
 		QString getModuleDir();
+
+		/**
+		 * @brief Gets the module library directory.
+		 */
+		[[nodiscard]] QSettings* getSettings();
 
 	private:
 		/**
@@ -73,5 +84,11 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 		 */
 		QSettings* _settings;
 };
+
+inline
+QSettings* ModuleConfiguration::getSettings()
+{
+	return _settings;
+}
 
 }

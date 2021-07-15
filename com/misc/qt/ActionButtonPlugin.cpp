@@ -72,7 +72,22 @@ QString ActionButtonPlugin::domXml() const
     <height>40</height>
    </rect>
   </property>
+  <property name="toolTip" >
+   <string>Custom push button.</string>
+  </property>
+  <property name="whatsThis">
+   <string>Custom push button connected to a action.</string>
+  </property>
  </widget>
+ <!-- Propery specification part -->
+ <customwidgets>
+  <customwidget>
+   <class>sf::ActionButton</class>
+   <propertyspecifications>
+    <stringpropertyspecification name="action" notr="true" type="singleline" />
+   </propertyspecifications>
+  </customwidget>
+ </customwidgets>
 </ui>
 )";
 }

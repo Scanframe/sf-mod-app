@@ -8,6 +8,7 @@
 #include "ModuleConfiguration.h"
 #include "ModuleConfigurationDialog.h"
 #include "ui_ModuleConfigurationDialog.h"
+#include "qt_utils.h"
 
 namespace sf
 {
@@ -277,6 +278,7 @@ bool AppModuleList::submit()
 
 ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config, QWidget* parent)
 	:QDialog(parent)
+	 , _config(config)
 	 , ui(new Ui::ModuleConfigurationDialog)
 	 , _moduleList(new AppModuleList(config, this))
 {
@@ -322,12 +324,29 @@ ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config
 	{
 		i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ColorRole::ButtonText));
 	}
+	stateSaveRestore(false);
 }
 
 ModuleConfigurationDialog::~ModuleConfigurationDialog()
 {
+	stateSaveRestore(true);
 	delete ui;
 	delete _moduleList;
+}
+
+void ModuleConfigurationDialog::stateSaveRestore(bool save)
+{
+	_config->getSettings()->beginGroup(getObjectNamePath(this).join('.'));
+	QString key("State");
+	if (save)
+	{
+		_config->getSettings()->setValue(key, saveGeometry());
+	}
+	else
+	{
+		restoreGeometry(_config->getSettings()->value(key).toByteArray());
+	}
+	_config->getSettings()->endGroup();
 }
 
 void ModuleConfigurationDialog::applyClose()

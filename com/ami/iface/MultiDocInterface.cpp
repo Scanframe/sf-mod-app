@@ -61,4 +61,13 @@ QString MultiDocInterface::getFileTypeFilters() const
 	return _module ? _module->getFileTypeFilters() :QString();
 }
 
+void MultiDocInterface::develop()
+{
+	auto obj = dynamic_cast<QObject*>(this);
+	if (obj)
+	{
+		qInfo() << QString("%1::%2() is not overridden.").arg(obj->metaObject()->className()).arg(__FUNCTION__);
+	}
+}
+
 }

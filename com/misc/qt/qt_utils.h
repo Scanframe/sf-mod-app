@@ -250,4 +250,12 @@ _MISC_FUNC  QMetaObject::Connection connectByName
 		Qt::ConnectionType ct = Qt::AutoConnection
 	);
 
-} // namespace
+/**
+ * @brief Gets all the parent names from the object's parent in a string list.
+ *
+ * @param object Top object.
+ * @return List of object names.
+ */
+_MISC_FUNC QStringList getObjectNamePath(const QObject* object);
+
+}

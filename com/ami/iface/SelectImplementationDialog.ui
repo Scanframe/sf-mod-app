@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>sf::SelectImplementationDialog</class>
- <widget class="QDialog" name="sf::SelectImplementationDialog">
+ <widget class="QDialog" name="SelectImplementationDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

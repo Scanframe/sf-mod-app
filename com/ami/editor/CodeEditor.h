@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QPlainTextEdit>
-#include <ami/iface/MultiDocInterface.h>
 #include "Highlighter.h"
+#include <ami/iface/MultiDocInterface.h>
+#include "CodeEditorConfiguration.h"
 
 class QPaintEvent;
 
@@ -21,7 +22,7 @@ class CodeEditor :public QPlainTextEdit, public MultiDocInterface
 
 	public:
 		// Constructor.
-		explicit CodeEditor(QWidget* parent = nullptr);
+		explicit CodeEditor(const CodeEditorConfiguration& cfg, QWidget* parent = nullptr);
 
 		// MultiDocInterface interface method.
 		void newFile() override;
@@ -35,8 +36,7 @@ class CodeEditor :public QPlainTextEdit, public MultiDocInterface
 		// MultiDocInterface interface method.
 		bool saveAs() override;
 
-		// MultiDocInterface interface method.
-		bool saveFile(const QString& fileName) override;
+		bool saveFile(const QString& fileName);
 
 		// MultiDocInterface interface method.
 		[[nodiscard]] bool isModified() const override;
@@ -102,6 +102,8 @@ class CodeEditor :public QPlainTextEdit, public MultiDocInterface
 		bool isUntitled;
 		QWidget* lineNumberArea;
 		int spacingNumber;
+		// Color for background of current line.
+		QColor curLineColor;
 
 		/**
 		 * Internal class.

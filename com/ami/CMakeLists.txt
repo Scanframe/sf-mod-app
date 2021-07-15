@@ -16,3 +16,4 @@ _SetOutputDirs()
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(iface)
 add_subdirectory(editor)
+add_subdirectory(layout)

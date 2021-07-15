@@ -3,6 +3,8 @@
 #include <QMap>
 #include <ami/iface/AppModuleInterface.h>
 #include <ami/iface/MultiDocInterface.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include "CodeEditorConfiguration.h"
 
 namespace sf
 {
@@ -13,7 +15,7 @@ class [[maybe_unused]] CodeEditorAppModule :public AppModuleInterface
 
 		explicit CodeEditorAppModule(const Parameters& params);
 
-		void addPropertySheets(QWidget*) override;
+		void addPropertyPages(PropertySheetDialog*) override;
 
 		MultiDocInterface* createWidget(QWidget* parent) const override;
 
@@ -24,6 +26,8 @@ class [[maybe_unused]] CodeEditorAppModule :public AppModuleInterface
 		[[nodiscard]] QString getDescription() const override;
 
 		[[nodiscard]] QString getSvgIconResource() const override;
+
+		CodeEditorConfiguration _configuration;
 };
 
 }

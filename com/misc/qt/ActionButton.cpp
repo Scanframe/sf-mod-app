@@ -6,11 +6,25 @@ namespace sf
 
 ActionButton::ActionButton(QWidget* parent)
 	:QPushButton(parent)
+	 , ObjectExtension(this)
 	 , _action(nullptr)
 {
 }
 
+bool ActionButton::isRequiredProperty(const QString& name)
+{
+	return true;
+}
+
 void ActionButton::setAction(QAction* action)
+{
+	// Store the action
+	_action = action;
+	// TODO: disconnect the other one maybe?
+	connectAction(action);
+}
+
+void ActionButton::connectAction(QAction* action)
 {
 	// if I've got already an action associated to the button
 	// remove all connections
@@ -21,8 +35,6 @@ void ActionButton::setAction(QAction* action)
 		disconnect(this, &ActionButton::clicked,
 			_action, &QAction::trigger);
 	}
-	// Store the action
-	_action = action;
 	// configure the button
 	updateButtonStatusFromAction();
 	// Connect the action and the button so that when the action is changed the button is changed too!
@@ -32,34 +44,57 @@ void ActionButton::setAction(QAction* action)
 	connect(this, &ActionButton::clicked, _action, &QAction::trigger);
 }
 
-QAction* ActionButton::getAction()
+QAction* ActionButton::getAction() const
 {
 	return _action;
 }
 
 void ActionButton::updateButtonStatusFromAction()
 {
-	if (!_action)
+	QAction* a = _action;
+	//
+	if (!a && !_actionName.isEmpty() && parent())
 	{
-		auto name = QString::fromStdString(SF_RTTI_NAME(*this));
-		setText(name);
-		setStatusTip(name);
-		setToolTip(name);
-		setIcon(QIcon());
-		setEnabled(false);
-		setCheckable(false);
-		setChecked(false);
+		// Find sibling action.
+		a = parent()->findChild<QAction*>(_actionName, Qt::FindChildOption::FindDirectChildrenOnly);
 	}
-	else
+
+	// Skip when in designer.
+	if (!inDesigner())
 	{
-		setText(_action->text());
-		setStatusTip(_action->statusTip());
-		setToolTip(_action->toolTip());
-		setIcon(_action->icon());
-		setEnabled(_action->isEnabled());
-		setCheckable(_action->isCheckable());
-		setChecked(_action->isChecked());
+		if (!a)
+		{
+			auto name = QString::fromStdString(SF_RTTI_NAME(*this));
+			setText(name);
+			setStatusTip(name);
+			setToolTip(name);
+			setIcon(QIcon());
+			setEnabled(false);
+			setCheckable(false);
+			setChecked(false);
+		}
+		else
+		{
+			setText(a->text());
+			setStatusTip(a->statusTip());
+			setToolTip(a->toolTip());
+			setIcon(a->icon());
+			setEnabled(a->isEnabled());
+			setCheckable(a->isCheckable());
+			setChecked(a->isChecked());
+		}
 	}
+}
+
+QString ActionButton::getActionByName() const
+{
+	return _action ? _action->objectName() : _actionName;
+}
+
+void ActionButton::setActionByName(const QString& name)
+{
+	_actionName = name;
+	updateButtonStatusFromAction();
 }
 
 }

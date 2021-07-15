@@ -3,7 +3,9 @@
 #include <QObject>
 #include <QMimeType>
 #include <QAbstractItemModel>
-#include "misc/gen/TClassRegistration.h"
+#include <QSettings>
+#include <misc/gen/TClassRegistration.h>
+#include <misc/qt/PropertySheetDialog.h>
 #include "MultiDocInterface.h"
 #include "AppModuleFileType.h"
 #include "global.h"
@@ -26,11 +28,16 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		struct Parameters
 		{
-			explicit Parameters(QObject* parent)
-				:_parent(parent) {}
+			explicit Parameters(QSettings* settings, QObject* parent)
+				:_settings(settings)
+				, _parent(parent) {}
 
 			/**
-			 * @brief Parent object
+			 * @brief Settings of application.
+			 */
+			QSettings* _settings;
+			/**
+			 * @brief Parent object.
 			 */
 			QObject* _parent;
 		};
@@ -48,13 +55,21 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		/**
 		 * @brief Creates instances of all available/loaded interface implementations.
 		 */
-		static void instantiate(QObject* parent);
+		static void instantiate(QSettings* settings, QObject* parent);
 
 		/**
-		 * @brief Adds module property sheets to the passed widget parent.
+		 * @brief Adds module property pages to the passed sheet.
 		 */
-		virtual void addPropertySheets(QWidget*) = 0;
+		virtual void addPropertyPages(PropertySheetDialog* sheet) = 0;
 
+		/**
+		 * @brief Adds property pages from all modules to the passed sheet.
+		 */
+		static void addAllPropertyPages(PropertySheetDialog* sheet);
+
+		/**
+		 * Map type for the application modules to their names.
+		 */
 		typedef QMap<QString, AppModuleInterface*> Map;
 
 		/**
@@ -132,7 +147,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Determined if the this module handles this mime type.
 		 * @return nullptr when cancelled
 		 */
-		static AppModuleInterface* selectDialog(const QString& title, QWidget* parent = nullptr);
+		static AppModuleInterface* selectDialog(const QString& title, QSettings* settings, QWidget* parent = nullptr);
 
 		/**
 		 * @brief Gets a list model from the available instances.
@@ -142,11 +157,17 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		[[nodiscard]] static QAbstractItemModel* getListModel(QObject* parent);
 
 		/**
-		 * Calls #createChild() and assigns the this creating instance for reference.
+		 * @brief Calls #createChild() and assigns the this creating instance for reference.
+		 *
 		 * @param parent Parent and owner of the new child.
 		 * @return
 		 */
 		[[nodiscard]] MultiDocInterface* createChild(QWidget* parent) const;
+
+		/**
+		 * @brief Gets the settings class passed on creation.
+		 */
+		QSettings& getSettings();
 
 	protected:
 		/**
@@ -158,6 +179,10 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		[[nodiscard]] virtual MultiDocInterface* createWidget(QWidget* parent) const = 0;
 
 	private:
+		/**
+		 * @brief Settings of application.
+		 */
+		QSettings& _settings;
 		/**
 		 * @brief Holds the file types serviced by this instance.
 		 */

@@ -28,6 +28,7 @@ set(SOURCES
 	main.cpp
 	MainWindow.cpp MainWindow.h
 	res/resource.qrc
+	ApplicationPropertyPage.cpp ApplicationPropertyPage.h ApplicationPropertyPage.ui
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.

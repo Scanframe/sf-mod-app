@@ -72,18 +72,36 @@ TEST_CASE("sf::Closure", "[generic]")
 
 	SECTION("sf::Closure Assignment Class Member")
 	{
-		struct MyTest
+		struct MyClass
 		{
-			// Construct closure with lambda function.
-			static std::string my_func(const char* fmt, int value)
+			std::string myFunc(const char* fmt, int value)
 			{
 				return sf::string_format(fmt, value);
 			}
-		};
-		//
-		my_closure_type c1(MyTest::my_func);
-		//
-		REQUIRE_THAT(c1("format (%d)", 123), Equals("format (123)"));
+
+			static std::string myStaticFunc(const char* fmt, int value)
+			{
+				return sf::string_format(fmt, value);
+			}
+		} myClass;
+
+		sf::TClosure<std::string, const char*, int> c2;
+
+		// Test assigning a static method directly.
+		c2.assign(&MyClass::myStaticFunc);
+		REQUIRE_THAT(c2("format (%d)", 345), Equals("format (345)"));
+
+		// Test assigning a function using std::bind().
+		c2.assign(std::bind(&MyClass::myStaticFunc,std::placeholders::_1, std::placeholders::_2)); // NOLINT(modernize-avoid-bind)
+		REQUIRE_THAT(c2("format (%d)", 123), Equals("format (123)"));
+
+		// Test assigning a member using std::bind().
+		c2.assign(std::bind(&MyClass::myFunc, &myClass, std::placeholders::_1, std::placeholders::_2)); // NOLINT(modernize-avoid-bind)
+		REQUIRE_THAT(c2("format (%d)", 123), Equals("format (123)"));
+
+		// Test assign template function using std::bind under the hood.
+		c2.assign(&myClass, &MyClass::myFunc, std::placeholders::_1, std::placeholders::_2);
+		REQUIRE_THAT(c2("format (%d)", 125), Equals("format (125)"));
 	}
 
 }

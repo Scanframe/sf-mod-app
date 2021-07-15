@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>474</width>
-    <height>336</height>
+    <width>378</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,87 +17,32 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>
    </property>
-   <item row="1" column="1">
-    <widget class="sf::PushButton" name="sfPushButton_2">
+   <property name="leftMargin">
+    <number>20</number>
+   </property>
+   <property name="topMargin">
+    <number>20</number>
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>20</number>
+   </property>
+   <item row="0" column="0" rowspan="3">
+    <widget class="sf::AnalogClock" name="AnalogClock">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>A inherited push button</string>
-     </property>
-     <property name="whatsThis">
-      <string>The a button for testing properties.</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: green;
-     qproperty-iconSource: &quot;:/action/clear&quot;;
-    </string>
-     </property>
-     <property name="text">
-      <string>SfPushButton</string>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>24</width>
-       <height>24</height>
-      </size>
-     </property>
-     <property name="iconSource">
-      <string>:/action/clear</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="4">
-    <widget class="sf::AnalogClock" name="sfAnalogClock">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>The current time</string>
-     </property>
-     <property name="whatsThis">
-      <string>The analog clock widget displays the current time.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="sf::PushButton" name="sfPushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>A inherited push button</string>
-     </property>
-     <property name="whatsThis">
-      <string>The a button for testing properties.</string>
-     </property>
-     <property name="text">
-      <string>SfPushButton</string>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>24</width>
-       <height>24</height>
-      </size>
-     </property>
-     <property name="iconSource">
-      <string notr="true">:/logo/scanframe</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="sf::PushButton" name="sfPushButton_3">
+    <widget class="sf::PushButton" name="sfPushButton_2">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -118,7 +63,7 @@
       </size>
      </property>
      <property name="iconSource">
-      <string notr="true">:/action/reload</string>
+      <string notr="true">:icon/svg/clear</string>
      </property>
     </widget>
    </item>
@@ -128,7 +73,7 @@
   <customwidget>
    <class>sf::AnalogClock</class>
    <extends>QWidget</extends>
-   <header>AnalogClock.h</header>
+   <header>custom-ui-plugin/src/SfAnalogClock.h</header>
   </customwidget>
   <customwidget>
    <class>sf::PushButton</class>

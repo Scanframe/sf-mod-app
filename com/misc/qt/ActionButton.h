@@ -3,14 +3,15 @@
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <QPushButton>
 #include <QAction>
+#include "ObjectExtension.h"
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton
+class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton, public ObjectExtension
 {
 	Q_OBJECT
-		Q_PROPERTY(QAction* action READ getAction WRITE setAction)
+		Q_PROPERTY(QString action READ getActionByName WRITE setActionByName)
 
 	public:
 		/**
@@ -19,20 +20,27 @@ class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton
 		 */
 		explicit ActionButton(QWidget* parent = nullptr);
 
+		bool isRequiredProperty(const QString& name) override;
+
 		/**
 		 * @brief Set the action owner of this button, that is the action associated to the button.
 		 *
-		 * The button is configured immediately
-		 * depending on the action status and the button and the action
+		 * The button is configured immediately depending on the action status and the button and the action
 		 * are connected together so that when the action is changed the button
 		 * is updated and when the button is clicked the action is triggered.
 		 * action the action to associate to this button
 		 */
 		void setAction(QAction* action);
 
-		QAction* getAction();
+		[[nodiscard]] QAction* getAction() const;
+
+		void setActionByName(const QString& name);
+
+		[[nodiscard]] QString getActionByName() const;
 
 	public slots:
+
+		void connectAction(QAction* action);
 
 		/**
 		 * @brief Update the button status depending on a change on the action status.
@@ -42,8 +50,8 @@ class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton
 		void updateButtonStatusFromAction();
 
 	private:
-		QAction * _action;
-
+		QAction* _action;
+		QString _actionName;
 };
 
 }

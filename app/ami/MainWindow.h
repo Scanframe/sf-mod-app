@@ -29,6 +29,10 @@ class MainWindow :public QMainWindow
 		bool openFile(const QString& fileName);
 
 	protected:
+		void dragEnterEvent(QDragEnterEvent* event) override;
+
+		void dropEvent(QDropEvent* event) override;
+
 		void closeEvent(QCloseEvent* event) override;
 
 	private slots:
@@ -68,7 +72,7 @@ class MainWindow :public QMainWindow
 		void switchLayoutDirection();
 
 	private:
-		enum {MaxRecentFiles = 5};
+		enum {MaxRecentFiles = 10};
 
 		void closeDocument();
 
@@ -94,12 +98,12 @@ class MainWindow :public QMainWindow
 
 		ModuleConfiguration* _moduleConfiguration{nullptr};
 
-		QMdiArea* _mdiArea{};
+		void settingsPropertySheet();
 
 		QSettings* _settings;
 
+		QMdiArea* _mdiArea{};
 		QMenu* _windowMenu{};
-
 		QAction* _newAction{};
 		QAction* _openAction{};
 		QAction* _saveAction{};
@@ -120,6 +124,8 @@ class MainWindow :public QMainWindow
 		QAction* _previousAction{};
 		QAction* _windowMenuSeparatorAction{};
 		QAction* _moduleConfigAction{};
+		QAction* _settingsAction{};
+		QAction* _developAction{};
 
 };
 

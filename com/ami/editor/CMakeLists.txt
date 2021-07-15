@@ -32,6 +32,8 @@ add_library(${PROJECT_NAME} SHARED
 	TextEditor.cpp TextEditor.h
 	TextEditorAppModule.cpp TextEditorAppModule.h
 	CodeEditorAppModule.cpp CodeEditorAppModule.h
+	CodeEditorPropertyPage.cpp CodeEditorPropertyPage.h CodeEditorPropertyPage.ui
+	CodeEditorConfiguration.h CodeEditorConfiguration.cpp
 	)
 
 # Link the Qt widgets library.

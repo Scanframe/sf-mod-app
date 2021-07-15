@@ -53,7 +53,8 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
-	qt/Graph.cpp qt/Graph.h)
+	qt/Graph.cpp qt/Graph.h
+	)
 
 if (NOT WIN32)
 
@@ -97,7 +98,7 @@ if (SF_BUILD_QT)
 		qt/qt_utils.cpp qt/qt_utils.h
 		qt/CaptureListModel.cpp qt/CaptureListModel.h
 		qt/Resource.h	qt/Resource.cpp
-		qt/FormWriter.cpp	qt/FormWriter.h
+		qt/FormBuilder.cpp qt/FormBuilder.h
 		qt/ObjectExtension.cpp qt/ObjectExtension.h
 		qt/FileMapper.cpp qt/FileMapper.h
 		qt/MiscCustomWidgets.cpp qt/MiscCustomWidgets.h
@@ -109,6 +110,8 @@ if (SF_BUILD_QT)
 		qt/DrawWidget.cpp qt/DrawWidget.h
 		qt/ModuleConfiguration.cpp qt/ModuleConfiguration.h
 		qt/ModuleConfigurationDialog.cpp qt/ModuleConfigurationDialog.h qt/ModuleConfigurationDialog.ui
+		qt/PropertySheetDialog.cpp qt/PropertySheetDialog.h qt/PropertySheetDialog.ui
+		qt/PropertyPage.cpp qt/PropertyPage.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)

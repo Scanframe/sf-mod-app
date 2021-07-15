@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="ui/">
-    <file alias="dialog">test-svg-icon.ui</file>
-  </qresource>
-</RCC>

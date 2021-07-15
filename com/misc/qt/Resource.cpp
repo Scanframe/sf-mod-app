@@ -26,13 +26,17 @@ const char* Resource::_iconResources[] =
 		":icon/svg/undo",
 		":icon/svg/redo",
 		":icon/svg/save",
+		":icon/svg/cancel",
 		":icon/svg/close",
 		":icon/svg/check",
 		":icon/svg/okay",
 		":icon/svg/exit",
 		":icon/svg/close-window",
 		":icon/svg/close-windows",
-		":icon/svg/config",
+		":icon/svg/configuration",
+		":icon/svg/settings",
+		":icon/svg/application",
+		":icon/svg/development",
 	};
 
 int Resource::_defaultIconSize = 128;

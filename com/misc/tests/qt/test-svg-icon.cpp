@@ -10,7 +10,6 @@
 #include <misc/qt/FormDialog.h>
 #include <misc/qt/DrawWidget.h>
 #include <misc/qt/Resource.h>
-#include <QStyleFactory>
 
 extern int debug_level;
 
@@ -19,7 +18,7 @@ TEST_CASE("sf::SvgIcon", "[debug][qt]")
 	SECTION("Create QIcon from SVG resource")
 	{
 		// Set the file location to the resource.
-		QFileInfo fi(":/ui/dialog");
+		QFileInfo fi(":ui/svg-icon");
 		REQUIRE(fi.exists());
 		//
 		sf::FormDialog dlg;
@@ -33,10 +32,10 @@ TEST_CASE("sf::SvgIcon", "[debug][qt]")
 		});
 		//
 		QIcon::Mode modes[] = {QIcon::Mode::Normal, QIcon::Mode::Active, QIcon::Mode::Disabled, QIcon::Mode::Selected};
-		//
-		//auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QApplication::palette(), QPalette::ColorRole::ButtonText, 100);
+		// <rect width="512" height="512" fill="red" />
+		auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QPalette::ColorRole::ButtonText, QSize(100, 100));
 		//auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColorConstants::Red, -1);
-		auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColor(255, 0, 255, 100), QSize(64, 64));
+		//auto icon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Reload), QColor(255, 0, 255, 100), QSize(64, 64));
 		//
 		for (auto widget: widgets)
 		{

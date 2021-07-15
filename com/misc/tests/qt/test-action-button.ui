@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TestWidget</class>
+ <widget class="QWidget" name="TestWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>403</width>
+    <height>244</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Icon Test Dialog</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <item row="1" column="1">
+    <widget class="sf::ActionButton" name="actionButton">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Action &amp;Button</string>
+     </property>
+     <property name="action" stdset="0">
+      <string>actionPushIt</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="btnClose">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>&amp;Close</string>
+     </property>
+     <property name="autoDefault">
+      <bool>true</bool>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="iconSource" stdset="0">
+      <cstring>tests/test</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+  <action name="actionPushIt">
+   <property name="text">
+    <string>PushIt</string>
+   </property>
+   <property name="toolTip">
+    <string>The push it action button</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::ActionButton</class>
+   <extends>QPushButton</extends>
+   <header>misc/qt/ActionButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="test-resource.qrc"/>
+  <include location="../../qt/res/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

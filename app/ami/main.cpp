@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QSettings>
-#include <QDir>
 #include <QFileInfo>
+#include <QTimer>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
@@ -27,8 +27,8 @@ int main(int argc, char* argv[])
 	QApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
 	// Create instance to handle settings.
 	ApplicationSettings app_settings;
-	// Set the file path to the settings instance and make it watch changes.
-	app_settings.setFilepath(fi.absoluteFilePath(), true);
+	// Set the file path to the settings instance.
+	app_settings.setFilepath(fi.absoluteFilePath());
 	//
 	QCommandLineParser parser;
 	parser.setApplicationDescription("ScanFrame's MDI concept example.");
@@ -39,15 +39,14 @@ int main(int argc, char* argv[])
 	//
 	auto settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, QApplication::instance());
 	//auto settings = new QSettings(QSettings::Scope::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	//
 	MainWindow win(settings);
-	const QStringList posArgs = parser.positionalArguments();
-	for (const QString& fileName: posArgs)
+	app_settings.restoreWindowRect("MainWindow", &win);
+	win.show();
+	// Open files from the command line after the window is shown other wise the MDI depend menu is not updated.
+	for (const QString& fileName: parser.positionalArguments())
 	{
 		win.openFile(fileName);
 	}
-	app_settings.restoreWindowRect("MainWindow", &win);
-	win.show();
 	auto exit_code = QApplication::exec();
 	app_settings.saveWindowRect("MainWindow", &win);
 	return exit_code;
