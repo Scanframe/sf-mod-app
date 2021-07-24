@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 		 */
 		~MainWindow() override;
 
-	private slots:
+	private Q_SLOTS:
 		/**
 		 * Create onCreateFormDialog using the UI file sizing to contain the UI-file entirely.
 		 * When the onCreateFormDialog is sided smaller scrollbars appear.

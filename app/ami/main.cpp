@@ -15,16 +15,17 @@ int main(int argc, char* argv[])
 	Q_INIT_RESOURCE(resource);
 	QApplication app(argc, argv);
 	QApplication::setOrganizationName("ScanFrame");
-	QApplication::setApplicationName("Modular Base Application");
+	//QApplication::setApplicationName("Modular Application");
+	QApplication::setApplicationDisplayName("Modular Base Application");
 	QApplication::setApplicationVersion(QT_VERSION_STR);
 	QApplication::setWindowIcon(QIcon(":logo/ico/scanframe"));
 	QApplication::setDesktopSettingsAware(false);
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
+	// Make settings file available through a property.
+	QApplication::instance()->setProperty("ConfigDir", fi.absolutePath());
 	// Set the instance to change the extension only.
 	fi.setFile(fi.absolutePath(), fi.completeBaseName() + ".ini");
-	// Make settings file available through a property..
-	QApplication::instance()->setProperty("SettingsFile", fi.absoluteFilePath());
 	// Create instance to handle settings.
 	ApplicationSettings app_settings;
 	// Set the file path to the settings instance.
@@ -40,14 +41,12 @@ int main(int argc, char* argv[])
 	auto settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, QApplication::instance());
 	//auto settings = new QSettings(QSettings::Scope::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	MainWindow win(settings);
-	app_settings.restoreWindowRect("MainWindow", &win);
+
 	win.show();
-	// Open files from the command line after the window is shown other wise the MDI depend menu is not updated.
+	// Open files from the command line after the window is shown otherwise the MDI dependent menu is not updated.
 	for (const QString& fileName: parser.positionalArguments())
 	{
 		win.openFile(fileName);
 	}
-	auto exit_code = QApplication::exec();
-	app_settings.saveWindowRect("MainWindow", &win);
-	return exit_code;
+	return QApplication::exec();
 }

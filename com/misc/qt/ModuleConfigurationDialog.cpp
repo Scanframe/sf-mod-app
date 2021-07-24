@@ -309,8 +309,10 @@ ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config
 */
 	// Populate the list.
 	_moduleList->refresh();
+	//
+	ui->listAvailable->header()->setStretchLastSection(true);
 	// Resize the columns.
-	for (int i = 0; i < _moduleList->columnCount(QModelIndex()); i++)
+	for (int i = 0; i < ui->listAvailable->model()->columnCount(QModelIndex()); i++)
 	{
 		ui->listAvailable->resizeColumnToContents(i);
 	}
@@ -336,7 +338,7 @@ ModuleConfigurationDialog::~ModuleConfigurationDialog()
 
 void ModuleConfigurationDialog::stateSaveRestore(bool save)
 {
-	_config->getSettings()->beginGroup(getObjectNamePath(this).join('.'));
+	_config->getSettings()->beginGroup(getObjectNamePath(this).join('.').prepend("State."));
 	QString key("State");
 	if (save)
 	{

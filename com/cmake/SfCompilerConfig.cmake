@@ -46,11 +46,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
-	# Do not export all by default.
-	add_definitions("-fvisibility=hidden")
+	# Do not export all by default in Linux.
+	if (NOT WIN32)
+		add_definitions("-fvisibility=hidden")
+	endif ()
 	# Generate an error on undefined (imported) symbols on dyn libs
 	# because the error appears only at load-time.
 	add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
+	# Suppressing the warning that out-of-line inline functions are redeclared.
+	if (WIN32)
+		add_link_options(-Wno-inconsistent-dllimport)
+	endif ()
 	set(CMAKE_CXX_STANDARD 17)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	#set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 17)

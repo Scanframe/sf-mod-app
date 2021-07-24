@@ -2,16 +2,16 @@
 #include <misc/qt/Resource.h>
 
 #include "TextEditor.h"
-#include "Highlighter.h"
 
 namespace sf
 {
 
 TextEditor::TextEditor(QWidget* parent)
 	:QTextEdit(parent)
-	 , MultiDocInterface(this)
+	 , MultiDocInterface()
 	 , isUntitled(true)
 {
+	setConnections(this);
 	// Make the widget delete on close.
 	setAttribute(Qt::WA_DeleteOnClose);
 	// Change the default editor colors.

@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <cctype>
 #include <cmath>
-#include <utility>
 
 #include "dbgutils.h"
 #include "gen_utils.h"
@@ -22,10 +21,13 @@ constexpr size_t MAX_IDENT_LENGTH = 64;
  */
 constexpr size_t MAX_STRING_LENGTH = (1024 * 4);
 
-//IMPLEMENT_REGISTERBASE(TScriptObject);
 
-const char* ScriptEngine::getArithErrorText(EArithError error_value) const
+const char* ScriptEngine::getErrorText(EArithError error_value) const
 {
+	if (error_value == aeCurrent)
+	{
+		error_value = _errorValue;
+	}
 	switch (error_value)
 	{
 		case aeSuccess:
@@ -138,7 +140,7 @@ const char* ScriptEngine::getArithErrorText(EArithError error_value) const
 #define SID_POW       (SID_SCRIPT_START - 54)
 #define SID_SQRT      (SID_SCRIPT_START - 55)
 
-ScriptEngine::Info ScriptEngine::_info[] =
+ScriptEngine::IdInfo ScriptEngine::_idInfo[] =
 	{
 		// Typedefs.
 		{SID_INT, idTypedef, "int", Value::vitInteger, nullptr},
@@ -186,16 +188,10 @@ ScriptEngine::ScriptEngine()
 {
 }
 
-const ScriptObject::Info* ScriptObject::getInfoUnknown()
-{
-	static Info info = {0, idUnknown, nullptr, 0, nullptr};
-	return &info;
-}
-
-const ScriptEngine::Info* ScriptEngine::getInfo(const std::string& name) const
+const ScriptEngine::IdInfo* ScriptEngine::getInfo(const std::string& name) const
 {
 	// Find the name of the identifier.
-	for (auto& i : _info)
+	for (auto& i : _idInfo)
 	{
 		if (i._name == name)
 		{
@@ -206,26 +202,24 @@ const ScriptEngine::Info* ScriptEngine::getInfo(const std::string& name) const
 	return getInfoUnknown();
 }
 
-ScriptObject* ScriptEngine::castToObject(const Value& value)
+strings ScriptEngine::getIdentifiers(ScriptObject::EIdentifier id) const
 {
-	// When the variable is of the special type an object is referenced.
-	if (value.getType() == Value::vitCustom && value.getSize() == sizeof(void*))
+	sf::strings rv;
+	for (auto& i: _idInfo)
 	{
-		struct TData {ScriptObject* Object;} * data;
-		// Cast binary data to the pointer type.
-		data = (TData*) value.getData();
-		// Check for a null pointer.
-		return data ? data->Object : nullptr;
+		if (i._id == id)
+		{
+			rv.add(i._name);
+		}
 	}
-	// Failed to cast the value.
-	return nullptr;
+	return rv;
 }
 
 std::string ScriptEngine::getInfoNames() const
 {
 	std::string s;
 	// Find the name of the identifier.
-	for (auto& i : _info)
+	for (auto& i : _idInfo)
 	{
 		s += i._name;
 		s += "\n";
@@ -235,10 +229,10 @@ std::string ScriptEngine::getInfoNames() const
 
 bool ScriptEngine::getSetValue
 	(
-		const Info* info,
+		const IdInfo* info,
 		Value* result,
 		Value::vector_type* param,
-		bool flagset
+		bool flag_set
 	)
 {
 	if (!info)
@@ -261,9 +255,9 @@ bool ScriptEngine::getSetValue
 			case idConstant:
 			{
 				// Check if a constant is assigned or not.
-				if (flagset)
+				if (flag_set)
 				{
-					setErrorValue(aeAssignConstant, info->_name);
+					setError(aeAssignConstant, info->_name);
 				}
 				else
 				{
@@ -274,7 +268,7 @@ bool ScriptEngine::getSetValue
 							break;
 
 						default:
-							setErrorValue(aeUnknownConstant, info->_name);
+							setError(aeUnknownConstant, info->_name);
 					}
 				}
 			}
@@ -359,9 +353,9 @@ bool ScriptEngine::getSetValue
 					case SID_SUBSTR:
 					{
 						std::string s = (*param)[0].getString();
-						int pos = (*param)[1].getInteger();
-						int len = (*param)[2].getInteger();
-						int sz = s.length();
+						std::string::size_type pos = (*param)[1].getInteger();
+						std::string::size_type len = (*param)[2].getInteger();
+						std::string::size_type sz = s.length();
 						if (pos >= 0)
 						{ // Clip the position
 							if (pos > sz)
@@ -382,8 +376,8 @@ bool ScriptEngine::getSetValue
 						{
 							result->set("");
 						}
-					}
 						break;
+					}
 
 					case SID_STRLEN:
 						result->set((int) (*param)[0].getString().length());
@@ -391,7 +385,7 @@ bool ScriptEngine::getSetValue
 
 					case SID_FINDSTR:
 					{
-						size_t pos = (*param)[0].getString().find((*param)[1].getString());
+						auto pos = (*param)[0].getString().find((*param)[1].getString());
 						result->set(Value::int_type((pos == std::string::npos) ? -1 : pos));
 						break;
 					}
@@ -405,7 +399,7 @@ bool ScriptEngine::getSetValue
 							// Characters to strip.
 							std::string chars = (*param)[1].getString();
 							// Type of strip mode.
-							int type = (*param)[2].getInteger();
+							ssize_t type = (*param)[2].getInteger();
 							// Select string side to strip.
 							switch (type)
 							{
@@ -442,8 +436,8 @@ bool ScriptEngine::getSetValue
 						{
 							c = (char) std::toupper(int(c));
 						}
-					}
 						break;
+					}
 
 					case SID_TO_LOWER:
 					{
@@ -453,8 +447,8 @@ bool ScriptEngine::getSetValue
 							c = (char) std::tolower(int(c));
 						}
 						result->set(s);
-					}
 						break;
+					}
 
 					case SID_CEIL:
 					{
@@ -466,8 +460,8 @@ bool ScriptEngine::getSetValue
 						{
 							result->set((*param)[0]);
 						}
-					}
 						break;
+					}
 
 					case SID_FLOOR:
 					{
@@ -479,32 +473,32 @@ bool ScriptEngine::getSetValue
 						{
 							result->set((*param)[0]);
 						}
-					}
 						break;
+					}
 
 					case SID_LOG:
 					{
 						double value = (*param)[0].getFloat();
 						value = log(value);
 						result->set(value);
-					}
 						break;
+					}
 
 					case SID_EXP:
 					{
 						double value = (*param)[0].getFloat();
 						value = exp(value);
 						result->set(value);
-					}
 						break;
+					}
 
 					case SID_LOG10:
 					{
 						double value = (*param)[0].getFloat();
 						value = log10(value);
 						result->set(value);
-					}
 						break;
+					}
 
 					case SID_LOGX:
 					{
@@ -512,8 +506,8 @@ bool ScriptEngine::getSetValue
 						double value = (*param)[1].getFloat();
 						value = log(value) / log(n);
 						result->set(value);
-					}
 						break;
+					}
 
 					case SID_POW:
 					{
@@ -521,25 +515,25 @@ bool ScriptEngine::getSetValue
 						double exp = (*param)[1].getFloat();
 						value = pow(value, exp);
 						result->set(value);
-					}
 						break;
+					}
 
 					case SID_SQRT:
 					{
 						double value = (*param)[0].getFloat();
 						value = sqrt(value);
 						result->set(value);
-					}
 						break;
+					}
 
 					default:
-						setErrorValue(aeUnknownFunction);
+						setError(aeUnknownFunction);
 				}
-			}
 				break;
+			}
 
 			case idVariable:
-				setErrorValue(aeUnknownVariable, info->_name);
+				setError(aeUnknownVariable, info->_name);
 				break;
 
 			case idTypedef:
@@ -551,7 +545,7 @@ bool ScriptEngine::getSetValue
 					case SID_STRING:
 					case SID_UNDEF:
 					case SID_OBJECT:
-						setErrorValue(aeUnknownIdentifier, info->_name);
+						setError(aeUnknownIdentifier, info->_name);
 				}
 			}
 
@@ -592,7 +586,7 @@ bool ScriptEngine::getName(std::string& name)
 	{
 		if (++p > MAX_IDENT_LENGTH)
 		{
-			return setErrorValue(aeMaxIdentifierLength);
+			return setError(aeMaxIdentifierLength);
 		}
 	}
 	//
@@ -709,7 +703,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)
 			}
 			else
 			{
-				setErrorValue(aeUnexpectedCharacter);
+				setError(aeUnexpectedCharacter);
 			}
 			break;
 		}
@@ -735,12 +729,12 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)
 					}
 					else
 					{
-						setErrorValue(aeNotLValue);
+						setError(aeNotLValue);
 					}
 				}
 				else
 				{
-					setErrorValue(aeUnexpectedCharacter);
+					setError(aeUnexpectedCharacter);
 				}
 			}
 			break;
@@ -798,7 +792,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
-				setErrorValue(aeDivisionByZero);
+				setError(aeDivisionByZero);
 			}
 			else
 			{
@@ -812,7 +806,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
-				setErrorValue(aeDivisionByZero);
+				setError(aeDivisionByZero);
 			}
 			else
 			{
@@ -859,7 +853,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 			{
 				if (_errorValue == aeUnexpectedEnd)
 				{
-					return setErrorValue(aeExpectedRightParenthesis);
+					return setError(aeExpectedRightParenthesis);
 				}
 				else
 				{
@@ -924,36 +918,34 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 			return false;
 		}
 		// Local storage of data and code.
-		DataCode datacode(this);
+		DataCode data_code(this);
 		// Get identifier info and number of parameters in case of a function
-		datacode._info = getInfo(name);
-		// When a value had a member that was dereferenced.
-		bool startover = true;
+		data_code._info = getInfo(name);
+		// When a value had a member that was dereference.
+		bool start_over = true;
 		do
 		{
-			startover = false;
+			start_over = false;
 			//
-			switch (datacode._info->_id)
+			switch (data_code._info->_id)
 			{
 				case idUnknown:
 				{
-					setErrorValue(aeUnknownSymbol, name);
+					setError(aeUnknownSymbol, name);
 					break;
 				}
 
 				case idConstant:
 				case idVariable:
-				{
 					// Check the next character
 					if (strchr("<>^&|= +-/*)!,%;", _cmd[_pos]))
 					{
-						datacode._object->getSetValue(datacode._info, &result, nullptr, false);
+						data_code._object->getSetValue(data_code._info, &result, nullptr, false);
 						// Set the left value.
-						left = datacode;
+						left = data_code;
 					}
-					else
-						// Check for dereferenced object.
-					if (_cmd[_pos] == '.')
+					// Check for dereferenced object.
+					else if (_cmd[_pos] == '.')
 					{
 						// Skip the dot character.
 						_pos++;
@@ -961,35 +953,34 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 						// Get 'self' pointer from the object.
 						Value objself;
 						// Is the current info structure already derived.
-						datacode._object->getSetValue(datacode._info, &objself, nullptr, false);
+						data_code._object->getSetValue(data_code._info, &objself, nullptr, false);
 						// Cast the value to a info pointer type.
-						datacode._object = castToObject(objself);
+						data_code._object = castToObject(objself);
 						// Generate an error when the object is not valid.
-						if (!datacode)
+						if (!data_code)
 						{
-							return setErrorValue(aeNotObject, name);
+							return setError(aeNotObject, name);
 						}
 						// Get the member name.
 						getName(name);
-						// Get the info struture of the passed object member name.
-						datacode._info = datacode._object->getInfo(name);
+						// Get the info structure of the passed object member name.
+						data_code._info = data_code._object->getInfo(name);
 						// Check for an error and an unknown ID.
-						if (!datacode._info || datacode._info->_id == idUnknown)
+						if (!data_code._info || data_code._info->_id == idUnknown)
 						{
-							return setErrorValue(aeUnknownObjectMember, name);
+							return setError(aeUnknownObjectMember, name);
 						}
 						else
 						{
 							// Make the same loop a gain.
-							startover = true;
+							start_over = true;
 						}
 					}
 					else
 					{
-						return setErrorValue(aeUnexpectedCharacter, std::string(1, _cmd[_pos]));
+						return setError(aeUnexpectedCharacter, std::string(1, _cmd[_pos]));
 					}
 					break;
-				}
 
 				case idFunction:
 				{
@@ -1021,40 +1012,40 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 							_pos++;
 						}
 						// Check if there are limits to the amount of parameters passed to the function.
-						if (datacode._info->_paramCount != std::numeric_limits<int>::max())
+						if (data_code._info->_paramCount != std::numeric_limits<int>::max())
 						{
 							// Get the minimum amount of parameters needed for this function
-							unsigned n = abs(datacode._info->_paramCount);
+							auto n = std::abs(data_code._info->_paramCount);
 							// Check in any case if there are sufficient parameters passed
-							if (params.count() > n && datacode._info->_paramCount > 0)
+							if (params.count() > n && data_code._info->_paramCount > 0)
 							{
-								setErrorValue(aeTooManyParameters, datacode._info->_name);
+								setError(aeTooManyParameters, data_code._info->_name);
 							}
 							// Check the minimum amount of parameters needed
 							if (params.count() < n)
 							{
-								setErrorValue(aeTooFewParameters, datacode._info->_name);
+								setError(aeTooFewParameters, data_code._info->_name);
 							}
-							if (getErrorValue() != aeSuccess)
+							if (getError() != aeSuccess)
 							{
 								return true;
 							}
 						}
 						// Prevent exception from continuing from here.
-						bool berr = false;
+						bool b_err = false;
 						try
 						{
-							datacode._object->getSetValue(datacode._info, &result, &params, false);
+							data_code._object->getSetValue(data_code._info, &result, &params, false);
 						}
 						catch (...) //(Exception& e)
 						{
-							berr = true;
+							b_err = true;
 						}
 						//
-						if (berr)
+						if (b_err)
 						{
-							SF_RTTI_NOTIFY(DO_DEFAULT, "Error in function ' " << datacode._info->_name << " ' !")
-							return setErrorValue(aeFunctionError, datacode._info->_name);
+							SF_RTTI_NOTIFY(DO_DEFAULT, "Error in function ' " << data_code._info->_name << " ' !")
+							return setError(aeFunctionError, data_code._info->_name);
 						}
 						else
 						{
@@ -1065,25 +1056,25 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 								_pos++;
 								eatWhite();
 								// Cast the value to a info pointer type.
-								datacode._object = castToObject(result);
+								data_code._object = castToObject(result);
 								// Generate an error when the object is not valid.
-								if (!datacode)
+								if (!data_code)
 								{
-									return setErrorValue(aeNotObject, name);
+									return setError(aeNotObject, name);
 								}
 								// Get the member name.
 								getName(name);
 								// Get the info struture of the passed object member name.
-								datacode._info = datacode._object->getInfo(name);
+								data_code._info = data_code._object->getInfo(name);
 								// Check for an error and an unknown ID.
-								if (!datacode._info || datacode._info->_id == idUnknown)
+								if (!data_code._info || data_code._info->_id == idUnknown)
 								{
-									return setErrorValue(aeUnknownObjectMember, name);
+									return setError(aeUnknownObjectMember, name);
 								}
 								else
 								{
 									// Make the same loop a gain.
-									startover = true;
+									start_over = true;
 								}
 								//
 								result.setType(Value::vitUndefined);
@@ -1092,18 +1083,18 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 					}
 					else
 					{
-						return setErrorValue(aeExpectedFunction, datacode._info->_name);
+						return setError(aeExpectedFunction, data_code._info->_name);
 					}
 					break;
 				}
 
 				default:
-					return setErrorValue(aeUnexpectedIdentifier, name);
+					return setError(aeUnexpectedIdentifier, name);
 			} // switch
 			//
 			eatWhite();
 		}
-		while (startover);
+		while (start_over);
 		//
 		return true;
 	}
@@ -1117,7 +1108,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 		// Iterate as long as double quoted regions are available.
 		while (_cmd[_pos] == '"')
 		{
-			int pos = _pos++;
+			auto pos = _pos++;
 			// As long as the end of the script is not reached.
 			do
 			{ // Check for escaped expression sequence.
@@ -1140,7 +1131,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 		// Check the max length.
 		if (s.length() > MAX_STRING_LENGTH)
 		{
-			return setErrorValue(aeStringTooLong, std::string(_cmd, _pos, MAX_STRING_LENGTH));
+			return setError(aeStringTooLong, std::string(_cmd, _pos, MAX_STRING_LENGTH));
 		}
 		// Convert the string if needed.
 		if (escaped)
@@ -1154,7 +1145,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 		return true;
 	}
 	//
-	return setErrorValue(aeUnexpectedCharacter);
+	return setError(aeUnexpectedCharacter);
 }
 
 bool ScriptEngine::getParameter(Value& value)
@@ -1183,10 +1174,10 @@ bool ScriptEngine::getParameter(Value& value)
 bool ScriptEngine::calculate(const std::string& script, Value& result)
 {
 	const char* prev_cmd = _cmd;
-	int prev_pos = _pos;
+	auto prev_pos = _pos;
 	_cmd = script.c_str();
 	_pos = 0;
-	setErrorValue(aeSuccess);
+	setError(aeSuccess);
 	result.setType(result.vitUndefined);
 	// execute until character '\0'
 	while (_cmd[_pos])
@@ -1200,12 +1191,12 @@ bool ScriptEngine::calculate(const std::string& script, Value& result)
 		// Check for unwanted ending characters.
 		if (!strchr("+-/*&|^=<>!%", _cmd[_pos]))
 		{ // report an error
-			setErrorValue(aeExpectedDelimiter);
+			setError(aeExpectedDelimiter);
 			return false;
 		}
 
 	}
-	// If there is an error return flase whithout restoring the previous situation.
+	// If there is an error return false without restoring the previous situation.
 	if (_errorValue)
 	{
 		return false;
@@ -1216,17 +1207,17 @@ bool ScriptEngine::calculate(const std::string& script, Value& result)
 	return true;
 }
 
-bool ScriptEngine::setErrorValue(EArithError error_value, std::string reason)
+bool ScriptEngine::setError(EArithError error_value, const std::string& reason)
 {
-	bool retval = error_value == aeSuccess;
+	bool rv = error_value == aeSuccess;
 	if (_errorValue != error_value)
 	{
 		_errorValue = error_value;
-		_errorReason = std::move(reason);
-		SF_COND_RTTI_NOTIFY(!retval, DO_DEFAULT,
-			"Error in script: '" << _errorReason << "' " << getArithErrorText(_errorValue));
+		_errorReason = reason;
+		SF_COND_RTTI_NOTIFY(!rv, DO_DEFAULT,
+			"Error in script: '" << _errorReason << "' " << getErrorText(_errorValue));
 	}
-	return retval;
+	return rv;
 }
 
 std::string ScriptEngine::getErrorReason() const
@@ -1242,15 +1233,14 @@ class ScriptCalcFunction :public ScriptEngine
 			memset(_value, 0, sizeof(_value));
 		}
 
-		//
 		void SetValue(int index, double value) {_value[index] = value;}
 
 	protected:
 		// Gets identifier information.
-		[[nodiscard]] const Info* getInfo(const std::string& name) const override;
+		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 
 		// Overloaded from base class.
-		bool getSetValue(const Info*, Value*, Value::vector_type*, bool) override;
+		bool getSetValue(const IdInfo*, Value*, Value::vector_type*, bool) override;
 
 	private:
 		enum {MAX_VALUES = 3};
@@ -1258,7 +1248,7 @@ class ScriptCalcFunction :public ScriptEngine
 		double _value[MAX_VALUES]{};
 };
 
-bool ScriptCalcFunction::getSetValue(const Info* info, Value* result,
+bool ScriptCalcFunction::getSetValue(const IdInfo* info, Value* result,
 	Value::vector_type* param, bool flag_set)
 {
 	if (info->_index > 0 && info->_index < MAX_VALUES)
@@ -1286,9 +1276,9 @@ Value::flt_type calculator(const std::string& script, Value::flt_type def)
 	return def;
 }
 
-const ScriptCalcFunction::Info* ScriptCalcFunction::getInfo(const std::string& name) const
+const ScriptCalcFunction::IdInfo* ScriptCalcFunction::getInfo(const std::string& name) const
 {
-	static ScriptEngine::Info Info[] =
+	static ScriptEngine::IdInfo Info[] =
 		{
 			{1, idConstant, "x", 0, nullptr},
 			{2, idConstant, "y", 0, nullptr},

@@ -40,7 +40,16 @@ class _MISC_CLASS Resource
 				Configuration,
 				Settings,
 				Application,
-				Development
+				Development,
+				Compile,
+				Initialize,
+				Step,
+				Run,
+				Start,
+				Stop,
+				Edit,
+				Add,
+				Remove
 		};
 
 		/**

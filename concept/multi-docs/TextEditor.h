@@ -35,7 +35,7 @@ class TextEditor :public QTextEdit, public MdiChild
 	protected:
 		void closeEvent(QCloseEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 		void documentWasModified();
 
 	private:

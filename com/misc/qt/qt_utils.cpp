@@ -302,7 +302,7 @@ QMetaObject::Connection connectByName
 		//
 		return QObject::connect(sender, signal.c_str(), receiver, slot.c_str(), ct);
 	}
-	return QMetaObject::Connection();
+	return {};
 }
 
 QStringList getObjectNamePath(const QObject* object)
@@ -310,7 +310,8 @@ QStringList getObjectNamePath(const QObject* object)
 	QStringList sl;
 	while (object)
 	{
-		sl.prepend(object->objectName());
+		auto s = object->objectName();
+		sl.prepend(s.isEmpty() ? object->metaObject()->className() : s);
 		object = object->parent();
 	}
 	return sl;

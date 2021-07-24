@@ -20,9 +20,9 @@ class _MISC_CLASS PropertyPage :public QWidget
 		/**
 		 * @brief Constructor.
 		 *
-		 * @param parent
+		 * @param parent Myst be a PropertySheetDialog pointer or derived one.
 		 */
-		explicit PropertyPage(PropertySheetDialog* parent);
+		explicit PropertyPage(QWidget* parent);
 
 		/**
 		 * @brief Gets the name of the page for displaying in the list view.
@@ -48,27 +48,28 @@ class _MISC_CLASS PropertyPage :public QWidget
 		 *
 		 * This method is called to initialize the control widgets.
 		 */
-		virtual void updatePage() = 0;
+		virtual void updatePage();
 
 		/**
 		 * @brief Gets the modified/changed status of the page.
 		 *
 		 * @return True when modified.
 		 */
-		[[nodiscard]] virtual bool isPageModified() const = 0;
+		[[nodiscard]] virtual bool isPageModified() const;
 
 		/**
 		 * @brief Applies the changes made in this page.
 		 */
-		virtual void applyPage() = 0;
+		virtual void applyPage();
 
 		/**
 		 * @brief Called when all pages are applied.
 		 *
 		 * Method can be overridden by a derived class to update control widgets
 		 * that were changed because of other pages being applied.
+		 * @param was_modified True when this page was modified.
 		 */
-		virtual void afterPageApply() = 0;
+		virtual void afterPageApply(bool was_modified);
 
 	protected:
 		/**
@@ -77,7 +78,14 @@ class _MISC_CLASS PropertyPage :public QWidget
 		 * A derived class should call this method when the is setup and controls are updated.
 		 * @return List of not connected control widgets.
 		 */
-		QWidgetList connectControls();
+		virtual QWidgetList connectControls();
+
+		/**
+		 * @brief Holds the sheet it is part of.
+		 */
+		PropertySheetDialog* _sheet;
+
+		friend PropertySheetDialog;
 };
 
 }

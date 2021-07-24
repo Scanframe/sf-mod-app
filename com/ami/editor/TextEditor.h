@@ -50,7 +50,7 @@ class TextEditor :public QTextEdit, public MultiDocInterface
 	protected:
 		void closeEvent(QCloseEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 
 		void documentWasModified();
 

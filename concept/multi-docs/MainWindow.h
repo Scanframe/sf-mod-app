@@ -28,7 +28,7 @@ class MainWindow :public QMainWindow
 	protected:
 		void closeEvent(QCloseEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 
 		void newFile();
 

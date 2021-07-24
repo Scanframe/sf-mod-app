@@ -15,6 +15,7 @@ _SetOutputDirs()
 
 # Uses directory Set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
+find_package(SfAmi REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -27,13 +28,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 add_library(${PROJECT_NAME} SHARED
 	res/resource.qrc
 	ModuleMain.cpp
-	Highlighter.cpp Highlighter.h
-	CodeEditor.cpp CodeEditor.h
+	JsHighlighter.cpp JsHighlighter.h
 	TextEditor.cpp TextEditor.h
+	CodeEditor.cpp CodeEditor.h
 	TextEditorAppModule.cpp TextEditorAppModule.h
 	CodeEditorAppModule.cpp CodeEditorAppModule.h
-	CodeEditorPropertyPage.cpp CodeEditorPropertyPage.h CodeEditorPropertyPage.ui
-	CodeEditorConfiguration.h CodeEditorConfiguration.cpp
 	)
 
 # Link the Qt widgets library.

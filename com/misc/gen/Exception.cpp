@@ -76,7 +76,7 @@ Exception Exception::Function(const char* mangled_name, const char* func, const 
 	vsnprintf(_msg, BUF_SIZE, Fmt, argptr);
 	va_end(argptr);
 	delete[] Fmt;
-	return Exception(*this);
+	return {*this};
 }
 
 ExceptionSystemCall::ExceptionSystemCall(const char* syscall, int error, const char* mangled_name, const char* func)

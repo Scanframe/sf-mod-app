@@ -4,6 +4,8 @@
 #include <ami/iface/MultiDocInterface.h>
 #include <ami/iface/AppModuleInterface.h>
 
+class QShortcut;
+
 class QAction;
 
 class QMenu;
@@ -26,7 +28,16 @@ class MainWindow :public QMainWindow
 	public:
 		explicit MainWindow(QSettings* settings);
 
-		bool openFile(const QString& fileName);
+		~MainWindow() override;
+
+		MultiDocInterface* openFile(const QString& fileName);
+
+		QMdiArea* getMdiArea()
+		{
+			return _mdiArea;
+		}
+
+		void settingsReadWrite(bool save);
 
 	protected:
 		void dragEnterEvent(QDragEnterEvent* event) override;
@@ -35,7 +46,7 @@ class MainWindow :public QMainWindow
 
 		void closeEvent(QCloseEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 
 		void newFile();
 
@@ -80,13 +91,7 @@ class MainWindow :public QMainWindow
 
 		void createStatusBar();
 
-		void readSettings();
-
-		void writeSettings();
-
-		bool loadFile(const QString& filename);
-
-		static bool hasRecentFiles();
+		MultiDocInterface* loadFile(const QString& fileName);
 
 		void prependToRecentFiles(const QString& filename);
 
@@ -99,6 +104,10 @@ class MainWindow :public QMainWindow
 		ModuleConfiguration* _moduleConfiguration{nullptr};
 
 		void settingsPropertySheet();
+
+		void stateSaveRestore(bool save);
+
+		void recentFilesReadWrite(bool save);
 
 		QSettings* _settings;
 
@@ -127,6 +136,7 @@ class MainWindow :public QMainWindow
 		QAction* _settingsAction{};
 		QAction* _developAction{};
 
+		QStringList _recentFiles;
 };
 
 }

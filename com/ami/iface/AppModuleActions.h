@@ -3,8 +3,8 @@
 #include <QList>
 #include <QObject>
 
-#include "global.h"
 #include "AppModuleAction.h"
+#include "global.h"
 
 namespace sf
 {

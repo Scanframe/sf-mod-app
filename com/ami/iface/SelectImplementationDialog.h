@@ -15,7 +15,7 @@ class _AMI_CLASS SelectImplementationDialog :public QDialog
 	Q_OBJECT
 
 	public:
-		explicit SelectImplementationDialog(QSettings* settings, QWidget* parent = nullptr);
+		explicit SelectImplementationDialog(QSettings* settings, bool file_only, QWidget* parent);
 
 		~SelectImplementationDialog() override;
 

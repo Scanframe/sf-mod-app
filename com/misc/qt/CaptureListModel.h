@@ -72,7 +72,7 @@ class _MISC_CLASS CaptureListModel :public QAbstractListModel
 		 */
 		[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
 
-	private slots:
+	private Q_SLOTS:
 
 		/**
 		 * @brief Menu handler for clearing the content.

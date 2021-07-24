@@ -36,6 +36,7 @@ set(SOURCES
 	gen/ResultDataHandler.cpp gen/ResultDataHandler.h
 	gen/ResultDataRequester.cpp gen/ResultDataRequester.h
 	gen/ResultDataStatic.cpp gen/ResultDataStatic.h
+	gen/InformationScript.cpp gen/InformationScript.h
 	)
 
 if (NOT WIN32)
@@ -119,7 +120,8 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CM
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
-	add_subdirectory(tests/app)
+	add_subdirectory(tests/app/graph)
+	add_subdirectory(tests/app/dialog)
 endif (SF_BUILD_TESTING)
 
 # Install designer plugin in plugins directory of current compiler.

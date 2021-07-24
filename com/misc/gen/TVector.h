@@ -405,7 +405,7 @@ bool TVector<T>::detachAt(size_type index)
 template<typename T>
 bool TVector<T>::detach(const T& t)
 {
-	for (unsigned i = 0; i < base_type::size(); i++)
+	for (size_type i = 0; i < base_type::size(); i++)
 	{
 		if (base_type::at(i) == t)
 		{

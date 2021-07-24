@@ -12,10 +12,11 @@ namespace sf
 
 LayoutEditor::LayoutEditor(QWidget* parent)
 	:QWidget(parent)
-	 , MultiDocInterface(this)
+	 , MultiDocInterface()
 	 , isUntitled(true)
 	 , _rootName("FormRoot")
 {
+	//setConnections(this);
 	// Make the widget delete on close.
 	setAttribute(Qt::WA_DeleteOnClose);
 	//

@@ -30,8 +30,6 @@ class _MISC_CLASS ModuleConfigurationDialog :public QDialog
 
 		void applyClose();
 
-		void apply();
-
 		Ui::ModuleConfigurationDialog* ui;
 
 		AppModuleList* _moduleList;

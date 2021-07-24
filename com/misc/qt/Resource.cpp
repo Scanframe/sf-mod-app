@@ -37,6 +37,15 @@ const char* Resource::_iconResources[] =
 		":icon/svg/settings",
 		":icon/svg/application",
 		":icon/svg/development",
+		":icon/svg/compile",
+		":icon/svg/initialize",
+		":icon/svg/step",
+		":icon/svg/run",
+		":icon/svg/start",
+		":icon/svg/stop",
+		":icon/svg/edit",
+		":icon/svg/add",
+		":icon/svg/remove"
 	};
 
 int Resource::_defaultIconSize = 128;

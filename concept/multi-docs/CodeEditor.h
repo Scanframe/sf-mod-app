@@ -2,7 +2,6 @@
 
 #include <QPlainTextEdit>
 #include "MdiChild.h"
-#include "Highlighter.h"
 
 QT_BEGIN_NAMESPACE
 class QPaintEvent;
@@ -63,7 +62,7 @@ class CodeEditor :public QPlainTextEdit, public MdiChild
 	protected:
 		void resizeEvent(QResizeEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 
 		void updateLineNumberAreaWidth(int newBlockCount);
 

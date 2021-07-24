@@ -42,17 +42,17 @@ QString DrawWidgetPlugin::group() const
 
 QIcon DrawWidgetPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString DrawWidgetPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString DrawWidgetPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool DrawWidgetPlugin::isContainer() const
@@ -88,4 +88,4 @@ QString DrawWidgetPlugin::includeFile() const
 	return QStringLiteral("misc/qt/DrawWidget.h");
 }
 
-} // namespace
+}

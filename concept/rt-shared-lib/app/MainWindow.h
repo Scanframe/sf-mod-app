@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
 		// Destructor.
 		~MainWindow() override;
 
-	private slots:
+	private Q_SLOTS:
 		void onFindLibs();
 		void onLoadLib();
 		void onCreateInstance();

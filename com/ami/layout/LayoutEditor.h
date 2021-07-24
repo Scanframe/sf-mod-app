@@ -55,7 +55,7 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 
 		void resizeEvent(QResizeEvent* event) override;
 
-	private slots:
+	private Q_SLOTS:
 
 		void documentWasModified();
 

@@ -12,7 +12,7 @@ namespace sf
 GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 	:QObject(parent)
 {
-	if (ObjectExtension::inDesigner())
+	//if (ObjectExtension::inDesigner())
 	{
 		Variable::initialize();
 	}
@@ -24,7 +24,7 @@ GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 
 GiiCustomWidgets::~GiiCustomWidgets()
 {
-	if (ObjectExtension::inDesigner())
+	//if (ObjectExtension::inDesigner())
 	{
 		// Disabled deinitialize because the in the designer the _references vector is changed.
 		Variable::deinitialize();

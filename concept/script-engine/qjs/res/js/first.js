@@ -27,6 +27,9 @@ Main.Third = function () {
 	ExposedObject.passValue('Just a string passed to passValue().');
 }
 
+console.info('Hello World info!');
+console.log('Hello World log!');
+console.error('Hello World error!');
 // Report the object name to get callables from.
 // noinspection BadExpressionStatementJS
 "Main";

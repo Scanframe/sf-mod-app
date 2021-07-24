@@ -6,16 +6,17 @@
 namespace sf
 {
 
-SelectImplementationDialog::SelectImplementationDialog(QSettings* settings, QWidget* parent)
+SelectImplementationDialog::SelectImplementationDialog(QSettings* settings, bool file_only, QWidget* parent)
 	:QDialog(parent)
 	 , _settings(settings)
 	 , ui(new Ui::SelectImplementationDialog)
 {
 	ui->setupUi(this);
 	// Attach the model to9 the view.
-	ui->listAvailable->setModel(AppModuleInterface::getListModel(this));
+	ui->listAvailable->setModel(AppModuleInterface::getListModel(file_only, this));
+	ui->listAvailable->header()->setStretchLastSection(true);
 	// Resize the columns.
-	for (int i = 0; i < ui->listAvailable->model()->columnCount(QModelIndex()); i++)
+	for (int i = 0; i < ui->listAvailable->model()->columnCount(QModelIndex()) - 1; i++)
 	{
 		ui->listAvailable->resizeColumnToContents(i);
 	}
@@ -44,7 +45,7 @@ SelectImplementationDialog::~SelectImplementationDialog()
 
 void SelectImplementationDialog::stateSaveRestore(bool save)
 {
-	_settings->beginGroup(getObjectNamePath(this).join('.'));
+	_settings->beginGroup(getObjectNamePath(this).join('.').prepend("State."));
 	QString key("State");
 	if (save)
 	{
@@ -64,12 +65,20 @@ AppModuleInterface* SelectImplementationDialog::getSelected() const
 
 void SelectImplementationDialog::okay()
 {
+	auto index = ui->listAvailable->selectionModel()->selectedIndexes().first();
+	if (index.isValid())
+	{
+		_selected = qvariant_cast<AppModuleInterface*>
+			(ui->listAvailable->model()->data(index, Qt::ItemDataRole::UserRole));
+	}
+/*
 	auto indexes = ui->listAvailable->selectionModel()->selectedIndexes();
 	if (indexes.count())
 	{
-		_selected =
-			qvariant_cast<AppModuleInterface*>(ui->listAvailable->model()->data(indexes.at(0), Qt::ItemDataRole::UserRole));
+		_selected = qvariant_cast<AppModuleInterface*>
+			(ui->listAvailable->model()->data(indexes.at(0), Qt::ItemDataRole::UserRole));
 	}
+*/
 	close();
 }
 

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScriptManagerPropertyPage</class>
+ <widget class="sf::PropertyPage" name="ScriptManagerPropertyPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>667</width>
+    <height>321</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Scripts</string>
+  </property>
+  <layout class="QVBoxLayout" name="vlPage">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Scripts</string>
+     </property>
+     <layout class="QHBoxLayout" name="hlScripts">
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="vlGroup">
+        <item>
+         <widget class="QToolButton" name="tbStartAll">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>StartAll</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbStart">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>Start</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbStop">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbEdit">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>Edit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbAdd">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbRemove">
+          <property name="toolTip">
+           <string>Custom push button.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Custom push button connected to a action.</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: left; padding: 0.2em</string>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTreeView" name="tvScripts">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::PropertyPage</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/PropertyPage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -31,7 +31,7 @@ S calc_offset(T value, T min, T max, S len, bool clip)
 	max -= min;
 	value -= min;
 	S temp = (max && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max) : (len * value) / max) : 0;
-	// Clip when needed required.
+	// Clip when required.
 	return (clip) ? ((temp > len) ? len : (temp < S(0)) ? S(0) : temp) : temp;
 }
 
@@ -141,7 +141,7 @@ std::string string_format(const std::string& format, Args ... args)
 	std::unique_ptr<char[]> buf(new char[size]);
 	snprintf(buf.get(), size, format.c_str(), args ...);
 	// We don't want the '\0' inside
-	return std::string(buf.get(), buf.get() + size - 1);
+	return {buf.get(), buf.get() + size - 1};
 }
 
 /**

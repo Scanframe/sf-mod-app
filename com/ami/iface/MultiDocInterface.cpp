@@ -6,32 +6,37 @@
 namespace sf
 {
 
-MultiDocInterface::MultiDocInterface(QWidget* editor)
-	:_editor(editor)
+MultiDocInterface::MultiDocInterface()
 {
-	if (auto c_edit = dynamic_cast<QPlainTextEdit*>(editor))
+	(void) this;
+}
+
+void MultiDocInterface::setConnections(QWidget* editor)
+{
+	if (auto pte = dynamic_cast<QPlainTextEdit*>(editor))
 	{
-		QObject::connect(c_edit, &QPlainTextEdit::textChanged, [&]() -> void {emit mdiSignals.textChanged();});
-		QObject::connect(c_edit, &QPlainTextEdit::copyAvailable, [&](bool b) -> void {emit mdiSignals.copyAvailable(b);});
-		QObject::connect(c_edit, &QPlainTextEdit::undoAvailable, [&](bool b) -> void {emit mdiSignals.undoAvailable(b);});
-		QObject::connect(c_edit, &QPlainTextEdit::redoAvailable, [&](bool b) -> void {emit mdiSignals.redoAvailable(b);});
-		QObject::connect(c_edit, &QPlainTextEdit::selectionChanged, [&]() -> void {emit mdiSignals.selectionChanged();});
-		QObject::connect(c_edit, &QPlainTextEdit::cursorPositionChanged,
+		QObject::connect(pte, &QPlainTextEdit::textChanged, [&]() -> void {emit mdiSignals.textChanged();});
+		QObject::connect(pte, &QPlainTextEdit::copyAvailable, [&](bool b) -> void {emit mdiSignals.copyAvailable(b);});
+		QObject::connect(pte, &QPlainTextEdit::undoAvailable, [&](bool b) -> void {emit mdiSignals.undoAvailable(b);});
+		QObject::connect(pte, &QPlainTextEdit::redoAvailable, [&](bool b) -> void {emit mdiSignals.redoAvailable(b);});
+		QObject::connect(pte, &QPlainTextEdit::selectionChanged, [&]() -> void {emit mdiSignals.selectionChanged();});
+		QObject::connect(pte, &QPlainTextEdit::cursorPositionChanged,
 			[&]() -> void {emit mdiSignals.cursorPositionChanged();});
-		QObject::connect(c_edit, &QPlainTextEdit::modificationChanged,
+		QObject::connect(pte, &QPlainTextEdit::modificationChanged,
 			[&](bool b) -> void {emit mdiSignals.modificationChanged(b);});
 	}
-	else if (auto t_edit = dynamic_cast<QTextEdit*>(editor))
+	else if (auto te = dynamic_cast<QTextEdit*>(editor))
 	{
-		QObject::connect(t_edit, &QTextEdit::textChanged, [&]() -> void {emit mdiSignals.textChanged();});
-		QObject::connect(t_edit, &QTextEdit::copyAvailable, [&](bool b) -> void {emit mdiSignals.copyAvailable(b);});
-		QObject::connect(t_edit, &QTextEdit::undoAvailable, [&](bool b) -> void {emit mdiSignals.undoAvailable(b);});
-		QObject::connect(t_edit, &QTextEdit::redoAvailable, [&](bool b) -> void {emit mdiSignals.redoAvailable(b);});
-		QObject::connect(t_edit, &QTextEdit::selectionChanged, [&]() -> void {emit mdiSignals.selectionChanged();});
-		QObject::connect(t_edit, &QTextEdit::cursorPositionChanged,
+		QObject::connect(te, &QTextEdit::textChanged, [&]() -> void {emit mdiSignals.textChanged();});
+		QObject::connect(te, &QTextEdit::copyAvailable, [&](bool b) -> void {emit mdiSignals.copyAvailable(b);});
+		QObject::connect(te, &QTextEdit::undoAvailable, [&](bool b) -> void {emit mdiSignals.undoAvailable(b);});
+		QObject::connect(te, &QTextEdit::redoAvailable, [&](bool b) -> void {emit mdiSignals.redoAvailable(b);});
+		QObject::connect(te, &QTextEdit::selectionChanged, [&]() -> void {emit mdiSignals.selectionChanged();});
+		QObject::connect(te, &QTextEdit::cursorPositionChanged,
 			[&]() -> void {emit mdiSignals.cursorPositionChanged();});
-		QObject::connect(t_edit, &QTextEdit::textChanged, [&]() -> void {emit mdiSignals.modificationChanged(true);});
+		QObject::connect(te, &QTextEdit::textChanged, [&]() -> void {emit mdiSignals.modificationChanged(true);});
 	}
+	_editor = editor;
 }
 
 bool MultiDocInterface::canClose() const
@@ -68,6 +73,10 @@ void MultiDocInterface::develop()
 	{
 		qInfo() << QString("%1::%2() is not overridden.").arg(obj->metaObject()->className()).arg(__FUNCTION__);
 	}
+}
+
+void MultiDocInterface::stateSaveRestore(bool save)
+{
 }
 
 }

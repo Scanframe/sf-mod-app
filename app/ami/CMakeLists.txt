@@ -24,10 +24,12 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+# RC-files only seem to be compiled when building using MingW.
 set(SOURCES
 	main.cpp
 	MainWindow.cpp MainWindow.h
 	res/resource.qrc
+	res/windows.rc
 	ApplicationPropertyPage.cpp ApplicationPropertyPage.h ApplicationPropertyPage.ui
 	)
 

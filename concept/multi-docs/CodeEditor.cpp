@@ -9,6 +9,7 @@
 #include <QGuiApplication>
 #include <QFileDialog>
 #include <QSaveFile>
+#include "Highlighter.h"
 
 CodeEditor::CodeEditor(QWidget* parent)
 	:QPlainTextEdit(parent)

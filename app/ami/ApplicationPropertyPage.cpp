@@ -1,25 +1,24 @@
 #include <QVariant>
-#include <misc/qt/Resource.h>
+#include <QMdiArea>
+#include <QMetaEnum>
 #include "ApplicationPropertyPage.h"
 #include "ui_ApplicationPropertyPage.h"
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
-ApplicationPropertyPage::ApplicationPropertyPage(PropertySheetDialog* parent)
+ApplicationPropertyPage::ApplicationPropertyPage(MainWindow* main_win, PropertySheetDialog* parent)
 	:PropertyPage(parent)
 	 , ui(new Ui::ApplicationPropertyPage)
+	 ,_mainWindow(main_win)
 {
 	ui->setupUi(this);
-	ui->comboBox->addItem(tr("Off"), QVariant(false));
-	ui->comboBox->addItem(tr("On"), QVariant(true));
-	ui->comboBox->setCurrentIndex(0);
-
-	ui->comboBox_2->addItem("Text Item 1");
-	ui->comboBox_2->addItem("Text Item 2");
-	ui->comboBox_2->setEditText("Initial..");
-
-	// Connect signals when the state of a control widget changes.
-	connectControls();
+	// Fill the combo box.
+	auto meta = QMetaEnum::fromType<QMdiArea::ViewMode>();
+	for (auto i :{QMdiArea::SubWindowView, QMdiArea::TabbedView})
+	{
+		ui->cbViewMode->addItem(tr(meta.valueToKey(i)), QVariant(i));
+	}
 }
 
 ApplicationPropertyPage::~ApplicationPropertyPage()
@@ -44,19 +43,31 @@ QString ApplicationPropertyPage::getPageDescription() const
 
 void ApplicationPropertyPage::updatePage()
 {
+	// Update controls with current values.
+	ui->cbViewMode->setCurrentIndex(_mainWindow->getMdiArea()->viewMode());
+	ui->leAppDisplayName->setText(QApplication::applicationDisplayName());
 }
 
 bool ApplicationPropertyPage::isPageModified() const
 {
-	return false;
+	bool rv = false;
+	rv |= ui->cbViewMode->currentIndex() != _mainWindow->getMdiArea()->viewMode();
+	rv |= ui->leAppDisplayName->text() != QApplication::applicationDisplayName();
+	return rv;
 }
 
 void ApplicationPropertyPage::applyPage()
 {
+	_mainWindow->getMdiArea()->setViewMode(static_cast<QMdiArea::ViewMode>(ui->cbViewMode->currentIndex()));
+	QApplication::setApplicationDisplayName(ui->leAppDisplayName->text());
 }
 
-void ApplicationPropertyPage::afterPageApply()
+void ApplicationPropertyPage::afterPageApply(bool was_modified)
 {
+	if (was_modified)
+	{
+		_mainWindow->settingsReadWrite(true);
+	}
 }
 
 }

@@ -15,6 +15,7 @@ _SetOutputDirs()
 
 # Uses directory Set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
+find_package(SfAmi REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)

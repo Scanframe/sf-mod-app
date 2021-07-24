@@ -13,7 +13,7 @@
 
 extern int debug_level;
 
-TEST_CASE("sf::SvgIcon", "[debug][qt]")
+TEST_CASE("sf::SvgIcon", "[qt][gui]")
 {
 	SECTION("Create QIcon from SVG resource")
 	{

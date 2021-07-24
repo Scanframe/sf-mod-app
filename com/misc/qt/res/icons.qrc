@@ -1,10 +1,11 @@
 <!DOCTYPE RCC>
-<!-- Generated at: 2021-07-20T17:14:00CEST:::z -->
+<!-- Generated at: 2021-08-01T21:23:04CEST:::z -->
 <RCC version="1.0">
 	<qresource prefix="icon/png/">
 		<file alias="warning">icon/warning.png</file>
 	</qresource>
 	<qresource prefix="icon/svg/">
+		<file alias="add">icon/add.svg</file>
 		<file alias="application">icon/application.svg</file>
 		<file alias="cancel">icon/cancel.svg</file>
 		<file alias="checked">icon/checked.svg</file>
@@ -13,6 +14,7 @@
 		<file alias="close">icon/close.svg</file>
 		<file alias="close-windows">icon/close-windows.svg</file>
 		<file alias="close-window">icon/close-window.svg</file>
+		<file alias="compile">icon/compile.svg</file>
 		<file alias="configuration">icon/configuration.svg</file>
 		<file alias="control-panel">icon/control-panel.svg</file>
 		<file alias="copy">icon/copy.svg</file>
@@ -21,7 +23,9 @@
 		<file alias="development">icon/development.svg</file>
 		<file alias="dots-horizontal">icon/dots-horizontal.svg</file>
 		<file alias="dots-vertical">icon/dots-vertical.svg</file>
+		<file alias="edit">icon/edit.svg</file>
 		<file alias="exit">icon/exit.svg</file>
+		<file alias="initialize">icon/initialize.svg</file>
 		<file alias="menu">icon/menu.svg</file>
 		<file alias="new">icon/new.svg</file>
 		<file alias="okay">icon/okay.svg</file>
@@ -29,9 +33,14 @@
 		<file alias="paste">icon/paste.svg</file>
 		<file alias="redo">icon/redo.svg</file>
 		<file alias="reload">icon/reload.svg</file>
+		<file alias="remove">icon/remove.svg</file>
+		<file alias="run">icon/run.svg</file>
 		<file alias="save">icon/save.svg</file>
 		<file alias="settings">icon/settings.svg</file>
+		<file alias="start">icon/start.svg</file>
 		<file alias="status">icon/status.svg</file>
+		<file alias="step">icon/step.svg</file>
+		<file alias="stop">icon/stop.svg</file>
 		<file alias="submit">icon/submit.svg</file>
 		<file alias="unchecked">icon/unchecked.svg</file>
 		<file alias="undo">icon/undo.svg</file>

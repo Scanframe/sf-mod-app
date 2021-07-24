@@ -38,7 +38,7 @@ class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton, public ObjectExt
 
 		[[nodiscard]] QString getActionByName() const;
 
-	public slots:
+	public Q_SLOTS:
 
 		void connectAction(QAction* action);
 

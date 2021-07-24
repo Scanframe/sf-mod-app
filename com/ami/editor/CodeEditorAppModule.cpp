@@ -1,7 +1,7 @@
+#include <misc/qt/EditorPropertyPage.h>
 #include "CodeEditorAppModule.h"
+#include "JsHighlighter.h"
 #include "CodeEditor.h"
-#include "CodeEditorConfiguration.h"
-#include "CodeEditorPropertyPage.h"
 
 namespace sf
 {
@@ -13,7 +13,7 @@ CodeEditorAppModule::CodeEditorAppModule(const AppModuleInterface::Parameters& p
 	addFileType("text/javascript");
 	addFileType(tr("Javascript"), "js");
 	// Load the configuration settings.
-	_configuration.load();
+	_configuration.settingsReadWrite(false);
 }
 
 QString CodeEditorAppModule::getName() const
@@ -28,12 +28,19 @@ QString CodeEditorAppModule::getDescription() const
 
 void CodeEditorAppModule::addPropertyPages(PropertySheetDialog* sheet)
 {
-	sheet->addPage(new CodeEditorPropertyPage(_configuration, sheet));
+	sheet->addPage(new EditorPropertyPage(_configuration, sheet));
 }
 
 MultiDocInterface* CodeEditorAppModule::createWidget(QWidget* parent) const
 {
-	return new CodeEditor(_configuration, parent);
+	auto ce = new CodeEditor(parent);
+	ce->setConfiguration(_configuration);
+	// Assign highlighter to the underlying document.
+	if (_configuration.useHighLighting)
+	{
+		new JsHighlighter(ce->document(), _configuration.darkMode);
+	}
+	return ce;
 }
 
 QString CodeEditorAppModule::getLibraryFilename() const
@@ -45,7 +52,6 @@ QString CodeEditorAppModule::getSvgIconResource() const
 {
 	return ":icon/svg/code-editor";
 }
-
 
 }
 

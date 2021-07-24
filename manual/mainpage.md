@@ -34,7 +34,6 @@ Classes needed for graphs.
 
 * `::sf::Draw`
 * `::sf::Graph`
-
   
 ### Script / Calculator
 
@@ -54,6 +53,7 @@ Unit conversion related functions and classes.
 
 * `::sf::TVector`
 * `::sf::TClosure`
+* `::sf::TListener`
 * `::sf::TDynamicBuffer`
 * `::sf::TClassRegistration`
 

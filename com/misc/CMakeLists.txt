@@ -31,7 +31,9 @@ set(SOURCES
 	gen/ElapseTimer.h gen/ElapseTimer.cpp
 	gen/PerformanceTimer.h gen/PerformanceTimer.cpp
 	gen/Value.h	gen/Value.cpp
+	gen/ScriptObject.h gen/ScriptObject.cpp
 	gen/ScriptEngine.h gen/ScriptEngine.cpp
+	gen/ScriptInterpreter.cpp gen/ScriptInterpreter.h gen/ScriptInterpreter_p.h
 	gen/TDynamicBuffer.h
 	gen/TDynamicArray.h
 	gen/IniProfile.h gen/IniProfile.cpp
@@ -47,13 +49,13 @@ set(SOURCES
 	gen/Condition.h gen/Condition.cpp
 	gen/Sync.h
 	gen/TVector.h
+	gen/TListener.h
 	gen/TDeque.h
 	gen/TFifoClass.h
 	gen/TStaticSync.h
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
-	qt/Graph.cpp qt/Graph.h
 	)
 
 if (NOT WIN32)
@@ -112,6 +114,13 @@ if (SF_BUILD_QT)
 		qt/ModuleConfigurationDialog.cpp qt/ModuleConfigurationDialog.h qt/ModuleConfigurationDialog.ui
 		qt/PropertySheetDialog.cpp qt/PropertySheetDialog.h qt/PropertySheetDialog.ui
 		qt/PropertyPage.cpp qt/PropertyPage.h
+		qt/PropertyPagePlugin.cpp qt/PropertyPagePlugin.h
+		qt/ScriptModelList.cpp qt/ScriptModelList.h
+		qt/ScriptHighlighter.cpp qt/ScriptHighlighter.h
+		qt/Editor.cpp qt/Editor.h
+		qt/EditorPropertyPage.cpp qt/EditorPropertyPage.h qt/EditorPropertyPage.ui
+		qt/EditorPlugin.cpp qt/EditorPlugin.h
+		qt/Graph.cpp qt/Graph.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)
@@ -157,7 +166,8 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CM
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
-	add_subdirectory(tests/app)
+	add_subdirectory(tests/app/threads)
+	add_subdirectory(tests/app/script)
 endif(SF_BUILD_TESTING)
 
 # Install designer plugin in plugins directory of current compiler.

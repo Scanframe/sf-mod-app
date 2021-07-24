@@ -13,7 +13,7 @@ namespace sf
 class InterfaceListModel :public QAbstractListModel
 {
 	public:
-		explicit InterfaceListModel(QObject* parent = nullptr);
+		explicit InterfaceListModel(bool file_only, QObject* parent = nullptr);
 
 		[[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
@@ -33,18 +33,35 @@ class InterfaceListModel :public QAbstractListModel
 			cLibrary,
 			cMaxColumns
 		};
+
+		QList<AppModuleInterface*> _list;
 };
 
-InterfaceListModel::InterfaceListModel(QObject* parent)
+InterfaceListModel::InterfaceListModel(bool file_only, QObject* parent)
 	:QAbstractListModel(parent)
 {
+	if (file_only)
+	{
+		for (auto entry: AppModuleInterface::getMap())
+		{
+			if (entry->hasFileTypes())
+			{
+				_list.append(entry);
+			}
+		}
+	}
+	else
+	{
+		// No restrictions so copy the map.
+		_list = AppModuleInterface::getMap().values();
+	}
 }
 
 QVariant InterfaceListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (role != Qt::DisplayRole)
 	{
-		return QVariant();
+		return {};
 	}
 	if (orientation == Qt::Horizontal)
 	{
@@ -79,21 +96,20 @@ Qt::ItemFlags InterfaceListModel::flags(const QModelIndex& index) const
 
 int InterfaceListModel::rowCount(const QModelIndex& parent) const
 {
-	return (int) AppModuleInterface::getMap().count();
+	return static_cast<int>(_list.count());
 }
 
 QVariant InterfaceListModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
 	{
-		return QVariant();
+		return {};
 	}
-	auto& map = AppModuleInterface::getMap();
-	if (index.row() >= map.count())
+	if (index.row() >= _list.size())
 	{
-		return QVariant();
+		return {};
 	}
-	auto entry = map[map.keys().at(index.row())];
+	auto entry = _list.at(index.row());
 	if (role == Qt::ItemDataRole::UserRole)
 	{
 		return QVariant::fromValue(entry);
@@ -120,7 +136,7 @@ QVariant InterfaceListModel::data(const QModelIndex& index, int role) const
 				return entry->getLibraryFilename();
 		}
 	}
-	return QVariant();
+	return {};
 }
 
 int InterfaceListModel::columnCount(const QModelIndex& parent) const
@@ -133,9 +149,11 @@ SF_IMPL_IFACE(AppModuleInterface, AppModuleInterface::Parameters, Interface)
 
 AppModuleInterface::Map AppModuleInterface::_map;
 
+AppModuleInterface::OpenFileClosure AppModuleInterface::callbackOpenFile;
+
 AppModuleInterface::AppModuleInterface(const AppModuleInterface::Parameters& parameters)
 	:QObject(parameters._parent)
-	 , _settings(*parameters._settings)
+	 , _settings(parameters._settings)
 {
 }
 
@@ -162,7 +180,7 @@ const AppModuleInterface::Map& AppModuleInterface::getMap()
 
 AppModuleInterface* AppModuleInterface::selectDialog(const QString& title, QSettings* settings, QWidget* parent)
 {
-	SelectImplementationDialog dlg(settings, parent);
+	SelectImplementationDialog dlg(settings, true, parent);
 	dlg.setWindowTitle(title);
 	dlg.exec();
 	return dlg.getSelected();
@@ -189,9 +207,9 @@ AppModuleInterface* AppModuleInterface::findByFile(const QString& filename)
 	return nullptr;
 }
 
-QAbstractItemModel* AppModuleInterface::getListModel(QObject* parent)
+QAbstractItemModel* AppModuleInterface::getListModel(bool file_only, QObject* parent)
 {
-	return new InterfaceListModel(parent);
+	return new InterfaceListModel(file_only, parent);
 }
 
 QString AppModuleInterface::getSvgIconResource() const
@@ -277,12 +295,13 @@ QString AppModuleInterface::getFileTypeFilters() const
 
 MultiDocInterface* AppModuleInterface::createChild(QWidget* parent) const
 {
-	auto widget = createWidget(parent);
-	if (widget)
+	auto child = createWidget(parent);
+	if (child)
 	{
-		widget->_module = this;
+		// Assign this module for access to configuration.
+		child->_module = this;
 	}
-	return widget;
+	return child;
 }
 
 void AppModuleInterface::addAllPropertyPages(PropertySheetDialog* sheet)
@@ -294,9 +313,34 @@ void AppModuleInterface::addAllPropertyPages(PropertySheetDialog* sheet)
 	}
 }
 
-QSettings& AppModuleInterface::getSettings()
+QSettings* AppModuleInterface::getSettings() const
 {
 	return _settings;
+}
+
+MultiDocInterface* AppModuleInterface::createWidget(QWidget* parent) const
+{
+	return nullptr;
+}
+
+bool AppModuleInterface::hasFileTypes() const
+{
+	return !_fileTypes.isEmpty();
+}
+
+MultiDocInterface* AppModuleInterface::openFile(const QString& filename, AppModuleInterface* ami) const
+{
+	// Check if the closure is assigned.
+	if (callbackOpenFile)
+	{
+		// Make the call and return the interface implementation.
+		return callbackOpenFile(filename, ami);
+	}
+	else
+	{
+		qWarning() << "Callback to open a file has not been assigned.";
+	}
+	return nullptr;
 }
 
 }

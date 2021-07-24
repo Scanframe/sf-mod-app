@@ -32,7 +32,7 @@ CaptureListModel::CaptureListModel(QObject* parent)
 		connect(avi, &QWidget::customContextMenuRequested, this, &CaptureListModel::contextMenuRequested);
 		_contextMenu = new QMenu(avi);
 		//
-		auto action = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Clear), QApplication::palette(), QPalette::ColorRole::ButtonText), "Clear", this);
+		auto action = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Clear), QPalette::ColorRole::ButtonText), "Clear", this);
 		_contextMenu->addAction(action);
 		connect(action, &QAction::triggered, this, &CaptureListModel::onClear);
 

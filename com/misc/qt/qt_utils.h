@@ -142,7 +142,7 @@ class _MISC_CLASS PaletteColors
 		typedef QPair<QPalette::ColorRole, QColor> Pair;
 		QList<Pair> _colors;
 
-		void styleMessageBox(QMessageBox& mb) const;
+		//void styleMessageBox(QMessageBox& mb) const;
 };
 
 
@@ -188,7 +188,7 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		 */
 		void saveWindowRect(const QString& win_name, QWidget* window);
 
-	private slots:
+	private Q_SLOTS:
 
 		/**
 		 * @brief Triggered when a watched files changes.

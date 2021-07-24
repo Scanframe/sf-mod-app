@@ -32,7 +32,9 @@ add_library(${PROJECT_NAME} SHARED
 	AppModuleActions.cpp AppModuleActions.h
 	MultiDocInterface.cpp MultiDocInterface.h
 	SelectImplementationDialog.cpp SelectImplementationDialog.h SelectImplementationDialog.ui
-	AppModuleFileType.cpp AppModuleFileType.h)
+	AppModuleFileType.cpp AppModuleFileType.h
+	PlainTextEditMdi.cpp PlainTextEditMdi.h
+	)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc)

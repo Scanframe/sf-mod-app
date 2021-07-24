@@ -39,7 +39,7 @@ struct PropertySheetDialog::Private :QObject
 		{
 			i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ButtonText));
 		}
-		// Restore the state of the dialog including the list view view mode.
+		// Restore the state of the dialog including the list view mode.
 		stateSaveRestore(false);
 		// Create a action group.
 		auto ag = new QActionGroup(menu);
@@ -102,7 +102,7 @@ struct PropertySheetDialog::Private :QObject
 
 	void stateSaveRestore(bool save)
 	{
-		_settings->beginGroup(getObjectNamePath(_s).join('.'));
+		_settings->beginGroup(getObjectNamePath(_s).join('.').prepend("State."));
 		QString keyState("State");
 		QString keySplitter("Splitter");
 		QString keyViewMode("ViewMode");
@@ -170,16 +170,24 @@ struct PropertySheetDialog::Private :QObject
 
 	void apply()
 	{
+		QList<PropertyPage*> modified_pages;
 		// Only apply the modified pages.
 		for (auto p: getPages())
 		{
 			if (p->isPageModified())
 			{
+				modified_pages.append(p);
 				p->applyPage();
 			}
 		}
+		// Call after apply to allow resolving dependencies between property pages or saving settings.
+		for (auto p: getPages())
+		{
+			p->afterPageApply(modified_pages.contains(p));
+		}
+		// Calling checkModified will enable or disable the buttons.
+		_s->checkModified(nullptr);
 	}
-
 };
 
 PropertySheetDialog::PropertySheetDialog(const QString& name, QSettings* settings, QWidget* parent)
@@ -201,6 +209,13 @@ void PropertySheetDialog::addPage(PropertyPage* page)
 	_p->ui->pageLayout->addWidget(page/*, 1, Qt::AlignmentFlag::AlignCenter*/);
 	// Make the page initially invisible.
 	page->setVisible(false);
+	// Update the control widgets before connecting signals.
+	page->updatePage();
+	// Connect the controls after the update not before.
+	for (auto w: page->connectControls())
+	{
+		qDebug() << __FUNCTION__  << "Not connected: " << w->objectName();
+	}
 	// Add an item to the list view.
 	auto item = new QListWidgetItem(_p->ui->listWidget);
 	// Assign the page to the user data.

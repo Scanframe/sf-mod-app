@@ -4,7 +4,7 @@
 #include <ami/iface/AppModuleInterface.h>
 #include <ami/iface/MultiDocInterface.h>
 #include <misc/qt/PropertySheetDialog.h>
-#include "CodeEditorConfiguration.h"
+#include <misc/qt/Editor.h>
 
 namespace sf
 {
@@ -27,7 +27,7 @@ class [[maybe_unused]] CodeEditorAppModule :public AppModuleInterface
 
 		[[nodiscard]] QString getSvgIconResource() const override;
 
-		CodeEditorConfiguration _configuration;
+		Editor::Configuration _configuration;
 };
 
 }

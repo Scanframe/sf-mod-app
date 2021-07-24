@@ -1,162 +1,10 @@
 #pragma once
 
-#include <cstring>
-#include "gen_utils.h"
-#include "Value.h"
+#include "ScriptObject.h"
 #include "../global.h"
 
 namespace sf
 {
-
-/**
- * @brief Info structure for objects used in scripts.
- */
-class _MISC_CLASS ScriptObject
-{
-	public:
-		/**
-		 * @brief Keyword identifiers.
-		 */
-		enum EIdentifier
-		{
-			/** Unknown to script */
-			idUnknown = 0,
-			/** Is a constant like PI.*/
-			idConstant,
-			/** Is a variable which cn be assigned.*/
-			idVariable,
-			/** Is a callable function.*/
-			idFunction,
-			/** Is a type definition like 'int', 'float', string, 'undef' and 'object'.*/
-			idTypedef,
-			/** Keyword like 'if' and not used at the moment.*/
-			idKeyword
-		};
-
-		/**
-		 * @brief Used to create static lookup lists.
-		 */
-		struct Info
-		{
-			/**
-			 * @brief Index for decoding. Could be regarded as function or variable address.
-			 */
-			int _index{0};
-			/**
-			 * @brief Function of the entry.
-			 */
-			EIdentifier _id{idUnknown};
-			/**
-			 * @brief Name of the entry.
-			 */
-			const char* _name{nullptr};
-			/**
-			 * @brief In case of a function the amount of parameters where std::numeric_limits<int>::max()
-			 * is infinite -2 is at least 2 and when 3 is exactly 3 parameters are required.
-			 */
-			int _paramCount{0};
-			/**
-			 * @brief Pointer referring to TInfoObject if nullptr it is a static entry.
-			 */
-			void* _data{nullptr};
-		};
-
-		/**
-		 * Default constructor.
-		 * @param type_name
-		 */
-		explicit ScriptObject(const char* type_name)
-			:_typeName(type_name) {}
-
-		/**
-		 * @brief Virtual destructor which can be overloaded to clean up objects.
-		 */
-		virtual ~ScriptObject() = default;
-
-		/**
-		 * @brief Must be overloaded for member namespace.
-		 */
-		[[nodiscard]] virtual const Info* getInfo(const std::string& name) const = 0;
-
-		/**
-		 * @brief Gets or sets the a passed data member. Must be overloaded in derived class.
-		 */
-		virtual bool getSetValue(const Info* info, Value* value, Value::vector_type* params, bool flag_set) = 0;
-
-		/**
-		 * @brief Asks if the object should be deleted after having made this call.
-		 */
-		virtual void destroyObject(bool& should_delete) = 0;
-
-		/**
-		 * @brief Gets the reference count.
-		 */
-		[[nodiscard]] int getRefCount() const
-		{
-			return _refCount;
-		}
-
-		/**
-		 * @brief Cast operator to be able to return this instance as a Value.
-		 */
-		explicit operator Value() const
-		{
-			const ScriptObject* so = this;
-			if (so)
-			{
-				return Value(Value::vitCustom, &so, sizeof(&so));
-			}
-			// Return zero integer when the object is valid.
-			return Value(0);
-		}
-
-		/**
-		 * @brief Returns the static Info structure for unknowns.
-		 */
-		static const Info* getInfoUnknown();
-
-		/**
-		 * @brief Returns the type name Set at the constructor.
-		 */
-		[[nodiscard]] std::string getTypeName() const
-		{
-			return _typeName;
-		}
-
-		/**
-		 * @brief Gets the script object owner.
-		 */
-		ScriptObject* getOwner()
-		{
-			return _owner;
-		}
-
-	protected:
-		/**
-		 * @brief Makes this object the owner of the other object.
-		 */
-		void makeOwner(ScriptObject* obj)
-		{
-			obj->_owner = this;
-		}
-
-	private:
-		/**
-		 * Reference count for internal use to determine if this instance is to be deleted.
-		 */
-		int _refCount{0};
-		/**
-		 * Type name used in the script for debugging.
-		 */
-		const char* _typeName{nullptr};
-		/**
-		 * Script object which owns/created this instance.
-		 * Used to call labels of for events.
-		 */
-		ScriptObject* _owner{nullptr};
-
-		friend class ScriptEngine;
-};
 
 /**
  * @brief Simple script engine able.
@@ -174,6 +22,8 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		 */
 		enum EArithError
 		{
+			/** Used default for retrieving the current error text.*/
+			aeCurrent = -1,
 			/** Success and no errors encountered.*/
 			aeSuccess = 0,
 			/** String is too long.*/
@@ -253,7 +103,7 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		/**
 		 * @brief Gets the error value of this instance.
 		 */
-		[[nodiscard]] EArithError getErrorValue() const
+		[[nodiscard]] EArithError getError() const
 		{
 			return _errorValue;
 		}
@@ -266,19 +116,19 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		/**
 		 * @brief Sets the error value for this instance
 		 */
-		bool setErrorValue(EArithError error_value, std::string reason = std::string());
+		bool setError(EArithError error_value, const std::string& reason = std::string());
 
 		/**
 		 * Returns the arithmetic error.
 		 * @param error_value
-		 * @return
+		 * @return Error text.
 		 */
-		[[nodiscard]] const char* getArithErrorText(EArithError error_value) const;
+		[[nodiscard]] const char* getErrorText(EArithError error_value = EArithError::aeCurrent) const;
 
 		/**
 		 * @brief Gets the current position.
 		 */
-		[[nodiscard]] int getPos() const
+		[[nodiscard]] pos_type getPos() const
 		{
 			return _pos;
 		}
@@ -294,20 +144,22 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		 * Gets identifier information
 		 * Can be virtual overloaded in derived class to add function names
 		 */
-		[[nodiscard]] const Info* getInfo(const std::string& name) const override;
+		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
+
+		/**
+		 * @brief Gets a list of available identifiers.
+		 *
+		 * Used for syntax high lighting for example or code completion.
+		 */
+		[[nodiscard]] virtual strings getIdentifiers(EIdentifier id) const;
 
 	protected:
-		/**
-		 * @brief Casts a #sf::Value::vitCustom typed #sf::Value to a #ScriptObject typed pointer.
-		 */
-		ScriptObject* castToObject(const Value& value);
-
 		/**
 		 * @brief Gets and sets a value using a returned Info structure.
 		 *
 		 * @return True if request was answered.
 		 */
-		bool getSetValue(const Info* info, Value* value, Value::vector_type* params, bool flagset) override;
+		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
 		/**
 		 * @brief Determines if the passed character is an alpha one.
@@ -344,7 +196,7 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 				return _info && _object;
 			}
 
-			const Info* _info{nullptr};
+			const IdInfo* _info{nullptr};
 
 			ScriptObject* _object{nullptr};
 		};
@@ -388,7 +240,7 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		/**
 		 * Current position.
 		 */
-		int _pos{0};
+		pos_type _pos{0};
 		/**
 		 * Command pointer.
 		 */
@@ -401,7 +253,10 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		 * Last error reason string.
 		 */
 		std::string _errorReason;
-		static Info _info[];
+		/**
+		 * @brief Static list of keywords, constants and functions.
+		 */
+		static IdInfo _idInfo[];
 };
 
 /**

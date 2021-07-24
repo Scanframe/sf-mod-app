@@ -9,11 +9,10 @@
 #include <QPushButton>
 #include <misc/qt/FormDialog.h>
 #include <misc/qt/DrawWidget.h>
-#include <misc/qt/Resource.h>
 
 extern int debug_level;
 
-TEST_CASE("sf::ActionButton", "[debug][qt]")
+TEST_CASE("sf::ActionButton", "[qt][gui]")
 {
 	SECTION("Load from Resource")
 	{

@@ -41,14 +41,19 @@ class _AMI_CLASS MultiDocInterfaceSignals :public QObject
 class _AMI_CLASS MultiDocInterface
 {
 	public:
+
 		/**
-		 * @brief Constructor.
+		 * @brief Default constructor.
+		 */
+		explicit MultiDocInterface();
+		/**
+		 * @brief Sets the editor to operate on.
 		 *
 		 * When the passed document inherits QPlainTextEdit or QTextEdit the MDI signals are automatically connected.
 		 * For other implementations you need to connect them manually.
-		 * @param editor Widget representing the actual MDI child.
+		 * @param editor Widget being a QPlainTextEdit or QTextEdit instance.
 		 */
-		explicit MultiDocInterface(QWidget* editor);
+		virtual void setConnections(QWidget* editor);
 
 		/**
 		 * @brief Pure virtual needs to be implemented.
@@ -146,6 +151,11 @@ class _AMI_CLASS MultiDocInterface
 		[[nodiscard]] QString getFileTypeFilters() const;
 
 		/**
+		 * @brief Saves or restores the state of the MDI instance.
+		 */
+		virtual void stateSaveRestore(bool save);
+
+		/**
 		 * @brief Instance to connect signal handlers onto.
 		 */
 		MultiDocInterfaceSignals mdiSignals;
@@ -162,7 +172,7 @@ class _AMI_CLASS MultiDocInterface
 		 */
 		QWidget* _editor{nullptr};
 		/**
-		 * @brief Holds the editor widget passed in the constructor.
+		 * @brief Holds the application module interface assigned when created by the same instance as assigned.
 		 */
 		const AppModuleInterface* _module{nullptr};
 

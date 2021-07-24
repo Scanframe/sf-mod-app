@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <misc/gen/dbgutils.h>
+#include <misc/gen/gen_utils.h>
 #include <misc/qt/qt_utils.h>
 #include "ExposedObject.h"
 
@@ -41,17 +42,17 @@ MainWindow::MainWindow(QWidget* parent)
 	{
 		pb->setEnabled(false);
 	}
-	// Fill the the combobox with usable scripts.
-	for(auto& entry: QDir( ":/js" ).entryList())
-	{
-		ui->comboBoxScripts->addItem("Resource: " + entry, QVariant(":/js/" + entry));
-	}
 	// Add the js-files in the application directory
 	QDirIterator it(QCoreApplication::applicationDirPath(), {"*.js"}, QDir::Files);
 	while (it.hasNext())
 	{
 		it.next();
 		ui->comboBoxScripts->addItem("File: " + it.fileInfo().baseName(), QVariant(it.filePath()));
+	}
+	// Fill the combobox with usable scripts.
+	for(auto& entry: QDir( ":/js" ).entryList())
+	{
+		ui->comboBoxScripts->addItem("Resource: " + entry, QVariant(":/js/" + entry));
 	}
 	// When scripts are there enable the run push button.
 	if (ui->comboBoxScripts->count())
@@ -70,11 +71,17 @@ void MainWindow::onLoadScript()
 {
 	// Only create the object once.
 	static auto obj = new ExposedObject(this);
-	// Delete JS engine in order to reset it. A method for doing that is not available.
-	delete _engine;
-	_engine = new QJSEngine(this);
+	// Delete JS engine in order to reset it.
+	// A method for doing that is not available.
+	sf::delete_null(_engine);
+	if (!_engine)
+	{
+		_engine = new QJSEngine(this);
+		_engine->installExtensions(QJSEngine::ConsoleExtension);
+	}
+	auto js_obj = _engine->toScriptValue(obj);
 	// Assign a global exposed object.
-	_engine->globalObject().setProperty("ExposedObject", _engine->toScriptValue(obj));
+	_engine->globalObject().setProperty("ExposedObject", js_obj);
 	// Get the current selected script.
 	auto script = ui->comboBoxScripts->currentData().toString();
 	// Evaluate the script.

@@ -20,8 +20,6 @@ namespace sf
  */
 class _AMI_CLASS AppModuleInterface :public QObject
 {
-	Q_OBJECT
-
 	public:
 		/**
 		 * @brief Structure for passing parameters to derived classes loaded and created at run-time.
@@ -47,6 +45,12 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		explicit AppModuleInterface(const Parameters&);
 
+		/**
+		 * Gets if the instance has file handling types.
+		 *
+		 * @return True when handling file types.
+		 */
+		[[nodiscard]] bool hasFileTypes() const;
 		/**
 		 * @brief Virtual destructor for derived classes.
 		 */
@@ -145,6 +149,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 
 		/**
 		 * @brief Determined if the this module handles this mime type.
+		 *
 		 * @return nullptr when cancelled
 		 */
 		static AppModuleInterface* selectDialog(const QString& title, QSettings* settings, QWidget* parent = nullptr);
@@ -152,9 +157,11 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		/**
 		 * @brief Gets a list model from the available instances.
 		 *
-		 * @return List model .
+		 * @param file_only True when only Modules handling files are to listed.
+		 * @param parent Owning object.
+		 * @return The list model.
 		 */
-		[[nodiscard]] static QAbstractItemModel* getListModel(QObject* parent);
+		[[nodiscard]] static QAbstractItemModel* getListModel(bool file_only, QObject* parent);
 
 		/**
 		 * @brief Calls #createChild() and assigns the this creating instance for reference.
@@ -167,7 +174,25 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		/**
 		 * @brief Gets the settings class passed on creation.
 		 */
-		QSettings& getSettings();
+		[[nodiscard]] QSettings* getSettings() const;
+
+		/**
+		 * @brief Makes the application open a file.
+		 *
+		 * @param filename Name of file to open.
+		 * @param ami Force file, even when empty to open using this module.
+		 * @return Not null when the type of document was handled.
+		 */
+		MultiDocInterface* openFile(const QString& filename, AppModuleInterface* ami = nullptr) const;
+
+		/**
+		 * @brief Type definition for the callback closure.
+		 */
+		typedef TClosure<MultiDocInterface*, const QString&, AppModuleInterface*> OpenFileClosure;
+		/**
+		 * @brief Holds a callback to open a file in the application.
+		 */
+		static OpenFileClosure callbackOpenFile;
 
 	protected:
 		/**
@@ -176,13 +201,13 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @param parent Parent widget of the returned object.
 		 * @return MDI child.
 		 */
-		[[nodiscard]] virtual MultiDocInterface* createWidget(QWidget* parent) const = 0;
+		[[nodiscard]] virtual MultiDocInterface* createWidget(QWidget* parent) const;
 
 	private:
 		/**
 		 * @brief Settings of application.
 		 */
-		QSettings& _settings;
+		QSettings* _settings;
 		/**
 		 * @brief Holds the file types serviced by this instance.
 		 */
@@ -192,7 +217,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		static Map _map;
 
-		// Declarations of static functions and data members to be able to create registered RSA implementations.
+		// Declarations of static functions and data members to be able to create implementations.
 	SF_DECL_IFACE(AppModuleInterface, AppModuleInterface::Parameters, Interface)
 };
 

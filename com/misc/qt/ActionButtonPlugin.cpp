@@ -42,17 +42,17 @@ QString ActionButtonPlugin::group() const
 
 QIcon ActionButtonPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString ActionButtonPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString ActionButtonPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool ActionButtonPlugin::isContainer() const

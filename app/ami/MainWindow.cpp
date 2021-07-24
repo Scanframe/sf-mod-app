@@ -8,6 +8,7 @@
 #include <misc/qt/ModuleConfiguration.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include <ami/iface/AppModuleInterface.h>
+#include <misc/gen/gen_utils.h>
 
 namespace sf
 {
@@ -19,10 +20,17 @@ MainWindow::MainWindow(QSettings* settings)
 {
 	// Set the object name for the getObjectNamePath() function so property sheet settings get a correct section assigned.
 	setObjectName("MainWindow");
+	// Set a property to be used as parent for shortcuts since an application shortcut needs a widget and not an object.
+	QApplication::instance()->setProperty("ShortcutParent", QVariant::fromValue(this));
 	// Title is the same as the application.
-	setWindowTitle(QCoreApplication::applicationName());
+	setWindowTitle(QApplication::applicationDisplayName());
+	//
+	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+	{
+		setWindowTitle(QApplication::applicationDisplayName());
+	});
 	// When libraries are loaded create the module instances.
-	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&]() -> void
+	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&]()
 	{
 		// Create the interface implementations (that are missing).
 		AppModuleInterface::instantiate(_settings, this);
@@ -30,6 +38,7 @@ MainWindow::MainWindow(QSettings* settings)
 	//
 	_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+	_mdiArea->setTabsMovable(true);
 	//_mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
 	_mdiArea->setViewMode(QMdiArea::ViewMode::TabbedView);
 
@@ -42,9 +51,46 @@ MainWindow::MainWindow(QSettings* settings)
 	//
 	setUnifiedTitleAndToolBarOnMac(true);
 	//
-	readSettings();
-	//
 	setAcceptDrops(true);
+	//
+	settingsReadWrite(false);
+	//
+	recentFilesReadWrite(false);
+	//
+	stateSaveRestore(false);
+	//
+	//AppModuleInterface::OpenFileClosure;
+	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface*
+	{
+		return openFile(filename);
+	};
+}
+
+MainWindow::~MainWindow()
+{
+	stateSaveRestore(true);
+}
+
+void MainWindow::stateSaveRestore(bool save)
+{
+	_settings->beginGroup(getObjectNamePath(this).join('.').prepend("State."));
+	QString keyState("State");
+	QString keyWidgetRect("WidgetRect");
+	if (save)
+	{
+		_settings->setValue(keyWidgetRect, geometry());
+		_settings->setValue(keyState, saveState());
+	}
+	else
+	{
+		// Get the keys in the section to check existence in the ini-section.
+		if (_settings->value(keyWidgetRect).toRect().isValid())
+		{
+			setGeometry(_settings->value(keyWidgetRect).toRect());
+		}
+		restoreState(_settings->value(keyState).toByteArray());
+	}
+	_settings->endGroup();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -56,7 +102,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 	else
 	{
-		writeSettings();
 		event->accept();
 	}
 	// Make the application quit after the main window closes.
@@ -96,33 +141,28 @@ void MainWindow::open()
 	}
 }
 
-bool MainWindow::openFile(const QString& fileName)
+MultiDocInterface* MainWindow::openFile(const QString& fileName)
 {
-	if (QMdiSubWindow* existing = findMdiChild(fileName))
+	if (auto existing = findMdiChild(fileName))
 	{
 		_mdiArea->setActiveSubWindow(existing);
-		return true;
+		return dynamic_cast<MultiDocInterface*>(existing->widget());
 	}
-	const bool succeeded = loadFile(fileName);
-	if (succeeded)
-	{
-		statusBar()->showMessage(tr("File loaded"), 2000);
-	}
-	return succeeded;
+	return loadFile(fileName);
 }
 
-bool MainWindow::loadFile(const QString& fileName)
+MultiDocInterface* MainWindow::loadFile(const QString& fileName)
 {
 	auto child = createMdiChild(fileName);
 	if (child)
 	{
-		const bool succeeded = child->loadFile(fileName);
 		auto widget = dynamic_cast<QWidget*>(child);
-		if (succeeded)
+		if (child->loadFile(fileName))
 		{
+			statusBar()->showMessage(tr("File loaded"), 2000);
 			if (widget)
 			{
-				//child->show();
+				//widget->show();
 				widget->showMaximized();
 			}
 		}
@@ -134,68 +174,50 @@ bool MainWindow::loadFile(const QString& fileName)
 			}
 		}
 		MainWindow::prependToRecentFiles(fileName);
-		return succeeded;
+		return child;
 	}
-	return false;
+	return nullptr;
 }
 
-static inline QString recentFilesKey()
+void MainWindow::recentFilesReadWrite(bool save)
 {
-	return QStringLiteral("recentFileList");
-}
-
-static inline QString fileKey()
-{
-	return QStringLiteral("file");
-}
-
-static QStringList readRecentFiles(QSettings& settings)
-{
-	QStringList result;
-	const int count = settings.beginReadArray(recentFilesKey());
-	for (int i = 0; i < count; ++i)
+	auto keyRecentFiles = QStringLiteral("RecentFiles");
+	auto keyFile = QStringLiteral("File");
+	if (save)
 	{
-		settings.setArrayIndex(i);
-		result.append(settings.value(fileKey()).toString());
+		const auto count = _recentFiles.size();
+		_settings->beginWriteArray(keyRecentFiles);
+		for (qsizetype i = 0; i < count; ++i)
+		{
+			_settings->setArrayIndex(static_cast<int>(i));
+			_settings->setValue(keyFile, _recentFiles.at(i));
+		}
+		_settings->endArray();
 	}
-	settings.endArray();
-	return result;
-}
-
-static void writeRecentFiles(const QStringList& files, QSettings& settings)
-{
-	const qsizetype count = files.size();
-	settings.beginWriteArray(recentFilesKey());
-	for (qsizetype i = 0; i < count; ++i)
+	else
 	{
-		settings.setArrayIndex((int) i);
-		settings.setValue(fileKey(), files.at(i));
+		const auto count = _settings->beginReadArray(keyRecentFiles);
+		for (int i = 0; i < count; ++i)
+		{
+			_settings->setArrayIndex(i);
+			_recentFiles.append(_settings->value(keyFile).toString());
+		}
+		_settings->endArray();
+		setRecentFilesVisible(!_recentFiles.isEmpty());
 	}
-	settings.endArray();
-}
-
-bool MainWindow::hasRecentFiles()
-{
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	const int count = settings.beginReadArray(recentFilesKey());
-	settings.endArray();
-	return count > 0;
 }
 
 void MainWindow::prependToRecentFiles(const QString& filename)
 {
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-
-	const QStringList oldRecentFiles = readRecentFiles(settings);
-	QStringList recentFiles = oldRecentFiles;
-	recentFiles.removeAll(filename);
-	recentFiles.prepend(filename);
-	if (oldRecentFiles != recentFiles)
+	// Check if a change is needed.
+	if (_recentFiles.isEmpty() || _recentFiles.at(0) != filename)
 	{
-		writeRecentFiles(recentFiles, settings);
+		_recentFiles.removeAll(filename);
+		_recentFiles.prepend(filename);
+		// Save the list to settings.
+		recentFilesReadWrite(true);
 	}
-
-	setRecentFilesVisible(!recentFiles.isEmpty());
+	setRecentFilesVisible(!_recentFiles.isEmpty());
 }
 
 void MainWindow::setRecentFilesVisible(bool visible)
@@ -206,16 +228,14 @@ void MainWindow::setRecentFilesVisible(bool visible)
 
 void MainWindow::updateRecentFileActions()
 {
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-
-	const QStringList recentFiles = readRecentFiles(settings);
-	const qsizetype count = qMin<qsizetype>(MaxRecentFiles, recentFiles.size());
+	const qsizetype count = qMin<qsizetype>(MaxRecentFiles, _recentFiles.size());
 	int i = 0;
 	for (; i < count; ++i)
 	{
-		const QString fileName = QFileInfo(recentFiles.at(i)).fileName();
+		const QString fileName = QFileInfo(_recentFiles.at(i)).fileName();
 		_recentFileActions[i]->setText(tr("&%1 %2").arg(i + 1).arg(fileName));
-		_recentFileActions[i]->setData(recentFiles.at(i));
+		_recentFileActions[i]->setData(_recentFiles.at(i));
+		_recentFileActions[i]->setStatusTip(_recentFiles.at(i));
 		_recentFileActions[i]->setVisible(true);
 	}
 	for (; i < MaxRecentFiles; ++i)
@@ -311,7 +331,7 @@ void MainWindow::settingsPropertySheet()
 	sheet->setWindowTitle(tr("Application Settings"));
 	sheet->setWindowIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Settings), Qt::gray));
 	//
-	sheet->addPage(new ApplicationPropertyPage(sheet));
+	sheet->addPage(new ApplicationPropertyPage(this, sheet));
 	// Adds all the property pages to the passed property sheet.
 	AppModuleInterface::addAllPropertyPages(sheet);
 	//
@@ -515,7 +535,8 @@ void MainWindow::createActions()
 	connect(recentMenu, &QMenu::aboutToShow, this, &MainWindow::updateRecentFileActions);
 	_recentFileSubMenuAction = recentMenu->menuAction();
 	_recentFileSeparator = fileMenu->addSeparator();
-	setRecentFilesVisible(MainWindow::hasRecentFiles());
+	//
+	setRecentFilesVisible(!_recentFiles.isEmpty());
 
 	for (auto& recentFileAct : _recentFileActions)
 	{
@@ -543,9 +564,12 @@ void MainWindow::createActions()
 
 	updateWindowMenu();
 
-	QToolBar* fileToolBar = addToolBar(tr("File"));
-	QToolBar* editToolBar = addToolBar(tr("Edit"));
-	QToolBar* configToolBar = addToolBar(tr("Config"));
+	auto fileToolBar = addToolBar(tr("File"));
+	fileToolBar->setObjectName("File");
+	auto editToolBar = addToolBar(tr("Edit"));
+	editToolBar->setObjectName("Edit");
+	auto configToolBar = addToolBar(tr("Config"));
+	configToolBar->setObjectName("Config");
 
 	fileToolBar->addAction(_newAction);
 	fileToolBar->addAction(_openAction);
@@ -561,7 +585,6 @@ void MainWindow::createActions()
 	configToolBar->addAction(_moduleConfigAction);
 	configToolBar->addAction(_settingsAction);
 	configToolBar->addAction(_developAction);
-
 }
 
 void MainWindow::createStatusBar()
@@ -569,21 +592,36 @@ void MainWindow::createStatusBar()
 	statusBar()->showMessage(tr("Ready"));
 }
 
-void MainWindow::readSettings()
+void MainWindow::settingsReadWrite(bool save)
 {
-	if (_moduleConfiguration)
+	// Load the missing modules from the configuration.
+	_moduleConfiguration->load();
+	//
+	auto settings = _moduleConfiguration->getSettings();
+	//
+	auto keyDisplayName = QString("DisplayName");
+	auto keyViewMode = QString("ViewMode");
+	//
+	settings->beginGroup("Application");
+	if (save)
 	{
-		// Load the missing modules from the configuration.
-		_moduleConfiguration->load();
+		settings->setValue(keyDisplayName, QApplication::applicationDisplayName());
+		settings->setValue(keyViewMode, _mdiArea->viewMode());
 	}
-}
-
-void MainWindow::writeSettings()
-{
+	else
+	{
+		QApplication::setApplicationDisplayName(
+			settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
+		_mdiArea->setViewMode(
+			clip(qvariant_cast<QMdiArea::ViewMode>(settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
+				QMdiArea::ViewMode::TabbedView));
+	}
+	settings->endGroup();
 }
 
 MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 {
+	QFileInfo fi(filename);
 	AppModuleInterface* entry;
 	// When empty a new file is expected.
 	if (filename.isEmpty())
@@ -592,6 +630,13 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 	}
 	else
 	{
+		// When the file does not exist.
+		if (!fi.exists())
+		{
+			QMessageBox::information(this, tr("File does not exist!"),
+				tr("Missing: '%1'").arg(fi.filePath()));
+			return nullptr;
+		}
 		// Get the instance that can handle it.
 		entry = AppModuleInterface::findByFile(filename);
 		if (!entry)
@@ -599,13 +644,16 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 			entry = AppModuleInterface::selectDialog(tr("Open file with"), _settings, this);
 		}
 	}
-	// When an entry was found for the file create a MDI child.
+	// When an entry was found for the file create an MDI child.
 	if (entry)
 	{
 		auto child = entry->createChild(this);
 		if (child)
 		{
 			auto sw = _mdiArea->addSubWindow(dynamic_cast<QWidget*>(child));
+			// Restore the state of the child after it got its actual parent.
+			child->stateSaveRestore(false);
+			//
 			sw->setWindowIcon(Resource::getSvgIcon(entry->getSvgIconResource(),
 				QApplication::palette().color(
 					_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ?

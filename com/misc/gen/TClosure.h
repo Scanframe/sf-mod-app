@@ -102,7 +102,7 @@ class TClosure
 		 * @param args List of arguments specified by the template.
 		 * @return Result type
 		 */
-		Result operator()(Args... args)
+		Result operator()(Args... args) const
 		{
 			return call(args...);
 		}
@@ -130,7 +130,7 @@ class TClosure
 		 * @param args List of arguments specified by the template.
 		 * @return Result type
 		 */
-		Result call(Args... args);
+		Result call(Args... args) const;
 
 	private:
 		/**
@@ -140,7 +140,7 @@ class TClosure
 };
 
 template<typename Result, typename... Args>
-Result TClosure<Result, Args...>::call(Args... args)
+Result TClosure<Result, Args...>::call(Args... args) const
 {
 	// Bail out when called and not assigned.
 	if (!isAssigned())
