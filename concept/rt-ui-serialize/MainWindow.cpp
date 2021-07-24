@@ -1,4 +1,4 @@
-rootName#include "MainWindow.h"
+#include "MainWindow.h"
 #include "./ui_MainWindow.h"
 
 #include <QDate>
@@ -159,7 +159,7 @@ void MainWindow::onCreateFormDialog()
 void MainWindow::onReadFromFile()
 {
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
-	QFormBuilder builder;
+	sf::FormBuilder builder;
 	// Add the application directory as the plugin directory to find custom plugins.
 	builder.addPluginPath(QCoreApplication::applicationDirPath());
 	// Show the plugin paths.
@@ -194,7 +194,7 @@ void MainWindow::onWriteToFile()
 		// Open file write only.
 		file.open(QFileDevice::WriteOnly);
 		//
-		sf::FormWriter builder;
+		sf::FormBuilder builder;
 		//
 		auto wgt = ui->frameEmbedded->findChild<QWidget*>(rootName, Qt::FindChildrenRecursively);
 		if (wgt)

@@ -47,8 +47,6 @@ class CodeEditor :public QPlainTextEdit, public MdiChild
 		// MdiChild interface method.
 		[[nodiscard]] bool hasSelection() const override;
 
-		[[nodiscard]] bool isUndoRedoEnabled() const override;
-
 		// MdiChild interface method.
 		void cut() override;
 

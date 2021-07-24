@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QtDesigner/QFormBuilder>
-#include <QFrame>
-#include <QDomDocument>
 
 #include "../global.h"
+
+// Forward definition.
+class QDomDocument;
 
 namespace sf
 {
