@@ -1,6 +1,6 @@
 /*
-Making it easier to build libararies for the various targets and platforms.
-Defines these defines with true (1) or false (0):
+Making it easier to build libraries for the various targets and platforms.
+Defines these with true (1) or false (0):
  * IS_GCC > GNU compiler detected.
  * IS_QT > QT compile target is detected.
  * IS_WIN > Windows compile target is detected.

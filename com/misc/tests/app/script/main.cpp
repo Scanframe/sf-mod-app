@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	// Initialize base using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.
-	fi.setFile(fi.absolutePath(), fi.completeBaseName() + ".ini");
+	fi.setFile(fi.absolutePath() + QDir::separator() + "config", fi.completeBaseName() + ".ini");
 	// Create instance to handle settings.
 	sf::ApplicationSettings app_settings;
 	// Set the file path to the settings instance and make it watch changes.

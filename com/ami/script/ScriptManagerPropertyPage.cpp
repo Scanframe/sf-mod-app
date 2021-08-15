@@ -68,7 +68,12 @@ ScriptManagerPropertyPage::ScriptManagerPropertyPage(ScriptManager* manager, Pro
 		auto idx = getIndex(ui->tvScripts);
 		if (idx.isValid())
 		{
+			// Open the editor from index position.
 			emit openEditor(idx.row());
+			// Apply modifications.
+			_sheet->applySheet();
+			// Close the sheet.
+			_sheet->close();
 		}
 	});
 	// Resize the columns.

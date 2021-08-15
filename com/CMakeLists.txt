@@ -4,6 +4,6 @@ cmake_minimum_required(VERSION 3.14)
 project("sf-com")
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(misc)
+add_subdirectory(gsc)
 add_subdirectory(gii)
 add_subdirectory(ami)
-add_subdirectory(globalshortcut)

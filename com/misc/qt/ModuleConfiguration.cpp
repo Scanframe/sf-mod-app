@@ -64,10 +64,10 @@ ModuleConfiguration::ModuleListType ModuleConfiguration::getList() const
 	return ml;
 }
 
-bool ModuleConfiguration::load()
+size_t ModuleConfiguration::load()
 {
 	// Return value initialization.
-	bool rv = false;
+	size_t rv = 0;
 	// Get the list of to be loaded modules.
 	auto list = getList();
 	// Load each dynamic library in the list when not loaded yet.
@@ -88,8 +88,8 @@ bool ModuleConfiguration::load()
 			{
 				func(it.key().toStdString().c_str());
 			}
-			// Signal at least one library was loaded.
-			rv = true;
+			// Increment the return value.
+			rv++;
 		}
 	}
 	// When a lib was loaded emit the signal.

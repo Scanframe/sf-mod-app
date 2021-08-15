@@ -134,21 +134,21 @@ void PlainTextEditMdi::newFile()
 	QObject::connect(_editor->document(), &QTextDocument::contentsChanged, [&]() {documentWasModified();});
 }
 
-bool PlainTextEditMdi::loadFile(const QString& fileName)
+bool PlainTextEditMdi::loadFile(const QString& filename)
 {
 	Q_ASSERT(_editor);
-	QFile file(fileName);
+	QFile file(filename);
 	if (!file.open(QFile::ReadOnly | QFile::Text))
 	{
 		QMessageBox::warning(_container, QObject::tr("MDI"),
-			QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
+			QObject::tr("Cannot read file %1:\n%2.").arg(filename).arg(file.errorString()));
 		return false;
 	}
 	QTextStream in(&file);
 	QGuiApplication::setOverrideCursor(Qt::WaitCursor);
 	_editor->setPlainText(in.readAll());
 	QGuiApplication::restoreOverrideCursor();
-	setCurrentFile(fileName);
+	setCurrentFile(filename);
 	QObject::connect(_editor->document(), &QTextDocument::contentsChanged, [&]() {documentWasModified();});
 	return true;
 }

@@ -36,8 +36,8 @@ set(SOURCES
 	gen/ResultDataHandler.cpp gen/ResultDataHandler.h
 	gen/ResultDataRequester.cpp gen/ResultDataRequester.h
 	gen/ResultDataStatic.cpp gen/ResultDataStatic.h
-	gen/InformationScript.cpp gen/InformationScript.h
-	)
+	gen/GiiScriptInterpreter.cpp gen/GiiScriptInterpreter.h
+	LibMain.cpp)
 
 if (NOT WIN32)
 

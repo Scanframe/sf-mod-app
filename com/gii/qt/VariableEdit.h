@@ -18,6 +18,7 @@ class QDESIGNER_WIDGET_EXPORT VariableEdit :public VariableWidgetBase
 {
 	Q_OBJECT
 		Q_PROPERTY(bool focusFrame READ hasFocusFrame WRITE setFocusFrame)
+		Q_PROPERTY(int nameLevel READ nameLevel WRITE setNameLevel)
 
 	public:
 		/**
@@ -36,6 +37,11 @@ class QDESIGNER_WIDGET_EXPORT VariableEdit :public VariableWidgetBase
 		 * @return True when a focus frame is used.
 		 */
 		[[nodiscard]] bool hasFocusFrame() const;
+
+		[[nodiscard]] int nameLevel() const;
+
+		void setNameLevel(int level = -1);
+
 
 	protected:
 		/**

@@ -10,18 +10,18 @@ namespace sf
 /**
  * @brief Script extending and linking the script to the generic information interface elements.
  */
-class InformationScript :public ScriptInterpreter, public InformationTypes
+class _GII_CLASS GiiScriptInterpreter :public ScriptInterpreter, public InformationTypes
 {
 	public:
 		/**
 		 * @brief Default constructor.
 		 */
-		InformationScript();
+		GiiScriptInterpreter();
 
 		/**
 		 * @brief Overridden destructor.
 		 */
-		~InformationScript() override;
+		~GiiScriptInterpreter() override;
 
 		/**
 		 * @brief Overloaded from base class.
@@ -109,11 +109,11 @@ class InformationScript :public ScriptInterpreter, public InformationTypes
 		/**
 		 * @brief Hook to member functions for GII interface for Variable instances.
 		 */
-		TVariableHandler<InformationScript> _varLink;
+		TVariableHandler<GiiScriptInterpreter> _varLink;
 		/**
 		 * @brief Hook to member functions for GII interface for ResultData instances.
 		 */
-		TResultDataLinkHandler<InformationScript> _resLink;
+		TResultDataLinkHandler<GiiScriptInterpreter> _resLink;
 };
 
 }

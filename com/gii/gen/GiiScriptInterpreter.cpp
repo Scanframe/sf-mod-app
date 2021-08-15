@@ -1,4 +1,4 @@
-#include "InformationScript.h"
+#include "GiiScriptInterpreter.h"
 
 namespace sf
 {
@@ -116,20 +116,20 @@ class _GII_CLASS TVarParamScriptObject :public ScriptObject, public InformationT
 
 ScriptObject::IdInfo VarParamInfo[] =
 	{
-		{SID_VAR_SETUP, InformationScript::idFunction, "Setup", 1, nullptr},
-		{SID_VAR_ID, InformationScript::idConstant, "Id", 0, nullptr},
-		{SID_VAR_NAME, InformationScript::idFunction, "Name", 1, nullptr},
-		{SID_VAR_UNIT, InformationScript::idConstant, "Unit", 0, nullptr},
-		{SID_VAR_CUR, InformationScript::idVariable, "Cur", 0, nullptr},
-		{SID_VAR_CURSTR, InformationScript::idConstant, "CurStr", 0, nullptr},
-		{SID_VAR_RND, InformationScript::idConstant, "Rnd", 0, nullptr},
-		{SID_VAR_DEF, InformationScript::idConstant, "Def", 0, nullptr},
-		{SID_VAR_MIN, InformationScript::idConstant, "Min", 0, nullptr},
-		{SID_VAR_MAX, InformationScript::idConstant, "Max", 0, nullptr},
-		{SID_VAR_FLAGS, InformationScript::idVariable, "Flags", 0, nullptr},
-		{SID_VAR_ISFLAGS, InformationScript::idFunction, "IsFlags", 1, nullptr},
-		{SID_VAR_SETFLAGS, InformationScript::idFunction, "SetFlags", 1, nullptr},
-		{SID_VAR_UNSETFLAGS, InformationScript::idFunction, "UnsetFlags", 1, nullptr},
+		{SID_VAR_SETUP, GiiScriptInterpreter::idFunction, "Setup", 1, nullptr},
+		{SID_VAR_ID, GiiScriptInterpreter::idConstant, "Id", 0, nullptr},
+		{SID_VAR_NAME, GiiScriptInterpreter::idFunction, "Name", 1, nullptr},
+		{SID_VAR_UNIT, GiiScriptInterpreter::idConstant, "Unit", 0, nullptr},
+		{SID_VAR_CUR, GiiScriptInterpreter::idVariable, "Cur", 0, nullptr},
+		{SID_VAR_CURSTR, GiiScriptInterpreter::idConstant, "CurStr", 0, nullptr},
+		{SID_VAR_RND, GiiScriptInterpreter::idConstant, "Rnd", 0, nullptr},
+		{SID_VAR_DEF, GiiScriptInterpreter::idConstant, "Def", 0, nullptr},
+		{SID_VAR_MIN, GiiScriptInterpreter::idConstant, "Min", 0, nullptr},
+		{SID_VAR_MAX, GiiScriptInterpreter::idConstant, "Max", 0, nullptr},
+		{SID_VAR_FLAGS, GiiScriptInterpreter::idVariable, "Flags", 0, nullptr},
+		{SID_VAR_ISFLAGS, GiiScriptInterpreter::idFunction, "IsFlags", 1, nullptr},
+		{SID_VAR_SETFLAGS, GiiScriptInterpreter::idFunction, "SetFlags", 1, nullptr},
+		{SID_VAR_UNSETFLAGS, GiiScriptInterpreter::idFunction, "UnsetFlags", 1, nullptr},
 	};
 
 const ScriptObject::IdInfo* TVarParamScriptObject::getInfo(const std::string& name) const
@@ -342,7 +342,7 @@ bool TVarParamScriptObject::getSetValue(const IdInfo* info, Value* value, Value:
 /**
  * Information object for importing and exporting TVariable.
  */
-struct InformationScript::GiiVariableInfo :TVarParamScriptObject, Variable
+struct GiiScriptInterpreter::GiiVariableInfo :TVarParamScriptObject, Variable
 {
 	// Constructor for import.
 	GiiVariableInfo(const char* name, long id);
@@ -366,14 +366,14 @@ struct InformationScript::GiiVariableInfo :TVarParamScriptObject, Variable
 	std::string ChangeLabel;
 };
 
-InformationScript::GiiVariableInfo::GiiVariableInfo(const char* name, long id)
+GiiScriptInterpreter::GiiVariableInfo::GiiVariableInfo(const char* name, long id)
 	:TVarParamScriptObject(this, "Variable", name, false), Variable(id, true)
 {
 	// Assign the pointer to the variable in the base class.
 	FVar = this;
 }
 
-InformationScript::GiiVariableInfo::GiiVariableInfo(const char* name, const std::string& definition)
+GiiScriptInterpreter::GiiVariableInfo::GiiVariableInfo(const char* name, const std::string& definition)
 	:TVarParamScriptObject(this, "Variable", name, true), Variable(definition)
 {
 	// Assign the pointer to the variable in the base class.
@@ -382,20 +382,20 @@ InformationScript::GiiVariableInfo::GiiVariableInfo(const char* name, const std:
 
 static ScriptObject::IdInfo VarObjInfo[] =
 	{
-		{SID_VAR_ON_VALUE, InformationScript::idVariable, "OnValue", 0, nullptr},
-		{SID_VAR_ON_FLAGS, InformationScript::idVariable, "OnFlags", 0, nullptr},
-		{SID_VAR_ON_ID, InformationScript::idVariable, "OnId", 0, nullptr},
-		{SID_VAR_SKIPEVENT, InformationScript::idVariable, "SkipEvent", 0, nullptr}
+		{SID_VAR_ON_VALUE, GiiScriptInterpreter::idVariable, "OnValue", 0, nullptr},
+		{SID_VAR_ON_FLAGS, GiiScriptInterpreter::idVariable, "OnFlags", 0, nullptr},
+		{SID_VAR_ON_ID, GiiScriptInterpreter::idVariable, "OnId", 0, nullptr},
+		{SID_VAR_SKIPEVENT, GiiScriptInterpreter::idVariable, "SkipEvent", 0, nullptr}
 	};
 
-const ScriptObject::IdInfo* InformationScript::GiiVariableInfo::getInfo(const std::string& name) const
+const ScriptObject::IdInfo* GiiScriptInterpreter::GiiVariableInfo::getInfo(const std::string& name) const
 {
 	for (auto& i: VarObjInfo)
 	{
 		if (i._name == name)
 		{
 			// Assign this pointer to info structure to reference owner of this member.
-			i._data = const_cast<InformationScript::GiiVariableInfo*>(this);
+			i._data = const_cast<GiiScriptInterpreter::GiiVariableInfo*>(this);
 			//
 			return &i;
 		}
@@ -405,7 +405,7 @@ const ScriptObject::IdInfo* InformationScript::GiiVariableInfo::getInfo(const st
 }
 
 bool
-InformationScript::GiiVariableInfo::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params,
+GiiScriptInterpreter::GiiVariableInfo::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params,
 	bool flagset)
 {
 	switch (info->_index)
@@ -473,7 +473,7 @@ InformationScript::GiiVariableInfo::getSetValue(const IdInfo* info, Value* value
 /**
  * Information object for importing and exporting TResultData.
  */
-struct InformationScript::GiiResultDataInfo :ScriptObject, ResultData
+struct GiiScriptInterpreter::GiiResultDataInfo :ScriptObject, ResultData
 {
 	// Constructor for import.
 	explicit GiiResultDataInfo(long id)
@@ -508,30 +508,30 @@ struct InformationScript::GiiResultDataInfo :ScriptObject, ResultData
 	}
 };
 
-static InformationScript::IdInfo ResObjInfo[] =
+static GiiScriptInterpreter::IdInfo ResObjInfo[] =
 	{
-		{SID_RES_ID, InformationScript::idConstant, "Id", 0, nullptr},
-		{SID_RES_NAME, InformationScript::idFunction, "Name", 1, nullptr},
-		{SID_RES_FLAGS, InformationScript::idConstant, "Flags", 0, nullptr},
-		{SID_RES_OFFSET, InformationScript::idConstant, "Offset", 0, nullptr},
-		{SID_RES_RANGE, InformationScript::idConstant, "Range", 0, nullptr},
-		{SID_RES_DATA, InformationScript::idFunction, "Data", 1, nullptr},
-		{SID_RES_REQUEST, InformationScript::idFunction, "Request", 2, nullptr},
-		{SID_RES_BLOCKCOUNT, InformationScript::idVariable, "BlockCount", 0, nullptr},
-		{SID_RES_ON_ID, InformationScript::idVariable, "OnId", 0, nullptr},
-		{SID_RES_ON_ACCESS, InformationScript::idVariable, "OnAccess", 0, nullptr},
-		{SID_RES_ON_CLEAR, InformationScript::idVariable, "OnClear", 0, nullptr},
-		{SID_RES_ON_GOTRANGE, InformationScript::idVariable, "OnGotRange", 0, nullptr},
+		{SID_RES_ID, GiiScriptInterpreter::idConstant, "Id", 0, nullptr},
+		{SID_RES_NAME, GiiScriptInterpreter::idFunction, "Name", 1, nullptr},
+		{SID_RES_FLAGS, GiiScriptInterpreter::idConstant, "Flags", 0, nullptr},
+		{SID_RES_OFFSET, GiiScriptInterpreter::idConstant, "Offset", 0, nullptr},
+		{SID_RES_RANGE, GiiScriptInterpreter::idConstant, "Range", 0, nullptr},
+		{SID_RES_DATA, GiiScriptInterpreter::idFunction, "Data", 1, nullptr},
+		{SID_RES_REQUEST, GiiScriptInterpreter::idFunction, "Request", 2, nullptr},
+		{SID_RES_BLOCKCOUNT, GiiScriptInterpreter::idVariable, "BlockCount", 0, nullptr},
+		{SID_RES_ON_ID, GiiScriptInterpreter::idVariable, "OnId", 0, nullptr},
+		{SID_RES_ON_ACCESS, GiiScriptInterpreter::idVariable, "OnAccess", 0, nullptr},
+		{SID_RES_ON_CLEAR, GiiScriptInterpreter::idVariable, "OnClear", 0, nullptr},
+		{SID_RES_ON_GOTRANGE, GiiScriptInterpreter::idVariable, "OnGotRange", 0, nullptr},
 	};
 
-const InformationScript::IdInfo* InformationScript::GiiResultDataInfo::getInfo(const std::string& name) const
+const GiiScriptInterpreter::IdInfo* GiiScriptInterpreter::GiiResultDataInfo::getInfo(const std::string& name) const
 {
 	for (auto& i:ResObjInfo)
 	{
 		if (i._name == name)
 		{
 			// Assign this pointer to info structure to reference owner of this member.
-			i._data = const_cast<InformationScript::GiiResultDataInfo*>(this);
+			i._data = const_cast<GiiScriptInterpreter::GiiResultDataInfo*>(this);
 			//
 			return &i;
 		}
@@ -539,7 +539,7 @@ const InformationScript::IdInfo* InformationScript::GiiResultDataInfo::getInfo(c
 	return getInfoUnknown();
 }
 
-bool InformationScript::GiiResultDataInfo::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params,
+bool GiiScriptInterpreter::GiiResultDataInfo::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params,
 	bool flagset)
 {
 	switch (info->_index)
@@ -692,16 +692,16 @@ bool InformationScript::GiiResultDataInfo::getSetValue(const IdInfo* info, Value
 	return true;
 }
 
-InformationScript::InformationScript()
-	:_varLink(this, &InformationScript::variableHandler)
-	 , _resLink(this, &InformationScript::resultDataHandler) {}
+GiiScriptInterpreter::GiiScriptInterpreter()
+	:_varLink(this, &GiiScriptInterpreter::variableHandler)
+	 , _resLink(this, &GiiScriptInterpreter::resultDataHandler) {}
 
-InformationScript::~InformationScript()
+GiiScriptInterpreter::~GiiScriptInterpreter()
 {
 	clear();
 }
 
-void InformationScript::clear()
+void GiiScriptInterpreter::clear()
 {
 	// Call overloaded function first.
 	ScriptInterpreter::clear();
@@ -719,7 +719,7 @@ void InformationScript::clear()
 	_resultDataInfoList.clear();
 }
 
-void InformationScript::linkInstruction()
+void GiiScriptInterpreter::linkInstruction()
 {
 	for (auto i: _variableInfoList)
 	{
@@ -742,7 +742,7 @@ void InformationScript::linkInstruction()
 	ScriptInterpreter::linkInstruction();
 }
 
-InformationScript::IdInfo InformationScript::_infoList[] =
+GiiScriptInterpreter::IdInfo GiiScriptInterpreter::_infoList[] =
 	{
 		// Functions
 		{SID_TIME, idFunction, "Time", 0, nullptr},
@@ -760,7 +760,7 @@ InformationScript::IdInfo InformationScript::_infoList[] =
 		{SID_VAR_EXPORT, idKeyword, "export", kwExternal, nullptr},
 	};
 
-std::string InformationScript::getInfoNames() const
+std::string GiiScriptInterpreter::getInfoNames() const
 {
 	// Call base class function first.
 	std::string s = ScriptInterpreter::getInfoNames();
@@ -794,7 +794,7 @@ std::string InformationScript::getInfoNames() const
 	return s;
 }
 
-const InformationScript::IdInfo* InformationScript::getInfo(const std::string& name) const
+const GiiScriptInterpreter::IdInfo* GiiScriptInterpreter::getInfo(const std::string& name) const
 {
 	for (auto& i: _infoList)
 	{
@@ -829,7 +829,7 @@ const InformationScript::IdInfo* InformationScript::getInfo(const std::string& n
 	return ScriptInterpreter::getInfo(name);
 }
 
-bool InformationScript::getSetValue(const InformationScript::IdInfo* info, Value* value, Value::vector_type* params,
+bool GiiScriptInterpreter::getSetValue(const GiiScriptInterpreter::IdInfo* info, Value* value, Value::vector_type* params,
 	bool flag_set)
 {
 	// Check if the ID is in our range if not let the base class handle the request.
@@ -989,7 +989,7 @@ bool InformationScript::getSetValue(const InformationScript::IdInfo* info, Value
 	return true;
 }
 
-InformationScript::GiiVariableInfo* InformationScript::_getVariableInfo(const std::string& name)
+GiiScriptInterpreter::GiiVariableInfo* GiiScriptInterpreter::_getVariableInfo(const std::string& name)
 {
 	for (auto i: _variableInfoList)
 	{
@@ -1002,7 +1002,7 @@ InformationScript::GiiVariableInfo* InformationScript::_getVariableInfo(const st
 	return nullptr;
 }
 
-bool InformationScript::compileAdditionalStatement(const InformationScript::IdInfo* info, const std::string& source)
+bool GiiScriptInterpreter::compileAdditionalStatement(const GiiScriptInterpreter::IdInfo* info, const std::string& source)
 {
 	if (info->_index > SID_GII_SCRIPT_START)
 	{
@@ -1074,7 +1074,7 @@ bool InformationScript::compileAdditionalStatement(const InformationScript::IdIn
 	return ScriptInterpreter::compileAdditionalStatement(info, source);
 }
 
-void InformationScript::variableHandler(Variable::EEvent event,
+void GiiScriptInterpreter::variableHandler(Variable::EEvent event,
 	const Variable& caller, Variable& link,	bool same_inst)
 {
 	(void) same_inst;
@@ -1119,7 +1119,7 @@ void InformationScript::variableHandler(Variable::EEvent event,
 	}
 }
 
-void InformationScript::resultDataHandler(ResultData::EEvent event,
+void GiiScriptInterpreter::resultDataHandler(ResultData::EEvent event,
 	const ResultData& caller, ResultData& link,	const Range& rng, bool same_inst)
 {
 	(void) same_inst;
@@ -1171,7 +1171,7 @@ void InformationScript::resultDataHandler(ResultData::EEvent event,
 	}
 }
 
-void InformationScript::exitFunction(EExitCode exitcode, const Value& value)
+void GiiScriptInterpreter::exitFunction(EExitCode exitcode, const Value& value)
 {
 	ScriptInterpreter::exitFunction(exitcode, value);
 }

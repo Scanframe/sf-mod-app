@@ -14,6 +14,7 @@ enum EColumn
 	cScriptState,
 	cBackground,
 	cShortcut,
+	cGlobal,
 	cFilename,
 	cMaxColumns
 };
@@ -54,6 +55,8 @@ QVariant ScriptManagerListModel::headerData(int section, Qt::Orientation orienta
 				return QString(tr("BkGnd"));
 			case cShortcut:
 				return QString(tr("Shortcut"));
+			case cGlobal:
+				return QString(tr("Global"));
 			case cFilename:
 				return QString(tr("Filename"));
 			default:
@@ -70,6 +73,8 @@ QVariant ScriptManagerListModel::headerData(int section, Qt::Orientation orienta
 				return CommonItemDelegate::etDropDownIndex;
 			case cShortcut:
 				return CommonItemDelegate::etShortcut;
+			case cGlobal:
+				return CommonItemDelegate::etDropDownIndex;
 			case cFilename:
 				return CommonItemDelegate::etDropDown;
 			default:
@@ -125,6 +130,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return QString(QMetaEnum::fromType<ScriptEntry::EBackgroundMode>().valueToKey(entry->getBackgroundMode())).remove(0, 2);
 			case cShortcut:
 				return entry->getKeySequence();
+			case cGlobal:
+				return entry->isGlobal() ? tr("Yes") : tr("No");
 			case cFilename:
 				return entry->getFilename();
 		}
@@ -142,6 +149,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->getBackgroundMode();
 			case cShortcut:
 				return entry->getKeySequence();
+			case cGlobal:
+				return entry->isGlobal();
 			case cFilename:
 				return entry->getFilename();
 		}
@@ -167,6 +176,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 			}
 			case cShortcut:
 				return entry->getKeySequence();
+			case cGlobal:
+				return QStringList({"No", "Yes"});
 			case cFilename:
 			{
 				QStringList files = _manager->getFilenames();
@@ -197,6 +208,9 @@ bool ScriptManagerListModel::setData(const QModelIndex& index, const QVariant& v
 				break;
 			case cShortcut:
 				entry->setKeySequence(value.value<QKeySequence>());
+				break;
+			case cGlobal:
+				entry->setGlobal(value.toBool());
 				break;
 			case cFilename:
 				entry->setFilename(value.toString());

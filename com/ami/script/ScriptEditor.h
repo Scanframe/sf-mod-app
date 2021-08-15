@@ -30,6 +30,17 @@ class ScriptEditor :public QWidget, public PlainTextEditMdi
 
 		void moveCursorToInstruction(int row);
 
+		bool loadFile(const QString& fileName) override;
+
+		/**
+		 * @brief Type definition for the callback closure.
+		 */
+		typedef TClosure<QSharedPointer<ScriptInterpreter>, const QString&> FindInterpreterClosure;
+		/**
+		 * @brief Holds a callback to find interpreter from the passed file.
+		 */
+		static FindInterpreterClosure callbackFindInterpreter;
+
 	public:
 		void onActionCompile();
 
@@ -44,6 +55,8 @@ class ScriptEditor :public QWidget, public PlainTextEditMdi
 		void onClickInstruction(const QModelIndex& index);
 
 		void stateSaveRestore(bool save) override;
+
+		void adjustColumns();
 
 		void develop() override;
 

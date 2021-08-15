@@ -58,6 +58,13 @@ ScriptHighlighter::ScriptHighlighter(ScriptInterpreter* script, QTextDocument* d
 		rule.pattern = QRegularExpression(QStringLiteral("[+-]?(?<![a-zA-Z_])([0-9]*[.])?[0-9]+([eE][+-]?[0-9]*)?"));
 		_rules.append(rule);
 	}
+	// Hexadecimal number values.
+	{
+		HighlightingRule rule;
+		rule.format.setForeground(dark_mode ? QColorConstants::Red.lighter() : QColorConstants::DarkRed);
+		rule.pattern = QRegularExpression(QStringLiteral("0[xX][0-9a-fA-F]+"));
+		_rules.append(rule);
+	}
 	// Type definitions.
 	{
 		HighlightingRule rule;
@@ -95,18 +102,18 @@ ScriptHighlighter::ScriptHighlighter(ScriptInterpreter* script, QTextDocument* d
 			_rules.append(rule);
 		}
 	}
-	// Single line comment.
-	{
-		HighlightingRule rule;
-		rule.format.setForeground(QColorConstants::Gray);
-		rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
-		_rules.append(rule);
-	}
 	// Double quoted strings.
 	{
 		HighlightingRule rule;
 		rule.format.setForeground(dark_mode ? QColorConstants::Green : QColorConstants::DarkGreen);
 		rule.pattern = QRegularExpression(QStringLiteral("\".*?(?<!\\\\)\""));
+		_rules.append(rule);
+	}
+	// Single line comment.
+	{
+		HighlightingRule rule;
+		rule.format.setForeground(QColorConstants::Gray);
+		rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
 		_rules.append(rule);
 	}
 	if (pte)

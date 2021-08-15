@@ -261,6 +261,14 @@ class TListener :private ListenerList::base_type
 					return rv;
 				}
 
+				/**
+				 * @brief Removes all listeners.
+				 */
+				void flush()
+				{
+					list.clear();
+				}
+
 			private:
 				/**
 				 * @brief List of weak pointers to an std::function.

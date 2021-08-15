@@ -13,6 +13,21 @@ ScriptAppModule::ScriptAppModule(const AppModuleInterface::Parameters& params)
 	addFileType(tr("Script file"), ScriptManager::getFileSuffix());
 	// Load the script manager configuration.
 	_scriptManager.settingsReadWrite(false);
+
+	ScriptEditor::callbackFindInterpreter = [&](const QString& filename) -> QSharedPointer<ScriptInterpreter>
+	{
+		if (auto entry = _scriptManager.getEntryByFilepath(filename))
+		{
+			return entry->getInterpreter();
+		}
+		return nullptr;
+	};
+}
+
+void ScriptAppModule::initialize()
+{
+	// Start all scripts.
+	_scriptManager.start();
 }
 
 QString ScriptAppModule::getName() const
@@ -44,7 +59,11 @@ void ScriptAppModule::openEditor(int index)
 		auto mdi = openFile(_scriptManager.getScriptFilePath(entry->getFilename()), this);
 		if (auto se = dynamic_cast<ScriptEditor*>(mdi))
 		{
-			se->setInterpreter(entry->getInterpreter());
+			// Skip when the same.
+			if (se->getScriptInterpreter() != entry->getInterpreter().get())
+			{
+				se->setInterpreter(entry->getInterpreter());
+			}
 		}
 	}
 }
@@ -60,8 +79,6 @@ MultiDocInterface* ScriptAppModule::createWidget(QWidget* parent) const
 	se->getEditor()->setConfiguration(_configuration);
 	return se;
 }
-
-
 
 }
 

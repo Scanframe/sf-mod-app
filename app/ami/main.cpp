@@ -22,10 +22,10 @@ int main(int argc, char* argv[])
 	QApplication::setDesktopSettingsAware(false);
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
+	// Set the instance to change the extension only.
+	fi.setFile(fi.absolutePath() + QDir::separator() + "config", fi.completeBaseName() + ".ini");
 	// Make settings file available through a property.
 	QApplication::instance()->setProperty("ConfigDir", fi.absolutePath());
-	// Set the instance to change the extension only.
-	fi.setFile(fi.absolutePath(), fi.completeBaseName() + ".ini");
 	// Create instance to handle settings.
 	ApplicationSettings app_settings;
 	// Set the file path to the settings instance.
@@ -41,7 +41,8 @@ int main(int argc, char* argv[])
 	auto settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, QApplication::instance());
 	//auto settings = new QSettings(QSettings::Scope::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	MainWindow win(settings);
-
+	// Call the modules' initialization method after construction.
+	win.initialize();
 	win.show();
 	// Open files from the command line after the window is shown otherwise the MDI dependent menu is not updated.
 	for (const QString& fileName: parser.positionalArguments())

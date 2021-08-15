@@ -30,9 +30,9 @@ set(LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets sf-misc)
 # Generic sources only STL dependent.
 set(SOURCES
 	global.h
-	QxtGlobalShortcut.cpp
-	QxtGlobalShortcut.h
-	QxtGlobalShortcutPrivate.h
+	GlobalShortcut.cpp
+	GlobalShortcut.h
+	GlobalShortcutPrivate.h
 	)
 
 if (NOT WIN32)
@@ -40,8 +40,8 @@ if (NOT WIN32)
 	find_package(OpenSSL REQUIRED)
 
 	set(SOURCES_LNX
-		#QxtGlobalShortcut_mac.cpp
-		QxtGlobalShortcut_x11.cpp
+		#GlobalShortcut_mac.cpp
+		GlobalShortcut_x11.cpp
 		)
 
 	list(APPEND SOURCES ${SOURCES_LNX})
@@ -49,14 +49,16 @@ if (NOT WIN32)
 
 else (NOT WIN32)
 
-	set(SOURCES_WIN QxtGlobalShortcut_win.cpp)
+	set(SOURCES_WIN GlobalShortcut_win.cpp)
 	list(APPEND SOURCES ${SOURCES_WIN})
 
 endif (NOT WIN32)
 
-
 # Add the library to create.
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+# Add include directory '~/lib/Qt/<qt-ver>/gcc_64/include/QtGui/<qt-ver>/QtGui'
+target_include_directories(${PROJECT_NAME} PRIVATE "${QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
@@ -74,7 +76,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
 # Tell the code the library is used as an archive. (So no imports or exports)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _IFACE_ARC)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE _GSC_ARC)
 
 # Tell the code the library is used as dynamic library. (So imports needed)
 target_compile_definitions(${PROJECT_NAME} PRIVATE _GSC_PKG)

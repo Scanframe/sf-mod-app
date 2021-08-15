@@ -154,6 +154,7 @@ AppModuleInterface::OpenFileClosure AppModuleInterface::callbackOpenFile;
 AppModuleInterface::AppModuleInterface(const AppModuleInterface::Parameters& parameters)
 	:QObject(parameters._parent)
 	 , _settings(parameters._settings)
+	 , _initialized(false)
 {
 }
 
@@ -171,6 +172,30 @@ void AppModuleInterface::instantiate(QSettings* settings, QObject* parent)
 			_map[name] = AppModuleInterface::Interface().create(nm, Parameters(settings, parent));
 		}
 	}
+}
+
+size_t AppModuleInterface::initializeInstances()
+{
+	size_t rv = 0;
+	for (auto i: _map.values())
+	{
+		// When not initialized skip it.
+		if (!i->_initialized)
+		{
+			// Set the initialization flag to prevent a second pass.
+			i->_initialized = true;
+			// Call possible overloaded method.
+			i->initialize();
+			// Increment the return value.
+			rv++;
+		}
+	}
+	return rv;
+}
+
+void AppModuleInterface::initialize()
+{
+	// Deliberately empty.
 }
 
 const AppModuleInterface::Map& AppModuleInterface::getMap()

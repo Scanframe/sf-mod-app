@@ -1010,6 +1010,8 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 
 		friend class ResultDataHandler;
 
+		friend class ResultDataReference;
+
 		friend class ResultDataStatic;
 };
 

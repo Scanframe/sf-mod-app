@@ -46,12 +46,6 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		explicit AppModuleInterface(const Parameters&);
 
 		/**
-		 * Gets if the instance has file handling types.
-		 *
-		 * @return True when handling file types.
-		 */
-		[[nodiscard]] bool hasFileTypes() const;
-		/**
 		 * @brief Virtual destructor for derived classes.
 		 */
 		~AppModuleInterface() override;
@@ -62,9 +56,11 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		static void instantiate(QSettings* settings, QObject* parent);
 
 		/**
-		 * @brief Adds module property pages to the passed sheet.
+		 * @brief Initializes all uninitialized instances.
+		 *
+		 * @return Amount of initialized instances.
 		 */
-		virtual void addPropertyPages(PropertySheetDialog* sheet) = 0;
+		static size_t initializeInstances();
 
 		/**
 		 * @brief Adds property pages from all modules to the passed sheet.
@@ -80,6 +76,11 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Gets the named module map.
 		 */
 		[[nodiscard]] static const Map& getMap();
+
+		/**
+		 * @brief Called when al modules are loaded or when a module added.
+		 */
+		virtual void initialize();
 
 		/**
 		 * @brief Gets the description of this instance.
@@ -99,6 +100,18 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Gets svg icon resource name and can be overridden to change the default.
 		 */
 		[[nodiscard]] virtual QString getSvgIconResource() const;
+
+		/**
+		 * @brief Adds module property pages to the passed sheet.
+		 */
+		virtual void addPropertyPages(PropertySheetDialog* sheet) = 0;
+
+		/**
+		 * Gets if the instance has file handling types.
+		 *
+		 * @return True when handling file types.
+		 */
+		[[nodiscard]] bool hasFileTypes() const;
 
 		/**
 		 * @brief Adds a file type handled by this instance.
@@ -212,6 +225,10 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Holds the file types serviced by this instance.
 		 */
 		QList<AppModuleFileType> _fileTypes;
+		/**
+		 * Holds the flag if the module has been initialized.
+		 */
+		bool _initialized;
 		/**
 		 * @brief Holds the instantiated module interfaces.
 		 */

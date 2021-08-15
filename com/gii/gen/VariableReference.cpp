@@ -47,30 +47,30 @@ void VariableReference::copy(const VariableReference& ref)
 
 VariableReference::~VariableReference()
 {
-	// If Variables are still referenced these must be removed first except if it is ZeroVariable itself.
+	// If Variables are still referenced these must be removed first except if it is Zero instance itself.
 	if (VariableStatic::zero()._reference == this)
 	{
 		// Qt Designer has something weird going on. Memory seems to be garbled.
 		if (!VariableStatic::_references->empty() && VariableStatic::_references->at(0) != this)
 		{
 			// Notification of warning
-			SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT, "Unexpected zero variable pointer not as first in list!");
+			SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT, "Unexpected Zero pointer not as first in list!");
 		}
 		else
 		{
-			// Check if there are still variables in the system when zero variable is destructed
+			// Check if there are still instances in the system when Zero instance is destructed
 			size_t total_count = 0;
-			// Iterate through all variable references and count the usage count
+			// Iterate through all references and count the usage count
 			for (auto ref: *VariableStatic::_references)
 			{
 				total_count += ref->_list.size();
 				// Notification of warning
-				// Check if current ref is the ZeroVariable reference.
+				// Check if current ref is the Zero instance reference.
 				if (ref == VariableStatic::zero()._reference)
 				{
-					// Iterate through each variable entry in the list.
+					// Iterate through each entry in the list.
 					size_type count = ref->_list.count();
-					// Skip the first one because there is always Zero Variable itself.
+					// Skip the first one because there is always Zero instance itself.
 					for (size_type idx = 1; idx < count; idx++)
 					{
 						if (ref->_list[idx])
@@ -93,12 +93,10 @@ VariableReference::~VariableReference()
 						": Dangling reference owning instance with ID 0x" << std::hex << ref->_id << " in this process!")
 				}
 			}
-			// Subtract 1 for zero variable itself. There should only be one left in the list
+			// Subtract 1 for zero instance itself. There should only be one left in the list.
 			total_count--;
 			// Notification of warning
-			SF_COND_RTTI_NOTIFY(total_count, DO_MSGBOX | DO_DEFAULT, "Total of " << total_count
-				<< " dangling Variable instances in this process!"
-			)
+			SF_COND_RTTI_NOTIFY(total_count, DO_MSGBOX | DO_DEFAULT, "Total of " << total_count << " dangling instances in this process!")
 		}
 	}
 	else
@@ -106,7 +104,7 @@ VariableReference::~VariableReference()
 		size_type count = _list.size();
 		while (count--)
 		{
-			// Attach variable to Zero which is the default and the invalid one
+			// Attach instance to Zero which is the default and the invalid one.
 			if (_list[count])
 			{
 				_list[count]->setup(0L, false);

@@ -2,7 +2,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QException>
-#include <gii/gen/InformationScript.h>
+#include <gii/gen/GiiScriptInterpreter.h>
 #include "ScriptManager.h"
 
 namespace sf
@@ -66,12 +66,12 @@ void ScriptEntry::setKeySequence(const QKeySequence& ks)
 	if (_keySequence != ks)
 	{
 		_keySequence = ks;
-		delete_null(_shortcut);
-		_shortcut = new QShortcut(ks, _manager->getShortcutParent(), [&]()
+		delete_null(_globalShortcut);
+		_globalShortcut = new GlobalShortcut(ks, _manager);
+		connect(_globalShortcut, &GlobalShortcut::activated, [&](GlobalShortcut* gsc)
 		{
 			_manager->shortcutActivated(this);
-		}, Qt::ApplicationShortcut);
-		_shortcut->setAutoRepeat(false);
+		});
 		_manager->setModified(this);
 	}
 }
@@ -100,6 +100,24 @@ QString ScriptEntry::getDisplayName() const
 		return QString::fromStdString(_interpreter->getScriptName());
 	}
 	return {"?"};
+}
+
+void ScriptEntry::setGlobal(bool global)
+{
+	if (this->_global != global)
+	{
+		_global = global;
+		if (_globalShortcut)
+		{
+			_globalShortcut->setGlobal(this->_global);
+			_manager->setModified(this);
+		}
+	}
+}
+
+bool ScriptEntry::isGlobal() const
+{
+	return this->_global;
 }
 
 QString ScriptEntry::getScriptName() const
@@ -202,6 +220,7 @@ void ScriptManager::settingsReadWrite(bool save)
 				_settings->setArrayIndex(index++);
 				_settings->setValue("DisplayName", entry->getDisplayName());
 				_settings->setValue("Shortcut", entry->getKeySequence().toString());
+				_settings->setValue("Global", entry->isGlobal());
 				_settings->setValue("Background", entry->getBackgroundMode());
 				_settings->setValue("Filename", entry->getFilename());
 			}
@@ -218,10 +237,11 @@ void ScriptManager::settingsReadWrite(bool save)
 		{
 			_settings->setArrayIndex(i);
 			auto entry = new ScriptEntry(this);
-			entry->setInterpreter(QSharedPointer<ScriptInterpreter>(new ScriptInterpreter()));
+			entry->setInterpreter(QSharedPointer<ScriptInterpreter>(new GiiScriptInterpreter()));
 			entry->setBackgroundMode(qvariant_cast<ScriptEntry::EBackgroundMode>(_settings->value("Background", entry->getBackgroundMode())));
 			entry->setDisplayName(_settings->value("DisplayName", QString("Script-%1").arg(i)).toString());
 			entry->setKeySequence(QKeySequence::fromString(_settings->value("Shortcut").toString()));
+			entry->setGlobal(_settings->value("Global").toBool());
 			entry->setFilename(_settings->value("Filename").toString());
 			_list.append(entry);
 		}
@@ -242,7 +262,7 @@ bool ScriptManager::isModified() const
 void ScriptManager::addAt(qsizetype index)
 {
 	auto entry = new ScriptEntry(this);
-	entry->setInterpreter(QSharedPointer<ScriptInterpreter>(new ScriptInterpreter));
+	entry->setInterpreter(QSharedPointer<ScriptInterpreter>(new GiiScriptInterpreter()));
 	entry->setScriptName("new");
 	// When index is less than zero append a new entry.
 	if (index < 0)
@@ -369,7 +389,6 @@ QStringList ScriptManager::getFilenames() const
 
 void ScriptManager::shortcutActivated(ScriptEntry* entry)
 {
-	qDebug() << __FUNCTION__ << entry->getDisplayName();
 	entry->getInterpreter()->callFunction("main", entry->getBackgroundMode() != ScriptEntry::bmNo);
 }
 
@@ -379,11 +398,16 @@ void ScriptManager::setModified(QObject* caller)
 	_modified = true;
 }
 
-QWidget* ScriptManager::getShortcutParent() const
+const ScriptEntry* ScriptManager::getEntryByFilepath(const QString& filepath)
 {
-	auto rv = QApplication::instance()->property("ShortcutParent").value<QWidget*>();
-	Q_ASSERT(rv);
-	return rv;
+	for (auto entry: _list)
+	{
+		if (filepath == getScriptFilePath(entry->getFilename()))
+		{
+			return entry;
+		}
+	}
+	return nullptr;
 }
 
 }

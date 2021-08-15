@@ -57,7 +57,7 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 		 *
 		 * @return True when at least a library was loaded.
 		 */
-		bool load();
+		size_t load();
 
 		/**
 		 * @brief Saves the module configuration to the settings.

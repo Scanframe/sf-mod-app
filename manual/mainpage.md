@@ -57,6 +57,10 @@ Unit conversion related functions and classes.
 * `::sf::TDynamicBuffer`
 * `::sf::TClassRegistration`
 
+### Miscellaneous Classes
+
+* `::sf::GlobalShortcut`
+
 ## Examples
 
 * [Variable Handler](sf-gii-Variable.html)

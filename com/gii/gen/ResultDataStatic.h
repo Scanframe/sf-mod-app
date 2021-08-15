@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ResultDataTypes.h"
+#include "ResultDataHandler.h"
+#include "ResultData.h"
 
 namespace sf
 {
@@ -48,7 +50,7 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		/**
 		 * @brief Static list to hold all references.
 		 */
-		static ReferenceVector _references;
+		static ReferenceVector* _references;
 		/**
 		 * @brief Array that holds information of the different types
 		 */

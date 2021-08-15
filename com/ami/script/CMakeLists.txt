@@ -14,8 +14,10 @@ find_package(SfCompiler CONFIG REQUIRED)
 _SetOutputDirs()
 
 # Uses directory Set by _SetOutputDirs().
+find_package(SfGsc REQUIRED)
 find_package(SfMisc REQUIRED)
 find_package(SfAmi REQUIRED)
+find_package(SfGii REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -37,7 +39,7 @@ add_library(${PROJECT_NAME} SHARED
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gii sf-ami)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gsc sf-gii sf-ami)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

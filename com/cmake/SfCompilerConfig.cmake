@@ -25,8 +25,10 @@ if (NOT DEFINED QT_DIRECTORY)
 	# since it weirdly keeps the previous selected CMAKE_PREFIX_PATH
 	if (WIN32)
 		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/mingw81_64")
+		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/mingw81_64/include")
 	else ()	
 		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/gcc_64")
+		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/gcc_64/include")
 	endif ()
 endif ()
 

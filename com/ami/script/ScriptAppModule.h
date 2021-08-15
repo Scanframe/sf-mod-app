@@ -15,6 +15,8 @@ class [[maybe_unused]] ScriptAppModule :public AppModuleInterface
 
 		explicit ScriptAppModule(const Parameters& params);
 
+		void initialize() override;
+
 		void addPropertyPages(PropertySheetDialog*) override;
 
 		[[nodiscard]] QString getName() const override;

@@ -10,9 +10,12 @@
 #include <misc/qt/ScriptModelList.h>
 #include <misc/qt/ScriptHighlighter.h>
 #include <misc/qt/Resource.h>
+#include <gii/gen/GiiScriptInterpreter.h>
 
 namespace sf
 {
+
+ScriptEditor::FindInterpreterClosure ScriptEditor::callbackFindInterpreter{};
 
 // Inherit from ListenerList to allow adding listeners for this class.
 struct ScriptEditor::ScriptEditor::Private :ListenerList
@@ -22,6 +25,12 @@ struct ScriptEditor::ScriptEditor::Private :ListenerList
 	{
 		_smlInstructions = new ScriptModelList(editor);
 		_smlVariables = new ScriptModelList(editor);
+	}
+
+	~Private()
+	{
+		// Prevent handling during destruction by deleting the listeners early.
+		flushListeners();
 	}
 
 	QSharedPointer<ScriptInterpreter> _interpreter{};
@@ -84,7 +93,7 @@ ScriptEditor::ScriptEditor(QSettings* settings, QWidget* parent)
 	ui->actionRun->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Run), QPalette::ColorRole::ButtonText, sz));
 	ui->actionStop->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Stop), QPalette::ColorRole::ButtonText, sz));
 	//
-	setInterpreter(QSharedPointer<ScriptInterpreter>(new ScriptInterpreter));
+	//setInterpreter(QSharedPointer<ScriptInterpreter>(new GiiScriptInterpreter()));
 }
 
 ScriptEditor::~ScriptEditor()
@@ -137,6 +146,24 @@ void ScriptEditor::updateStatus()
 	}
 }
 
+void ScriptEditor::adjustColumns()
+{
+	// Only resize columns when data is there.
+	if (!_p._interpreter->getInstructions().empty())
+	{
+		dynamic_cast<ScriptModelList*>(ui->tvInstructions->model())->refresh();
+		for (int i = 0; i < ui->tvInstructions->model()->columnCount(QModelIndex()) - 1; i++)
+		{
+			ui->tvInstructions->resizeColumnToContents(i);
+		}
+	}
+	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	for (int i = 0; i < ui->tvVariables->model()->columnCount(QModelIndex()) - 1; i++)
+	{
+		ui->tvInstructions->resizeColumnToContents(i);
+	}
+}
+
 void ScriptEditor::onActionCompile()
 {
 	if (!_p._interpreter)
@@ -150,26 +177,17 @@ void ScriptEditor::onActionCompile()
 		qWarning() << "Compile failed:" << _p._interpreter->getError() << _p._interpreter->getErrorReason();
 	}
 	//
-	dynamic_cast<ScriptModelList*>(ui->tvInstructions->model())->refresh();
-	for (int i = 0; i < ui->tvInstructions->model()->columnCount(QModelIndex()) - 1; i++)
-	{
-		ui->tvInstructions->resizeColumnToContents(i);
-	}
-	//
 	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	//
+	adjustColumns();
 }
 
 void ScriptEditor::onActionInitialize()
 {
-	if (!_p._interpreter)
+	if (_p._interpreter)
 	{
-		return;
-	}
-	_p._interpreter->Execute(ScriptInterpreter::emInit);
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
-	for (int i = 0; i < ui->tvVariables->model()->columnCount(QModelIndex()) - 1; i++)
-	{
-		ui->tvInstructions->resizeColumnToContents(i);
+		_p._interpreter->Execute(ScriptInterpreter::emInit);
+		adjustColumns();
 	}
 }
 
@@ -278,14 +296,8 @@ void ScriptEditor::setInterpreter(const QSharedPointer<ScriptInterpreter>& inter
 	_p._smlVariables->setInterpreter(_p._interpreter.get(), ScriptModelList::mVariables);
 	// Highlight the keywords and so on.
 	new ScriptHighlighter(_p._interpreter.get(), ui->pteSource->document());
-	// Only resize columns when data is there.
-	if (!_p._interpreter->getInstructions().empty())
-	{
-		for (int i = 0; i < ui->tvInstructions->model()->columnCount(QModelIndex()) - 1; i++)
-		{
-			ui->tvInstructions->resizeColumnToContents(i);
-		}
-	}
+	//
+	adjustColumns();
 	// Link the interpreter change events.
 	interpreter->getChangeEmitter().linkListener(&_p, [&](const ScriptInterpreter*)
 	{
@@ -295,11 +307,35 @@ void ScriptEditor::setInterpreter(const QSharedPointer<ScriptInterpreter>& inter
 	updateStatus();
 }
 
+bool ScriptEditor::loadFile(const QString& filename)
+{
+	// Converts relative file path into absolute.
+	QFileInfo fi (filename);
+	// Bailout when loading fails.
+	if (!PlainTextEditMdi::loadFile(fi.absoluteFilePath()))
+	{
+		// Signal failure.
+		return false;
+	}
+	// Check if closure is assigned.
+	if (callbackFindInterpreter)
+	{
+		// When a interpreter has been found.
+		if (auto interpreter = callbackFindInterpreter(fi.absoluteFilePath()))
+		{
+			// Assign the interpreter.
+			setInterpreter(interpreter);
+		}
+	}
+	// Signal success.
+	return true;
+}
+
 void ScriptEditor::develop()
 {
 //	if (!_p._interpreter)
 	{
-		auto i = new ScriptInterpreter;
+		auto i = new GiiScriptInterpreter();
 		i->setScriptName(userFriendlyCurrentFile().toStdString());
 		setInterpreter(QSharedPointer<ScriptInterpreter>(i));
 	}

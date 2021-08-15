@@ -18,6 +18,7 @@ struct VariableEditPrivate :QObject, VariableWidgetBasePrivate
 	QLabel* _labelName{nullptr};
 	QLineEdit* _editValue{nullptr};
 	QLabel* _labelUnit{nullptr};
+	int _nameLevel{-1};
 
 	static VariableEditPrivate* cast(VariableWidgetBasePrivate* data)
 	{
@@ -85,7 +86,8 @@ struct VariableEditPrivate :QObject, VariableWidgetBasePrivate
 			case veLinked:
 			case veIdChanged:
 				_editValue->setReadOnly(link_var.isReadOnly() || _readOnly);
-				_labelName->setText(QString::fromStdString(link_var.getName()));
+				_labelName->setText(QString::fromStdString(link_var.getName(_nameLevel)));
+				_labelUnit->setVisible(!!link_var.getUnit().length());
 				_labelUnit->setText(QString::fromStdString(link_var.getUnit()));
 				_editValue->setAlignment(Qt::AlignVCenter | (link_var.isNumber() ? Qt::AlignRight : Qt::AlignLeft));
 				_editValue->setText(QString::fromStdString(link_var.getCurString()));
@@ -101,7 +103,9 @@ struct VariableEditPrivate :QObject, VariableWidgetBasePrivate
 				break;
 
 			case veConverted:
-				_labelName->setText(QString::fromStdString(link_var.getName()));
+			case veUserPrivate:
+				_labelName->setText(QString::fromStdString(link_var.getName(_nameLevel)));
+				_labelUnit->setVisible(!!link_var.getUnit().length());
 				_labelUnit->setText(QString::fromStdString(link_var.getUnit()));
 				_editValue->setText(QString::fromStdString(link_var.getCurString()));
 				break;
@@ -195,6 +199,21 @@ void VariableEdit::setFocusFrame(bool yn)
 bool VariableEdit::hasFocusFrame() const
 {
 	return VariableEditPrivate::cast(_private)->_editValue->hasFrame();
+}
+
+int VariableEdit::nameLevel() const
+{
+	return VariableEditPrivate::cast(_private)->_nameLevel;
+}
+
+void VariableEdit::setNameLevel(int level)
+{
+	auto p = VariableEditPrivate::cast(_private);
+	if (	p->_nameLevel != level)
+	{
+		p->_nameLevel = level;
+		p->_variable.emitEvent(Variable::veUserPrivate);
+	}
 }
 
 }

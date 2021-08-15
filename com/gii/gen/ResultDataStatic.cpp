@@ -8,7 +8,7 @@ namespace sf
 
 ResultData* ResultDataStatic::_zero{nullptr};
 
-ResultData::ReferenceVector ResultDataStatic::_references;
+ResultData::ReferenceVector* ResultDataStatic::_references{nullptr};
 
 TVector<void*> ResultDataStatic::_deleteWaitCache;
 
@@ -65,6 +65,7 @@ void sf::ResultDataStatic::initialize(bool init)
 		{
 			// Reset the sequence ID counter.
 			ResultDataStatic::_uniqueIdCounter = 0;
+			_references = new ResultDataTypes::ReferenceVector;
 			// Call special private constructor to create the Zero instance.
 			new ResultData(nullptr, nullptr);
 		}
@@ -72,7 +73,7 @@ void sf::ResultDataStatic::initialize(bool init)
 	else
 	{
 		// Get the amount of references that still exist.
-		auto sz = _references.size();
+		auto sz = _references->size();
 		// Prevent deletion of zero before all other instances.
 		if (sz > 1)
 		{
@@ -80,7 +81,7 @@ void sf::ResultDataStatic::initialize(bool init)
 			// Skip the first one which is zero variable.
 			for (ReferenceVector::size_type i = 1; i < sz; i++)
 			{
-				auto k = _references.at(i);
+				auto k = _references->at(i);
 				os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 			}
 			SF_NORM_NOTIFY(DO_CERR, "ResulDataStatic::" << __FUNCTION__ << "(false) Unable to perform, ("
@@ -89,6 +90,8 @@ void sf::ResultDataStatic::initialize(bool init)
 		else
 		{
 			delete ResultDataStatic::_zero;
+			// Delete the reference vector.
+			delete_null(_references);
 		}
 	}
 }

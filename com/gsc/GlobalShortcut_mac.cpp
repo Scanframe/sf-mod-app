@@ -1,6 +1,6 @@
 #include <Carbon/Carbon.h>
 
-#include "QxtGlobalShortcutPrivate.h"
+#include "GlobalShortcutPrivate.h"
 #include <QMap>
 #include <QHash>
 #include <QtDebug>

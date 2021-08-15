@@ -30,7 +30,7 @@ class MainWindow :public QMainWindow
 
 		~MainWindow() override;
 
-		MultiDocInterface* openFile(const QString& fileName);
+		MultiDocInterface* openFile(const QString& filename);
 
 		QMdiArea* getMdiArea()
 		{
@@ -38,6 +38,8 @@ class MainWindow :public QMainWindow
 		}
 
 		void settingsReadWrite(bool save);
+
+		void initialize();
 
 	protected:
 		void dragEnterEvent(QDragEnterEvent* event) override;
@@ -91,7 +93,7 @@ class MainWindow :public QMainWindow
 
 		void createStatusBar();
 
-		MultiDocInterface* loadFile(const QString& fileName);
+		MultiDocInterface* loadFile(const QString& filename);
 
 		void prependToRecentFiles(const QString& filename);
 

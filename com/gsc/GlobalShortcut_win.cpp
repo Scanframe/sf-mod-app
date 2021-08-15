@@ -1,21 +1,49 @@
-#include "QxtGlobalShortcutPrivate.h"
+#include "GlobalShortcutPrivate.h"
 #include <qt_windows.h>
 
-bool QxtGlobalShortcutPrivate::nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result)
+namespace sf
+{
+
+bool GlobalShortcut::Private::EventFilter::nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result)
 {
 	Q_UNUSED(eventType);
 	Q_UNUSED(result);
 	MSG* msg = static_cast<MSG*>(message);
+	// When registered as a global hot key.
 	if (msg->message == WM_HOTKEY)
 	{
 		const quint32 keycode = HIWORD(msg->lParam);
 		const quint32 modifiers = LOWORD(msg->lParam);
-		activateShortcut(keycode, modifiers);
+		activateShortcut(keycode, modifiers, false);
+	}
+	// When as a local key down.
+	if (msg->message == WM_KEYDOWN || msg->message == WM_SYSKEYDOWN)
+	{
+		const quint32 keycode = msg->wParam;
+		quint32 modifiers = 0;
+		const auto flags = HIWORD(msg->lParam);
+		if (GetKeyState(VK_SHIFT) < 0)
+		{
+			modifiers |= MOD_SHIFT;
+		}
+		if (GetKeyState(VK_CONTROL) < 0)
+		{
+			modifiers |= MOD_CONTROL;
+		}
+		if (GetKeyState(VK_LWIN) < 0 || (GetKeyState(VK_RWIN) < 0))
+		{
+			modifiers |= MOD_WIN;
+		}
+		if (flags & KF_ALTDOWN)
+		{
+			modifiers |= MOD_ALT;
+		}
+		activateShortcut(keycode, modifiers, flags & KF_REPEAT);
 	}
 	return false;
 }
 
-quint32 QxtGlobalShortcutPrivate::nativeModifiers(Qt::KeyboardModifiers modifiers)
+quint32 GlobalShortcut::Private::nativeModifiers(Qt::KeyboardModifiers modifiers)
 {
 	// MOD_ALT, MOD_CONTROL, (MOD_KEYUP), MOD_SHIFT, MOD_WIN
 	quint32 native = 0;
@@ -41,7 +69,17 @@ quint32 QxtGlobalShortcutPrivate::nativeModifiers(Qt::KeyboardModifiers modifier
 	return native;
 }
 
-quint32 QxtGlobalShortcutPrivate::nativeKeycode(Qt::Key key)
+bool GlobalShortcut::Private::registerShortcut(quint32 nativeKey, quint32 nativeMods) // NOLINT(readability-make-member-function-const)
+{
+	return RegisterHotKey(nullptr, (int)(nativeMods ^ nativeKey), _autoRepeat ? nativeMods : nativeMods | MOD_NOREPEAT, nativeKey);
+}
+
+bool GlobalShortcut::Private::unregisterShortcut(quint32 nativeKey, quint32 nativeMods)
+{
+	return UnregisterHotKey(nullptr, (int)(nativeMods ^ nativeKey));
+}
+
+quint32 GlobalShortcut::Private::nativeKeycode(Qt::Key key)
 {
 	// Here is list of keys that presumably work on most keyboard layouts.
 	// Default branch is for keys that can change with keyboard layout.
@@ -161,23 +199,15 @@ quint32 QxtGlobalShortcutPrivate::nativeKeycode(Qt::Key key)
 
 		default:
 			// Try to get virtual key from current keyboard layout or US.
-			const HKL layout = GetKeyboardLayout(0);
+			HKL layout = GetKeyboardLayout(0);
 			int vk = VkKeyScanEx(key, layout);
 			if (vk == -1)
 			{
-				const HKL layoutUs = GetKeyboardLayout(0x409);
+				HKL layoutUs = GetKeyboardLayout(0x409);
 				vk = VkKeyScanEx(key, layoutUs);
 			}
 			return vk == -1 ? 0 : vk;
 	}
 }
 
-bool QxtGlobalShortcutPrivate::registerShortcut(quint32 nativeKey, quint32 nativeMods)
-{
-	return RegisterHotKey(0, nativeMods ^ nativeKey, nativeMods, nativeKey);
-}
-
-bool QxtGlobalShortcutPrivate::unregisterShortcut(quint32 nativeKey, quint32 nativeMods)
-{
-	return UnregisterHotKey(0, nativeMods ^ nativeKey);
 }

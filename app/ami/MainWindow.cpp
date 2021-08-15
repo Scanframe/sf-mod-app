@@ -20,8 +20,6 @@ MainWindow::MainWindow(QSettings* settings)
 {
 	// Set the object name for the getObjectNamePath() function so property sheet settings get a correct section assigned.
 	setObjectName("MainWindow");
-	// Set a property to be used as parent for shortcuts since an application shortcut needs a widget and not an object.
-	QApplication::instance()->setProperty("ShortcutParent", QVariant::fromValue(this));
 	// Title is the same as the application.
 	setWindowTitle(QApplication::applicationDisplayName());
 	//
@@ -69,6 +67,11 @@ MainWindow::MainWindow(QSettings* settings)
 MainWindow::~MainWindow()
 {
 	stateSaveRestore(true);
+}
+
+void MainWindow::initialize()
+{
+	AppModuleInterface::initializeInstances();
 }
 
 void MainWindow::stateSaveRestore(bool save)
@@ -141,23 +144,23 @@ void MainWindow::open()
 	}
 }
 
-MultiDocInterface* MainWindow::openFile(const QString& fileName)
+MultiDocInterface* MainWindow::openFile(const QString& filename)
 {
-	if (auto existing = findMdiChild(fileName))
+	if (auto existing = findMdiChild(filename))
 	{
 		_mdiArea->setActiveSubWindow(existing);
 		return dynamic_cast<MultiDocInterface*>(existing->widget());
 	}
-	return loadFile(fileName);
+	return loadFile(filename);
 }
 
-MultiDocInterface* MainWindow::loadFile(const QString& fileName)
+MultiDocInterface* MainWindow::loadFile(const QString& filename)
 {
-	auto child = createMdiChild(fileName);
+	auto child = createMdiChild(filename);
 	if (child)
 	{
 		auto widget = dynamic_cast<QWidget*>(child);
-		if (child->loadFile(fileName))
+		if (child->loadFile(filename))
 		{
 			statusBar()->showMessage(tr("File loaded"), 2000);
 			if (widget)
@@ -173,7 +176,7 @@ MultiDocInterface* MainWindow::loadFile(const QString& fileName)
 				widget->close();
 			}
 		}
-		MainWindow::prependToRecentFiles(fileName);
+		MainWindow::prependToRecentFiles(filename);
 		return child;
 	}
 	return nullptr;
@@ -596,11 +599,11 @@ void MainWindow::settingsReadWrite(bool save)
 {
 	// Load the missing modules from the configuration.
 	_moduleConfiguration->load();
-	//
+	// Use the module configuration settings instance.
 	auto settings = _moduleConfiguration->getSettings();
 	//
-	auto keyDisplayName = QString("DisplayName");
-	auto keyViewMode = QString("ViewMode");
+	const auto keyDisplayName = QString("DisplayName");
+	const auto keyViewMode = QString("ViewMode");
 	//
 	settings->beginGroup("Application");
 	if (save)
@@ -610,11 +613,9 @@ void MainWindow::settingsReadWrite(bool save)
 	}
 	else
 	{
-		QApplication::setApplicationDisplayName(
-			settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
-		_mdiArea->setViewMode(
-			clip(qvariant_cast<QMdiArea::ViewMode>(settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
-				QMdiArea::ViewMode::TabbedView));
+		QApplication::setApplicationDisplayName(settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
+		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
+			QMdiArea::ViewMode::TabbedView));
 	}
 	settings->endGroup();
 }

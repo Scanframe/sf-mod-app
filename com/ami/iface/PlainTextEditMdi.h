@@ -42,7 +42,7 @@ class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
 		void newFile() override;
 
 		// MultiDocInterface interface method.
-		bool loadFile(const QString& fileName) override;
+		bool loadFile(const QString& filename) override;
 
 		// MultiDocInterface interface method.
 		bool save() override;

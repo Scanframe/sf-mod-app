@@ -63,12 +63,13 @@ void sf::VariableStatic::initialize(bool init)
 			}
 			else
 			{
-				// Destructor sets the the '_zero' to null.
+				// Destructor sets the '_zero' to null.
 				delete VariableStatic::_zero;
 				// Delete the reference vector.
 				delete_null(_references);
 				// Delete the wait cache.
 				delete_null(_deleteWaitCache);
+				//
 				_globalActive = 0;
 			}
 		}

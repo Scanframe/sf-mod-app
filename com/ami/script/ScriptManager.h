@@ -5,6 +5,7 @@
 #include <QKeySequence>
 #include <QShortcut>
 #include <QWidget>
+#include <gsc/GlobalShortcut.h>
 #include <misc/gen/ScriptInterpreter.h>
 
 namespace sf
@@ -27,6 +28,9 @@ class ScriptManager :public QObject
 		 */
 		explicit ScriptManager(QSettings* settings, QObject* parent);
 
+		/**
+		 * @brief Overridden destructor.
+		 */
 		~ScriptManager() override;
 
 		/**
@@ -89,6 +93,11 @@ class ScriptManager :public QObject
 		 */
 		void setModified(QObject* caller);
 
+		/**
+		 * @brief Gets the entry pointer form the passed absolute file path.
+		 */
+		const ScriptEntry* getEntryByFilepath(const QString& filepath);
+
 	private:
 		/**
 		 * @brief Called by the  timer to run the background scripts.
@@ -120,11 +129,6 @@ class ScriptManager :public QObject
 		 * @brief Timer instance calling the backgroundRun() method regularly.
 		 */
 		QTimer* _timer{nullptr};
-
-		/**
-		 * @brief Shortcuts need a QWidget as parent otherwise a segmentation fault occurs.
-		 */
-		QWidget* getShortcutParent() const;
 
 		friend ScriptManagerListModel;
 		friend ScriptEntry;
@@ -211,6 +215,16 @@ class ScriptEntry :public QObject
 
 		[[nodiscard]] QString getStateName() const;
 
+		/**
+		 * @brief Sets the global shortcut global flag.
+		 */
+		[[nodiscard]] bool isGlobal() const;
+
+		/**
+		 * @brief Sets the global shortcut global flag.
+		 */
+		void setGlobal(bool);
+
 	private:
 		/**
 		 * @brief Name of the script file not the path.
@@ -229,11 +243,17 @@ class ScriptEntry :public QObject
 		 */
 		ScriptManager* _manager{nullptr};
 		/**
-		 * @brief Shortcut to execute the script.
+		 * @brief Shortcut key sequence to execute the script.
 		 */
 		QKeySequence _keySequence{};
-
-		QShortcut* _shortcut{nullptr};
+		/**
+		 * @brief Holds the global shortcut instance.
+		 */
+		GlobalShortcut* _globalShortcut{nullptr};
+		/**
+		 * @brief Holds teh shortcut global flag.
+		 */
+		bool _global{false};
 };
 
 }

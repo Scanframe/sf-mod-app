@@ -127,13 +127,13 @@ bool ResultData::recycleEnable(bool recycle)
 ResultData::size_type ResultData::getCount()
 {
 	// Return the actual count -1 because of the Zero reference.
-	return ResultDataStatic::_references.count() - 1;
+	return ResultDataStatic::_references->count() - 1;
 }
 
 ResultData::size_type ResultData::getTotalReservedSize()
 {
 	size_type rv = 0;
-	for (auto i: ResultDataStatic::_references)
+	for (auto i: *ResultDataStatic::_references)
 	{
 		rv += i->_data->getSize();
 	}
@@ -144,7 +144,7 @@ ResultData::size_type ResultData::getInstanceCount()
 {
 	unsigned count = 0;
 	// Iterate through all result references and count the usage count
-	for (auto i: ResultDataStatic::_references)
+	for (auto i: *ResultDataStatic::_references)
 	{
 		count += i->_list.count();
 	}
@@ -157,9 +157,9 @@ ResultData::Vector ResultData::getList()
 	// Return value.
 	ResultData::Vector rv;
 	// Set the vector to reserve the maximum expected size.
-	rv.reserve(ResultDataStatic::_references.size());
+	rv.reserve(ResultDataStatic::_references->size());
 	// Iterate through the references.
-	for (auto ref: ResultDataStatic::_references)
+	for (auto ref: *ResultDataStatic::_references)
 	{
 		// Only instance references which has id of zero.
 		if (ref->_id)
@@ -174,7 +174,7 @@ ResultDataReference* ResultData::getReferenceById(ResultDataTypes::id_type id)
 {
 	if (id)
 	{
-		for (auto ref: ResultDataStatic::_references)
+		for (auto ref: *ResultDataStatic::_references)
 		{
 			if (ref->_id == id && ref != ResultDataStatic::zero()._reference)
 			{
@@ -453,7 +453,7 @@ ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng
 	// Declare event list for instance pointers.
 	Vector ev_list;
 	// Iterate through all references.
-	for (auto ref: ResultDataStatic::_references)
+	for (auto ref: *ResultDataStatic::_references)
 	{
 		// Iterate through all instances attached of the reference.
 		for (auto rd: ref->_list)
@@ -484,7 +484,7 @@ ResultData::size_type ResultData::attachDesired()
 	// Signal other event handler functions are called using a global predefined list.
 	Vector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
-	for (auto ref: ResultDataStatic::_references)
+	for (auto ref: *ResultDataStatic::_references)
 	{
 		// Iterate through all instances of the reference.
 		for (auto res: ref->_list)
@@ -544,10 +544,10 @@ void ResultData::setHandler(ResultDataHandler* handler)
 void ResultData::removeHandler(ResultDataHandler* handler)
 {
 	// Iterate through all result references.
-	for (size_t i = 0; i < ResultDataStatic::_references.count(); i++)
+	for (size_t i = 0; i < ResultDataStatic::_references->count(); i++)
 	{
 		// Get the current result pointer.
-		ResultDataReference* ref = ResultDataStatic::_references[i];
+		ResultDataReference* ref = (*ResultDataStatic::_references)[i];
 		// Get the total amount of results attached to this reference.
 		size_t vrc = ref->_list.count();
 		// Iterate through the results.
@@ -670,7 +670,7 @@ std::string ResultData::getName(int levels) const
 	// Return full name path at levels equals zero.
 	std::string rv = _reference->_name;
 	auto len = rv.length();
-	// Check if levels is non zero.
+	// Check if levels is none zero.
 	if (levels)
 	{
 		if (levels > 0)
