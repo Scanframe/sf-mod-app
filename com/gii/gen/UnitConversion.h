@@ -1,7 +1,10 @@
 #pragma once
 
+#include <utility>
+
 #include "misc/gen/gen_utils.h"
 #include "misc/gen/TVector.h"
+#include "misc/gen/TClosure.h"
 
 #include "../global.h"
 
@@ -9,36 +12,48 @@ namespace sf
 {
 
 /**
+ * @brief Structure passed to handle unit conversions.
+ */
+struct UnitConversionEvent
+{
+	/**
+	 * @brief Constructor.
+	 */
+	UnitConversionEvent(std::string option, std::string from_unit, int from_precision,
+		double& multiplier, double& offset, std::string& to_unit, int& to_precision)
+		:_option(std::move(option)), _from_unit(std::move(from_unit)), _from_precision(from_precision)
+		 , _multiplier(multiplier), _offset(offset), _to_precision(to_precision), _to_unit(to_unit) {}
+
+	/** @brief Special conversion option code. */
+	std::string _option;
+	/** @brief current unit string. */
+	std::string _from_unit;
+	/** @brief  Decimals of current unit. (can be negative) */
+	int _from_precision;
+	/** @brief Multiplication factor. */
+	double& _multiplier;
+	/** @brief Offset value. */
+	double& _offset;
+	/** @brief New precision after conversion. */
+	std::string& _to_unit;
+	/** @brief New unit string. */
+	int& _to_precision;
+};
+
+/**
  * @brief Type of the server callback function.
  *
- * @param option Special conversion option code.
- * @param from_unit current unit string.
- * @param from_precision Decimals of current unit. (can be negative)
- * @param multiplier Multiplication factor.
- * @param offset Offset value.
- * @param to_unit New unit string.
- * @param to_precision New from_precision after conversion.
- * @return True on success.
+ * @return True on successful conversion.
  */
-typedef bool (* UnitConversionServerCallBack)
-	(
-		void* data,
-		const std::string& option,
-		const std::string& from_unit,
-		int from_precision,
-		double& multiplier,
-		double& offset,
-		std::string& to_unit,
-		int& to_precision
-	);
+typedef TClosure<bool, UnitConversionEvent&> UnitConversionServerClosure;
 
 /**
  * @brief Sets the callback function for a security server.
  *
- * @param func Callback function
- * @param data Pointer passed to the callback (mainly for 'this' pointer of implementation class instance)
+ * @param closure Callback closure.
  */
-_GII_FUNC void setUnitConversionHandler(UnitConversionServerCallBack func, void* data = nullptr);
+_GII_FUNC void setUnitConversionHandler(const UnitConversionServerClosure& closure = UnitConversionServerClosure());
+
 /**
  * @brief Returns true if a conversion could be made.
  * <br>
@@ -57,8 +72,7 @@ _GII_FUNC void setUnitConversionHandler(UnitConversionServerCallBack func, void*
  * @param to_precision New precision after conversion.
  * @return True on success.
  */
-_GII_FUNC bool
-getUnitConversion
+_GII_FUNC bool getUnitConversion
 	(
 		const std::string& option,
 		const std::string& from_unit,

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "VariableHandler.h"
-#include "VariableStatic.h"
 
 namespace sf
 {
@@ -260,7 +259,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * Sets a event handler for this variable, passing NULL wil disable the handler
 		 * @param handler Handler from conversion interface.
 		 */
-		void setConvertHandler(VariableHandler* handler);
+		static void setConvertHandler(VariableHandler* handler);
 
 		/**
 		 * @brief Returns the link to the global conversion handler.
@@ -396,8 +395,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param digits Significant digits for the new unit.
 		 * @return
 		 */
-		bool setConvertValues(const std::string& unit, const Value& multiplier,
-			const Value& offset, int digits = std::numeric_limits<int>::max());
+		bool setConvertValues(const std::string& unit, const Value& multiplier, const Value& offset, int digits = std::numeric_limits<int>::max());
 
 		/**
 		 * @brief Enables or disables unit conversion.
@@ -633,7 +631,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @brief Returns the state index of passed value when it exists.
 		 *
 		 * @param v Value to lookup.
-		 * @return Valid index and when it does not exist it "std::numeric_limits<size_type>::max()".
+		 * @return Valid index and when it does not exist it returns #npos.
 		 */
 		[[nodiscard]] size_type getState(const Value& v) const;
 

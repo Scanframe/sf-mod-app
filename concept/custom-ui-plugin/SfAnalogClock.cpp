@@ -19,6 +19,7 @@ AnalogClock::AnalogClock(QWidget* parent)
 
 bool AnalogClock::isRequiredProperty(const QString& name)
 {
+/*
 	static const char* keys[] = {
 		"geometry",
 		"toolTip",
@@ -31,6 +32,8 @@ bool AnalogClock::isRequiredProperty(const QString& name)
 	{
 		return name == prop;
 	});
+*/
+	return true;
 }
 
 void AnalogClock::paintEvent(QPaintEvent*)

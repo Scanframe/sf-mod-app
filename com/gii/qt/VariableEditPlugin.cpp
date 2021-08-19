@@ -44,17 +44,17 @@ QString VariableEditPlugin::group() const
 
 QIcon VariableEditPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString VariableEditPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString VariableEditPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool VariableEditPlugin::isContainer() const
@@ -88,7 +88,7 @@ QString VariableEditPlugin::domXml() const
   <property name="converted">
    <bool>false</bool>
   </property>
-  <property name="readonly">
+  <property name="readOnly">
    <bool>false</bool>
   </property>
  </widget>

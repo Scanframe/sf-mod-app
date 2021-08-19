@@ -1,6 +1,7 @@
 #include <misc/qt/PropertySheetDialog.h>
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
+#include "LayoutEditorPropertyPage.h"
 
 namespace sf
 {
@@ -21,13 +22,14 @@ QString LayoutEditorAppModule::getDescription() const
 	return tr("UI layout editor.");
 }
 
-void LayoutEditorAppModule::addPropertyPages(PropertySheetDialog*)
+void LayoutEditorAppModule::addPropertyPages(PropertySheetDialog* sheet)
 {
+	sheet->addPage(new LayoutEditorPropertyPage(*this, sheet));
 }
 
 MultiDocInterface* LayoutEditorAppModule::createWidget(QWidget* parent) const
 {
-	return new LayoutEditor(parent);
+	return new LayoutEditor(getSettings(), parent);
 }
 
 QString LayoutEditorAppModule::getLibraryFilename() const
@@ -38,6 +40,11 @@ QString LayoutEditorAppModule::getLibraryFilename() const
 QString LayoutEditorAppModule::getSvgIconResource() const
 {
 	return ":icon/svg/layout";
+}
+
+void LayoutEditorAppModule::settingsReadWrite(bool save)
+{
+
 }
 
 }

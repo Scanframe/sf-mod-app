@@ -1,11 +1,14 @@
 #include <string>
 #include <cstring>
-#include <cstdlib>
 
 #include "gen_utils.h"
 #include "IniProfile.h"
 
 namespace sf
+{
+
+// Anonymous namespace.
+namespace
 {
 
 std::istream& skip_empty_lines(std::istream& is)
@@ -57,9 +60,7 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 	return is;
 }
 
-//
-// IniProfile Members
-//
+}
 
 void IniProfile::initialize()
 {
@@ -72,7 +73,7 @@ IniProfile::IniProfile()
 }
 
 IniProfile::IniProfile(const std::string& path)
-:_path(path)
+	:_path(path)
 {
 	load(path);
 }
@@ -115,7 +116,7 @@ void IniProfile::flush()
 bool IniProfile::load(const std::string& path)
 {
 	// create 'std::istream' using Path member variable
-	if (sf::file_exists(path))
+	if (sf::fileExists(path))
 	{
 		std::ifstream is(path.c_str(), std::ios::in/*, filebuf::openprot*/);
 		load(is);
@@ -195,14 +196,24 @@ bool IniProfile::sync()
 std::string IniProfile::getSection(IniProfile::size_type p) const
 {
 	// return NULL if there are no section loaded at all
-	if (_sections.count())
+	if (!_sections.empty())
 	{ // check if 'p' has a valid value
-		if (p < _sections.count() || p == npos)
+		if (p < _sections.count() || p == npos && _sectionIndex != npos)
 		{
-			return _sections[(p == npos) ? _sectionIndex : p]->_name;
+			return _sections.at((p == npos) ? _sectionIndex : p)->_name;
 		}
 	}
 	return "";
+}
+
+strings IniProfile::getSections() const
+{
+	strings rv;
+	for (auto& s: _sections)
+	{
+		rv.append(s->_name);
+	}
+	return rv;
 }
 
 bool IniProfile::setSection(IniProfile::size_type index)
@@ -250,7 +261,12 @@ bool IniProfile::setSection(const std::string& section, bool create)
 	return false;
 }
 
-IniProfile::size_type  IniProfile::findEntry(const std::string& key)
+bool IniProfile::selectSection(const std::string& section) const
+{
+	return const_cast<IniProfile*>(this)->setSection(section, false);
+}
+
+IniProfile::size_type IniProfile::findEntry(const std::string& key)
 {
 	auto rv = _sections.count() ? _sections[_sectionIndex]->findEntry(key) : npos;
 	if (rv == npos)
@@ -266,17 +282,22 @@ IniProfile::size_type  IniProfile::findEntry(const std::string& key)
 
 bool IniProfile::getString(const std::string& key, std::string& value, const std::string& defaultString) const
 {
+	// Check if the section exists.
+	if (_sectionIndex == npos)
+	{
+		value = defaultString;
+		return false;
+	}
 	auto p = _sections[_sectionIndex]->findEntry(key);
 	if (p == npos)
 	{
-		// if not found, copy default std::string into the std::string and return false
-		// Check for valid buffer
+		// if not found, copy default into the value and return false
 		value = defaultString;
 		// Signal failure.
 		return false;
 	}
 	// Check for valid buffer
-	value = _sections[_sectionIndex]->_entries[p]->getValue();
+	value = _sections[_sectionIndex]->_entries[p]->_value;
 	// Signal success.
 	return true;
 }
@@ -293,7 +314,7 @@ int IniProfile::getInt(const std::string& key, int defaultInt) const
 	// check section entries
 	if (_sections.count())
 	{
-		auto value = _sections[_sectionIndex]->getEntry(key,"");
+		auto value = _sections[_sectionIndex]->getEntry(key, "");
 		return value.empty() ? defaultInt : std::stoi(value);
 	}
 	return defaultInt;
@@ -374,7 +395,8 @@ bool IniProfile::removeSection(IniProfile::size_type p)
 {
 	// check for valid parameters
 	if (p != npos && p < _sections.count())
-	{ // delete instance
+	{
+		// delete instance
 		delete_null(_sections[p]);
 		// remove from list
 		_sections.detachAt(p);
@@ -390,6 +412,30 @@ bool IniProfile::removeSection(IniProfile::size_type p)
 		// Set dirty flag
 		_dirty = true;
 		// return true on success
+		return true;
+	}
+	return false;
+}
+
+bool IniProfile::removeKeys(IniProfile::size_type section)
+{
+	// Check if current must be selected.
+	if (section == npos)
+	{
+		section = _sectionIndex;
+	}
+	// check for valid parameters
+	if (section < _sections.count())
+	{
+		// delete instance
+		for (auto e: _sections[section]->_entries)
+		{
+			delete e;
+		}
+		_sections[section]->_entries.clear();
+		// Set dirty flag
+		_dirty = true;
+		// Signal success.
 		return true;
 	}
 	return false;
@@ -465,7 +511,7 @@ std::ostream& IniProfile::Section::write(std::ostream& os) // NOLINT(readability
 std::string IniProfile::Section::getEntry(const std::string& key, const std::string& defValue)
 {
 	auto p = findEntry(key);
-	return (p == npos) ? defValue : _entries[p]->getValue();
+	return (p == npos) ? defValue : _entries[p]->_value;
 }
 
 int IniProfile::Section::setEntry(const std::string& key, const std::string& value)
@@ -478,7 +524,7 @@ int IniProfile::Section::setEntry(const std::string& key, const std::string& val
 		// if entry was found
 		if (p != npos)
 		{
-			if (_entries[p]->getValue() == value)
+			if (_entries[p]->_value == value)
 			{
 				// Signal no change made.
 				return 0;
@@ -493,7 +539,7 @@ int IniProfile::Section::setEntry(const std::string& key, const std::string& val
 				return 1;
 			}
 		}
-		// if not found
+			// if not found
 		else
 		{
 			// Add entry at the end of the section list
@@ -533,9 +579,9 @@ IniProfile::EntryVector::size_type IniProfile::Section::findEntry(const std::str
 	{
 		EntryVector::size_type idx = 0;
 		// Loop through entry list
-		for (auto& e: _entries)
+		for (auto e: _entries)
 		{
-			// Section name is case sensitive compared.
+			// Section name is case-sensitive compared.
 			if (e->_key == key)
 			{
 				// Return index in list
@@ -548,14 +594,14 @@ IniProfile::EntryVector::size_type IniProfile::Section::findEntry(const std::str
 	return npos;
 }
 
-bool IniProfile::Section::removeEntry(EntryVector::size_type p)
+bool IniProfile::Section::removeEntry(EntryVector::size_type index)
 { // check for valid parameters
-	if (p != npos && p < _entries.count())
+	if (index != npos && index < _entries.count())
 	{
 		// delete entry instance
-		delete_null(_entries[p]);
+		delete_null(_entries[index]);
 		// remove from list
-		_entries.detachAt(p);
+		_entries.detachAt(index);
 		// return true on success
 		return true;
 	}
@@ -579,7 +625,7 @@ bool IniProfile::Entry::setLine(const std::string& line)
 	if (!line.empty())
 	{
 		// Check if this line is NOT a comment line by checking the first character.
-		if (line.at(0) != ';'|| line.at(0) != '#')
+		if (line.at(0) != ';' && line.at(0) != '#')
 		{
 			// Get key value separator position in the line.
 			auto pos = line.find_first_of('=');
@@ -595,7 +641,7 @@ bool IniProfile::Entry::setLine(const std::string& line)
 				_value = line.substr(pos + 1, line.length());
 			}
 		}
-		// Comment line.
+			// Comment line.
 		else
 		{
 			_cmtFlag = true;
@@ -618,16 +664,6 @@ bool IniProfile::Entry::read(std::istream& is)
 	return is.good() && setLine(line);
 }
 
-const std::string& IniProfile::Entry::getKey()
-{
-	return _key;
-}
-
-const std::string& IniProfile::Entry::getValue()
-{
-	return _value;
-}
-
 IniProfile::size_type IniProfile::getEntryCount() const
 {
 	return _sections.count() ? _sections[_sectionIndex]->_entries.count() : 0;
@@ -636,13 +672,39 @@ IniProfile::size_type IniProfile::getEntryCount() const
 std::string IniProfile::getEntryKey(IniProfile::size_type p)
 {
 	Entry* entry = getEntry(p);
-	return entry ? entry->getKey() : std::string("");
+	return entry ? entry->_key : std::string();
+}
+
+strings IniProfile::getKeys(size_type section) const
+{
+	strings rv;
+	// Check if the current section is targeted.
+	if (section == npos)
+	{
+		// Assign the current in section index to be used.
+		section = _sectionIndex;
+	}
+	// Check if 'index' has a valid value
+	if (section < _sections.count())
+	{
+		// Iterate through the sections entries.
+		for (auto e: _sections.at(_sectionIndex)->_entries)
+		{
+			// Ignore comment lines.
+			if (!e->_cmtFlag)
+			{
+				// Append the
+				rv.append(e->_key);
+			}
+		}
+	}
+	return rv;
 }
 
 std::string IniProfile::getEntryValue(IniProfile::size_type p)
 {
 	Entry* entry = getEntry(p);
-	return entry ? entry->getValue() : "";
+	return entry ? entry->_value : std::string();
 }
 
 std::ostream& IniProfile::writeSection(std::ostream& os) const
@@ -677,6 +739,8 @@ bool IniProfile::setFilepath(const std::string& path)
 {
 	// Flush current entries.
 	flush();
+	// Assign the new file path.
+	_path = path;
 	// Load the file when it exists
 	return load(path);
 }
@@ -684,6 +748,32 @@ bool IniProfile::setFilepath(const std::string& path)
 const std::string& IniProfile::getFilepath() const
 {
 	return _path;
+}
+
+IniProfile::KeyValueMap IniProfile::getMap(IniProfile::size_type section) const
+{
+	IniProfile::KeyValueMap rv;
+	// Check if the current section is targeted.
+	if (section == npos)
+	{
+		// Assign the current in section index to be used.
+		section = _sectionIndex;
+	}
+	// Check if 'index' has a valid value
+	if (section < _sections.count())
+	{
+		// Iterate through the sections entries.
+		for (auto e: _sections.at(section)->_entries)
+		{
+			// Ignore comment lines.
+			if (!e->_cmtFlag)
+			{
+				// Append the
+				rv.insert(std::pair(e->_key, e->_value));
+			}
+		}
+	}
+	return rv;
 }
 
 std::ostream& IniProfile::Entry::write(std::ostream& os)
@@ -707,4 +797,4 @@ std::ostream& IniProfile::Entry::write(std::ostream& os)
 	return os;
 }
 
-} // namespace sf
+}

@@ -470,6 +470,15 @@ class _MISC_CLASS Value
 		 */
 		[[nodiscard]] std::string getString(int precision = std::numeric_limits<int>::max()) const;
 
+#if IS_QT
+		/**
+		 * @brief Easy conversion to QString.
+		 */
+		[[nodiscard]] QString getQString(int precision = std::numeric_limits<int>::max()) const
+		{
+			return QString::fromStdString(getString(precision));
+		}
+#endif
 		/**
 		 * @brief Rounds the current instance to a multiple of the passed value.
 		 * @param v Value to round.

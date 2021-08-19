@@ -382,13 +382,11 @@ std::string Value::getString(int precision) const
 
 		case vitInteger:
 		{
-			// Create buffer on stack.
-			char buf[std::numeric_limits<int_type>::max_digits10 + 1];
-			return itoa(_data._int, buf, 10);
+			return itostr(_data._int, 10);
 		}
 
 		case vitFloat:
-			if (precision != INT_MAX)
+			if (precision != std::numeric_limits<int>::max())
 			{
 				// Clip the precision
 				precision = clip(precision, 0, std::numeric_limits<flt_type>::digits10);
@@ -412,7 +410,7 @@ std::string Value::getString(int precision) const
 
 		case vitBinary:
 		case vitCustom:
-			return hexstring(_data._ptr, _size);
+			return hexString(_data._ptr, _size);
 
 	}// switch
 	return _invalidStr;
@@ -555,7 +553,7 @@ bool Value::setType(EType type)
 				// Create new buffer
 				_data._ptr = new char[_size + _sizeExtra];
 				// Convert hex std::string to binary data
-				if (stringhex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
+				if (stringHex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
 				{
 					// Clear all memory after conversion error
 					std::memset(_data._ptr, '\0', _size);
@@ -781,12 +779,12 @@ int Value::compare(const Value& v) const
 
 		case vitInvalid:
 		case vitUndefined:
-			// Return greater then when comparing an undefined value.
+			// Return greater than when comparing an undefined value.
 			return 1;
 
 		default:
-			// return INT_MAX if in comparable.
-			return INT_MAX;
+			// Return max integer when incomparable.
+			return std::numeric_limits<int>::max();
 	}// switch
 }
 

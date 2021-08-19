@@ -16,9 +16,18 @@ class _MISC_CLASS ScriptObject
 {
 	public:
 		/**
-		 * Type to pass to registered classes.
+		 * @brief Type to pass to registered classes.
 		 */
-		typedef ScriptObject* Parameters;
+		struct Parameters
+		{
+			explicit Parameters(Value::vector_type* arguments, ScriptObject* parent = nullptr)
+			:_parent(parent)
+			, _arguments(arguments)
+			{}
+			ScriptObject* _parent;
+			Value::vector_type* _arguments;
+		};
+
 		/**
 		 * @brief Source position type.
 		 */
@@ -75,10 +84,9 @@ class _MISC_CLASS ScriptObject
 		};
 
 		/**
-		 * Default constructor.
-		 * @param type_name
+		 * Constructor.
 		 */
-		explicit ScriptObject(const char* type_name);
+		explicit ScriptObject(const char* type_name, ScriptObject* parent = nullptr);
 
 		/**
 		 * @brief Virtual destructor which can be overloaded to clean up objects.
@@ -126,40 +134,47 @@ class _MISC_CLASS ScriptObject
 		/**
 		 * @brief Gets the script object owner.
 		 */
-		ScriptObject* getOwner()
+		ScriptObject* getParent()
 		{
-			return _owner;
+			return _parent;
 		}
 
-	protected:
 		/**
-		 * @brief Makes this object the owner of the other object.
+		 * @brief Gets the script object owner.
 		 */
-		void makeOwner(ScriptObject* obj)
+		const ScriptObject* getParent() const
 		{
-			obj->_owner = this;
+			return _parent;
 		}
 
-	protected:
 		/**
 		 * @brief Casts a #sf::Value::vitCustom typed #sf::Value to a #ScriptObject typed pointer.
 		 */
 		ScriptObject* castToObject(const Value& value);
 
+	protected:
+		/**
+		 * @brief Makes this object the owner of the other object.
+		 */
+		void makeParent(ScriptObject* so);
+		/**
+		 * @brief Sets the owner to the pass script object.
+		 */
+		void setParent(ScriptObject* parent);
+
 	private:
 		/**
-		 * Reference count for internal use to determine if this instance is to be deleted.
+		 * @brief Reference count for internal use to determine if this instance is to be deleted.
 		 */
 		int _refCount{0};
 		/**
-		 * Type name used in the script for debugging.
+		 * @brief Type name used in the script for debugging.
 		 */
 		const char* _typeName{nullptr};
 		/**
-		 * Script object which owns/created this instance.
-		 * Used to call labels of for events.
+		 * @brief Script object which owns/created this instance. Is used to call labels of for events.
 		 */
-		ScriptObject* _owner{nullptr};
+		ScriptObject* _parent{nullptr};
 
 		friend class ScriptInterpreter;
 

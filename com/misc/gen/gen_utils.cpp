@@ -32,7 +32,7 @@ std::string stringf(const char* fmt, ...)
 	return &buf[0];
 }
 
-std::string bittostring(unsigned long wrd, size_t count)
+std::string bitToString(unsigned long wrd, size_t count)
 {
 	std::string ret;
 	for (size_t i = 0; i < count; i++)
@@ -42,13 +42,13 @@ std::string bittostring(unsigned long wrd, size_t count)
 	return ret;
 }
 
-char hexcharvalue(char ch)
+char hexCharValue(char ch)
 {
 	ch = (char) ((isalpha(ch)) ? ch & (~(1 << 5)) : ch);
 	return (char) ((isalpha(ch)) ? ch - 'A' + 10 : ch - '0');
 }
 
-std::string hexstring(const void* array, size_t size)
+std::string hexString(const void* array, size_t size)
 {
 	// look up table for hex characters
 	const char* hexval = "0123456789abcdef";
@@ -64,7 +64,7 @@ std::string hexstring(const void* array, size_t size)
 	return buffer;
 }
 
-size_t stringhex(const char* hexstr, void* buffer, size_t size)
+size_t stringHex(const char* hexstr, void* buffer, size_t size)
 {
 	// Check valid pointers.
 	if (!hexstr || !buffer)
@@ -92,14 +92,14 @@ size_t stringhex(const char* hexstr, void* buffer, size_t size)
 	{
 		for (unsigned i = 0; i < chars; i += 2)
 		{
-			((char*) buffer)[i / 2] = (char) ((hexcharvalue(hexstr[i]) << 4) + hexcharvalue(hexstr[i + 1]));
+			((char*) buffer)[i / 2] = (char) ((hexCharValue(hexstr[i]) << 4) + hexCharValue(hexstr[i + 1]));
 		}
 	}
 	// Return the number of returned bytes.
 	return chars / 2;
 }
 
-std::string do_escaping(const std::string& str, bool reverse = false, char delimiter = '\0')
+std::string doEscaping(const std::string& str, bool reverse = false, char delimiter = '\0')
 {
 	std::string rv;
 	// create conversion table
@@ -145,7 +145,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 				// Add the delimiter character as a hexadecimal 2 character code.
 				rv += '\\';
 				rv += 'x';
-				rv += hexstring(str.c_str() + i, 1);
+				rv += hexString(str.c_str() + i, 1);
 			}
 			else
 			{
@@ -173,7 +173,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 						// Add the character as a hexadecimal 2 character code.
 						rv += '\\';
 						rv += 'x';
-						rv += hexstring(str.c_str() + i, 1);
+						rv += hexString(str.c_str() + i, 1);
 					}
 					else
 					{
@@ -222,7 +222,7 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 						{
 							// convert next 2 characters in the std::string to a binary character.
 							char ch;
-							if (stringhex(str.c_str() + i, &ch, 1))
+							if (stringHex(str.c_str() + i, &ch, 1))
 							{
 								// On success add the character
 								rv += ch;
@@ -263,12 +263,12 @@ std::string do_escaping(const std::string& str, bool reverse = false, char delim
 
 std::string escape(const std::string& str, char delimiter)
 {
-	return do_escaping(str, false, delimiter);
+	return doEscaping(str, false, delimiter);
 }
 
 std::string unescape(const std::string& str)
 {
-	return do_escaping(str, true);
+	return doEscaping(str, true);
 }
 
 std::string filter(std::string s, const std::string& filter)
@@ -340,51 +340,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 	return !*wild;
 }
 
-std::string implode(strings strs, std::string glue, bool skip_empty) // NOLINT(performance-unnecessary-value-param)
-{
-	std::string retval;
-	strings_iter i(strs);
-	while (i)
-	{
-		if (retval.length() || !skip_empty)
-		{
-			retval += glue;
-		}
-		retval += (i++);
-	}
-	return retval;
-}
-
-strings explode(const std::string& str, const std::string& separator, bool skip_empty)
-{
-	strings result;
-	size_t ofs = 0, found = str.find_first_of(separator, ofs);
-	if (found != std::string::npos)
-	{
-		do
-		{
-			result.push_back(str.substr(ofs, found - ofs));
-			//
-			ofs = skip_empty ? str.find_first_not_of(separator, found) : (found + 1);
-			if (ofs == std::string::npos)
-			{
-				break;
-			}
-			//
-			found = str.find_first_of(separator, ofs);
-		}
-		while (found != std::string::npos);
-	}
-	//
-	if (str.length() > ofs)
-	{
-		result.push_back(str.substr(ofs, str.length()));
-	}
-	//
-	return result;
-}
-
-std::string getline(std::istream& is)
+std::string getLine(std::istream& is)
 {
 	const size_t sz = 4096;
 	char* buf = (char*) malloc(sz);
@@ -453,7 +409,7 @@ std::string demangle(const char* name)
 	return rv;
 }
 
-timespec gettime()
+timespec getTime()
 {
 	timespec ct{};
 	if (clock_gettime(CLOCK_REALTIME, &ct))
@@ -463,7 +419,7 @@ timespec gettime()
 	return ct;
 }
 
-int timespeccmp(const timespec& ts1, const timespec& ts2)
+int timespecCompare(const timespec& ts1, const timespec& ts2)
 {
 	if (ts1.tv_sec > ts2.tv_sec)
 	{  // NOLINT(bugprone-branch-clone)
@@ -485,7 +441,7 @@ int timespeccmp(const timespec& ts1, const timespec& ts2)
 	return 0;
 }
 
-std::string tolower(std::string s)
+std::string toLower(std::string s)
 {
 	// Make the data pointer accessible.
 	char* p = const_cast<char*>(s.data());
@@ -499,7 +455,7 @@ std::string tolower(std::string s)
 	return s;
 }
 
-std::string toupper(std::string s)
+std::string toUpper(std::string s)
 {
 	// Make the data pointer accessible.
 	char* p = const_cast<char*>(s.data());
@@ -513,24 +469,24 @@ std::string toupper(std::string s)
 	return s;
 }
 
-std::string trim_right(std::string s, const std::string& t)
+std::string trimRight(std::string s, const std::string& t)
 {
 	return s.erase(s.find_last_not_of(t) + 1);
 }
 
-std::string trim_left(std::string s, const std::string& t)
+std::string trimLeft(std::string s, const std::string& t)
 {
 	return s.erase(0, s.find_first_not_of(t));
 }
 
 std::string trim(std::string s, const std::string& t)
 {
-	return trim_left(trim_right(std::move(s), t), t);
+	return trimLeft(trimRight(std::move(s), t), t);
 }
 
 std::string unique(const std::string& s)
 {
-	return std::string(s.c_str(), s.length());
+	return {s.c_str(), s.length()};
 }
 
 size_t strncspn(const char* s, size_t n, const char* reject)
@@ -594,8 +550,7 @@ const char* strnstr(const char* s, const char* find, size_t n)
 	return (char*) s;
 }
 
-bool
-getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
+bool getFiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
 {
 	DIR* dp;
 	dirent* dirp;
@@ -624,17 +579,17 @@ getfiles(strings& files, std::string directory, std::string wildcard) // NOLINT(
 	return true;
 }
 
-std::string file_basename(const std::string& path)
+std::string fileBaseName(const std::string& path)
 {
 	return ::basename(const_cast<char*>(sf::unique(path).c_str()));
 }
 
-std::string file_dirname(const std::string& path)
+std::string fileDirName(const std::string& path)
 {
 	return ::dirname(const_cast<char*>(sf::unique(path).c_str()));
 }
 
-bool file_unlink(const std::string& path)
+bool fileUnlink(const std::string& path)
 {
 	if (::unlink(path.c_str()) == -1)
 	{
@@ -644,9 +599,9 @@ bool file_unlink(const std::string& path)
 	return true;
 }
 
-bool file_rename(const std::string& old_path, const std::string& new_path)
+bool fileRename(const std::string& old_path, const std::string& new_path)
 {
-	if (::rename(old_path.c_str(), new_path.c_str()) == -1)
+	if (std::rename(old_path.c_str(), new_path.c_str()) == -1)
 	{
 		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << strerror(errno))
 		return false;
@@ -654,14 +609,14 @@ bool file_rename(const std::string& old_path, const std::string& new_path)
 	return true;
 }
 
-bool file_exists(const char* path)
+bool fileExists(const char* path)
 {
-	return !access(path, F_OK);
+	return !::access(path, F_OK);
 }
 
-bool file_find(sf::strings& files, const std::string& path)
+bool fileFind(sf::strings& files, const std::string& path)
 {
-	return sf::getfiles(files, file_dirname(path), file_basename(path));
+	return sf::getFiles(files, fileDirName(path), fileBaseName(path));
 }
 
 } // namespace

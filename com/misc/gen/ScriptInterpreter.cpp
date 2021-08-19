@@ -38,10 +38,13 @@ namespace sf
 #define SID_FOCUSWINDOW  (SID_COMPILER_START -19)
 #define SID_TRACE        (SID_COMPILER_START -20)
 #define SID_GETUSERNAME  (SID_COMPILER_START -21)
-#define SID_CREATEOBJECT (SID_COMPILER_START -22)
+#define SID_CREATE       (SID_COMPILER_START -22)
+#define SID_TIME         (SID_COMPILER_START -23)
+#define SID_DATE         (SID_COMPILER_START -24)
 
 // Timeout value for script when not in stepping mode. 10 seconds for debugging purposes.
-#define SCRIPT_TIMEOUT 10000000
+//#define SCRIPT_TIMEOUT 10000000
+#define SCRIPT_TIMEOUT 1000000000
 
 ScriptInterpreter::ScriptInterpreter()
 	:ScriptEngine()
@@ -82,8 +85,8 @@ ScriptInterpreter::IdInfo ScriptInterpreter::_info[] =
 	{
 		// Functions
 		{SID_EXIT, idFunction, "exit", 1, nullptr},
-		{SID_PRINT, idFunction, "print", INT_MAX, nullptr},
-		{SID_LOG, idFunction, "writelog", INT_MAX, nullptr},
+		{SID_PRINT, idFunction, "print", std::numeric_limits<int>::max(), nullptr},
+		{SID_LOG, idFunction, "writelog", std::numeric_limits<int>::max(), nullptr},
 		{SID_BEEP, idFunction, "beep", 2, nullptr},
 		{SID_CLOCK, idFunction, "clock", 1, nullptr},
 		{SID_SPEAK, idFunction, "speak", 2, nullptr},
@@ -101,7 +104,9 @@ ScriptInterpreter::IdInfo ScriptInterpreter::_info[] =
 		{SID_GETCONFIGDIR, idConstant, "configdir", 1, nullptr},
 		{SID_FOCUSWINDOW, idFunction, "focuswindow", 1, nullptr},
 		{SID_TRACE, idFunction, "trace", 1, nullptr},
-		{SID_CREATEOBJECT, idFunction, "createobject", 1, nullptr},
+		{SID_CREATE, idFunction, "Create", -1, nullptr},
+		{SID_TIME, idFunction, "Time", 0, nullptr},
+		{SID_DATE, idFunction, "Date", 0, nullptr},
 		// Keywords. (do not need speed index)
 		{0, idKeyword, "if", kwIf, nullptr},
 		{0, idKeyword, "while", kwWhile, nullptr},
@@ -114,16 +119,14 @@ ScriptInterpreter::IdInfo ScriptInterpreter::_info[] =
 		{0, idKeyword, "extern", kwExtern, nullptr},
 	};
 
-std::string ScriptInterpreter::getInfoNames() const
+strings ScriptInterpreter::getInfoNames() const
 {
-	std::string s = ScriptEngine::getInfoNames();
-	// Find the name of the identifier.
-	for (auto& i: _info)
+	strings rv = ScriptEngine::getInfoNames();
+	for (auto& i : _info)
 	{
-		s += i._name;
-		s += "\n";
+		rv.add(i._name);
 	}
-	return s;
+	return rv;
 }
 
 const ScriptInterpreter::IdInfo* ScriptInterpreter::getInfo(const std::string& name) const
@@ -669,16 +672,40 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_CREATEOBJECT:
+			case SID_CREATE:
 			{
-				// Create a registered object.
-				ScriptObject* obj = Interface().create((*params)[0].getString(), this);
-				// Store the pointer into value as a custom value.
+				auto type_name = (*params)[0].getString();
+				// Remove the type name from the passed arguments.
+				params->detachAt(0);
+				// Find script object by the passed type name.
+				auto obj = ScriptObject::Interface().create(type_name, ScriptObject::Parameters(params, this));
+				// Return the pointer to the derived class.
 				result->set(Value::vitCustom, &obj, sizeof(&obj));
+				//
 				if (!obj)
 				{
-					SF_RTTI_NOTIFY(DO_DEFAULT, "Script object with name '" << (*params)[0].getString() << "' does not exist!");
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Script object with name '" << type_name << "' does not exist!");
 				}
+				break;
+			}
+
+			case SID_TIME:
+			{
+				char buf[80];
+				time_t now = time(nullptr);
+				struct tm local = *localtime(&now);
+				strftime(buf, sizeof(buf), "%Y-%m-%d", &local);
+				result->set(buf);
+				break;
+			}
+
+			case SID_DATE:
+			{
+				char buf[80];
+				time_t now = time(nullptr);
+				struct tm local = *localtime(&now);
+				strftime(buf, sizeof(buf), "%X", &local);
+				result->set(buf);
 				break;
 			}
 

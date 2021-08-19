@@ -14,6 +14,7 @@ make C++ programming easier.
 #include <random>
 #include <sys/types.h>
 #include "TVector.h"
+#include "TStrings.h"
 #include "TDynamicBuffer.h"
 // Import of shared library export defines.
 #include "../global.h"
@@ -22,8 +23,8 @@ namespace sf
 {
 
 /**
-* Calculates the offset for a given range and Set point.
-*/
+ * @brief Calculates the offset for a given range and Set point.
+ */
 template<class T, class S>
 inline
 S calc_offset(T value, T min, T max, S len, bool clip)
@@ -36,8 +37,8 @@ S calc_offset(T value, T min, T max, S len, bool clip)
 }
 
 /**
-* Return clipped value of v between a and b where a < b.
-*/
+ * @brief Return clipped value of v between a and b where a < b.
+ */
 template<class T>
 T clip(const T v, const T a, const T b)
 {
@@ -45,11 +46,11 @@ T clip(const T v, const T a, const T b)
 }
 
 /**
-* Deletes object and clears pointer
-*
-* Defines and templates for deleting allocated memory and
-* testing for zero and clearing the pointer at the same time.
-*/
+ * @brief Deletes object and clears pointer
+ *
+ * Defines and templates for deleting allocated memory and
+ * testing for zero and clearing the pointer at the same time.
+ */
 template<class T>
 inline void delete_null(T& p)
 {
@@ -83,7 +84,8 @@ void free_null(T& p)
 }
 
 /**
- * Swaps the to passed values.
+ * @brief Swaps the to passed values.
+ *
  * @tparam T Type that is swapped
  * @param t1 Parameter 1 of type
  * @param t2 Parameter 2 of type
@@ -131,7 +133,7 @@ class scope_free
 _MISC_FUNC std::string stringf(const char* fmt, ...);
 
 /**
- * Better implementation of 'stringf' ?
+ * @brief Better implementation of 'stringf' ?
  */
 template<typename ... Args>
 std::string string_format(const std::string& format, Args ... args)
@@ -145,28 +147,29 @@ std::string string_format(const std::string& format, Args ... args)
 }
 
 /**
- * converts a integer value to bit string '0' and '1' characters
+ * @brief Converts a integer value to bit string '0' and '1' characters
  * where the first character is the first bit
  */
-_MISC_FUNC std::string bittostring(unsigned long wrd, size_t count);
+_MISC_FUNC std::string bitToString(unsigned long wrd, size_t count);
 
 /**
  *  Returns numeric the value of the passed hexadecimal character
  */
-_MISC_FUNC char hexcharvalue(char ch);
+_MISC_FUNC char hexCharValue(char ch);
 
 /**
- * Converts a hexadecimal string to a block of data
+ * @brief Converts a hexadecimal string to a block of data
  */
-_MISC_FUNC size_t stringhex(const char* hexstr, void* buffer, size_t sz);
+_MISC_FUNC size_t stringHex(const char* hexstr, void* buffer, size_t sz);
 
 /**
- * Converts a block of data to a hexadecimal string
+ * @brief Converts a block of data to a hexadecimal string
  */
-_MISC_FUNC std::string hexstring(const void* buffer, size_t sz);
+_MISC_FUNC std::string hexString(const void* buffer, size_t sz);
 
 /**
- * Escapes all control and non ascii characters.
+ * @brief Escapes all control and non ascii characters.
+ *
  * @see unescape()
  * @param str String to be escaped.
  * @param delimiter Character delimiting the escaped string.
@@ -174,7 +177,8 @@ _MISC_FUNC std::string hexstring(const void* buffer, size_t sz);
  */
 _MISC_FUNC std::string escape(const std::string& str, char delimiter = '\0');
 /**
- * Unescapes the passed string escaped by the escape() function.
+ * @brief Unescapes the passed string escaped by the escape() function.
+ *
  * @see escape()
  * @param str Input string
  * @return Unescaped string
@@ -182,33 +186,19 @@ _MISC_FUNC std::string escape(const std::string& str, char delimiter = '\0');
 _MISC_FUNC std::string unescape(const std::string& str);
 
 /**
- * Filters all characters from the passed string and returns the resulting string.
+ * @brief Filters all characters from the passed string and returns the resulting string.
  */
 _MISC_FUNC std::string filter(std::string str, const std::string& filter);
 
 /**
-* Counted vector of strings.
-*/
-typedef TVector<std::string> strings;
-
-/**
-* Counted vector iterator of strings.
-*/
-typedef TIterator<std::string> strings_iter;
-/**
- * Implodes a string list into a single string.
+ * @brief Vector of std::strings with additional purks.
  */
-_MISC_FUNC std::string implode(strings strs, std::string glue, bool skip_empty = false);
-/**
- * Explodes the passed string into a strings using the separator.
- * When skip_empty is true empty strings are ignored.
- */
-_MISC_FUNC strings explode(const std::string& str, const std::string& separator, bool skip_empty = false);
+typedef TStrings<std::string, std::string::value_type> strings;
 
 /**
  * Return a line from the input stream.
  */
-_MISC_FUNC std::string getline(std::istream& is);
+_MISC_FUNC std::string getLine(std::istream& is);
 
 _MISC_FUNC std::string::value_type getDirectorySeparator();
 /**
@@ -230,7 +220,7 @@ _MISC_FUNC std::string getExecutableName();
 /**
  * Returns the timespec as function return value as clock_gettime().
  */
-_MISC_FUNC timespec gettime();
+_MISC_FUNC timespec getTime();
 /**
  * Returns the unmangled function name returned by type ID.
  */
@@ -239,15 +229,15 @@ _MISC_FUNC std::string demangle(const char* name);
  * Compares the 2 times.
  * Returns -1, 0, 1 respectively for smaller, equal en larger.
  */
-_MISC_FUNC int timespeccmp(const timespec& ts1, const timespec& ts2);
+_MISC_FUNC int timespecCompare(const timespec& ts1, const timespec& ts2);
 /**
  * Converts the passed string into a lower case one and returns it.
  */
-_MISC_FUNC std::string tolower(std::string s);
+_MISC_FUNC std::string toLower(std::string s);
 /**
  * Converts the passed string into a upper case one and returns it.
  */
-_MISC_FUNC std::string toupper(std::string s);
+_MISC_FUNC std::string toUpper(std::string s);
 /**
  * Trims a passed string at both sides and returns it.
  */
@@ -255,12 +245,12 @@ _MISC_FUNC std::string trim(std::string s, const std::string& t = " ");
 /**
  * Trims a passed string left and returns it.
  */
-_MISC_FUNC std::string trim_left(std::string s, const std::string& t = " ");
+_MISC_FUNC std::string trimLeft(std::string s, const std::string& t = " ");
 
 /**
  * Trims a passed string right and returns it.
  */
-_MISC_FUNC std::string trim_right(std::string s, const std::string& t = " ");
+_MISC_FUNC std::string trimRight(std::string s, const std::string& t = " ");
 
 /**
  * Returns the same string but now uses a new buffer making the string thread save.
@@ -470,6 +460,64 @@ std::string itostr(T value, int base = 10)
 }
 
 /**
+ * @brief Converts a std::string to a T value and whe not possible it returns the passed default.
+ *
+ * @tparam T Any floating point or integer value.
+ * @param s String representation of the value.
+ * @param def Default value when conversion is not possible.
+ * @return Converted or default value.
+ */
+template<typename T>
+T toTypeDef(const std::string& s, T def)
+{
+	if (!s.empty())
+	{
+		try
+		{
+			std::string::size_type idx = std::string::npos;
+			if (std::numeric_limits<T>::is_integer)
+			{
+				if (std::numeric_limits<T>::is_signed)
+				{
+					auto rv = std::stoll(s, &idx, 0);
+					// Must have read to the end of the string.
+					if (idx != s.size())
+					{
+						rv = def;
+					}
+					return static_cast<T>(rv);
+				}
+				else
+				{
+					auto rv = std::stoull(s, &idx, 0);
+					// Must have read to the end of the string.
+					if (idx != s.size())
+					{
+						rv = def;
+					}
+					return static_cast<T>(rv);
+				}
+			}
+			else if (std::numeric_limits<T>::is_iec559)
+			{
+				auto rv = std::stod(s, &idx);
+				// Must have read to the end of the string.
+				if (idx != s.size())
+				{
+					rv = def;
+				}
+				return static_cast<T>(rv);
+			}
+		}
+		catch(...)
+		{
+			// Just all of them.
+		}
+	}
+	return def;
+}
+
+/**
  * String formats a floating point or integer value using scientific notation where the exponent is always a multiple of 3.
  * @tparam T Type of the template function.
  * @param value Value to be converted to a string.
@@ -633,34 +681,34 @@ int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 /**
  * Checks if the passed path exists (by doing a access() using F_OK).
  */
-_MISC_FUNC bool file_exists(const char* path);
+_MISC_FUNC bool fileExists(const char* path);
 
 inline
-bool file_exists(const std::string& path)
+bool fileExists(const std::string& path)
 {
-	return file_exists(path.c_str());
+	return fileExists(path.c_str());
 }
 
 /**
  * Same as basename() but using an std::string.
  */
-_MISC_FUNC std::string file_basename(const std::string& path);
+_MISC_FUNC std::string fileBaseName(const std::string& path);
 /**
  * Same as dirname() but using an std::string.
  */
-_MISC_FUNC std::string file_dirname(const std::string& path);
+_MISC_FUNC std::string fileDirName(const std::string& path);
 /**
  * Same as unlink() but using an std::string.
  */
-_MISC_FUNC bool file_unlink(const std::string& path);
+_MISC_FUNC bool fileUnlink(const std::string& path);
 /**
  * Same as rename() but using an std::string.
  */
-_MISC_FUNC bool file_rename(const std::string& old_path, const std::string& new_path);
+_MISC_FUNC bool fileRename(const std::string& old_path, const std::string& new_path);
 
 /**
  * Finds the files using the passed wildcard.
  */
-_MISC_FUNC bool file_find(sf::strings& files, const std::string& wildcard);
+_MISC_FUNC bool fileFind(sf::strings& files, const std::string& wildcard);
 
 } // namespace

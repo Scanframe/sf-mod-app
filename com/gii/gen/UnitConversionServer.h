@@ -6,14 +6,13 @@
 #include <gii/gen/UnitConversion.h>
 #include "../global.h"
 
-
 namespace sf
 {
 
 /**
  * @brief Implementation of a unit conversion server using an ini-file.
  *
- * This conversion class installs a handler using #setUnitConversionHandler() using a #UnitConversionServerCallBack type of function.
+ * This conversion class installs a handler using #setUnitConversionHandler() using a #UnitConversionServerClosure type of function.
  *
  */
 class _GII_CLASS UnitConversionServer
@@ -21,22 +20,9 @@ class _GII_CLASS UnitConversionServer
 	public:
 
 		/**
-		 * @brief Constructor.
-		 * @param ini_filepath Path to ini file.
+		 * @brief Default constructor.
 		 */
-		explicit UnitConversionServer(const std::string& ini_filepath);
-
-		/**
-		 * @brief Constructor using an input stream.
-		 *
-		 * @param is Input stream.
-		 */
-		explicit UnitConversionServer(std::istream& is);
-
-		/**
-		 * @brief Destructor.
-		 */
-		~UnitConversionServer();
+		UnitConversionServer();
 
 		/**
 		 * @brief Copying this class is not possible.
@@ -44,9 +30,45 @@ class _GII_CLASS UnitConversionServer
 		UnitConversionServer(const UnitConversionServer&) = delete;
 
 		/**
-		 * Different conversion modes.
+		 * @brief Loads the conversion settings.
+		 *
+		 * @param is Input stream.
 		 */
-		enum EUnitSystem
+		virtual bool load(std::istream& is);
+
+		/**
+		 * @brief Saves the conversion settings.
+		 *
+		 * @param os Output stream.
+		 */
+		virtual bool save(std::ostream& os);
+
+		/**
+		 * @brief Gets the dirty status of the configuration.
+		 *
+		 * @return True when the config has been changed.
+		 */
+		[[nodiscard]] bool isDirty() const;
+
+		/**
+		 * @brief Writes or over writes a conversion entry in the profile.
+		 */
+		void setConversion(UnitConversionEvent& ev);
+
+		/**
+		 * @brief Removes a conversion entry in the profile.
+		 */
+		void removeConversion(const std::string& key);
+
+		/**
+		 * @brief Destructor.
+		 */
+		~UnitConversionServer();
+
+		/**
+		 * @brief Different unit conversion systems.
+		 */
+		enum EUnitSystem :int
 		{
 			/**
 			 * No conversion use as is which should be SI-units.
@@ -65,43 +87,57 @@ class _GII_CLASS UnitConversionServer
 		};
 
 		/**
-		 * Sets the unit system to be applied.
-		 * @param us Unit system.
+		 * @brief Sets the unit system to be applied.
+		 *
+		 * @param us Unit system vale #EUnitSystem.
 		 */
-		void setUnitSystem(EUnitSystem us);
+		virtual void setUnitSystem(int us);
 
-	private:
 		/**
-		 * Handler according
+		 * @brief Gets the unit system being applied.
 		 */
-		static bool Handler
-			(
-				void* data,
-				const std::string& option,
-				const std::string& from_unit,
-				int from_precision,
-				double& multiplier,
-				double& offset,
-				std::string& to_unit,
-				int& to_precision
-			);
+		[[nodiscard]] EUnitSystem getUnitSystem() const;
+
+		/**
+		 * @brief Gets the internal storage profile.
+		 */
+		[[nodiscard]] IniProfile& getProfile();
+
+		/**
+		 * @brief Gets the section name of the passed enumerate.
+		 *
+		 * @param us Unit system enumerate.
+		 * @return Name of the system.
+		 */
+		static const char* getUnitSystemName(int us);
+
+		/**
+		 * @brief Type to combine a system enumerate and name.
+		 */
+		typedef std::pair<UnitConversionServer::EUnitSystem, const char*> UnitSystemPair;
+
+		/**
+		 * Gets all the system unit entries as a pair in a vector.
+		 * @return
+		 */
+		static const std::vector<UnitSystemPair>& getUnitSystemNames();
+
+	protected:
+		/**
+		 * @brief Handler according the unit conversion function type.
+		 */
+		virtual bool Handler(UnitConversionEvent& ev);
 
 		/**
 		 * Ini profile keeping all conversion information.
 		 */
 		IniProfile _profile;
+
+	private:
 		/**
-		 * Holds the unit sys set using #setUnitSystem
+		 * Holds the unit sys set using #setUnitSystem()
 		 */
 		EUnitSystem _unitSystem{usPassThrough};
-
-		/**
-		 * Returns the section name.
-		 * @param us
-		 * @return
-		 */
-		static std::string getUnitSystemName(EUnitSystem us);
-
 };
 
 }

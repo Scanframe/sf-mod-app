@@ -1,5 +1,4 @@
 #include "VariableBar.h"
-
 #include <QApplication>
 #include <QMouseEvent>
 #include <QStyle>
@@ -14,16 +13,19 @@
 namespace sf
 {
 
-struct VariableBarPrivate :VariableWidgetBasePrivate
+struct VariableBar::Private :QObject, PrivateBase
 {
 	VariableBar* _widget{nullptr};
+	QLabel* _labelNameAlt{nullptr};
+	int _nameLevel{-1};
 
-	static VariableBarPrivate* cast(VariableWidgetBasePrivate* data)
+
+	static Private* cast(PrivateBase* data)
 	{
-		return static_cast<VariableBarPrivate*>(data); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+		return static_cast<Private*>(data); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 	}
 
-	explicit VariableBarPrivate(VariableBar* widget)
+	explicit Private(VariableBar* widget)
 		:_widget(widget)
 	{
 		// Only link when not in design mode.
@@ -31,9 +33,33 @@ struct VariableBarPrivate :VariableWidgetBasePrivate
 		{
 			_variable.setHandler(this);
 		}
+		QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
 	}
 
-	~VariableBarPrivate() override
+	void onDestroyed(QObject *obj = nullptr) // NOLINT(readability-make-member-function-const)
+	{
+		if (_labelNameAlt && _labelNameAlt == obj)
+		{
+			disconnect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+			_labelNameAlt = nullptr;
+		}
+	}
+
+	void connectLabelNameAlt()
+	{
+		// Try finding label where this widget is its buddy.
+		if (auto label = findLabelByBuddy(_widget))
+		{
+			// Assign the pointer to alternate name label.
+			_labelNameAlt = label;
+			// Connect handler for when the label is destroyed to null the alternate label.
+			connect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+			// Trigger event to fill in the label text and tool tip.
+			_variable.emitEvent(Variable::veUserPrivate);
+		}
+	}
+
+	~Private() override
 	{
 		// Clear the handler when destructing.
 		_variable.setHandler(nullptr);
@@ -51,8 +77,16 @@ struct VariableBarPrivate :VariableWidgetBasePrivate
 		{
 			case veLinked:
 			case veIdChanged:
+				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
 				_widget->setToolTip(QString::fromStdString(link_var.getDescription()));
 				_widget->update();
+				// Run into next.
+			case veUserPrivate:
+				if (_labelNameAlt)
+				{
+					_labelNameAlt->setToolTip(_widget->toolTip());
+					_labelNameAlt->setText(QString::fromStdString(link_var.getName(_nameLevel)));
+				}
 				break;
 
 			case veValueChange:
@@ -70,7 +104,7 @@ struct VariableBarPrivate :VariableWidgetBasePrivate
 		const QWidget* w = _widget;
 		if (!w->isVisible())
 		{
-			return QRect();
+			return {};
 		}
 		QRect r = _widget->rect();
 		int ox = 0;
@@ -89,31 +123,14 @@ struct VariableBarPrivate :VariableWidgetBasePrivate
 VariableBar::VariableBar(QWidget* parent)
 	:VariableWidgetBase(parent, this)
 {
-	_private = new VariableBarPrivate(this);
-//	setAttribute(Qt::WA_TransparentForMouseEvents);
+	_p = new Private(this);
 	setFocusPolicy(Qt::StrongFocus);
 	setAttribute(Qt::WA_KeyboardFocusChange);
-	//setAttribute(Qt::WA_NoChildEventsForParent, true);
-	//setAttribute(Qt::WA_AcceptDrops, style()->styleHint(QStyle::SH_FocusFrame_AboveWidget, 0, this));
 }
 
 bool VariableBar::isRequiredProperty(const QString& name)
 {
-	if (VariableWidgetBase::isRequiredProperty(name))
-	{
-		return true;
-	}
-	static const char* keys[] =
-		{
-			"geometry",
-			"whatsThis",
-			"styleSheet",
-		};
-	// Check if passed property name is in the keys list.
-	return std::any_of(&keys[0], &keys[sizeof(keys) / sizeof(keys[0])], [name](const char* prop)
-	{
-		return name == prop;
-	});
+	return true;
 }
 
 void VariableBar::applyReadOnly(bool yn)
@@ -152,7 +169,7 @@ void VariableBar::paintEvent(QPaintEvent* ev)
 	// Create additional spacing.
 	inflate(rc, -so.lineWidth);
 	// Get variable as a reference.
-	auto& v(VariableBarPrivate::cast(_private)->_variable);
+	auto& v(Private::cast(_p)->_variable);
 	// Set designer text as default.
 	QString text("Value Unit");
 	auto pos = rc.size().width() / 2;
@@ -180,7 +197,22 @@ void VariableBar::paintEvent(QPaintEvent* ev)
 
 void VariableBar::keyPressEvent(QKeyEvent* event)
 {
-	_private->keyPressEvent(event);
+	_p->keyPressEvent(event);
+}
+
+int VariableBar::nameLevel() const
+{
+	return VariableBar::Private::cast(_p)->_nameLevel;
+}
+
+void VariableBar::setNameLevel(int level)
+{
+	auto p = VariableBar::Private::cast(_p);
+	if (p->_nameLevel != level)
+	{
+		p->_nameLevel = level;
+		p->_variable.emitEvent(Variable::veUserPrivate);
+	}
 }
 
 }

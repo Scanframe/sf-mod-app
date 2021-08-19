@@ -55,15 +55,14 @@ class _MISC_CLASS PropertySheetDialog :public QDialog
 		 */
 		void applySheet();
 
-		/**
-		 * @brief Overridden from base class to change the button enable status.
-		 */
-		void open() override;
+	protected:
+		void showEvent(QShowEvent* event) override;
 
+	Q_SIGNALS:
 		/**
-		 * @brief Overridden from base class to change the button enable status.
+		 * @brief Emitted when a modification was applied.
 		 */
-		int exec() override;
+		void modified();
 
 	public Q_SLOTS:
 		/**

@@ -5,21 +5,22 @@
 #include <QCloseEvent>
 #include <misc/qt/Resource.h>
 #include <misc/qt/FormBuilder.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <gii/qt/VariableWidgetBase.h>
 #include "LayoutEditor.h"
+#include "pages/VariableIdPropertyPage.h"
+#include "pages/WidgetPropertyPage.h"
 
 namespace sf
 {
 
-LayoutEditor::LayoutEditor(QWidget* parent)
-	:QWidget(parent)
+LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
+	:LayoutWidget(parent)
 	 , MultiDocInterface()
-	 , isUntitled(true)
+	 , _settings(settings)
+	 , _isUntitled(true)
 	 , _rootName("FormRoot")
 {
-	//setConnections(this);
-	// Make the widget delete on close.
-	setAttribute(Qt::WA_DeleteOnClose);
-	//
 /*
 	_scrollArea = new QScrollArea(this);
 	_scrollArea->setFrameShape(QFrame::Shape::Box);
@@ -28,6 +29,33 @@ LayoutEditor::LayoutEditor(QWidget* parent)
 */
 	//scrollArea->setSizeAdjustPolicy(QScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow);
 	adjustSize();
+	// TODO: Needs to be set from property page.
+	setReadOnly(false);
+	//
+	_targetContextMenu = new QMenu(this);
+	//
+	auto actionEdit = new QAction(tr("&Edit"), _targetContextMenu);
+	actionEdit->setToolTip(tr("Edit the properties of this widget."));
+	actionEdit->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Edit), QPalette::ColorRole::ButtonText));
+	_targetContextMenu->addAction(actionEdit);
+	connect(actionEdit, &QAction::triggered, [&]()
+	{
+		if (_currentTarget)
+		{
+			openPropertyEditor(_currentTarget);
+		}
+	});
+	auto actionRemove = new QAction(tr("&Remove"), _targetContextMenu);
+	actionRemove->setToolTip(tr("Remove this widget."));
+	actionRemove->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Remove), QPalette::ColorRole::ButtonText));
+	_targetContextMenu->addAction(actionRemove);
+	connect(actionRemove, &QAction::triggered, [&]()
+	{
+		if (_currentTarget)
+		{
+			_currentTarget->deleteLater();
+		}
+	});
 }
 
 void LayoutEditor::resizeEvent(QResizeEvent* event)
@@ -58,10 +86,11 @@ void LayoutEditor::closeEvent(QCloseEvent* event)
 void LayoutEditor::newFile()
 {
 	static int sequenceNumber = 1;
-	isUntitled = true;
-	curFile = tr("document-%1.ui").arg(sequenceNumber++);
-	setWindowTitle(curFile + "[*]");
-//	connect(document(), &QTextDocument::contentsChanged, this, &LayoutEditor::documentWasModified);
+	_isUntitled = true;
+	_curFile = tr("document-%1.ui").arg(sequenceNumber++);
+	setWindowTitle(_curFile + "[*]");
+	_modified = true;
+	documentWasModified();
 }
 
 bool LayoutEditor::loadFile(const QString& fileName)
@@ -78,7 +107,7 @@ bool LayoutEditor::loadFile(const QString& fileName)
 	// Add the application directory as the plugin directory to find custom plugins.
 	builder.addPluginPath(QCoreApplication::applicationDirPath());
 	// Create widget from the loaded ui-file.
-	_widget = builder.load(&file, _scrollArea ? (QWidget*)_scrollArea : (QWidget*)this);
+	_widget = builder.load(&file, _scrollArea ? (QWidget*) _scrollArea : (QWidget*) this);
 	// When loading is successful.
 	if (_widget)
 	{
@@ -102,18 +131,27 @@ bool LayoutEditor::loadFile(const QString& fileName)
 	QGuiApplication::restoreOverrideCursor();
 	setCurrentFile(fileName);
 	//connect(document(), &QTextDocument::contentsChanged, this, &LayoutEditor::documentWasModified);
+	for (auto child: _widget->children())
+	{
+		child->installEventFilter(this);
+	}
 	return true;
 }
 
 bool LayoutEditor::save()
 {
-	return isUntitled ? saveAs() : saveFile(curFile);
+	return _isUntitled ? saveAs() : saveFile(_curFile);
 }
 
 bool LayoutEditor::saveAs()
 {
-	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile, getFileTypeFilters());
-	return !fileName.isEmpty() && saveFile(fileName);
+	auto fileName = QFileDialog::getSaveFileName(this, tr("Save As"), _curFile, getFileTypeFilters());
+	if (!fileName.isEmpty() && saveFile(fileName))
+	{
+		_modified = false;
+		return true;
+	}
+	return false;
 }
 
 bool LayoutEditor::saveFile(const QString& fileName, bool keep_name)
@@ -153,23 +191,30 @@ bool LayoutEditor::saveFile(const QString& fileName, bool keep_name)
 	{
 		setCurrentFile(fileName);
 	}
+	// Reset the modified flag.
+	_modified = false;
+	// Trigger the signal.
+	documentWasModified();
+	// Signal success.
 	return true;
 }
 
 void LayoutEditor::documentWasModified()
 {
-	setWindowModified(isModified());
+	auto flag = isModified();
+	setWindowModified(flag);
+	emit mdiSignals.modificationChanged(flag);
 }
 
 QString LayoutEditor::currentFile() const
 {
-	return curFile;
+	return _curFile;
 }
 
 void LayoutEditor::setCurrentFile(const QString& fileName)
 {
-	curFile = QFileInfo(fileName).canonicalFilePath();
-	isUntitled = false;
+	_curFile = QFileInfo(fileName).canonicalFilePath();
+	_isUntitled = false;
 	//document()->setModified(false);
 	setWindowModified(false);
 	setWindowTitle(userFriendlyCurrentFile() + "[*]");
@@ -182,67 +227,111 @@ QString LayoutEditor::strippedName(const QString& fullFileName) const
 
 QString LayoutEditor::userFriendlyCurrentFile() const
 {
-	return strippedName(curFile);
+	return strippedName(_curFile);
 }
 
 bool LayoutEditor::hasSelection() const
 {
-	return false;//textCursor().hasSelection();
+	return false;
 }
 
 bool LayoutEditor::isUndoRedoEnabled() const
 {
-	return false;//QWidget::isUndoRedoEnabled();
+	return false;
 }
 
 bool LayoutEditor::isUndoAvailable() const
 {
-	return false;//document()->isUndoAvailable();
+	return false;
 }
 
 bool LayoutEditor::isRedoAvailable() const
 {
-	return false;//document()->isUndoAvailable();
+	return false;
 }
 
 bool LayoutEditor::isModified() const
 {
-	return false;//document()->isModified();
+	return _modified;
 }
 
 void LayoutEditor::cut()
 {
-	//QTextEdit::cut();
 }
 
 void LayoutEditor::copy()
 {
-	//QTextEdit::copy();
 }
 
 void LayoutEditor::paste()
 {
-	//QTextEdit::paste();
 }
 
 void LayoutEditor::undo()
 {
-	//QTextEdit::undo();
 }
 
 void LayoutEditor::redo()
 {
-	//QTextEdit::redo();
 }
 
 void LayoutEditor::develop()
 {
 	// Append the xml extension to the existing file name.
-	auto fn = QString(curFile).append(".xml");
+	auto fn = QString(_curFile).append(".xml");
 	// Save the file but keep the name.
 	saveFile(fn, true);
-	// Make the log lne so it can be opened in CLion.
+	// Make the log line, so it can be opened in CLion.
 	qDebug() << "Written to " << fn.prepend("file://");
+}
+
+void LayoutEditor::popupContextMenu(QObject* target, const QPoint& pos)
+{
+	_currentTarget = target;
+	_targetContextMenu->exec(pos);
+	_currentTarget = nullptr;
+}
+
+bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
+{
+	// Intercept mouse button pressed when layout is editable.
+	if (_editable && event->type() == QEvent::MouseButtonPress)
+	{
+		// Get the mouse event.
+		if (auto mouseEvent = dynamic_cast<QMouseEvent*>(event))
+		{
+			// Check if it was the right mouse button.
+			if (mouseEvent->button() == Qt::MouseButton::RightButton && QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
+			{
+				popupContextMenu(watched, mouseEvent->globalPosition().toPoint());
+			}
+		}
+	}
+	return QObject::eventFilter(watched, event);
+}
+
+void LayoutEditor::openPropertyEditor(QObject* target)
+{
+	auto dlg = new PropertySheetDialog("LayoutObjectEditor", _settings, this);
+	// Make the dialog close
+	dlg->setAttribute(Qt::WA_DeleteOnClose);
+	//
+	if (auto vwb = dynamic_cast<VariableWidgetBase*>(target))
+	{
+		dlg->addPage(new VariableIdPropertyPage(vwb, dlg));
+	}
+	if (auto w = dynamic_cast<QWidget*>(target))
+	{
+		dlg->addPage(new WidgetPropertyPage(w, dlg));
+	}
+	// When the dialog was applied set the modified flag.
+	connect(dlg, &PropertySheetDialog::modified, [&]()
+	{
+		_modified = true;
+		documentWasModified();
+	});
+	// FixMe: Prevent multiple properties sheet dialogs per target using a shared and week pointer.
+	dlg->show();
 }
 
 }

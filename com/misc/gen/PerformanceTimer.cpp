@@ -11,12 +11,12 @@ PerformanceTimer::PerformanceTimer()
 
 void PerformanceTimer::reset()
 {
-	_start = gettime();
+	_start = getTime();
 }
 
 TimeSpec PerformanceTimer::elapse()
 {
-	return TimeSpec(gettime()).sub(_start);
+	return TimeSpec(getTime()).sub(_start);
 }
 
 TimeSpec PerformanceTimer::elapse(const TimeSpec& ts)

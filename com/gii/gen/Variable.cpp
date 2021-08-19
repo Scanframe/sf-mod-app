@@ -1,14 +1,10 @@
 #include <cmath>
 #include <cstdio>
-
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/gen_utils.h>
 #include <misc/gen/Value.h>
-#include <misc/gen/csf.h>
-
 #include "UnitConversion.h"
 #include "Variable.h"
-// Not part of the public interface.
 #include "VariableStatic.h"
 #include "VariableReference.h"
 
@@ -123,7 +119,7 @@ bool Variable::setExport(bool global)
 
 bool Variable::setGlobal(bool global)
 {
-	// Only allowed when variable is not attached to other then Zero.
+	// Only allowed when variable is not attached to other than Zero.
 	if (_reference == VariableStatic::zero()._reference)
 	{
 		_global = global;
@@ -320,7 +316,7 @@ bool Variable::attachRef(VariableReference* ref)
 		{
 			// Notify all variables that this reference is becoming invalid.
 			emitLocalEvent(veInvalid, false);
-			// Make pointer to this variable NULL so it isn't attached again in
+			// Make pointer to this variable null, so it isn't attached again in
 			// the reference destructor and detach it when the ref is deleted
 			_reference->_list[0] = nullptr;
 			// the destructor reattaches all variables that are left
@@ -344,7 +340,7 @@ bool Variable::attachRef(VariableReference* ref)
 	if (ref)
 	{
 		_reference = ref;
-		// Add this instance to the the Variable Reference list
+		// Add this instance to the Variable Reference list
 		_reference->_list.add(this);
 		// Notify the user of this instance by telling it was attached.
 		emitEvent(veIdChanged, *this);
@@ -360,7 +356,7 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 		// Check if the local instance is currently exported.
 		if (!_reference->_exported)
 		{
-			// Check if the new ID is different and non zero.
+			// Check if the new ID is different and non-zero.
 			if (id && _reference->_id != id)
 			{ // Assign the new ID.
 				_reference->_id = id;
@@ -376,6 +372,10 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 
 bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 {
+	if (!definition._valid)
+	{
+		return false;
+	}
 	// Check for not owning and global variable.
 	bool local_owner = !_global && isOwner() && getUsageCount() > 1;
 	// If this is a not local owner attach it to the zero instance.
@@ -387,16 +387,16 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 	_desiredId = 0;
 	// The default return value is the definitions '_valid' field.
 	bool ret_val = definition._valid;
-	// Check if variables other then the zero variable have an ID of zero.
+	// Check if variables other than the zero variable have an ID of zero.
 	if (_reference != VariableStatic::zero()._reference && !local_owner && definition._id == 0)
 	{
 		ret_val = false;
 	}
-	// Don' bother to go on if an error occurred so far.
+	// Don't bother to go on if an error occurred so far.
 	if (ret_val)
 	{
 		// Check if the ID already exist with getReferenceById() returns the
-		// zero reference when not found or if this instance is non global.
+		// zero reference when not found or if this instance is non-global.
 		VariableReference* ref = _global ? getReferenceById(definition._id + id_ofs) : VariableStatic::zero()._reference;
 		if (ref && ref != VariableStatic::zero()._reference)
 		{
@@ -415,7 +415,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 			}
 			else
 			{
-				// Create new global or non global reference for this variable instance.
+				// Create new global or non-global reference for this variable instance.
 				ref = new VariableReference(_global);
 			}
 		}
@@ -481,7 +481,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 				s._value.setType(ref->_type);
 			}
 		}
-		// Attach ref to this variable if possible if everything went well so far.
+		// Attach ref to this variable if possible and check if everything went well so far.
 		if (!ret_val || !attachRef(ref))
 		{
 			// Set 'ret_val' to false so an error message is generated
@@ -506,7 +506,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 	// When the reference was reused with all users attached.
 	if (local_owner)
 	{
-		// When setup fails to setup this local owning instance.
+		// When setup method fails to 'setup' this local owning instance.
 		// Attach it to the Zero instance.
 		if (ret_val)
 		{
@@ -547,12 +547,12 @@ std::string Variable::getName(int levels) const
 	// Return full name path at levels equals zero.
 	std::string ret_val = _reference->_name;
 	auto len = ret_val.length();
-	// Check if levels is non zero.
+	// Check if levels is non-zero.
 	if (levels)
 	{
 		if (levels > 0)
 		{
-			int i = len;
+			std::string::size_type i = len;
 			while (i--)
 			{ // Is the character a separator character.
 				if (ret_val[i] == '|')
@@ -596,16 +596,7 @@ std::string Variable::getName(int levels) const
 
 int Variable::getNameLevelCount() const
 {
-	int levels = 0;
-	int i = _reference->_name.length();
-	while (i--)
-	{ // Is the character a separator character.
-		if (_reference->_name[i] == '|')
-		{
-			levels++;
-		}
-	}
-	return levels;
+	return static_cast<int>(std::count(_reference->_name.begin(), _reference->_name.end(), '|'));
 }
 
 Variable::size_type Variable::getState(const Value& v) const
@@ -617,7 +608,7 @@ Variable::size_type Variable::getState(const Value& v) const
 			return std::distance(_reference->_states.begin(), i);
 		}
 	}
-	return std::numeric_limits<size_type>::max();
+	return npos;
 }
 
 const Value& Variable::getStateValue(Variable::size_type state) const
@@ -660,9 +651,9 @@ bool Variable::increase(int steps, bool skip_self)
 	}
 }
 
-void Variable::emitEvent(EEvent event, const Variable& caller)
+void Variable::emitEvent(EEvent event, const Variable& caller) // NOLINT(misc-no-recursion)
 {
-	// If the caller is an other instance then this one when the value changes.
+	// If the caller is another instance then this one when the value changes.
 	// When one these events passes, Update the temporary value.
 	if (_temporary)
 	{
@@ -788,9 +779,8 @@ Variable::size_type Variable::attachDesired()
 			for (auto var: ref->_list)
 			{
 				// Check if the desired ID is non-zero which means it is enabled.
-				// Also compare the desired and this ID to check if it has not be
-				// linked to the reference. Also check if the variable is global
-				// because global variables can only be attached by a desired ID.
+				// Also compare the desired ID and this ID to check if it has not been linked to the reference.
+				// Also check if the variable is global because global variables can only be attached by a desired ID.
 				if (var && var->_global && var->_desiredId && var->_desiredId == _reference->_id)
 				{
 					// Add instance pointer the to list.
@@ -939,7 +929,7 @@ bool Variable::setCur(const Value& value, bool skip_self)
 		return updateTempValue(value, skip_self);
 	}
 	// If this instance uses the converted value it must be converted first to the real value.
-	return updateValue(_converted ? convert(value, true): value, skip_self);
+	return updateValue(_converted ? convert(value, true) : value, skip_self);
 }
 
 bool Variable::isReadOnly() const
@@ -1079,7 +1069,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 					s = trim(s, " ");
 					s = trim(s, "\\");
 					s = trim(s, " ");
-					// When not empty append the back slash.
+					// When not empty append the backslash.
 					if (s.length())
 					{
 						s.append(1, '\\');
@@ -1498,8 +1488,7 @@ bool Variable::setConvertValues
 			if (_reference->_sigDigits != std::numeric_limits<int>::max())
 			{
 				// Adjust the significant digits value with the magnitude of the multiplication factor.
-				_reference->_convertSigDigits = _reference->_sigDigits + magnitude(_reference->_convertMultiplier.getFloat()) +
-					1;
+				_reference->_convertSigDigits = _reference->_sigDigits + magnitude(_reference->_convertMultiplier.getFloat()) + 1;
 			}
 			else
 			{
@@ -1510,7 +1499,7 @@ bool Variable::setConvertValues
 		{
 			_reference->_convertSigDigits = digits;
 		}
-		// If the unit length is non zero it always generates an event.
+		// If the unit length is non-zero it always generates an event.
 		// Only when both length values are zero there is no event generated.
 		if (unit.length() || _reference->_convertUnit.length())
 		{
@@ -1547,8 +1536,7 @@ bool Variable::setConvertValues(bool convert)
 				int digits = _reference->_sigDigits;
 				std::string new_unit = _reference->_unit;
 				// Check if a conversion is found.
-				if (getUnitConversion(_reference->_convertOption, _reference->_unit, _reference->_sigDigits,
-					multiplier, offset, new_unit, digits))
+				if (getUnitConversion(_reference->_convertOption, _reference->_unit, _reference->_sigDigits, multiplier, offset, new_unit, digits))
 				{
 					// Set the convert values.
 					return setConvertValues(new_unit, Value(multiplier), Value(offset), digits);
@@ -1668,7 +1656,7 @@ bool Variable::isTemporaryDifferent() const
 	return false;
 }
 
-bool Variable::updateTemporary(bool skip_self)
+bool Variable::updateTemporary(bool skip_self) // NOLINT(misc-no-recursion)
 {
 	// Check if the temporary value is used.
 	if (_temporary)
@@ -1835,7 +1823,7 @@ Variable::EStringType Variable::getStringType() const
 			}
 		}
 	}
-	// By default return the normal string type.
+	// By default, return the normal string type.
 	return stNormal;
 }
 
@@ -2063,49 +2051,60 @@ const Variable::State::Vector& Variable::getStates() const
 Variable::Definition Variable::getDefinition(const std::string& str)
 {
 	Definition def;
-	// Flag to determine if the conversion went well.
-	bool ok = true;
-	// Pointer that points to the place where the conversion of the ID went wrong.
-	char* end_ptr = nullptr;
-	// Get the result ID from the setup string.
-	std::string tmp = GetCsfField(vfId, str);
-	id_type id = std::strtoull(tmp.c_str(), &end_ptr, 0);
-	// Return zero if an error occurred during conversion of the ID.
-	if (end_ptr && *end_ptr != '\0')
+	// Set the reference valid flag default to true.
+	def._valid = true;
+	// Split the string in using a csv format.
+	strings sl;
+	sl.split(str, ',', '"');
+	auto getField = [sl](strings::size_type i) -> std::string
 	{
-		ok = false;
+		if (i < sl.size())
+		{
+			return sl[i];
+		}
+		return {};
+	};
+	// Pointer that points to the place where the conversion of the ID went wrong.
+	size_t end_pos = 0;
+	// Get the result ID from the setup string.
+	std::string tmp = getField(vfId);
+	id_type id = std::stoull(tmp, &end_pos, 0);
+	// Return zero if an error occurred during conversion of the ID.
+	if (tmp[end_pos] != '\0')
+	{
+		def._valid = false;
 	}
 	// Read all values in as strings to convert them later to the actual form.
 	def._id = id;
-	def._name = GetCsfField(vfName, str);
-	def._unit = GetCsfField(vfUnit, str);
-	def._convertOption = GetCsfField(vfConversionType, str);
-	def._description = unescape(GetCsfField(vfDescription, str));
-	def._flags = toFlags(GetCsfField(vfFlags, str));
+	def._name = getField(vfName);
+	def._unit = getField(vfUnit);
+	def._convertOption = getField(vfConversionType);
+	def._description = unescape(getField(vfDescription));
+	def._flags = toFlags(getField(vfFlags));
 	// Check for multi line string so the default value
-	Value::EType type = (Value::EType) Value::getType(GetCsfField(vfType, str).c_str());
+	Value::EType type = (Value::EType) Value::getType(getField(vfType).c_str());
 	//
 	if (type == Value::vitString && def._unit.find('M') != std::string::npos)
 	{
-		def._defaultValue.set(unescape(GetCsfField(vfDefault, str)));
+		def._defaultValue.set(unescape(getField(vfDefault)));
 	}
 	else
 	{
-		def._defaultValue.set(GetCsfField(vfDefault, str));
+		def._defaultValue.set(getField(vfDefault));
 	}
-	def._minValue.set(GetCsfField(vfMinimum, str).c_str());
-	def._maxValue.set(GetCsfField(vfMaximum, str).c_str());
-	def._roundValue.set(GetCsfField(vfRound, str).c_str());
+	def._minValue.set(getField(vfMinimum).c_str());
+	def._maxValue.set(getField(vfMaximum).c_str());
+	def._roundValue.set(getField(vfRound).c_str());
 	// Get max state field count
 	int state_count = 0;
-	while (GetCsfField(vfFirstState + state_count, str).length())
+	while (getField(vfFirstState + state_count).length())
 	{
 		state_count++;
 	}
 	def._states.resize(state_count);
 	for (int i = 0; i < state_count; i++)
 	{
-		def._states[i]._name = GetCsfField(vfFirstState + i, str);
+		def._states[i]._name = getField(vfFirstState + i);
 		if (def._states[i]._name.length())
 		{
 			size_t pos = def._states[i]._name.find_first_of('=');
@@ -2123,21 +2122,21 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 		}
 	}
 	// Skip type conversion if an error occurred so far.
-	if (ok)
+	if (def._valid)
 	{
 		// Convert all Value reference data members to the wanted type
 		// and check for errors during the conversion.
-		ok &= def._maxValue.setType(type);
-		ok &= def._minValue.setType(type);
-		ok &= def._roundValue.setType(type);
+		def._valid &= def._maxValue.setType(type);
+		def._valid &= def._minValue.setType(type);
+		def._valid &= def._roundValue.setType(type);
 		for (auto& s: def._states)
 		{
-			ok &= s._value.setType(type);
+			def._valid &= s._value.setType(type);
 		}
 		def._type = (Value::EType) type;
 	}
-	// Set the validation boolean flag.
-	def._valid = ok;
+	// Notify when not valid notify.
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n" << str);
 	//
 	return def;
 }

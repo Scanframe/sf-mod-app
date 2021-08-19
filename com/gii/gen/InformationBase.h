@@ -54,6 +54,10 @@ class _GII_CLASS InformationTypes
 		 * @brief Vector for containing different information base derived classes.
 		 */
 		typedef TVector<InformationBase*> Vector;
+		/**
+		 * @brief Unsigned size value indicating not found or no index.
+		 */
+		static constexpr size_t npos = std::numeric_limits<size_type>::max();
 };
 
 }

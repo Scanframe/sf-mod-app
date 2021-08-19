@@ -28,6 +28,7 @@ set(SOURCES
 	gen/VariableHandler.cpp gen/VariableHandler.h
 	gen/VariableReference.cpp gen/VariableReference.h
 	gen/UnitConversionServer.cpp gen/UnitConversionServer.h
+	gen/UnitConversionServerEx.cpp gen/UnitConversionServerEx.h
 	gen/UnitConversion.cpp gen/UnitConversion.h
 	gen/FileMappedStorage.cpp gen/FileMappedStorage.h
 	gen/ResultDataTypes.cpp gen/ResultDataTypes.h
@@ -37,6 +38,8 @@ set(SOURCES
 	gen/ResultDataRequester.cpp gen/ResultDataRequester.h
 	gen/ResultDataStatic.cpp gen/ResultDataStatic.h
 	gen/GiiScriptInterpreter.cpp gen/GiiScriptInterpreter.h
+	gen/VariableScriptObject.cpp gen/VariableScriptObject.h
+	gen/ResultDataScriptObject.cpp gen/ResultDataScriptObject.h
 	LibMain.cpp)
 
 if (NOT WIN32)

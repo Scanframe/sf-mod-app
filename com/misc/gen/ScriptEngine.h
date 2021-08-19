@@ -136,7 +136,7 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		/**
 		 * @brief Gets names of info structures in lines.
 		 */
-		[[nodiscard]] virtual std::string getInfoNames() const;
+		[[nodiscard]] virtual strings getInfoNames() const;
 
 		/**
 		 * @brief Functions to be overloaded in derived classes to add functions, parameters, constants and keywords.

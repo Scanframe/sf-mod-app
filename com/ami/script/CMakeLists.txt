@@ -29,14 +29,13 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	res/resource.qrc
-	ModuleMain.cpp
+	LibMain.cpp
 	ScriptManager.cpp ScriptManager.h
 	ScriptAppModule.cpp ScriptAppModule.h
 	ScriptManagerPropertyPage.cpp ScriptManagerPropertyPage.h ScriptManagerPropertyPage.ui
 	ScriptManagerListModel.cpp ScriptManagerListModel.h
-	CommonItemDelegate.cpp CommonItemDelegate.h
 	ScriptEditor.cpp ScriptEditor.h ScriptEditor.ui
-	)
+	IniProfileObject.cpp IniProfileObject.h)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gsc sf-gii sf-ami)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QSettings>
 #include "../global.h"
 
 namespace sf
@@ -70,6 +71,18 @@ class _MISC_CLASS PropertyPage :public QWidget
 		 * @param was_modified True when this page was modified.
 		 */
 		virtual void afterPageApply(bool was_modified);
+
+		/**
+		 * @brief Gets the parent sheet of this page. (also the parent but casted.)
+		 */
+		PropertySheetDialog* getSheet(){return _sheet;};
+
+		/**
+		 * @brief Called by sheet to save the state of the page.
+		 *
+		 * A call to QSettings::beginGroup() is not needed since it is done by the parent sheet already.
+		 */
+		virtual void stateSaveRestore(QSettings& settings, bool save);
 
 	protected:
 		/**

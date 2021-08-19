@@ -34,11 +34,6 @@ ScriptModelList::ScriptModelList(QObject* parent)
 {
 }
 
-ScriptModelList::~ScriptModelList()
-{
-	(void) this;
-}
-
 void ScriptModelList::setInterpreter(ScriptInterpreter* interpreter, ScriptModelList::EMode mode)
 {
 	_interpreter = interpreter;
@@ -227,7 +222,18 @@ QVariant ScriptModelList::data(const QModelIndex& index, int role) const
 					case vcName:
 						return QString::fromStdString(ids.at(index.row())->_name);
 					case vcType:
-						return Value::getType(ids.at(index.row())->_value.getType());
+					{
+						auto& value = ids.at(index.row())->_value;
+						// Custom types are script objects.
+						if (value.getType() == Value::EType::vitCustom)
+						{
+							if (auto obj = _interpreter->castToObject(value))
+							{
+								return QString::fromStdString(ScriptObject::Interface().getRegisterName(obj));
+							}
+						}
+						return Value::getType(value.getType());
+					}
 					case vcValue:
 						return QString::fromStdString(ids.at(index.row())->_value.getString());
 				}

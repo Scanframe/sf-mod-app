@@ -1,100 +1,149 @@
 #include <iostream>
+#include <algorithm>
 
 #include "UnitConversionServer.h"
 
 namespace sf
 {
 
-UnitConversionServer::UnitConversionServer(const std::string& ini_filepath)
-	:_profile(ini_filepath)
+UnitConversionServer::UnitConversionServer()
+	:_profile()
 {
 	// Install handler.
-	sf::setUnitConversionHandler(&sf::UnitConversionServer::Handler, this);
+	setUnitConversionHandler(UnitConversionServerClosure().assign(this, &UnitConversionServer::Handler, std::placeholders::_1));
 }
-
-UnitConversionServer::UnitConversionServer(std::istream& is)
-:_profile(is)
-{
-	// Install handler.
-	sf::setUnitConversionHandler(&sf::UnitConversionServer::Handler, this);
-}
-
 
 UnitConversionServer::~UnitConversionServer()
 {
-	// Install handler.
-	sf::setUnitConversionHandler(nullptr, nullptr);
+	// Uninstall a possible previous set handler.
+	sf::setUnitConversionHandler();
+	// Clear the profile.
 	_profile.flush();
 }
 
-bool UnitConversionServer::Handler(
-	void* data,
-	const std::string& option,
-	const std::string& from_unit,
-	int from_precision,
-	double& multiplier,
-	double& offset,
-	std::string& to_unit,
-	int& to_precision)
+bool UnitConversionServer::load(std::istream& is)
 {
-	// Get reference to server class from passed data pointer.
-	auto& self = *static_cast<UnitConversionServer*>(data);
-	to_unit.clear();
-	multiplier = 0.0;
-	offset = 0.0;
-	to_precision = 0;
+	return _profile.read(is);
+}
 
+bool UnitConversionServer::save(std::ostream& os)
+{
+	return !_profile.write(os).fail();
+}
+
+void UnitConversionServer::setConversion(UnitConversionEvent& ev)
+{
+	// When pass though is selected do not write.
+	if (_unitSystem != usPassThrough)
+	{
+		// Select the section.
+		if (_profile.setSection(getUnitSystemName(_unitSystem)))
+		{
+			auto key = std::string(ev._from_unit).append(",").append(itostr(ev._from_precision));
+			auto value = std::string(ev._to_unit).append(",").append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), ".")).append(",").append(
+			trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
+			_profile.setString(key, value);
+		}
+	}
+}
+
+
+void UnitConversionServer::removeConversion(const std::string& key)
+{
+	_profile.removeEntry(key);
+}
+
+bool UnitConversionServer::Handler(UnitConversionEvent& ev)
+{
 	// When pass though is selected.
-	if (self._unitSystem == usPassThrough)
+	if (_unitSystem == usPassThrough)
 	{
 		return false;
 	}
-	auto section = std::string("System ").append(getUnitSystemName(self._unitSystem));
-	if (self._profile.getSection() != section)
+	auto section = getUnitSystemName(_unitSystem);
+	if (_profile.getSection() != section)
 	{
-		if (!self._profile.setSection(section))
+		if (!_profile.setSection(section))
 		{
 			return false;
 		}
 	}
 	std::string value;
-	auto key = std::string(from_unit).append(1, '|').append(itostr(from_precision, 10));
-	if (self._profile.getString(key, value))
+	auto key = std::string(ev._from_unit).append(1, ',').append(itostr(ev._from_precision, 10));
+	if (_profile.getString(key, value))
 	{
 		//std::clog << key << "=" << value << std::endl;
-		// Format of the key and value: unit|precision=unit,multiplier,offset,precision
-		auto sl = sf::explode(value, ",");
+		// Format of the key and value: <from-unit>,<from-precision>=<to-unit>,<multiplier>,<offset>,<to-precision>
+		strings sl;
+		sl.split(value, ',');
 		// Need at least 4 parts.
 		if (sl.size() >= 4)
 		{
-			to_unit = sl[0];
-			multiplier = std::stod(sl[1]);
-			offset = std::stod(sl[2]);
-			to_precision = std::stoi(sl[3]);
+			ev._to_unit = sl[0].empty() ? "??" : sl[0];
+			ev._multiplier = toTypeDef<double>(sl[1], 1.0);
+			ev._offset = toTypeDef<double>(sl[2], 0.0);
+			ev._to_precision = toTypeDef<int>(sl[3], ev._from_precision);
 			return true;
 		}
 	}
+	else
+	{
+		SF_RTTI_NOTIFY(DO_CLOG, "Profile key '" << key << "' does not exist!")
+	}
+	// Clear all returned values when not found.
+	ev._to_unit.clear();
+	ev._multiplier = 0.0;
+	ev._offset = 0.0;
+	ev._to_precision = 0;
 	return false;
 }
 
-void UnitConversionServer::setUnitSystem(UnitConversionServer::EUnitSystem us)
+void UnitConversionServer::setUnitSystem(int us)
 {
-	_unitSystem = us;
+	_unitSystem = (UnitConversionServer::EUnitSystem) us;
+	if (_unitSystem != usPassThrough)
+	{
+		_profile.setSection(getUnitSystemName(_unitSystem));
+	}
 }
 
-std::string UnitConversionServer::getUnitSystemName(UnitConversionServer::EUnitSystem us)
+UnitConversionServer::EUnitSystem UnitConversionServer::getUnitSystem() const
 {
-	std::string rv;
-	switch (us)
+	return _unitSystem;
+}
+
+const std::vector<std::pair<UnitConversionServer::EUnitSystem, const char*>>& UnitConversionServer::getUnitSystemNames()
+{
+	static auto unitSystemNames = std::vector<UnitSystemPair>{
+		{UnitConversionServer::usPassThrough, "PassThrough"},
+		{UnitConversionServer::usMetric, "Metric"},
+		{UnitConversionServer::usImperial, "Imperial"},
+	};
+	return unitSystemNames;
+}
+
+const char* UnitConversionServer::getUnitSystemName(int us)
+{
+	auto& names = getUnitSystemNames();
+	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool
 	{
-		case usImperial:
-			return "Imperial";
-		case usMetric:
-			return "Metric";
-		default:
-			return "";
+		return usp.first == us;
+	});
+	if (it == names.end())
+	{
+		it = names.begin();
 	}
-	return rv;
+	return it->second;
+}
+
+IniProfile& UnitConversionServer::getProfile()
+{
+	return _profile;
+}
+
+bool UnitConversionServer::isDirty() const
+{
+	return _profile.isDirty();
 }
 
 }

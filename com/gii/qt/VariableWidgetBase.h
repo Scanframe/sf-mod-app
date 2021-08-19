@@ -11,7 +11,7 @@ namespace sf
 /**
  * Forward definition of private implemented class to prevent interfaces exposure.
  */
-class VariableWidgetBasePrivate;
+class Variable;
 
 /**
  * @brief Base class for #sf::Variable based widgets.
@@ -46,6 +46,11 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		[[nodiscard]] QString getVariableId() const;
 
 		/**
+		 * @brief Gets the reference to the underlying Variable instance.
+		 */
+		[[nodiscard]] Variable& getVariable();
+
+		/**
 		 * @brief Property 'converted' set method.
 		 */
 		void setConverted(bool);
@@ -78,16 +83,15 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		 */
 		virtual void applyReadOnly(bool yn) = 0;
 
+		struct PrivateBase;
 		/**
 		 * @brief Holds the private object or a derived one.
 		 */
-		VariableWidgetBasePrivate* _private{nullptr};
+		PrivateBase* _p{nullptr};
 
 	private:
+
 		typedef QWidget base_type;
-
-
-		friend VariableWidgetBasePrivate;
 };
 
 }

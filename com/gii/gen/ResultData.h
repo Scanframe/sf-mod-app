@@ -274,7 +274,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 *
 		 * @return Name string
 		 */
-		[[nodiscard]] size_t getNameLevelCount() const;
+		[[nodiscard]] int getNameLevelCount() const;
 
 		/**
 		 * @brief Gets the instance description.
@@ -489,9 +489,8 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @brief For owners to writes data to storage in using an offset and size in blocks.
 		 *
 		 * Written data needs to be committed using #commitValidations() which emits the events to all event handlers.
-		 * Passing std::numeric_limits<Range::size_type>::max() as offset means that the data is appended and getBlockCount
-		 * is called internally to get the offset.
-		 * @param ofs When the value is std::numeric_limits<Range::size_type>::max() the data is appended.
+		 * Passing #npos as offset means that the data is appended and getBlockCount is called internally to get the offset.
+		 * @param ofs When the value is #npos the data is appended.
 		 * @param sz Size in blocks to write.
 		 * @param src Source pointer to data to read from.
 		 * @param auto_reserve Reserve file mapped memory when needed.

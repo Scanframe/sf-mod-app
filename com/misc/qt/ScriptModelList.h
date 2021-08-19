@@ -18,11 +18,6 @@ class _MISC_CLASS ScriptModelList :public QAbstractListModel
 		explicit ScriptModelList(QObject* parent = nullptr);
 
 		/**
-		 * @brief Destructor.
-		 */
-		~ScriptModelList() override;
-
-		/**
 		 * @brief Modes available for this model.
 		 */
 		enum EMode

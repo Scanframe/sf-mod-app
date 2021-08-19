@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include <iostream>
 #include <fstream>
 
 #include "TVector.h"
 #include "../global.h"
+#include "gen_utils.h"
 
 namespace sf
 {
@@ -17,6 +19,7 @@ class _MISC_CLASS IniProfile
 {
 	protected:
 		class Entry;
+
 		class Section;
 
 	public:
@@ -26,9 +29,9 @@ class _MISC_CLASS IniProfile
 		typedef TVector<Entry*> EntryVector;
 
 		/**
-		 * @brief Not found return value.
+		 * @brief Index not found return value.
 		 */
-		static const size_t npos = EntryVector::npos;
+		static constexpr size_t npos = EntryVector::npos;
 
 		/**
 		 * @brief Type
@@ -43,7 +46,7 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Initializing constructor.
 		 *
-		 * @param path Filepath to the ini file.
+		 * @param path Filepath to the ini-file.
 		 */
 		explicit IniProfile(const std::string& path);
 
@@ -77,7 +80,7 @@ class _MISC_CLASS IniProfile
 		/**
 		* @brief Works the same as TProfile from OWL
 		*/
-		bool getString(const std::string&, std::string&, const std::string& defaultString = "") const;
+		bool getString(const std::string& key, std::string& value, const std::string& defaultString = {}) const;
 
 		/**
 		 * @brief Flushes/Removes all sections from this instance.
@@ -87,43 +90,60 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Prepends prefix to key if prefix not null
 		 */
-		void setKeyPrefix(const std::string& prefix);
+		void setKeyPrefix(const std::string& prefix = {});
 
 		/**
-		* @brief Gets a string class value.
-		*/
-		[[nodiscard]] std::string getString(const std::string& key, const std::string& defaultString = "") const;
+		 * @brief Gets a string class value.
+		 */
+		[[nodiscard]] std::string getString(const std::string& key, const std::string& defaultString = {}) const;
 
 		/**
-		* @brief Sets a string class value making the Dirty flag true
-		*/
+		 * @brief Sets a string class value making the Dirty flag true
+		 */
 		bool setString(const std::string& key, const std::string& st);
 
 		/**
-		* @brief Sets an (int) value and sets the Dirty flag to true
-		*/
+		 * @brief Sets an (int) value and sets the Dirty flag to true
+		 */
 		bool setInt(const std::string& key, int value);
 
 		/**
-		* @brief Sets current section, returns true if section exists
-		* and creates one if 'create' is true.
-		*/
-		bool setSection(const std::string& section = "", bool create = true);
+		 * @brief Sets current section, returns true if section exists
+		 * and creates one if 'create' is true.
+		 */
+		bool setSection(const std::string& section, bool create = true);
 
 		/**
-		* @brief Sets current section, returns true if section exists.
-		*/
+		 * Selects section without creating.
+		 * @param section
+		 * @return
+		 */
+		[[nodiscard]] bool selectSection(const std::string& section) const;
+
+		/**
+		 * @brief Sets current section by index.
+		 *
+		 * @param index Section index.
+		 * @return true if section exists.
+		 */
 		bool setSection(size_type index);
 
 		/**
-		* @brief Returns the count of sections.
-		*/
+		 * @brief Gets the section count.
+		 *
+		 * @return Amount of sections.
+		 */
 		[[nodiscard]] size_type getSectionCount() const;
 
 		/**
 		* @brief Get current or specific section name p is index in section list.
 		*/
 		[[nodiscard]] std::string getSection(size_type p = npos) const;
+
+		/**
+		* @brief Get all section names in a std::string vector.
+		*/
+		[[nodiscard]] strings getSections() const;
 
 		/**
 		 * @brief Finds current or specific section location in list.
@@ -141,6 +161,7 @@ class _MISC_CLASS IniProfile
 		{
 			return findSection(section) != npos;
 		}
+
 		/**
 		 * @brief Returns whether the passed key exists in the current selected in the section of the profile.
 		 *
@@ -164,6 +185,11 @@ class _MISC_CLASS IniProfile
 		bool removeSection(size_type p);
 
 		/**
+		 * @brief Removes all keys from a section by position or the current selected one if none has been passed.
+		 */
+		bool removeKeys(size_type section = npos);
+
+		/**
 		 * @brief Inserts comment before existing key.
 		 */
 		bool insertComment(const std::string& key, const std::string& comment);
@@ -174,7 +200,7 @@ class _MISC_CLASS IniProfile
 		[[nodiscard]] size_type getEntryCount() const;
 
 		/**
-		 * @brief Finds in the current section the key, on failure it returns UINT_MAX.
+		 * @brief Finds in the current section the key, on failure it returns npos.
 		 */
 		size_type findEntry(const std::string& key);
 
@@ -184,6 +210,27 @@ class _MISC_CLASS IniProfile
 		 * p is index in entry (key) list (includes comments !!)
 		 */
 		std::string getEntryKey(size_type p);
+
+		/**
+		 * @brief Gets the keys of the current section or of the passed section index.
+
+		 * @param section Section index where #npos indicates the current selected one.
+		 * @return Vector of std::string of keys.
+		 */
+		[[nodiscard]] strings getKeys(size_type section = npos) const;
+
+		/**
+		 * @brief Type for retrieving key and values.
+		 */
+		typedef std::map<std::string, std::string> KeyValueMap;
+
+		/**
+		 * @brief Gets the key value map from the current selected section by default or the section provided.
+		 *
+		 * @param section Index of the section (default 'npos' = current)
+		 * @return Map of keys and values.
+		 */
+		[[nodiscard]] KeyValueMap getMap(size_type section = npos) const;
 
 		/**
 		 * @brief Get entry key in current section, returns key or comment.
@@ -284,10 +331,6 @@ class _MISC_CLASS IniProfile
 
 				bool setLine(const std::string&);
 
-				const std::string& getKey();
-
-				const std::string& getValue();
-
 				std::ostream& write(std::ostream& os);
 
 				bool read(std::istream& is);
@@ -299,7 +342,7 @@ class _MISC_CLASS IniProfile
 				std::string _key;
 				std::string _value;
 
-				friend Section;
+				friend class IniProfile;
 		};
 
 		/**
@@ -321,6 +364,7 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Finds an entry by key value.
+				 *
 				 * @param key Name of the key
 				 * @return #npos if not found.
 				 */
@@ -328,6 +372,7 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Sets sections value by key name.
+				 *
 				 * @param key Name of the key
 				 * @param value String value.
 				 * @return -1 on failure and 1 on change and 0 on no change.
@@ -335,26 +380,42 @@ class _MISC_CLASS IniProfile
 				int setEntry(const std::string& key, const std::string& value);
 
 				/**
+				 * @brief Gets an entry string and returns a default when it does not exist.
+				 * @param key Key name.
 				 *
-				 * @param key
-				 * @param defValue
-				 * @return
+				 * @param defValue Default string value.
+				 * @return Found value or default when not found.
 				 */
 				std::string getEntry(const std::string& key, const std::string& defValue);
 
-				bool removeEntry(EntryVector::size_type p);
+				/**
+				 * @brief Removes an entry from a index position.
+				 *
+				 * @param index Position of the entry.
+				 * @return True on success.
+				 */
+				bool removeEntry(EntryVector::size_type index);
 
+				/**
+				 * @brief Adds comment to before entry specified by the key.
+				 *
+				 * @param key Key name
+				 * @param comment Comment added before the name entry.
+				 * @return True when successful.
+				 */
 				bool insertComment(const std::string& key, const std::string& comment);
 
 				/**
 				 * @brief Streams section to an output stream.
+				 *
 				 * @param os Output stream.
-				 * @return
+				 * @return The passed output stream.
 				 */
 				std::ostream& write(std::ostream& os);
 
 				/**
 				 * @brief Read section from an input stream.
+				 *
 				 * @param is Input stream.
 				 * @return True on success.
 				 */
@@ -435,4 +496,4 @@ std::ostream& operator<<(std::ostream& os, const IniProfile& profile)
 	return profile.write(os);
 }
 
-} // namespace
+}

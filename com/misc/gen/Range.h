@@ -281,7 +281,7 @@ class _MISC_CLASS Range :private RANGE
 			/**
 			 * Failed to compare.
 			 */
-			cmpError = INT_MAX,
+			cmpError = std::numeric_limits<int>::max(),
 			/**
 			 * Both ranges ae the same.
 			 * ```text

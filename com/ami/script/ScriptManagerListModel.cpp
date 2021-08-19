@@ -1,6 +1,6 @@
 #include <QMetaEnum>
 #include "ScriptManagerListModel.h"
-#include "CommonItemDelegate.h"
+#include <misc/qt/CommonItemDelegate.h>
 
 namespace sf
 {

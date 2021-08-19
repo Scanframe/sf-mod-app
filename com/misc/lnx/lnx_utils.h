@@ -30,7 +30,7 @@ _MISC_FUNC pid_t gettid() noexcept;
 /**
  * Returns all the files from the passed directory using a wildcard.
  */
-_MISC_FUNC bool getfiles(strings& files, std::string directory, std::string wildcard);
+_MISC_FUNC bool getFiles(strings& files, std::string directory, std::string wildcard);
 
 /**
  * Writes a buffer to a file.

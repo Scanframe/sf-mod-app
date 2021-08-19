@@ -22,6 +22,7 @@ PushButton::PushButton(QWidget* parent)
 
 bool PushButton::isRequiredProperty(const QString& name)
 {
+/*
 	static const char* keys[] =
 		{
 			"geometry",
@@ -38,6 +39,8 @@ bool PushButton::isRequiredProperty(const QString& name)
 	{
 		return name == prop;
 	});
+*/
+	return true;
 }
 
 void PushButton::mousePressEvent(QMouseEvent* event)

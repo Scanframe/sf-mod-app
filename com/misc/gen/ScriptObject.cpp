@@ -5,8 +5,9 @@ namespace sf
 
 SF_IMPL_IFACE(ScriptObject, ScriptObject::Parameters, Interface)
 
-ScriptObject::ScriptObject(const char* type_name)
+ScriptObject::ScriptObject(const char* type_name, ScriptObject* parent)
 	:_typeName(type_name)
+	,_parent(parent)
 {}
 
 const ScriptObject::IdInfo* ScriptObject::getInfoUnknown()
@@ -35,7 +36,7 @@ ScriptObject::operator Value() const
 	const ScriptObject* so = this;
 	if (so)
 	{
-		return Value(Value::vitCustom, &so, sizeof(&so));
+		return {Value::vitCustom, &so, sizeof(&so)};
 	}
 	// Return zero integer when the object is valid.
 	return Value(0);
@@ -44,6 +45,16 @@ ScriptObject::operator Value() const
 std::string ScriptObject::getTypeName() const
 {
 	return _typeName;
+}
+
+void ScriptObject::makeParent(ScriptObject* so)
+{
+	so->_parent = this;
+}
+
+void ScriptObject::setParent(ScriptObject* parent)
+{
+	_parent = parent;
 }
 
 }

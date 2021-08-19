@@ -2,6 +2,7 @@
 #include <QMenu>
 #include <QSettings>
 #include <QWidget>
+#include <QStatusBar>
 #include "PropertySheetDialog.h"
 #include "ui_PropertySheetDialog.h"
 #include "Resource.h"
@@ -40,7 +41,7 @@ struct PropertySheetDialog::Private :QObject
 			i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ButtonText));
 		}
 		// Restore the state of the dialog including the list view mode.
-		stateSaveRestore(false);
+		stateSaveRestore(false, nullptr);
 		// Create a action group.
 		auto ag = new QActionGroup(menu);
 		ag->setExclusive(true);
@@ -100,28 +101,51 @@ struct PropertySheetDialog::Private :QObject
 		return ppl;
 	}
 
-	void stateSaveRestore(bool save)
+	void stateSaveRestore(bool save, PropertyPage* pp)
 	{
 		_settings->beginGroup(getObjectNamePath(_s).join('.').prepend("State."));
-		QString keyState("State");
-		QString keySplitter("Splitter");
-		QString keyViewMode("ViewMode");
-		QString keyPage("Page");
-		if (save)
+		if (!pp)
 		{
-			_settings->setValue(keyState, _s->saveGeometry());
-			_settings->setValue(keySplitter, ui->splitter->saveState());
-			_settings->setValue(keyViewMode, ui->listWidget->viewMode());
-			_settings->setValue(keyPage, _selectedPage);
+			QString keyState("State");
+			QString keySplitter("Splitter");
+			QString keyViewMode("ViewMode");
+			QString keyPage("Page");
+			if (save)
+			{
+				_settings->setValue(keyState, _s->saveGeometry());
+				_settings->setValue(keySplitter, ui->splitter->saveState());
+				_settings->setValue(keyViewMode, ui->listWidget->viewMode());
+				_settings->setValue(keyPage, _selectedPage);
+			}
+			else
+			{
+				_s->restoreGeometry(_settings->value(keyState).toByteArray());
+				ui->splitter->restoreState(_settings->value(keySplitter).toByteArray());
+				auto vm = ui->listWidget->viewMode();
+				ui->listWidget->setViewMode((QListView::ViewMode) _settings->value(keyViewMode, (int) vm).toInt());
+				applyViewMode(vm);
+				_selectedPage = _settings->value(keyPage, _selectedPage).toString();
+			}
+			for(auto p: getPages())
+			{
+				auto name = p->objectName();
+				if (!name.isEmpty())
+				{
+					_settings->beginGroup(name);
+					p->stateSaveRestore(*_settings, save);
+					_settings->endGroup();
+				}
+			}
 		}
 		else
 		{
-			_s->restoreGeometry(_settings->value(keyState).toByteArray());
-			ui->splitter->restoreState(_settings->value(keySplitter).toByteArray());
-			auto vm = ui->listWidget->viewMode();
-			ui->listWidget->setViewMode((QListView::ViewMode)_settings->value(keyViewMode, (int)vm).toInt());
-			applyViewMode(vm);
-			_selectedPage = _settings->value(keyPage, _selectedPage).toString();
+			auto name = pp->objectName();
+			if (!name.isEmpty())
+			{
+				_settings->beginGroup(name);
+				pp->stateSaveRestore(*_settings, save);
+				_settings->endGroup();
+			}
 		}
 		_settings->endGroup();
 	}
@@ -153,7 +177,7 @@ struct PropertySheetDialog::Private :QObject
 		{
 			// Get the page from the list widget.
 			auto page = qvariant_cast<PropertyPage*>(items.first()->data(Qt::ItemDataRole::UserRole));
-			// Now activate the the page by making it visible.
+			// Now activate the page by making it visible.
 			page->setVisible(true);
 			// Assign the object name of the selected page.
 			_selectedPage = page->objectName();
@@ -162,8 +186,12 @@ struct PropertySheetDialog::Private :QObject
 
 	void applyClose()
 	{
-		// Apply the changes.
-		apply();
+		// Apply the changes when modified.
+		// Is an additional check when 'Ok' button is not enabled or disabled when modified.
+		if (_s->isSheetModified())
+		{
+			apply();
+		}
 		// Close the sheet.
 		_s->close();
 	}
@@ -187,6 +215,11 @@ struct PropertySheetDialog::Private :QObject
 		}
 		// Calling checkModified will enable or disable the buttons.
 		_s->checkModified(nullptr);
+		// Emit the modified signal when a page was applied.
+		if (!modified_pages.isEmpty())
+		{
+			emit _s->modified();
+		}
 	}
 };
 
@@ -200,7 +233,7 @@ PropertySheetDialog::PropertySheetDialog(const QString& name, QSettings* setting
 
 PropertySheetDialog::~PropertySheetDialog()
 {
-	_p->stateSaveRestore(true);
+	_p->stateSaveRestore(true, nullptr);
 }
 
 void PropertySheetDialog::addPage(PropertyPage* page)
@@ -228,6 +261,8 @@ void PropertySheetDialog::addPage(PropertyPage* page)
 	item->setText(page->getPageName());
 	// Set item tool tip from the property page list description.
 	item->setToolTip(page->getPageDescription());
+	// Restore state of this single page.
+	_p->stateSaveRestore(false, page);
 }
 
 bool PropertySheetDialog::isSheetModified() const
@@ -250,21 +285,14 @@ void PropertySheetDialog::checkModified(QWidget* origin)
 	auto modified = isSheetModified();
 	// Enable or disable the apply buttons depending on the sheet change.
 	_p->ui->btnApply->setEnabled(modified);
-	_p->ui->btnOkay->setEnabled(modified);
+	//_p->ui->btnOkay->setEnabled(modified);
 }
 
-void PropertySheetDialog::open()
+void PropertySheetDialog::showEvent(QShowEvent* event)
 {
+	QDialog::showEvent(event);
 	// Calling checkModified will enable or disable the buttons.
 	checkModified(nullptr);
-	QDialog::open();
-}
-
-int PropertySheetDialog::exec()
-{
-	// Calling checkModified will enable or disable the buttons.
-	checkModified(nullptr);
-	return QDialog::exec();
 }
 
 }

@@ -1,18 +1,21 @@
 #pragma once
 
 #include <QWidget>
+#include <QMenu>
 #include <QScrollArea>
+#include <QSettings>
+#include <misc/qt/LayoutWidget.h>
 #include <ami/iface/MultiDocInterface.h>
 
 namespace sf
 {
 
-class LayoutEditor :public QWidget, public MultiDocInterface
+class LayoutEditor :public LayoutWidget, public MultiDocInterface
 {
 	Q_OBJECT
 
 	public:
-		explicit LayoutEditor(QWidget* parent);
+		explicit LayoutEditor(QSettings* settings, QWidget* parent);
 
 		void newFile() override;
 
@@ -50,6 +53,12 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 
 		void develop() override;
 
+		bool eventFilter(QObject* watched, QEvent* event) override;
+
+		void popupContextMenu(QObject* target, const QPoint& pos) override;
+
+		void openPropertyEditor(QObject* target) override;
+
 	protected:
 		void closeEvent(QCloseEvent* event) override;
 
@@ -64,11 +73,17 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 
 		[[nodiscard]] QString strippedName(const QString& fullFileName) const;
 
-		QString curFile;
-		bool isUntitled;
+		QSettings* _settings;
+		QString _curFile;
+		bool _isUntitled;
 		QScrollArea* _scrollArea{nullptr};
 		QWidget* _widget{nullptr};
 		QString _rootName;
+		bool _editable{true};
+		bool _modified{false};
+		QObject* _currentTarget{nullptr};
+		QMenu* _targetContextMenu{nullptr};
+
 };
 
 }

@@ -157,7 +157,7 @@ md5hash_t md5(const std::string& s)
 
 std::string md5hexstr(const md5hash_t& hash)
 {
-	return hexstring(&hash, sizeof(hash));
+	return hexString(&hash, sizeof(hash));
 }
 
 std::string md5str(const std::string& s)
@@ -454,7 +454,7 @@ bool file_mkdir(const char* path, __mode_t mode)
 			// Retrieve single subdirectory.
 			std::string tmp = dir.substr(0, pos);
 			// Check for existence of dir before creating.
-			if (!file_exists(tmp.c_str()))
+			if (!fileExists(tmp.c_str()))
 			{
 				// Create the sub directory.
 				if (::mkdir(tmp.c_str(), mode))
@@ -481,7 +481,7 @@ bool file_mkdir(const char* path, __mode_t mode)
 	}
 	while (ofs);
 	// In the end check if the directory exists as a whole.
-	return file_exists(dir.c_str());
+	return fileExists(dir.c_str());
 }
 
 }

@@ -21,7 +21,7 @@ namespace sf
 
 PropertyPage::PropertyPage(QWidget* parent)
 	:QWidget(parent)
-	, _sheet(qobject_cast<PropertySheetDialog*>(parent))
+	 , _sheet(qobject_cast<PropertySheetDialog*>(parent))
 {
 }
 
@@ -77,6 +77,14 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		if (auto o = qobject_cast<QGroupBox*>(widget))
 		{
 			connectIt(sheet, o, rv);
+			continue;
+		}
+		if (auto o = qobject_cast<QTabWidget*>(widget))
+		{
+			for (int i = 0; i < o->count(); i++)
+			{
+				connectIt(sheet, o->widget(i), rv);
+			}
 			continue;
 		}
 		// CheckBox
@@ -182,22 +190,26 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// QAbstractItemModel
 		if (auto o = qobject_cast<QTreeView*>(widget))
 		{
-			QObject::connect(o->model(), &QAbstractItemModel::dataChanged, [sheet, widget]()
+			// When no model is connected avoid erroneous connections.
+			if (o->model())
 			{
-				sheet->checkModified(widget);
-			});
-			QObject::connect(o->model(), &QAbstractItemModel::rowsInserted, [sheet, widget]()
-			{
-				sheet->checkModified(widget);
-			});
-			QObject::connect(o->model(), &QAbstractItemModel::rowsMoved, [sheet, widget]()
-			{
-				sheet->checkModified(widget);
-			});
-			QObject::connect(o->model(), &QAbstractItemModel::rowsRemoved, [sheet, widget]()
-			{
-				sheet->checkModified(widget);
-			});
+				QObject::connect(o->model(), &QAbstractItemModel::dataChanged, [sheet, widget]()
+				{
+					sheet->checkModified(widget);
+				});
+				QObject::connect(o->model(), &QAbstractItemModel::rowsInserted, [sheet, widget]()
+				{
+					sheet->checkModified(widget);
+				});
+				QObject::connect(o->model(), &QAbstractItemModel::rowsMoved, [sheet, widget]()
+				{
+					sheet->checkModified(widget);
+				});
+				QObject::connect(o->model(), &QAbstractItemModel::rowsRemoved, [sheet, widget]()
+				{
+					sheet->checkModified(widget);
+				});
+			}
 			continue;
 		}
 		// No standard matching control widget was so add it to the returned list.
@@ -232,6 +244,11 @@ void PropertyPage::afterPageApply(bool was_modified)
 }
 
 void PropertyPage::applyPage()
+{
+	// Left empty and must be implemented in a derived class.
+}
+
+void PropertyPage::stateSaveRestore(QSettings& settings, bool save)
 {
 	// Left empty and must be implemented in a derived class.
 }

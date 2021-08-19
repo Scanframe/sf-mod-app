@@ -61,6 +61,11 @@ class _GII_CLASS FileMappedStorage
 		typedef uint64_t size_type;
 
 		/**
+		 * @brief Unsigned size value indicating not found or no index.
+		 */
+		static constexpr size_t npos = std::numeric_limits<size_type>::max();
+
+		/**
 		 * Initializing constructor.
 		 * @param seg_sz Sets the segment size of storage in blocks.
 		 * @param blk_sz Is in bytes.
@@ -159,11 +164,6 @@ class _GII_CLASS FileMappedStorage
 		 * @return True on success.
 		 */
 		bool setRecycleCount(size_type count);
-
-		/**
-		 * @brief Returns true if the instance was constructed well.
-		 */
-		[[nodiscard]] bool isValid() const;
 
 		/**
 		 * @brief Writes the status to the output stream.
@@ -455,7 +455,7 @@ class _GII_CLASS FileMappedStorage
 		 * Holds the segment which is locked by this class instance.
 		 * Where max() means no segment is locked.
 		 */
-		size_type _cachedSegmentIndex{std::numeric_limits<size_type>::max()};
+		size_type _cachedSegmentIndex{npos};
 		/**
 		 * Maximum amount of segments to be used when storage is recycled.
 		 */

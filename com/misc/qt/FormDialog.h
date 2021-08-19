@@ -22,7 +22,7 @@ class _MISC_CLASS FormDialog :public QDialog
 		/**
 		 * Overridden to return the size of the contained UI file.
 		 */
-		QSize sizeHint() const override;
+		[[nodiscard]] QSize sizeHint() const override;
 
 		/**
 		 * Loads UI file in the form.
@@ -41,6 +41,7 @@ class _MISC_CLASS FormDialog :public QDialog
 		void resizeEvent(QResizeEvent* event) override;
 
 	private:
+
 		QScrollArea* _scrollArea;
 
 		QWidget* _widget{nullptr};

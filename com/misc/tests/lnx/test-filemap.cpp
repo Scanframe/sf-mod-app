@@ -73,7 +73,7 @@ TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
 		// Delete the file map which implicates unlinking the temporary file.
 		delete fm;
 		// Check if the temp file has been deleted.
-		REQUIRE(!sf::file_exists(fp));
+		REQUIRE(!sf::fileExists(fp));
 	}
 
 }

@@ -21,7 +21,6 @@ constexpr size_t MAX_IDENT_LENGTH = 64;
  */
 constexpr size_t MAX_STRING_LENGTH = (1024 * 4);
 
-
 const char* ScriptEngine::getErrorText(EArithError error_value) const
 {
 	if (error_value == aeCurrent)
@@ -215,16 +214,14 @@ strings ScriptEngine::getIdentifiers(ScriptObject::EIdentifier id) const
 	return rv;
 }
 
-std::string ScriptEngine::getInfoNames() const
+strings ScriptEngine::getInfoNames() const
 {
-	std::string s;
-	// Find the name of the identifier.
+	strings rv;
 	for (auto& i : _idInfo)
 	{
-		s += i._name;
-		s += "\n";
+		rv.add(i._name);
 	}
-	return s;
+	return rv;
 }
 
 bool ScriptEngine::getSetValue
@@ -237,12 +234,12 @@ bool ScriptEngine::getSetValue
 {
 	if (!info)
 	{
-		throw std::invalid_argument(std::string(__FUNCTION__ ) + "() 'info' is nullptr!");
+		throw std::invalid_argument(std::string(__FUNCTION__) + "() 'info' is nullptr!");
 	}
 	// Check if the amount of parameters is correct.
 	if (info->_id == idFunction && !param)
 	{
-		throw std::invalid_argument(std::string(__FUNCTION__ ) + "() 'param' is nullptr!");
+		throw std::invalid_argument(std::string(__FUNCTION__) + "() 'param' is nullptr!");
 	}
 	// Check if the info is own info structure by checking the speed index.
 	if (info->_index <= SID_SCRIPT_START)
@@ -405,12 +402,12 @@ bool ScriptEngine::getSetValue
 							{
 								// left trim
 								case -1:
-									str = trim_left(str, chars);
+									str = trimLeft(str, chars);
 									break;
 
 									// right trim
 								case 1:
-									str = trim_right(str, chars);
+									str = trimRight(str, chars);
 									break;
 
 									// left and right trim.
@@ -921,7 +918,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 		DataCode data_code(this);
 		// Get identifier info and number of parameters in case of a function
 		data_code._info = getInfo(name);
-		// When a value had a member that was dereference.
+		// When a value had a member that was dereferenced.
 		bool start_over = true;
 		do
 		{
@@ -944,7 +941,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 						// Set the left value.
 						left = data_code;
 					}
-					// Check for dereferenced object.
+						// Check for dereferenced object.
 					else if (_cmd[_pos] == '.')
 					{
 						// Skip the dot character.
@@ -1064,7 +1061,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 								}
 								// Get the member name.
 								getName(name);
-								// Get the info struture of the passed object member name.
+								// Get the info structure of the passed object member name.
 								data_code._info = data_code._object->getInfo(name);
 								// Check for an error and an unknown ID.
 								if (!data_code._info || data_code._info->_id == idUnknown)
@@ -1294,8 +1291,7 @@ const ScriptCalcFunction::IdInfo* ScriptCalcFunction::getInfo(const std::string&
 	return ScriptEngine::getInfo(name);
 }
 
-Value::flt_type calculator(const std::string& script, Value::flt_type def,
-	Value::flt_type x, Value::flt_type y, Value::flt_type z)
+Value::flt_type calculator(const std::string& script, Value::flt_type def, Value::flt_type x, Value::flt_type y, Value::flt_type z)
 {
 	Value result(0.0);
 	ScriptCalcFunction fsc;

@@ -183,7 +183,7 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		void setMaxLoopTime(unsigned long usec);
 
 		// Overloaded from base class.
-		[[nodiscard]] std::string getInfoNames() const override;
+		[[nodiscard]] strings getInfoNames() const override;
 
 		/**
 		 * Overloaded from base class to append more information on identifier/keywords.
@@ -281,6 +281,12 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 */
 		[[nodiscard]] strings getIdentifiers(EIdentifier id) const override;
 
+		/**
+		 * @brief Get the step mode of the script.
+		 * @return True when the script is in step mode.
+		 */
+		[[nodiscard]] bool isStepMode() const;
+
 	protected:
 		/**
 		 * @brief Possible exit codes.
@@ -344,12 +350,6 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 * @brief Links the labels of the calls in the script.
 		 */
 		virtual void linkInstruction();
-
-		/**
-		 * @brief Get the step mode of the script.
-		 * @return True when the script is in step mode.
-		 */
-		[[nodiscard]] bool isStepMode() const;
 
 		/**
 		 * @brief Sets the execution state.
@@ -563,7 +563,7 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		/**
 		 * @brief Holds the trace status where 0 = Off, 1 = _outputStream.
 		 */
-		int _trace{0};
+		Value::int_type _trace{0};
 		/**
 		 * @brief Holds a static list of identifier info.
 		 */

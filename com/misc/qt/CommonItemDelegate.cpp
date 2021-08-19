@@ -2,8 +2,8 @@
 #include <QLineEdit>
 #include <QKeySequenceEdit>
 #include <QStandardItemModel>
+#include <QSpinBox>
 #include "CommonItemDelegate.h"
-#include "ScriptManagerListModel.h"
 
 namespace sf
 {
@@ -28,6 +28,11 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		{
 			return new QKeySequenceEdit(parent);
 		}
+
+		case etSpinBox:
+		{
+			return new QSpinBox(parent);
+		}
 	}
 	// Call the initial method.
 	return QStyledItemDelegate::createEditor(parent, option, index);
@@ -46,7 +51,7 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			auto v = index.model()->data(index, Qt::EditRole);
 
 			cb->addItems(sl);
-			cb->setCurrentIndex(sl.indexOf(v.toString()));
+			cb->setCurrentIndex((int)sl.indexOf(v.toString()));
 			return;
 		}
 
@@ -64,6 +69,14 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			auto kse = dynamic_cast<QKeySequenceEdit*>(editor);
 			Q_ASSERT(kse);
 			kse->setKeySequence(index.model()->data(index, Qt::EditRole).value<QKeySequence>());
+			return;
+		}
+
+		case etSpinBox:
+		{
+			auto sb = dynamic_cast<QSpinBox*>(editor);
+			Q_ASSERT(sb);
+			sb->setValue(index.model()->data(index, Qt::EditRole).toInt());
 			return;
 		}
 	}
@@ -100,6 +113,15 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			model->setData(index, kse->keySequence(), Qt::EditRole);
 			return;
 		}
+
+		case etSpinBox:
+		{
+			auto sb = dynamic_cast<QSpinBox*>(editor);
+			Q_ASSERT(sb);
+			model->setData(index, sb->value(), Qt::EditRole);
+			return;
+		}
+
 	}
 	// Call the initial method.
 	return QStyledItemDelegate::setModelData(editor, model, index);

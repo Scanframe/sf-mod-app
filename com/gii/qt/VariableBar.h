@@ -6,10 +6,6 @@
 namespace sf
 {
 
-/**
- * Forward definition.
- */
-class VariableBarPrivate;
 
 /**
  * @brief Widget for showing #sf::Variable value types integer and floating point having a minimum and maximum value.
@@ -17,6 +13,7 @@ class VariableBarPrivate;
 class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
 {
 	Q_OBJECT
+		Q_PROPERTY(int nameLevel READ nameLevel WRITE setNameLevel)
 
 	public:
 		/**
@@ -33,6 +30,16 @@ class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
 		 * @brief Overridden from base class.
 		 */
 		[[nodiscard]] QSize minimumSizeHint() const override;
+
+		/**
+		 * Gets the name level shown.
+		 */
+		[[nodiscard]] int nameLevel() const;
+
+		/**
+		 * Sets the name level shown.
+		 */
+		void setNameLevel(int level = -1);
 
 	protected:
 		/**
@@ -52,7 +59,7 @@ class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
 
 	private:
 
-		friend VariableBarPrivate;
+		struct Private;
 
 		Q_DISABLE_COPY(VariableBar)
 };

@@ -40,6 +40,10 @@ class TVector :public std::vector<T>
 		 * @brief Iteration type of the template.
 		 */
 		typedef TIterator<value_type> iter_type;
+		/**
+		 * @brief Iteration const type of the template.
+		 */
+		typedef const iter_type const_iter_type;
 
 		/**
 		 * @brief Value returned by various member functions when they fail.
@@ -85,7 +89,29 @@ class TVector :public std::vector<T>
 		 * @return Start index of the inserted entry.
 		 *
 		 */
-		size_type add(const T&);
+		size_type add(const T& t);
+
+		/**
+		 * @brief Adds item at the end of the vector.
+		 *
+		 * @return Start index of the inserted entry.
+		 *
+		 */
+		size_type add(T&& t);
+
+		/**
+		 * @brief Appends an entry to the vectors items at the end of the vector but returns itself.
+		 *
+		 * @return Start index of the inserted entries.
+		 */
+		TVector<T>& append(const T& t);
+
+		/**
+		 * @brief Appends an entry to the vectors items at the end of the vector but returns itself.
+		 *
+		 * @return Start index of the inserted entries.
+		 */
+		TVector<T>& append(T&& t);
 
 		/**
 		 * @brief Adds the vectors items at the end of the vector.
@@ -102,6 +128,15 @@ class TVector :public std::vector<T>
 		 * @return True on success.
 		 */
 		bool addAt(const T& t, size_type index);
+
+		/**
+		 * @brief Adds an item at index position.
+		 *
+		 * @param t Reference of instance.
+		 * @param index Position where to add/insert.
+		 * @return True on success.
+		 */
+		bool addAt(T&& t, size_type index);
 
 		/**
 		 * @brief Removes specific item from the list by instance.
@@ -365,6 +400,29 @@ typename TVector<T>::size_type TVector<T>::add(const T& t)
 }
 
 template<typename T>
+typename TVector<T>::size_type TVector<T>::add(T&& t)
+{
+	// Insert item at the end.
+	return std::distance(base_type::begin(), base_type::insert(base_type::end(), t));
+}
+
+template<typename T>
+TVector<T>& TVector<T>::append(const T& t)
+{
+	// Insert item at the end.
+	base_type::push_back(t);
+	return *this;
+}
+
+template<typename T>
+TVector<T>& TVector<T>::append(T&& t)
+{
+	// Insert item at the end.
+	base_type::push_back(std::move(t));
+	return *this;
+}
+
+template<typename T>
 typename TVector<T>::size_type TVector<T>::add(const TVector<T>& tv)
 {
 	// Insert item at the end.
@@ -373,6 +431,25 @@ typename TVector<T>::size_type TVector<T>::add(const TVector<T>& tv)
 
 template<typename T>
 bool TVector<T>::addAt(const T& t, size_type index)
+{
+	// Check if index is in range.
+	if (index > base_type::size())
+	{
+		return false;
+	}
+	if (index == base_type::size())
+	{
+		base_type::insert(base_type::end(), t);
+	}
+	else
+	{
+		base_type::insert(base_type::begin() + index, t);
+	}
+	return true;
+}
+
+template<typename T>
+bool TVector<T>::addAt(T&& t, size_type index)
 {
 	// Check if index is in range.
 	if (index > base_type::size())

@@ -48,7 +48,8 @@ m/s|2="/s,39.37007874015748031496062992126,0,2
 )";
 		// Initialize the unit conversion interface.
 		std::istringstream is(IniContent);
-		sf::UnitConversionServer ucs(is);
+		sf::UnitConversionServer ucs;
+		ucs.load(is);
 		// MAke clients get The imperial conversion values.
 		//ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
 		ucs.setUnitSystem(sf::UnitConversionServer::usMetric);

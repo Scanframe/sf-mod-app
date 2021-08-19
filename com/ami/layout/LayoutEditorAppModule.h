@@ -24,6 +24,10 @@ class [[maybe_unused]] LayoutEditorAppModule :public AppModuleInterface
 		[[nodiscard]] QString getLibraryFilename() const override;
 
 		[[nodiscard]] QString getSvgIconResource() const override;
+
+		bool _readOnly = true;
+
+		void settingsReadWrite(bool save);
 };
 
 }

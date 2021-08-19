@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QStyledItemDelegate>
+#include "../global.h"
 
 namespace sf
 {
 
-class CommonItemDelegate :public QStyledItemDelegate
+class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
 {
 	public:
 
@@ -21,6 +22,7 @@ class CommonItemDelegate :public QStyledItemDelegate
 			etDropDownIndex,
 			etDropDownEdit,
 			etShortcut,
+			etSpinBox,
 		};
 
 		explicit CommonItemDelegate(QObject* parent = nullptr);

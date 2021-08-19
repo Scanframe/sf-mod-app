@@ -8,7 +8,7 @@ namespace sf
 {
 
 /**
- * List model for manipulating the passed script manager.
+ * @brief List model for manipulating the passed script manager.
  */
 class ScriptManagerListModel :public QAbstractListModel
 {

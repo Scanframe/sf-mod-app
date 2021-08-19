@@ -43,12 +43,12 @@ set(SOURCES
 	gen/Exception.h gen/Exception.cpp
 	gen/Range.h	gen/Range.cpp
 	gen/RangeManager.h gen/RangeManager.cpp
-	gen/csf.h gen/csf.cpp
 	gen/Mutex.h gen/Mutex.cpp
 	gen/Thread.h gen/Thread.cpp
 	gen/Condition.h gen/Condition.cpp
 	gen/Sync.h
 	gen/TVector.h
+	gen/TStrings.h
 	gen/TListener.h
 	gen/TDeque.h
 	gen/TFifoClass.h
@@ -121,6 +121,8 @@ if (SF_BUILD_QT)
 		qt/EditorPropertyPage.cpp qt/EditorPropertyPage.h qt/EditorPropertyPage.ui
 		qt/EditorPlugin.cpp qt/EditorPlugin.h
 		qt/Graph.cpp qt/Graph.h
+		qt/CommonItemDelegate.cpp qt/CommonItemDelegate.h
+		qt/LayoutWidget.cpp qt/LayoutWidget.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)

@@ -315,7 +315,7 @@ TClassRegistration<T, P>::lookup(const std::string& name) const
 		// Iterate through the list.
 		for (typename entries_t::const_iterator it = _entries->begin(); it != _entries->end(); ++it)
 		{
-			// Compare the name case insensitive.
+			// Compare the name and return it when found.
 			if (name.compare(it->_name) == 0)
 			{
 				return it;
@@ -349,7 +349,7 @@ const typename TClassRegistration<T, P>::entry_t* TClassRegistration<T, P>::find
 	{
 		return nullptr;
 	}
-	// Convert iterator to entry pointer. (calls a dereference operator first).
+	// Convert iterator to entry pointer. (calls a dereferenced operator first).
 	return &(*it);
 }
 

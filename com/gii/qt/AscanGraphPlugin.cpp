@@ -42,17 +42,17 @@ QString AscanGraphPlugin::group() const
 
 QIcon AscanGraphPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString AscanGraphPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString AscanGraphPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool AscanGraphPlugin::isContainer() const

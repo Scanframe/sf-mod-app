@@ -27,7 +27,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	res/resource.qrc
-	ModuleMain.cpp
+	LibMain.cpp
 	JsHighlighter.cpp JsHighlighter.h
 	TextEditor.cpp TextEditor.h
 	CodeEditor.cpp CodeEditor.h

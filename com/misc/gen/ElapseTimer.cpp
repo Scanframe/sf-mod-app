@@ -7,7 +7,7 @@ namespace sf
 
 ElapseTimer::ElapseTimer()
 {
-	_target = gettime();
+	_target = getTime();
 }
 
 ElapseTimer::ElapseTimer(unsigned long usec)
@@ -17,12 +17,12 @@ ElapseTimer::ElapseTimer(unsigned long usec)
 
 bool ElapseTimer::operator()(const timespec& t) const
 {
-	return _enabled && timespeccmp(t, _target) >= 0;
+	return _enabled && timespecCompare(t, _target) >= 0;
 }
 
 bool ElapseTimer::isActive() const
 {
-	return _enabled && timespeccmp(gettime(), _target) >= 0;
+	return _enabled && timespecCompare(getTime(), _target) >= 0;
 }
 
 void ElapseTimer::set(unsigned long usec)
@@ -37,7 +37,7 @@ void ElapseTimer::set(const timespec& t)
 {
 	// Assign the elapse time for usage by Reset().
 	_elapsedTime = t;
-	timespec ct = gettime();
+	timespec ct = getTime();
 	_target.tv_sec = ct.tv_sec + _elapsedTime.tv_sec;
 	_target.tv_nsec = ct.tv_nsec + _elapsedTime.tv_nsec;
 	// Correction on the nano seconds.
@@ -52,7 +52,7 @@ void ElapseTimer::set(const timespec& t)
 
 TimeSpec ElapseTimer::getTimeLeft() const
 {
-	return getTimeLeft(gettime());
+	return getTimeLeft(getTime());
 }
 
 TimeSpec ElapseTimer::getTimeLeft(const timespec& t) const

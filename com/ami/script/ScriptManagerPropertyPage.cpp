@@ -117,8 +117,4 @@ void ScriptManagerPropertyPage::applyPage()
 	_manager->settingsReadWrite(true);
 }
 
-void ScriptManagerPropertyPage::afterPageApply(bool was_modified)
-{
-}
-
 }

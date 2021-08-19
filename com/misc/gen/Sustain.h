@@ -44,7 +44,7 @@ class _MISC_CLASS SustainBase
 			/** Default priority **/
 			spDefault = 100,
 			/** Maximum priority **/
-			spTimer = INT_MAX
+			spTimer = std::numeric_limits<int>::max()
 		};
 
 		/**

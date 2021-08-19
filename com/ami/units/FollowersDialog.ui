@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sf::FollowersDialog</class>
+ <widget class="QDialog" name="sf::FollowersDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>373</width>
+    <height>549</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Followers</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="gbFollowers">
+     <property name="title">
+      <string>Explanation</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="lblInformation">
+        <property name="text">
+         <string>Variables following the master using a formula which is used as multiplier when converting to the specified unit.
+In the formula the 'x' represents the master value like i.e. '2 * Pi * x' .</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblMessage">
+     <property name="toolTip">
+      <string>Error message</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbUnits">
+     <property name="title">
+      <string>Master</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblUnit">
+        <property name="toolTip">
+         <string>New unit after formula is applied.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Unit</string>
+        </property>
+        <property name="buddy">
+         <cstring>leUnit</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="leUnit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblMasterId">
+        <property name="toolTip">
+         <string>Master variable id.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Id</string>
+        </property>
+        <property name="buddy">
+         <cstring>leMasterId</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leMasterId"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblFormula">
+        <property name="toolTip">
+         <string>Formula like '2*x' where x is the master value.</string>
+        </property>
+        <property name="text">
+         <string>Formula</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="leFormula"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbMaster">
+     <property name="toolTip">
+      <string>List following variables id's.</string>
+     </property>
+     <property name="title">
+      <string>&amp;Followers</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <property name="leftMargin">
+       <number>4</number>
+      </property>
+      <property name="topMargin">
+       <number>4</number>
+      </property>
+      <property name="rightMargin">
+       <number>4</number>
+      </property>
+      <property name="bottomMargin">
+       <number>4</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayoutTab2">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="tbEdit">
+          <property name="text">
+           <string>Edit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbAdd">
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbRemove">
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="vsButtons">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListWidget" name="lwFollowers">
+        <property name="contextMenuPolicy">
+         <enum>Qt::ActionsContextMenu</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>leMasterId</tabstop>
+  <tabstop>leFormula</tabstop>
+  <tabstop>leUnit</tabstop>
+  <tabstop>lwFollowers</tabstop>
+  <tabstop>tbEdit</tabstop>
+  <tabstop>tbAdd</tabstop>
+  <tabstop>tbRemove</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sf::ConversionDialog</class>
+ <widget class="QDialog" name="sf::ConversionDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>355</width>
+    <height>495</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Unit Conversion</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Explanation</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="lblInformation">
+        <property name="text">
+         <string>The entered values below will be used for the conversion calculation of the new value with the new unit. For the new value the following formula is used:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblFormula">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>original = (new * multiplier) + offset</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblMessage">
+     <property name="toolTip">
+      <string>Error message</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbUnits">
+     <property name="title">
+      <string>From</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblFromUnit">
+        <property name="text">
+         <string>Unit</string>
+        </property>
+        <property name="buddy">
+         <cstring>leFromUnit</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leFromUnit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblFromPrecision">
+        <property name="toolTip">
+         <string>Precision shift of the from unit.</string>
+        </property>
+        <property name="text">
+         <string>Precision</string>
+        </property>
+        <property name="buddy">
+         <cstring>sbFromPrecision</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="sbFromPrecision">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>&amp;To</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblMultiplier">
+        <property name="text">
+         <string>&amp;Multiplier</string>
+        </property>
+        <property name="buddy">
+         <cstring>leMultiplier</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="leMultiplier">
+        <property name="toolTip">
+         <string>Multiplier for the new value.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblOffset">
+        <property name="text">
+         <string>&amp;Offset</string>
+        </property>
+        <property name="buddy">
+         <cstring>leOffset</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="leOffset">
+        <property name="toolTip">
+         <string>Offset given after multiplication for the new value.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="lblPrecisionShift">
+        <property name="toolTip">
+         <string>Precision shift of the from unit.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Precision Shift</string>
+        </property>
+        <property name="buddy">
+         <cstring>lblPrecisionShift</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblToUnit">
+        <property name="text">
+         <string>&amp;Unit</string>
+        </property>
+        <property name="buddy">
+         <cstring>leToUnit</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leToUnit"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="sbPrecisionShift">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>leFromUnit</tabstop>
+  <tabstop>sbFromPrecision</tabstop>
+  <tabstop>leToUnit</tabstop>
+  <tabstop>leMultiplier</tabstop>
+  <tabstop>leOffset</tabstop>
+  <tabstop>sbPrecisionShift</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

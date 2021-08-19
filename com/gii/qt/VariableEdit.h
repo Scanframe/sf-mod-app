@@ -7,11 +7,6 @@ namespace sf
 {
 
 /**
- * Forward definition of private implemented class to prevent interfaces exposure.
- */
-class VariableEditPrivate;
-
-/**
  * @brief Widget for editing #sf::Variable value types integer, floating point and single line string.
  */
 class QDESIGNER_WIDGET_EXPORT VariableEdit :public VariableWidgetBase
@@ -38,10 +33,14 @@ class QDESIGNER_WIDGET_EXPORT VariableEdit :public VariableWidgetBase
 		 */
 		[[nodiscard]] bool hasFocusFrame() const;
 
+		/**
+		 * Gets the name level shown.
+		 */
 		[[nodiscard]] int nameLevel() const;
-
+		/**
+		 * Sets the name level shown.
+		 */
 		void setNameLevel(int level = -1);
-
 
 	protected:
 		/**
@@ -56,7 +55,10 @@ class QDESIGNER_WIDGET_EXPORT VariableEdit :public VariableWidgetBase
 
 	private:
 
-		friend VariableEditPrivate;
+	/**
+	 * @brief Forward definition of private implemented class to prevent interfaces exposure.
+	 */
+		struct Private;
 
 		Q_DISABLE_COPY(VariableEdit)
 

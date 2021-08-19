@@ -9,6 +9,7 @@ list(APPEND CMAKE_PREFIX_PATH "../../cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
+find_package(SfGii CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
@@ -27,13 +28,16 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	res/resource.qrc
-	ModuleMain.cpp
+	LibMain.cpp
 	LayoutEditor.cpp LayoutEditor.h
 	LayoutEditorAppModule.cpp LayoutEditorAppModule.h
+	LayoutEditorPropertyPage.cpp LayoutEditorPropertyPage.h LayoutEditorPropertyPage.ui
+	pages/VariableIdPropertyPage.cpp pages/VariableIdPropertyPage.h pages/VariableIdPropertyPage.ui
+	pages/WidgetPropertyPage.cpp pages/WidgetPropertyPage.h pages/WidgetPropertyPage.ui
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-ami)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-gii sf-ami)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

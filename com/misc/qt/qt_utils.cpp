@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QFileSystemWatcher>
 #include <gen/dbgutils.h>
+#include <QLayout>
 
 #include "qt_utils.h"
 
@@ -311,10 +312,29 @@ QStringList getObjectNamePath(const QObject* object)
 	while (object)
 	{
 		auto s = object->objectName();
-		sl.prepend(s.isEmpty() ? object->metaObject()->className() : s);
+		// Cannot be used in destructor of class concerned. sl.prepend(s.isEmpty() ? object->metaObject()->className() : s);
+		sl.prepend(s.isEmpty() ? "_" : s);
 		object = object->parent();
 	}
 	return sl;
+}
+
+QLayout* getWidgetLayout(QWidget* widget)
+{
+	if (widget)
+	{
+		if (auto pw = widget->parentWidget())
+		{
+			for (auto layout: pw->findChildren<QLayout*>(QString(), Qt::FindChildrenRecursively))
+			{
+				if (layout->indexOf(widget) != -1)
+				{
+					return layout;
+				}
+			}
+		}
+	}
+	return nullptr;
 }
 
 }

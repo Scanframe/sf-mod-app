@@ -19,7 +19,6 @@ FileMappedStorage::FileMappedStorage(FileMappedStorage::size_type seg_sz, FileMa
 	_reference->_referenceCount = 1;
 	_reference->_blockSize = blk_sz;
 	_reference->_segmentSize = seg_sz;
-
 	// Segment and block size are not allowed to be zero.
 	if (!_reference->_blockSize || !_reference->_segmentSize)
 	{
@@ -90,7 +89,7 @@ void FileMappedStorage::flush()
 		// Remove all entries in the dynamic list.
 		_reference->_segmentList.flush();
 		// Set locked segment to none.
-		_cachedSegmentIndex = std::numeric_limits<size_type>::max();
+		_cachedSegmentIndex = npos;
 	}
 }
 
@@ -113,7 +112,7 @@ bool FileMappedStorage::reserve(FileMappedStorage::size_type block_count)
 	if (block_count < getBlockCount())
 	{
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to decrease block count by calling 'reserve()'!")
-		// Return false to indicate failure.
+		// Do not return false since it is not a real failure.
 		return true;
 	}
 	// Calculate the new needed amount of segments for the required blocks.
@@ -133,7 +132,6 @@ bool FileMappedStorage::reserve(FileMappedStorage::size_type block_count)
 		{
 			_reference->_segmentList.add(new Segment(_reference->_segmentSize * _reference->_blockSize));
 		}
-		//_RTTI_NOTIFY(DO_DEFAULT, "Reserved Segment For Owned Data.")
 	}
 	// Return true to indicate success.
 	return true;
@@ -150,7 +148,7 @@ bool FileMappedStorage::cacheSegment(FileMappedStorage::size_type idx)
 		{ // Unlock the segment,
 			_reference->_segmentList[_cachedSegmentIndex]->doUnlockMemory();
 			// Set the cached segment index to none.
-			_cachedSegmentIndex = std::numeric_limits<size_type>::max();
+			_cachedSegmentIndex = npos;
 		}
 		// Try lock the segment for this data store class.
 		if (_reference->_segmentList[idx]->doLockMemory())
@@ -456,6 +454,7 @@ bool FileMappedStorage::Lock::acquire(FileMappedStorage::size_type seg_idx)
 		_data = _segment->lockMemory();
 		// Copy the index number for debugging purposes.
 		_segmentIndex = seg_idx;
+		(void)_segmentIndex;
 		return true;
 	}
 	return false;

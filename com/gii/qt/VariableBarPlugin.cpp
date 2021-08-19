@@ -42,17 +42,17 @@ QString VariableBarPlugin::group() const
 
 QIcon VariableBarPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString VariableBarPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString VariableBarPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool VariableBarPlugin::isContainer() const

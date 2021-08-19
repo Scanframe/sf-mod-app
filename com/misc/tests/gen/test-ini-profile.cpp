@@ -20,9 +20,9 @@ TEST_CASE("sf::IniProfile", "[ini][file]")
 		// Scope for ini to get out of scope.
 		{
 			// Remove the file when it exists.
-			if (sf::file_exists(ini_path))
+			if (sf::fileExists(ini_path))
 			{
-				sf::file_unlink(ini_path);
+				sf::fileUnlink(ini_path);
 			}
 
 			sf::IniProfile ini(ini_path);
@@ -51,7 +51,7 @@ TEST_CASE("sf::IniProfile", "[ini][file]")
 		}
 
 		// File needs to exist.
-		REQUIRE(sf::file_exists(ini_path));
+		REQUIRE(sf::fileExists(ini_path));
 		// Open the ini-file again.
 		sf::IniProfile ini(ini_path);
 
@@ -88,6 +88,7 @@ Integer=987654321
 		REQUIRE(ini.setSection("Section B"));
 		REQUIRE(ini.getString("Key2") == "Value2");
 		REQUIRE(ini.getInt("Integer") == 987654321);
+		REQUIRE(ini.getKeys() == sf::strings{"Key2", "Integer"});
 
 		//ini.write(std::clog);
 	}

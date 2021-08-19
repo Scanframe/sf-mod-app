@@ -9,6 +9,7 @@
 #include <QFileSystemWatcher>
 #include <QPalette>
 #include <QFileDialog>
+#include <QLayout>
 #include <QMessageBox>
 
 #include "../global.h"
@@ -257,5 +258,13 @@ _MISC_FUNC  QMetaObject::Connection connectByName
  * @return List of object names.
  */
 _MISC_FUNC QStringList getObjectNamePath(const QObject* object);
+
+/**
+ * @brief Gets the layout containing the passed widget.
+ *
+ * @param widget .
+ * @return On not found nullptr.
+ */
+_MISC_FUNC QLayout* getWidgetLayout(QWidget* widget);
 
 }

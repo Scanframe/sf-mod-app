@@ -13,16 +13,17 @@ namespace
 
 const char* IniContent = R"(
 
-[System Metric]
-m/s|1=mm/s,1000,0,-2
-m/s|2=mm/s,1000,0,-1
-m/s|3=mm/s,1000,0,0
+[Metric]
+m/s,1=mm/s,1000,0,-2
+m/s,2=mm/s,1000,0,-1
+m/s,3=mm/s,1000,0,0
+°C,1=°C,1,0,1
 
-[System Imperial]
-m/s|0="/s,39.37007874015748031496062992126,0,0
-m/s|1="/s,39.37007874015748031496062992126,0,1
-m/s|2="/s,39.37007874015748031496062992126,0,2
-°C|1=°F,1.8,32,1
+[Imperial]
+m/s,0="/s,39.3700787401,0,0
+m/s,1="/s,39.3700787401,0,1
+m/s,2="/s,39.3700787401,0,2
+°C,1=°F,1.8,32,1
 
 )";
 
@@ -92,7 +93,7 @@ struct VarHandler :sf::VariableHandler
 			case veValueChange:
 			{
 				bool owned = link_var.isOwner();
-				// Server report non converted value.
+				// Server report non-converted value.
 				ve._any = link_var.getCur(!owned).getString(link_var.getSigDigits(!owned));
 				break;
 			}
@@ -240,8 +241,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		VarHandler handler_client;
 
 		// Create owner instance.
-		sf::Variable v_server(std::string("0x1000,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"),
-			0x200000);
+		sf::Variable v_server("0x1000,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20", 0x200000);
 		v_server.setHandler(&handler_server);
 
 		sf::Variable v_client;
@@ -326,9 +326,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Create server instance.
 		sf::Variable v_server;
 		v_server.setHandler(&handler_server);
-		v_server.setup(
-			sf::Variable::getDefinition("0x1000,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"),
-			0x300000);
+		v_server.setup(sf::Variable::getDefinition("0x1000,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"), 0x300000);
 
 		// Create local variable.
 		sf::Variable v_client;
@@ -477,7 +475,8 @@ TEST_CASE("sf::Variable", "[variable]")
 	SECTION("Unit Conversion")
 	{
 		std::istringstream is(IniContent);
-		sf::UnitConversionServer ucs(is);
+		sf::UnitConversionServer ucs;
+		ucs.load(is);
 		ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
 
 		VarHandler handler_server;
@@ -486,17 +485,22 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Create server instance.
 		sf::Variable v_server;
 		v_server.setHandler(&handler_server);
-		v_server.setup(
-			sf::Variable::getDefinition("0x1,Outside Temperature,°C,A,Temperature measure outside,FLOAT,DOUBLE,0.1,18,-30,50"), 0x100);
+		v_server.setup(sf::Variable::getDefinition("0x1,Outside Temperature,°C,A,Temperature measured outside,FLOAT,DOUBLE,0.1,18,-30,50"), 0x100);
 		// Makes the server instance retrieve new conversion values.
 		REQUIRE(v_server.setConvertValues(true));
+
 		// Create local variable.
 		sf::Variable v_client;
 		v_client.setHandler(&handler_client);
-		// Make the client use of a temporary value.
+		// Assign the global id.
 		v_client.setup(0x101);
 
+		REQUIRE(v_client.getUnit() == "°C");
+
 		REQUIRE(v_client.setConvert(true));
+
+		REQUIRE(v_client.getUnit() == "°F");
+
 		REQUIRE(v_client.setCur(sf::Value(90)));
 
 		// Check server instance events.

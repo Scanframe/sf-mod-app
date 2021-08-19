@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sf::LayoutEditorPropertyPage</class>
+ <widget class="sf::PropertyPage" name="sf::LayoutEditorPropertyPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>145</width>
+    <height>41</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>LayoutEditorPropertyPage</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="lblReadOnly">
+     <property name="toolTip">
+      <string>Layout files opened in the editor are readonly.</string>
+     </property>
+     <property name="text">
+      <string>&amp;Read-only</string>
+     </property>
+     <property name="buddy">
+      <cstring>cbReadOnly</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QCheckBox" name="cbReadOnly">
+     <property name="text">
+      <string>yes/no</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::PropertyPage</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/PropertyPage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

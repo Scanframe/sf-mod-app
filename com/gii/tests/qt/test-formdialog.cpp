@@ -16,16 +16,16 @@ namespace
 
 const char* IniContent = R"(
 
-[System Metric]
-m/s|1=km/h,3.6,0,1
-m/s|2=km/h,3.6,0,2
-m/s|3=km/h,3.6,0,3
+[Metric]
+m/s,1=km/h,3.6,0,1
+m/s,2=km/h,3.6,0,2
+m/s,3=km/h,3.6,0,3
 
-[System Imperial]
-m/s|0="/s,39.37007874015748031496062992126,0,0
-m/s|1="/s,39.37007874015748031496062992126,0,1
-m/s|2="/s,39.37007874015748031496062992126,0,2
-°C|1=°F,1.8,32,1
+[Imperial]
+m/s,0="/s,39.37007874015748031496062992126,0,0
+m/s,1="/s,39.37007874015748031496062992126,0,1
+m/s,2="/s,39.37007874015748031496062992126,0,2
+°C,1=°F,1.8,32,1
 
 )";
 
@@ -40,14 +40,15 @@ TEST_CASE("sf::FormDialog", "[debug]")
 	{
 		// Initialize the unit conversion interface.
 		std::istringstream is(IniContent);
-		sf::UnitConversionServer ucs(is);
-		// MAke clients get he imperial conversion values.
-		ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
+		sf::UnitConversionServer ucs;
+		ucs.load(is);
+		// MAke clients get the Imperial conversion values.
+		//ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
 		ucs.setUnitSystem(sf::UnitConversionServer::usMetric);
 		// Create a server instance.
 		sf::Variable v_server(std::string("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"));
 		// Makes the server instance retrieve new conversion values.
-		REQUIRE(v_server.setConvertValues(true));
+		CHECK(v_server.setConvertValues(true));
 		// Set the file location to the resource.
 		QFileInfo fi(":/ui/test-formdialog");
 		REQUIRE(fi.exists());

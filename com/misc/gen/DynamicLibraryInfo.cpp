@@ -46,7 +46,7 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 	// Set to 1 when the begin marker has been found and to 2 when both are found.
 	int flag = 0;
 	// Sanity check.
-	if (!file_exists(filepath))
+	if (!fileExists(filepath))
 	{
 		return false;
 	}

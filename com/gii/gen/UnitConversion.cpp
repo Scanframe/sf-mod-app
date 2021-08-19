@@ -7,21 +7,20 @@
 namespace sf
 {
 
-static UnitConversionServerCallBack UnitConversionCallBack = nullptr;
+static UnitConversionServerClosure UnitConversionClosure;
 
-static void* UnitConversionCallBackData = nullptr;
-
-void setUnitConversionHandler(UnitConversionServerCallBack func, void* data)
+void setUnitConversionHandler(const UnitConversionServerClosure& closure)
 {
-	UnitConversionCallBack = func;
-	UnitConversionCallBackData = data;
+	UnitConversionClosure.assign(closure);
 }
 
-bool getUnitConversion(const std::string& option, const std::string& from, int precision, double& mul, double& ofs, std::string& to, int& to_precision)
+bool getUnitConversion(const std::string& option, const std::string& from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision)
 {
-	if (UnitConversionCallBack)
+	// When set call the handler.
+	if (UnitConversionClosure)
 	{
-		return UnitConversionCallBack(UnitConversionCallBackData, option, from, precision, mul, ofs, to, to_precision);
+		UnitConversionEvent ev(option, from_unit, from_precision, multiplier, offset, to_unit, to_precision);
+		return UnitConversionClosure(ev);
 	}
 	return false;
 }
@@ -54,7 +53,7 @@ std::string UnitConverter::getString(double value) const
 	//
 	int precision = getSigDigits();
 	//
-	if (precision != INT_MAX)
+	if (precision != std::numeric_limits<int>::max())
 	{
 		precision = clip(precision, 0, std::numeric_limits<double>::max_digits10 - 1);
 		return stringf("%.*lf", precision, value);

@@ -1,11 +1,8 @@
 #include <misc/gen/TVector.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/RangeManager.h>
-#include <misc/gen/csf.h>
-
 #include "ResultData.h"
 #include "ResultDataHandler.h"
-// Not part of the public interface.
 #include "ResultDataStatic.h"
 #include "ResultDataReference.h"
 
@@ -249,7 +246,7 @@ bool ResultData::attachRef(ResultDataReference* ref)
 		{
 			// Notify all results that this reference is to become invalid.
 			emitLocalEvent(reInvalid, _reference->_rangeManager->getManaged(), false);
-			// Make pointer to this result data NULL so it isn't attached again in
+			// Make pointer to this result data null, so it isn't attached again in
 			// the reference destructor and detach it when the ref is deleted
 			_reference->_list[0] = nullptr;
 			// the destructor reattaches all results that are left
@@ -273,7 +270,7 @@ bool ResultData::attachRef(ResultDataReference* ref)
 	if (ref)
 	{
 		_reference = ref;
-		// Add this instance to the the reference list.
+		// Add this instance to the reference list.
 		_reference->_list.add(this);
 		// Notify the user of this instance by telling it was attached.
 		emitEvent(reIdChanged, _reference->_rangeManager->getManaged(), false);
@@ -296,7 +293,7 @@ bool ResultData::createDataStore(ResultDataReference* ref,
 	}
 	// When the recycle flag is enabled recycling is used on the data store.
 	size_type recycle = (ref->_flags & flgRecycle) ? ResultDataStatic::_recycleSize : 0;
-	// Setup the 'Data' member of the reference.
+	// Setup of the 'Data' member of the reference.
 	// Create a new TDataStore instance for this reference
 	// The block size is the size of the type times the given type instances per block.
 	ref->_data = new FileMappedStorage(segment_size,
@@ -316,6 +313,11 @@ bool ResultData::createDataStore(ResultDataReference* ref,
 
 bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_type id_ofs)
 {
+	// When not valid do not even try.
+	if (!definition._valid)
+	{
+		return false;
+	}
 	// Detach existing reference first by Attaching to ZeroRef
 	if (!attachRef(ResultDataStatic::zero()._reference))
 	{
@@ -323,17 +325,17 @@ bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_
 	}
 	// The default return value is true.
 	bool rv = true;
-	// Check if instances other then the zero result have an ID of zero.
+	// Check if instances other than Zero result have an id of zero.
 	if (_reference != ResultDataStatic::zero()._reference && (definition._id + id_ofs) == 0)
 	{
 		rv = false;
 	}
-	// Don' bother to go on if an error occurred so far.
+	// Don't bother to go on if an error occurred so far.
 	if (rv)
 	{
 		// Check if a reference with this id already exists.
 		ResultDataReference* ref = getReferenceById(definition._id + id_ofs);
-		// Check if the the returned reference pointer is not the zero reference.
+		// Check if the returned reference pointer is not the zero reference.
 		if (ref != ResultDataStatic::zero()._reference)
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
@@ -400,7 +402,7 @@ bool ResultData::emitEvent(EEvent event, const ResultData& caller, const Range& 
 
 ResultData::size_type ResultData::emitEvent(EEvent event, const Range& rng, bool skip_self)
 {
-	// Check if the event must be broad casted or not
+	// Check if the event must be broadcast or not.
 	if (event < reFirstLocal)
 	{
 		return emitGlobalEvent(event, rng, skip_self);
@@ -489,7 +491,7 @@ ResultData::size_type ResultData::attachDesired()
 		// Iterate through all instances of the reference.
 		for (auto res: ref->_list)
 		{
-			// Check if the desired ID is set to a value greater then zero
+			// Check if the desired ID is set to a value greater than zero.
 			// which means it is enabled.
 			// Also compare the desired and this ID.
 			if (res && res->_desiredId && res->_desiredId == _reference->_id)
@@ -526,7 +528,7 @@ void ResultData::setHandler(ResultDataHandler* handler)
 			// Notify instance getting event link
 			_handler = handler;
 			emitEvent(reLinked, *this, _reference->_rangeManager->getManaged());
-			// Use a unique predictable id as transaction id so it can be checked in a unit test.
+			// Use a unique predictable id as transaction id, so it can be checked in a unit test.
 			_transactionId = (Range::id_type) ResultDataStatic::getUniqueId();
 		}
 		else
@@ -609,7 +611,7 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 	{
 		// Add clipped new range to existing range.
 		Range nr(
-			_reference->_rangeManager->getManaged() + rng & Range(0, std::numeric_limits<Range::size_type>::max()));
+			_reference->_rangeManager->getManaged() + rng & Range(0, npos));
 		// Compare the new formed range with the existing one.
 		if (nr != _reference->_rangeManager->getManaged())
 		{
@@ -675,7 +677,7 @@ std::string ResultData::getName(int levels) const
 	{
 		if (levels > 0)
 		{
-			unsigned i = len;
+			std::string::size_type i = len;
 			while (i--)
 			{
 				// Is the character a separator character.
@@ -719,18 +721,9 @@ std::string ResultData::getName(int levels) const
 	return rv;
 }
 
-ResultData::size_type ResultData::getNameLevelCount() const
+int ResultData::getNameLevelCount() const
 {
-	int levels = 0;
-	for (auto ch: _reference->_name)
-	{
-		// Is the character a separator character.
-		if (ch == '|')
-		{
-			levels++;
-		}
-	}
-	return levels;
+	return static_cast<int>(std::count(_reference->_name.begin(), _reference->_name.end(), '|'));
 }
 
 ResultData::flags_type ResultData::toFlags(const std::string& flags)
@@ -853,7 +846,8 @@ bool ResultData::updateFlags(int flags, bool skip_self)
 		}
 		// Check for a change in flags.
 		if (_reference->_curFlags != flags)
-		{ // Set the flags member.
+		{
+			// Set the 'flags' member.
 			_reference->_curFlags = flags;
 			// Signal attached instances of the fact.
 			emitLocalEvent(reFlagsChange, _reference->_rangeManager->getManaged(), skip_self);
@@ -885,7 +879,7 @@ bool ResultData::setReservedBlockCount(Range::size_type sz, bool skip_self)
 		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Only owner is allowed to set reserve blocks!")
 		return false;
 	}
-	// Check if this call really reserves some extra blocks or not. Otherwise skip it from here.
+	// Check if this call really reserves some extra blocks or not, otherwise skip it from here.
 	if (sz > _reference->_data->getBlockCount())
 	{
 		// If reserved failed notify.
@@ -911,7 +905,7 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 		return false;
 	}
 	// When the passed offset is max the data must be appended.
-	if (ofs == std::numeric_limits<Range::size_type>::max())
+	if (ofs == npos)
 	{
 		ofs = _reference->_rangeManager->getManaged().getStop();
 	}
@@ -948,7 +942,7 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 	//LocalEvent(reUserLocal, Range(ofs, ofs + sz, FRef->Id), false);
 	//LocalEvent(reUserLocal, Range(ofs, ofs + sz, FRef->Id), false);
 
-	// Add this range to the validate cache that will be processed when commitValidations() is called for.
+	// Add this range to the 'validate cache' that will be processed when commitValidations() is called for.
 	_reference->_validatedCache.add(Range(ofs, ofs + sz, (Range::id_type) _reference->_id));
 	return true;
 }
@@ -988,19 +982,18 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Committing reduced vector: " << _reference->_validatedCache)
 		// Retrieve the current extends and compare them later.
 		Range aer = _reference->_rangeManager->getManaged();
-		// Create a temporary vector to let the function to return the resolved.
-		// requests in.
+		// Create a temporary vector to let the function return the resolved.
+		// Requests in.
 		Range::Vector rrl;
 		// Validate by telling the range manager that the ranges are accessible.
-		// When the function returns true requests are fulfilled an returned in 'rrl'.
+		// When the function returns true requests are fulfilled and returned in 'rrl'.
 		if (_reference->_rangeManager->setAccessible(_reference->_validatedCache, rrl))
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Range requests resolved:" << rrl)
 			// Iterate through the vector of resolved requested ranges.
 			for (auto& rng: rrl)
 			{
-				// Iterate through the result list and find the one with the
-				// the same reference as this one
+				// Iterate through the result list and find the one with the same reference as this one.
 				for (auto rd: _reference->_list)
 				{
 					// Check if the pointer is valid Check if the transaction id is
@@ -1011,7 +1004,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 						rv += rd->emitEvent(reGotRange, *this, rng);
 					}
 				}
-				// Generate an event for all of the results having the same ID as this instance.
+				// Generate an event for all the results having the same ID as this instance.
 				//LocalEvent(reGotRange, i.Current(), false);
 			}
 		}
@@ -1020,12 +1013,12 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT,
 				"Access range has changed: " << _reference->_rangeManager->getManaged())
-			// Generate an event for all of the results having the same ID as this instance.
+			// Generate an event for all the results having the same ID as this instance.
 			rv += emitLocalEvent(reAccessChange, _reference->_rangeManager->getManaged(), skip_self);
 		}
 		// Notify clients of the committed vector.
 		rv += emitLocalEvent(reCommitted, _reference->_rangeManager->getManaged(), skip_self);
-		// Flush the validate cache.
+		// Flush the 'validate cache'.
 		_reference->_validatedCache.flush();
 	}
 	return rv;
@@ -1040,7 +1033,7 @@ bool ResultData::clearValidations(bool skip_self)
 		_reference->_validatedCache.flush();
 		// Check if flushing has any effect of calling it
 		if (_reference->_rangeManager->isFlushable())
-		{ // Notify clients before it is actual cleared.
+		{ // Notify clients before it is actually cleared.
 			emitLocalEvent(reClear, _reference->_rangeManager->getManaged(), skip_self);
 			// Flush all ranges within the range manager.
 			_reference->_rangeManager->flush();
@@ -1254,7 +1247,7 @@ bool ResultData::requestRange(const Range& rng)
 bool ResultData::isIndexRangeValid(const Range& r) const
 {
 	RANGE rng{r.getStart(), r.getStop()};
-	// Apply an offset to the passed index range start because it is an index index
+	// Apply an offset to the passed index range start because it is an index.
 	if (rng._start > 0)
 	{
 		rng._start -= 1;
@@ -1264,7 +1257,7 @@ bool ResultData::isIndexRangeValid(const Range& r) const
 
 bool ResultData::requestIndexRange(const Range& rng)
 {
-	// Apply an offset to the passed index range because it is an index index
+	// Apply an offset to the passed index range because it is an index.
 	RANGE range{rng.getStart() - 1, rng.getStop()};
 	// Negative values are not allowed.
 	if (range._start < 0)
@@ -1396,7 +1389,7 @@ bool ResultData::readUpdate(std::istream& is, bool skip_self, Vector& list)
 		// Check if the reference pointer is non-zero and look only into that list for the id.
 		auto& res = const_cast<ResultData&>(not_ref_null(list) ?
 			getInstanceById(rng.getId(), list) : getInstanceById(rng.getId()));
-		// Check if new passed 'Stop' value is smaller then current one.
+		// Check if new passed 'Stop' value is smaller than current one.
 		// If so this result should be cleared. first
 		if (rng.getStop() < res._reference->_rangeManager->getManaged().getStop())
 		{
@@ -1418,13 +1411,12 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 	Definition def;
 	//
 	strings fields;
-	GetCsfFields(str.c_str(), fields);
+	fields.split(str, ',', '"');
 	// Set the reference valid flag default to true.
-	def._valid = false;
+	def._valid = true;
 	// Only when field exist.
 	if (fields.size() > rfeSegmentSize)
 	{
-		def._valid = true;
 		// Id.
 		def._id = std::stoull(fields[rfeId], nullptr, 0);
 		// Name.
@@ -1442,6 +1434,10 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 		//
 		def._valid &= (def._blockSize > 0);
 	}
+	else
+	{
+		def._valid = true;
+	};
 	// SignificantBits clipped to min and max value.
 	if (fields.size() > rfeSigBits)
 	{
@@ -1453,6 +1449,8 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 	{
 		def._offset = std::stoull(fields[rfeOffset], nullptr, 0);
 	}
+	// Notify when not valid notify.
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n" << str);
 	//
 	return def;
 }

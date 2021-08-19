@@ -29,6 +29,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	RsaEmulator.cpp	RsaEmulator.h
+	LibMain.cpp
 	)
 
 # Link the Qt widgets library.

@@ -62,11 +62,13 @@ class TClosure
 		 * @param cls Pointer of the class having the passed method.
 		 * @param mtd Pointer to method of the given class.
 		 * @param args Amount of arguments needed to call the method using **std::placeholders::_?** enumeration values.
+		 * @return It self.
 		 */
 		template<typename ClassType, typename MethodType, typename... BoundArgs>
-		void assign(ClassType* cls, MethodType mtd, BoundArgs... args)
+		TClosure& assign(ClassType* cls, MethodType mtd, BoundArgs... args)
 		{
 			TClosure<Result, Args...>::assign(std::bind(mtd, cls, args...)); // NOLINT(modernize-avoid-bind)
+			return *this;
 		}
 
 		/**

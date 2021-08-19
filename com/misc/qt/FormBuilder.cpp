@@ -70,7 +70,7 @@ bool isDispensablePropertyByValue(QObject* obj, const QString& name, const QVari
 	{
 		if (name == "modified")
 		{
-			// Not not save this at all.
+			// Not save this at all.
 			return true;
 		}
 		if (name == "readOnly" || name == "clearButtonEnabled" || name == "dragEnabled")
@@ -373,7 +373,7 @@ QWidget* FormBuilder::load(QIODevice* dev, QWidget* parentWidget)
 		buf.write(dom.toByteArray());
 		// Move pointer to start of the buffer for reading.
 		buf.seek(0);
-		// Load the the UI XML from the buffer.
+		// Load the UI XML from the buffer.
 		widget = QFormBuilder::load(&buf, parentWidget);
 	}
 	// Check if the resulting widget is valid.
@@ -403,6 +403,7 @@ void FormBuilder::save(QIODevice* dev, QWidget* widget)
 	fixSavingProperties(widget, dom);
 	// Write the document to file.
 	dev->write(dom.toByteArray());
+
 }
 
 template<typename Func>
@@ -415,7 +416,7 @@ void iterateDomElements(QDomDocument& dom, const QDomElement& elem, Func callbac
 	// Loop as long as the element is valid.
 	while (!el.isNull())
 	{
-		// When the callback is provided call other wise add all elements.
+		// When the callback is provided call otherwise add all elements.
 		callback(el);
 		// Move into the child nodes when there are any.
 		if (!el.firstChildElement().isNull())
@@ -436,7 +437,7 @@ void iterateDomElements(QDomDocument& dom, const QDomElement& elem, Func callbac
 		}
 		while (el.isNull() && !stack.isEmpty())
 		{
-			// Pop the element so we continue where we left of.
+			// Pop the element, so we continue where we left of.
 			el = stack.pop();
 			// Move to the next one.
 			el = el.nextSiblingElement();
@@ -452,7 +453,7 @@ QList<QDomElement> findDomElements(QDomDocument& dom, const QDomElement& elem, F
 	// Iterate through the list of dom elements and add them to the return value list when the callback returns true.
 	iterateDomElements(dom, elem, [&rv, callback](const QDomElement& el)
 	{
-		// When the callback is provided call other wise add all elements.
+		// When the callback is provided call otherwise add all elements.
 		if (callback(el))
 		{
 			rv.append(el);
@@ -481,7 +482,7 @@ QDomElement createDomProperty(QDomDocument& dom, const QString& name, const QStr
 	attr.setValue(name);
 	prop.setAttributeNode(attr);
 /*
- * This is not working where this works every where else.
+ * This is not working where this works everywhere else.
 	prop.setAttributeNode(dom.createAttribute("name")).setValue(name);
 */
 	auto enu = dom.createElement(type);
@@ -492,11 +493,47 @@ QDomElement createDomProperty(QDomDocument& dom, const QString& name, const QStr
 
 void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 {
+	// List of class names not saving any children.
+	QStringList classNames;
+	// Iterate to gather the class names not saving children.
+	for (auto w: widget->findChildren<QWidget*>())
+	{
+		if (auto oe = dynamic_cast<ObjectExtension*>(w))
+		{
+			if (!oe->getSaveChildren())
+			{
+				if (!classNames.contains(w->metaObject()->className()))
+				{
+					classNames.append(w->metaObject()->className());
+				}
+			}
+		}
+	}
 	// Get the root widget element.
 	auto root = dom.firstChildElement("ui").firstChildElement("widget");
+	// Fix custom container widgets.
+	{
+		// Iterate through all dom elements
+		iterateDomElements(dom, root, [&](QDomElement& elem)
+		{
+			if (elem.nodeName() == "widget")
+			{
+				// Get the name attribute of the widget element.
+				auto attr = elem.attributes().namedItem("class");
+				// Check if the attribute is valid attribute and the name is not empty.
+				if (!attr.isNull() && attr.isAttr() && !attr.nodeValue().isEmpty())
+				{
+					if (classNames.contains(attr.nodeValue()))
+					{
+						// FIXME: When no layout is present all child widgets should be removed individually.
+						elem.removeChild(elem.firstChildElement("layout"));
+					}
+				}
+			}
+		});
+	}
 	// Fix QWidget or derived elements custom properties.
 	{
-		//QMap<QString, QPair<QDomElement, QWidget*>> widgets;
 		// Iterate through all dom elements
 		iterateDomElements(dom, root, [&dom, widget](QDomElement& elem)
 		{
@@ -686,7 +723,7 @@ void FormBuilder::fixLoadingProperties(QWidget* widget, QDomDocument& dom)
 								nms.append(mo->property(idx).name());
 							}
 						}
-						// Get all non dynamic properties in a list for comparison.
+						// Get all non-dynamic properties in a list for comparison.
 						QStringList& names = cache[mo->className()];
 						// Iterate through property elements in the dom.
 						for (auto& pnm: wgt->dynamicPropertyNames())
@@ -702,7 +739,7 @@ void FormBuilder::fixLoadingProperties(QWidget* widget, QDomDocument& dom)
 								{
 									// Get the property's n ode attributes node value.
 									auto anv = pna.nodeValue();
-									// Check if the name is not in the list of non dynamic properties.
+									// Check if the name is not in the list of non-dynamic properties.
 									if (!anv.isEmpty() && !names.contains(pna.nodeValue()))
 									{
 										auto pnv = pel.firstChildElement().text();

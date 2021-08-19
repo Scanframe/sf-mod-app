@@ -27,8 +27,6 @@ class ScriptManagerPropertyPage :public PropertyPage
 
 		void applyPage() override;
 
-		void afterPageApply(bool was_modified) override;
-
 	Q_SIGNALS:
 
 		void openEditor(int index);
