@@ -21,18 +21,17 @@ class _AMI_CLASS SelectImplementationDialog :public QDialog
 
 		[[nodiscard]] AppModuleInterface* getSelected() const;
 
-	private:
-		void okay();
+		static AppModuleInterface* execute(QSettings* settings, bool file_only, QWidget* parent);
 
-		void doubleClicked(const QModelIndex& index);
+	private:
 
 		void stateSaveRestore(bool save);
 
 		Ui::SelectImplementationDialog* ui;
 
-		AppModuleInterface* _selected{};
-
 		QSettings* _settings;
+
+		AppModuleInterface* _selected{nullptr};
 };
 
 }

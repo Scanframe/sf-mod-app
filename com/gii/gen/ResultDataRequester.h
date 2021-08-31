@@ -127,13 +127,11 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 
 		/**
 		 * Called from sustain interface.
-		 * @param clk
-		 * @return
 		 */
-		bool sustain(clock_t clk);
+		bool sustain(const timespec& t);
 
 		/**
-		 * Hook to result events.
+		 * @brief Hook to result events.
 		 */
 		TResultDataLinkHandler<ResultDataRequester> _dataHandler;
 

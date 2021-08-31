@@ -127,11 +127,16 @@ void PlainTextEditMdi::documentWasModified()
 void PlainTextEditMdi::newFile()
 {
 	Q_ASSERT(_editor);
-	static int sequenceNumber = 1;
 	isUntitled = true;
-	curFile = QObject::tr("document-%1.js").arg(sequenceNumber++);
+	curFile = newFileName();
 	_container->setWindowTitle(curFile + "[*]");
 	QObject::connect(_editor->document(), &QTextDocument::contentsChanged, [&]() {documentWasModified();});
+}
+
+QString PlainTextEditMdi::newFileName() const
+{
+	static int sequenceNumber = 1;
+	return QObject::tr("document-%1.suffix").arg(sequenceNumber++);
 }
 
 bool PlainTextEditMdi::loadFile(const QString& filename)

@@ -14,7 +14,7 @@ UnitConversionServerEx::Entry::Entry(UnitConversionServerEx* owner)
 	_vMaster.setHandler(this);
 }
 
-void UnitConversionServerEx::Entry::VariableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
+void UnitConversionServerEx::Entry::variableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
 {
 	// When the master variable changes all dependent variables needs to have their conversion values set.
 	if (event == Variable::veValueChange || event == Variable::veIdChanged)
@@ -242,7 +242,7 @@ void UnitConversionServerEx::convertVariable(Variable& var, bool regular)
 	}
 }
 
-void UnitConversionServerEx::VariableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
+void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
 {
 	switch (event)
 	{

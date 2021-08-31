@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <misc/qt/Resource.h>
 #include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/qt_utils.h>
 #include "ScriptManagerListModel.h"
 #include "ScriptManagerPropertyPage.h"
 #include "ui_ScriptManagerPropertyPage.h"
@@ -77,10 +78,7 @@ ScriptManagerPropertyPage::ScriptManagerPropertyPage(ScriptManager* manager, Pro
 		}
 	});
 	// Resize the columns.
-	for (int i = 0; i < ui->tvScripts->model()->columnCount(QModelIndex()); i++)
-	{
-		ui->tvScripts->resizeColumnToContents(i);
-	}
+	resizeColumnsToContents(ui->tvScripts);
 }
 
 ScriptManagerPropertyPage::~ScriptManagerPropertyPage()

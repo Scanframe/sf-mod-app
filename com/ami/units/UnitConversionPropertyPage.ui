@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>sf::UnitConversionPropertyPage</class>
- <widget class="sf::PropertyPage" name="UnitConversionPropertyPage">
+ <widget class="sf::PropertyPage" name="sf::UnitConversionPropertyPage">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>406</height>
+    <width>681</width>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,20 +90,20 @@
            <string>Enable or disable the unit conversion using a variable.</string>
           </property>
           <property name="text">
-           <string>&amp;Enable ID</string>
+           <string>&amp;Enable  ID</string>
           </property>
           <property name="buddy">
-           <cstring>leEnableId</cstring>
+           <cstring>iieEnableId</cstring>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="leEnableId">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
+         <widget class="sf::InformationIdEdit" name="iieEnableId">
+          <property name="toolTip">
+           <string>Information ID select edit.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Information ID select edit with ID select dialog.</string>
           </property>
          </widget>
         </item>
@@ -302,6 +302,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>sf::InformationIdEdit</class>
+   <extends>QLineEdit</extends>
+   <header>gii/qt/InformationIdEdit.h</header>
+  </customwidget>
+  <customwidget>
    <class>sf::PropertyPage</class>
    <extends>QWidget</extends>
    <header>misc/qt/PropertyPage.h</header>
@@ -311,7 +316,6 @@
  <tabstops>
   <tabstop>cbSystem</tabstop>
   <tabstop>cbAsk</tabstop>
-  <tabstop>leEnableId</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>tbAddConversion</tabstop>
   <tabstop>tvConversions</tabstop>

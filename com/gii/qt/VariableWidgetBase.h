@@ -75,6 +75,13 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
+		/**
+		 * @brief Property name of the property which guides the layout editor to the proper parent.
+		 *
+		 * @return Property name.
+		 */
+		static const char* propertyNameEditorObject();
+
 	protected:
 
 		/**

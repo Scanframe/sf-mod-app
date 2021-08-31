@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QException>
+#include <misc/gen/ConfigLocation.h>
 #include <gii/gen/GiiScriptInterpreter.h>
 #include "ScriptManager.h"
 
@@ -20,7 +21,7 @@ bool ScriptEntry::start()
 	// Sanity check.
 	if (!fi.exists())
 	{
-		qWarning() << "Missing file:" << fi.fileName();
+		qWarning() << "Missing file:" << fi.absoluteFilePath();
 		return false;
 	}
 	QFile file(fi.absoluteFilePath());
@@ -184,21 +185,12 @@ QString ScriptManager::getFileSuffix()
 
 QString ScriptManager::getScriptFilePath(const QString& base_name) const
 {
-	const char* prop = "ConfigDir";
-	auto cfg_dir = QApplication::instance()->property(prop);
-	if (!cfg_dir.isValid())
+	auto rv = QString::fromStdString(getConfigLocation("scripts", true));
+	if (!base_name.isEmpty())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Application property '%s' not valid!", prop);
+		rv += QDir::separator() + base_name + '.' + getFileSuffix();
 	}
-	else
-	{
-		QString rv = cfg_dir.toString() + QDir::separator() + _subDirectory;
-		if (!base_name.isEmpty())
-		{
-			rv += QDir::separator() + base_name + '.' + getFileSuffix();
-		}
-		return rv;
-	}
+	return rv;
 }
 
 void ScriptManager::settingsReadWrite(bool save)

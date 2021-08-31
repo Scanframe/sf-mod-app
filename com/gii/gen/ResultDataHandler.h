@@ -15,13 +15,13 @@ class _GII_CLASS ResultDataHandler :public ResultDataTypes
 		/**
 		 * @brief Pure virtual function which must be overloaded in a derived class.
 		 */
-		virtual void handleResultDataEvent
+		virtual void resultDataEventHandler
 			(
-				EEvent /*event*/,
-				const ResultData& /*caller*/,
-				ResultData& /*link*/,
-				const Range& /*rng*/,
-				bool /*same_inst*/
+				EEvent event,
+				const ResultData& caller,
+				ResultData& link,
+				const Range& rng,
+				bool same_inst
 			) = 0;
 
 		/**
@@ -84,7 +84,7 @@ class TResultDataLinkHandler :public ResultDataHandler
 		/**
 		 * Call the member function through virtual overloaded function from the base class.
 		 */
-		void handleResultDataEvent
+		void resultDataEventHandler
 			(
 				EEvent event,
 				const ResultData& caller,

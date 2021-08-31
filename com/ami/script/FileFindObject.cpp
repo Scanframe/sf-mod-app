@@ -1,6 +1,5 @@
-#include "IniProfileObject.h"
 #include <misc/gen/ScriptObject.h>
-#include <misc/gen/IniProfile.h>
+#include "FileFindObject.h"
 
 namespace sf
 {
@@ -11,26 +10,29 @@ SF_REG_CLASS
 	FileFindObject, "FileFind", "File finder object."
 )
 
-// Scan entry objects speed index defines.
-#define SID_FIRST 1
-#define SID_NEXT  2
-#define SID_PATH  3
-#define SID_NAME  4
-#define SID_INFOLINE  5
-#define SID_ISDIR     6
-#define SID_ISFILE    7
-#define SID_ISFOUND   8
+// Speed index.
+enum :int
+{
+	sidFirst,
+	sidNext,
+	sidPath,
+	sidName,
+	sidInfoLine,
+	sidIsDir,
+	sidIsFile,
+	sidIsFound,
+};
 
 ScriptObject::IdInfo FileFindObject::_objectInfo[] =
 	{
-		{SID_FIRST, ScriptObject::idFunction, "First", 2, nullptr},
-		{SID_NEXT, ScriptObject::idFunction, "Next", 0, nullptr},
-		{SID_PATH, ScriptObject::idConstant, "Path", 0, nullptr},
-		{SID_NAME, ScriptObject::idConstant, "Name", 0, nullptr},
-		{SID_ISDIR, ScriptObject::idConstant, "IsDir", 0, nullptr},
-		{SID_ISFILE, ScriptObject::idConstant, "IsFile", 0, nullptr},
-		{SID_ISFOUND, ScriptObject::idConstant, "IsFound", 0, nullptr},
-		{SID_INFOLINE, ScriptObject::idFunction, "InfoLine", 1, nullptr},
+		{sidFirst, ScriptObject::idFunction, "First", 2, nullptr},
+		{sidNext, ScriptObject::idFunction, "Next"},
+		{sidPath, ScriptObject::idConstant, "Path"},
+		{sidName, ScriptObject::idConstant, "Name"},
+		{sidIsDir, ScriptObject::idConstant, "IsDir"},
+		{sidIsFile, ScriptObject::idConstant, "IsFile"},
+		{sidIsFound, ScriptObject::idConstant, "IsFound"},
+		{sidInfoLine, ScriptObject::idFunction, "InfoLine", 1, nullptr},
 	};
 
 const ScriptObject::IdInfo* FileFindObject::getInfo(const std::string& name) const
@@ -40,7 +42,7 @@ const ScriptObject::IdInfo* FileFindObject::getInfo(const std::string& name) con
 		if (i._name == name)
 		{
 			// Assign this pointer to info structure to reference owner of this member.
-			i._data = const_cast<ScriptObject*>(this);
+			i._data = const_cast<FileFindObject*>(this);
 			//
 			return &i;
 		}
@@ -55,7 +57,7 @@ bool FileFindObject::getSetValue(const IdInfo* info, Value* value, Value::vector
 		default:
 			return false;
 
-		case SID_FIRST:
+		case sidFirst:
 		{
 			_dirIterator.reset(new QDirIterator((*params)[0].getQString(), QDir::Filter::Files));
 			//std::string attr = (*params)[1].getString();
@@ -63,19 +65,19 @@ bool FileFindObject::getSetValue(const IdInfo* info, Value* value, Value::vector
 			break;
 		}
 
-		case SID_NEXT:
+		case sidNext:
 			value->set(_dirIterator->next());
 			break;
 
-		case SID_PATH:
+		case sidPath:
 			value->set(_dirIterator->filePath());
 			break;
 
-		case SID_NAME:
+		case sidName:
 			value->set(_dirIterator->fileName());
 			break;
 
-		case SID_INFOLINE:
+		case sidInfoLine:
 		{
 			auto fi = _dirIterator->fileInfo();
 			value->set(QString("%1 (%2) (%3)").arg(fi.baseName()).arg(fi.group()).arg(fi.size()));
@@ -83,9 +85,9 @@ bool FileFindObject::getSetValue(const IdInfo* info, Value* value, Value::vector
 		}
 
 			// TODO: Needs implementing.
-		case SID_ISDIR:
-		case SID_ISFILE:
-		case SID_ISFOUND:
+		case sidIsDir:
+		case sidIsFile:
+		case sidIsFound:
 			value->set(true);
 			break;
 	}

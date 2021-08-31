@@ -1,15 +1,14 @@
 #include "VariableEdit.h"
-
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QLabel>
 #include <QMenu>
 #include <QTimer>
+#include <QGuiApplication>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/ScriptEngine.h>
 #include <misc/qt/LayoutWidget.h>
-#include <QGuiApplication>
 #include "VariableWidgetBasePrivate.h"
 
 namespace sf
@@ -48,6 +47,12 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		_labelName->setObjectName("name");
 		_editValue->setObjectName("value");
 		_labelUnit->setObjectName("unit");
+
+		// Set the correct parent to edit in the layout editor.
+		for (auto o: QObjectList {_labelName, _editValue, _labelUnit})
+		{
+			o->setProperty(VariableWidgetBase::propertyNameEditorObject(), QVariant::fromValue(_widget));
+		}
 		// Allow name with hot key for instant focus.
 		_labelName->setBuddy(_editValue);
 		// Format using Horizontal layout.
@@ -69,6 +74,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		{
 			_variable.setHandler(this);
 		}
+		// Execute after the layout is loaded, so the label can be found for sure.
 		QTimer::singleShot(0, this, &VariableEdit::Private::connectLabelNameAlt);
 		// The edit value gets handler for the context menu.
 		_editValue->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -77,7 +83,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 
 	void createContextMenu(const QPoint& pos) const
 	{
-		if (QGuiApplication::keyboardModifiers() ==(Qt::ControlModifier | Qt::ShiftModifier))
+		if (QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
 		{
 			if (auto lw = LayoutWidget::getLayoutWidgetOf(_widget))
 			{
@@ -99,7 +105,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		delete _labelUnit;
 	}
 
-	void VariableEventHandler
+	void variableEventHandler
 		(
 			EEvent event,
 			const Variable& call_var,
@@ -133,7 +139,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 				break;
 
 			case veFlagsChange:
-				_editValue->setReadOnly(link_var.isReadOnly() || _readOnly);
+				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
 				break;
 
 			case veConverted:
@@ -144,7 +150,6 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 
 			default:
 				break;
-
 		}
 	}
 
@@ -169,7 +174,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		// Update the control with the recently set value.
 		if (!skip)
 		{
-			VariableEventHandler(Variable::veValueChange, _variable, _variable, true);
+			variableEventHandler(Variable::veValueChange, _variable, _variable, true);
 		}
 	}
 
@@ -206,7 +211,6 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 			_variable.emitEvent(Variable::veUserPrivate);
 		}
 	}
-
 };
 
 void VariableEdit::Private::LineEdit::keyPressEvent(QKeyEvent* event)

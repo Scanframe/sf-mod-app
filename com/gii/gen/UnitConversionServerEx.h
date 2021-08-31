@@ -105,7 +105,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		/**
 		 * @brief Handler which is registered to handle the global unit conversion calls.
 		 */
-		void VariableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
+		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
 
 		/**
 		 * @brief Read or write the conversion configuration to ini-profile.
@@ -144,7 +144,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 
 			private:
 				// Implement abstract method from base class.
-				void VariableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
+				void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
 		};
 
 		/**

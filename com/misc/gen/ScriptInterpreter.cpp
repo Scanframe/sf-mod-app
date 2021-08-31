@@ -20,7 +20,7 @@ namespace sf
 #define SID_LABELS       (SID_COMPILER_START - 1)
 #define SID_EXIT         (SID_COMPILER_START - 2)
 #define SID_PRINT        (SID_COMPILER_START - 3)
-#define SID_LOG          (SID_COMPILER_START - 4)
+#define SID_WRITELOG     (SID_COMPILER_START - 4)
 #define SID_BEEP         (SID_COMPILER_START - 5)
 #define SID_CLOCK        (SID_COMPILER_START - 6)
 #define SID_CLS          (SID_COMPILER_START - 7)
@@ -86,7 +86,7 @@ ScriptInterpreter::IdInfo ScriptInterpreter::_info[] =
 		// Functions
 		{SID_EXIT, idFunction, "exit", 1, nullptr},
 		{SID_PRINT, idFunction, "print", std::numeric_limits<int>::max(), nullptr},
-		{SID_LOG, idFunction, "writelog", std::numeric_limits<int>::max(), nullptr},
+		{SID_WRITELOG, idFunction, "writelog", std::numeric_limits<int>::max(), nullptr},
 		{SID_BEEP, idFunction, "beep", 2, nullptr},
 		{SID_CLOCK, idFunction, "clock", 1, nullptr},
 		{SID_SPEAK, idFunction, "speak", 2, nullptr},
@@ -441,7 +441,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_LOG:
+			case SID_WRITELOG:
 			{
 				std::string s;
 				for (uint i = 0; i < params->size(); i++)
@@ -464,16 +464,15 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 
 			case SID_CLOCK:
-
-				result->set((((*params)[0].getInteger() - clock()) * 1000L) / CLOCKS_PER_SEC);
+				result->set((*params)[0].getFloat() - TimeSpec(getTime()).toDouble());
 				if ((*params)[0].isZero())
 				{
-					*result *= Value(-1);
+					*result *= Value(-1.0);
 				}
 				break;
 
 			case SID_SPEAK:
-				// TODO: Beep should be implemented.
+				// TODO: Speak should be implemented.
 				/*
 				"Syntax:\n"
 				"  Speak(append, text)\n\n"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPainter>
+#include <QPalette>
 #include "Draw.h"
 #include "../global.h"
 #include "../gen/gen_utils.h"
@@ -20,9 +21,9 @@ class _MISC_CLASS Graph
 {
 	public:
 		/**
-		 * Default constructor.
+		 * Constructor passing a palette.
 		 */
-		Graph();
+		explicit Graph(const QPalette& palette = {});
 
 		/**
 		 * @brief Sets and thus enabling the ruler for the passed orientation.
@@ -51,11 +52,12 @@ class _MISC_CLASS Graph
 		 * @param painter Painter instance.
 		 * @param bounds Boundaries to paint in.
 		 * @param region Region in case of an event.
+		 * @return Rectangle of the resulting graph area. Same value as #getGraphArea() returns.
 		 */
-		void paint(QPainter& painter, const QRect& bounds, const QRegion& region = null_ref<QRegion>());
+		const QRect& paint(QPainter& painter, const QRect& bounds, const QRegion& region = null_ref<QRegion>());
 
 		/**
-		 * @brief returns the area for the graph after rulers and grid are painted.
+		 * @brief Gets the area for the graph after rulers and grid are painted.
 		 *
 		 * @return Area rectangle of the graph.
 		 */
@@ -88,6 +90,11 @@ class _MISC_CLASS Graph
 		 */
 		void setColor(EColor index, QColor color);
 
+		/**
+		 * @brief Draws only area bounds contours when enabled.
+		 */
+		bool _debug{false};
+
 	protected:
 		/**
 		 * @brief Holds the colors for painting the rulers en grid.
@@ -113,7 +120,7 @@ class _MISC_CLASS Graph
 			QString unit;
 			// Bounds for value texts.
 			QRect bounds;
-			// Rectangle fot the ticks.
+			// Rectangle for the ticks.
 			QRect rect;
 			// Calculated ruler size (width/height).
 			int size{100};

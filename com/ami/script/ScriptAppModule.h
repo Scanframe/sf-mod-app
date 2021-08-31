@@ -15,7 +15,7 @@ class [[maybe_unused]] ScriptAppModule :public AppModuleInterface
 
 		explicit ScriptAppModule(const Parameters& params);
 
-		void initialize() override;
+		void initialize(bool init) override;
 
 		void addPropertyPages(PropertySheetDialog*) override;
 

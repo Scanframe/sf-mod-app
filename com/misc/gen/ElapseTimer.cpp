@@ -27,20 +27,17 @@ bool ElapseTimer::isActive() const
 
 void ElapseTimer::set(unsigned long usec)
 {
-	timespec ct{};
-	ct.tv_sec = usec / 1000000l;
-	ct.tv_nsec = usec % 1000000l;
-	set(ct);
+	set({time_t(usec / 1000000l),time_t(usec % 1000000l)});
 }
 
 void ElapseTimer::set(const timespec& t)
 {
-	// Assign the elapse time for usage by Reset().
+	// Assign the elapse-time for usage by reset().
 	_elapsedTime = t;
 	timespec ct = getTime();
 	_target.tv_sec = ct.tv_sec + _elapsedTime.tv_sec;
 	_target.tv_nsec = ct.tv_nsec + _elapsedTime.tv_nsec;
-	// Correction on the nano seconds.
+	// Correction on the nanoseconds.
 	if (_target.tv_nsec > 1000000000l)
 	{
 		_target.tv_nsec -= 1000000000l;
@@ -62,7 +59,7 @@ TimeSpec ElapseTimer::getTimeLeft(const timespec& t) const
 	{
 		ct = t;
 		ct.tv_sec -= _target.tv_sec;
-		// Check if the current nano seconds part is larger then the start.
+		// Check if the current nanoseconds part is larger than the start.
 		if (ct.tv_nsec > _target.tv_nsec)
 		{
 			ct.tv_nsec -= _target.tv_nsec;

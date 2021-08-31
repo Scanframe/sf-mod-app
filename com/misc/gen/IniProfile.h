@@ -108,7 +108,7 @@ class _MISC_CLASS IniProfile
 		bool setInt(const std::string& key, int value);
 
 		/**
-		 * @brief Sets current section, returns true if section exists
+		 * @brief Sets current section, returns true if section exist
 		 * and creates one if 'create' is true.
 		 */
 		bool setSection(const std::string& section, bool create = true);
@@ -124,7 +124,7 @@ class _MISC_CLASS IniProfile
 		 * @brief Sets current section by index.
 		 *
 		 * @param index Section index.
-		 * @return true if section exists.
+		 * @return true if section exist.
 		 */
 		bool setSection(size_type index);
 
@@ -152,10 +152,10 @@ class _MISC_CLASS IniProfile
 		[[nodiscard]] size_type findSection(const std::string& section) const;
 
 		/**
-		 * @brief Returns whether the passed section exists in the profile.
+		 * @brief Returns whether the passed section exist in the profile.
 		 *
 		 * @param section Section name.
-		 * @return True when it exists.
+		 * @return True when it exist.
 		 */
 		[[nodiscard]] bool sectionExists(const std::string& section) const
 		{
@@ -163,10 +163,10 @@ class _MISC_CLASS IniProfile
 		}
 
 		/**
-		 * @brief Returns whether the passed key exists in the current selected in the section of the profile.
+		 * @brief Returns whether the passed key exist in the current selected in the section of the profile.
 		 *
 		 * @param key Key name.
-		 * @return True when it exists.
+		 * @return True when it exist.
 		 */
 		[[nodiscard]] bool keyExists(const std::string& key) const
 		{

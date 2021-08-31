@@ -34,6 +34,8 @@ set(SOURCES
 	gen/ScriptObject.h gen/ScriptObject.cpp
 	gen/ScriptEngine.h gen/ScriptEngine.cpp
 	gen/ScriptInterpreter.cpp gen/ScriptInterpreter.h gen/ScriptInterpreter_p.h
+	gen/ScriptGlobalObject.cpp gen/ScriptGlobalObject.h
+	gen/ScriptGlobalEntry.cpp gen/ScriptGlobalEntry.h
 	gen/TDynamicBuffer.h
 	gen/TDynamicArray.h
 	gen/IniProfile.h gen/IniProfile.cpp
@@ -46,6 +48,7 @@ set(SOURCES
 	gen/Mutex.h gen/Mutex.cpp
 	gen/Thread.h gen/Thread.cpp
 	gen/Condition.h gen/Condition.cpp
+	gen/ConfigLocation.h gen/ConfigLocation.cpp
 	gen/Sync.h
 	gen/TVector.h
 	gen/TStrings.h
@@ -115,7 +118,7 @@ if (SF_BUILD_QT)
 		qt/PropertySheetDialog.cpp qt/PropertySheetDialog.h qt/PropertySheetDialog.ui
 		qt/PropertyPage.cpp qt/PropertyPage.h
 		qt/PropertyPagePlugin.cpp qt/PropertyPagePlugin.h
-		qt/ScriptModelList.cpp qt/ScriptModelList.h
+		qt/ScriptListModel.cpp qt/ScriptListModel.h
 		qt/ScriptHighlighter.cpp qt/ScriptHighlighter.h
 		qt/Editor.cpp qt/Editor.h
 		qt/EditorPropertyPage.cpp qt/EditorPropertyPage.h qt/EditorPropertyPage.ui
@@ -123,6 +126,7 @@ if (SF_BUILD_QT)
 		qt/Graph.cpp qt/Graph.h
 		qt/CommonItemDelegate.cpp qt/CommonItemDelegate.h
 		qt/LayoutWidget.cpp qt/LayoutWidget.h
+		qt/Globals.cpp qt/Globals.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)

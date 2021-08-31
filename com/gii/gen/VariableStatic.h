@@ -16,7 +16,7 @@ class _GII_DATA VariableStatic :public VariableTypes
 {
 	public:
 		/**
-		 * @brief Returns Variable instance that always exists in the system and is referenced if no other is available or applicable.
+		 * @brief Returns Variable instance that always exist in the system and is referenced if no other is available or applicable.
 		 */
 		static Variable& zero();
 

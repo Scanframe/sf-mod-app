@@ -1,0 +1,500 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget name="Form" class="QWidget">
+  <property name="objectName">
+   <string notr="true">Form</string>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1772</width>
+    <height>1002</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout name="verticalLayout" class="QVBoxLayout">
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="objectName">
+    <string notr="true">verticalLayout</string>
+   </property>
+   <item>
+    <widget name="label" class="QLabel">
+     <property name="text">
+      <string>&lt;html>&lt;head/>&lt;body>&lt;p align="center">&lt;span style=" font-size:24pt; font-weight:700; color:#007400;">RSA Server Test&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color :  lightgrey;</string>
+     </property>
+     <property name="margin">
+      <number>4</number>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="objectName">
+      <string notr="true">label</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout name="horizontalLayout" class="QHBoxLayout">
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="objectName">
+      <string notr="true">horizontalLayout</string>
+     </property>
+     <item>
+      <widget name="frame" class="QFrame">
+       <property name="objectName">
+        <string notr="true">frame</string>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <layout name="formLayout_2" class="QFormLayout">
+        <property name="objectName">
+         <string notr="true">formLayout_2</string>
+        </property>
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <item column="0" row="0">
+         <widget name="label_2" class="QLabel">
+          <property name="text">
+           <string>Sound Velocity</string>
+          </property>
+          <property name="toolTip">
+           <string>Sound velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">label_2</string>
+          </property>
+          <property name="buddy">
+           <cstring>variableEdit1</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="0">
+         <widget name="variableEdit1" class="sf::VariableEdit">
+          <property name="variableId">
+           <string>0x10</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>true</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Special edit having name and unit label.</string>
+          </property>
+          <property name="focusFrame">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>Sound velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">variableEdit1</string>
+          </property>
+          <property name="nameLevel">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item column="0" row="1">
+         <widget name="label_3" class="QLabel">
+          <property name="text">
+           <string>Time of Flight</string>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">label_3</string>
+          </property>
+          <property name="buddy">
+           <cstring>variableEdit2</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="1">
+         <widget name="variableEdit2" class="sf::VariableEdit">
+          <property name="variableId">
+           <string>0x100</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>true</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Special edit having name and unit label.</string>
+          </property>
+          <property name="focusFrame">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">variableEdit2</string>
+          </property>
+          <property name="nameLevel">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item column="0" row="2">
+         <widget name="label_4" class="QLabel">
+          <property name="text">
+           <string>Time of Flight</string>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">label_4</string>
+          </property>
+          <property name="buddy">
+           <cstring>variableEdit2_2</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="2">
+         <widget name="variableEdit2_2" class="sf::VariableEdit">
+          <property name="variableId">
+           <string>0x100</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Special edit having name and unit label.</string>
+          </property>
+          <property name="focusFrame">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">variableEdit2_2</string>
+          </property>
+          <property name="nameLevel">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item column="0" row="3">
+         <widget name="label_6" class="QLabel">
+          <property name="text">
+           <string>Time of Flight</string>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">label_6</string>
+          </property>
+          <property name="buddy">
+           <cstring>variableBar1</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="3">
+         <widget name="variableBar1" class="sf::VariableBar">
+          <property name="variableId">
+           <string>0x100</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>true</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Variable bar used for progress or level indication.</string>
+          </property>
+          <property name="toolTip">
+           <string>High speed velocity setting</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">variableBar1</string>
+          </property>
+          <property name="nameLevel">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item column="0" row="4">
+         <widget name="label_7" class="QLabel">
+          <property name="text">
+           <string>Followers Enabled</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">label_7</string>
+          </property>
+          <property name="buddy">
+           <cstring>checkBox</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="4">
+         <widget name="checkBox" class="sf::VariableCheckBox">
+          <property name="variableId">
+           <string>0x5</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Special check box having name label.</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">checkBox</string>
+          </property>
+          <property name="nameLevel">
+           <number>-1</number>
+          </property>
+          <property name="focusFrame">
+           <string>true</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget name="frame_2" class="QFrame">
+       <property name="objectName">
+        <string notr="true">frame_2</string>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <layout name="formLayout" class="QFormLayout">
+        <property name="objectName">
+         <string notr="true">formLayout</string>
+        </property>
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <item column="1" row="0">
+         <widget name="informationIdEdit" class="sf::InformationIdEdit">
+          <property name="cursor">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="text">
+           <string>0x10</string>
+          </property>
+          <property name="maxLength">
+           <number>24</number>
+          </property>
+          <property name="placeholderText">
+           <string/>
+          </property>
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursorPosition">
+           <number>4</number>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy vsizetype="Fixed" hsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>Information ID select edit with ID select dialog.</string>
+          </property>
+          <property name="toolTip">
+           <string>Information ID select edit.</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">informationIdEdit</string>
+          </property>
+          <property name="dummy">
+           <string>2</string>
+          </property>
+         </widget>
+        </item>
+        <item column="0" row="0">
+         <widget name="lblVar3_2" class="QLabel">
+          <property name="text">
+           <string>&amp;Just an ID</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">lblVar3_2</string>
+          </property>
+          <property name="buddy">
+           <cstring>informationIdEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="1">
+         <widget name="informationIdEdit_2" class="sf::InformationIdEdit">
+          <property name="cursor">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="text">
+           <string>0x10</string>
+          </property>
+          <property name="maxLength">
+           <number>24</number>
+          </property>
+          <property name="placeholderText">
+           <string/>
+          </property>
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursorPosition">
+           <number>4</number>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy vsizetype="Fixed" hsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>Information ID select edit with ID select dialog.</string>
+          </property>
+          <property name="toolTip">
+           <string>Information ID select edit.</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">informationIdEdit_2</string>
+          </property>
+         </widget>
+        </item>
+        <item column="1" row="3">
+         <widget name="variableComboBox" class="sf::VariableComboBox">
+          <property name="variableId">
+           <string>0x20000</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="converted">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>Special edit having name and unit label.</string>
+          </property>
+          <property name="focusFrame">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>Generic information server state Server</string>
+          </property>
+          <property name="objectName">
+           <string notr="true">variableComboBox</string>
+          </property>
+          <property name="nameLevel">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget name="ascanGraph" class="sf::AscanGraph">
+     <property name="styleSheet">
+      <string notr="true">sf--AscanGraph
+{ 
+/*  background-color: yellow;*/
+}
+</string>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy vsizetype="Expanding" hsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="whatsThis">
+      <string>A-scan graph using GII interface.</string>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>A-scan graph</string>
+     </property>
+     <property name="objectName">
+      <string notr="true">ascanGraph</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections/>
+</ui>

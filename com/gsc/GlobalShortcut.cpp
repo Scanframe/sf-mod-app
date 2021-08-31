@@ -19,7 +19,6 @@ void GlobalShortcut::Private::installEventFilter(bool install)
 		if (!count++)
 		{
 			Q_UNUSED(count);
-			//std::clog << __FUNCTION__ << " " << install << std::endl;
 			QAbstractEventDispatcher::instance()->installNativeEventFilter(&filter);
 		}
 	}
@@ -27,8 +26,15 @@ void GlobalShortcut::Private::installEventFilter(bool install)
 	{
 		if (!--count)
 		{
-			//std::clog << __FUNCTION__ << " " << install << std::endl;
-			QAbstractEventDispatcher::instance()->removeNativeEventFilter(&filter);
+			auto inst = QAbstractEventDispatcher::instance();
+			if (inst)
+			{
+				inst->removeNativeEventFilter(&filter);
+			}
+			else
+			{
+				qWarning("QAbstractEventDispatcher::instance() result is not valid!");
+			}
 		}
 	}
 }

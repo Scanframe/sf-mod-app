@@ -1,8 +1,8 @@
-#include "IniProfileObject.h"
-#include <misc/gen/ScriptObject.h>
-#include <misc/gen/IniProfile.h>
-#include <misc/qt/qt_utils.h>
 #include <QCoreApplication>
+#include <misc/gen/ScriptObject.h>
+#include <misc/qt/qt_utils.h>
+#include <misc/gen/ConfigLocation.h>
+#include "IniProfileObject.h"
 
 namespace sf
 {
@@ -16,29 +16,28 @@ SF_REG_CLASS
 IniProfileObject::IniProfileObject(const Parameters& params)
 	:ScriptObject("IniFile")
 {
-	// TODO: This must be configured globally.
-	// Set the default file.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
-	fi.setFile(fi.absolutePath() + QDir::separator() + "config", fi.completeBaseName() + ".cfg");
+	// Set the instance to change the extension only.
+	fi.setFile(QString::fromStdString(getConfigLocation()), fi.completeBaseName() + ".ini");
 	_iniProfile.setFilepath(fi.absoluteFilePath().toStdString());
 	_iniProfile.setSection("Default");
 }
 
-#define SID_INI_PATH 1
-#define SID_INI_SECTION 2
-#define SID_INI_READ  3
-#define SID_INI_WRITE 4
-#define SID_INI_REDIRECT 5
+// Speed index.
+enum :int
+{
+	sidPath = 1,
+	sidSection,
+	sidRead,
+	sidWrite,
+};
 
-
-ScriptObject::IdInfo IniProfileObject::_objectInfo[] =
-	{
-		{SID_INI_PATH, ScriptObject::idVariable, "Path", 0, nullptr},
-		{SID_INI_SECTION, ScriptObject::idVariable, "Section", 0, nullptr},
-		{SID_INI_READ, ScriptObject::idFunction, "Read", 2, nullptr},
-		{SID_INI_WRITE, ScriptObject::idFunction, "Write", 2, nullptr},
-		{SID_INI_REDIRECT, ScriptObject::idFunction, "Redirect", 1, nullptr},
-	};
+ScriptObject::IdInfo IniProfileObject::_objectInfo[] = {
+	{sidPath, ScriptObject::idVariable, "Path", 0, nullptr},
+	{sidSection, ScriptObject::idVariable, "Section", 0, nullptr},
+	{sidRead, ScriptObject::idFunction, "Read", 2, nullptr},
+	{sidWrite, ScriptObject::idFunction, "Write", 2, nullptr},
+};
 
 const ScriptObject::IdInfo* IniProfileObject::getInfo(const std::string& name) const
 {
@@ -52,7 +51,7 @@ const ScriptObject::IdInfo* IniProfileObject::getInfo(const std::string& name) c
 			return &i;
 		}
 	}
-	return ScriptObject::getInfoUnknown();
+	return getInfoUnknown();
 }
 
 bool IniProfileObject::getSetValue(const ScriptObject::IdInfo* info, Value* value, Value::vector_type* params, bool flag_set)
@@ -62,7 +61,7 @@ bool IniProfileObject::getSetValue(const ScriptObject::IdInfo* info, Value* valu
 		default:
 			return false;
 
-		case SID_INI_SECTION:
+		case sidSection:
 		{
 			if (flag_set)
 			{
@@ -75,7 +74,7 @@ bool IniProfileObject::getSetValue(const ScriptObject::IdInfo* info, Value* valu
 			break;
 		}
 
-		case SID_INI_READ:
+		case sidRead:
 		{
 			std::string val;
 			_iniProfile.getString((*params)[0].getString(), val, (*params)[1].getString());
@@ -83,46 +82,30 @@ bool IniProfileObject::getSetValue(const ScriptObject::IdInfo* info, Value* valu
 			break;
 		}
 
-		case SID_INI_WRITE:
+		case sidWrite:
 		{
 			value->set(_iniProfile.setString((*params)[0].getString(), (*params)[1].getString()));
 			break;
 		}
 
-		case SID_INI_REDIRECT:
-		{
-			QFileInfo fi((*params)[0].getQString());
-			if (fi.isRelative())
+		case sidPath:
+			if (flag_set)
 			{
-				QFileInfo fia(QCoreApplication::applicationFilePath());
-				// Set the instance to change the extension only.
-				fi.setFile(fia.absolutePath() + QDir::separator() + "config", fi.filePath());
+				QFileInfo fi(value->getQString());
+				if (fi.isRelative())
+				{
+					// Set the instance to change the extension only.
+					fi.setFile(QString::fromStdString(getConfigLocation()), fi.filePath());
+				}
+				_iniProfile.setFilepath(fi.absoluteFilePath().toStdString());
+				// Return the resolved path.
+				value->set(_iniProfile.getFilepath());
 			}
-			_iniProfile.setFilepath(fi.absoluteFilePath().toStdString());
-			// Return the resolved path.
-			value->set(_iniProfile.getFilepath());
+			else
+			{
+				value->set(_iniProfile.getFilepath());
+			}
 			break;
-		}
-
-		case SID_INI_PATH:
-		if (flag_set)
-		{
-			QFileInfo fi((*params)[0].getQString());
-			if (fi.isRelative())
-			{
-				QFileInfo fia(QCoreApplication::applicationFilePath());
-				// Set the instance to change the extension only.
-				fia.setFile(fia.absolutePath() + QDir::separator() + "config", fi.filePath());
-			}
-			_iniProfile.setFilepath(fi.absoluteFilePath().toStdString());
-			// Return the resolved path.
-			value->set(_iniProfile.getFilepath());
-		}
-		else
-		{
-			value->set(_iniProfile.getFilepath());
-		}
-		break;
 	}
 	//
 	return true;

@@ -2,6 +2,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QInputDialog>
+#include <qt/InformationSelectDialog.h>
 #include "FollowersDialog.h"
 #include "ui_FollowersDialog.h"
 
@@ -50,12 +51,19 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 		auto si = ui->lwFollowers->selectedItems();
 		if (!si.empty())
 		{
-			si[0]->setText(QInputDialog::getText(this, tr("Add Follower"), tr("Follower id"), QLineEdit::Normal, si[0]->text()));
+			auto s = QInputDialog::getText(this, tr("Edit Follower"), tr("Follower id"), QLineEdit::Normal, si[0]->text());
+			if (!s.isEmpty())
+			{
+				si[0]->setText(s);
+			}
 		}
 	});
 	connect(_actionAdd, &QAction::triggered, [&]()
 	{
-		ui->lwFollowers->addItem(QInputDialog::getText(this, tr("Add Follower"), tr("Follower id")));
+		for (auto id: InformationSelectDialog(this).execute(Gii::Multiple))
+		{
+			ui->lwFollowers->addItem(QString("0x%1").arg(id, 0, 16));
+		}
 	});
 	connect(_actionRemove, &QAction::triggered, [&]()
 	{

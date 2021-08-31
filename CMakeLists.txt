@@ -19,7 +19,6 @@ set(SF_BUILD_QT ON)
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
-
 	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=bfd")
 endif (WIN32)
 
@@ -36,7 +35,7 @@ _SetOutputDirs()
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
 add_subdirectory(app)
-#add_subdirectory(rsa)
 add_subdirectory(manual)
-#add_subdirectory(concept)
+#add_subdirectory(concept/treemodel)
+#add_subdirectory(concept/dock-widgets)
 

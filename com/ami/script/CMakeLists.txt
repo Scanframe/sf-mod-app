@@ -35,7 +35,9 @@ add_library(${PROJECT_NAME} SHARED
 	ScriptManagerPropertyPage.cpp ScriptManagerPropertyPage.h ScriptManagerPropertyPage.ui
 	ScriptManagerListModel.cpp ScriptManagerListModel.h
 	ScriptEditor.cpp ScriptEditor.h ScriptEditor.ui
-	IniProfileObject.cpp IniProfileObject.h)
+	IniProfileObject.cpp IniProfileObject.h
+	FileFindObject.cpp FileFindObject.h
+	)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gsc sf-gii sf-ami)

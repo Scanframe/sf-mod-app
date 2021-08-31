@@ -89,24 +89,24 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		enum EField :int
 		{
 			/** Identifier field.*/
-			rfeId = 0,
+			rfId = 0,
 			/** Name field.*/
-			rfeName,
+			rfName,
 			/** Flags field.*/
-			rfeFlags,
+			rfFlags,
 			/** description field.*/
-			rfeDescription,
+			rfDescription,
 			/** Type string field @see #EType */
-			rfeType,
+			rfType,
 			/** Size of the block in amount of types.*/
-			rfeBlockSize,
+			rfBlockSize,
 			/** Size of segment in blocks.*/
-			rfeSegmentSize,
+			rfSegmentSize,
 			/** Significant bits for this instance this can not be larger then the bit count of the type.*/
-			rfeSigBits,
+			rfSigBits,
 			/** Negative offset of values.
 			 * To get the real value clients must subtract this value from the read unsigned value.*/
-			rfeOffset
+			rfOffset
 		};
 		/**
 		 * @brief This enumerate is used to identify the type of data.

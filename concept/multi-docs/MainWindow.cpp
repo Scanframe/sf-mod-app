@@ -343,8 +343,7 @@ void MainWindow::createActions()
 	fileMenu->addAction(newAct);
 	fileToolBar->addAction(newAct);
 
-	//const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":/images/open.png"));
-	const QIcon openIcon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::Open), iconColor);
+	const QIcon openIcon = sf::Resource::getSvgIcon(sf::Resource::getSvgIconResource(sf::Resource::Icon::OpenFolder), iconColor);
 
 	auto openAct = new QAction(openIcon, tr("&Open..."), this);
 	openAct->setShortcuts(QKeySequence::Open);

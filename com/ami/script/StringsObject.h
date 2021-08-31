@@ -3,15 +3,17 @@
 #include <misc/gen/ScriptObject.h>
 #include <QDirIterator>
 
+// TODO: This class is not linked yet and available for scripts to use.
+
 namespace sf
 {
 
-class FileFindObject :public ScriptObject
+class StringsObject :public ScriptObject
 {
 	public:
 		// Constructor.
 		explicit FileFindObject(Parameters&)
-			:ScriptObject("FileFind")
+			:ScriptObject("Strings")
 		{
 		}
 

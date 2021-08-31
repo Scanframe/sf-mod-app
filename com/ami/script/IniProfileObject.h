@@ -1,5 +1,4 @@
 #pragma once
-#include <QDirIterator>
 #include <misc/gen/ScriptObject.h>
 #include <misc/gen/IniProfile.h>
 

@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <misc/qt/LayoutWidget.h>
 #include <ami/iface/MultiDocInterface.h>
+#include "ObjectHierarchyModel.h"
 
 namespace sf
 {
@@ -57,7 +58,9 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 
 		void popupContextMenu(QObject* target, const QPoint& pos) override;
 
-		void openPropertyEditor(QObject* target) override;
+		PropertySheetDialog* openPropertyEditor(QObject* target) override;
+
+		ObjectHierarchyModel* getHierarchyModel();
 
 	protected:
 		void closeEvent(QCloseEvent* event) override;
@@ -79,11 +82,11 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 		QScrollArea* _scrollArea{nullptr};
 		QWidget* _widget{nullptr};
 		QString _rootName;
-		bool _editable{true};
 		bool _modified{false};
 		QObject* _currentTarget{nullptr};
 		QMenu* _targetContextMenu{nullptr};
-
+		ObjectHierarchyModel* _model{nullptr};
+		QAction* _actionEdit{nullptr};
 };
 
 }

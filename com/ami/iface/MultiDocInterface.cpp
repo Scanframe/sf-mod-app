@@ -66,6 +66,15 @@ QString MultiDocInterface::getFileTypeFilters() const
 	return _module ? _module->getFileTypeFilters() :QString();
 }
 
+void MultiDocInterface::activate(bool yn)
+{
+	if (_active != yn)
+	{
+		_active = yn;
+		_module->documentActivated(this, _active);
+	}
+}
+
 void MultiDocInterface::develop()
 {
 	auto obj = dynamic_cast<QObject*>(this);

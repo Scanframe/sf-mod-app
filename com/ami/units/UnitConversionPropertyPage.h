@@ -5,10 +5,10 @@
 namespace sf
 {
 
+namespace Ui {class UnitConversionPropertyPage;}
+
 class ConversionListModel;
 class FollowersListModel;
-
-namespace Ui {class UnitConversionPropertyPage;}
 
 class UnitConversionPropertyPage :public PropertyPage
 {

@@ -76,7 +76,7 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 
 	private:
 		/**
-		 * @brief Holds the dialog pointer when a dialog exists.
+		 * @brief Holds the dialog pointer when a dialog exist.
 		 */
 		QDialog* _dialog;
 		/**

@@ -14,6 +14,8 @@ class [[maybe_unused]] TextEditorAppModule :public AppModuleInterface
 
 		explicit TextEditorAppModule(const Parameters& params);
 
+		void initialize(bool init) override;
+
 		void addPropertyPages(PropertySheetDialog*) override;
 
 		MultiDocInterface* createWidget(QWidget* parent) const override;
@@ -26,5 +28,6 @@ class [[maybe_unused]] TextEditorAppModule :public AppModuleInterface
 
 		[[nodiscard]] QString getSvgIconResource() const override;
 };
+
 
 }

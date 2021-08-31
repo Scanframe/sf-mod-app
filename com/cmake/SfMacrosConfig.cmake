@@ -1,12 +1,14 @@
 macro(_check_file_exists file)
 	if (NOT EXISTS "${file}")
-		message(FATAL_ERROR "The file \"${file}\" does not exist.")
+		message(FATAL_ERROR "The file \"${file}\" does not exist. Check order of dependent add_subdirectory(...).")
+		#message(WARNING "The file \"${file}\" does not exist.")
 	endif ()
 endmacro()
 
 macro(_populate_target_props TargetName Configuration LIB_LOCATION IMPLIB_LOCATION)
 	# Seems a relative directory is not working using REALPATH.
 	get_filename_component(imported_location "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${LIB_LOCATION}" REALPATH)
+	# When this fails on a library which is part of the project the order of add_subdirectory(...) is incorrect.
 	_check_file_exists(${imported_location})
 	set_target_properties(${TargetName} PROPERTIES "IMPORTED_LOCATION_${Configuration}" ${imported_location})
 	if (NOT "${IMPLIB_LOCATION}" STREQUAL "")

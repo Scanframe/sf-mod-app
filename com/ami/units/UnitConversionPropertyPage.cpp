@@ -1,5 +1,6 @@
 #include <misc/qt/Resource.h>
 #include <gii/gen/UnitConversionServerEx.h>
+#include <misc/qt/qt_utils.h>
 #include "UnitConversionPropertyPage.h"
 #include "ConversionListModel.h"
 #include "FollowersListModel.h"
@@ -53,6 +54,9 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 	ui->tvConversions->setModel(_lmConversions);
 	ui->tvFollowers->setModel(_lmFollowers);
 	//
+	resizeColumnsToContents(ui->tvConversions);
+	resizeColumnsToContents(ui->tvFollowers);
+	//
 	connect(ui->tvConversions, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index)
 	{
 		_lmConversions->edit(index);
@@ -95,7 +99,7 @@ QIcon UnitConversionPropertyPage::getPageIcon() const
 void UnitConversionPropertyPage::updatePage()
 {
 	ui->cbAsk->setChecked(_ucm._ask);
-	ui->leEnableId->setText(QString("0x%1").arg(_ucm._ucs.getEnableId(), 0, 16));
+	ui->iieEnableId->setId(_ucm._ucs.getEnableId());
 	ui->cbSystem->setCurrentIndex(_ucm._ucs.getUnitSystem());
 }
 
@@ -107,7 +111,7 @@ void UnitConversionPropertyPage::applyPage()
 	_lmFollowers->sync();
 	//
 	_ucm._ask = ui->cbAsk->isChecked();
-	_ucm._ucs.setEnableId(ui->leEnableId->text().toLongLong(nullptr, 0));
+	_ucm._ucs.setEnableId(ui->iieEnableId->getId());
 	// This must be done last so the system can use its new settings.
 	_ucm._ucs.setUnitSystem(static_cast<UnitConversionServerEx::EUnitSystem>(ui->cbSystem->currentIndex()));
 
@@ -117,7 +121,7 @@ bool UnitConversionPropertyPage::isPageModified() const
 {
 	bool rv = false;
 	rv |= _ucm._ask != ui->cbAsk->isChecked();
-	rv |= _ucm._ucs.getEnableId() != ui->leEnableId->text().toLongLong(nullptr, 0);
+	rv |= _ucm._ucs.getEnableId() != ui->iieEnableId->getId();
 	rv |= _ucm._ucs.getUnitSystem() != ui->cbSystem->currentIndex();
 	rv |= _lmConversions->isDirty();
 	rv |= _lmFollowers->isDirty();

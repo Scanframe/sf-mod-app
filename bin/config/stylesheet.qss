@@ -3,13 +3,18 @@ QWidget[specialStyle="form"]
  background-color: darkred;
 }
 
-QPushButton:hover
+QToolButton:hover
 {
 	background-color: darkorange;
 	border: 1px solid green;
 }
 
 /*
+sf--VariableBar
+{
+	border: 2px solid darkorange;
+}
+
 sf--VariableEdit QLineEdit
 {
 	border: 4px solid yellow;
@@ -40,7 +45,14 @@ sf--VariableBar:focus
 {
 	border-color: yellow;
 }
+
+sf--AscanGraph
+{
+	border: 2px solid red;
+	background-color: #9F9F9F;
+}
 */
+
 
 QPushButton
 {

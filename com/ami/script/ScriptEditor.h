@@ -41,6 +41,8 @@ class ScriptEditor :public QWidget, public PlainTextEditMdi
 		 */
 		static FindInterpreterClosure callbackFindInterpreter;
 
+		QString newFileName() const override;
+
 	public:
 		void onActionCompile();
 

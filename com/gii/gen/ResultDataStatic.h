@@ -14,7 +14,7 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 {
 	public:
 		/**
-		 * @brief Result that always exists in the system and is referenced if no other is available or applicable.
+		 * @brief Result that always exist in the system and is referenced if no other is available or applicable.
 		 */
 		static ResultData& zero();
 

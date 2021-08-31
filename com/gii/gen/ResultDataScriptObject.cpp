@@ -229,7 +229,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 	return true;
 }
 
-void ResultDataScriptObject::handleResultDataEvent(ResultDataTypes::EEvent event, const ResultData& data, ResultData& resultData, const Range& range, bool b)
+void ResultDataScriptObject::resultDataEventHandler(ResultDataTypes::EEvent event, const ResultData& data, ResultData& resultData, const Range& range, bool b)
 {
 	auto si = dynamic_cast<ScriptInterpreter*>(getParent());
 	if (event < ResultData::reFirstLocal)

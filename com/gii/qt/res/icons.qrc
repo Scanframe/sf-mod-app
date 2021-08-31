@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<!-- Generated at: 2021-09-05T03:40:49CEST:::z -->
+<RCC version="1.0">
+	<qresource prefix="icon/svg/">
+		<file alias="resultdata">icon/resultdata.svg</file>
+		<file alias="variable">icon/variable.svg</file>
+	</qresource>
+</RCC>

@@ -167,7 +167,8 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	{
 		settings.setValue(key, QApplication::style()->objectName());
 	}
-	auto app_style = QApplication::setStyle(settings.value(key, QApplication::style()->objectName()).toString())->name();
+	QApplication::setStyle(settings.value(key, QApplication::style()->objectName()).toString());
+	auto app_style = QApplication::style()->name();
 	// Sentry and also the instance.
 	if (_systemColors.isEmpty())
 	{
@@ -335,6 +336,18 @@ QLayout* getWidgetLayout(QWidget* widget)
 		}
 	}
 	return nullptr;
+}
+
+int indexFromComboBox(QComboBox* comboBox, const QVariant& value, int default_index)
+{
+	for (int i = 0; i < comboBox->count(); i++)
+	{
+		if (comboBox->itemData(i) == value)
+		{
+			return i;
+		}
+	}
+	return default_index;
 }
 
 }

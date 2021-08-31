@@ -476,7 +476,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		[[nodiscard]] EStringType getStringType() const;
 
 		/**
-		 * @brief Returns the name for passed string type.
+		 * @brief Gets the name for passed string type.
 		 *
 		 * @param type Enumerate value.
 		 * @return Name of the string type.
@@ -484,7 +484,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		static const char* getStringType(EStringType type);
 
 		/**
-		 * @brief Returns the purpose description of the attached variable.
+		 * @brief Gets the purpose description of the attached variable.
 		 *
 		 * @return Description string.
 		 */
@@ -628,7 +628,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		[[nodiscard]] size_type getStateCount() const;
 
 		/**
-		 * @brief Returns the state index of passed value when it exists.
+		 * @brief Returns the state index of passed value when it exist.
 		 *
 		 * @param v Value to lookup.
 		 * @return Valid index and when it does not exist it returns #npos.
@@ -694,6 +694,11 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @return Vector of instance pointers.
 		 */
 		static Vector getList();
+
+		/**
+		 * @brief Gets the name of the passed field enumerate #EField.
+		 */
+		static std::string getFieldName(int field);
 
 		/**
 		 * @brief Returns variable with the given id.
@@ -840,7 +845,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 
 		/**
 		 * During events no instances should be deleted.
-		 * The destructor will be called but the data still exists
+		 * The destructor will be called but the data still exist
 		 */
 		void operator delete(void*); // NOLINT(misc-new-delete-overloads)
 
@@ -946,7 +951,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 */
 		Value* _temporary{nullptr};
 		/**
-		 * @brief Pointer to object with VariableEventHandler function.
+		 * @brief Pointer to object with variableEventHandler function.
 		 */
 		VariableHandler* _handler{nullptr};
 		/**

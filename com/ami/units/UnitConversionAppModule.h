@@ -16,7 +16,7 @@ class UnitConversionAppModule :public AppModuleInterface
 
 		~UnitConversionAppModule() override;
 
-		void initialize() override;
+		void initialize(bool init) override;
 
 		void addPropertyPages(PropertySheetDialog*) override;
 

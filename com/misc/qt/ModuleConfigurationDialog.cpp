@@ -3,8 +3,6 @@
 #include <QLibrary>
 #include "Resource.h"
 #include "../gen/DynamicLibraryInfo.h"
-#include "../gen/gen_utils.h"
-
 #include "ModuleConfiguration.h"
 #include "ModuleConfigurationDialog.h"
 #include "ui_ModuleConfigurationDialog.h"
@@ -91,7 +89,6 @@ void AppModuleList::refresh()
 		// Check if the file is a library.
 		if (QLibrary::isLibrary(it.next()))
 		{
-			qInfo() << "Checking: " << it.fileName();
 			ListItem dld;
 			dld.read(it.fileInfo().absoluteDir().absolutePath().toStdString(), it.fileName().toStdString());
 			if (dld.filename.length())
@@ -133,7 +130,7 @@ QVariant AppModuleList::headerData(int section, Qt::Orientation orientation, int
 {
 	if (role != Qt::DisplayRole)
 	{
-		return QVariant();
+		return {};
 	}
 	if (orientation == Qt::Horizontal)
 	{
@@ -185,11 +182,11 @@ QVariant AppModuleList::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
 	{
-		return QVariant();
+		return {};
 	}
 	if (index.row() >= _libraryInfoList.count())
 	{
-		return QVariant();
+		return {};
 	}
 	if (role == Qt::CheckStateRole && index.column() == cCheckBox)
 	{
@@ -207,7 +204,7 @@ QVariant AppModuleList::data(const QModelIndex& index, int role) const
 				return QString::fromStdString(_libraryInfoList.at(index.row()).filename);
 		}
 	}
-	return QVariant();
+	return {};
 }
 
 int AppModuleList::columnCount(const QModelIndex& parent) const
@@ -247,7 +244,7 @@ void AppModuleList::toggleSelection(const QModelIndex& index)
 				state = Qt::CheckState::Unchecked;
 				break;
 		}
-		emit dataChanged(index, QModelIndex());
+		emit dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(0), {Qt::CheckStateRole});
 		_dirty = true;
 	}
 }

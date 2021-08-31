@@ -14,7 +14,7 @@ enum EColumn
 {
 	cMaster = 0,
 	cScript,
-	cUnit,
+	vcUnit,
 	cFollowers,
 	cMaxColumns
 };
@@ -92,7 +92,7 @@ QVariant FollowersListModel::headerData(int section, Qt::Orientation orientation
 				return QString(tr("Master"));
 			case cScript:
 				return QString(tr("Script"));
-			case cUnit:
+			case vcUnit:
 				return QString(tr("Unit"));
 			case cFollowers:
 				return QString(tr("Followers"));
@@ -131,7 +131,7 @@ QVariant FollowersListModel::data(const QModelIndex& index, int role) const
 			case cScript:
 				return entry._formula;
 
-			case cUnit:
+			case vcUnit:
 				return entry._unit;
 
 			case cFollowers:

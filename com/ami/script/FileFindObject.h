@@ -9,8 +9,9 @@ namespace sf
 class FileFindObject :public ScriptObject
 {
 	public:
+
 		// Constructor.
-		explicit FileFindObject(Parameters&)
+		explicit FileFindObject(const Parameters&)
 			:ScriptObject("FileFind")
 		{
 		}

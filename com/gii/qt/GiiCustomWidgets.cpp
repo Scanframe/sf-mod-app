@@ -1,9 +1,11 @@
 #include <QDebug>
 #include <misc/qt/ObjectExtension.h>
-#include "../gen/Variable.h"
 #include "GiiCustomWidgets.h"
-#include "VariableEditPlugin.h"
 #include "VariableBarPlugin.h"
+#include "VariableEditPlugin.h"
+#include "VariableCheckBoxPlugin.h"
+#include "VariableComboBoxPlugin.h"
+#include "InformationIdEditPlugin.h"
 #include "AscanGraphPlugin.h"
 
 namespace sf
@@ -17,8 +19,11 @@ GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 		//Variable::initialize();
 	}
 	// Add the implemented widgets to the list.
-	widgets.append(new VariableEditPlugin(this));
 	widgets.append(new VariableBarPlugin(this));
+	widgets.append(new VariableEditPlugin(this));
+	widgets.append(new VariableCheckBoxPlugin(this));
+	widgets.append(new VariableComboBoxPlugin(this));
+	widgets.append(new InformationIdEditPlugin(this));
 	widgets.append(new AscanGraphPlugin(this));
 }
 

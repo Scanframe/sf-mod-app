@@ -1,5 +1,5 @@
 <!DOCTYPE RCC>
-<!-- Generated at: 2021-08-01T21:23:04CEST:::z -->
+<!-- Generated at: 2021-09-07T13:11:42CEST:::z -->
 <RCC version="1.0">
 	<qresource prefix="icon/png/">
 		<file alias="warning">icon/warning.png</file>
@@ -14,8 +14,10 @@
 		<file alias="close">icon/close.svg</file>
 		<file alias="close-windows">icon/close-windows.svg</file>
 		<file alias="close-window">icon/close-window.svg</file>
+		<file alias="collapse">icon/collapse.svg</file>
 		<file alias="compile">icon/compile.svg</file>
 		<file alias="configuration">icon/configuration.svg</file>
+		<file alias="container">icon/container.svg</file>
 		<file alias="control-panel">icon/control-panel.svg</file>
 		<file alias="copy">icon/copy.svg</file>
 		<file alias="cut">icon/cut.svg</file>
@@ -25,10 +27,15 @@
 		<file alias="dots-vertical">icon/dots-vertical.svg</file>
 		<file alias="edit">icon/edit.svg</file>
 		<file alias="exit">icon/exit.svg</file>
+		<file alias="expand">icon/expand.svg</file>
+		<file alias="folder">icon/folder.svg</file>
+		<file alias="form">icon/form.svg</file>
+		<file alias="hand">icon/hand.svg</file>
 		<file alias="initialize">icon/initialize.svg</file>
 		<file alias="menu">icon/menu.svg</file>
 		<file alias="new">icon/new.svg</file>
 		<file alias="okay">icon/okay.svg</file>
+		<file alias="open-folder">icon/open-folder.svg</file>
 		<file alias="open">icon/open.svg</file>
 		<file alias="paste">icon/paste.svg</file>
 		<file alias="redo">icon/redo.svg</file>
@@ -36,6 +43,7 @@
 		<file alias="remove">icon/remove.svg</file>
 		<file alias="run">icon/run.svg</file>
 		<file alias="save">icon/save.svg</file>
+		<file alias="search">icon/search.svg</file>
 		<file alias="settings">icon/settings.svg</file>
 		<file alias="start">icon/start.svg</file>
 		<file alias="status">icon/status.svg</file>
@@ -44,5 +52,6 @@
 		<file alias="submit">icon/submit.svg</file>
 		<file alias="unchecked">icon/unchecked.svg</file>
 		<file alias="undo">icon/undo.svg</file>
+		<file alias="widget">icon/widget.svg</file>
 	</qresource>
 </RCC>

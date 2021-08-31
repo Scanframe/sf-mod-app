@@ -145,7 +145,8 @@ fi
 # Configure
 if ${FLAG_CONFIG} ; then
 # Configure debug
-${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
+#${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
+${CMAKE_BIN} -B "${BUILD_DIR}" "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
 fi
 
 # Build/Compile

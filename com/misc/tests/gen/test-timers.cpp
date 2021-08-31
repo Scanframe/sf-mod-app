@@ -4,6 +4,8 @@
 #include <misc/gen/TimeSpec.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/PerformanceTimer.h>
+#include <misc/gen/IntervalTimer.h>
+#include <misc/gen/gen_utils.h>
 
 TEST_CASE("sf::TimeSpec", "[generic][timers]")
 {
@@ -29,6 +31,26 @@ TEST_CASE("sf::TimeSpec", "[generic][timers]")
 		REQUIRE(ts.tv_sec == 124);
 		REQUIRE(ts.tv_nsec == 100000000);
 	}
+
+	SECTION("Subtract", "Subtract time from the TimeSpec class")
+	{
+		sf::TimeSpec ts(124, 100000000);
+		ts.sub({0, 550000000});
+		REQUIRE(ts.tv_sec == 123);
+		REQUIRE(ts.tv_nsec == 550000000);
+	}
+
+	SECTION("Compare", "Compare instances")
+	{
+		CHECK(!!sf::TimeSpec() == false);
+		CHECK(sf::TimeSpec(24, 100000000) == sf::TimeSpec(24, 100000000));
+		CHECK(sf::TimeSpec(4, 100000000) != sf::TimeSpec(24, 100000000));
+		CHECK(sf::TimeSpec(3, 400000000) > sf::TimeSpec(1, 100000000));
+		CHECK(sf::TimeSpec(1, 100000000) < sf::TimeSpec(3, 400000000));
+		CHECK(sf::TimeSpec(3, 400000000) >= sf::TimeSpec(1, 100000000));
+		CHECK(sf::TimeSpec(1, 100000000) <= sf::TimeSpec(3, 400000000));
+	}
+
 }
 
 TEST_CASE("sf::Timers", "[generic][timers]")
@@ -52,10 +74,10 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 
 	SECTION("ElapseTimer", "Individual class only")
 	{
-		// Performance timer to check the elapse timer.
+		// Performance timer to check the elapse-timer.
 		sf::PerformanceTimer pt;
-		// Initialize the elapse timer.
-		auto et = sf::ElapseTimer(sf::TimeSpec(1, 234000000));
+		// Initialize the elapse-timer.
+		sf::ElapseTimer et(sf::TimeSpec(1, 234000000));
 		//
 		CHECK_THAT(et.getElapseTime().toString(), Equals("1.234s"));
 		// Check if the timer is enabled by default.
@@ -91,4 +113,35 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		// Check if the timer is disabled.
 		CHECK(!et.isEnabled());
 	}
+
+	SECTION("IntervalTimer", "Individual class only")
+	{
+		// Performance timer to check the elapse-timer.
+		sf::PerformanceTimer pt;
+		// Initialize the elapse-timer.
+		sf::IntervalTimer it(0.2);
+		//
+		CHECK(it.getInterval() == sf::TimeSpec(0, 200000000l));
+		//
+		CHECK((it.getInterval() + sf::getTime()).toDouble() == Approx(it.getTarget().toDouble()).margin(0.001));
+
+		// Check if the timer is enabled by default.
+		REQUIRE(it.isEnabled());
+		// Counter for the mount of timeouts.
+		int count = 0;
+		// The maximum loops for this test is 1.1 seconds.
+		int max_loops = 1100000 / 1000;
+		while (max_loops-- > 0)
+		{
+			::usleep(1000);
+			// Check it the timer timed out.
+			if (it)
+			{
+				count++;
+			}
+		}
+		CHECK(count == 5);
+		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.15));
+	}
+
 }

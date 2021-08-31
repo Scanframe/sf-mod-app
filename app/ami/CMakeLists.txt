@@ -27,6 +27,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 # RC-files only seem to be compiled when building using MingW.
 set(SOURCES
 	main.cpp
+	Application.cpp Application.h
 	MainWindow.cpp MainWindow.h
 	res/resource.qrc
 	res/windows.rc

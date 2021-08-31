@@ -167,8 +167,7 @@ bool Draw::Ruler
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(
-						numberString<double>((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
+					auto text = QString::fromStdString(numberString<double>((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
 					// Get the size of the to be drawn text.
 					auto tr = fm.boundingRect(text);
 					// Paint the text values.
@@ -325,10 +324,10 @@ bool Draw::Ruler
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(
-						numberString<double>((abs(x_pos) < abs(units_per_pixel) / 2) ? 0.0 : x_pos, digits, true));
+					auto text = QString::fromStdString(numberString<double>((abs(x_pos) < abs(units_per_pixel) / 2) ? 0.0 : x_pos, digits, true));
 					// Get the size of the to be drawn text.
 					auto tr = fm.boundingRect(text);
+					tr.setWidth(tr.width() + 2);
 					QPoint pt(xp, 0);
 					// Paint the text values.
 					if (ro == roTop)

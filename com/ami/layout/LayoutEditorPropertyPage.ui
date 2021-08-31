@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>145</width>
-    <height>41</height>
+    <width>254</width>
+    <height>56</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
    <item row="0" column="1">
     <widget class="QCheckBox" name="cbReadOnly">
      <property name="text">
-      <string>yes/no</string>
+      <string>Open files as read-only</string>
      </property>
     </widget>
    </item>

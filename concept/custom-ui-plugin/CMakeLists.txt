@@ -25,6 +25,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
+	namespace.h
 	SfAnalogClock.cpp
 	SfAnalogClock.h
 	SfAnalogClockPlugin.cpp

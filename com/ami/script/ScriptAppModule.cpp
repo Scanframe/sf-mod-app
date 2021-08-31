@@ -24,10 +24,17 @@ ScriptAppModule::ScriptAppModule(const AppModuleInterface::Parameters& params)
 	};
 }
 
-void ScriptAppModule::initialize()
+void ScriptAppModule::initialize(bool init)
 {
-	// Start all scripts.
-	_scriptManager.start();
+	if (init)
+	{
+		// Start all scripts.
+		_scriptManager.start();
+	}
+	else
+	{
+		_scriptManager.stop();
+	}
 }
 
 QString ScriptAppModule::getName() const

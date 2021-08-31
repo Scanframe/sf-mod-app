@@ -1,9 +1,4 @@
-/*
-Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
-*/
-
 #include "target.h"
-#include <ctime>
 
 #if IS_GNU
 #include <cxxabi.h>
@@ -27,8 +22,9 @@ Contains debugging macro's that are defined when define DEBUG_LEVEL is non zero.
 #include <processenv.h>
 #endif
 
-#include "Mutex.h"
 #include "dbgutils.h"
+#include "gen_utils.h"
+#include "TimeSpec.h"
 
 namespace sf
 {
@@ -76,7 +72,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 {
 	// Critical section to prevent simultaneous modification of the Fifo.
 	std::lock_guard<std::mutex> lock(DbgMutex);
-	// When default is specified Set the the bit.
+	// When default is specified set the bit.
 	if (type & dotDefault)
 	{
 		type |= DefaultDebugOutputType;
@@ -86,17 +82,11 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 	{
 		//::OutputDebugString((std::string(s) + "\n").c_str());
 	}
-	auto tm = double(clock()) / (CLOCKS_PER_SEC);
-#if !IS_WIN
-	// Value 'CLOCKS_PER_SEC' Seems not to be correct in Linux some how.
-	tm /= 10;
-#endif
+	TimeSpec tm(getTimeRunning());
 	// If the log bit is enabled write the line as is.
 	if (type & dotStdLog)
 	{
-		auto old = std::clog.precision(3);
-		std::clog << std::fixed << tm << ' ' << s << std::endl;
-		std::clog.precision(old);
+		std::clog << tm.toString() << ' ' << s << std::endl;
 	}
 	// Find the file separator character '\x1C'.
 	char* sep = std::strchr(const_cast<char*>(s), '\x1C');
@@ -108,11 +98,11 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 	// Execute functions according the bits.
 	if (type & dotStdErr)
 	{
-		std::cerr << tm << ' ' << s << std::endl;
+		std::cerr << tm.toString() << ' ' << s << std::endl;
 	}
 	if (type & dotStdOut)
 	{
-		std::cout << tm << ' ' << s << std::endl;
+		std::cout << tm.toString() << ' ' << s << std::endl;
 	}
 	if (type & dotMessageBox || type & dotThrow)
 	{
@@ -142,6 +132,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 			if (!sentry)
 			{
 				sentry = true;
+				(void)sentry;
 				// Release lock to prevent lockup multiple threads.
 				DbgMutex.unlock();
 #if IS_QT
@@ -151,6 +142,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 				}
 #endif
 				sentry = false;
+				(void)sentry;
 			}
 		}
 	}

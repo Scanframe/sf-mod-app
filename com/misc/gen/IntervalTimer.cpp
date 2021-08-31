@@ -1,70 +1,92 @@
+
+
 #include "IntervalTimer.h"
+#include "gen_utils.h"
 
 namespace sf
 {
 
-IntervalTimer::IntervalTimer()
-{
-	_target = clock();
-}
-
-void IntervalTimer::set(clock_t t)
+void IntervalTimer::set(const timespec& t)
 {
 	_enabled = true;
-	_interval = (t * (clock_t) CLOCKS_PER_SEC) / 1000L;
-	_target = clock() + _interval;
+	_interval = t;
+	_target = getTime();
+	_target += _interval;
 }
 
-bool IntervalTimer::active() const
+
+IntervalTimer::IntervalTimer(int usec)
 {
-	return _enabled && active(clock());
+	_enabled = true;
+	_interval = TimeSpec(TimeSpec::nsec_type(usec) * 1000);
+	_target = getTime();
+	_target += _interval;
 }
 
-bool IntervalTimer::active(clock_t t) const
+IntervalTimer::IntervalTimer(double sec)
 {
-	if (_enabled && t > _target)
+	_enabled = true;
+	_interval = TimeSpec(sec);
+	_target = getTime();
+	_target += _interval;
+}
+
+bool IntervalTimer::active(const timespec& t) const
+{
+	if (!_enabled)
 	{
-		if (!_interval)
-		{
-			return true;
-		}
+		return false;
+	}
+	// When zero always return as being active.
+	if (!_interval)
+	{
+		return true;
+	}
+	// Check if time is over.
+	if (timespecCompare(t, _target) >= 0)
+	{
 		// Set new interval target
-		*(clock_t*) &_target = (clock() / _interval + 1) * _interval;
+		*const_cast<TimeSpec*>(&_target) = _interval + t;
 		return true;
 	}
 	return false;
 }
 
-clock_t IntervalTimer::getTimeLeft() const
+bool IntervalTimer::active() const
 {
-	return getTimeLeft(clock());
+	return active(getTime());
 }
 
-clock_t IntervalTimer::getTimeLeft(clock_t clk) const
+TimeSpec IntervalTimer::getTimeLeft() const
+{
+	return getTimeLeft(getTime());
+}
+
+TimeSpec IntervalTimer::getTimeLeft(const timespec& t) const
 {
 	if (_enabled)
 	{
-		clock_t retval = ((_target - clk) * 1000L) / (clock_t) CLOCKS_PER_SEC;
-		if (retval > 0L)
+		auto rv = _target - t;
+		if (rv)
 		{
-			return retval;
+			return rv;
 		}
 	}
-	return 0L;
+	return {};
 }
 
-clock_t IntervalTimer::getTimeOver() const
+TimeSpec IntervalTimer::getTimeOver() const
 {
-	return getTimeOver(clock());
+	return getTimeOver(getTime());
 }
 
-clock_t IntervalTimer::getTimeOver(clock_t clk) const
+TimeSpec IntervalTimer::getTimeOver(const timespec& t) const
 {
-	if (_enabled)
+	if (_enabled && timespecCompare(getTime(), _target) >= 0)
 	{
-		return ((clk - _target) * 1000L) / (clock_t) CLOCKS_PER_SEC;
+		return TimeSpec(t) - _target;
 	}
-	return 0L;
+	return {};
 }
 
 }

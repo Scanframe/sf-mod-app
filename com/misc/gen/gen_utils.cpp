@@ -1,7 +1,6 @@
 
 #include <cstdarg>
 #include <ctime>
-#include <random>
 #include <utility>
 #include <cxxabi.h>
 #include <dirent.h>
@@ -12,6 +11,7 @@
 #include "dbgutils.h"
 #include "gen_utils.h"
 #include "target.h"
+#include "TimeSpec.h"
 
 #if IS_WIN
 #include <windows.h>
@@ -409,12 +409,37 @@ std::string demangle(const char* name)
 	return rv;
 }
 
-timespec getTime()
+namespace
+{
+
+timespec startTime{0, 0};
+
+__attribute__((constructor)) void initializeStartTime()
+{
+#if IS_WIN
+	clock_gettime(CLOCK_MONOTONIC, &startTime);
+#else
+	clock_gettime(CLOCK_MONOTONIC_COARSE, &startTime);
+#endif
+}
+
+}
+
+timespec getTimeRunning()
+{
+	return TimeSpec(getTime()).sub(startTime);
+}
+
+timespec getTime(bool realTime)
 {
 	timespec ct{};
-	if (clock_gettime(CLOCK_REALTIME, &ct))
+#if IS_WIN
+	if (clock_gettime(realTime ? CLOCK_REALTIME :	CLOCK_MONOTONIC, &ct))
+#else
+	if (clock_gettime(realTime ? CLOCK_REALTIME :	CLOCK_MONOTONIC_COARSE, &ct))
+#endif
 	{
-		throw ExceptionSystemCall("epoll_wait", errno, nullptr, __FUNCTION__);
+		throw ExceptionSystemCall("clock_gettime", errno, nullptr, __FUNCTION__);
 	}
 	return ct;
 }
@@ -619,4 +644,4 @@ bool fileFind(sf::strings& files, const std::string& path)
 	return sf::getFiles(files, fileDirName(path), fileBaseName(path));
 }
 
-} // namespace
+}

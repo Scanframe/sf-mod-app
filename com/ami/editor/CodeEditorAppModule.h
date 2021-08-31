@@ -15,6 +15,8 @@ class [[maybe_unused]] CodeEditorAppModule :public AppModuleInterface
 
 		explicit CodeEditorAppModule(const Parameters& params);
 
+		void initialize(bool init) override;
+
 		void addPropertyPages(PropertySheetDialog*) override;
 
 		MultiDocInterface* createWidget(QWidget* parent) const override;

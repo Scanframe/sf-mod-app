@@ -202,13 +202,13 @@ class _MISC_CLASS File
 		[[nodiscard]] int getDescriptor() const;
 
 		/**
-		 * Check if the file exists.
+		 * Check if the file exist.
 		 * @return
 		 */
 		bool exists();
 
 		/**
-		 * Removes the file wen it exists.
+		 * Removes the file wen it exist.
 		 */
 		void unlink();
 

@@ -415,12 +415,12 @@ class _MISC_CLASS Range :private RANGE
 		bool operator<(const Range& r) const;
 
 		/**
-		 * @brief And operator which is a subset of both range where elements of the one also exists in the other range.
+		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
 		 */
 		Range operator&(const Range& r) const;
 
 		/**
-		 * @brief And operator which is a subset of both range where elements of the one also exists in the other range.
+		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
 		 */
 		Range& operator&=(const Range& r);
 

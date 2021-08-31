@@ -731,6 +731,11 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		static Vector getList();
 
 		/**
+		 * @brief Gets the name of the passed field enumerate #EField.
+		 */
+		static std::string getFieldName(int field);
+
+		/**
 		 * @brief Gets instance with the given id otherwise the zero instance.
 		 *
 		 * @param id Identifier integer.
@@ -837,7 +842,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 
 		/**
 		 * @brief During events no instances should be deleted.
-		 * The destructor will be called but the data still exists
+		 * The destructor will be called but the data still exist
 		 */
 		void operator delete(void*); // NOLINT(misc-new-delete-overloads)
 
@@ -1130,7 +1135,6 @@ bool ResultData::setAccessRange(Range::size_type stop, bool skip_self)
 {
 	return ResultData::setAccessRange(Range(0, stop), skip_self);
 }
-
 
 inline
 ResultData::size_type ResultData::getTypeSize() const

@@ -260,7 +260,7 @@ bool ConversionListModel::edit(QModelIndex index)
 		if (flag)//(edit ? (it != std::next(_list.begin(), index.row())) : (it != _list.end()))
 		{
 			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("Unit Conversion"),
-				tr("Unit and precision combination (%1,%2) already exists!").arg(entry._from_unit).arg(entry._from_precision));
+				tr("Unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
 			continue;
 		}
 		// Set the dirty flag before an event is going to be send from the list modification.

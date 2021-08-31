@@ -53,5 +53,9 @@ QString CodeEditorAppModule::getSvgIconResource() const
 	return ":icon/svg/code-editor";
 }
 
+void CodeEditorAppModule::initialize(bool)
+{
+}
+
 }
 

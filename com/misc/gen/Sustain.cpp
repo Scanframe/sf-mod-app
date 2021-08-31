@@ -1,9 +1,9 @@
-#include <ctime>
-
 #include "target.h"
 #include "gen_utils.h"
 #include "Sustain.h"
-#if IS_WIN
+#if IS_QT
+#include <QTimer>
+#elif IS_WIN
 #include "dbgutils.h"
 #include "../win/WinTimer.h"
 #endif
@@ -87,7 +87,7 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 	}
 	if (vector)
 	{ // Get the clock for all sustain functions.
-		clock_t time = clock();
+		auto time = getTime(false);
 		// Do not use iterator because sustain could affect the vector itself.
 		unsigned i = 0;
 		while (i < vector->count())
@@ -116,7 +116,40 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 	}
 }
 
-#if IS_WIN
+#if IS_QT
+
+class SustainQtTimer
+{
+	public:
+		SustainQtTimer()
+		{
+			QObject::connect(&_timer, &QTimer::timeout, [&]()
+			{
+				static int sentry = 0;
+				// Place sentry for this part of the code
+				if (sentry < MAX_TIMER_REENTRIES)
+				{
+					// Set sentry
+					sentry++;
+					// Iterate through all functions in the table.
+					SustainBase::callSustain();
+					// Make entry of the function possible.
+					sentry--;
+					// Prevent clang warning.
+					(void) sentry;
+				}
+				else
+				{
+					SF_NORM_NOTIFY(DO_DEFAULT, "Skipped: Maximum re-entries reached!")
+				}
+			});
+		}
+
+		QTimer _timer;
+};
+
+
+#elif IS_WIN
 
 class SustainWinTimer :public WinTimer
 {
@@ -137,11 +170,11 @@ class SustainWinTimer :public WinTimer
 			if (inprogress < MAX_TIMER_REENTRIES)
 			{
 				// Set sentry
-				inprogress = true;
+				inprogress++;
 				// Iterate through all functions in the table.
 				SustainBase::callSustain();
 				// Make entry of the function possible.
-				inprogress = false;
+				inprogress--;
 			}
 			else
 			{
@@ -149,25 +182,61 @@ class SustainWinTimer :public WinTimer
 			}
 		}
 
-} StaticSustainWinTimer;
+};
 
 #endif
 
-bool setSustainTimer(unsigned msec)
+
+#if IS_QT
+SustainQtTimer* globalSustainQtTimer{nullptr};
+#elif IS_WIN
+SustainWinTimer* globalSustainWinTimer{nullptr};
+#endif
+
+bool setSustainTimer(int msec)
 {
-#if IS_WIN
-	return StaticSustainWinTimer.Set(msec);
-#endif
+#if IS_QT
+	if (!globalSustainQtTimer && msec > 0)
+	{
+		globalSustainQtTimer = new SustainQtTimer();
+	}
+	else
+	{
+		delete_null(globalSustainQtTimer);
+	}
+	if (globalSustainQtTimer)
+	{
+		globalSustainQtTimer->_timer.setInterval(msec);
+		globalSustainQtTimer->_timer.start();
+	}
+	return true;
+#elif IS_WIN
+	if (!timer && msec > 0)
+	{
+		globalSustainWinTimer = new SustainWinTimer();
+	}
+	else
+	{
+		delete_null(globalSustainWinTimer);
+	}
+	if (globalSustainWinTimer)
+	{
+		return globalSustainWinTimer->set(msec);
+	}
+	return true;
+#else
 	(void) msec;
 	return false;
+#endif
 }
 
-unsigned getSustainTimer()
+int getSustainTimer()
 {
-#if IS_WIN
-	return StaticSustainWinTimer.GetInterval();
+#if IS_QT
+	return globalSustainQtTimer->_timer.interval();
+#elif IS_WIN
+	return StaticSustainWinTimer.getInterval();
 #endif
-	return 0;
 }
 
 }

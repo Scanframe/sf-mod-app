@@ -31,10 +31,13 @@ add_library(${PROJECT_NAME} SHARED
 	LibMain.cpp
 	LayoutEditor.cpp LayoutEditor.h
 	LayoutEditorAppModule.cpp LayoutEditorAppModule.h
+	ObjectHierarchyModel.cpp ObjectHierarchyModel.h
 	LayoutEditorPropertyPage.cpp LayoutEditorPropertyPage.h LayoutEditorPropertyPage.ui
-	pages/VariableIdPropertyPage.cpp pages/VariableIdPropertyPage.h pages/VariableIdPropertyPage.ui
+	pages/ObjectPropertyPage.cpp pages/ObjectPropertyPage.h pages/ObjectPropertyPage.ui
+	pages/MiscellaneousPropertyPage.cpp pages/MiscellaneousPropertyPage.h pages/MiscellaneousPropertyPage.ui
 	pages/WidgetPropertyPage.cpp pages/WidgetPropertyPage.h pages/WidgetPropertyPage.ui
-	)
+	pages/VariableIdPropertyPage.cpp pages/VariableIdPropertyPage.h pages/VariableIdPropertyPage.ui
+	HierarchyViewer.cpp HierarchyViewer.h HierarchyViewer.ui)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-gii sf-ami)

@@ -27,6 +27,7 @@ set(SOURCES
 	gen/Variable.cpp gen/Variable.h
 	gen/VariableHandler.cpp gen/VariableHandler.h
 	gen/VariableReference.cpp gen/VariableReference.h
+	gen/VariableScriptObject.cpp gen/VariableScriptObject.h
 	gen/UnitConversionServer.cpp gen/UnitConversionServer.h
 	gen/UnitConversionServerEx.cpp gen/UnitConversionServerEx.h
 	gen/UnitConversion.cpp gen/UnitConversion.h
@@ -38,8 +39,8 @@ set(SOURCES
 	gen/ResultDataRequester.cpp gen/ResultDataRequester.h
 	gen/ResultDataStatic.cpp gen/ResultDataStatic.h
 	gen/GiiScriptInterpreter.cpp gen/GiiScriptInterpreter.h
-	gen/VariableScriptObject.cpp gen/VariableScriptObject.h
 	gen/ResultDataScriptObject.cpp gen/ResultDataScriptObject.h
+	gen/InformationServer.cpp gen/InformationServer.h
 	LibMain.cpp)
 
 if (NOT WIN32)
@@ -69,14 +70,26 @@ set(CMAKE_AUTORCC ON)
 
 # Qt dependent sources.
 set(SOURCES_QT
+	qt/res/icons.qrc
+	qt/Namespace.h
 	qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h	qt/VariableWidgetBasePrivate.h
+	qt/InformationSelectDialog.cpp qt/InformationSelectDialog.h qt/InformationSelectDialog.ui
 	qt/VariableEdit.cpp qt/VariableEdit.h
+	qt/InformationIdEdit.cpp qt/InformationIdEdit.h
+	qt/InformationIdEditPlugin.cpp qt/InformationIdEditPlugin.h
+	qt/VariableEdit.cpp qt/VariableEdit.h
+	qt/VariableEditPlugin.cpp qt/VariableEditPlugin.h
+	qt/VariableComboBox.cpp qt/VariableComboBox.h
+	qt/VariableComboBoxPlugin.cpp qt/VariableComboBoxPlugin.h
+	qt/VariableCheckBox.cpp qt/VariableCheckBox.h
+	qt/VariableCheckBoxPlugin.cpp qt/VariableCheckBoxPlugin.h
 	qt/VariableBar.cpp qt/VariableBar.h
 	qt/VariableBarPlugin.cpp qt/VariableBarPlugin.h
+	qt/InformationItemModel.cpp qt/InformationItemModel.h
 	qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
-	qt/VariableEditPlugin.cpp qt/VariableEditPlugin.h
 	qt/AscanGraph.cpp qt/AscanGraph.h
 	qt/AscanGraphPlugin.cpp qt/AscanGraphPlugin.h
+	qt/InformationMonitor.cpp qt/InformationMonitor.h qt/InformationMonitor.ui
 	)
 
 list(APPEND SOURCES ${SOURCES_QT})
@@ -125,6 +138,7 @@ if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
 	add_subdirectory(tests/app/graph)
 	add_subdirectory(tests/app/dialog)
+	add_subdirectory(tests/app/select-id)
 endif (SF_BUILD_TESTING)
 
 # Install designer plugin in plugins directory of current compiler.

@@ -19,14 +19,14 @@ class QMdiSubWindow;
 namespace sf
 {
 
-class ModuleConfiguration;
+class Application;
 
 class MainWindow :public QMainWindow
 {
 	Q_OBJECT
 
 	public:
-		explicit MainWindow(QSettings* settings);
+		explicit MainWindow(QSettings* settings, Application* application);
 
 		~MainWindow() override;
 
@@ -38,8 +38,6 @@ class MainWindow :public QMainWindow
 		}
 
 		void settingsReadWrite(bool save);
-
-		void initialize();
 
 	protected:
 		void dragEnterEvent(QDragEnterEvent* event) override;
@@ -80,18 +78,22 @@ class MainWindow :public QMainWindow
 
 		void updateWindowMenu();
 
+		void createAppModuleMenus();
+
 		sf::MultiDocInterface* createMdiChild(const QString& filename = QString());
 
 		void switchLayoutDirection();
 
+		void mdiSubActivated(QMdiSubWindow*);
+
 	private:
 		enum {MaxRecentFiles = 10};
-
-		void closeDocument();
 
 		void createActions();
 
 		void createStatusBar();
+
+		void createDockWindows();
 
 		MultiDocInterface* loadFile(const QString& filename);
 
@@ -103,42 +105,47 @@ class MainWindow :public QMainWindow
 
 		[[nodiscard]] QMdiSubWindow* findMdiChild(const QString& filename) const;
 
-		ModuleConfiguration* _moduleConfiguration{nullptr};
-
 		void settingsPropertySheet();
 
 		void stateSaveRestore(bool save);
 
 		void recentFilesReadWrite(bool save);
 
+		Application* _application;
+
 		QSettings* _settings;
 
 		QMdiArea* _mdiArea{};
-		QMenu* _windowMenu{};
-		QAction* _newAction{};
-		QAction* _openAction{};
-		QAction* _saveAction{};
-		QAction* _saveAsAction{};
-		QAction* _recentFileActions[MaxRecentFiles]{};
-		QAction* _recentFileSeparator{};
-		QAction* _recentFileSubMenuAction{};
-		QAction* _cutAction{};
-		QAction* _copyAction{};
-		QAction* _pasteAction{};
-		QAction* _undoAction{};
-		QAction* _redoAction{};
-		QAction* _closeWindowAction{};
-		QAction* _closeWindowsAction{};
-		QAction* _tileAction{};
-		QAction* _cascadeAction{};
-		QAction* _nextAction{};
-		QAction* _previousAction{};
-		QAction* _windowMenuSeparatorAction{};
-		QAction* _moduleConfigAction{};
-		QAction* _settingsAction{};
-		QAction* _developAction{};
+		QMenu* _menuView{};
+		QMenu* _menuTools{};
+		QMenu* _menuWindow{};
+
+		QAction* _actionNew{};
+		QAction* _actionOpen{};
+		QAction* _actionSave{};
+		QAction* _actionSaveAs{};
+		QAction* _actionRecentFile[MaxRecentFiles]{};
+		QAction* _actionRecentFileSeparator{};
+		QAction* _actionRecentFileSubMenu{};
+		QAction* _actionCut{};
+		QAction* _actionCopy{};
+		QAction* _actionPaste{};
+		QAction* _actionUndo{};
+		QAction* _actionRedo{};
+		QAction* _actionCloseWindow{};
+		QAction* _actionCloseWindows{};
+		QAction* _actionTileWindows{};
+		QAction* _actionCascadeWindows{};
+		QAction* _actionNextWindow{};
+		QAction* _actionPreviousWindow{};
+		QAction* _actionWindowMenuSeparator{};
+		QAction* _actionModuleConfig{};
+		QAction* _actionSettings{};
+		QAction* _actionDevelop{};
 
 		QStringList _recentFiles;
+
+		void createAppModuleToolBars();
 };
 
 }

@@ -6,6 +6,7 @@
 #include "TClosure.h"
 #include "TVector.h"
 #include "../global.h"
+#include "Exception.h"
 
 
 /**
@@ -302,6 +303,11 @@ template<typename T, typename P>
 size_t TClassRegistration<T, P>::registerClass(const char* name, const char* description,
 	const typename TClassRegistration<T, P>::callback_t& callback)
 {
+	// Sanity check on existing entry.
+	if (find(name))
+	{
+		throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
+	}
 	return std::distance(_entries->begin(), _entries->insert(_entries->end(), entry_t(name, description, callback)));
 }
 

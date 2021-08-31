@@ -83,7 +83,7 @@ struct VarHandler :sf::VariableHandler
 {
 	VarEvent::Vector _events;
 
-	void VariableEventHandler(sf::Variable::EEvent event, const sf::Variable& call_var, sf::Variable& link_var,
+	void variableEventHandler(sf::Variable::EEvent event, const sf::Variable& call_var, sf::Variable& link_var,
 		bool same_inst) override
 	{
 		// Add the even to the list.
@@ -535,9 +535,11 @@ TEST_CASE("sf::Variable", "[variable]")
 */
 	}
 
-	SECTION("Zero destruct")
+	SECTION("SetCur Bug")
 	{
 		sf::Variable var;
+		var.setup(R"(0xE0008,Storage|Logfile Path,,ASPE,File path to the log file which determines the next file number.,STRING,,256,C:\DOCUME~1\bcbdebug\LOCALS~1\Temp\stogii32,,)");
+		var.setCur(sf::Value(sf::unescape(R"(D:\\Data\\files)")));
 	}
 
 	sf::Variable::deinitialize();

@@ -3,12 +3,12 @@
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <QWidget>
 #include <QPaintEvent>
-/*#include "ObjectExtension.h"*/
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget/*, public ObjectExtension*/
+class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget, public ObjectExtension
 {
 	Q_OBJECT
 
@@ -17,9 +17,13 @@ class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget/*, public ObjectExtensi
 
 		void paintEvent(QPaintEvent* event) override;
 
-	Q_SIGNALS:
-		void paint(QPaintEvent* event);
+		QSize minimumSizeHint() const override;
 
+		bool isRequiredProperty(const QString& name) override;
+
+	private:
+		struct Private;
+		Private* _p;
 };
 
 }

@@ -9,11 +9,11 @@ namespace sf
 /**
  * Sustain timer loop time for checking on possible errors.
  */
-#define SUSTAIN_TIME 1000
+#define SUSTAIN_TIME {1, 0}
 /**
  * Default time for state machine to wait for an state change.
  */
-#define DEF_TIMEOUT_TIME 30000
+#define DEF_TIMEOUT_TIME {30, 0}
 
 ResultDataRequester::ResultDataRequester()
 	:_sustain(this, &ResultDataRequester::sustain, _sustain.spTimer)
@@ -212,7 +212,7 @@ void ResultDataRequester::resultCallback
 	// Emit the event.
 	if (_handler)
 	{
-		_handler->handleResultDataEvent(event, caller, link, rng, same_inst);
+		_handler->resultDataEventHandler(event, caller, link, rng, same_inst);
 	}
 }
 
@@ -220,7 +220,7 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 {
 	if (_handler)
 	{
-		_handler->handleResultDataEvent
+		_handler->resultDataEventHandler
 			(
 				(ResultData::EEvent) event,
 				*_rdIndex,
@@ -231,7 +231,7 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 	}
 }
 
-bool ResultDataRequester::sustain(clock_t)
+bool ResultDataRequester::sustain(const timespec& t)
 {
 	// Processes the current state when not waiting for an event.
 	if (_state != drsReady)

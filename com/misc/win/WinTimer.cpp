@@ -39,7 +39,7 @@ WinTimer::~WinTimer()
 	}
 }
 
-bool WinTimer::Set(unsigned interval)
+bool WinTimer::set(unsigned interval)
 {
 	if (_winTimer != this)
 	{
@@ -50,8 +50,8 @@ bool WinTimer::Set(unsigned interval)
 		// Check if the timer is event pending.
 		if (_timerId)
 		{
-			bool result = ::KillTimer(NULL, _timerId);
-			SF_COND_NORM_NOTIFY(!result, DO_DEFAULT, "SetSustainTimer(): Failed to Kill Timer!" << _timerId)
+			bool result = ::KillTimer(nullptr, _timerId);
+			SF_COND_NORM_NOTIFY(!result, DO_CERR, "SetSustainTimer(): Failed to Kill Timer!" << _timerId)
 			// Clear the member which is also used as a flag.
 			_timerId = 0;
 			_interval = 0;
@@ -66,15 +66,15 @@ bool WinTimer::Set(unsigned interval)
 	if (interval)
 	{
 		_interval = interval;
-		_timerId = ::SetTimer(NULL, 0, _interval, (TIMERPROC) Callback);
-		SF_COND_NORM_NOTIFY(!_timerId, DO_DEFAULT, "SetSustainTimer(): Failed to Set Timer!" << _timerId)
+		_timerId = ::SetTimer(nullptr, 0, _interval, (TIMERPROC) callback);
+		SF_COND_NORM_NOTIFY(!_timerId, DO_CERR, "SetSustainTimer(): Failed to Set Timer!" << _timerId)
 		// Signal success or failure
 		return !_timerId;
 	}
 	return true;
 }
 
-void CALLBACK WinTimer::Callback(HWND, UINT, UINT, DWORD ticks)
+void CALLBACK WinTimer::callback(HWND, UINT, UINT, DWORD ticks)
 {
 	if (_winTimer)
 	{

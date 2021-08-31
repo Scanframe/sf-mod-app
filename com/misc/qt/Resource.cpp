@@ -45,7 +45,16 @@ const char* Resource::_iconResources[] =
 		":icon/svg/stop",
 		":icon/svg/edit",
 		":icon/svg/add",
-		":icon/svg/remove"
+		":icon/svg/remove",
+		":icon/svg/folder",
+		":icon/svg/collapse",
+		":icon/svg/expand",
+		":icon/svg/open-folder",
+		":icon/svg/hand",
+		":icon/svg/search",
+		":icon/svg/form",
+		":icon/svg/container",
+		":icon/svg/widget"
 	};
 
 int Resource::_defaultIconSize = 128;

@@ -6,6 +6,16 @@
 namespace sf
 {
 
+AppModuleInterface* SelectImplementationDialog::execute(QSettings* settings, bool file_only, QWidget* parent)
+{
+	SelectImplementationDialog dlg(settings, file_only, parent);
+	if (dlg.exec() == QDialog::Accepted)
+	{
+		return dlg.getSelected();
+	}
+	return nullptr;
+}
+
 SelectImplementationDialog::SelectImplementationDialog(QSettings* settings, bool file_only, QWidget* parent)
 	:QDialog(parent)
 	 , _settings(settings)
@@ -16,23 +26,23 @@ SelectImplementationDialog::SelectImplementationDialog(QSettings* settings, bool
 	ui->listAvailable->setModel(AppModuleInterface::getListModel(file_only, this));
 	ui->listAvailable->header()->setStretchLastSection(true);
 	// Resize the columns.
-	for (int i = 0; i < ui->listAvailable->model()->columnCount(QModelIndex()) - 1; i++)
-	{
-		ui->listAvailable->resizeColumnToContents(i);
-	}
+	resizeColumnsToContents(ui->listAvailable);
 	// Connect the needed signals
-	connect(ui->listAvailable, &QTreeView::doubleClicked, this, &SelectImplementationDialog::doubleClicked);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &SelectImplementationDialog::close);
-	connect(ui->btnOkay, &QPushButton::clicked, this, &SelectImplementationDialog::okay);
-	// Assign svg icons to the buttons.
-	for (auto& i: QList<QPair<QAbstractButton*, Resource::Icon >>
-		{
-			{ui->btnOkay, Resource::Icon::Okay},
-			{ui->btnCancel, Resource::Icon::Cancel},
-		})
+	connect(ui->listAvailable, &QTreeView::doubleClicked, [&](const QModelIndex &index)
 	{
-		i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ButtonText));
-	}
+		accept();
+	});
+	connect(this, &QDialog::accepted, [&]()
+	{
+		auto index = ui->listAvailable->selectionModel()->selectedIndexes().first();
+		if (index.isValid())
+		{
+			_selected = qvariant_cast<AppModuleInterface*>(ui->listAvailable->model()->data(index, Qt::ItemDataRole::UserRole));
+		}
+	});
+	// Connect the needed buttonbox signals.
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 	//
 	stateSaveRestore(false);
 }
@@ -61,31 +71,6 @@ void SelectImplementationDialog::stateSaveRestore(bool save)
 AppModuleInterface* SelectImplementationDialog::getSelected() const
 {
 	return _selected;
-}
-
-void SelectImplementationDialog::okay()
-{
-	auto index = ui->listAvailable->selectionModel()->selectedIndexes().first();
-	if (index.isValid())
-	{
-		_selected = qvariant_cast<AppModuleInterface*>
-			(ui->listAvailable->model()->data(index, Qt::ItemDataRole::UserRole));
-	}
-/*
-	auto indexes = ui->listAvailable->selectionModel()->selectedIndexes();
-	if (indexes.count())
-	{
-		_selected = qvariant_cast<AppModuleInterface*>
-			(ui->listAvailable->model()->data(indexes.at(0), Qt::ItemDataRole::UserRole));
-	}
-*/
-	close();
-}
-
-void SelectImplementationDialog::doubleClicked(const QModelIndex& index)
-{
-	_selected = qvariant_cast<AppModuleInterface*>(ui->listAvailable->model()->data(index, Qt::ItemDataRole::UserRole));
-	close();
 }
 
 }

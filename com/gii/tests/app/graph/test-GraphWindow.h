@@ -1,29 +1,23 @@
 #pragma once
 
-#include <QMainWindow>
+#include <QDialog>
 
-QT_BEGIN_NAMESPACE
 namespace Ui {class GraphWindow;}
-QT_END_NAMESPACE
 
-class GraphWindow :public QMainWindow
+class GraphWindow :public QDialog
 {
 	Q_OBJECT
 
 	public:
 		explicit GraphWindow(QWidget* parent = nullptr);
 
-		~GraphWindow() override;
-
 	private Q_SLOTS:
-
-		void onAction1();
-
-		void onAction2();
 
 		void onPaint(QPaintEvent* event);
 
 	private:
 		// Pointer to the main window.
 		Ui::GraphWindow* ui;
+
+		void onSlider(int pos);
 };

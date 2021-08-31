@@ -58,7 +58,7 @@ struct ResHandler :sf::ResultDataHandler
 
 	sf::TClosure<void, sf::ResultData::EEvent, const sf::ResultData&, sf::ResultData&, const sf::Range&, bool> _callback;
 
-	void handleResultDataEvent
+	void resultDataEventHandler
 		(
 			sf::ResultData::EEvent event,
 			const sf::ResultData& call_res,

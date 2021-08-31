@@ -22,10 +22,10 @@ class _AMI_CLASS MultiDocInterfaceSignals :public QObject
 {
 	Q_OBJECT
 
-	/*
-	 * Most signals from class QPlainTextEdit are implemented.
-	 */
 	Q_SIGNALS:
+		/*
+		 * Most signals from class QPlainTextEdit are implemented.
+		 */
 		void textChanged();
 		void undoAvailable(bool b);
 		void redoAvailable(bool b);
@@ -156,6 +156,11 @@ class _AMI_CLASS MultiDocInterface
 		virtual void stateSaveRestore(bool save);
 
 		/**
+		 * @brief Called by application when this document is activated deactivated.
+		 */
+		void activate(bool);
+
+		/**
 		 * @brief Instance to connect signal handlers onto.
 		 */
 		MultiDocInterfaceSignals mdiSignals;
@@ -175,6 +180,10 @@ class _AMI_CLASS MultiDocInterface
 		 * @brief Holds the application module interface assigned when created by the same instance as assigned.
 		 */
 		const AppModuleInterface* _module{nullptr};
+		/**
+		 * @brief Holds the flag on active or not active to prevent overhead.
+		 */
+		 bool _active{false};
 
 		friend AppModuleInterface;
 };

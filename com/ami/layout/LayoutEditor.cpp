@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+#include <QApplication>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSaveFile>
@@ -7,6 +8,8 @@
 #include <misc/qt/FormBuilder.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include <gii/qt/VariableWidgetBase.h>
+#include <ami/layout/pages/ObjectPropertyPage.h>
+#include <ami/layout/pages/MiscellaneousPropertyPage.h>
 #include "LayoutEditor.h"
 #include "pages/VariableIdPropertyPage.h"
 #include "pages/WidgetPropertyPage.h"
@@ -29,16 +32,14 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 */
 	//scrollArea->setSizeAdjustPolicy(QScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow);
 	adjustSize();
-	// TODO: Needs to be set from property page.
-	setReadOnly(false);
 	//
 	_targetContextMenu = new QMenu(this);
 	//
-	auto actionEdit = new QAction(tr("&Edit"), _targetContextMenu);
-	actionEdit->setToolTip(tr("Edit the properties of this widget."));
-	actionEdit->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Edit), QPalette::ColorRole::ButtonText));
-	_targetContextMenu->addAction(actionEdit);
-	connect(actionEdit, &QAction::triggered, [&]()
+	_actionEdit = new QAction(tr("&Edit"), _targetContextMenu);
+	_actionEdit->setToolTip(tr("Edit the properties of this widget."));
+	_actionEdit->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Edit), QPalette::ColorRole::ButtonText));
+	_targetContextMenu->addAction(_actionEdit);
+	connect(_actionEdit, &QAction::triggered, [&]()
 	{
 		if (_currentTarget)
 		{
@@ -54,6 +55,8 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 		if (_currentTarget)
 		{
 			_currentTarget->deleteLater();
+			_modified = true;
+			documentWasModified();
 		}
 	});
 }
@@ -75,6 +78,8 @@ void LayoutEditor::closeEvent(QCloseEvent* event)
 {
 	if (canClose())
 	{
+		// On closing send deactivation signal.
+		activate(false);
 		event->accept();
 	}
 	else
@@ -130,10 +135,13 @@ bool LayoutEditor::loadFile(const QString& fileName)
 
 	QGuiApplication::restoreOverrideCursor();
 	setCurrentFile(fileName);
-	//connect(document(), &QTextDocument::contentsChanged, this, &LayoutEditor::documentWasModified);
-	for (auto child: _widget->children())
+	// TODO: install event filter for all children up the tree.
+	if (_widget)
 	{
-		child->installEventFilter(this);
+		for (auto child: _widget->children())
+		{
+			child->installEventFilter(this);
+		}
 	}
 	return true;
 }
@@ -287,15 +295,26 @@ void LayoutEditor::develop()
 
 void LayoutEditor::popupContextMenu(QObject* target, const QPoint& pos)
 {
-	_currentTarget = target;
-	_targetContextMenu->exec(pos);
-	_currentTarget = nullptr;
+	if (!getReadOnly())
+	{
+		_currentTarget = target;
+		auto p = _currentTarget->property(VariableWidgetBase::propertyNameEditorObject());
+		if (p.isValid())
+		{
+			_currentTarget = p.value<QObject*>();
+		}
+		// Set the text of the menu's action using the class name of the target.
+		_actionEdit->setText(QString("&Edit (%1)").arg(QString(_currentTarget->metaObject()->className()).split("::").last()));
+		//
+		_targetContextMenu->exec(pos);
+		_currentTarget = nullptr;
+	}
 }
 
 bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 {
 	// Intercept mouse button pressed when layout is editable.
-	if (_editable && event->type() == QEvent::MouseButtonPress)
+	if (event->type() == QEvent::MouseButtonPress)
 	{
 		// Get the mouse event.
 		if (auto mouseEvent = dynamic_cast<QMouseEvent*>(event))
@@ -303,6 +322,9 @@ bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 			// Check if it was the right mouse button.
 			if (mouseEvent->button() == Qt::MouseButton::RightButton && QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
 			{
+				// When in widget resides in a splitter, events of the widgets do not pass here.
+				// So get the widget under the global position.
+				watched = QApplication::widgetAt(mouseEvent->globalPosition().toPoint());
 				popupContextMenu(watched, mouseEvent->globalPosition().toPoint());
 			}
 		}
@@ -310,19 +332,25 @@ bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 	return QObject::eventFilter(watched, event);
 }
 
-void LayoutEditor::openPropertyEditor(QObject* target)
+PropertySheetDialog* LayoutEditor::openPropertyEditor(QObject* target)
 {
 	auto dlg = new PropertySheetDialog("LayoutObjectEditor", _settings, this);
 	// Make the dialog close
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
-	//
-	if (auto vwb = dynamic_cast<VariableWidgetBase*>(target))
-	{
-		dlg->addPage(new VariableIdPropertyPage(vwb, dlg));
-	}
+	dlg->setWindowTitle(tr("Widget (%1) Properties").arg(target->objectName()));
+	// Add the object property page.
+	dlg->addPage(new ObjectPropertyPage(target, dlg));
+	// Add the miscellaneous property page.
+	dlg->addPage(new MiscellaneousPropertyPage(target, dlg));
+	// When based of a widget.
 	if (auto w = dynamic_cast<QWidget*>(target))
 	{
 		dlg->addPage(new WidgetPropertyPage(w, dlg));
+	}
+	// When based of the variable widget base class.
+	if (auto vwb = dynamic_cast<VariableWidgetBase*>(target))
+	{
+		dlg->addPage(new VariableIdPropertyPage(vwb, dlg));
 	}
 	// When the dialog was applied set the modified flag.
 	connect(dlg, &PropertySheetDialog::modified, [&]()
@@ -332,6 +360,18 @@ void LayoutEditor::openPropertyEditor(QObject* target)
 	});
 	// FixMe: Prevent multiple properties sheet dialogs per target using a shared and week pointer.
 	dlg->show();
+	return dlg;
+}
+
+ObjectHierarchyModel* LayoutEditor::getHierarchyModel()
+{
+	// When the model does not exist create it.
+	if (!_model)
+	{
+		_model = new ObjectHierarchyModel(false, this);
+		_model->updateList(_widget);
+	}
+	return _model;
 }
 
 }

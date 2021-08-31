@@ -49,7 +49,16 @@ class _MISC_CLASS Resource
 				Stop,
 				Edit,
 				Add,
-				Remove
+				Remove,
+				Folder,
+				Collapse,
+				Expand,
+				OpenFolder,
+				Hand,
+				Search,
+				Form,
+				Container,
+				Widget
 		};
 
 		/**

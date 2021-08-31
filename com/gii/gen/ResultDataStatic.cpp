@@ -35,7 +35,7 @@ ResultDataStatic::FlagLetters ResultDataStatic::_flagLetters[] =
 		{'A', flgArchive},
 		{'S', flgShare},
 		{'H', flgHidden},
-		{'r', flgRecycle}
+		{'R', flgRecycle}
 	};
 
 int ResultDataStatic::_globalActive = 0;

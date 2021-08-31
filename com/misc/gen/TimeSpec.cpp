@@ -66,7 +66,7 @@ TimeSpec& TimeSpec::add(time_t sec, long nsec)
 	return *this;
 }
 
-TimeSpec& TimeSpec::assign(time_t sec, long nsec)
+TimeSpec& TimeSpec::assign(time_t sec, nsec_type nsec)
 {
 	tv_sec = sec + nsec / 1000000000l;
 	tv_nsec = nsec % 1000000000l;

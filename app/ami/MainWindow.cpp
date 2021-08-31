@@ -1,7 +1,5 @@
 #include <QtWidgets>
 #include <QPlainTextEdit>
-
-#include "MainWindow.h"
 #include "ApplicationPropertyPage.h"
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
@@ -9,29 +7,28 @@
 #include <misc/qt/PropertySheetDialog.h>
 #include <ami/iface/AppModuleInterface.h>
 #include <misc/gen/gen_utils.h>
+#include <misc/qt/Globals.h>
+#include "Application.h"
+#include "MainWindow.h"
 
 namespace sf
 {
 
-MainWindow::MainWindow(QSettings* settings)
-	:_mdiArea(new QMdiArea)
+MainWindow::MainWindow(QSettings* settings, Application* application)
+	:_application(application)
+	 , _mdiArea(new QMdiArea)
 	 , _settings(settings)
-	 , _moduleConfiguration(new ModuleConfiguration(settings, this))
 {
 	// Set the object name for the getObjectNamePath() function so property sheet settings get a correct section assigned.
 	setObjectName("MainWindow");
 	// Title is the same as the application.
 	setWindowTitle(QApplication::applicationDisplayName());
+	// Set the parent that can be used for floating windows created from script functions.
+	setGlobalParent(this);
 	//
 	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 	{
 		setWindowTitle(QApplication::applicationDisplayName());
-	});
-	// When libraries are loaded create the module instances.
-	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&]()
-	{
-		// Create the interface implementations (that are missing).
-		AppModuleInterface::instantiate(_settings, this);
 	});
 	//
 	_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
@@ -41,10 +38,11 @@ MainWindow::MainWindow(QSettings* settings)
 	_mdiArea->setViewMode(QMdiArea::ViewMode::TabbedView);
 
 	setCentralWidget(_mdiArea);
-	connect(_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::updateMenus);
+	connect(_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::mdiSubActivated);
 
 	createActions();
 	createStatusBar();
+	createDockWindows();
 	updateMenus();
 	//
 	setUnifiedTitleAndToolBarOnMac(true);
@@ -57,7 +55,6 @@ MainWindow::MainWindow(QSettings* settings)
 	//
 	stateSaveRestore(false);
 	//
-	//AppModuleInterface::OpenFileClosure;
 	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface*
 	{
 		return openFile(filename);
@@ -67,11 +64,8 @@ MainWindow::MainWindow(QSettings* settings)
 MainWindow::~MainWindow()
 {
 	stateSaveRestore(true);
-}
-
-void MainWindow::initialize()
-{
-	AppModuleInterface::initializeInstances();
+	// Reset the global parent.
+	setGlobalParent(nullptr);
 }
 
 void MainWindow::stateSaveRestore(bool save)
@@ -132,8 +126,7 @@ void MainWindow::open()
 	// When desktop aware use the colors of the desktop so icon colors are matching.
 	if (QApplication::desktopSettingsAware())
 	{
-		auto pc = qvariant_cast<PaletteColors*>(QApplication::instance()->property("systemColors"));
-		if (pc)
+		if (auto pc = qvariant_cast<PaletteColors*>(QApplication::instance()->property("systemColors")))
 		{
 			pc->styleFileDialog(fd);
 		}
@@ -156,8 +149,7 @@ MultiDocInterface* MainWindow::openFile(const QString& filename)
 
 MultiDocInterface* MainWindow::loadFile(const QString& filename)
 {
-	auto child = createMdiChild(filename);
-	if (child)
+	if (auto child = createMdiChild(filename))
 	{
 		auto widget = dynamic_cast<QWidget*>(child);
 		if (child->loadFile(filename))
@@ -225,8 +217,8 @@ void MainWindow::prependToRecentFiles(const QString& filename)
 
 void MainWindow::setRecentFilesVisible(bool visible)
 {
-	_recentFileSubMenuAction->setVisible(visible);
-	_recentFileSeparator->setVisible(visible);
+	_actionRecentFileSubMenu->setVisible(visible);
+	_actionRecentFileSeparator->setVisible(visible);
 }
 
 void MainWindow::updateRecentFileActions()
@@ -236,14 +228,14 @@ void MainWindow::updateRecentFileActions()
 	for (; i < count; ++i)
 	{
 		const QString fileName = QFileInfo(_recentFiles.at(i)).fileName();
-		_recentFileActions[i]->setText(tr("&%1 %2").arg(i + 1).arg(fileName));
-		_recentFileActions[i]->setData(_recentFiles.at(i));
-		_recentFileActions[i]->setStatusTip(_recentFiles.at(i));
-		_recentFileActions[i]->setVisible(true);
+		_actionRecentFile[i]->setText(tr("&%1 %2").arg(i + 1).arg(fileName));
+		_actionRecentFile[i]->setData(_recentFiles.at(i));
+		_actionRecentFile[i]->setStatusTip(_recentFiles.at(i));
+		_actionRecentFile[i]->setVisible(true);
 	}
 	for (; i < MaxRecentFiles; ++i)
 	{
-		_recentFileActions[i]->setVisible(false);
+		_actionRecentFile[i]->setVisible(false);
 	}
 }
 
@@ -315,17 +307,16 @@ void MainWindow::redo()
 
 void MainWindow::about()
 {
-	QMessageBox::about(this, tr("About MDI"),
-		tr("The <b>MDI</b> example demonstrates how to write multiple "
-			 "document interface applications using Qt."));
+	const char* msg = R"(
+<h3>Scanframe Modular Application</h3>
+Application to build faster.
+)";
+	QMessageBox::about(this, tr("About"), tr(msg));
 }
 
 void MainWindow::configModules()
 {
-	if (_moduleConfiguration)
-	{
-		_moduleConfiguration->openDialog(this);
-	}
+	_application->getModuleConfiguration().openDialog(this);
 }
 
 void MainWindow::settingsPropertySheet()
@@ -344,24 +335,23 @@ void MainWindow::settingsPropertySheet()
 
 void MainWindow::updateWindowMenu()
 {
-	_windowMenu->clear();
-	_windowMenu->addAction(_closeWindowAction);
-	_windowMenu->addAction(_closeWindowsAction);
-	_windowMenu->addSeparator();
-	_windowMenu->addAction(_tileAction);
-	_windowMenu->addAction(_cascadeAction);
-	_windowMenu->addSeparator();
-	_windowMenu->addAction(_nextAction);
-	_windowMenu->addAction(_previousAction);
-	_windowMenu->addAction(_windowMenuSeparatorAction);
+	_menuWindow->clear();
+	_menuWindow->addAction(_actionCloseWindow);
+	_menuWindow->addAction(_actionCloseWindows);
+	_menuWindow->addSeparator();
+	_menuWindow->addAction(_actionTileWindows);
+	_menuWindow->addAction(_actionCascadeWindows);
+	_menuWindow->addSeparator();
+	_menuWindow->addAction(_actionNextWindow);
+	_menuWindow->addAction(_actionPreviousWindow);
+	_menuWindow->addAction(_actionWindowMenuSeparator);
 
 	QList<QMdiSubWindow*> windows = _mdiArea->subWindowList();
-	_windowMenuSeparatorAction->setVisible(!windows.isEmpty());
+	_actionWindowMenuSeparator->setVisible(!windows.isEmpty());
 
 	for (int i = 0; i < windows.size(); ++i)
 	{
 		QMdiSubWindow* mdiSubWindow = windows.at(i);
-		//auto child = qobject_cast<TextEditor*>(mdiSubWindow->widget());
 		auto child = dynamic_cast<MultiDocInterface*>(mdiSubWindow->widget());
 		QString text;
 		if (i < 9)
@@ -372,7 +362,7 @@ void MainWindow::updateWindowMenu()
 		{
 			text = tr("%1 %2").arg(i + 1).arg(child->userFriendlyCurrentFile());
 		}
-		QAction* action = _windowMenu->addAction(text, mdiSubWindow, [this, mdiSubWindow]()
+		QAction* action = _menuWindow->addAction(text, mdiSubWindow, [this, mdiSubWindow]()
 		{
 			_mdiArea->setActiveSubWindow(mdiSubWindow);
 		});
@@ -381,213 +371,249 @@ void MainWindow::updateWindowMenu()
 	}
 }
 
+void MainWindow::mdiSubActivated(QMdiSubWindow* subWindow)
+{
+	// Deactivate all MDI documents first.
+	for (auto window: _mdiArea->subWindowList())
+	{
+		if (auto iface = subWindow ? dynamic_cast<MultiDocInterface*>(window) : nullptr)
+		{
+			// Signal the interface it is deactivated.
+			iface->activate(false);
+		}
+	}
+	// Activate the single MDI documents.
+	if (auto iface = subWindow ? dynamic_cast<MultiDocInterface*>(subWindow->widget()) : nullptr)
+	{
+		// Signal the interface it is activated.
+		iface->activate(true);
+	}
+	updateMenus();
+}
+
 void MainWindow::updateMenus()
 {
 	bool hasMdiChild = (activeMdiChild() != nullptr);
-	_saveAction->setEnabled(hasMdiChild && activeMdiChild()->isModified());
-	_saveAsAction->setEnabled(hasMdiChild);
-	_pasteAction->setEnabled(hasMdiChild);
-	_closeWindowAction->setEnabled(hasMdiChild);
-	_closeWindowsAction->setEnabled(hasMdiChild);
-	_tileAction->setEnabled(hasMdiChild);
-	_cascadeAction->setEnabled(hasMdiChild);
-	_nextAction->setEnabled(hasMdiChild);
-	_previousAction->setEnabled(hasMdiChild);
-	_windowMenuSeparatorAction->setVisible(hasMdiChild);
+	_actionSave->setEnabled(hasMdiChild && activeMdiChild()->isModified());
+	_actionSaveAs->setEnabled(hasMdiChild);
+	_actionPaste->setEnabled(hasMdiChild);
+	_actionCloseWindow->setEnabled(hasMdiChild);
+	_actionCloseWindows->setEnabled(hasMdiChild);
+	_actionTileWindows->setEnabled(hasMdiChild);
+	_actionCascadeWindows->setEnabled(hasMdiChild);
+	_actionNextWindow->setEnabled(hasMdiChild);
+	_actionPreviousWindow->setEnabled(hasMdiChild);
+	_actionWindowMenuSeparator->setVisible(hasMdiChild);
 	bool hasSelection = (hasMdiChild && activeMdiChild()->hasSelection());
-	_cutAction->setEnabled(hasSelection);
-	_copyAction->setEnabled(hasSelection);
+	_actionCut->setEnabled(hasSelection);
+	_actionCopy->setEnabled(hasSelection);
 	bool isUndoRedo = (hasMdiChild && activeMdiChild()->isUndoRedoEnabled());
-	_undoAction->setEnabled(isUndoRedo && activeMdiChild()->isUndoAvailable());
-	_redoAction->setEnabled(isUndoRedo && activeMdiChild()->isUndoAvailable());
+	_actionUndo->setEnabled(isUndoRedo && activeMdiChild()->isUndoAvailable());
+	_actionRedo->setEnabled(isUndoRedo && activeMdiChild()->isUndoAvailable());
 }
 
 void MainWindow::createActions()
 {
-	QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-	QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
-	_windowMenu = menuBar()->addMenu(tr("&Window"));
+	QMenu* menuFile = menuBar()->addMenu(tr("&File"));
+	QMenu* menuEdit = menuBar()->addMenu(tr("&Edit"));
+	_menuView = menuBar()->addMenu(tr("&View"));
+	_menuTools = menuBar()->addMenu(tr("&Tools"));
+	_menuWindow = menuBar()->addMenu(tr("&Window"));
 	QMenu* configMenu = menuBar()->addMenu(tr("&Config"));
 	QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
 	//
-	connect(_windowMenu, &QMenu::aboutToShow, this, &MainWindow::updateWindowMenu);
+	connect(_menuWindow, &QMenu::aboutToShow, this, &MainWindow::updateWindowMenu);
 	// Color for the icons.
-	auto iconColor = QApplication::palette().color(QPalette::ColorRole::ButtonText);
+	auto colorIcon = QApplication::palette().color(QPalette::ColorRole::ButtonText);
 
-	auto newIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::New), iconColor);
-	_newAction = new QAction(newIcon, tr("&New"), this);
-	_newAction->setShortcuts(QKeySequence::New);
-	_newAction->setStatusTip(tr("Create a new file"));
-	connect(_newAction, &QAction::triggered, this, &MainWindow::newFile);
+	auto newIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::New), colorIcon);
+	_actionNew = new QAction(newIcon, tr("&New"), this);
+	_actionNew->setShortcuts(QKeySequence::New);
+	_actionNew->setStatusTip(tr("Create a new file"));
+	connect(_actionNew, &QAction::triggered, this, &MainWindow::newFile);
 
-	auto openIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Open), iconColor);
-	_openAction = new QAction(openIcon, tr("&Open..."), this);
-	_openAction->setShortcuts(QKeySequence::Open);
-	_openAction->setStatusTip(tr("Open an existing file"));
-	connect(_openAction, &QAction::triggered, this, &MainWindow::open);
+	auto openIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::OpenFolder), colorIcon);
+	_actionOpen = new QAction(openIcon, tr("&Open..."), this);
+	_actionOpen->setShortcuts(QKeySequence::Open);
+	_actionOpen->setStatusTip(tr("Open an existing file"));
+	connect(_actionOpen, &QAction::triggered, this, &MainWindow::open);
 
-	auto saveIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Save), iconColor);
-	_saveAction = new QAction(saveIcon, tr("&Save"), this);
-	_saveAction->setShortcuts(QKeySequence::Save);
-	_saveAction->setStatusTip(tr("Save the document to disk"));
-	connect(_saveAction, &QAction::triggered, this, &MainWindow::save);
+	auto saveIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Save), colorIcon);
+	_actionSave = new QAction(saveIcon, tr("&Save"), this);
+	_actionSave->setShortcuts(QKeySequence::Save);
+	_actionSave->setStatusTip(tr("Save the document to disk"));
+	connect(_actionSave, &QAction::triggered, this, &MainWindow::save);
 
-	auto saveAsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Save), iconColor);
-	_saveAsAction = new QAction(saveAsIcon, tr("Save &As..."), this);
-	_saveAsAction->setShortcuts(QKeySequence::SaveAs);
-	_saveAsAction->setStatusTip(tr("Save the document under a new name"));
-	connect(_saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
+	auto saveAsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Save), colorIcon);
+	_actionSaveAs = new QAction(saveAsIcon, tr("Save &As..."), this);
+	_actionSaveAs->setShortcuts(QKeySequence::SaveAs);
+	_actionSaveAs->setStatusTip(tr("Save the document under a new name"));
+	connect(_actionSaveAs, &QAction::triggered, this, &MainWindow::saveAs);
 
-	auto exitIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Exit), iconColor);
-	auto exitAction = new QAction(exitIcon, tr("E&xit"), this);
-	connect(exitAction, &QAction::triggered, QCoreApplication::instance(), &QApplication::closeAllWindows);
-	exitAction->setShortcuts(QKeySequence::Quit);
-	exitAction->setStatusTip(tr("Exit the application"));
+	auto exitIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Exit), colorIcon);
+	auto _actionExit = new QAction(exitIcon, tr("E&xit"), this);
+	connect(_actionExit, &QAction::triggered, QCoreApplication::instance(), &QApplication::closeAllWindows);
+	_actionExit->setShortcuts(QKeySequence::Quit);
+	_actionExit->setStatusTip(tr("Exit the application"));
 
-	auto cutIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Cut), iconColor);
-	_cutAction = new QAction(cutIcon, tr("Cu&t"), this);
-	_cutAction->setShortcuts(QKeySequence::Cut);
-	_cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
-	connect(_cutAction, &QAction::triggered, this, &MainWindow::cut);
+	auto cutIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Cut), colorIcon);
+	_actionCut = new QAction(cutIcon, tr("Cu&t"), this);
+	_actionCut->setShortcuts(QKeySequence::Cut);
+	_actionCut->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
+	connect(_actionCut, &QAction::triggered, this, &MainWindow::cut);
 
-	auto copyIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Copy),
-		iconColor);
-	_copyAction = new QAction(copyIcon, tr("&Copy"), this);
-	_copyAction->setShortcuts(QKeySequence::Copy);
-	_copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
-	connect(_copyAction, &QAction::triggered, this, &MainWindow::copy);
+	auto copyIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Copy), colorIcon);
+	_actionCopy = new QAction(copyIcon, tr("&Copy"), this);
+	_actionCopy->setShortcuts(QKeySequence::Copy);
+	_actionCopy->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
+	connect(_actionCopy, &QAction::triggered, this, &MainWindow::copy);
 
-	auto pasteIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Paste), iconColor);
-	_pasteAction = new QAction(pasteIcon, tr("&Paste"), this);
-	_pasteAction->setShortcuts(QKeySequence::Paste);
-	_pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
-	connect(_pasteAction, &QAction::triggered, this, &MainWindow::paste);
+	auto pasteIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Paste), colorIcon);
+	_actionPaste = new QAction(pasteIcon, tr("&Paste"), this);
+	_actionPaste->setShortcuts(QKeySequence::Paste);
+	_actionPaste->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
+	connect(_actionPaste, &QAction::triggered, this, &MainWindow::paste);
 
-	auto undoIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Undo), iconColor);
-	_undoAction = new QAction(undoIcon, tr("&Undo"), this);
-	_undoAction->setShortcuts(QKeySequence::Undo);
-	_undoAction->setStatusTip(tr("Undo last made changes"));
-	connect(_undoAction, &QAction::triggered, this, &MainWindow::undo);
+	auto undoIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Undo), colorIcon);
+	_actionUndo = new QAction(undoIcon, tr("&Undo"), this);
+	_actionUndo->setShortcuts(QKeySequence::Undo);
+	_actionUndo->setStatusTip(tr("Undo last made changes"));
+	connect(_actionUndo, &QAction::triggered, this, &MainWindow::undo);
 
-	auto redoIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Redo), iconColor);
-	_redoAction = new QAction(redoIcon, tr("&Redo"), this);
-	_redoAction->setShortcuts(QKeySequence::Redo);
-	_redoAction->setStatusTip(tr("Redo last made changes"));
-	connect(_redoAction, &QAction::triggered, this, &MainWindow::redo);
+	auto redoIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Redo), colorIcon);
+	_actionRedo = new QAction(redoIcon, tr("&Redo"), this);
+	_actionRedo->setShortcuts(QKeySequence::Redo);
+	_actionRedo->setStatusTip(tr("Redo last made changes"));
+	connect(_actionRedo, &QAction::triggered, this, &MainWindow::redo);
 
-	auto closeWindowIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::CloseWindow), iconColor);
-	_closeWindowAction = new QAction(closeWindowIcon, tr("Cl&ose"), this);
-	_closeWindowAction->setStatusTip(tr("Close the active window"));
-	_closeWindowAction->setShortcuts(QKeySequence::Close);
-	connect(_closeWindowAction, &QAction::triggered, _mdiArea, &QMdiArea::closeActiveSubWindow);
+	auto closeWindowIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::CloseWindow), colorIcon);
+	_actionCloseWindow = new QAction(closeWindowIcon, tr("Cl&ose"), this);
+	_actionCloseWindow->setStatusTip(tr("Close the active window"));
+	_actionCloseWindow->setShortcuts(QKeySequence::Close);
+	connect(_actionCloseWindow, &QAction::triggered, _mdiArea, &QMdiArea::closeActiveSubWindow);
 
-	auto closeWindowsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::CloseWindows), iconColor);
-	_closeWindowsAction = new QAction(closeWindowsIcon, tr("Close &All"), this);
-	_closeWindowsAction->setStatusTip(tr("Close all the windows"));
-	connect(_closeWindowsAction, &QAction::triggered, _mdiArea, &QMdiArea::closeAllSubWindows);
+	auto closeWindowsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::CloseWindows), colorIcon);
+	_actionCloseWindows = new QAction(closeWindowsIcon, tr("Close &All"), this);
+	_actionCloseWindows->setStatusTip(tr("Close all the windows"));
+	connect(_actionCloseWindows, &QAction::triggered, _mdiArea, &QMdiArea::closeAllSubWindows);
 
-	_tileAction = new QAction(tr("&Tile"), this);
-	_tileAction->setStatusTip(tr("Tile the windows"));
-	connect(_tileAction, &QAction::triggered, _mdiArea, &QMdiArea::tileSubWindows);
+	_actionTileWindows = new QAction(tr("&Tile"), this);
+	_actionTileWindows->setStatusTip(tr("Tile the windows"));
+	connect(_actionTileWindows, &QAction::triggered, _mdiArea, &QMdiArea::tileSubWindows);
 
-	_cascadeAction = new QAction(tr("&Cascade"), this);
-	_cascadeAction->setStatusTip(tr("Cascade the windows"));
-	connect(_cascadeAction, &QAction::triggered, _mdiArea, &QMdiArea::cascadeSubWindows);
+	_actionCascadeWindows = new QAction(tr("&Cascade"), this);
+	_actionCascadeWindows->setStatusTip(tr("Cascade the windows"));
+	connect(_actionCascadeWindows, &QAction::triggered, _mdiArea, &QMdiArea::cascadeSubWindows);
 
-	_nextAction = new QAction(tr("Ne&xt"), this);
-	_nextAction->setShortcuts(QKeySequence::NextChild);
-	_nextAction->setStatusTip(tr("Move the focus to the next window"));
-	connect(_nextAction, &QAction::triggered, _mdiArea, &QMdiArea::activateNextSubWindow);
+	_actionNextWindow = new QAction(tr("Ne&xt"), this);
+	_actionNextWindow->setShortcuts(QKeySequence::NextChild);
+	_actionNextWindow->setStatusTip(tr("Move the focus to the next window"));
+	connect(_actionNextWindow, &QAction::triggered, _mdiArea, &QMdiArea::activateNextSubWindow);
 
-	_previousAction = new QAction(tr("Pre&vious"), this);
-	_previousAction->setShortcuts(QKeySequence::PreviousChild);
-	_previousAction->setStatusTip(tr("Move the focus to the previous window"));
-	connect(_previousAction, &QAction::triggered, _mdiArea, &QMdiArea::activatePreviousSubWindow);
+	_actionPreviousWindow = new QAction(tr("Pre&vious"), this);
+	_actionPreviousWindow->setShortcuts(QKeySequence::PreviousChild);
+	_actionPreviousWindow->setStatusTip(tr("Move the focus to the previous window"));
+	connect(_actionPreviousWindow, &QAction::triggered, _mdiArea, &QMdiArea::activatePreviousSubWindow);
 
-	_windowMenuSeparatorAction = new QAction(this);
-	_windowMenuSeparatorAction->setSeparator(true);
+	_actionWindowMenuSeparator = new QAction(this);
+	_actionWindowMenuSeparator->setSeparator(true);
 
-	auto moduleConfigIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Configuration), iconColor);
-	_moduleConfigAction = new QAction(moduleConfigIcon, tr("&Modules"), this);
-	connect(_moduleConfigAction, &QAction::triggered, this, &MainWindow::configModules);
-	_moduleConfigAction->setStatusTip(tr("Configure application modules to load"));
+	auto moduleConfigIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Configuration), colorIcon);
+	_actionModuleConfig = new QAction(moduleConfigIcon, tr("&Modules"), this);
+	connect(_actionModuleConfig, &QAction::triggered, this, &MainWindow::configModules);
+	_actionModuleConfig->setStatusTip(tr("Configure application modules to load"));
 
-	auto settingsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Settings), iconColor);
-	_settingsAction = new QAction(settingsIcon, tr("&Settings"), this);
-	connect(_settingsAction, &QAction::triggered, this, &MainWindow::settingsPropertySheet);
-	_settingsAction->setStatusTip(tr("Application and modules settings"));
+	auto settingsIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Settings), colorIcon);
+	_actionSettings = new QAction(settingsIcon, tr("&Settings"), this);
+	connect(_actionSettings, &QAction::triggered, this, &MainWindow::settingsPropertySheet);
+	_actionSettings->setStatusTip(tr("Application and modules settings"));
 
-	auto developIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Development), iconColor);
-	_developAction = new QAction(developIcon, tr("&Develop"), this);
-	connect(_developAction, &QAction::triggered, [&](bool) -> void
+	auto developIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Development), colorIcon);
+	_actionDevelop = new QAction(developIcon, tr("&Develop"), this);
+	connect(_actionDevelop, &QAction::triggered, [&](bool) -> void
 	{
 		if (auto mdi = activeMdiChild())
 		{
 			mdi->develop();
 		}
 	});
-	_developAction->setStatusTip(tr("Development action as a shortcut for testing stuff."));
+	_actionDevelop->setStatusTip(tr("Development action as a shortcut for testing stuff."));
 
-	fileMenu->addAction(_newAction);
-	fileMenu->addAction(_openAction);
-	fileMenu->addAction(_saveAction);
-	fileMenu->addAction(_saveAsAction);
-	fileMenu->addSeparator();
+	menuFile->addAction(_actionNew);
+	menuFile->addAction(_actionOpen);
+	menuFile->addAction(_actionSave);
+	menuFile->addAction(_actionSaveAs);
+	menuFile->addSeparator();
 
-	QMenu* recentMenu = fileMenu->addMenu(tr("&Recent..."));
-	connect(recentMenu, &QMenu::aboutToShow, this, &MainWindow::updateRecentFileActions);
-	_recentFileSubMenuAction = recentMenu->menuAction();
-	_recentFileSeparator = fileMenu->addSeparator();
+	QMenu* menuRecentFiles = menuFile->addMenu(tr("&Recent..."));
+	connect(menuRecentFiles, &QMenu::aboutToShow, this, &MainWindow::updateRecentFileActions);
+	_actionRecentFileSubMenu = menuRecentFiles->menuAction();
+	_actionRecentFileSeparator = menuFile->addSeparator();
 	//
 	setRecentFilesVisible(!_recentFiles.isEmpty());
 
-	for (auto& recentFileAct : _recentFileActions)
+	for (auto& recentFileAct: _actionRecentFile)
 	{
-		recentFileAct = recentMenu->addAction(QString(), this, &MainWindow::openRecentFile);
+		recentFileAct = menuRecentFiles->addAction(QString(), this, &MainWindow::openRecentFile);
 		recentFileAct->setVisible(false);
 	}
-	fileMenu->addAction(tr("Switch layout direction"), this, &MainWindow::switchLayoutDirection);
-	fileMenu->addSeparator();
-	fileMenu->addAction(exitAction);
+	menuFile->addAction(tr("Switch layout direction"), this, &MainWindow::switchLayoutDirection);
+	menuFile->addSeparator();
+	menuFile->addAction(_actionExit);
 
-	editMenu->addAction(_cutAction);
-	editMenu->addAction(_copyAction);
-	editMenu->addAction(_pasteAction);
-	editMenu->addAction(_undoAction);
-	editMenu->addAction(_redoAction);
+	menuEdit->addAction(_actionCut);
+	menuEdit->addAction(_actionCopy);
+	menuEdit->addAction(_actionPaste);
+	menuEdit->addAction(_actionUndo);
+	menuEdit->addAction(_actionRedo);
 
-	configMenu->addAction(_moduleConfigAction);
-	configMenu->addAction(_settingsAction);
+	configMenu->addAction(_actionModuleConfig);
+	configMenu->addAction(_actionSettings);
 
-	QAction* aboutAction = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
-	aboutAction->setStatusTip(tr("Show the application's About box"));
+	QAction* actionAbout = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
+	actionAbout->setStatusTip(tr("Show the application's About box"));
 
 	QAction* aboutQtAction = helpMenu->addAction(tr("About &Qt"), QCoreApplication::instance(), &QApplication::aboutQt);
 	aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
 
+	createAppModuleMenus();
+
+	auto toolBarFile = addToolBar(tr("File"));
+	toolBarFile->setObjectName("File");
+	auto toolBarEdit = addToolBar(tr("Edit"));
+	toolBarEdit->setObjectName("Edit");
+	auto toolBarConfig = addToolBar(tr("Config"));
+	toolBarConfig->setObjectName("Config");
+
+	toolBarFile->addAction(_actionNew);
+	toolBarFile->addAction(_actionOpen);
+	toolBarFile->addAction(_actionSave);
+	toolBarFile->addAction(_actionCloseWindow);
+
+	toolBarEdit->addAction(_actionCut);
+	toolBarEdit->addAction(_actionCopy);
+	toolBarEdit->addAction(_actionPaste);
+	toolBarEdit->addAction(_actionUndo);
+	toolBarEdit->addAction(_actionRedo);
+
+	toolBarConfig->addAction(_actionModuleConfig);
+	toolBarConfig->addAction(_actionSettings);
+	toolBarConfig->addAction(_actionDevelop);
+
+	createAppModuleToolBars();
+
 	updateWindowMenu();
+}
 
-	auto fileToolBar = addToolBar(tr("File"));
-	fileToolBar->setObjectName("File");
-	auto editToolBar = addToolBar(tr("Edit"));
-	editToolBar->setObjectName("Edit");
-	auto configToolBar = addToolBar(tr("Config"));
-	configToolBar->setObjectName("Config");
+void MainWindow::createAppModuleMenus()
+{
+	AppModuleInterface::addAllMenuItems(AppModuleInterface::View, _menuView);
+	AppModuleInterface::addAllMenuItems(AppModuleInterface::Tools, _menuTools);
+}
 
-	fileToolBar->addAction(_newAction);
-	fileToolBar->addAction(_openAction);
-	fileToolBar->addAction(_saveAction);
-	fileToolBar->addAction(_closeWindowAction);
-
-	editToolBar->addAction(_cutAction);
-	editToolBar->addAction(_copyAction);
-	editToolBar->addAction(_pasteAction);
-	editToolBar->addAction(_undoAction);
-	editToolBar->addAction(_redoAction);
-
-	configToolBar->addAction(_moduleConfigAction);
-	configToolBar->addAction(_settingsAction);
-	configToolBar->addAction(_developAction);
+void MainWindow::createAppModuleToolBars()
+{
+	AppModuleInterface::addAllToolBars(this);
 }
 
 void MainWindow::createStatusBar()
@@ -597,27 +623,22 @@ void MainWindow::createStatusBar()
 
 void MainWindow::settingsReadWrite(bool save)
 {
-	// Load the missing modules from the configuration.
-	_moduleConfiguration->load();
-	// Use the module configuration settings instance.
-	auto settings = _moduleConfiguration->getSettings();
-	//
 	const auto keyDisplayName = QString("DisplayName");
 	const auto keyViewMode = QString("ViewMode");
 	//
-	settings->beginGroup("Application");
+	_settings->beginGroup("Application");
 	if (save)
 	{
-		settings->setValue(keyDisplayName, QApplication::applicationDisplayName());
-		settings->setValue(keyViewMode, _mdiArea->viewMode());
+		_settings->setValue(keyDisplayName, QApplication::applicationDisplayName());
+		_settings->setValue(keyViewMode, _mdiArea->viewMode());
 	}
 	else
 	{
-		QApplication::setApplicationDisplayName(settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
-		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
+		QApplication::setApplicationDisplayName(_settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
+		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(_settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
 			QMdiArea::ViewMode::TabbedView));
 	}
-	settings->endGroup();
+	_settings->endGroup();
 }
 
 MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
@@ -660,11 +681,11 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 					_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ?
 						QPalette::ColorRole::ButtonText : QPalette::ColorRole::WindowText)));
 			// Connect the MDI actions to the
-			connect(&child->mdiSignals, &MultiDocInterfaceSignals::modificationChanged, _saveAction, &QAction::setEnabled);
-			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _cutAction, &QAction::setEnabled);
-			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _copyAction, &QAction::setEnabled);
-			connect(&child->mdiSignals, &MultiDocInterfaceSignals::undoAvailable, _undoAction, &QAction::setEnabled);
-			connect(&child->mdiSignals, &MultiDocInterfaceSignals::redoAvailable, _redoAction, &QAction::setEnabled);
+			connect(&child->mdiSignals, &MultiDocInterfaceSignals::modificationChanged, _actionSave, &QAction::setEnabled);
+			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _actionCut, &QAction::setEnabled);
+			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _actionCopy, &QAction::setEnabled);
+			connect(&child->mdiSignals, &MultiDocInterfaceSignals::undoAvailable, _actionUndo, &QAction::setEnabled);
+			connect(&child->mdiSignals, &MultiDocInterfaceSignals::redoAvailable, _actionRedo, &QAction::setEnabled);
 			// Fix the system menu shortcut key for QKeySequence::Close (Ctrl + W) to be ambiguous
 			// with an item in the main menu by replacing it.
 			for (auto action: sw->systemMenu()->actions())
@@ -704,17 +725,6 @@ QMdiSubWindow* MainWindow::findMdiChild(const QString& fileName) const
 	return nullptr;
 }
 
-void MainWindow::closeDocument()
-{
-	if (activeMdiChild())
-	{
-		if (activeMdiChild()->canClose())
-		{
-			_mdiArea->closeActiveSubWindow();
-		}
-	}
-}
-
 void MainWindow::switchLayoutDirection()
 {
 	if (layoutDirection() == Qt::LeftToRight)
@@ -740,6 +750,15 @@ void MainWindow::dropEvent(QDropEvent* event)
 	for (const auto& url: event->mimeData()->urls())
 	{
 		openFile(url.toLocalFile());
+	}
+}
+
+void MainWindow::createDockWindows()
+{
+	auto list = AppModuleInterface::createAllDockingWidgets(this);
+	for (auto dock: list)
+	{
+		addDockWidget(Qt::RightDockWidgetArea, dock);
 	}
 }
 

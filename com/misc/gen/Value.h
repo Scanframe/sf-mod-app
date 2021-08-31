@@ -52,12 +52,17 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Default constructor.
 		 */
-		Value() = default;
+		Value();
 
 		/**
 		 * @brief Move assignment operator is default.
 		 */
-		Value& operator= (Value&&) = default;
+		Value& operator=(Value&&) noexcept;
+
+		/**
+		 * @brief Move constructor.
+		 */
+		Value(Value&&) noexcept;
 
 		/**
 		 * @brief Copy constructor.
@@ -124,6 +129,10 @@ class _MISC_CLASS Value
 		 * @param v The boolean value.
 		 */
 		explicit Value(int v);
+
+#if IS_WIN
+		explicit Value(long v);
+#endif
 
 		/**
 		 * @brief 32-bit unsigned integer type constructor for implicit vitInteger.
@@ -199,6 +208,9 @@ class _MISC_CLASS Value
 		 */
 		Value& set(int v);
 
+#if IS_WIN
+		Value& set(long v);
+#endif
 		/**
 		 * @brief Sets the type and content.
 		 *
@@ -471,6 +483,7 @@ class _MISC_CLASS Value
 		[[nodiscard]] std::string getString(int precision = std::numeric_limits<int>::max()) const;
 
 #if IS_QT
+
 		/**
 		 * @brief Easy conversion to QString.
 		 */
@@ -478,7 +491,9 @@ class _MISC_CLASS Value
 		{
 			return QString::fromStdString(getString(precision));
 		}
+
 #endif
+
 		/**
 		 * @brief Rounds the current instance to a multiple of the passed value.
 		 * @param v Value to round.
@@ -720,7 +735,7 @@ class _MISC_CLASS Value
 		/**
 		 * Vector type and implicit iterator for this class.
 		 */
-		typedef TVector<Value> vector_type;
+		typedef TVector <Value> vector_type;
 
 		friend Value operator*(const Value& v1, const Value& v2);
 
@@ -748,6 +763,14 @@ Value& Value::set(int v)
 {
 	return set(int_type(v));
 }
+
+#if IS_WIN
+inline
+Value& Value::set(long v)
+{
+	return set(int_type(v));
+}
+#endif
 
 inline
 Value& Value::set(unsigned v)
@@ -780,13 +803,11 @@ Value& Value::set(const std::string& v)
 }
 
 #if IS_QT
-
 inline
 Value& Value::set(const QString& as)
 {
 	return set(as.toStdString());
 }
-
 #endif
 
 inline
@@ -816,7 +837,7 @@ Value& Value::assign(const unsigned v)
 	return assign(&i, sizeof(int_type));
 }
 
-#if !IS_WIN
+#if IS_WIN
 inline
 Value& Value::assign(const long v)
 {
@@ -859,25 +880,25 @@ Value& Value::assign(const void* v, size_t size)
 }
 
 inline
-Value::EType Value::getType() const
+Value::EType Value::getType() const // NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->getType() : _type;
 }
 
 inline
-bool Value::isValid() const
+bool Value::isValid() const // NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->isValid() : _type != vitInvalid;
 }
 
 inline
-bool Value::isNumber() const
+bool Value::isNumber() const // NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->isNumber() : _type == vitInteger || _type == vitFloat;
 }
 
 inline
-size_t Value::getSize() const
+size_t Value::getSize() const // NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->getSize() : _size;
 }
@@ -1050,4 +1071,4 @@ _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Value& v);
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Value& v);
 
-} // namespace
+}

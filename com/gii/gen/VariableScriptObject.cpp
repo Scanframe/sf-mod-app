@@ -300,7 +300,7 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 	return true;
 }
 
-void VariableScriptObject::VariableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
+void VariableScriptObject::variableEventHandler(VariableTypes::EEvent event, const Variable& call_var, Variable& link_var, bool same_inst)
 {
 	(void) same_inst;
 	auto si = dynamic_cast<ScriptInterpreter*>(getParent());

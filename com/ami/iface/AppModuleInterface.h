@@ -4,11 +4,14 @@
 #include <QMimeType>
 #include <QAbstractItemModel>
 #include <QSettings>
+#include <QDockWidget>
 #include <misc/gen/TClassRegistration.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include "MultiDocInterface.h"
 #include "AppModuleFileType.h"
 #include "global.h"
+
+class QMainWindow;
 
 namespace sf
 {
@@ -28,7 +31,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		{
 			explicit Parameters(QSettings* settings, QObject* parent)
 				:_settings(settings)
-				, _parent(parent) {}
+				 , _parent(parent) {}
 
 			/**
 			 * @brief Settings of application.
@@ -56,16 +59,33 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		static void instantiate(QSettings* settings, QObject* parent);
 
 		/**
-		 * @brief Initializes all uninitialized instances.
+		 * @brief Initializes all uninitialized instances or visa versa.
 		 *
+		 * @param init Determines initialization or uninitialization.
 		 * @return Amount of initialized instances.
 		 */
-		static size_t initializeInstances();
+		static size_t initializeInstances(bool init = true);
 
 		/**
 		 * @brief Adds property pages from all modules to the passed sheet.
 		 */
 		static void addAllPropertyPages(PropertySheetDialog* sheet);
+
+		/**
+		 * Type of menu items to collect.
+		 */
+		enum MenuType
+		{
+			Tools,
+			View
+		};
+
+		/**
+		 * @brief Adds items from all modules to this menu.
+		 * @param menuType Type of menu items to add.
+		 * @param menu Menu to add the actions/menus to.
+		 */
+		static void addAllMenuItems(MenuType menuType, QMenu* menu);
 
 		/**
 		 * Map type for the application modules to their names.
@@ -79,8 +99,9 @@ class _AMI_CLASS AppModuleInterface :public QObject
 
 		/**
 		 * @brief Called when al modules are loaded or when a module added.
+		 * @param init Determines initialization or uninitialization.
 		 */
-		virtual void initialize();
+		virtual void initialize(bool init) = 0;
 
 		/**
 		 * @brief Gets the description of this instance.
@@ -96,6 +117,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Gets the library filename.
 		 */
 		[[nodiscard]] virtual QString getLibraryFilename() const = 0;
+
 		/**
 		 * @brief Gets svg icon resource name and can be overridden to change the default.
 		 */
@@ -105,6 +127,40 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @brief Adds module property pages to the passed sheet.
 		 */
 		virtual void addPropertyPages(PropertySheetDialog* sheet) = 0;
+
+		/**
+		 * @brief Adds menu items for the passed type of menu.
+		 */
+		virtual void addMenuItems(MenuType menuType, QMenu* menu);
+
+		/**
+		 * @brief Type definition for containing dock widgets.
+		 */
+		typedef QList<QDockWidget*> DockWidgetList;
+
+		/**
+		 * @brief Creates docking widgets having the passed parent.
+		 */
+		virtual DockWidgetList createDockingWidgets(QWidget* parent);
+
+		/**
+		 * @brief Creates all docking widgets of the loaded modules by calling #createDockingWidgets().
+		 *
+		 * @see createDockingWidgets()
+		 */
+		static DockWidgetList createAllDockingWidgets(QWidget* parent);
+
+		/**
+		 * @brief Adds toolbars to the passed main window.
+		 */
+		virtual void addToolBars(QMainWindow* mainWindow);
+
+		/**
+		 * @brief Creates all toolbars of the loaded modules by calling #addToolBars().
+		 *
+		 * @see addToolBars()
+		 */
+		static void addAllToolBars(QMainWindow* mainWindow);
 
 		/**
 		 * Gets if the instance has file handling types.
@@ -120,6 +176,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @param suffix File suffix like 'txt'
 		 */
 		void addFileType(const QString& name, const QString& suffix);
+
 		/**
 		 * @brief Adds a file type handled by this instance.
 		 *
@@ -133,6 +190,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 * @param mime Mime as a string like 'text/plain'.
 		 */
 		void addFileType(const QMimeType& mime);
+
 		/**
 		 * @brief Find the instance handling the file using the file suffix.
 		 *
@@ -199,6 +257,14 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		MultiDocInterface* openFile(const QString& filename, AppModuleInterface* ami = nullptr) const;
 
 		/**
+		 * @brief Called from main window when a document is activated or deactivated.
+		 *
+		 * @param iface MDI interface which can be dynamic casted to the actual document.
+		 * @param yn
+		 */
+		virtual void documentActivated(MultiDocInterface* iface, bool yn) const;
+
+		/**
 		 * @brief Type definition for the callback closure.
 		 */
 		typedef TClosure<MultiDocInterface*, const QString&, AppModuleInterface*> OpenFileClosure;
@@ -236,6 +302,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 
 		// Declarations of static functions and data members to be able to create implementations.
 	SF_DECL_IFACE(AppModuleInterface, AppModuleInterface::Parameters, Interface)
+
 };
 
 }

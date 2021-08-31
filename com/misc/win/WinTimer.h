@@ -36,18 +36,18 @@ class _MISC_CLASS WinTimer
 		 * @param interval
 		 * @return
 		 */
-		bool Set(unsigned interval);
+		bool set(unsigned interval);
 
 		/**
 		 * When the interval of zero is returned the timer is disabled.
 		 * @return
 		 */
-		[[nodiscard]] unsigned GetInterval() const;
+		[[nodiscard]] unsigned getInterval() const;
 
 		/**
 		 * Timer callback function.
 		 */
-		static void CALLBACK Callback
+		static void CALLBACK callback
 			(
 				HWND hwnd,     // Handle of window for timer messages
 				UINT msg,      // WM_TIMER message.
@@ -74,9 +74,9 @@ class _MISC_CLASS WinTimer
 };
 
 inline
-unsigned WinTimer::GetInterval() const
+unsigned WinTimer::getInterval() const
 {
 	return _interval;
 }
 
-} // namespace
+}

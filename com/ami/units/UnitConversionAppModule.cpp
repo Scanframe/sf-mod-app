@@ -1,9 +1,10 @@
 #include <QSettings>
-#include <QMetaEnum>
 #include <QFileInfo>
 #include <QDir>
 #include <QCoreApplication>
+#include <misc/qt/qt_utils.h>
 #include <misc/qt/PropertySheetDialog.h>
+#include <misc/gen/ConfigLocation.h>
 #include "UnitConversionAppModule.h"
 #include "ConversionDialog.h"
 #include "UnitConversionPropertyPage.h"
@@ -13,14 +14,10 @@ namespace sf
 
 UnitConversionAppModule::UnitConversionAppModule(const AppModuleInterface::Parameters& params)
 	:AppModuleInterface(params)
-	,_settings(params._settings)
+	 , _settings(params._settings)
 {
-
-	// TODO: Resolving path needs to be fixed globally.
 	// Form the path to the configuration settings file.
-	QFileInfo fi(QCoreApplication::applicationFilePath());
-	fi.setFile(fi.absolutePath() + QDir::separator() + "config", QFileInfo(getLibraryFilename()).baseName() + ".cfg");
-	_configFilePath = fi.absoluteFilePath();
+	_configFilePath = QFileInfo(QString::fromStdString(getConfigLocation()), QFileInfo(getLibraryFilename()).baseName() + ".cfg").absoluteFilePath();
 	//
 	std::ifstream ifs(_configFilePath.toStdString());
 	_ucs.load(ifs);
@@ -52,11 +49,14 @@ UnitConversionAppModule::~UnitConversionAppModule()
 	}
 }
 
-void UnitConversionAppModule::initialize()
+void UnitConversionAppModule::initialize(bool init)
 {
-		// Load the settings.
-//		settingsReadWrite(false);
-		//_ucs.setEnable(true);
+	// Load the settings.
+	if (init)
+	{
+		//settingsReadWrite(false);
+	}
+	//_ucs.setEnable(true);
 }
 
 QString UnitConversionAppModule::getName() const
@@ -84,24 +84,6 @@ QString UnitConversionAppModule::getSvgIconResource() const
 	return ":icon/svg/units";
 }
 
-template<typename T>
-static const char* enumToKey(const T value)
-{
-	return QMetaEnum::fromType<T>().valueToKey(value);
-}
-
-template<typename T>
-static T keyToEnum(const char* key)
-{
-	return QMetaEnum::fromType<T>().keyToValue(key);
-}
-
-template<typename T>
-static T keyToEnum(QString key)
-{
-	return QMetaEnum::fromType<T>().keyToValue(key);
-}
-
 void UnitConversionAppModule::settingsReadWrite(bool save)
 {
 	if (!_settings)
@@ -121,7 +103,7 @@ void UnitConversionAppModule::settingsReadWrite(bool save)
 	else
 	{
 		_settings->setValue(keyEnableId, QString("0x%1").arg(_ucs.getEnableId(), 0, 16));
-		_settings->setValue(keyUnitSystem, enumToKey((UnitSystem)_ucs.getUnitSystem()));
+		_settings->setValue(keyUnitSystem, enumToKey((UnitSystem) _ucs.getUnitSystem()));
 		_settings->setValue(keyAsk, _ask);
 	}
 	_settings->endGroup();

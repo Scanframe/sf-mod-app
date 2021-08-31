@@ -24,6 +24,7 @@ QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(QWidget* widget)
 			}
 		}
 	}
+	return nullptr;
 }
 
 
@@ -129,5 +130,9 @@ Variable& VariableWidgetBase::getVariable()
 	return _p->_variable;
 }
 
+const char* VariableWidgetBase::propertyNameEditorObject()
+{
+	return "editorObject";
+}
 
 }

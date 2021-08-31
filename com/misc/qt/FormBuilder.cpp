@@ -525,8 +525,14 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 				{
 					if (classNames.contains(attr.nodeValue()))
 					{
-						// FIXME: When no layout is present all child widgets should be removed individually.
+						// Remove the layout which has the widgets when it exists.
 						elem.removeChild(elem.firstChildElement("layout"));
+						// Remove all child widgets.
+						auto children = elem.elementsByTagName("widget");
+						for (int i = 0; i < children.count(); i++)
+						{
+							elem.removeChild(children.at(i));
+						}
 					}
 				}
 			}
@@ -616,7 +622,8 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 							elem.lastChildElement("property"));
 					}
 				}
-				// Fix QLabel's buddy.
+				// Fix QLabel's buddy. Which seems to be fixed already.
+				// TODO: When the buddy exists this will add a second entry so check first if the buddy is present.
 				if (auto lbl = dynamic_cast<QLabel*>(frames[name]))
 				{
 					if (lbl->buddy())

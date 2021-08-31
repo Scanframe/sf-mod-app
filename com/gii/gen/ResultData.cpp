@@ -394,7 +394,7 @@ bool ResultData::emitEvent(EEvent event, const ResultData& caller, const Range& 
 	// Check if a handler was linked and if so call it.
 	if (_handler)
 	{
-		_handler->handleResultDataEvent(event, caller, *this, rng, &caller == this);
+		_handler->resultDataEventHandler(event, caller, *this, rng, &caller == this);
 		return true;
 	}
 	return false;
@@ -1415,22 +1415,22 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 	// Set the reference valid flag default to true.
 	def._valid = true;
 	// Only when field exist.
-	if (fields.size() > rfeSegmentSize)
+	if (fields.size() > rfSegmentSize)
 	{
 		// Id.
-		def._id = std::stoull(fields[rfeId], nullptr, 0);
+		def._id = std::stoull(fields[rfId], nullptr, 0);
 		// Name.
-		def._name = unescape(fields[rfeName]);
+		def._name = unescape(fields[rfName]);
 		// Flags.
-		def._flags = toFlags(fields[rfeFlags]);
+		def._flags = toFlags(fields[rfFlags]);
 		// Description.
-		def._description = unescape(fields[rfeDescription]);
+		def._description = unescape(fields[rfDescription]);
 		// Type.
-		def._type = getType(fields[rfeType].c_str());
+		def._type = getType(fields[rfType].c_str());
 		// Block size.
-		def._blockSize = std::stoull(fields[rfeBlockSize], nullptr, 0);
+		def._blockSize = std::stoull(fields[rfBlockSize], nullptr, 0);
 		// Segment size.
-		def._segmentSize = std::stoull(fields[rfeSegmentSize], nullptr, 0);
+		def._segmentSize = std::stoull(fields[rfSegmentSize], nullptr, 0);
 		//
 		def._valid &= (def._blockSize > 0);
 	}
@@ -1439,15 +1439,15 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 		def._valid = true;
 	};
 	// SignificantBits clipped to min and max value.
-	if (fields.size() > rfeSigBits)
+	if (fields.size() > rfSigBits)
 	{
 		// Significant bits
-		def._significantBits = std::stoull(fields[rfeSigBits], nullptr, 0);
+		def._significantBits = std::stoull(fields[rfSigBits], nullptr, 0);
 	}
 	// Offset
-	if (fields.size() > rfeOffset)
+	if (fields.size() > rfOffset)
 	{
-		def._offset = std::stoull(fields[rfeOffset], nullptr, 0);
+		def._offset = std::stoull(fields[rfOffset], nullptr, 0);
 	}
 	// Notify when not valid notify.
 	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n" << str);
@@ -1675,6 +1675,33 @@ void ResultData::setDesiredId()
 ResultDataTypes::size_type ResultData::getBufferSize(ResultDataTypes::size_type blocks) const
 {
 	return blocks * _reference->_data->getBlockSize();
+}
+
+std::string ResultData::getFieldName(int field)
+{
+	switch (field)
+	{
+		case rfId:
+			return "Id";
+		case rfName:
+			return "Name";
+		case rfDescription:
+			return "Description";
+		case rfFlags:
+			return "Flags";
+		case rfType:
+			return "Type";
+		case rfSigBits:
+			return "SignificantBits";
+		case rfOffset:
+			return "Offset";
+		case rfBlockSize:
+			return "BlockSize";
+		case rfSegmentSize:
+			return "SegmentSize";
+		default:
+			return "?Field" + itostr(field) + "?";
+	}
 }
 
 std::ostream& operator<<(std::ostream& os, const ResultData& rd)

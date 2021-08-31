@@ -27,7 +27,7 @@ class ResultDataScriptObject :public ScriptObject, public ResultData, private Re
 		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
 	private:
-		void handleResultDataEvent(EEvent event, const ResultData& data, ResultData& resultData, const Range& range, bool b) override;
+		void resultDataEventHandler(EEvent event, const ResultData& data, ResultData& resultData, const Range& range, bool b) override;
 
 		// Instruction pointer to jump to on a change of ID. 0 means disabled.
 		ip_type OnId{0};

@@ -16,15 +16,15 @@ struct _GII_CLASS VariableHandler :public VariableTypes
 	 * @brief Pure virtual function which must be implemented when used in a polymorphic setting.
 	 *
 	 * @param event Type of the event
-	 * @param call_var Calling variable instance
-	 * @param link_var Linked variable instance
+	 * @param caller Calling variable instance
+	 * @param link Linked variable instance
 	 * @param same_inst
 	 */
-	virtual void VariableEventHandler
+	virtual void variableEventHandler
 		(
 			EEvent event,
-			const Variable& call_var,
-			Variable& link_var,
+			const Variable& caller,
+			Variable& link,
 			bool same_inst
 		) = 0;
 
@@ -47,7 +47,7 @@ class TVariableHandler :public VariableHandler
 		/**
 		 * @brief Required event handler type.
 		 */
-		typedef void (T::*TPmf)(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst);
+		typedef void (T::*TPmf)(EEvent event, const Variable& caller, Variable& link, bool same_inst);
 
 		/**
 		 * @brief Constructor for assigning the pointer of the member function.
@@ -78,19 +78,19 @@ class TVariableHandler :public VariableHandler
 		 * @brief Call the member function through virtual overloaded function from the base class.
 		 *
 		 * @param event
-		 * @param call_var
-		 * @param link_var
-		 * @param same_inst
+		 * @param caller
+		 * @param link
+		 * @param sameInst
 		 */
-		void VariableEventHandler
+		void variableEventHandler
 			(
 				EEvent event,
-				const Variable& call_var,
-				Variable& link_var,
-				bool same_inst
+				const Variable& caller,
+				Variable& link,
+				bool sameInst
 			) override
 		{
-			(_self->*_pmf)(event, call_var, link_var, same_inst);
+			(_self->*_pmf)(event, caller, link, sameInst);
 		}
 };
 

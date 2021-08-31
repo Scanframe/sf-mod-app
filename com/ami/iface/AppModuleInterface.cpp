@@ -174,28 +174,23 @@ void AppModuleInterface::instantiate(QSettings* settings, QObject* parent)
 	}
 }
 
-size_t AppModuleInterface::initializeInstances()
+size_t AppModuleInterface::initializeInstances(bool init)
 {
 	size_t rv = 0;
 	for (auto i: _map.values())
 	{
 		// When not initialized skip it.
-		if (!i->_initialized)
+		if (i->_initialized != init)
 		{
 			// Set the initialization flag to prevent a second pass.
-			i->_initialized = true;
+			i->_initialized = init;
 			// Call possible overloaded method.
-			i->initialize();
+			i->initialize(init);
 			// Increment the return value.
 			rv++;
 		}
 	}
 	return rv;
-}
-
-void AppModuleInterface::initialize()
-{
-	// Deliberately empty.
 }
 
 const AppModuleInterface::Map& AppModuleInterface::getMap()
@@ -320,13 +315,13 @@ QString AppModuleInterface::getFileTypeFilters() const
 
 MultiDocInterface* AppModuleInterface::createChild(QWidget* parent) const
 {
-	auto child = createWidget(parent);
-	if (child)
+	if (auto child = createWidget(parent))
 	{
 		// Assign this module for access to configuration.
 		child->_module = this;
+		return child;
 	}
-	return child;
+	return nullptr;
 }
 
 void AppModuleInterface::addAllPropertyPages(PropertySheetDialog* sheet)
@@ -366,6 +361,52 @@ MultiDocInterface* AppModuleInterface::openFile(const QString& filename, AppModu
 		qWarning() << "Callback to open a file has not been assigned.";
 	}
 	return nullptr;
+}
+
+AppModuleInterface::DockWidgetList AppModuleInterface::createAllDockingWidgets(QWidget* parent)
+{
+	AppModuleInterface::DockWidgetList rv;
+	// Iterate through the modules and add
+	for (auto m: _map)
+	{
+		rv.append(m->createDockingWidgets(parent));
+	}
+	return rv;
+}
+
+QList<QDockWidget*> AppModuleInterface::createDockingWidgets(QWidget* parent)
+{
+	return {};
+}
+
+void AppModuleInterface::documentActivated(MultiDocInterface* iface, bool yn) const
+{
+}
+
+void AppModuleInterface::addMenuItems(AppModuleInterface::MenuType menuType, QMenu* menu)
+{
+}
+
+void AppModuleInterface::addAllMenuItems(AppModuleInterface::MenuType menuType, QMenu* menu)
+{
+	// Iterate through the modules and add the menus of each module.
+	for (auto m: _map)
+	{
+		m->addMenuItems(menuType, menu);
+	}
+}
+
+void AppModuleInterface::addToolBars(QMainWindow* mainWindow)
+{
+}
+
+void AppModuleInterface::addAllToolBars(QMainWindow* mainWindow)
+{
+	// Iterate through the modules and add
+	for (auto m: _map)
+	{
+		m->addToolBars(mainWindow);
+	}
 }
 
 }

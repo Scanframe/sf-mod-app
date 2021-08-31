@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg
+	version="1.1"
+	color="darkcyan"
+	height="100px" width="100px"
+	xml:space="preserve"
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 1000 1000"
+>
+	<g fill="currentColor">
+		<path d="m 500,137.5 -245,245 h 490 z" id="path3805" />
+		<path d="M 10,430 V 552.5 H 990 V 430 Z" id="path3807" />
+		<path d="m 255,597.5 245,245 245,-245 z" id="path3809" />
+	</g>
+</svg>

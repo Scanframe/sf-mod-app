@@ -10,7 +10,10 @@
 #include <QPalette>
 #include <QFileDialog>
 #include <QLayout>
+#include <QTreeView>
+#include <QMetaEnum>
 #include <QMessageBox>
+#include <QComboBox>
 
 #include "../global.h"
 
@@ -102,16 +105,17 @@ QRect operator-=(QRect& rc, const QPoint& pt)
  * @brief Inflates the passed rect on all sides using an integer.
  */
 inline
-void inflate(QRect& r, int sz)
+QRect& inflate(QRect& r, int sz)
 {
 	r.adjust(-sz, -sz, sz, sz);
+	return r;
 }
 
 /**
  * @brief Inflates a copy the rectangle an integer and returns it.
  */
 inline
-QRect inflated(const QRect& r, int sz)
+constexpr QRect inflated(const QRect& r, int sz)
 {
 	return r.adjusted(-sz, -sz, sz, sz);
 }
@@ -266,5 +270,71 @@ _MISC_FUNC QStringList getObjectNamePath(const QObject* object);
  * @return On not found nullptr.
  */
 _MISC_FUNC QLayout* getWidgetLayout(QWidget* widget);
+
+
+
+/**
+ * @brief Turns a QT enumerate type into a named key.
+ *
+ * @tparam T Enumerate type.
+ * @param value Enum value.
+ * @return Key name of the enumerate.
+ */
+template<typename T>
+static const char* enumToKey(const T value)
+{
+	return QMetaEnum::fromType<T>().valueToKey(value);
+}
+
+/**
+ * @brief Turns a QT enumerate typed key name into an enumerate value.
+ *
+ * @tparam T Enumerate type.
+ * @param key Key name
+ * @return Enumerate value.
+ */
+template<typename T>
+static T keyToEnum(const char* key)
+{
+	return QMetaEnum::fromType<T>().keyToValue(key);
+}
+
+/**
+ * @brief Turns a QT enumerate typed key name into an enumerate value.
+ *
+ * @tparam T Enumerate type.
+ * @param key Key name
+ * @return Enumerate value.
+ */
+template<typename T>
+static T keyToEnum(QString key)
+{
+	return QMetaEnum::fromType<T>().keyToValue(key);
+}
+
+/**
+ * @brief Gets the index from the passed data value of the passed combo box widget.
+ *
+ * @param comboBox Combo box to query on for the given value..
+ * @param value Value to look the index up from.
+ * @param default_index DEfault index when the value was not found.
+ * @return The found index or default given one.
+ */
+_MISC_FUNC int indexFromComboBox(QComboBox* comboBox, const QVariant& value, int default_index = -1);
+
+
+/**
+ * @brief Resizes all columns to content of a tree view except the last column.
+ * @param treeView
+ */
+inline
+void resizeColumnsToContents(QTreeView* treeView)
+{
+	auto count = treeView->model()->columnCount({}) - 1;
+	for (int i = 0; i < count; i++)
+	{
+		treeView->resizeColumnToContents(i);
+	}
+}
 
 }

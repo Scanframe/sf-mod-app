@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>310</width>
-    <height>115</height>
+    <width>302</width>
+    <height>121</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,17 +15,11 @@
   </property>
   <layout class="QFormLayout" name="formLayout_2">
    <item row="0" column="1">
-    <widget class="QLineEdit" name="leId">
+    <widget class="sf::InformationIdEdit" name="iieId">
      <property name="minimumSize">
       <size>
        <width>100</width>
        <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
       </size>
      </property>
      <property name="alignment">
@@ -49,7 +43,7 @@
       <string>Variable &amp;Id</string>
      </property>
      <property name="buddy">
-      <cstring>leId</cstring>
+      <cstring>iieId</cstring>
      </property>
     </widget>
    </item>
@@ -87,7 +81,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="lblConverted_2">
+    <widget class="QLabel" name="lblNameLevel">
      <property name="statusTip">
       <string>Show the converted unit.</string>
      </property>
@@ -112,6 +106,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>sf::InformationIdEdit</class>
+   <extends>QLineEdit</extends>
+   <header>gii/qt/InformationIdEdit.h</header>
+  </customwidget>
   <customwidget>
    <class>sf::PropertyPage</class>
    <extends>QWidget</extends>

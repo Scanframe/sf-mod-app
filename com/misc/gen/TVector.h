@@ -56,6 +56,34 @@ class TVector :public std::vector<T>
 		TVector() = default;
 
 		/**
+		 * @brief Copy constructor.
+		 */
+		TVector(const TVector& v) :base_type(v) {};
+
+		/**
+		 * @brief Move constructor.
+		 */
+		TVector(TVector&&) noexcept = default;
+
+		/**
+		 * @brief Assignment operator.
+		 */
+		TVector& operator=(const TVector& v) noexcept
+		{
+			*((base_type*) this) = (base_type) v;
+			return *this;
+		}
+
+		/**
+		 * @brief Assignment move operator.
+		 */
+		TVector& operator=(TVector&& v) noexcept
+		{
+			*((base_type*) this) = (base_type) v;
+			return *this;
+		}
+
+		/**
 		 * @brief Initializing constructor using an iterator.
 		 */
 		template<typename InputIterator>
@@ -203,11 +231,57 @@ class TVector :public std::vector<T>
 		}
 
 		/**
+		 * @brief Returns the amount of entries in the vector.
+		 *
+		 * @return Entry count.
+		 */
+		inline
+		T& first()
+		{
+			assert(!base_type::empty());
+			return *base_type::begin();
+		}
+
+		inline
+		const T& first() const noexcept
+		{
+			assert(!base_type::empty());
+			return *base_type::begin();
+		}
+
+		inline
+		T& last()
+		{
+			assert(!base_type::empty());
+			return *(base_type::end() - 1);
+		}
+
+		inline
+		const T& last() const noexcept
+		{
+			assert(!base_type::empty());
+			return *(base_type::end() - 1);
+		}
+
+		inline
+		bool startsWith(T t) const
+		{
+			return !base_type::empty() && first() == t;
+		}
+
+		inline bool
+		endsWith(T t) const
+		{
+			return !base_type::empty() && last() == t;
+		}
+
+		/**
 		 * @brief Gets entry from index position.
 		 *
 		 * @param i  Index position
 		 * @return Instance at position.
 		 */
+		inline
 		T& get(size_type i)
 		{
 			return base_type::at(i);
@@ -297,7 +371,7 @@ std::ostream& TVector<T>::write(std::ostream& os, bool inc_hex) const
 			uint64_t _x{0};
 			for (int i = 0; i < sizeof(T); i++)
 			{
-				((uint8_t*)&_x)[i] = ((uint8_t*)&x)[i];
+				((uint8_t*) &_x)[i] = ((uint8_t*) &x)[i];
 			}
 			os << " (" << std::hex << "0x" << _x << ')';
 		}

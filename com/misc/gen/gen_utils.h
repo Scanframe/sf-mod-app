@@ -61,7 +61,9 @@ inline void delete_null(T& p)
 	}
 }
 
-//
+/**
+ * @brief Template function deleting an array previous allocated by 'new[]' when the pointer is non-null and also nulls the passed pointer.
+ */
 template<class T>
 inline void delete_anull(T& p)
 {
@@ -72,6 +74,9 @@ inline void delete_anull(T& p)
 	}
 }
 
+/**
+ * @brief Template function freeing a pointer previous allocated by 'malloc' when the pointer is non-null and also nulls the passed pointer.
+ */
 template<class T>
 inline
 void free_null(T& p)
@@ -99,6 +104,10 @@ void swap_it(T& t1, T& t2)
 	t2 = t;
 }
 
+/**
+ * @brief Deletes the pointer of type T allocated by 'new' when this instance goes out of scope.
+ * @tparam T
+ */
 template<class T>
 class scope_delete
 {
@@ -113,6 +122,10 @@ class scope_delete
 		T* P;
 };
 
+/**
+ * @brief Frees the pointer of type T allocated by 'malloc' when this instance goes out of scope.
+ * @tparam T
+ */
 template<class T>
 class scope_free
 {
@@ -128,7 +141,7 @@ class scope_free
 };
 
 /**
- * creates a formatted string and returns it in a string class instance.
+ * @brief Creates a formatted string and returns it in a string class instance.
  */
 _MISC_FUNC std::string stringf(const char* fmt, ...);
 
@@ -147,13 +160,12 @@ std::string string_format(const std::string& format, Args ... args)
 }
 
 /**
- * @brief Converts a integer value to bit string '0' and '1' characters
- * where the first character is the first bit
+ * @brief Converts a integer value to bit string '0' and '1' characters where the first character is the first bit
  */
 _MISC_FUNC std::string bitToString(unsigned long wrd, size_t count);
 
 /**
- *  Returns numeric the value of the passed hexadecimal character
+ * @brief Returns numeric the value of the passed hexadecimal character
  */
 _MISC_FUNC char hexCharValue(char ch);
 
@@ -176,6 +188,7 @@ _MISC_FUNC std::string hexString(const void* buffer, size_t sz);
  * @return Escaped string
  */
 _MISC_FUNC std::string escape(const std::string& str, char delimiter = '\0');
+
 /**
  * @brief Unescapes the passed string escaped by the escape() function.
  *
@@ -196,64 +209,88 @@ _MISC_FUNC std::string filter(std::string str, const std::string& filter);
 typedef TStrings<std::string, std::string::value_type> strings;
 
 /**
- * Return a line from the input stream.
+ * @brief Return a line from the input stream.
  */
 _MISC_FUNC std::string getLine(std::istream& is);
 
-_MISC_FUNC std::string::value_type getDirectorySeparator();
 /**
- * Returns the working directory.
+ * @brief Returns OS dependent directory separation character.
+ */
+_MISC_FUNC std::string::value_type getDirectorySeparator();
+
+/**
+ * @brief Returns the working directory.
  */
 _MISC_FUNC std::string getWorkingDirectory();
+
 /**
- * Returns the executable filepath.
+ * @brief Returns the executable filepath.
  */
 _MISC_FUNC std::string getExecutableFilepath();
+
 /**
- * Returns the executable directory.
+ * @brief Returns the executable directory.
  */
 _MISC_FUNC std::string getExecutableDirectory();
+
 /**
- * Returns the executable name.
+ * @brief Returns the executable name.
  */
 _MISC_FUNC std::string getExecutableName();
+
 /**
- * Returns the timespec as function return value as clock_gettime().
+ * @brief Gets the time this application is running.
+ *
+ * Is used in combination with getTime(false) to get the time since the start of the application.
  */
-_MISC_FUNC timespec getTime();
+_MISC_FUNC timespec getTimeRunning();
+
 /**
- * Returns the unmangled function name returned by type ID.
+ * @brief Gets the timespec as function return value as clock_gettime() for the current time.
+ * @param realTime When true the real time is returned.
+ * 	      When false the time is used for timers and un effected by system time changes.
+ */
+_MISC_FUNC timespec getTime(bool realTime = false);
+
+/**
+ * @brief Returns the unmangled function name returned by type ID.
  */
 _MISC_FUNC std::string demangle(const char* name);
+
 /**
- * Compares the 2 times.
- * Returns -1, 0, 1 respectively for smaller, equal en larger.
+ * @brief Compares the 2 times.
+ *
+ * @return -1, 0, 1 respectively for smaller, equal en larger.
  */
 _MISC_FUNC int timespecCompare(const timespec& ts1, const timespec& ts2);
+
 /**
- * Converts the passed string into a lower case one and returns it.
+ * @brief Converts the passed string into a lower case one and returns it.
  */
 _MISC_FUNC std::string toLower(std::string s);
+
 /**
- * Converts the passed string into a upper case one and returns it.
+ * @brief Converts the passed string into a upper case one and returns it.
  */
 _MISC_FUNC std::string toUpper(std::string s);
+
 /**
- * Trims a passed string at both sides and returns it.
+ * @brief Trims a passed string at both sides and returns it.
  */
 _MISC_FUNC std::string trim(std::string s, const std::string& t = " ");
+
 /**
- * Trims a passed string left and returns it.
+ * @brief Trims a passed string left and returns it.
  */
 _MISC_FUNC std::string trimLeft(std::string s, const std::string& t = " ");
 
 /**
- * Trims a passed string right and returns it.
+ * @brief Trims a passed string right and returns it.
  */
 _MISC_FUNC std::string trimRight(std::string s, const std::string& t = " ");
 
 /**
- * Returns the same string but now uses a new buffer making the string thread save.
+ * @brief Returns the same string but now uses a new buffer making the string thread save.
  */
 _MISC_FUNC std::string unique(const std::string& s);
 
@@ -263,7 +300,7 @@ _MISC_FUNC std::string unique(const std::string& s);
 template<typename T>
 T random(T start, T stop)
 {
-	static std::default_random_engine generator;
+	static std::default_random_engine generator; // NOLINT(cert-msc51-cpp)
 	std::uniform_int_distribution<T> distribution(start, stop);
 	return distribution(generator);
 }
@@ -509,7 +546,7 @@ T toTypeDef(const std::string& s, T def)
 				return static_cast<T>(rv);
 			}
 		}
-		catch(...)
+		catch (...)
 		{
 			// Just all of them.
 		}
@@ -679,7 +716,7 @@ int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 }
 
 /**
- * Checks if the passed path exists (by doing a access() using F_OK).
+ * Checks if the passed path exist (by doing a access() using F_OK).
  */
 _MISC_FUNC bool fileExists(const char* path);
 
@@ -707,8 +744,8 @@ _MISC_FUNC bool fileUnlink(const std::string& path);
 _MISC_FUNC bool fileRename(const std::string& old_path, const std::string& new_path);
 
 /**
- * Finds the files using the passed wildcard.
+ * @brief Finds the files using the passed wildcard.
  */
 _MISC_FUNC bool fileFind(sf::strings& files, const std::string& wildcard);
 
-} // namespace
+}

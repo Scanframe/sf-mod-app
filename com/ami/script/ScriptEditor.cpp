@@ -1,5 +1,6 @@
 #include "ScriptEditor.h"
 #include "ui_ScriptEditor.h"
+#include "ScriptManager.h"
 
 #include <iostream>
 #include <QDebug>
@@ -7,7 +8,7 @@
 #include <QPainter>
 #include <misc/qt/CaptureListModel.h>
 #include <misc/qt/qt_utils.h>
-#include <misc/qt/ScriptModelList.h>
+#include <misc/qt/ScriptListModel.h>
 #include <misc/qt/ScriptHighlighter.h>
 #include <misc/qt/Resource.h>
 #include <gii/gen/GiiScriptInterpreter.h>
@@ -23,8 +24,8 @@ struct ScriptEditor::ScriptEditor::Private :ListenerList
 	explicit Private(QSettings* settings, ScriptEditor* editor)
 		:_settings(settings)
 	{
-		_smlInstructions = new ScriptModelList(editor);
-		_smlVariables = new ScriptModelList(editor);
+		_smlInstructions = new ScriptListModel(editor);
+		_smlVariables = new ScriptListModel(editor);
 	}
 
 	~Private()
@@ -34,8 +35,8 @@ struct ScriptEditor::ScriptEditor::Private :ListenerList
 	}
 
 	QSharedPointer<ScriptInterpreter> _interpreter{};
-	ScriptModelList* _smlInstructions{nullptr};
-	ScriptModelList* _smlVariables{nullptr};
+	ScriptListModel* _smlInstructions{nullptr};
+	ScriptListModel* _smlVariables{nullptr};
 	QSettings* _settings{nullptr};
 	QString _curFile;
 	bool _isUntitled{true};
@@ -151,17 +152,11 @@ void ScriptEditor::adjustColumns()
 	// Only resize columns when data is there.
 	if (!_p._interpreter->getInstructions().empty())
 	{
-		dynamic_cast<ScriptModelList*>(ui->tvInstructions->model())->refresh();
-		for (int i = 0; i < ui->tvInstructions->model()->columnCount(QModelIndex()) - 1; i++)
-		{
-			ui->tvInstructions->resizeColumnToContents(i);
-		}
+		dynamic_cast<ScriptListModel*>(ui->tvInstructions->model())->refresh();
+		resizeColumnsToContents(ui->tvInstructions);
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
-	for (int i = 0; i < ui->tvVariables->model()->columnCount(QModelIndex()) - 1; i++)
-	{
-		ui->tvInstructions->resizeColumnToContents(i);
-	}
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
+	resizeColumnsToContents(ui->tvVariables);
 }
 
 void ScriptEditor::onActionCompile()
@@ -177,7 +172,7 @@ void ScriptEditor::onActionCompile()
 		qWarning() << "Compile failed:" << _p._interpreter->getError() << _p._interpreter->getErrorReason();
 	}
 	//
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 	//
 	adjustColumns();
 }
@@ -208,7 +203,7 @@ void ScriptEditor::onActionStep()
 	{
 		_p._interpreter->Execute(ScriptInterpreter::emStep);
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 }
 
 void ScriptEditor::onActionRun()
@@ -221,7 +216,7 @@ void ScriptEditor::onActionRun()
 	{
 		qWarning() << "Run failed:" << _p._interpreter->getError() << _p._interpreter->getErrorReason();
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 }
 
 void ScriptEditor::onActionStop()
@@ -234,7 +229,7 @@ void ScriptEditor::onActionStop()
 	{
 		qWarning() << "Stop failed:" << _p._interpreter->getError() << _p._interpreter->getErrorReason();
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 }
 
 void ScriptEditor::onClickInstruction(const QModelIndex& index)
@@ -292,8 +287,8 @@ void ScriptEditor::setInterpreter(const QSharedPointer<ScriptInterpreter>& inter
 	// Assign the new shared pointer.
 	_p._interpreter = interpreter;
 	// Assign the pointer to the module lists.
-	_p._smlInstructions->setInterpreter(_p._interpreter.get(), ScriptModelList::mInstructions);
-	_p._smlVariables->setInterpreter(_p._interpreter.get(), ScriptModelList::mVariables);
+	_p._smlInstructions->setInterpreter(_p._interpreter.get(), ScriptListModel::mInstructions);
+	_p._smlVariables->setInterpreter(_p._interpreter.get(), ScriptListModel::mVariables);
 	// Highlight the keywords and so on.
 	new ScriptHighlighter(_p._interpreter.get(), ui->pteSource->document());
 	//
@@ -339,6 +334,12 @@ void ScriptEditor::develop()
 		i->setScriptName(userFriendlyCurrentFile().toStdString());
 		setInterpreter(QSharedPointer<ScriptInterpreter>(i));
 	}
+}
+
+QString ScriptEditor::newFileName() const
+{
+	static int sequenceNumber = 1;
+	return QObject::tr("document-%1.%2").arg(sequenceNumber++).arg(ScriptManager::getFileSuffix());
 }
 
 }

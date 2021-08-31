@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <misc/qt/CaptureListModel.h>
 #include <misc/qt/qt_utils.h>
-#include <misc/qt/ScriptModelList.h>
+#include <misc/qt/ScriptListModel.h>
 #include <misc/qt/ScriptHighlighter.h>
 #include <misc/qt/Resource.h>
 
@@ -65,11 +65,11 @@ ScriptWindow::ScriptWindow(QSettings* settings, QWidget* parent)
 	connect(ui->tvInstructions, &QTreeView::clicked, this, &ScriptWindow::onClickInstruction);
 	ui->pteSource->setPlainText(InitialScript);
 	_script.setScriptName("test-script");
-	auto lm_instr = new ScriptModelList(this);
-	lm_instr->setInterpreter(&_script, ScriptModelList::mInstructions);
+	auto lm_instr = new ScriptListModel(this);
+	lm_instr->setInterpreter(&_script, ScriptListModel::mInstructions);
 	ui->tvInstructions->setModel(lm_instr);
-	auto lm_var = new ScriptModelList(this);
-	lm_var->setInterpreter(&_script, ScriptModelList::mVariables);
+	auto lm_var = new ScriptListModel(this);
+	lm_var->setInterpreter(&_script, ScriptListModel::mVariables);
 	ui->tvVariables->setModel(lm_var);
 	// Highlight the keywords and so on.
 	new ScriptHighlighter(&_script, ui->pteSource->document());
@@ -158,13 +158,13 @@ void ScriptWindow::onActionCompile()
 		std::clog << "Compile failed: (" << _script.getError() << ") " << _script.getErrorReason() << std::endl;
 	}
 	//
-	dynamic_cast<ScriptModelList*>(ui->tvInstructions->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvInstructions->model())->refresh();
 	for (int i = 0; i < ui->tvInstructions->model()->columnCount(QModelIndex()) - 1; i++)
 	{
 		ui->tvInstructions->resizeColumnToContents(i);
 	}
 	//
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 	//
 	updateStatus();
 }
@@ -172,7 +172,7 @@ void ScriptWindow::onActionCompile()
 void ScriptWindow::onActionInitialize()
 {
 	_script.Execute(ScriptInterpreter::emInit);
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 	for (int i = 0; i < ui->tvVariables->model()->columnCount(QModelIndex()) - 1; i++)
 	{
 		ui->tvInstructions->resizeColumnToContents(i);
@@ -197,7 +197,7 @@ void ScriptWindow::onActionStep()
 	{
 		_script.Execute(ScriptInterpreter::emStep);
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 	updateStatus();
 }
 
@@ -211,7 +211,7 @@ void ScriptWindow::onActionRun()
 	{
 		std::clog << "Run failed: (" << _script.getError() << ") " << _script.getErrorReason() << std::endl;
 	}
-	dynamic_cast<ScriptModelList*>(ui->tvVariables->model())->refresh();
+	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
 	updateStatus();
 }
 

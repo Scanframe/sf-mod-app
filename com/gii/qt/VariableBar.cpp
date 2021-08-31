@@ -15,10 +15,11 @@ namespace sf
 
 struct VariableBar::Private :QObject, PrivateBase
 {
+	int margin{1};
+
 	VariableBar* _widget{nullptr};
 	QLabel* _labelNameAlt{nullptr};
 	int _nameLevel{-1};
-
 
 	static Private* cast(PrivateBase* data)
 	{
@@ -36,7 +37,7 @@ struct VariableBar::Private :QObject, PrivateBase
 		QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
 	}
 
-	void onDestroyed(QObject *obj = nullptr) // NOLINT(readability-make-member-function-const)
+	void onDestroyed(QObject* obj = nullptr) // NOLINT(readability-make-member-function-const)
 	{
 		if (_labelNameAlt && _labelNameAlt == obj)
 		{
@@ -65,7 +66,7 @@ struct VariableBar::Private :QObject, PrivateBase
 		_variable.setHandler(nullptr);
 	}
 
-	void VariableEventHandler
+	void variableEventHandler
 		(
 			EEvent event,
 			const Variable& call_var,
@@ -140,59 +141,81 @@ void VariableBar::applyReadOnly(bool yn)
 
 QSize VariableBar::minimumSizeHint() const
 {
+	auto p = Private::cast(_p);
 	// Not sure if sizeHint() needs to be implemented.
 	ensurePolished();
-	QFontMetrics fm(font());
-	int h = fm.height();
-	int w = fm.height();
+	QFontMetrics fm(fontMetrics());
 	QStyleOptionFrame opt;
-	opt.initFrom(this);
-	//return QSize(w, h);
-	auto sz = style()->sizeFromContents(QStyle::CT_LineEdit, &opt, QSize(w, h), this);
-	return sz;
+	initStyleOption(&opt);
+	int h = fm.height() + 2 * p->margin;
+	int w = fm.maxWidth() * 10 + 2 * p->margin;
+	// When a no style object is present set line width to zero to get the correct calculation.
+	// A style object is present when a style has been applied using a stylesheet.
+	if (!opt.styleObject)
+	{
+		opt.lineWidth = 0;
+	}
+	return style()->sizeFromContents(QStyle::CT_LineEdit, &opt, QSize(w, h), this);
+}
+
+void VariableBar::initStyleOption(QStyleOptionFrame* option) const
+{
+	if (!option)
+	{
+		return;
+	}
+	auto p = Private::cast(_p);
+	option->initFrom(this);
+	option->rect = contentsRect();
+	// Needed otherwise no focus rectangle is drawn.
+	option->lineWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, option, this);
+	option->midLineWidth = 0;
+	option->state |= QStyle::State_Sunken;
+	if (p->_readOnly || p->_variable.isReadOnly())
+	{
+		option->state |= QStyle::State_ReadOnly;
+	}
+	option->features = QStyleOptionFrame::None;
 }
 
 void VariableBar::paintEvent(QPaintEvent* ev)
 {
+	auto p = Private::cast(_p);
 	VariableWidgetBase::paintEvent(ev);
-	QStyleOptionFrame so;
-	so.initFrom(this);
-	// Needed otherwise no focus rectangle is drawn.
-	so.lineWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &so);
+	QStyleOptionFrame panel;
+	initStyleOption(&panel);
 	// Create painter for this widget.
-	QStylePainter p(this);
-	//
-	//p.setRenderHint(QPainter::Antialiasing);
+	QStylePainter sp(this);
 	// Use base function to draw the focus rectangle having the right color as a regular edit widget.
-	p.drawPrimitive(QStyle::PE_PanelLineEdit, so);
-	auto rc = p.style()->subElementRect(QStyle::SE_LineEditContents, &so, this);
-	// Create additional spacing.
-	inflate(rc, -so.lineWidth);
-	// Get variable as a reference.
-	auto& v(Private::cast(_p)->_variable);
+	sp.drawPrimitive(QStyle::PE_PanelLineEdit, panel);
+	auto rc = sp.style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
+	// Create 1 pixel spacing between border and
+	inflate(rc, -p->margin);
 	// Set designer text as default.
 	QString text("Value Unit");
 	auto pos = rc.size().width() / 2;
 	if (!inDesigner())
 	{
+		// Get variable as a reference.
+		auto& v(p->_variable);
 		text = QString::fromStdString(v.getCurString() + ' ' + v.getUnit());
-		pos = (int)Value::calculateOffset(v.getCur(), v.getMin(), v.getMax(), Value(rc.width()), true).getInteger();
+		pos = (int) Value::calculateOffset(v.getCur(), v.getMin(), v.getMax(), Value(rc.width()), true).getInteger();
 	}
 	// First part.
-	p.setClipRect(QRect(rc.topLeft(), QSize(pos, rc.height())));
-	p.setBrush(palette().color(QPalette::Highlight));
-	p.setPen(Qt::NoPen);
-	p.drawRect(rc);
-	p.setClipRect(rc);
-	p.setPen(QPen(palette().color(QPalette::HighlightedText)));
-	p.drawText(rc, Qt::AlignCenter, text);
+	sp.setClipRect(QRect(rc.topLeft(), QSize(pos, rc.height())));
+	sp.setBrush(palette().color(QPalette::Highlight));
+	sp.setPen(Qt::NoPen);
+	sp.drawRect(rc);
+	sp.setClipRect(rc);
+	sp.setPen(QPen(palette().color(QPalette::HighlightedText)));
+	sp.drawText(rc, Qt::AlignCenter, text);
 	// Second part.
-	p.setClipRect(QRect(QPoint(pos, 0), rc.bottomRight()));
-	p.setBrush(palette().color(QPalette::Base));
-	p.setPen(Qt::NoPen);
-	p.drawRect(rc);
-	p.setPen(QPen(palette().color(QPalette::Text)));
-	p.drawText(rc, Qt::AlignCenter, text);
+	sp.setClipRect(QRect(QPoint(pos, 0), rc.bottomRight()));
+	sp.setBrush(palette().color(QPalette::Base));
+	sp.setPen(Qt::NoPen);
+	sp.drawRect(rc);
+	sp.setPen(QPen(palette().color(QPalette::Text)));
+	sp.drawText(rc, Qt::AlignCenter, text);
 }
 
 void VariableBar::keyPressEvent(QKeyEvent* event)

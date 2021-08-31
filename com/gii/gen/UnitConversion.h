@@ -52,7 +52,7 @@ typedef TClosure<bool, UnitConversionEvent&> UnitConversionServerClosure;
  *
  * @param closure Callback closure.
  */
-_GII_FUNC void setUnitConversionHandler(const UnitConversionServerClosure& closure = UnitConversionServerClosure());
+_GII_FUNC void setUnitConversionHandler(const UnitConversionServerClosure& closure = {});
 
 /**
  * @brief Returns true if a conversion could be made.

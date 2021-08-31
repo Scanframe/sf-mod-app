@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ctime>
+#include "TimeSpec.h"
 #include "../global.h"
 
 namespace sf
@@ -13,23 +13,35 @@ namespace sf
 class _MISC_CLASS IntervalTimer
 {
 	public:
-		/**
-		 * @brief Default constructor is by default disabled until Set() is called.
-		 */
-		IntervalTimer();
 
 		/**
-		 * @brief Initializing constructor setting the timers interval time in msec.
+		 * @brief Default constructor.
 		 *
-		 * Is by default enabled.
+		 * The timer is by default disabled until set() is called.
 		 */
-		explicit IntervalTimer(clock_t t);
+		IntervalTimer() = default;
 
 		/**
-		 * @brief Sets the timers interval time in msec.
+		 * @brief Initializing constructor setting the elapse time using a timespec struct.
+		 */
+		explicit IntervalTimer(const timespec& t);
+
+		/**
+		 * @brief Initializing constructor setting the elapse time in usec.
+		 */
+		explicit IntervalTimer(int usec);
+
+		/**
+		 * @brief Initializing constructor setting the elapse time in seconds and fraction using a double.
+		 */
+		explicit IntervalTimer(double sec);
+
+		/**
+		 * @brief Sets the timers interval time.
+		 *
 		 * When zero is passed it is always active.
 		 */
-		void set(clock_t t);
+		void set(const timespec& t);
 
 		/**
 		 * @brief Tests if the timer is active if it is active it returns non-zero and resets the timer to a new event.
@@ -39,12 +51,12 @@ class _MISC_CLASS IntervalTimer
 		[[nodiscard]] bool active() const;
 
 		/**
-		 * @brief Allows passing clock() value ourself to reduce overhead in case of multiple timers.
+		 * @brief Allows passing timespec value ourself to reduce overhead in case of multiple timers.
 		 *
-		 * @param time Clock() value.
+		 * @param t #sf::getTime() value.
 		 * @return True when active.
 		 */
-		[[nodiscard]] bool active(clock_t time) const;
+		[[nodiscard]] bool active(const timespec& t) const;
 
 		/**
 		 * @brief Enables the timer with the current interval time.
@@ -65,29 +77,38 @@ class _MISC_CLASS IntervalTimer
 
 		/**
 		 * @brief Gets the set interval time in msec.
+		 *
 		 * @return Interval time.
 		 */
-		[[nodiscard]] clock_t getIntervalTime() const;
+		[[nodiscard]] const TimeSpec& getInterval() const;
+		/**
+		 * @brief Gets the set interval time in msec.
+		 *
+		 * @return Interval time.
+		 */
+		[[nodiscard]] const TimeSpec& getTarget() const;
 
 		/**
 		 * @brief Gets the time left in msec before function active becomes true.
+		 *
 		 * @return Time left.
 		 */
-		[[nodiscard]] clock_t getTimeLeft() const;
+		[[nodiscard]] TimeSpec getTimeLeft() const;
 
 		/**
 		 * @brief Gets the time left in msec before function active becomes true.
-		 * @param time Clock() value.
+		 *
+		 * @param t #sf::getTime() value.
 		 * @return Time left.
 		 */
-		[[nodiscard]] clock_t getTimeLeft(clock_t time) const;
+		[[nodiscard]] TimeSpec getTimeLeft(const timespec& t) const;
 
 		/**
 		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
 		 *
 		 * @return Time over value.
 		 */
-		[[nodiscard]] clock_t getTimeOver() const;
+		[[nodiscard]] TimeSpec getTimeOver() const;
 
 		/**
 		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
@@ -95,7 +116,7 @@ class _MISC_CLASS IntervalTimer
 		 * @param t Clock() value.
 		 * @return Time over value.
 		 */
-		[[nodiscard]] clock_t getTimeOver(clock_t t) const;
+		[[nodiscard]] TimeSpec getTimeOver(const timespec& t) const;
 
 		/**
 		 * @brief Test operator.
@@ -110,17 +131,17 @@ class _MISC_CLASS IntervalTimer
 		 * @param t Clock() value.
 		  * @return True if timer is active.
 		  */
-		bool operator()(clock_t t) const;
+		bool operator()(const timespec& t) const;
 
 	private:
 		/**
 		 * @brief Holds the interval time with which the target time is set.
 		 */
-		clock_t _interval{0};
+		TimeSpec _interval{0, 0};
 		/**
 		 * @brief Holds the target time at which the timer should active.
 		 */
-		clock_t _target{0};
+		TimeSpec _target{0, 0};
 		/**
 		 * @brief Holds the enable flag
 		 */
@@ -128,7 +149,7 @@ class _MISC_CLASS IntervalTimer
 };
 
 inline
-IntervalTimer::IntervalTimer(clock_t t)
+IntervalTimer::IntervalTimer(const timespec& t)
 {
 	set(t);
 }
@@ -152,9 +173,15 @@ bool IntervalTimer::isEnabled() const
 }
 
 inline
-clock_t IntervalTimer::getIntervalTime() const
+const TimeSpec& IntervalTimer::getInterval() const
 {
 	return _interval;
+}
+
+inline
+const TimeSpec& IntervalTimer::getTarget() const
+{
+	return _target;
 }
 
 inline
@@ -164,7 +191,7 @@ IntervalTimer::operator bool() const
 }
 
 inline
-bool IntervalTimer::operator()(clock_t t) const
+bool IntervalTimer::operator()(const timespec& t) const
 {
 	return active(t);
 }

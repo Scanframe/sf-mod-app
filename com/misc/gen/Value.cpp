@@ -3,7 +3,6 @@
 #include <cfenv>
 #include <sstream>
 #include <malloc.h>
-#include <climits>
 #include "TDynamicBuffer.h"
 #include "Value.h"
 #include "gen_utils.h"
@@ -26,14 +25,40 @@ const char* Value::_typeNames[] =
 		"CUSTOM"
 	};
 
-Value::Value(EType type)
+Value& Value::operator=(Value&& v) noexcept
 {
-	setType(type);
+	_data = v._data;
+	_size = v._size;
+	_type = v._type;
+	v._type = vitInvalid;
+	v._data._ptr = nullptr;
+	v._size = 0;
+	return *this;
+}
+
+Value::Value()
+{
+	(void) this;
+}
+
+Value::Value(Value&& v) noexcept
+{
+	_data = v._data;
+	_size = v._size;
+	_type = v._type;
+	v._type = vitInvalid;
+	v._data._ptr = nullptr;
+	v._size = 0;
 }
 
 Value::Value(const Value& v)
 {
 	set(v);
+}
+
+Value::Value(EType type)
+{
+	setType(type);
 }
 
 Value::Value(Value* v)
@@ -62,6 +87,14 @@ Value::Value(int v)
 	int_type ll = v;
 	set(vitInteger, &ll);
 }
+
+#if IS_WIN
+Value::Value(long v)
+{
+	int_type ll = v;
+	set(vitInteger, &ll);
+}
+#endif
 
 Value::Value(unsigned v)
 {
@@ -104,8 +137,7 @@ Value::~Value()
 	// Only delete memory of variable sized value types.
 	if (_type >= vitString && _data._ptr)
 	{
-		delete[] _data._ptr;
-		_data._ptr = nullptr;
+		free_null(_data._ptr);
 	}
 }
 
@@ -114,8 +146,7 @@ Value& Value::set(int type, const void* content, size_t size)
 	// Free any memory for this item if any is allocated.
 	if (_type >= vitString && _data._ptr)
 	{
-		delete[] _data._ptr;
-		_data._ptr = nullptr;
+		free_null(_data._ptr);
 	}
 	_size = 0;
 	switch (type)
@@ -155,7 +186,8 @@ Value& Value::set(int type, const void* content, size_t size)
 				{
 					_size = maxString;
 				}
-				_data._ptr = new char[_size + _sizeExtra];
+				_data._ptr = (char*)malloc(_size + _sizeExtra);
+				//_data._ptr = malloc();
 				memcpy(_data._ptr, content, _size);
 				_data._ptr[_size - 1] = '\0';
 			}
@@ -165,7 +197,7 @@ Value& Value::set(int type, const void* content, size_t size)
 				{
 					_size = maxString;
 				}
-				_data._ptr = new char[_size + _sizeExtra];
+				_data._ptr = (char*)malloc(_size + _sizeExtra);
 				memset(_data._ptr, 0, _size);
 			}
 			break;
@@ -176,7 +208,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			{
 				_size = maxBinary;
 			}
-			_data._ptr = new char[_size + _sizeExtra];
+			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
 				memcpy(_data._ptr, content, _size);
@@ -193,7 +225,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			{
 				_size = maxCustom;
 			}
-			_data._ptr = new char[_size + _sizeExtra];
+			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
 				memcpy(_data._ptr, content, _size);
@@ -216,7 +248,7 @@ Value& Value::set(int type, const void* content, size_t size)
 	return *this;
 }
 
-Value& Value::assign(const Value& v)
+Value& Value::assign(const Value& v) // NOLINT(misc-no-recursion)
 {
 	if (_type == vitReference)
 	{
@@ -238,7 +270,7 @@ Value& Value::assign(const Value& v)
 	return *this;
 }
 
-bool Value::isZero() const
+bool Value::isZero() const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -273,7 +305,7 @@ Value& Value::set(const Value& v)
 		// Delete the current allocated memory.
 		if (_type >= vitString && _data._ptr)
 		{
-			delete[] _data._ptr;
+			free_null(_data._ptr);
 		}
 		// Assign the new type and size
 		_type = v._type;
@@ -281,7 +313,7 @@ Value& Value::set(const Value& v)
 		// Check if memory needs to be copied and reserved.
 		if (_type >= vitString)
 		{
-			_data._ptr = new char[_size + _sizeExtra];
+			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			memcpy(_data._ptr, v._data._ptr, _size);
 		}
 		else
@@ -292,7 +324,7 @@ Value& Value::set(const Value& v)
 	return *this;
 }
 
-Value::int_type Value::getInteger(int* cnverr) const
+Value::int_type Value::getInteger(int* cnv_err) const // NOLINT(misc-no-recursion)
 {
 	char* end_ptr = nullptr;
 	int_type rv = 0;
@@ -315,9 +347,9 @@ Value::int_type Value::getInteger(int* cnverr) const
 
 		case vitString:
 			rv = strtol(_data._ptr, &end_ptr, 0);
-			if (end_ptr && *end_ptr != '\0' && cnverr)
+			if (end_ptr && *end_ptr != '\0' && cnv_err)
 			{
-				(*cnverr)++;
+				(*cnv_err)++;
 			}
 			break;
 
@@ -327,11 +359,11 @@ Value::int_type Value::getInteger(int* cnverr) const
 		case vitUndefined:
 		default:
 			break;
-	}// switch
+	}
 	return rv;
 }
 
-Value::flt_type Value::getFloat(int* cnv_err) const
+Value::flt_type Value::getFloat(int* cnv_err) const // NOLINT(misc-no-recursion)
 {
 	char* end_ptr = nullptr;
 	flt_type rv = 0.0;
@@ -365,15 +397,14 @@ Value::flt_type Value::getFloat(int* cnv_err) const
 		case vitUndefined:
 		default:
 			break;
-	}// switch
+	}
 	return rv;
 }
 
-std::string Value::getString(int precision) const
+std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
-		default:
 		case vitInvalid:
 			return _invalidStr;
 
@@ -412,11 +443,11 @@ std::string Value::getString(int precision) const
 		case vitCustom:
 			return hexString(_data._ptr, _size);
 
-	}// switch
+	}
 	return _invalidStr;
 }
 
-const void* Value::getBinary() const
+const void* Value::getBinary() const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -439,7 +470,7 @@ const void* Value::getBinary() const
 	}
 }
 
-const char* Value::getData() const
+const char* Value::getData() const // NOLINT(misc-no-recursion)
 {
 	if (_type == vitReference)
 	{
@@ -473,13 +504,13 @@ void Value::makeInvalid()
 	// When memory was allocated release it.
 	if (_type >= vitString)
 	{
-		delete[] _data._ptr;
+		free_null(_data._ptr);
 	}
 	// Set the type to the invalid value.
 	_type = vitInvalid;
 }
 
-bool Value::setType(EType type)
+bool Value::setType(EType type) // NOLINT(misc-no-recursion)
 {
 	// Check if a different type is to be Set.
 	if (_type == type)
@@ -491,7 +522,7 @@ bool Value::setType(EType type)
 	{
 		return _data._ref->setType(type);
 	}
-	// Cannot Set the type of an invalid instance.
+	// Cannot set the type of invalid instances.
 	if (_type == vitInvalid)
 	{
 		return false;
@@ -509,7 +540,7 @@ bool Value::setType(EType type)
 		case vitUndefined:
 			if (_type >= vitString)
 			{
-				delete[] _data._ptr;
+				free_null(_data._ptr);
 			}
 			_type = vitUndefined;
 			break;
@@ -548,10 +579,10 @@ bool Value::setType(EType type)
 				if (_type >= vitString)
 				{
 					// Delete previous content pointer
-					delete[] _data._ptr;
+					free_null(_data._ptr);
 				}
 				// Create new buffer
-				_data._ptr = new char[_size + _sizeExtra];
+				_data._ptr = (char*)malloc(_size + _sizeExtra);
 				// Convert hex std::string to binary data
 				if (stringHex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
 				{
@@ -569,7 +600,7 @@ bool Value::setType(EType type)
 	return !cnv_err;
 }
 
-Value Value::mul(const Value& v) const
+Value Value::mul(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -594,7 +625,7 @@ Value Value::mul(const Value& v) const
 	}// switch
 }
 
-Value Value::div(const Value& v) const
+Value Value::div(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -637,7 +668,7 @@ Value Value::div(const Value& v) const
 	}
 }
 
-Value Value::add(const Value& v) const
+Value Value::add(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -663,10 +694,10 @@ Value Value::add(const Value& v) const
 
 		default:
 			return Value(0);
-	}// switch
+	}
 }
 
-Value Value::sub(const Value& v) const
+Value Value::sub(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -691,7 +722,7 @@ Value Value::sub(const Value& v) const
 	}
 }
 
-Value Value::mod(const Value& v) const
+Value Value::mod(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -716,14 +747,14 @@ Value Value::mod(const Value& v) const
 	}// switch
 }
 
-int Value::compare(const Value& v) const
+int Value::compare(const Value& v) const // NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
 		case vitInteger:
 		{
 			int_type l = v.getInteger(nullptr);
-			int_type rv = _data._int != l;
+			int rv = _data._int != l;
 			rv *= (l > _data._int) ? -1 : 1;
 			return rv;
 		}
@@ -737,7 +768,7 @@ int Value::compare(const Value& v) const
 			{
 				try
 				{
-					// The difference must be smaller then 1E10 of the operand.
+					// The difference must be smaller than 1E10 of the operand.
 					rv = std::fabs(a / (a - b)) < 1E10;
 				}
 				catch (...)
@@ -788,7 +819,7 @@ int Value::compare(const Value& v) const
 	}// switch
 }
 
-Value& Value::round(const Value& v)
+Value& Value::round(const Value& v) // NOLINT(misc-no-recursion)
 {
 	if (!v.isZero())
 	{

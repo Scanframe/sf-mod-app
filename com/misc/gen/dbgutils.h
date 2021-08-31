@@ -65,7 +65,7 @@
 
 // Coverts the passed type into a name.
 #define SF_RTTI_NAME(self) sf::Demangle(typeid(self).name())
-// Define that converts a this pointer to the class type name.
+// Define that converts a 'this' pointer to the class type name.
 #define SF_RTTI_TYPENAME SF_RTTI_NAME(*this)
 // Only the filename part of __FILE__.
 #define SF_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
@@ -74,7 +74,7 @@
 
 // Coverts the passed type into a name.
 #define SF_Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
-// Define that converts a this pointer to the class type name.
+// Define that converts a 'this' pointer to the class type name.
 #define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
 
 inline
@@ -224,13 +224,13 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 #define DO_DBGBRK  sf::dotDebugBreak
 
 // Class name and file name separator character
-#define SF_CLS_SEP '|'
+#define SF_CLS_SEP ';'
 
 #if (SF_DEBUG_LEVEL == 1)
 
 #define SF_NORM_NOTIFY(f, a) {sf::debug_ostream(f) << a;}
-#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << a;}
-#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << a;}
+#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;}
+#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;}
 #define SF_COND_NORM_NOTIFY(p, f, a) {if (p) {SF_NORM_NOTIFY(f, a);}}
 #define SF_COND_CLASS_NOTIFY(p, f, a) {if (p) {SF_CLASS_NOTIFY(f, a);}}
 #define SF_COND_RTTI_NOTIFY(p, f, a) {if (p) {SF_RTTI_NOTIFY(f, a);}}

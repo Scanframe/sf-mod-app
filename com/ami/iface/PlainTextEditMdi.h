@@ -41,6 +41,9 @@ class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
 		// MultiDocInterface interface method.
 		void newFile() override;
 
+		// Can be overridden to change the suffix.
+		virtual QString newFileName() const;
+
 		// MultiDocInterface interface method.
 		bool loadFile(const QString& filename) override;
 
@@ -50,6 +53,7 @@ class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
 		// MultiDocInterface interface method.
 		bool saveAs() override;
 
+		// MultiDocInterface interface method.
 		bool saveFile(const QString& fileName);
 
 		// MultiDocInterface interface method.

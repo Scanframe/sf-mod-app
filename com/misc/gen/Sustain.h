@@ -2,8 +2,8 @@
 
 #include "TVector.h"
 #include "IntervalTimer.h"
-#include "global.h"
 #include "target.h"
+#include "../global.h"
 
 namespace sf
 {
@@ -20,13 +20,13 @@ namespace sf
  *   // In class declaration.
  *   TSustain< cls > Entry;
  *   // Function must return true if it wants to be called again.
- *   bool call(clock_t);
+ *   bool call(const timespec& t);
  *
  *   // Line in constructor
  *   Entry(this, &cls::MySustainFunction, priority, nullptr)
  *
  *   // To set the freq of the timer, use
- *   Entry.setInterval(int ms);
+ *   Entry.setInterval(const timespec& interval);
  *
  *   // To enable all this, do once, at program startup...
  *   // (this timer determines the maximum freq of sustained functions
@@ -84,7 +84,7 @@ class _MISC_CLASS SustainBase
 		 * This is only valid when the priority for this entry is #spTimer.
 		 * @param interval In milliseconds.
 		 */
-		void setInterval(clock_t interval)
+		void setInterval(const timespec& interval)
 		{
 			_timer.set(interval);
 		}
@@ -94,9 +94,9 @@ class _MISC_CLASS SustainBase
 		 *
 		 * @return Interval in milliseconds.
 		 */
-		[[nodiscard]] clock_t getInterval() const
+		[[nodiscard]] const timespec& getInterval() const
 		{
-			return _timer.getIntervalTime();
+			return _timer.getInterval();
 		}
 
 		/**
@@ -131,7 +131,7 @@ class _MISC_CLASS SustainBase
 		 * @param time
 		 * @return
 		 */
-		virtual inline bool call(clock_t time)
+		virtual inline bool call(const timespec& time)
 		{
 			return false;
 		}
@@ -181,7 +181,7 @@ class TSustain :public SustainBase
 		/**
 		 * @brief Required type.
 		 */
-		typedef bool (T::*Pmf)(clock_t);
+		typedef bool (T::*Pmf)(const timespec& t);
 
 		/**
 		 * @brief One and only initializing constructor.
@@ -219,9 +219,10 @@ class TSustain :public SustainBase
 		 * @param time Current clock time value.
 		 * @return True when...
 		 */
-		inline bool call(clock_t time) override
+		inline
+		bool call(const timespec& t) override
 		{
-			return (_self->*_pmf)(time);
+			return (_self->*_pmf)(t);
 		}
 };
 
@@ -240,12 +241,13 @@ class _MISC_CLASS StaticSustain :public SustainBase
 {
 	public:
 		/**
-		 * Required type for the callback function.
+		 * @brief Required type for the callback function.
 		 */
-		typedef bool (* Pf)(clock_t);
+		typedef bool (* Pf)(const timespec&);
 
 		/**
-		 * One and only constructor
+		 * @brief One and only constructor
+		 *
 		 * @param pf
 		 * @param priority
 		 * @param vector
@@ -255,12 +257,12 @@ class _MISC_CLASS StaticSustain :public SustainBase
 			 , _pf(pf) {}
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		StaticSustain(const StaticSustain&) = delete;
 
 		/**
-		 * Prevent copying.
+		 * @brief Prevent copying.
 		 */
 		StaticSustain& operator=(const StaticSustain&) = delete;
 
@@ -271,32 +273,33 @@ class _MISC_CLASS StaticSustain :public SustainBase
 		Pf _pf{};
 
 		/**
-		 * @brief Call the static function.
-		 *
-		 * @param time
-		 * @return
+		 * @brief Call the assigned method.
 		 */
-		inline bool call(clock_t time) override
-		{
-			return _pf(time);
-		}
+		bool call(const timespec& time) override;
 };
+
+inline
+bool StaticSustain::call(const timespec& time)
+{
+	return _pf(time);
+}
 
 /**
  * @brief This function will enable a timer that call all Sustain functions in the
- * DefaultVector member of the 'TSustainBaseTableEntry' class.
+ * DefaultVector member of the 'TSustain' template class.
  *
  * Passing the repetition rate in milliseconds.
  * if the passed time is zero the timer stops.
  * Returns true if it was successful.
  * @param msec Time in milliseconds.
  */
-_MISC_FUNC bool setSustainTimer(unsigned msec);
+_MISC_FUNC bool setSustainTimer(int msec);
 
 /**
- * @brief Gets the current sustain timer interval.
+ * @brief Gets the current sustain timer interval in milli-seconds.
+ *
  * @return Interval in milliseconds.
  */
-_MISC_FUNC unsigned getSustainTimer();
+_MISC_FUNC int getSustainTimer();
 
 }

@@ -520,7 +520,7 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 */
 		ip_type _errorInstructionPtr{-1};
 		/**
-		 * @brief Instruction index to main function. When main does not exists it is -1.
+		 * @brief Instruction index to main function. When main does not exist it is -1.
 		 */
 		ip_type _mainFunction{-1};
 

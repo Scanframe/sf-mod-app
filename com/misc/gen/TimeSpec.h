@@ -2,6 +2,7 @@
 
 #include <ctime>
 #include <string>
+#include "gen_utils.h"
 #include "../global.h"
 
 namespace sf
@@ -12,23 +13,22 @@ namespace sf
  */
 struct _MISC_CLASS TimeSpec :public timespec
 {
+	/**
+	 * @brief Integer type to indicate nanoseconds.
+	 */
+	typedef long nsec_type;
 
 	/**
-	 * Default constructor.
+	 * @brief Default constructor.
 	 */
-	TimeSpec() :timespec()
+	TimeSpec()
+		:timespec()
 	{
 		assign(0, 0);
 	}
 
 	/**
-	 * @brief Move assignment operator is default.
-	 */
-	TimeSpec& operator= (TimeSpec&&) = default;
-
-	/**
 	 * @brief Copy constructor.
-	 * @param ts
 	 */
 	TimeSpec(const TimeSpec& ts)
 		:timespec(ts)
@@ -37,8 +37,17 @@ struct _MISC_CLASS TimeSpec :public timespec
 	}
 
 	/**
+	 * @brief Move constructor.
+	 */
+	TimeSpec(TimeSpec&& ts) = default;
+
+	/**
+	 * @brief Move assignment operator is default.
+	 */
+	TimeSpec& operator=(TimeSpec&&) = default;
+
+	/**
 	 * @brief Parent copy constructor.
-	 * @param ts
 	 */
 	explicit TimeSpec(const timespec& ts)
 		:timespec()
@@ -47,36 +56,30 @@ struct _MISC_CLASS TimeSpec :public timespec
 	}
 
 	/**
-	 * @brief Initialize using whole nano seconds.
-	 * @param nsec Nanoseconds.
-	 */
-	explicit TimeSpec(long nsec)
-		:timespec()
-	{
-		assign(0, nsec);
-	}
-
-	/**
 	 * @brief Initialize using seconds with a floating point.
 	 * @param sec Seconds.
 	 */
-	explicit TimeSpec(double sec) :timespec()
+	explicit TimeSpec(double sec)
+		:timespec()
 	{
 		assign(sec);
 	}
 
 	/**
 	 * @brief Initialize using seconds and nano seconds.
+	 *
 	 * @param sec  Seconds.
 	 * @param nsec Nanoseconds.
 	 */
-	explicit TimeSpec(time_t sec, long nsec) :timespec()
+	explicit TimeSpec(time_t sec, nsec_type nsec)
+		:timespec()
 	{
 		assign(sec, nsec);
 	}
 
 	/**
 	 * @brief Assignment operator using base structure.
+	 *
 	 * @param ts Base structure.
 	 * @return Itself.
 	 */
@@ -87,7 +90,71 @@ struct _MISC_CLASS TimeSpec :public timespec
 	}
 
 	/**
+	 * @brief Test if it has been set.
+	 */
+	inline
+	explicit operator bool() const
+	{
+		return tv_sec || tv_nsec;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator>=(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) >= 0;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator>(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) > 0;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator<(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) < 0;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator<=(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) <= 0;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator==(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) == 0;
+	}
+
+	/**
+	 * @brief Compare operator.
+	 */
+	inline
+	bool operator!=(const timespec& ts) const
+	{
+		return timespecCompare(*this, ts) != 0;
+	}
+
+	/**
 	 * @brief Assignment operator.
+	 *
 	 * @param ts Other instance.
 	 * @return Itself.
 	 */
@@ -99,16 +166,77 @@ struct _MISC_CLASS TimeSpec :public timespec
 
 	/**
 	 * @brief Operator to add nano seconds.
-	 * @param nsec Nanoseconds.
+	 *
+	 * @param nsec Nano seconds increment value.
 	 * @return Itself
 	 */
-	TimeSpec& operator+=(long nsec)
+	inline
+	TimeSpec& operator+=(nsec_type nsec)
 	{
 		return add(0, nsec);
 	}
 
 	/**
+	 * @brief Operator to add nano seconds.
+	 *
+	 * @param nsec Nano seconds decrement value.
+	 * @return Itself
+	 */
+	inline
+	TimeSpec& operator-=(nsec_type nsec)
+	{
+		return add(0, -nsec);
+	}
+
+	/**
+	 * @brief Operator to add another timespec.
+	 *
+	 * @param t Time increment value.
+	 * @return Itself
+	 */
+	inline
+	TimeSpec& operator+=(const timespec& t)
+	{
+		return add(t);
+	}
+
+	/**
+	 * @brief Operator to subtract another timespec.
+	 *
+	 * @param t Time decrement value.
+	 * @return Itself
+	 */
+	inline
+	TimeSpec& operator-=(const timespec& t)
+	{
+		return sub(t);
+	}
+
+	/**
+	 * @brief Operator to add another timespec.
+	 *
+	 * @param t Time increment value.
+	 * @return Itself
+	 */
+	TimeSpec operator+(const timespec& t) const
+	{
+		return TimeSpec(*this).add(t);
+	}
+
+	/**
+	 * @brief Operator to add another timespec.
+	 *
+	 * @param t Time decrement value.
+	 * @return Itself
+	 */
+	TimeSpec operator-(const timespec& t) const
+	{
+		return TimeSpec(*this).sub(t);
+	}
+
+	/**
 	 * @brief Assigns a double as seconds.
+	 *
 	 * @param sec Seconds.
 	 * @return Itself
 	 */
@@ -116,6 +244,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 
 	/**
 	 * @brief Assigns a timespec base type.
+	 *
 	 * @param ts Instance.
 	 * @return Itself.
 	 */
@@ -131,53 +260,61 @@ struct _MISC_CLASS TimeSpec :public timespec
 
 	/**
 	 * @brief Assign the the current time.
+	 *
 	 * @return Itself.
 	 */
 	TimeSpec& setTimeOfDay();
 
 	/**
 	 * @brief Adds seconds and nanoseconds to the current value.
+	 *
 	 * @param sec Seconds.
 	 * @param nsec Nanoseconds.
 	 * @return Itself.
 	 */
-	TimeSpec& add(time_t sec, long nsec);
+	TimeSpec& add(time_t sec, nsec_type nsec);
 
 	/**
 	 * @brief Adds a timespec base type to the current value.
-	 * @param ts Instance.
-	 * @return
+	 *
+	 * @param ts Base class.
+ * @return Itself
 	 */
 	TimeSpec& add(const timespec& ts);
 
 	/**
-	 * @brief Subtracts timespec base type from the current value.
-	 * @param ts Base type.
-	 * @return Itself.
-	 */
+ * @brief Subtracts a timespec base type from the current value.
+ *
+ * @param ts Base class.
+ * @return Itself
+ */
 	TimeSpec& sub(const timespec& ts);
 
 	/**
 	 * @brief Assigns seconds and nanoseconds to the current value.
+	 *
 	 * @param sec Seconds
 	 * @param nsec Nanosecond
 	 * @return Itself.
 	 */
-	TimeSpec& assign(time_t sec, long nsec);
+	TimeSpec& assign(time_t sec, nsec_type nsec);
 
 	/**
 	 * @brief Gets the time value as a double.
 	 * @return Seconds.
 	 */
 	[[nodiscard]] double toDouble() const;
+
 	/**
 	 * @brief Gets the time value as a double.
+	 *
 	 * @return Seconds.
 	 */
 	[[nodiscard]] time_t toMilliSecs() const;
 
 	/**
 	 * @brief Returns the time as #toDouble() result converted to a string.
+	 *
 	 * @return String
 	 */
 	[[nodiscard]] std::string toString() const;

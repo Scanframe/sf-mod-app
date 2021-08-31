@@ -467,7 +467,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 			ref->_sigDigits = 0;
 		}
 		// Skip type conversion if an error occurred so far.
-		if (ret_val)
+		//if (ret_val) // Seems always true for now.
 		{
 			// Convert all Value reference data members to the wanted type
 			// and check for errors during the conversion.
@@ -667,7 +667,7 @@ void Variable::emitEvent(EEvent event, const Variable& caller) // NOLINT(misc-no
 	// Check if a handler was linked and if so call it.
 	if (_handler)
 	{
-		_handler->VariableEventHandler(event, caller, *this, &caller == this);
+		_handler->variableEventHandler(event, caller, *this, &caller == this);
 	}
 }
 
@@ -917,7 +917,6 @@ const Value& Variable::getCur() const
 
 const Value& Variable::getCur(bool converted) const
 {
-	// When temporary is used return the temporary value.
 	return (converted && isConverted()) ? _reference->_convertCurValue : _reference->_curValue;
 }
 
@@ -1092,8 +1091,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 			changed = _reference->_curValue != v;
 			// assign the value
 			_reference->_curValue = v;
-		}
 			break;
+		}
 
 		case Value::vitBinary:
 		case Value::vitCustom:
@@ -1113,8 +1112,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 				// Set changed local variable to trigger event
 				changed = true;
 			}
-		}
 			break;
+		}
 
 		default:
 			break;
@@ -1529,7 +1528,7 @@ bool Variable::setConvertValues(bool convert)
 			{
 				// Call the handler setting the linker to the zero variable to
 				// indicate the global nature of the call.
-				VariableStatic::_convertHandler->VariableEventHandler(veConvert, *this, VariableStatic::zero(), false);
+				VariableStatic::_convertHandler->variableEventHandler(veConvert, *this, VariableStatic::zero(), false);
 			}
 			else
 			{
@@ -2051,94 +2050,139 @@ const Variable::State::Vector& Variable::getStates() const
 Variable::Definition Variable::getDefinition(const std::string& str)
 {
 	Definition def;
-	// Set the reference valid flag default to true.
-	def._valid = true;
-	// Split the string in using a csv format.
-	strings sl;
-	sl.split(str, ',', '"');
-	auto getField = [sl](strings::size_type i) -> std::string
+	try
 	{
-		if (i < sl.size())
+		// Set the reference valid flag default to true.
+		def._valid = true;
+		// Split the string in using a csv format.
+		strings sl;
+		sl.split(str, ',', '"');
+		auto getField = [sl](strings::size_type i) -> std::string
 		{
-			return sl[i];
-		}
-		return {};
-	};
-	// Pointer that points to the place where the conversion of the ID went wrong.
-	size_t end_pos = 0;
-	// Get the result ID from the setup string.
-	std::string tmp = getField(vfId);
-	id_type id = std::stoull(tmp, &end_pos, 0);
-	// Return zero if an error occurred during conversion of the ID.
-	if (tmp[end_pos] != '\0')
-	{
-		def._valid = false;
-	}
-	// Read all values in as strings to convert them later to the actual form.
-	def._id = id;
-	def._name = getField(vfName);
-	def._unit = getField(vfUnit);
-	def._convertOption = getField(vfConversionType);
-	def._description = unescape(getField(vfDescription));
-	def._flags = toFlags(getField(vfFlags));
-	// Check for multi line string so the default value
-	Value::EType type = (Value::EType) Value::getType(getField(vfType).c_str());
-	//
-	if (type == Value::vitString && def._unit.find('M') != std::string::npos)
-	{
-		def._defaultValue.set(unescape(getField(vfDefault)));
-	}
-	else
-	{
-		def._defaultValue.set(getField(vfDefault));
-	}
-	def._minValue.set(getField(vfMinimum).c_str());
-	def._maxValue.set(getField(vfMaximum).c_str());
-	def._roundValue.set(getField(vfRound).c_str());
-	// Get max state field count
-	int state_count = 0;
-	while (getField(vfFirstState + state_count).length())
-	{
-		state_count++;
-	}
-	def._states.resize(state_count);
-	for (int i = 0; i < state_count; i++)
-	{
-		def._states[i]._name = getField(vfFirstState + i);
-		if (def._states[i]._name.length())
-		{
-			size_t pos = def._states[i]._name.find_first_of('=');
-			// If equal sign has been found add state value
-			if (pos != std::string::npos)
+			if (i < sl.size())
 			{
-				def._states[i]._value.set(def._states[i]._name.substr(pos + 1).c_str());
-				// Truncate name to position of the equal sign
-				def._states[i]._name.resize(pos);
+				return sl[i];
 			}
+			return {};
+		};
+		// Pointer that points to the place where the conversion of the ID went wrong.
+		size_t end_pos = 0;
+		// Get the result ID from the setup string.
+		std::string tmp = getField(vfId);
+		id_type id = std::stoull(tmp, &end_pos, 0);
+		// Return zero if an error occurred during conversion of the ID.
+		if (tmp[end_pos] != '\0')
+		{
+			def._valid = false;
+		}
+		// Read all values in as strings to convert them later to the actual form.
+		def._id = id;
+		def._name = getField(vfName);
+		def._unit = getField(vfUnit);
+		def._convertOption = getField(vfConversionType);
+		def._description = unescape(getField(vfDescription));
+		def._flags = toFlags(getField(vfFlags));
+		// Check for multi line string so the default value
+		Value::EType type = (Value::EType) Value::getType(getField(vfType).c_str());
+		//
+		if (type == Value::vitString && def._unit.find('M') != std::string::npos)
+		{
+			def._defaultValue.set(unescape(getField(vfDefault)));
 		}
 		else
 		{
-			break;
+			def._defaultValue.set(getField(vfDefault));
+		}
+		def._minValue.set(getField(vfMinimum).c_str());
+		def._maxValue.set(getField(vfMaximum).c_str());
+		def._roundValue.set(getField(vfRound).c_str());
+		// Get max state field count
+		int state_count = 0;
+		while (getField(vfFirstState + state_count).length())
+		{
+			state_count++;
+		}
+		def._states.resize(state_count);
+		for (int i = 0; i < state_count; i++)
+		{
+			def._states[i]._name = getField(vfFirstState + i);
+			if (def._states[i]._name.length())
+			{
+				size_t pos = def._states[i]._name.find_first_of('=');
+				// If equal sign has been found add state value
+				if (pos != std::string::npos)
+				{
+					def._states[i]._value.set(def._states[i]._name.substr(pos + 1).c_str());
+					// Truncate name to position of the equal sign
+					def._states[i]._name.resize(pos);
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+		// Skip type conversion if an error occurred so far.
+		if (def._valid)
+		{
+			// Convert all Value reference data members to the wanted type
+			// and check for errors during the conversion.
+			def._valid &= def._maxValue.setType(type);
+			def._valid &= def._minValue.setType(type);
+			def._valid &= def._roundValue.setType(type);
+			for (auto& s: def._states)
+			{
+				def._valid &= s._value.setType(type);
+			}
+			def._type = (Value::EType) type;
 		}
 	}
-	// Skip type conversion if an error occurred so far.
-	if (def._valid)
+	catch (std::exception& ex)
 	{
-		// Convert all Value reference data members to the wanted type
-		// and check for errors during the conversion.
-		def._valid &= def._maxValue.setType(type);
-		def._valid &= def._minValue.setType(type);
-		def._valid &= def._roundValue.setType(type);
-		for (auto& s: def._states)
-		{
-			def._valid &= s._value.setType(type);
-		}
-		def._type = (Value::EType) type;
+		def._valid = false;
 	}
 	// Notify when not valid notify.
 	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n" << str);
 	//
 	return def;
+}
+
+std::string Variable::getFieldName(int field)
+{
+	switch (field)
+	{
+		case vfId:
+			return "Id";
+		case vfName:
+			return "Name";
+		case vfFlags:
+			return "Flags";
+		case vfUnit:
+			return "Unit";
+		case vfType:
+			return "Type";
+		case vfConversionType:
+			return "ConversionType";
+		case vfRound:
+			return "Round";
+		case vfDefault:
+			return "Default";
+		case vfMinimum:
+			return "Minimum";
+		case vfMaximum:
+			return "Maximum";
+		case vfDescription:
+			return "Description";
+		default:
+			if (field >= vfFirstState)
+			{
+				return "State-" + itostr(field - vfFirstState + 1);
+			}
+			else
+			{
+				return "?Field" + itostr(field) + "?";
+			}
+	}
 }
 
 }

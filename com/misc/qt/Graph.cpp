@@ -1,10 +1,22 @@
 #include "Graph.h"
+#include "qt_utils.h"
 
 namespace sf
 {
 
-Graph::Graph()
-	:_colors({QColorConstants::White, QColorConstants::Yellow, QColorConstants::LightGray, QColorConstants::DarkBlue,  QColorConstants::DarkGray})
+Graph::Graph(const QPalette& palette)
+	:_colors({
+//	cText,
+	palette.color(QPalette::ColorRole::WindowText),
+//	cLine,
+	palette.color(QPalette::ColorRole::Dark),
+//	cGrid,
+	palette.color(QPalette::ColorRole::AlternateBase),
+//	cRulerBackground,
+	palette.color(QPalette::ColorRole::Window),
+//	cGraphBackground,
+	palette.color(QPalette::ColorRole::Base)
+})
 {
 }
 
@@ -38,7 +50,7 @@ void Graph::setColor(Graph::EColor index, QColor color)
 void Graph::setRuler(Draw::ERulerOrientation ro, double start, double stop, int digits, const QString& unit)
 {
 	auto ri = getRulerInfo(ro);
-	// Setting information enables the ruler too when the amount of digits is non zero.
+	// Setting information enables the ruler too when the amount of digits is non-zero.
 	ri->enabled = digits > 0;
 	ri->start = start;
 	ri->stop = stop;
@@ -46,7 +58,7 @@ void Graph::setRuler(Draw::ERulerOrientation ro, double start, double stop, int 
 	ri->unit = unit;
 }
 
-void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
+const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 {
 	Draw draw;
 	// Get font sizes to calculate needed widths and heights.
@@ -61,10 +73,6 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 		_top.enabled ? _top.size : 0,
 		_right.enabled ? -_right.size : 0,
 		_bottom.enabled ? -_bottom.size : 0);
-/*
-	painter.setPen(QPen(Qt::cyan));
-	painter.drawRect(QRect(graph_area.topLeft(), graph_area.size() - QSize(1, 1)));
-*/
 	// When the background is a valid color paint int.
 	if (_colors[cGraphBackground].isValid())
 	{
@@ -79,14 +87,14 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 		// The area allowed to paint in.
 		auto area = _left.bounds;
 		// Draw background of ruler area.
-		if (_colors[cRulerBackground].isValid())
+		if (_colors[cRulerBackground].isValid() && !_debug)
 		{
 			painter.fillRect(_left.rect, _colors[cRulerBackground]);
 		}
 		// Correction when having a top ruler.
 		if (_top.enabled)
 		{
-			_left.rect.setY(_top.size);
+			_left.rect.setY(_top.size + bounds.y());
 		}
 		// Correction when having a bottom ruler.
 		if (_bottom.enabled)
@@ -94,27 +102,30 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 			_left.rect.setBottom(_left.rect.bottom() - _bottom.size);
 		}
 		// Draw the actual ruler elements.
-		draw.Ruler(painter, Draw::roLeft, _colors[cLine], _colors[cText],
-			_left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
+		if (!_debug)
+		{
+			draw.Ruler(painter, Draw::roLeft, _colors[cLine], _colors[cText],
+				_left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
+		}
 	}
 	// When there is a right ruler.
 	if (_right.enabled)
 	{
 		_right.rect = bounds;
 		_right.rect.setWidth(_right.size);
-		_right.rect.moveTo(QPoint(bounds.width() - _right.size, 0));
+		_right.rect.moveTo(QPoint(bounds.width() - _right.size, 0) + bounds.topLeft());
 		_right.bounds = _right.rect;
 		// The area allowed to paint in.
 		auto area = _right.bounds;
 		// Draw background of ruler area.
-		if (_colors[cRulerBackground].isValid())
+		if (_colors[cRulerBackground].isValid() && !_debug)
 		{
 			painter.fillRect(_right.rect, _colors[cRulerBackground]);
 		}
 		// Correction when having a top ruler.
 		if (_top.enabled)
 		{
-			_right.rect.setY(_top.size);
+			_right.rect.setY(_top.size + bounds.y());
 		}
 		// Correction when having a bottom ruler.
 		if (_bottom.enabled)
@@ -122,8 +133,11 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 			_right.rect.setBottom(_right.rect.bottom() - _bottom.size);
 		}
 		// Draw the actual ruler elements.
-		draw.Ruler(painter, Draw::roRight, _colors[cLine], _colors[cText],
-			_right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
+		if (!_debug)
+		{
+			draw.Ruler(painter, Draw::roRight, _colors[cLine], _colors[cText],
+				_right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
+		}
 	}
 	// When there is a top ruler.
 	if (_top.enabled)
@@ -136,7 +150,7 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 		// Correction when having a left ruler.
 		if (_left.enabled)
 		{
-			_top.rect.setX(_left.size);
+			_top.rect.setX(_left.size + bounds.x());
 		}
 		// Correction when having a right ruler.
 		if (_right.enabled)
@@ -144,19 +158,22 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 			_top.rect.setRight(_top.rect.right() - _right.size);
 		}
 		// Draw background of area.
-		if (_colors[cRulerBackground].isValid())
+		if (_colors[cRulerBackground].isValid() && !_debug)
 		{
 			painter.fillRect(_top.rect, _colors[cRulerBackground]);
 		}
 		// Draw the actual ruler elements.
-		draw.Ruler(painter, Draw::roTop, _colors[cLine], _colors[cText],
-			_top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
+		if (!_debug)
+		{
+			draw.Ruler(painter, Draw::roTop, _colors[cLine], _colors[cText],
+				_top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
+		}
 	}
 	// When there is a bottom ruler.
 	if (_bottom.enabled)
 	{
 		_bottom.rect = bounds;
-		_bottom.rect.moveTo(0, _bottom.rect.height() - _bottom.size);
+		_bottom.rect.moveTo(QPoint(0, _bottom.rect.height() - _bottom.size) + bounds.topLeft());
 		_bottom.rect.setHeight(_bottom.size);
 		_bottom.bounds = _bottom.rect;
 		// The area allowed to paint in.
@@ -164,7 +181,7 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 		// Correction when having a left ruler.
 		if (_left.enabled)
 		{
-			_bottom.rect.setX(_left.size);
+			_bottom.rect.setX(_left.size + bounds.x());
 		}
 		// Correction when having a right ruler.
 		if (_right.enabled)
@@ -172,26 +189,47 @@ void Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
 			_bottom.rect.setRight(_bottom.rect.right() - _right.size);
 		}
 		// Draw background of area.
-		if (_colors[cRulerBackground].isValid())
+		if (_colors[cRulerBackground].isValid() && !_debug)
 		{
 			painter.fillRect(_bottom.rect, _colors[cRulerBackground]);
 		}
 		// Draw the actual ruler elements.
-		draw.Ruler(painter, Draw::roBottom, _colors[cLine], _colors[cText],
-			_bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
+		if (!_debug)
+		{
+			draw.Ruler(painter, Draw::roBottom, _colors[cLine], _colors[cText],
+				_bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
+		}
 	}
 	// Check if horizontal grid is enabled.
-	if (_horizontal)
+	if (_horizontal && !_debug)
 	{
 		auto ri = getRulerInfo(_horizontal);
 		draw.GridLines(painter, Draw::goHorizontal, _colors[cGrid], _graphArea, ri->start, ri->stop, ri->digits);
 	}
 	// Check if vertical grid is enabled.
-	if (_vertical)
+	if (_vertical && !_debug)
 	{
 		auto ri = getRulerInfo(_vertical);
 		draw.GridLines(painter, Draw::goVertical, _colors[cGrid], _graphArea, ri->start, ri->stop, ri->digits);
 	}
+	if (_debug)
+	{
+		for (auto& i: {_left, _right, _top, _bottom})
+		{
+			if (i.enabled)
+			{
+				painter.setPen(Qt::blue);
+				painter.drawRect(inflated(i.rect, -1));
+				painter.setPen(QPen(Qt::red, 1, Qt::PenStyle::DashDotLine));
+				painter.drawRect(i.bounds);
+			}
+		}
+		painter.setPen(Qt::green);
+		painter.drawRect(_graphArea);
+		painter.setPen(Qt::darkGray);
+		painter.drawRect(inflated(bounds, 1));
+	}
+	return _graphArea;
 }
 
 void Graph::setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro)

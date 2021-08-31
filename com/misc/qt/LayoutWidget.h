@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include "PropertySheetDialog.h"
 #include "../global.h"
 
 namespace sf
@@ -11,6 +12,8 @@ namespace sf
  */
 class _MISC_CLASS LayoutWidget :public QWidget
 {
+	Q_OBJECT
+
 	public:
 		/**
 		 * @brief Constructor as QWidget.
@@ -20,14 +23,18 @@ class _MISC_CLASS LayoutWidget :public QWidget
 		/**
 		 * @brief Opens a property editor dialog for the given target in a derived class.
 		 *
+		 * Te returned pointer can be used to execute the dialog in modal mode.
+		 *
 		 * @param target Object targeted in the editor.
+		 * @return return Pointer to sheet dialog.
 		 */
-		virtual void openPropertyEditor(QObject* target);
+		virtual PropertySheetDialog* openPropertyEditor(QObject* target);
 
 		/**
 		 * @brief Executes a popup from .
 		 *
 		 * @param target Object targeted in the editor.
+		 * @param pos Global position to popup the menu.
 		 */
 		virtual void popupContextMenu(QObject* target, const QPoint& pos);
 

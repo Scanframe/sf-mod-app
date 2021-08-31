@@ -26,7 +26,7 @@ class VariableScriptObject :public ScriptObject, public Variable, private Variab
 		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
 	private:
-		void VariableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
+		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
 		// Skips event for this instance.
 		bool _skipEvent{false};
 

@@ -6,7 +6,6 @@
 namespace sf
 {
 
-
 /**
  * @brief Widget for showing #sf::Variable value types integer and floating point having a minimum and maximum value.
  */
@@ -58,6 +57,8 @@ class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
 		void paintEvent(QPaintEvent* event) override;
 
 	private:
+
+		void initStyleOption(QStyleOptionFrame *option) const;
 
 		struct Private;
 
