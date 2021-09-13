@@ -165,6 +165,20 @@ struct PropertySheetDialog::Private :QObject
 		}
 	}
 
+	void setActivePage(PropertyPage* page) const
+	{
+		// Deactivate all pages.
+		for (int i = 0; i < ui->listWidget->count(); i++)
+		{
+			auto item = ui->listWidget->item(i);
+			if (qvariant_cast<PropertyPage*>(item->data(Qt::ItemDataRole::UserRole)) == page)
+			{
+				ui->listWidget->setCurrentItem(item);
+			}
+		}
+	}
+
+
 	void activatePage()
 	{
 		// Deactivate all pages.
@@ -184,29 +198,47 @@ struct PropertySheetDialog::Private :QObject
 		}
 	}
 
-	void applyClose()
+	void applyClose() const
 	{
 		// Apply the changes when modified.
 		// Is an additional check when 'Ok' button is not enabled or disabled when modified.
 		if (_s->isSheetModified())
 		{
-			apply();
+			// When apply was successful.
+			if (apply())
+			{
+				// Close the sheet.
+				_s->close();
+			}
+			return;
 		}
 		// Close the sheet.
 		_s->close();
 	}
 
-	void apply()
+	[[nodiscard]] bool apply() const
 	{
 		QList<PropertyPage*> modified_pages;
-		// Only apply the modified pages.
+		// Iterate through the pages and collect the modified pages.
 		for (auto p: getPages())
 		{
 			if (p->isPageModified())
 			{
 				modified_pages.append(p);
-				p->applyPage();
+				// If a page cannot be applied return false.
+				if (!p->canApplyPage())
+				{
+					// Activate the first page which could not be applied.
+					setActivePage(p);
+					// Signal failure to apply.
+					return false;
+				}
 			}
+		}
+		// Only apply the modified pages.
+		for (auto p: modified_pages)
+		{
+			p->applyPage();
 		}
 		// Call after apply to allow resolving dependencies between property pages or saving settings.
 		for (auto p: getPages())
@@ -220,6 +252,8 @@ struct PropertySheetDialog::Private :QObject
 		{
 			emit _s->modified();
 		}
+		// Signal all was applied.
+		return true;
 	}
 };
 
@@ -276,7 +310,7 @@ bool PropertySheetDialog::isSheetModified() const
 
 void PropertySheetDialog::applySheet()
 {
-	_p->apply();
+	(void)_p->apply();
 }
 
 void PropertySheetDialog::checkModified(QWidget* origin)

@@ -22,15 +22,14 @@ struct _GII_CLASS VariableHandler :public VariableTypes
 	 */
 	virtual void variableEventHandler
 		(
-			EEvent event,
+			VariableTypes::EEvent event,
 			const Variable& caller,
 			Variable& link,
 			bool same_inst
 		) = 0;
 
 	/**
-	 * @brief Destructor clears the link with variable instances so no errors occur
-	 * when the link is destructed before the variable is.
+	 * @brief Destructor clears the link with variable instances so no errors occur when the link is destructed before the variable is.
 	 */
 	virtual ~VariableHandler();
 };

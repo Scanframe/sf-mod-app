@@ -21,6 +21,7 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 	QLabel* _labelNameAlt{nullptr};
 	QComboBox* _comboBoxValue{nullptr};
 	int _nameLevel{-1};
+	bool _ignoreIndexChange = false;
 
 	static VariableComboBox::Private* cast(PrivateBase* data)
 	{
@@ -50,13 +51,6 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 		_widget->setFocusPolicy(Qt::StrongFocus);
 		// Then when getting focus pass it to the child line edit widget.
 		_widget->setFocusProxy(_comboBoxValue);
-		//
-		QObject::connect(_comboBoxValue, &QComboBox::currentIndexChanged, this, &VariableComboBox::Private::onIndexChange);
-		// Only link when not in design mode.
-		if (!ObjectExtension::inDesigner())
-		{
-			_variable.setHandler(this);
-		}
 		// Execute after the layout is loaded, so the label can be found for sure.
 		QTimer::singleShot(0, this, &VariableComboBox::Private::connectLabelNameAlt);
 		// The edit value gets handler for the context menu.
@@ -71,30 +65,41 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 		delete _comboBoxValue;
 	}
 
-	void variableEventHandler
-		(
-			EEvent event,
-			const Variable& call_var,
-			Variable& link_var,
-			bool same_inst
-		) override
+	void initialize()
 	{
-		SF_COND_RTTI_NOTIFY(IsDebug(), DO_DEFAULT, Variable::getEventName(event));
+		// Only link when not in design mode.
+		if (!ObjectExtension::inDesigner())
+		{
+			_variable.setHandler(this);
+			//
+			QObject::connect(_comboBoxValue, &QComboBox::currentIndexChanged, this, &VariableComboBox::Private::onIndexChange);
+		}
+	}
+
+	void variableEventHandler(EEvent event, const Variable& caller, Variable& link, bool sameInst) override
+	{
+		//SF_COND_RTTI_NOTIFY(IsDebug(), DO_DEFAULT, Variable::getEventName(event));
 		switch (event)
 		{
 			case veLinked:
 			case veIdChanged:
-				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
+				_widget->applyReadOnly(_readOnly || link.isReadOnly());
+				// Connection function is called when items are added..
+				_ignoreIndexChange = true;
 				// Remove all items.
 				_comboBoxValue->clear();
-				for (int i = 0; i < link_var.getStateCount(); i++)
+				for (int i = 0; i < link.getStateCount(); i++)
 				{
-					_comboBoxValue->addItem(QString::fromStdString(link_var.getStateName(i)), i);
+					_comboBoxValue->addItem(QString::fromStdString(link.getStateName(i)), i);
 				}
-				_widget->setToolTip(QString::fromStdString(link_var.getDescription()));
+				// Select the current.
+				_comboBoxValue->setCurrentIndex(indexFromComboBox(_comboBoxValue, static_cast<int>(link.getState(link.getCur()))));
+				// Enable updates again.
+				_ignoreIndexChange = false;
+				_widget->setToolTip(QString::fromStdString(link.getDescription()));
 				// Run into next.
 			case veUserPrivate:
-				_labelName->setText(QString::fromStdString(link_var.getName(_nameLevel)));
+				_labelName->setText(QString::fromStdString(link.getName(_nameLevel)));
 				if (_labelNameAlt)
 				{
 					_labelNameAlt->setText(_labelName->text());
@@ -103,12 +108,11 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 				break;
 
 			case veValueChange:
-
-				_comboBoxValue->setCurrentIndex(indexFromComboBox(_comboBoxValue, static_cast<int>(link_var.getState(link_var.getCur()))));
+				_comboBoxValue->setCurrentIndex(indexFromComboBox(_comboBoxValue, static_cast<int>(link.getState(link.getCur()))));
 				break;
 
 			case veFlagsChange:
-				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
+				_widget->applyReadOnly(_readOnly || link.isReadOnly());
 				break;
 
 			default:
@@ -132,7 +136,11 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 	void onIndexChange(int index)
 	{
 		(void) index;
-		updateValue(false);
+		// Skip updates when combo box is filled with items.
+		if (!_ignoreIndexChange)
+		{
+			updateValue(false);
+		}
 	}
 
 	void onDestroyed(QObject* obj = nullptr) // NOLINT(readability-make-member-function-const)
@@ -165,14 +173,18 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 VariableComboBox::VariableComboBox(QWidget* parent)
 	:VariableWidgetBase(parent, this)
 {
-	_p = new VariableComboBox::Private(this);
+	auto p = new VariableComboBox::Private(this);
+	_p = p;
+	p->initialize();
 }
 
 void VariableComboBox::applyReadOnly(bool yn)
 {
 	setFocusPolicy(yn ? Qt::NoFocus : Qt::StrongFocus);
 	if (_p)
-	VariableComboBox::Private::cast(_p)->_comboBoxValue->setDisabled(yn);
+	{
+		VariableComboBox::Private::cast(_p)->_comboBoxValue->setDisabled(yn);
+	}
 }
 
 bool VariableComboBox::isRequiredProperty(const QString& name)

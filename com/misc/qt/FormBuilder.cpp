@@ -528,10 +528,12 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 						// Remove the layout which has the widgets when it exists.
 						elem.removeChild(elem.firstChildElement("layout"));
 						// Remove all child widgets.
-						auto children = elem.elementsByTagName("widget");
-						for (int i = 0; i < children.count(); i++)
+						auto child = elem.firstChildElement("widget");
+						while(!child.isNull())
 						{
-							elem.removeChild(children.at(i));
+							elem.removeChild(child);
+							// Move to next which is now the first again.
+							child = elem.firstChildElement("widget");
 						}
 					}
 				}
@@ -611,14 +613,14 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 					if (def_shape != frm->frameShape())
 					{
 						elem.insertAfter(createDomProperty(dom, "frameShadow", "enum",
-							QString("QFrame::%1").arg(metaEnumShadow.valueToKey(frm->frameShadow()))),
+								QString("QFrame::%1").arg(metaEnumShadow.valueToKey(frm->frameShadow()))),
 							elem.lastChildElement("property"));
 					}
 					// Only add property when different from the default.
 					if (def_shadow != frm->frameShadow())
 					{
 						elem.insertAfter(createDomProperty(dom, "frameShape", "enum",
-							QString("QFrame::%1").arg(metaEnumShape.valueToKey(frm->frameShape()))),
+								QString("QFrame::%1").arg(metaEnumShape.valueToKey(frm->frameShape()))),
 							elem.lastChildElement("property"));
 					}
 				}
@@ -716,7 +718,7 @@ void FormBuilder::fixLoadingProperties(QWidget* widget, QDomDocument& dom)
 					// Get a child by name if it is not the root widget itself.
 					if (auto wgt = (wgt_name == widget->objectName()) ? widget : widget->findChild<QWidget*>(wgt_name))
 					{
-						// Get the widgets meta object.
+						// Get the widgets meta-object.
 						auto mo = wgt->metaObject();
 						// When the cache entry does not exist for this class name yet created it.
 						if (!cache.contains(mo->className()))
@@ -726,7 +728,7 @@ void FormBuilder::fixLoadingProperties(QWidget* widget, QDomDocument& dom)
 							// Iterate through its properties to collect names.
 							for (int idx = 0; idx < mo->propertyCount(); ++idx)
 							{
-								// Add each known property to teh string list.
+								// Add each known property to the string list.
 								nms.append(mo->property(idx).name());
 							}
 						}

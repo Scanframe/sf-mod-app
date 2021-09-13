@@ -180,10 +180,6 @@ class _AMI_CLASS MultiDocInterface
 		 * @brief Holds the application module interface assigned when created by the same instance as assigned.
 		 */
 		const AppModuleInterface* _module{nullptr};
-		/**
-		 * @brief Holds the flag on active or not active to prevent overhead.
-		 */
-		 bool _active{false};
 
 		friend AppModuleInterface;
 };

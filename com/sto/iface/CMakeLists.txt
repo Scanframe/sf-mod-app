@@ -1,10 +1,10 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("sf-ami-rsa" LANGUAGES CXX)
+project("sf-sto" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "../../cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../com/cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
@@ -15,27 +15,26 @@ _SetOutputDirs()
 
 # Uses directory Set by _SetOutputDirs().
 find_package(SfMisc REQUIRED)
-find_package(SfGii CONFIG REQUIRED)
-find_package(SfAmi REQUIRED)
-find_package(SfRsa REQUIRED)
+find_package(SfGii REQUIRED)
 
+#[[
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+]]
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-	res/resource.qrc
-	LibMain.cpp
-	AcquisitionAppModule.cpp AcquisitionAppModule.h
-	AcquisitionPropertyPage.cpp AcquisitionPropertyPage.h AcquisitionPropertyPage.ui
+	global.h
+	StorageInterface.cpp StorageInterface.h
+	StorageServer.cpp StorageServer.h
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-gii sf-ami sf-rsa)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-gii)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
@@ -50,10 +49,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
 # Tell the code the library is used as an archive. (So no imports or exports)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _IFACE_ARC)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE _STO_ARC)
 
 # Tell the code the library is used as dynamic library. (So imports needed)
-target_compile_definitions(${PROJECT_NAME} PRIVATE _AMI_PKG)
+target_compile_definitions(${PROJECT_NAME} PRIVATE _STO_PKG)
 
 # Set the include directory for this library when it is imported by another sub project.
 #set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/")

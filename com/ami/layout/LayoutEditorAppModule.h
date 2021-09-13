@@ -34,9 +34,13 @@ class [[maybe_unused]] LayoutEditorAppModule :public AppModuleInterface
 
 		void documentActivated(MultiDocInterface* interface, bool yn) const override;
 
+		~LayoutEditorAppModule() override;
+
 		QSettings* _settings;
 
 		HierarchyViewer* _hierarchyViewer{nullptr};
+
+		QTreeView* _tvProperties{nullptr};
 
 		bool _readOnly = true;
 };

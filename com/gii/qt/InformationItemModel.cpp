@@ -40,14 +40,14 @@ namespace
 {
 enum
 {
-	vcName,
+	cName,
 	vcId,
-	vcType,
+	cType,
 	vcUnit,
 	vcFlags,
 	vcValue,
 	vcDescription,
-	vcColumnCount
+	cColumnCount
 };
 
 enum
@@ -124,7 +124,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 					return QString("Field %1").arg(section);
 				case vcId:
 					return QString(tr("Id"));
-				case vcName:
+				case cName:
 					return QString(tr("Name"));
 				case vcValue:
 					return QString(tr("Value"));
@@ -132,7 +132,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 					return QString(tr("Description"));
 				case vcUnit:
 					return QString(tr("Unit"));
-				case vcType:
+				case cType:
 					return QString(tr("Type"));
 				case vcFlags:
 					return QString(tr("Flags"));
@@ -179,7 +179,7 @@ int InformationItemModel::columnCount(const QModelIndex& parent) const
 			}
 		}
 	}
-	return (_idType == Gii::Variable) ? static_cast<int>(vcColumnCount) : static_cast<int>(rcColumnCount);
+	return (_idType == Gii::Variable) ? static_cast<int>(cColumnCount) : static_cast<int>(rcColumnCount);
 }
 
 int InformationItemModel::rowCount(const QModelIndex& parent) const
@@ -210,7 +210,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 	{
 		if (role == Qt::CheckStateRole)
 		{
-			if (_mode == Gii::Multiple && index.column() == vcName && item->_type != TreeItem::dtFolder)
+			if (_mode == Gii::Multiple && index.column() == cName && item->_type != TreeItem::dtFolder)
 			{
 				return item->_selected ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
 			}
@@ -229,7 +229,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						}
 						return QString("0x%1").arg(item->_id, 0, 16);
 
-					case vcName:
+					case cName:
 						return item->_name;
 
 					case vcValue:
@@ -253,7 +253,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						}
 						return QString::fromStdString(Variable::getInstanceById(item->_id).getUnit());
 
-					case vcType:
+					case cType:
 						if (item->_type == TreeItem::dtFolder)
 						{
 							return {};

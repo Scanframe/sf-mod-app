@@ -1878,7 +1878,7 @@ void FillDataBuffer
 		value += 0.02 * double(rand()) / double(RAND_MAX);//  (gain*gain/10.0)
 		value *= gain;
 		// Clip after multiplying.
-		uint32_t amp = calc_offset(clip(value, -1.0, 1.0), -1.0, 1.0, amplitude, true);
+		uint32_t amp = calculateOffset(clip(value, -1.0, 1.0), -1.0, 1.0, amplitude, true);
 		//
 		if (sizeof(uint32_t) == wordSize)
 		{

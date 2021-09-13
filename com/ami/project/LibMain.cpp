@@ -1,20 +1,20 @@
 #include <ami/iface/AppModuleInterface.h>
-#include "AcquisitionAppModule.h"
+#include "ProjectAppModule.h"
 
 namespace sf
 {
 
 // Declaration of the dynamic library information.
-SF_DL_INFORMATION("Acquisition",
-	R"(Repetitive signal acquisition application module.)"
+SF_DL_INFORMATION("Project",
+	R"(Project application module where controllers and acquisition devices can be configured.)"
 )
 
 // Register this derived class.
 SF_REG_CLASS
 (
 	AppModuleInterface, AppModuleInterface::Parameters, Interface,
-	AcquisitionAppModule,
-	"Acquisition", "Repetitive signal acquisition application module."
+	ProjectAppModule,
+	"Project", "Project application module."
 )
 
 }

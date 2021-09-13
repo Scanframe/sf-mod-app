@@ -129,11 +129,12 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		REQUIRE(it.isEnabled());
 		// Counter for the mount of timeouts.
 		int count = 0;
+		const int sleep_time = 50000;
 		// The maximum loops for this test is 1.1 seconds.
-		int max_loops = 1100000 / 1000;
+		int max_loops = 1100000 / sleep_time;
 		while (max_loops-- > 0)
 		{
-			::usleep(1000);
+			::usleep(sleep_time);
 			// Check it the timer timed out.
 			if (it)
 			{
@@ -141,7 +142,7 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 			}
 		}
 		CHECK(count == 5);
-		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.15));
+		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.3));
 	}
 
 }

@@ -28,8 +28,8 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Sets and thus enabling the ruler for the passed orientation.
 		 * @param ro Orientation of the ruler.
-		 * @param start Ruler start value.
-		 * @param stop Ruler stop value.
+		 * @param start ruler start value.
+		 * @param stop ruler stop value.
 		 * @param digits Precision of the ruler values.
 		 * @param unit Unit text of the ruler.
 		 */
@@ -41,7 +41,7 @@ class _MISC_CLASS Graph
 		 * When painting this enables drawing grid for the passed orientation using
 		 * the information of the passed ruler orientation.
 		 * @param go Grid orientation
-		 * @param ro Ruler orientation.
+		 * @param ro ruler orientation.
 		 */
 		void setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro);
 
@@ -52,16 +52,25 @@ class _MISC_CLASS Graph
 		 * @param painter Painter instance.
 		 * @param bounds Boundaries to paint in.
 		 * @param region Region in case of an event.
-		 * @return Rectangle of the resulting graph area. Same value as #getGraphArea() returns.
+		 * @return Rectangle of the resulting graph area. Same value as #getPlotArea() returns.
 		 */
 		const QRect& paint(QPainter& painter, const QRect& bounds, const QRegion& region = null_ref<QRegion>());
 
 		/**
-		 * @brief Gets the area for the graph after rulers and grid are painted.
+		 * @brief Paints a cross with text in the plot area.
+		 * Used when a plot can not be painted.
 		 *
-		 * @return Area rectangle of the graph.
+		 * @param painter Painter instance.
+		 * @param text Text to paint in the middle in a rectangle.
 		 */
-		[[nodiscard]] const QRect& getGraphArea() const;
+		void paintPlotCross(QPainter& painter, const QString& text);
+
+		/**
+		 * @brief Gets the remaining area to plot the graph after rulers and grid have been painted.
+		 *
+		 * @return Area rectangle to plot the actual graphic.
+		 */
+		[[nodiscard]] const QRect& getPlotArea() const;
 
 		/**
 		 * @brief Colors enumeration of colors in the graph.
@@ -134,15 +143,15 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Gets the ruler information by orientation.
 		 *
-		 * @param ro Ruler orientation.
-		 * @return Ruler information structure.
+		 * @param ro ruler orientation.
+		 * @return ruler information structure.
 		 */
 		RulerInfo* getRulerInfo(Draw::ERulerOrientation ro);
 
 		/**
 		 * @brief Holds the last calculated graph area rectangle.
 		 */
-		 QRect _graphArea;
+		 QRect _plotArea;
 };
 
 }

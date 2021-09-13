@@ -1,0 +1,21 @@
+// Some comment.
+int my_int = 1;
+float my_float = PI * 2e+2;
+string my_string = "Just some text... ";
+return;
+
+:main;
+my_int = my_int + 1;
+if (my_int % 2)
+	gosub subroutine1;
+else
+	gosub subroutine2;
+return;
+
+:subroutine1;
+writelog("The sub-routine1\n");
+return;
+
+:subroutine2;
+writelog("The sub-routine2 ", my_string, my_float / 2e1, my_int, "\n");
+return;

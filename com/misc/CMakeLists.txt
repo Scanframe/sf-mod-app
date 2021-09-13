@@ -119,6 +119,7 @@ if (SF_BUILD_QT)
 		qt/PropertyPage.cpp qt/PropertyPage.h
 		qt/PropertyPagePlugin.cpp qt/PropertyPagePlugin.h
 		qt/ScriptListModel.cpp qt/ScriptListModel.h
+		qt/ObjectPropertyModel.cpp qt/ObjectPropertyModel.h
 		qt/ScriptHighlighter.cpp qt/ScriptHighlighter.h
 		qt/Editor.cpp qt/Editor.h
 		qt/EditorPropertyPage.cpp qt/EditorPropertyPage.h qt/EditorPropertyPage.ui

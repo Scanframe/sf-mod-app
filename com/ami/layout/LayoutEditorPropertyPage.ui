@@ -20,7 +20,7 @@
       <string>Layout files opened in the editor are readonly.</string>
      </property>
      <property name="text">
-      <string>&amp;Read-only</string>
+      <string>&amp;load-only</string>
      </property>
      <property name="buddy">
       <cstring>cbReadOnly</cstring>

@@ -55,26 +55,28 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 			reReserve,
 			/** Result reference is invalid after this event.*/
 			reInvalid,
-			/** current data will be cleared after this event.*/
+			/** Current data will be cleared after this event.*/
 			reClear,
 			/** First user local event.*/
 			reUserLocal,
 			// Events from here are only generated for results.
 			/** Indicates first private event.*/
 			reFirstPrivate = 16000,
-			/** The result instance's ID changed.*/
+			/** This instance was setup.*/
+			reSetup,
+			/** The instance's ID changed.*/
 			reIdChanged,
-			/** This result instance desired ID changed.*/
+			/** This instance desired ID changed.*/
 			reDesiredId,
-			/** Result instance is being removed.*/
+			/** Instance is being removed.*/
 			reRemove,
-			/** Result instance has become owner.*/
+			/** Instance has become owner.*/
 			reGetOwner,
-			/** Result instance has lost ownership.*/
+			/** Instance has lost ownership.*/
 			reLostOwner,
-			/** Result instance has been linked.*/
+			/** Instance has been linked.*/
 			reLinked,
-			/** Result instance has lost link.*/
+			/** Instance has lost link.*/
 			reUnlinked,
 			/** Clients receive this event when a request is answered.*/
 			reGotRange,

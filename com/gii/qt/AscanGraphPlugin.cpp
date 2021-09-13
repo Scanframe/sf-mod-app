@@ -79,14 +79,13 @@ QString AscanGraphPlugin::domXml() const
    <string>A-scan graph using GII interface.</string>
   </property>
  </widget>
- <!-- Propery specification part -->
 </ui>
 )";
 }
 
 
 /*
-
+ <!-- Propery specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::AscanGraph</class>

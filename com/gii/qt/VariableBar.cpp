@@ -148,7 +148,7 @@ QSize VariableBar::minimumSizeHint() const
 	QStyleOptionFrame opt;
 	initStyleOption(&opt);
 	int h = fm.height() + 2 * p->margin;
-	int w = fm.maxWidth() * 10 + 2 * p->margin;
+	int w = fm.maxWidth() + 2 * p->margin;
 	// When a no style object is present set line width to zero to get the correct calculation.
 	// A style object is present when a style has been applied using a stylesheet.
 	if (!opt.styleObject)
@@ -178,10 +178,10 @@ void VariableBar::initStyleOption(QStyleOptionFrame* option) const
 	option->features = QStyleOptionFrame::None;
 }
 
-void VariableBar::paintEvent(QPaintEvent* ev)
+void VariableBar::paintEvent(QPaintEvent* event)
 {
+	VariableWidgetBase::paintEvent(event);
 	auto p = Private::cast(_p);
-	VariableWidgetBase::paintEvent(ev);
 	QStyleOptionFrame panel;
 	initStyleOption(&panel);
 	// Create painter for this widget.

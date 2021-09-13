@@ -28,7 +28,7 @@ class _MISC_CLASS LayoutWidget :public QWidget
 		 * @param target Object targeted in the editor.
 		 * @return return Pointer to sheet dialog.
 		 */
-		virtual PropertySheetDialog* openPropertyEditor(QObject* target);
+		virtual void openPropertyEditor(QObject* target);
 
 		/**
 		 * @brief Executes a popup from .

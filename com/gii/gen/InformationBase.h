@@ -27,9 +27,9 @@ class _GII_CLASS InformationTypes
 {
 	public:
 		/**
-		 * @brief Type used for the identifying integer.
+		 * @brief Type used for the identifying integer (64-bits).
 		 */
-		typedef uint64_t id_type;
+		typedef unsigned long long id_type;
 		/**
 		 * @brief Type used for the flag integer.
 		 */

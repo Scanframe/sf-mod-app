@@ -22,15 +22,15 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 	}
 #endif
 
-	SECTION("sf::calc_offset", "Offset calculation.")
+	SECTION("sf::calculateOffset", "Offset calculation.")
 	{
-		CHECK(sf::calc_offset(10000000ll, -1000000000ll, 1000000000ll, 1000ll, true) == 505ll);
-		CHECK(sf::calc_offset(10, -1000, 1000, 1000ll, true) == 505ll);
+		CHECK(sf::calculateOffset(10000000ll, -1000000000ll, 1000000000ll, 1000ll, true) == 505ll);
+		CHECK(sf::calculateOffset(10, -1000, 1000, 1000ll, true) == 505ll);
 
-		CHECK(sf::calc_offset(10000000ll, -1000000000ll, 1000000000ll, 1000.0f, true) == 505.0f);
-		CHECK(sf::calc_offset(10, -1000, 1000, 1000.0f, true) == 505.0f);
+		CHECK(sf::calculateOffset(10000000ll, -1000000000ll, 1000000000ll, 1000.0f, true) == 505.0f);
+		CHECK(sf::calculateOffset(10, -1000, 1000, 1000.0f, true) == 505.0f);
 
-		CHECK(sf::calc_offset(10e6, -1e9, 1e9, 1000000000000ll, true) == 505000000000ll);
+		CHECK(sf::calculateOffset(10e6, -1e9, 1e9, 1000000000000ll, true) == 505000000000ll);
 	}
 
 	SECTION("sf::random", "Random range number.")

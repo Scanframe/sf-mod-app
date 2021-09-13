@@ -2,10 +2,14 @@
 #include <QTreeView>
 #include <QFocusEvent>
 #include <misc/qt/qt_utils.h>
+#include <QUiLoader>
+#include <QCoreApplication>
+#include <misc/gen/ConfigLocation.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/ObjectPropertyModel.h>
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
 #include "LayoutEditorPropertyPage.h"
-#include "ObjectHierarchyModel.h"
 
 namespace sf
 {
@@ -17,6 +21,19 @@ LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameter
 	addFileType(tr("UI Layout File"), "ui");
 	//
 	settingsReadWrite(false);
+	// Create pre configured global UI loader instance.
+	auto uiLoader = new QUiLoader(this);
+	// Add the application directory as the plugin directory to find custom plugins.
+	uiLoader->addPluginPath(QCoreApplication::applicationDirPath());
+	// Not sure if this is needed at any time.
+	uiLoader->setWorkingDirectory(QString::fromStdString(getConfigLocation()));
+	// Make the created instance the current one.
+	delete setGlobalUiLoader(uiLoader);
+}
+
+LayoutEditorAppModule::~LayoutEditorAppModule()
+{
+	delete setGlobalUiLoader(nullptr);
 }
 
 QString LayoutEditorAppModule::getName() const
@@ -38,6 +55,13 @@ MultiDocInterface* LayoutEditorAppModule::createWidget(QWidget* parent) const
 {
 	auto le = new LayoutEditor(getSettings(), parent);
 	le->setReadOnly(_readOnly);
+	connect(le, &LayoutEditor::objectSelected, [&](QObject* obj)
+	{
+		if (_hierarchyViewer)
+		{
+			_hierarchyViewer->selectObject(obj);
+		}
+	});
 	return le;
 }
 
@@ -71,7 +95,7 @@ void LayoutEditorAppModule::settingsReadWrite(bool save)
 
 }
 
-void LayoutEditorAppModule::initialize(bool)
+void LayoutEditorAppModule::initialize(bool init)
 {
 }
 
@@ -85,7 +109,30 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		dock->setObjectName("layoutHierarchy");
 		dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 		_hierarchyViewer = new HierarchyViewer(dock);
+		connect(_hierarchyViewer, &HierarchyViewer::objectSelectChange, [&](QObject* obj)
+		{
+			if (_tvProperties)
+			{
+				if (auto m = dynamic_cast<ObjectPropertyModel*>(_tvProperties->model()))
+				{
+					m->setTarget(obj);
+					resizeColumnsToContents(_tvProperties);
+				}
+			}
+		});
 		dock->setWidget(_hierarchyViewer);
+		rv.append(dock);
+		// Add dock widget for the object properties.
+		dock = new QDockWidget(tr("Object Properties"), parent);
+		dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+		dock->setObjectName("layoutObjectProperties");
+		_tvProperties = new QTreeView(dock);
+		auto model = new ObjectPropertyModel();
+		model->setDelegates(_tvProperties);
+		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);
+		_tvProperties->setModel(model);
+		_tvProperties->setAlternatingRowColors(true);
+		dock->setWidget(_tvProperties);
 		rv.append(dock);
 	}
 	return rv;

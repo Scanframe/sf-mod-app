@@ -24,7 +24,7 @@ set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer UiTools REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
 	res/resource.qrc
@@ -33,14 +33,24 @@ add_library(${PROJECT_NAME} SHARED
 	LayoutEditorAppModule.cpp LayoutEditorAppModule.h
 	ObjectHierarchyModel.cpp ObjectHierarchyModel.h
 	LayoutEditorPropertyPage.cpp LayoutEditorPropertyPage.h LayoutEditorPropertyPage.ui
-	pages/ObjectPropertyPage.cpp pages/ObjectPropertyPage.h pages/ObjectPropertyPage.ui
+	pages/PositionPropertyPage.cpp pages/PositionPropertyPage.h pages/PositionPropertyPage.ui
 	pages/MiscellaneousPropertyPage.cpp pages/MiscellaneousPropertyPage.h pages/MiscellaneousPropertyPage.ui
 	pages/WidgetPropertyPage.cpp pages/WidgetPropertyPage.h pages/WidgetPropertyPage.ui
 	pages/VariableIdPropertyPage.cpp pages/VariableIdPropertyPage.h pages/VariableIdPropertyPage.ui
-	HierarchyViewer.cpp HierarchyViewer.h HierarchyViewer.ui)
+	pages/AscanPropertyPage.cpp pages/AscanPropertyPage.h pages/AscanPropertyPage.ui
+	HierarchyViewer.cpp HierarchyViewer.h HierarchyViewer.ui
+	AddItemDialog.cpp AddItemDialog.h AddItemDialog.ui
+	pages/ContainerPropertyPage.cpp pages/ContainerPropertyPage.h pages/ContainerPropertyPage.ui)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-gii sf-ami)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+	Qt${QT_VERSION_MAJOR}::Widgets
+	Qt${QT_VERSION_MAJOR}::Designer
+	Qt${QT_VERSION_MAJOR}::UiTools
+	sf-misc
+	sf-gii
+	sf-ami
+	)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

@@ -15,13 +15,13 @@ void RsaServer::resultNotifyProc(void* data, id_type id)
 	((RsaServer*) data)->resultNotify(id);
 }
 
-RsaServer::RsaServer(int compatible, int deviceNumber, const std::string& serverName)
+RsaServer::RsaServer(int compatible, id_type deviceNumber, const std::string& serverName)
 	:InformationServer()
 	 , _serverVariableHandler(this, &RsaServer::serverVariableHandler)
 	 , _serverResultDataHandler(this, &RsaServer::serverResultDataHandler)
 	 , _implementationId(0)
 	 , _vImplementation()
-	 , _deviceNumber((deviceNumber < 0) ? DEVICENR_UT : deviceNumber)
+	 , _deviceNumber(deviceNumber)
 	 , _serverName(serverName.empty() ? "Acquisition" : serverName)
 	 , _acquisition(nullptr)
 	 , _lock(false)
@@ -313,14 +313,7 @@ void RsaServer::createInterface()
 		vid_state = OLD_MAKE_UT_CHAN_VID(0, _deviceNumber, 0, 1);
 	}
 	// Create the server state variable.
-	setup
-		(
-			"Server",
-			_serverName.c_str(),
-			vid_state,
-			MAKE_VID_DEVICE(_deviceNumber),
-			MAKE_VID(0, 0)
-		);
+	setup("Server", _serverName, vid_state, MAKE_VID_DEVICE(_deviceNumber), MAKE_VID(0, 0));
 	// Cannot change implementation during measurements.
 	attachVariable(&_vImplementation, clC);
 	// Call it for the first time.
@@ -647,7 +640,7 @@ void RsaServer::destroyVariable(Variable* var)
 		// Cast the data of the variable;
 		ExtraInfo* ei = castExtraInfo(var);
 		//
-		SF_RTTI_NOTIFY(DO_CLOG, "Destroying Variable: " << var->getName());
+		SF_COND_RTTI_NOTIFY(IsDebug(), DO_CLOG, "Destroying Variable: " << var->getName());
 		// Delete the structure if it exists.
 		delete_null(ei);
 		// Delete the variable.
@@ -671,7 +664,7 @@ void RsaServer::destroyResultData(ResultData* res)
 		// Cast the data of the variable;
 		ExtraInfo* ei = castExtraInfo(res);
 		//
-		SF_RTTI_NOTIFY(DO_CLOG, "Destroying ResultData: " << res->getName());
+		SF_COND_RTTI_NOTIFY(IsDebug(), DO_CLOG, "Destroying ResultData: " << res->getName());
 		// Delete the structure if it exists.
 		delete_null(ei);
 		// Delete the variable.
@@ -822,20 +815,20 @@ void RsaServer::evaluateInterfaceResults()
 	IdList ids;
 	// Get all the results ids.
 	_acquisition->enumResultIds(ids);
-	// Check if the list size is non zero.
+	// Check if the list size is non-zero.
 	if (_resultVector.count())
-	{  // Iterate backwards through the list of existing results.
-		auto count = _resultVector.count();
-		for (auto i = count - 1; i >= 0; i--)
-		{ // Get the extra info pointer of the result data instance.
-			ExtraInfo* ei = castExtraInfo(_resultVector[i]);
+	{
+		// Iterate backwards through the list of existing results.
+		for (auto it = _resultVector.rbegin(); it != _resultVector.rend(); it++)
+		{
+			// Get the extra info pointer of the result data instance.
 			// If the info struct is present continue.
-			if (ei)
+			if (auto ei = castExtraInfo(*it))
 			{ // Check if the ID is found in not wanted list of ID's.
 				if (ids.find(ei->_id) == IdList::npos)
 				{
 					// Call the special function to delete a variable from the VarList.
-					destroyResultData(_resultVector[i]);
+					destroyResultData(*it);
 				}
 			}
 		}
@@ -945,7 +938,7 @@ void RsaServer::evaluateInterfaceResults()
 					}
 				}
 				else
-				{ // Check if the instance was succesfully created.
+				{ // Check if the instance was successfully created.
 					if (!createResultData(res, info, setup))
 					{  // If not, destroy it.
 						destroyResultData(res);
@@ -1179,8 +1172,8 @@ void RsaServer::paramNotify(id_type id)
 		{
 			// Set the kind of sentry when handling a parameter.
 			_handledParamId = id;
-			unsigned i = variableListFind(id);
-			if (i != UINT_MAX)
+			auto i = variableListFind(id);
+			if (i != Variable::Vector::npos)
 			{
 				_variableVector[i]->setCur(value, false);
 			}
@@ -1208,20 +1201,20 @@ void RsaServer::resultNotify(InformationTypes::id_type id)
 	if (idx != ResultData::Vector::npos)
 	{ // Get a pointer to the result.
 		ResultData* res = _resultVector[idx];
-		unsigned blkbytesz = res->getBufferSize(1);
+		unsigned blkByteSize = res->getBufferSize(1);
 		// Declare buffer info structure to receive
-		BufferInfo bufinfo;
+		BufferInfo bufInfo;
 		do
 		{ // Reset the data members of the info structure.
-			bufinfo.Clear();
+			bufInfo.Clear();
 			// Get the buffer information from the implementation.
-			if (_acquisition->getResultBuffer(id, bufinfo) && bufinfo.BlockBufSize)
+			if (_acquisition->getResultBuffer(id, bufInfo) && bufInfo.BlockBufSize)
 			{ // Write the data into the result.
-				if (blkbytesz != bufinfo.BlockBufSize)
+				if (blkByteSize != bufInfo.BlockBufSize)
 				{
 					throw Exception("ResultNotify(): Block size '%s' is not of the expected size!", res->getName(2).c_str());
 				}
-				if (!res->blockWrite(-1L, bufinfo.Size, bufinfo.Buffer, true))
+				if (!res->blockWrite(-1L, bufInfo.Size, bufInfo.Buffer, true))
 				{
 					SF_RTTI_NOTIFY(DO_CLOG, "BlockWrite() Failed!");
 					break;
@@ -1230,7 +1223,7 @@ void RsaServer::resultNotify(InformationTypes::id_type id)
 				res->commitValidations();
 			}
 		}
-		while (bufinfo.Remain);
+		while (bufInfo.Remain);
 	}
 }
 

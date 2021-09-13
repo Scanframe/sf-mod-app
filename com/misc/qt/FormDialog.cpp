@@ -47,7 +47,6 @@ QSize FormDialog::sizeHint() const
 		auto sa = dynamic_cast<QScrollArea*>(child);
 		if (sa && sa->widget())
 		{
-			qDebug() << "Class:" << SF_RTTI_NAME(*this) << sa->contentsMargins();
 			return (sa->widget()->rect() + sa->contentsMargins()).size();
 		}
 	}

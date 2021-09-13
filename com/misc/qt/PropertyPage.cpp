@@ -253,4 +253,10 @@ void PropertyPage::stateSaveRestore(QSettings& settings, bool save)
 	// Left empty and must be implemented in a derived class.
 }
 
+bool PropertyPage::canApplyPage() const
+{
+	// Left empty and must be implemented in a derived class.
+	return true;
+}
+
 }

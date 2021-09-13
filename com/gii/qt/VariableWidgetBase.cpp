@@ -14,7 +14,7 @@ QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(QWidget* widget)
 	{
 		for (int i = 0; i < layout->count(); i++)
 		{
-			if (auto label = qobject_cast<QLabel*>(layout->itemAt(i)->widget()))
+			if (auto label = dynamic_cast<QLabel*>(layout->itemAt(i)->widget()))
 			{
 				// When a label id found having this widget as its buddy.
 				if (label->buddy() == widget)
@@ -26,7 +26,6 @@ QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(QWidget* widget)
 	}
 	return nullptr;
 }
-
 
 void VariableWidgetBase::PrivateBase::keyPressEvent(QKeyEvent* event)
 {
@@ -64,22 +63,22 @@ VariableWidgetBase::~VariableWidgetBase()
 	delete_null(_p);
 }
 
-void VariableWidgetBase::setVariableId(const QString& id)
+void VariableWidgetBase::setId(qulonglong id)
 {
 	if (inDesigner())
 	{
 		_p->_id = id;
 	}
-	_p->_variable.setup(id.toULongLong(nullptr, 0), true);
+	_p->_variable.setup(id, true);
 }
 
-QString VariableWidgetBase::getVariableId() const
+qulonglong VariableWidgetBase::getId() const
 {
 	if (inDesigner())
 	{
 		return _p->_id;
 	}
-	return QString("0x%1").arg(_p->_variable.getDesiredId(), 0, 16);
+	return _p->_variable.getDesiredId();
 }
 
 void VariableWidgetBase::setConverted(bool yn)

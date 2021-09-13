@@ -30,7 +30,7 @@ class _GII_CLASS InformationServer :public InformationTypes
 		 * @param deviceMask Device vid mask of this server.
 		 * @param serverMask Server vid mask of this server.
 		 */
-		void setup(const char* name, const char* namePrefix, long vid, long deviceMask, long serverMask);
+		void setup(const std::string& name, const std::string& namePrefix, long vid, long deviceMask, long serverMask);
 
 		/**
 		 * @brief Clears the instance. Also called from setup.

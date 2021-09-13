@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>707</width>
-    <height>429</height>
+    <width>580</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>WidgetPropertyPage</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabPosition">
@@ -23,13 +23,76 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabSize">
       <attribute name="title">
        <string>&amp;Sizing</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+       <item>
+        <widget class="QGroupBox" name="gbSizePolicy">
+         <property name="title">
+          <string>Policy</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblHorizontalPolicy">
+            <property name="text">
+             <string>Horizontal Policy</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="cbHorizontalPolicy"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblVerticalPolicy">
+            <property name="text">
+             <string>Veritcal Policy</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="cbVerticalPolicy"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblHorizontalStretch">
+            <property name="text">
+             <string>Horizontal Stretch</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="sbHorizontalStretch">
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="lblVerticalStretch">
+            <property name="text">
+             <string>Vertical Stretch</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="sbVerticalStretch">
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
         <widget class="QGroupBox" name="gbSizes">
          <property name="title">
@@ -141,69 +204,6 @@
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QGroupBox" name="gbSizePolicy">
-         <property name="title">
-          <string>Policy</string>
-         </property>
-         <layout class="QFormLayout" name="formLayout_3">
-          <item row="0" column="0">
-           <widget class="QLabel" name="lblHorizontalPolicy">
-            <property name="text">
-             <string>Horizontal Policy</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="cbHorizontalPolicy"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="lblVerticalPolicy">
-            <property name="text">
-             <string>Veritcal Policy</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="cbVerticalPolicy"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="lblHorizontalStretch">
-            <property name="text">
-             <string>Horizontal Stretch</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="sbHorizontalStretch">
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="lblVerticalStretch">
-            <property name="text">
-             <string>Vertical Stretch</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="sbVerticalStretch">
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tabStyling">
@@ -211,6 +211,9 @@
        <string>S&amp;tyling</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout">
+       <property name="rowWrapPolicy">
+        <enum>QFormLayout::WrapAllRows</enum>
+       </property>
        <item row="0" column="0">
         <widget class="QLabel" name="lblStyleSheet">
          <property name="text">
@@ -222,11 +225,31 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPlainTextEdit" name="pteStyleSheet"/>
+        <widget class="QPlainTextEdit" name="pteStyleSheet">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -239,7 +262,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>sbMaxWidth</tabstop>
   <tabstop>sbMaxHeight</tabstop>
   <tabstop>sbMinHeight</tabstop>

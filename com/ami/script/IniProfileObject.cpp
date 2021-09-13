@@ -35,8 +35,8 @@ enum :int
 ScriptObject::IdInfo IniProfileObject::_objectInfo[] = {
 	{sidPath, ScriptObject::idVariable, "Path", 0, nullptr},
 	{sidSection, ScriptObject::idVariable, "Section", 0, nullptr},
-	{sidRead, ScriptObject::idFunction, "Read", 2, nullptr},
-	{sidWrite, ScriptObject::idFunction, "Write", 2, nullptr},
+	{sidRead, ScriptObject::idFunction, "load", 2, nullptr},
+	{sidWrite, ScriptObject::idFunction, "read", 2, nullptr},
 };
 
 const ScriptObject::IdInfo* IniProfileObject::getInfo(const std::string& name) const

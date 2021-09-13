@@ -18,7 +18,7 @@ class Application :public QApplication
 
 		ModuleConfiguration& getModuleConfiguration();
 
-		void initialize();
+		void initialize(bool init = true);
 
 		MainWindow* getMainWindow();
 

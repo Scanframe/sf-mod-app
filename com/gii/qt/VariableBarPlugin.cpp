@@ -79,15 +79,6 @@ QString VariableBarPlugin::domXml() const
    <string>Variable bar used for progress or level indication.</string>
   </property>
  </widget>
- <!-- Propery specification part -->
- <customwidgets>
-  <customwidget>
-   <class>sf::VariableBar</class>
-   <propertyspecifications>
-    <stringpropertyspecification name="variableId" notr="true" type="singleline" />
-   </propertyspecifications>
-  </customwidget>
- </customwidgets>
 </ui>
 )";
 }

@@ -306,7 +306,10 @@ size_t TClassRegistration<T, P>::registerClass(const char* name, const char* des
 	// Sanity check on existing entry.
 	if (find(name))
 	{
-		throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
+		std::clog << __FUNCTION__ << ": Entry with name '" << name << "' is already registered!" << std::endl;
+		typename entries_t::const_iterator begin =_entries->begin();
+		return std::distance(begin, lookup(name));
+		//throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
 	}
 	return std::distance(_entries->begin(), _entries->insert(_entries->end(), entry_t(name, description, callback)));
 }

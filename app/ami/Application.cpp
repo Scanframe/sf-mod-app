@@ -69,17 +69,20 @@ std::string Application::ConfigLocationHandler(const std::string& option)
 	return rv.toStdString();
 }
 
-void Application::initialize()
+void Application::initialize(bool init)
 {
-	// Load the missing modules from the configuration.
-	_moduleConfiguration->load();
-	// Create the main window when not done already.
-	if (!_mainWindow)
+	if (init)
 	{
-		_mainWindow = new MainWindow(_settings, this);
+		// Load the missing modules from the configuration.
+		_moduleConfiguration->load();
+		// Create the main window when not done already.
+		if (!_mainWindow)
+		{
+			_mainWindow = new MainWindow(_settings, this);
+		}
 	}
 	// Initializes all uninitialized module instances.
-	AppModuleInterface::initializeInstances();
+	AppModuleInterface::initializeInstances(init);
 }
 
 void Application::parseCommandline()

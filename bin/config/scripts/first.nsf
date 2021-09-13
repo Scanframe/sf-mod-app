@@ -1,0 +1,34 @@
+// Just some comment
+int counter = 0;
+// Create variable object.
+object VUtFormVisible = Variable("0x92004,Script|Winscan|Acquisition|Visible1,,S,,INTEGER,,1,0,0,1,Hide=0,Show=1");
+object varVisible = Create("Variable", "0x92004,Script|Winscan|Acquisition|Visible2,,S,,INTEGER,,1,0,0,1,Hide=0,Show=1", 1);
+object VHighSpeed = Create("Variable", "0x92004,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20", 2);
+
+VUtFormVisible.OnValue = report1;
+varVisible.OnValue = report2;
+
+VUtFormVisible.SkipEvent = 0;
+varVisible.SkipEvent = 0;
+
+// Exit for initialization.
+exit(0); 
+
+:main;
+	// Increment the counter.
+	counter = counter + 1;
+	// Toggle.
+	VUtFormVisible.Cur = !VUtFormVisible.Cur;
+	//
+	writelog("Counter", counter, "\n");
+	return;
+
+:report1;
+	// Write the new value to log.
+	writelog("Report1", VUtFormVisible.Name(2), VUtFormVisible.CurStr, "\n");
+	return;
+
+:report2;
+	// Write the new value to log.
+	writelog("Report2", varVisible.Name(2), varVisible.CurStr, "\n");
+	return;

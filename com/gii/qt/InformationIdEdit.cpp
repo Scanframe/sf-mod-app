@@ -83,11 +83,11 @@ void InformationIdEdit::focusOutEvent(QFocusEvent* event)
 	setId(getId());
 }
 
-Gii::TypeId InformationIdEdit::getIdType() const
+Gii::TypeId InformationIdEdit::getTypeId() const
 {
 	return _typeId;}
 
-void InformationIdEdit::setIdType(Gii::TypeId typeId)
+void InformationIdEdit::setTypeId(Gii::TypeId typeId)
 {
 	if (_typeId != typeId)
 	{

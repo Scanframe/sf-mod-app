@@ -85,5 +85,16 @@ void WidgetPropertyPage::applyPage()
 	_target->setStyleSheet(ui->pteStyleSheet->toPlainText());
 }
 
+void WidgetPropertyPage::stateSaveRestore(QSettings& settings, bool save)
+{
+	if (save)
+	{
+		settings.setValue("TabIndex", ui->tabWidget->currentIndex());
+	}
+	else
+	{
+		ui->tabWidget->setCurrentIndex(settings.value("TabIndex", ui->tabWidget->currentIndex()).toInt());
+	}
+}
 
 }

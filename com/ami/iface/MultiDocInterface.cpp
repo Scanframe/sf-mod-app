@@ -68,11 +68,7 @@ QString MultiDocInterface::getFileTypeFilters() const
 
 void MultiDocInterface::activate(bool yn)
 {
-	if (_active != yn)
-	{
-		_active = yn;
-		_module->documentActivated(this, _active);
-	}
+	_module->documentActivated(this, yn);
 }
 
 void MultiDocInterface::develop()

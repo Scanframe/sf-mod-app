@@ -9,7 +9,24 @@ QToolButton:hover
 	border: 1px solid green;
 }
 
+QWidget#Form
+{
+	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 orange, stop:1 lightblue);
+}
+
+sf--VariableEdit[userprop="joehoe"] QLineEdit
+{
+	border: 1px solid red;
+}
+
 /*
+
+sf--VariableEdit
+{
+	background: qlineargradient(spread:pad, x1:0 y1:0, x2:1 y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #ABCD44, stop: 0.5 #ABCD44, stop: 0.51 #A1C72E, stop: 0.54 #A1C72E, stop: 1.0 #9CC322);
+}
+
 sf--VariableBar
 {
 	border: 2px solid darkorange;

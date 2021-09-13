@@ -389,10 +389,14 @@ void AppModuleInterface::addMenuItems(AppModuleInterface::MenuType menuType, QMe
 
 void AppModuleInterface::addAllMenuItems(AppModuleInterface::MenuType menuType, QMenu* menu)
 {
-	// Iterate through the modules and add the menus of each module.
-	for (auto m: _map)
+	// Sanity check.
+	if (menu)
 	{
-		m->addMenuItems(menuType, menu);
+		// Iterate through the modules and add the menus of each module.
+		for (auto m: _map)
+		{
+			m->addMenuItems(menuType, menu);
+		}
 	}
 }
 

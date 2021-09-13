@@ -1,79 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>649</width>
-    <height>375</height>
+    <width>400</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Dialog</string>
   </property>
-  <layout class="QGridLayout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
-   </property>
-   <property name="leftMargin">
-    <number>20</number>
-   </property>
-   <property name="topMargin">
-    <number>20</number>
-   </property>
-   <property name="rightMargin">
-    <number>20</number>
-   </property>
-   <property name="bottomMargin">
-    <number>20</number>
-   </property>
-   <item row="2" column="1">
-    <widget class="sf::PushButton" name="sfPushButton_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="My::AnalogClock" name="analogClock">
      <property name="toolTip">
-      <string>A inherited push button</string>
+      <string>The current time</string>
      </property>
      <property name="whatsThis">
-      <string>The a button for testing properties.</string>
-     </property>
-     <property name="text">
-      <string>SfPushButton</string>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>24</width>
-       <height>24</height>
-      </size>
-     </property>
-     <property name="iconSource">
-      <string notr="true">:icon/svg/clear</string>
+      <string>The analog clock widget displays the current time.</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="3">
-    <widget class="sf::AnalogClock" name="AnalogClock">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="sf::Editor" name="editor">
-     <property name="toolTip">
-      <string>Widget for editing code.</string>
-     </property>
-     <property name="whatsThis">
-      <string>Widget for editing code.</string>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -81,23 +38,44 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>sf::AnalogClock</class>
+   <class>My::AnalogClock</class>
    <extends>QWidget</extends>
-   <header>custom-ui-plugin/src/SfAnalogClock.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::PushButton</class>
-   <extends>QPushButton</extends>
-   <header>SfPushButton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::Editor</class>
-   <extends>QPlainTextEdit</extends>
-   <header>misc/qt/Editor.h</header>
+   <header>analogclock.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../com/misc/qt/res/resource.qrc"/>
- </resources>
- <connections/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -790,7 +790,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		bool writeUpdate(std::ostream& os) const;
 
 		/**
-		 * @brief Read new multiple current access range and current flags are read from stream.
+		 * @brief load new multiple current access range and current flags are read from stream.
 		 *
 		 * Used in communication between applications.
 		 * @param is Input stream.

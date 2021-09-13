@@ -9,6 +9,7 @@
 #include <QFileSystemWatcher>
 #include <gen/dbgutils.h>
 #include <QLayout>
+#include <QFormLayout>
 
 #include "qt_utils.h"
 
@@ -348,6 +349,76 @@ int indexFromComboBox(QComboBox* comboBox, const QVariant& value, int default_in
 		}
 	}
 	return default_index;
+}
+
+QPair<int, QFormLayout::ItemRole> getLayoutPosition(QFormLayout* layout, QObject* target)
+{
+	int row = -1;
+	QFormLayout::ItemRole role(QFormLayout::SpanningRole);
+	if (auto wgt = dynamic_cast<QWidget*>(target))
+	{
+		layout->getWidgetPosition(wgt, &row, &role);
+	}
+	else if (auto lo = dynamic_cast<QLayout*>(target))
+	{
+		layout->getLayoutPosition(lo, &row, &role);
+	}
+	return {row, role};
+}
+
+int getLayoutIndex(QBoxLayout* layout, QObject* target)
+{
+	if (auto wgt = dynamic_cast<QWidget*>(target))
+	{
+		return layout->indexOf(wgt);
+	}
+	else if (auto lo = dynamic_cast<QLayout*>(target))
+	{
+		return layout->indexOf(lo);
+	}
+	return -1;
+}
+
+void childrenExpandCollapse(QTreeView* treeView, bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
+{
+	if (!index.isValid())
+	{
+		//childrenExpandCollapse(expand, ui->treeView->rootIndex());
+		int count = treeView->model()->rowCount();
+		for (int i = 0; i < count; i++)
+		{
+			childrenExpandCollapse(treeView, expand, treeView->model()->index(i, 0));
+		}
+		return;
+	}
+	int childCount = index.model()->rowCount(index);
+	for (int i = 0; i < childCount; i++)
+	{
+		childrenExpandCollapse(treeView, expand, treeView->model()->index(i, 0, index));
+	}
+	expand ? treeView->expand(index) : treeView->collapse(index);
+}
+
+void dumpObjectProperties(QObject* obj)
+{
+	auto mo = obj->metaObject();
+	qDebug() << "## Properties of" << obj;
+	do
+	{
+		qDebug() << "### Class" << mo->className();
+		std::vector<std::pair<QString, QVariant> > v;
+		v.reserve(mo->propertyCount() - mo->propertyOffset());
+		for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)
+		{
+			v.emplace_back(mo->property(i).name(), mo->property(i).read(obj));
+		}
+		//std::sort(v.begin(), v.end());
+		for (auto& i: v)
+		{
+			qDebug() << i.first << "=>" << i.second;
+		}
+	}
+	while ((mo = mo->superClass()));
 }
 
 }

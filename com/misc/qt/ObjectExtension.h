@@ -30,15 +30,11 @@ class _MISC_CLASS ObjectExtension
 		virtual bool isRequiredProperty(const QString& name) = 0;
 
 		/**
-		 * @brief When set to true the form builder does not ignore/remove child widgets from the saved XML.
-		 * @param save Pass true when using
-		 */
-		void setSaveChildren(bool save);
-
-		/**
 		 * @brief Gets if the children needs saving by the FormBuilder class.
+		 *
+		 * @return False by default.
 		 */
-		[[nodiscard]] bool getSaveChildren() const;
+		[[nodiscard]] virtual bool getSaveChildren() const;
 		/**
 		 * @brief Gets the designer status.
 		 * @return True when in the designer application.
@@ -51,10 +47,6 @@ class _MISC_CLASS ObjectExtension
 		 * @brief Holds the concerned base object which this class is extending.
  		 */
 		QObject* _object;
-		/**
-		 * @brief holds the flag which determines if the children are saved to UI/XML file.
-		 */
-		bool _saveChildren{false};
 };
 
 } // namespace

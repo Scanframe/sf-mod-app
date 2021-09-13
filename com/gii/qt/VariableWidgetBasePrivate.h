@@ -9,7 +9,7 @@ namespace sf
 
 struct VariableWidgetBase::PrivateBase :VariableHandler
 {
-	QString _id{};
+	qulonglong _id{0};
 	Variable _variable{};
 	bool _converted{false};
 	bool _readOnly{false};

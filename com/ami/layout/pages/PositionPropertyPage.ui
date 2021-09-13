@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sf::PositionPropertyPage</class>
+ <widget class="sf::PropertyPage" name="sf::PositionPropertyPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>278</width>
+    <height>240</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PositionPropertyPage</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
+   <item>
+    <widget class="QGroupBox" name="gbFormLayout">
+     <property name="title">
+      <string>Form Layout </string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblFormLayoutRow">
+        <property name="text">
+         <string>Row &amp;number</string>
+        </property>
+        <property name="buddy">
+         <cstring>sbFormLayoutRow</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="sbFormLayoutRow"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblFormLayoutRole">
+        <property name="text">
+         <string>&amp;Role</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbFormLayoutRole</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cbFormLayoutRole"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbBoxLayout">
+     <property name="title">
+      <string>Box Layout</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblBoxIndex">
+        <property name="text">
+         <string>&amp;Index</string>
+        </property>
+        <property name="buddy">
+         <cstring>sbBoxIndex</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="sbBoxIndex"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::PropertyPage</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/PropertyPage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

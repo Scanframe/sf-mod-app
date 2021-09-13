@@ -2,5 +2,6 @@
 <RCC version="1.0">
 	<qresource prefix="icon/svg">
 		<file alias="signal">signal.svg</file>
+		<file alias="project">project.svg</file>
 	</qresource>
 </RCC>

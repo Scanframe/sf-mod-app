@@ -278,8 +278,7 @@ bool ResultData::attachRef(ResultDataReference* ref)
 	return rv;
 }
 
-bool ResultData::createDataStore(ResultDataReference* ref,
-	ResultData::size_type segment_size, ResultData::size_type block_size)
+bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type segment_size, ResultData::size_type block_size)
 {
 	// Limit the size of the segment.
 	if (segment_size > (10L * 1024L * 1024L) / block_size)
@@ -382,6 +381,11 @@ bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_
 		if (rv)
 		{
 			rv = createDataStore(ref, segment_size, block_size);
+		}
+		// If the setup succeeded notify the handler of this event.
+		if (rv)
+		{
+			emitEvent(reSetup, {});
 		}
 	}
 	// If an error occurred On error report to standard out
@@ -915,7 +919,7 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 		// Check the auto_reserve flag.
 		if (!auto_reserve)
 		{
-			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Write blocks failed due to lak of reserved blocks!")
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "read blocks failed due to lak of reserved blocks!")
 			// Bail out
 			return false;
 		}
@@ -1300,6 +1304,9 @@ const char* ResultData::getEventName(EEvent event)
 			rv = "IdChanged";
 			break;
 
+		case reSetup:
+			rv = "Setup";
+			break;
 		case reRemove:
 			rv = "Remove";
 			break;

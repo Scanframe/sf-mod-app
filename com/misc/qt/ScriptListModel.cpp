@@ -21,8 +21,8 @@ enum EInstructionColumn
 
 enum EVariableColumn
 {
-	vcName = 0,
-	vcType,
+	cName = 0,
+	cType,
 	vcValue,
 	vcMaxColumns
 };
@@ -97,9 +97,9 @@ QVariant ScriptListModel::headerData(int section, Qt::Orientation orientation, i
 	{
 		switch (section)
 		{
-			case vcName:
+			case cName:
 				return QString(tr("Name"));
-			case vcType:
+			case cType:
 				return QString(tr("Type"));
 			case vcValue:
 				return QString(tr("Value"));
@@ -219,9 +219,9 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 			{
 				switch (index.column())
 				{
-					case vcName:
+					case cName:
 						return QString::fromStdString(ids.at(index.row())->_name);
-					case vcType:
+					case cType:
 					{
 						auto& value = ids.at(index.row())->_value;
 						// Custom types are script objects.

@@ -1,0 +1,170 @@
+// Create a Profile for the ECT level params.
+object Profile = Create("IniFile");
+Profile.Path = "scripts.ini";
+print("Ini Path:", Profile.Path, "\n");
+
+//
+// 0x99000 Calculation parameters.
+// 0x91000 Control parameters
+//
+// Construction of parameters.
+//object VLongVel = Variable("0x99001,Project|Sound Velocity|Material|Longitudinal,m/s,SA,"
+//  "Longitudinal sound velocity of the inspected material,FLOAT,,1,5820,100,10000");
+//object VShearVel = Variable("0x99002,Project|Sound Velocity|Material|Shear,m/s,SA,"
+//  "Shear sound velocity of the inspected material,FLOAT,,1,3020,100,10000");
+object VMediumVel = Variable("0x99003,Project|Sound Velocity|Medium,m/s,AS,Sound velocity of the medium,FLOAT,,1,1480,100,10000");
+object VMaterialVel = Variable("0x99004,Project|Sound Velocity|Material,m/s,AS,Sound velocity of the inspected material,FLOAT,,1,5820,100,10000");
+object CurrentTime = Variable("0x99005,Project|System|Time,s,AS,Current time,STRING,,100,0,0,0");
+object CurrentDate = Variable("0x99006,Project|System|Date,s,AS,Current Date,STRING,,100,0,0,0");
+
+//object VVelocityMode = Variable("0x99101,Project|Sound Velocity|Mode,!,SAP,
+//  "Use Shear or Longitudinal sound velocity for calculations,INTEGER,,1,0,0,2,"
+//  "Longitudinal=0,Shear=1");
+object VDisplayMode = Variable("0x99102,Project|Display Mode,!,SP,Display in Time or Distance mode,INTEGER,,1,0,0,1,Time=0,Distance=1");
+
+object VUtThreshold = Variable("0x99201,Project|Ultrasonic|Threshold,%,SAP,UT C-scan display threshold.,FLOAT,,1.0,30.0,0.0,100.0");
+object VUtMax = Variable("0x99202,Project|Ultrasonic|Max Value,%,R,UT C-scan display Maximum value.,FLOAT,,1.0,128.0,0.0,128.0");
+
+// Set profile section
+Profile.Section = "ET Levels";
+// Read the NON peak to peak instrument maximum level for creating the level parameters.
+float level = Profile.Read("Max Level", 2.0);
+//
+object VEtThreshold = Variable("0x99211,Project|Eddy Current|Threshold,V,S,"
+  "ET C-scan display threshold.,FLOAT,,0.01," + str(level / 2.0) + ",0.0," + str(level));
+object VEtMaxVal = Variable("0x99212,Project|Eddy Current|Max Value,V,RA,"
+  "ET C-scan display maximum value.,FLOAT,,0.01," + str(level) + "," + str(-level) + "," + str(level));
+object VEtMinVal = Variable("0x99213,Project|Eddy Current|Min Value,V,RA,"
+  "ET C-scan display minimum value.,FLOAT,,0.01," + str(-level) + "," + str(-level) + "," + str(level));
+
+object VEtPpThreshold = Variable("0x99214,Project|Eddy Current|Peak-to-Peak|Threshold,V,SAP,"
+  "ET Peak-Peak C-scan display threshold.,FLOAT,,0.01," + str(level) + ",0.0," + str(level * 2.0));
+object VEtPpMaxVal = Variable("0x99215,Project|Eddy Current|Peak-to-Peak|Max Value,V,RA,"
+  "ET Peak-Peak C-scan display maximum value.,FLOAT,,0.01," + str(level * 2.0) + ",0.0," + str(level * 2.0));
+object VEtPpMinVal = Variable("0x99216,Project|Eddy Current|Peak-to-Peak|Min Value,V,RA,"
+  "ET Peak-Peak C-scan display minimum value.,FLOAT,,0.01,0.0,0.0," + str(level * 2.0));
+
+// Hooks to filter values
+object VUtAnFilterThreshold = Variable(0x70404);
+object VEtAnFilterThreshold = Variable(0x71004);
+
+// Link some event functions.
+VUtAnFilterThreshold.OnValue = UtFilterThreshold;
+VUtAnFilterThreshold.OnId = UtFilterThreshold;
+VEtAnFilterThreshold.OnValue = EtFilterThreshold;
+VEtAnFilterThreshold.OnId = EtFilterThreshold;
+VEtPpThreshold.OnValue = EtThresholdChange;
+VEtPpMaxVal.OnValue = EtThresholdChange;
+VEtPpMinVal.OnValue = EtThresholdChange;
+
+//Import the Project velocity factors.
+object VProjectMaterialVelocity =  Variable(0x5F017);
+object VProjectMediumVelocity =  Variable(0x57001);
+object VProjectVelocityFactor =  Variable(0x5F118);
+// Link Velocitys to keep material velocity updated.
+VProjectMaterialVelocity.OnValue = VelChange;
+VProjectVelocityFactor.OnValue = VelChange;
+VProjectMediumVelocity.OnValue = VelChange;
+VProjectMaterialVelocity.OnId = IdChange;
+VProjectVelocityFactor.OnId = IdChange;
+VProjectMediumVelocity.OnId = IdChange;
+
+object VScanDepth = Variable(0x5F300);
+object VCh1Gate1_Delay = Variable(0x20482);
+object VCh1Gate1_Range = Variable(0x20483);
+// Link Project state.
+object VProjectState = Variable(0x50001);
+VProjectState.OnValue = ProjectState;
+VCh1Gate1_Delay.OnValue = ProjectState;
+// Start calc when on Id and on Change.
+VScanDepth.OnValue = ProjectState;
+VScanDepth.OnId = ProjectState;
+
+gosub initialize;
+exit(0);
+
+// Main function
+:main;
+gosub UtFilterThreshold;
+return;
+
+// Initalize all parameters and other stuff.
+:initialize;
+	gosub UtFilterThreshold;
+	gosub EtFilterThreshold;
+	gosub EtThresholdChange;
+	gosub VelChange;
+	print("Script: Project Scanner engine initialized.....\n");
+return;
+
+// Set the Gate 1 according to the scan depth and the sound vel.
+:ProjectState;
+	// Calc new gate 1 range when :
+	//  Project state = "Checking" and ScanDepth is not zero and scandepth must exist.
+//  if ((VProjectState.Cur == 15) && (VScanDepth.Cur != 0.0) && (VScanDepth.Id != 0))
+//  { // sec = m / m/s;
+//    VCh1Gate1_Range.Cur = (VScanDepth.Cur / VMaterialVel.Cur) * 2 - VCh1Gate1_Delay.Cur;
+//    print("Changed Gate 1 range. V"+VMaterialVel.Cur+"D=" + VScanDepth.Cur +" Del" + VCh1Gate1_Delay.Cur +"\n");
+//  }
+	// Set time and date when project state is checked.
+	if (VProjectState.Cur == 16)
+	{
+		CurrentTime.Cur = Time();
+		CurrentDate.Cur = Date();
+	}
+	return;
+
+// Update material velocity.
+// The correction factors are to show real depth below surface.
+// The factors are the cos of the angle in the material.
+:VelChange;
+	if (VProjectMaterialVelocity.Id != 0)
+	{
+		VMaterialVel.Cur = VProjectMaterialVelocity.Cur;
+		if (VProjectVelocityFactor.Id != 0)
+			VMaterialVel.Cur = VMaterialVel.Cur * VProjectVelocityFactor.Cur;
+	}
+	if (VProjectMediumVelocity.Id != 0)
+	{
+		VMediumVel.Cur = VProjectMediumVelocity.Cur;
+		if (VMediumVel.Cur < VMediumVel.Min)
+			VMediumVel.Cur = VMediumVel.Min;
+	}
+	return;
+
+:IdChange;
+	if (VProjectMaterialVelocity.Id == 0)
+		VMaterialVel.UnsetFlags("R");
+	else
+		VMaterialVel.SetFlags("R");
+	if (VProjectMediumVelocity.Id == 0)
+		VMediumVel.UnsetFlags("R");
+	else
+		VMediumVel.SetFlags("R");
+	gosub VelChange;
+	return;
+
+// Keeps the Threshold for the PP data current.
+:EtThresholdChange;
+	// Copy new Threshold value. ( -2..2V -> 0..4V )
+	VEtThreshold.Cur = VEtPpThreshold.Cur / 2.0;
+	VEtMaxVal.Cur = VEtPpMaxVal.Cur - VEtMaxVal.Max;
+	VEtMinVal.Cur = VEtPpMinVal.Cur - VEtMaxVal.Max;
+	return;
+
+:UtFilterThreshold;
+	if (VUtAnFilterThreshold.Id != 0)
+	{
+		VUtThreshold.Cur = VUtAnFilterThreshold.Cur;
+	}
+	return;
+
+:EtFilterThreshold;
+	if (VEtAnFilterThreshold.Id != 0)
+	{
+		VEtPpThreshold.Cur = VEtAnFilterThreshold.Cur;// * (VEtMaxVal.Max * 2.0)/100;
+		// The event is not triggered when the owner sets the current value so
+		// we call the handler ourselfs.
+		gosub EtThresholdChange;
+	}
+	return;

@@ -106,10 +106,10 @@
      <normaloff>:logo/ico/scanframe</normaloff>:/logo/ico/scanframe</iconset>
    </property>
    <property name="text">
-    <string>&amp;Read UI</string>
+    <string>&amp;load UI</string>
    </property>
    <property name="toolTip">
-    <string>Read UI from file</string>
+    <string>load UI from file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -121,10 +121,10 @@
      <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
    </property>
    <property name="text">
-    <string>&amp;Write UI</string>
+    <string>&amp;read UI</string>
    </property>
    <property name="toolTip">
-    <string>Write UI to file</string>
+    <string>read UI to file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -136,10 +136,10 @@
      <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
    </property>
    <property name="text">
-    <string>Read &amp;File</string>
+    <string>load &amp;File</string>
    </property>
    <property name="toolTip">
-    <string>Read UI from file</string>
+    <string>load UI from file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>

@@ -17,19 +17,19 @@ class _GII_CLASS ResultDataHandler :public ResultDataTypes
 		 */
 		virtual void resultDataEventHandler
 			(
-				EEvent event,
+				ResultDataTypes::EEvent event,
 				const ResultData& caller,
 				ResultData& link,
-				const Range& rng,
-				bool same_inst
+				const Range& range,
+				bool sameInst
 			) = 0;
 
 		/**
 		 * @brief Destructor
 		 *
-		 * Clears the link with result instances so no errors occur when the link is destructed before the result.
+		 * Clears the link with result-data instances so no errors occur when the link is destructed before the result.
 		 */
-		~ResultDataHandler();
+		virtual ~ResultDataHandler();
 
 		friend class ResultDataTypes;
 
@@ -49,7 +49,7 @@ class TResultDataLinkHandler :public ResultDataHandler
 				const ResultData& caller,
 				ResultData& link,
 				const Range& rng,
-				bool same_inst
+				bool sameInst
 			);
 
 		/**

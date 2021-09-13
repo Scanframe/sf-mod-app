@@ -1,7 +1,5 @@
-#include <misc/qt/qt_utils.h>
-#include <gen/Variable.h>
-
 #include <utility>
+#include <misc/qt/qt_utils.h>
 #include <misc/qt/Resource.h>
 #include <misc/qt/ObjectExtension.h>
 #include <QSplitter>
@@ -10,37 +8,61 @@
 namespace sf
 {
 
-ObjectHierarchyModel::TreeItem::TreeItem(ObjectHierarchyModel::TreeItem* parent, QObject* obj)
+ObjectHierarchyModel::TreeItem::TreeItem(ObjectHierarchyModel* owner, TreeItem* parent, QObject* obj)
 	:_parentItem(parent)
 	 , _object(obj)
+	 , _owner(owner)
 {
+	// Add the item to the owners items.
+	_owner->_items.append(this);
+	// When a parent was set (all except the root item)
 	if (parent)
 	{
+		// Add the item to the parent's list.
 		parent->_childItems.append(this);
 	}
 }
 
 ObjectHierarchyModel::TreeItem::~TreeItem()
 {
-	qDeleteAll(_childItems);
+	// Remove this entry from the owners list.
+	_owner->_items.removeAll(this);
+	// This is not true for the root item.
+	if (_parentItem)
+	{
+		_parentItem->_childItems.removeAll(this);
+	}
+	// Move the child items to another list to prevent double free.
+	QList<TreeItem*> _children(std::move(_childItems));
+	qDeleteAll(_children);
+}
+
+int ObjectHierarchyModel::TreeItem::getRow()
+{
+	return _parentItem ? static_cast<int>(_parentItem->_childItems.indexOf(this)) : -1;
 }
 
 namespace
 {
 enum
 {
-	vcName,
-	vcType,
-	cLayout,
-	vcColumnCount
+	cName,
+	cType,
+	cColumnCount
 };
+
+enum
+{
+	cLayout = cColumnCount
+};
+
 }
 
 ObjectHierarchyModel::ObjectHierarchyModel(bool multi, QObject* parent)
 	:QAbstractItemModel(parent)
-	 , _rootItem(new TreeItem(nullptr, nullptr))
 	 , _multi(multi)
 {
+	_rootItem = new TreeItem(this, nullptr, nullptr);
 	_iconForm = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Form), QPalette::ColorRole::Mid);
 	_iconContainer = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Container), QPalette::ColorRole::Mid);
 	_iconWidget = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Widget), QPalette::ColorRole::Mid);
@@ -92,9 +114,9 @@ QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientati
 		{
 			default:
 				return QString("Field %1").arg(section);
-			case vcName:
+			case cName:
 				return QString(tr("Name"));
-			case vcType:
+			case cType:
 				return QString(tr("Type"));
 			case cLayout:
 				return QString(tr("Layout"));
@@ -105,7 +127,7 @@ QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientati
 
 int ObjectHierarchyModel::columnCount(const QModelIndex& parent) const
 {
-	return vcColumnCount;
+	return cColumnCount;
 }
 
 int ObjectHierarchyModel::rowCount(const QModelIndex& parent) const
@@ -146,19 +168,26 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 		{
 			switch (index.column())
 			{
-				case vcName:
+				case cName:
 					if (!item->_object)
 					{
 						return {};
 					}
 					return item->_object->objectName();
 
-				case vcType:
+				case cType:
+				{
 					if (!item->_object)
 					{
 						return {};
 					}
+					auto w = qobject_cast<QWidget*>(item->_object);
+					if (w && !dynamic_cast<ObjectExtension*>(w) && w->layout())
+					{
+						return QString("%1/%2").arg(w->metaObject()->className()).arg(w->layout()->metaObject()->className());
+					}
 					return item->_object->metaObject()->className();
+				}
 
 				case cLayout:
 					if (!item->_childItems.empty())
@@ -212,8 +241,13 @@ void ObjectHierarchyModel::addChild(QObject* obj, TreeItem* parent) // NOLINT(mi
 	// When not an extension derived class.
 	if (dynamic_cast<QWidget*>(obj) && !dynamic_cast<QSplitterHandle*>(obj))
 	{
-		auto item = new TreeItem(parent, obj);
-		if (!dynamic_cast<ObjectExtension*>(obj))
+		auto item = new TreeItem(this, parent, obj);
+		bool flagChildren = true;
+		if (auto oe = dynamic_cast<ObjectExtension*>(obj))
+		{
+			flagChildren = oe->getSaveChildren();
+		}
+		if (flagChildren)
 		{
 			for (auto child: obj->children())
 			{
@@ -248,6 +282,18 @@ void ObjectHierarchyModel::toggleSelection(const QModelIndex& index)
 	dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(0), {Qt::CheckStateRole});
 }
 
+bool ObjectHierarchyModel::isRoot(QModelIndex index) const
+{
+	if (index.isValid())
+	{
+		if (auto item = static_cast<TreeItem*>(index.internalPointer()))
+		{
+			return item->_parentItem == _rootItem;
+		}
+	}
+	return false;
+}
+
 QObject* ObjectHierarchyModel::getObject(QModelIndex index) const
 {
 	if (index.isValid())
@@ -258,6 +304,44 @@ QObject* ObjectHierarchyModel::getObject(QModelIndex index) const
 		}
 	}
 	return nullptr;
+}
+
+bool ObjectHierarchyModel::insertItemAt(const QModelIndex& parent, QObject* obj)
+{
+	auto parentItem = static_cast<TreeItem*>(parent.internalPointer());
+	if (parentItem->_object != obj->parent())
+	{
+		qWarning() << "Passed object and index do not have the same parent!";
+		return false;
+	}
+	new TreeItem(this, parentItem, obj);
+	auto row = static_cast<int>(parentItem->_childItems.size());
+	beginInsertRows(parent, row, row);
+	endInsertRows();
+	return true;
+}
+
+void ObjectHierarchyModel::removeItem(const QModelIndex& index)
+{
+	auto item = static_cast<TreeItem*>(index.internalPointer());
+	item->_object = nullptr;
+	beginRemoveRows(index.parent(), index.row(), index.row());
+	delete item;
+	endRemoveRows();
+}
+
+QModelIndex ObjectHierarchyModel::getObjectIndex(QObject* obj)
+{
+	auto it = std::find_if(_items.begin(), _items.end(), [obj](TreeItem* item)
+	{
+		return item->_object == obj;
+	});
+	// When found.
+	if (it != _items.end())
+	{
+		return createIndex((*it)->getRow(), 0, (*it));
+	}
+	return {};
 }
 
 }

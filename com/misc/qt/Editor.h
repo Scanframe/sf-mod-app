@@ -33,11 +33,9 @@ class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
 				int fontSize{10};
 				bool showGutter{true};
 				bool darkMode{false};
-
 				bool useHighLighting{true};
 
 			private:
-
 				QSettings* _settings;
 		};
 

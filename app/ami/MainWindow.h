@@ -116,6 +116,7 @@ class MainWindow :public QMainWindow
 		QSettings* _settings;
 
 		QMdiArea* _mdiArea{};
+		QMenu* _menuSettings{};
 		QMenu* _menuView{};
 		QMenu* _menuTools{};
 		QMenu* _menuWindow{};

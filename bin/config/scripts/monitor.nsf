@@ -1,0 +1,7 @@
+object Global = Create("Global");
+return;
+
+:main;
+//Global.MonitorVariable(0x99003);
+Global.MonitorResultData(0x20402);
+return;

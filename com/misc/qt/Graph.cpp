@@ -68,7 +68,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 	_right.size = fm.averageCharWidth() * 10 + _right.digits;
 	_top.size = _bottom.size = fm.height() * 3 * 6 / 7;
 	// Calculate the graph area.
-	_graphArea = bounds.adjusted(
+	_plotArea = bounds.adjusted(
 		_left.enabled ? _left.size : 0,
 		_top.enabled ? _top.size : 0,
 		_right.enabled ? -_right.size : 0,
@@ -76,7 +76,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 	// When the background is a valid color paint int.
 	if (_colors[cGraphBackground].isValid())
 	{
-		painter.fillRect(_graphArea, _colors[cGraphBackground]);
+		painter.fillRect(_plotArea, _colors[cGraphBackground]);
 	}
 	// When there is a left ruler.
 	if (_left.enabled)
@@ -104,7 +104,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.Ruler(painter, Draw::roLeft, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roLeft, _colors[cLine], _colors[cText],
 				_left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
 		}
 	}
@@ -135,7 +135,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.Ruler(painter, Draw::roRight, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roRight, _colors[cLine], _colors[cText],
 				_right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
 		}
 	}
@@ -165,7 +165,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.Ruler(painter, Draw::roTop, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roTop, _colors[cLine], _colors[cText],
 				_top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
 		}
 	}
@@ -196,7 +196,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.Ruler(painter, Draw::roBottom, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roBottom, _colors[cLine], _colors[cText],
 				_bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
 		}
 	}
@@ -204,13 +204,13 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 	if (_horizontal && !_debug)
 	{
 		auto ri = getRulerInfo(_horizontal);
-		draw.GridLines(painter, Draw::goHorizontal, _colors[cGrid], _graphArea, ri->start, ri->stop, ri->digits);
+		draw.gridLines(painter, Draw::goHorizontal, _colors[cGrid], _plotArea, ri->start, ri->stop, ri->digits);
 	}
 	// Check if vertical grid is enabled.
 	if (_vertical && !_debug)
 	{
 		auto ri = getRulerInfo(_vertical);
-		draw.GridLines(painter, Draw::goVertical, _colors[cGrid], _graphArea, ri->start, ri->stop, ri->digits);
+		draw.gridLines(painter, Draw::goVertical, _colors[cGrid], _plotArea, ri->start, ri->stop, ri->digits);
 	}
 	if (_debug)
 	{
@@ -225,11 +225,16 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 			}
 		}
 		painter.setPen(Qt::green);
-		painter.drawRect(_graphArea);
+		painter.drawRect(_plotArea);
 		painter.setPen(Qt::darkGray);
 		painter.drawRect(inflated(bounds, 1));
 	}
-	return _graphArea;
+	return _plotArea;
+}
+
+void Graph::paintPlotCross(QPainter& painter, const QString& text)
+{
+	Draw().textCross(painter, _plotArea, text, _colors[cText]);
 }
 
 void Graph::setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro)
@@ -244,9 +249,10 @@ void Graph::setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro)
 	}
 }
 
-const QRect& Graph::getGraphArea() const
+const QRect& Graph::getPlotArea() const
 {
-	return _graphArea;
+	return _plotArea;
 }
+
 
 }

@@ -19,14 +19,9 @@ bool ObjectExtension::inDesigner()
 	return flag;
 }
 
-void ObjectExtension::setSaveChildren(bool save)
-{
-	_saveChildren = save;
-}
-
 bool ObjectExtension::getSaveChildren() const
 {
-	return _saveChildren;
+	return false;
 }
 
 }

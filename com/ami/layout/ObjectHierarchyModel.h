@@ -75,6 +75,30 @@ class ObjectHierarchyModel :public QAbstractItemModel
 		 */
 		void updateList(QObject* root);
 
+		/**
+		 * @brief Inserts an object at the index
+		 *
+		 * @param parent Index of the parent in the tree.
+		 * @param obj New child object of the parent indicated by the index.
+		 * @return True wen parentIndex indeed points to the objects parent object.
+		 */
+		bool insertItemAt(const QModelIndex& parent, QObject* obj);
+
+		/**
+		 * @brief removes item at passed index.
+		 */
+		void removeItem(const QModelIndex& index);
+
+		/**
+		 * @brief Determines if this is the root item.
+		 */
+		bool isRoot(QModelIndex index) const;
+
+		/**
+		 * @brief Gets the model-index from the passed object.
+		 */
+		QModelIndex getObjectIndex(QObject* obj);
+
 	private:
 
 		/**
@@ -83,14 +107,31 @@ class ObjectHierarchyModel :public QAbstractItemModel
 		struct TreeItem
 		{
 
-			explicit TreeItem(TreeItem* parent, QObject* obj);
+			/**
+			 * @brief Constructor.
+			 */
+			explicit TreeItem(ObjectHierarchyModel* owner, TreeItem* parent, QObject* obj);
 
+			/**
+			 * @brief Destructor.
+			 */
 			~TreeItem();
+
+			/**
+			 * @brief Gets the row number of this item in the parent.
+			 * @return -1 When there is no  parent (only when this is root).
+			 */
+			int getRow();
 
 			/**
 			 * @brief Holds the selected status.
 			 */
 			bool _selected{false};
+
+			/**
+			 * @brief holds the owner of the item.
+			 */
+			ObjectHierarchyModel* _owner{nullptr};
 			/**
 			 * @brief Holds the object to get the type from.
 			 */
@@ -121,6 +162,10 @@ class ObjectHierarchyModel :public QAbstractItemModel
 		 * @brief Holds the root item
 		 */
 		TreeItem* _rootItem;
+		/**
+		 * @brief Holds all items for lookup purposes.
+		 */
+		QList<TreeItem*> _items;
 		/**
 		 * @brief Holds the items selected in multi mode.
 		 */

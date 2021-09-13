@@ -1,3 +1,6 @@
+#include <optional>
+#include <cassert>
+#include <gen/Exception.h>
 #include "Globals.h"
 
 namespace sf
@@ -8,6 +11,7 @@ namespace
 {
 	QSettings* GlobalSettings{nullptr};
 	QWidget* GlobalParent{nullptr};
+	QUiLoader* GlobalUiLoader{nullptr};
 }
 
 QSettings* setGlobalSettings(QSettings* settings)
@@ -31,5 +35,22 @@ QWidget* getGlobalParent()
 {
 	return GlobalParent;
 }
+
+QUiLoader* setGlobalUiLoader(QUiLoader* uiLoader)
+{
+	std::swap(uiLoader, GlobalUiLoader);
+	return uiLoader;
+}
+
+QUiLoader* getGlobalUiLoader()
+{
+	if (!GlobalUiLoader)
+	{
+		throw Exception("Needed global QUiLoader instance not set using setGlobalUiLoader(...).");
+	}
+	return GlobalUiLoader;
+}
+
+
 
 }

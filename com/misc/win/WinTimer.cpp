@@ -27,7 +27,7 @@ WinTimer::WinTimer(unsigned interval)
 	else
 	{
 		_winTimer = this;
-		Set(interval);
+		set(interval);
 	}
 }
 

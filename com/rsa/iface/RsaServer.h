@@ -21,7 +21,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		 * @param deviceNumber The device number used for creating an implementation. (default is UT)
 		 * @param serverName Server name added to the settings and results. (Default is 'Acquisition')
 		 */
-		explicit RsaServer(int compatible, int deviceNumber = -1, const std::string& serverName = {});
+		explicit RsaServer(int compatible, id_type deviceNumber, const std::string& serverName = {});
 
 		/**
 		 * Destructor.
@@ -247,11 +247,11 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Holds the device number passed at the constructor.
 		 */
-		long _deviceNumber;
+		IdType _deviceNumber;
 		/**
 		 * @brief Holds the VID of the implementation.
 		 */
-		long _implementationId;
+		IdType _implementationId;
 		/**
 		 * @brief Holds the compatibility state passed at the constructor.
 		 */

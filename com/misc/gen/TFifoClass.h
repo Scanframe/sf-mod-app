@@ -68,7 +68,7 @@ class TFifoClass
 		const T& latest() const;
 
 		/**
-		 * @brief Read item at head of buffer and removes it.
+		 * @brief load item at head of buffer and removes it.
 		 */
 		T pop();
 

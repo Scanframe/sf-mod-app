@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>414</height>
+    <width>235</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="tbEdit"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="tbAdd"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="tbRemove"/>
      </item>
      <item>
       <widget class="QLineEdit" name="leSearch">
@@ -46,7 +52,6 @@
  <tabstops>
   <tabstop>tbExpandAll</tabstop>
   <tabstop>tbCollapseAll</tabstop>
-  <tabstop>tbEdit</tabstop>
   <tabstop>leSearch</tabstop>
   <tabstop>treeView</tabstop>
  </tabstops>

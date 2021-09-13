@@ -27,7 +27,11 @@ bool ElapseTimer::isActive() const
 
 void ElapseTimer::set(unsigned long usec)
 {
+#if IS_WIN
+	set({time_t(usec / 1000000l),long(usec % 1000000l)});
+#else
 	set({time_t(usec / 1000000l),time_t(usec % 1000000l)});
+#endif	
 }
 
 void ElapseTimer::set(const timespec& t)

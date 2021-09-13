@@ -19,10 +19,11 @@ class _MISC_CLASS FormBuilder :public ::QFormBuilder
 		 * @brief Overridden from QFormBuilder base class.
 		 */
 		QWidget* load(QIODevice* dev, QWidget* parentWidget) override;
+
 		/**
 		 * @brief Overridden from QFormBuilder base class.
 		 */
-		void save(QIODevice *dev, QWidget *widget) override;
+		void save(QIODevice* dev, QWidget* widget) override;
 
 	protected:
 		/**
@@ -34,6 +35,7 @@ class _MISC_CLASS FormBuilder :public ::QFormBuilder
 		 * @brief Fixes the missing property dom elements when saving the dom.
 		 */
 		void fixSavingProperties(QWidget* widget, QDomDocument& dom);
+
 		/**
 		 * @brief Fixes the missing property dom elements when loading the dom.
 		 */

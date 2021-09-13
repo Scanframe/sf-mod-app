@@ -24,6 +24,8 @@ class WidgetPropertyPage :public PropertyPage
 
 		void updatePage() override;
 
+		void stateSaveRestore(QSettings& settings, bool save) override;
+
 	private:
 		Ui::WidgetPropertyPage* ui;
 		QWidget* _target;

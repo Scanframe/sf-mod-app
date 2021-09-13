@@ -27,7 +27,7 @@ InformationServer::InformationServer()
 		}
 	}
 	//
-	for (auto & from : _jumpTable)
+	for (auto& from: _jumpTable)
 	{
 		from[issOff] = &InformationServer::stateChangeAnyToOff;
 	}
@@ -64,8 +64,8 @@ void InformationServer::flush()
 
 void InformationServer::setup
 	(
-		const char* name,
-		const char* namePrefix,
+		const std::string& name,
+		const std::string& namePrefix,
 		long vid,
 		long deviceMask,
 		long serverMask
@@ -77,13 +77,7 @@ void InformationServer::setup
 	_serverDeviceMask = deviceMask | serverMask;
 	_serverDeviceId = vid & (deviceMask | serverMask);
 	// Create the setup string for creating the control information control variable.
-	std::string setupString = stringf
-		(
-			"0x%lX,%s|State,,S,Generic information server state %s,",
-			vid,
-			namePrefix,
-			name
-		);
+	std::string setupString = stringf("0x%lX,%s|State,,S,Generic information server state %s,", vid, namePrefix.c_str(), name.c_str());
 	// Add the range part.
 	setupString += stringf("INTEGER,,1,0,%i,%i,", issOff, issMaxState - 1);
 	// Add the states.

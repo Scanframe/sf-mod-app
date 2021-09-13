@@ -282,12 +282,12 @@ class _MISC_CLASS IniProfile
 		bool sync();
 
 		/**
-		 * @brief Write to std::ostream 'os' current position.
+		 * @brief read to std::ostream 'os' current position.
 		 */
 		virtual std::ostream& write(std::ostream& os) const;
 
 		/**
-		 * @brief Write current section to a 'ostream'.
+		 * @brief read current section to a 'ostream'.
 		 */
 		std::ostream& writeSection(std::ostream& os) const;
 
@@ -414,7 +414,7 @@ class _MISC_CLASS IniProfile
 				std::ostream& write(std::ostream& os);
 
 				/**
-				 * @brief Read section from an input stream.
+				 * @brief load section from an input stream.
 				 *
 				 * @param is Input stream.
 				 * @return True on success.

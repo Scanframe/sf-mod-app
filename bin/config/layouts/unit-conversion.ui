@@ -108,9 +108,6 @@ p, li { white-space: pre-wrap; }
          <property name="whatsThis">
           <string>Special edit having name and unit label.</string>
          </property>
-         <property name="variableId">
-          <string>0x10</string>
-         </property>
          <property name="converted">
           <bool>true</bool>
          </property>
@@ -138,9 +135,6 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="whatsThis">
           <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="variableId">
-          <string>0x100</string>
          </property>
          <property name="converted">
           <bool>true</bool>
@@ -170,9 +164,6 @@ p, li { white-space: pre-wrap; }
          <property name="whatsThis">
           <string>Special edit having name and unit label.</string>
          </property>
-         <property name="variableId">
-          <string>0x100</string>
-         </property>
          <property name="converted">
           <bool>false</bool>
          </property>
@@ -201,9 +192,6 @@ p, li { white-space: pre-wrap; }
          <property name="whatsThis">
           <string>Variable bar used for progress or level indication.</string>
          </property>
-         <property name="variableId">
-          <string>0x100</string>
-         </property>
          <property name="converted">
           <bool>true</bool>
          </property>
@@ -219,9 +207,6 @@ p, li { white-space: pre-wrap; }
         <widget class="sf::VariableCheckBox" name="variableCheckBox">
          <property name="whatsThis">
           <string>Special check box having name label.</string>
-         </property>
-         <property name="variableId">
-          <string>0x5</string>
          </property>
          <property name="converted">
           <bool>false</bool>
@@ -290,9 +275,6 @@ p, li { white-space: pre-wrap; }
          <property name="whatsThis">
           <string>Special edit having name and unit label.</string>
          </property>
-         <property name="variableId">
-          <string>0x5</string>
-         </property>
          <property name="converted">
           <bool>true</bool>
          </property>
@@ -333,9 +315,6 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="whatsThis">
           <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="variableId">
-          <string>0x100</string>
          </property>
          <property name="converted">
           <bool>false</bool>
@@ -383,9 +362,6 @@ p, li { white-space: pre-wrap; }
 {
 border: 2px solid green;
 }</string>
-         </property>
-         <property name="variableId">
-          <string>0x100</string>
          </property>
          <property name="converted">
           <bool>true</bool>
@@ -453,14 +429,14 @@ border: 2px solid green;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>sf::VariableEdit</class>
-   <extends>QWidget</extends>
-   <header>com/gii/qt/VariableEdit.h</header>
-  </customwidget>
-  <customwidget>
    <class>sf::VariableBar</class>
    <extends>QWidget</extends>
    <header>gii/qt/VariableBar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::VariableEdit</class>
+   <extends>QWidget</extends>
+   <header>com/gii/qt/VariableEdit.h</header>
   </customwidget>
   <customwidget>
    <class>sf::VariableCheckBox</class>

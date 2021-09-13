@@ -58,18 +58,29 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 
 		void popupContextMenu(QObject* target, const QPoint& pos) override;
 
-		PropertySheetDialog* openPropertyEditor(QObject* target) override;
+		void openPropertyEditor(QObject* target) override;
 
 		ObjectHierarchyModel* getHierarchyModel();
+
+	public Q_SLOTS:
+
+		/**
+		 * @brief Send MDI signals on modification of the document.
+		 */
+		void documentWasModified();
+
+		/**
+		 * @brief Sets the modified flag and calls #documentWasModified().
+		 */
+		void documentModified();
+
+	Q_SIGNALS:
+		void objectSelected(QObject* obj);
 
 	protected:
 		void closeEvent(QCloseEvent* event) override;
 
 		void resizeEvent(QResizeEvent* event) override;
-
-	private Q_SLOTS:
-
-		void documentWasModified();
 
 	private:
 		void setCurrentFile(const QString& fileName);

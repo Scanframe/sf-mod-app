@@ -114,6 +114,7 @@ void MainWindow::newFile()
 		// Get the widget from the MultiDocInterface child.
 		if (auto widget = dynamic_cast<QWidget*>(child))
 		{
+			// TODO: Show-mode should depend on other MDI children's status.
 			//widget->show();
 			widget->showMaximized();
 		}
@@ -416,6 +417,7 @@ void MainWindow::createActions()
 {
 	QMenu* menuFile = menuBar()->addMenu(tr("&File"));
 	QMenu* menuEdit = menuBar()->addMenu(tr("&Edit"));
+	_menuSettings = menuBar()->addMenu(tr("&Settings"));
 	_menuView = menuBar()->addMenu(tr("&View"));
 	_menuTools = menuBar()->addMenu(tr("&Tools"));
 	_menuWindow = menuBar()->addMenu(tr("&Window"));
@@ -607,8 +609,17 @@ void MainWindow::createActions()
 
 void MainWindow::createAppModuleMenus()
 {
+
+	AppModuleInterface::addAllMenuItems(AppModuleInterface::Settings, _menuSettings);
 	AppModuleInterface::addAllMenuItems(AppModuleInterface::View, _menuView);
 	AppModuleInterface::addAllMenuItems(AppModuleInterface::Tools, _menuTools);
+	for (auto m: {&_menuView, &_menuTools, &_menuSettings})
+	{
+		if ((*m) && (*m)->isEmpty())
+		{
+			delete_null((*m));
+		}
+	}
 }
 
 void MainWindow::createAppModuleToolBars()

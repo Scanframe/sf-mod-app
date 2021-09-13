@@ -1,3 +1,4 @@
+#pragma once
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <QLineEdit>
 #include <misc/qt/ObjectExtension.h>
@@ -18,7 +19,7 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public Object
 		// Declarations in these macros are made private.
 	Q_OBJECT
 		// Need full namespace for this property macro.
-		Q_PROPERTY(sf::Gii::TypeId idType READ getIdType WRITE setIdType);
+		Q_PROPERTY(sf::Gii::TypeId typeId READ getTypeId WRITE setTypeId);
 
 	public:
 		/**
@@ -52,16 +53,16 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public Object
 		/**
 		 * @brief Set the type of id set with #setId().
 		 */
-		void setIdType(Gii::TypeId typeId);
+		void setTypeId(Gii::TypeId typeId);
 
 		/**
 		 * @brief Gets the type of id set with #setId().
 		 */
-		[[nodiscard]] Gii::TypeId getIdType() const;
+		[[nodiscard]] Gii::TypeId getTypeId() const;
 
 	protected:
 		/**
-		 * @brief overrriden from base class.
+		 * @brief overridden from base class.
 		 */
 		void focusOutEvent(QFocusEvent* event) override;
 

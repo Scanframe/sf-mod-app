@@ -27,7 +27,7 @@ QString VariableIdPropertyPage::getPageName() const
 bool VariableIdPropertyPage::isPageModified() const
 {
 	bool rv = false;
-	rv |= ui->iieId->text() != _target->getVariableId();
+	rv |= ui->iieId->getId() != _target->getId();
 	rv |= ui->cbReadOnly->isChecked() != _target->getReadOnly();
 	rv |= ui->cbConverted->isChecked() != _target->getConverted();
 	if (_hasNameLevel)
@@ -39,7 +39,7 @@ bool VariableIdPropertyPage::isPageModified() const
 
 void VariableIdPropertyPage::updatePage()
 {
-	ui->iieId->setText(_target->getVariableId());
+	ui->iieId->setId(_target->getId());
 	ui->cbReadOnly->setChecked(_target->getReadOnly());
 	ui->cbConverted->setChecked(_target->getConverted());
 	if (_hasNameLevel)
@@ -50,7 +50,7 @@ void VariableIdPropertyPage::updatePage()
 
 void VariableIdPropertyPage::applyPage()
 {
-	_target->setVariableId(ui->iieId->text());
+	_target->setId(ui->iieId->getId());
 	_target->setReadOnly(ui->cbReadOnly->isChecked());
 	_target->setConverted(ui->cbConverted->isChecked());
 	if (_hasNameLevel)

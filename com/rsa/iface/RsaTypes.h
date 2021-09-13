@@ -25,7 +25,7 @@ struct _RSA_CLASS RsaTypes
 	/**
 	 * @brief Type for gathering parameter ID's.
 	 */
-	typedef uint64_t IdType;
+	typedef unsigned long long IdType;
 
 	/**
 	 * @brief Type for gathering parameter ID's.

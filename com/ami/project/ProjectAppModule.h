@@ -3,19 +3,20 @@
 #include <ami/iface/AppModuleInterface.h>
 #include <rsa/iface/RsaServer.h>
 #include <gen/Variable.h>
+#include <ipj/ProjectConfig.h>
 
 namespace sf
 {
 
-class AcquisitionAppModule :public AppModuleInterface
+class ProjectAppModule :public AppModuleInterface
 {
 	Q_OBJECT
 
 	public:
 
-		explicit AcquisitionAppModule(const Parameters& params);
+		explicit ProjectAppModule(const Parameters& params);
 
-		~AcquisitionAppModule() override;
+		~ProjectAppModule() override;
 
 		void initialize(bool init) override;
 
@@ -37,21 +38,27 @@ class AcquisitionAppModule :public AppModuleInterface
 
 		void createDevices();
 
+		ProjectConfig* _projectConfig{nullptr};
+
 		QSettings* _settings{nullptr};
-
-		Variable _vSwitch;
-
-		RsaServer* _serverUt{nullptr};
-
-		RsaServer* _serverEt{nullptr};
 
 		QString _serverUtName;
 
 		QString _serverEtName;
 
+		QString _serverMotionName;
+
+		QString _serverStorageName;
+
 		QAction* _actionMonitorVariable{nullptr};
 
 		QAction* _actionMonitorResultData{nullptr};
+
+		QAction* _actionSaveSettings{nullptr};
+
+		QAction* _actionLoadSettings{nullptr};
+
+		QString _currentSettingsFile;
 };
 
 }

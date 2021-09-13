@@ -80,7 +80,7 @@ QByteArray Resource::getByteArray(const QString& resource_location)
 
 float Resource::getColorLuminance(const QColor& color)
 {
-	return calc_offset((color.red() * 299 + color.green() * 587 + color.blue() * 114), 0, 255000, 1.0f, true);
+	return calculateOffset((color.red() * 299 + color.green() * 587 + color.blue() * 114), 0, 255000, 1.0f, true);
 }
 
 QColor Resource::getColor(const QColor& color, float brightness)

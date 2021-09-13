@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sf::ProjectPropertyPage</class>
+ <widget class="sf::PropertyPage" name="sf::ProjectPropertyPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>399</width>
+    <height>313</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AcquisitionPropertyPage</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Hardware Devices</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblDeviceUt">
+        <property name="toolTip">
+         <string>Id for switching between multiple acquisition devices.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Ultrasonic</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbDeviceUt</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cbDeviceUt"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="cbDeviceMotion"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblDeviceMotion">
+        <property name="toolTip">
+         <string>Id for switiching between multiple acquisition devices.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Motion Controller</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbDeviceMotion</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblDeviceEt">
+        <property name="toolTip">
+         <string>Id for switiching between multiple acquisition devices.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Eddy-current</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbDeviceEt</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cbDeviceEt"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbStorage">
+     <property name="title">
+      <string>Storage Server</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblStorage">
+        <property name="toolTip">
+         <string>Id for switching between multiple acquisition devices.</string>
+        </property>
+        <property name="text">
+         <string>&amp;Data</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbStorage</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cbStorage"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::PropertyPage</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/PropertyPage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

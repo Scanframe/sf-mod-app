@@ -76,8 +76,9 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		enum MenuType
 		{
-			Tools,
-			View
+			Settings,
+			View,
+			Tools
 		};
 
 		/**

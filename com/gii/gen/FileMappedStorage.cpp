@@ -178,7 +178,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 	// Check if the size addressed data is in range
 	if (ofs < 0L || sz < 0L)
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, (rd ? "Read(" : "Write(") << ofs << ',' << sz << ") invalid parameters!")
+		SF_RTTI_NOTIFY(DO_DEFAULT, (rd ? "load(" : "read(") << ofs << ',' << sz << ") invalid parameters!")
 		return false;
 	}
 	if ((ofs + sz) > getBlockCount())
@@ -186,7 +186,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 		SF_RTTI_NOTIFY
 		(
 			DO_DEFAULT,
-			(rd ? "Read(" : "Write(") << ofs << ',' << sz << ") out of scope!"
+			(rd ? "load(" : "read(") << ofs << ',' << sz << ") out of scope!"
 		)
 		SF_RTTI_NOTIFY(DO_DEFAULT, "getBlockCount() = " << getBlockCount())
 		return false;
@@ -223,7 +223,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 				: !_reference->_segmentList[seg_i]->write(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
 				)
 			{
-				SF_RTTI_NOTIFY(DO_DEFAULT, "Block" << (rd ? "Read" : "Write") << " Failed!")
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Block" << (rd ? "load" : "read") << " Failed!")
 				// Return false indicating failure.
 				return false;
 			}
@@ -404,7 +404,7 @@ bool
 FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
 {
 	// Debug notify when trying to read zero bytes.
-	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried To Read Zero Bytes of data!")
+	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried To load Zero Bytes of data!")
 	// Debug notify when trying to read zero bytes.
 	SF_COND_RTTI_NOTIFY(!dst, DO_DEFAULT, "Passed NULL pointer for storing data!")
 	// Bail out here.

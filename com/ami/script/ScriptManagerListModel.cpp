@@ -10,7 +10,7 @@ namespace
 
 enum EColumn
 {
-	cDisplayName = 0,
+	cName = 0,
 	cScriptState,
 	cBackground,
 	cShortcut,
@@ -47,7 +47,7 @@ QVariant ScriptManagerListModel::headerData(int section, Qt::Orientation orienta
 	{
 		switch (section)
 		{
-			case cDisplayName:
+			case cName:
 				return QString(tr("Name"));
 			case cScriptState:
 				return QString(tr("State"));
@@ -61,24 +61,6 @@ QVariant ScriptManagerListModel::headerData(int section, Qt::Orientation orienta
 				return QString(tr("Filename"));
 			default:
 				return QString("Field %1").arg(section);
-		}
-	}
-	else if (role == Qt::UserRole && orientation == Qt::Horizontal)
-	{
-		switch (section)
-		{
-			case cDisplayName:
-				return CommonItemDelegate::etEdit;
-			case cBackground:
-				return CommonItemDelegate::etDropDownIndex;
-			case cShortcut:
-				return CommonItemDelegate::etShortcut;
-			case cGlobal:
-				return CommonItemDelegate::etDropDownIndex;
-			case cFilename:
-				return CommonItemDelegate::etDropDown;
-			default:
-				return CommonItemDelegate::etDefault;
 		}
 	}
 	return {};
@@ -122,7 +104,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cDisplayName:
+			case cName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -141,7 +123,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cDisplayName:
+			case cName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -155,12 +137,31 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->getFilename();
 		}
 	}
-	// Used for editors
-	if (role == Qt::ItemDataRole::UserRole)
+	// Used for selection of editor type.
+	if (role == CommonItemDelegate::TypeRole)
 	{
 		switch (index.column())
 		{
-			case cDisplayName:
+			case cName:
+				return CommonItemDelegate::etEdit;
+			case cBackground:
+				return CommonItemDelegate::etDropDownIndex;
+			case cShortcut:
+				return CommonItemDelegate::etShortcut;
+			case cGlobal:
+				return CommonItemDelegate::etDropDownIndex;
+			case cFilename:
+				return CommonItemDelegate::etDropDown;
+			default:
+				return CommonItemDelegate::etDefault;
+		}
+	}
+	// Used for editor's selectable options.
+	if (role == CommonItemDelegate::OptionsRole)
+	{
+		switch (index.column())
+		{
+			case cName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -200,7 +201,7 @@ bool ScriptManagerListModel::setData(const QModelIndex& index, const QVariant& v
 		auto& entry = _manager->_list[index.row()];
 		switch (index.column())
 		{
-			case cDisplayName:
+			case cName:
 				entry->setDisplayName(value.toString());
 				break;
 			case cBackground:

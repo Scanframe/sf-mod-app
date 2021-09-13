@@ -172,7 +172,7 @@ class _GII_CLASS FileMappedStorage
 
 	private:
 		/**
-		 * @brief Method used in blockRead and Block Write
+		 * @brief Method used in blockRead and Block read
 		 * @param rd True makes it read and false write.
 		 * @param ofs Offset in blocks
 		 * @param sz Size in blocks
@@ -221,7 +221,7 @@ class _GII_CLASS FileMappedStorage
 
 				/**
 				 * @brief Locks the file map and returns the pointer to the memory.
-				 * Read only (const version)
+				 * load only (const version)
 				 * @return NULL on failure.
 				 */
 				[[nodiscard]] const void* lockMemory() const;

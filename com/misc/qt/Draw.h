@@ -36,7 +36,7 @@ class _MISC_CLASS Draw
 		/**
 		 * @brief Draws a ruler for example around a graph.
 		 *
-		 * @param p Painter context.
+		 * @param painter Painter context.
 		 * @param ro Orientation.
 		 * @param color Color for the ticks.
 		 * @param font_color Color of the texts.
@@ -48,9 +48,9 @@ class _MISC_CLASS Draw
 		 * @param unit Unit string.
 		 * @return True on success false in case of an exception.
 		 */
-		bool Ruler
+		bool ruler
 			(
-				QPainter& p,
+				QPainter& painter,
 				ERulerOrientation ro,
 				const QColor& color,
 				const QColor& font_color,
@@ -76,7 +76,7 @@ class _MISC_CLASS Draw
 		/**
 		 * @brief Draws the lines in the graph as the ruler ticks.
 		 *
-		 * @param p Pointer context.
+		 * @param painter Painter context.
 		 * @param go Orientation.
 		 * @param color Color of the grid lines.
 		 * @param bounds Area boundaries for the ruler.
@@ -85,9 +85,9 @@ class _MISC_CLASS Draw
 		 * @param digits To make the grid correspond with the ruler when vertical.
 		 * @return True on success false in case of an exception.
 		 */
-		bool GridLines
+		bool gridLines
 			(
-				QPainter& p,
+				QPainter& painter,
 				EGridOrientation go,
 				const QColor& color,
 				const QRect& bounds,
@@ -95,6 +95,17 @@ class _MISC_CLASS Draw
 				double stop,
 				unsigned digits
 			) const;
+
+		/**
+		 * @brief Draws a cross with text rectangle in the middle.
+		 *
+		 * @param painter Painter context.
+		 * @param bounds Area boundaries for the ruler.
+		 * @param text Text put in a rectangle in the middle.
+		 * @param color Color of the cross and text.
+		 * @return True on success false in case of an exception.
+		 */
+		bool textCross(QPainter& painter, const QRect& bounds, const QString& text, const QColor& color);
 
 	private:
 		/**

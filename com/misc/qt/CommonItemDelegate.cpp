@@ -1,9 +1,12 @@
+#include <bitset>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QKeySequenceEdit>
 #include <QStandardItemModel>
 #include <QSpinBox>
+#include <QListView>
 #include "CommonItemDelegate.h"
+#include "qt_utils.h"
 
 namespace sf
 {
@@ -13,15 +16,25 @@ CommonItemDelegate::CommonItemDelegate(QObject* parent)
 {
 }
 
+CommonItemDelegate::EEditorType CommonItemDelegate::getEditorType(const QModelIndex& index) const
+{
+	return index.model()->data(index, TypeRole).value<EEditorType>();
+}
+
 QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	// The user role is assigned to the type of delegate editor.
-	switch (index.model()->headerData(index.column(), Qt::Horizontal, Qt::UserRole).toInt())
+	switch (getEditorType(index))
 	{
 		case etDropDown:
 		case etDropDownIndex:
 		{
 			return new QComboBox(parent);
+		}
+
+		case etDropDownFlags:
+		{
+			return new QListView(parent);
 		}
 
 		case etShortcut:
@@ -33,25 +46,26 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		{
 			return new QSpinBox(parent);
 		}
+
+		default:
+			// Call the initial method.
+			return QStyledItemDelegate::createEditor(parent, option, index);
 	}
-	// Call the initial method.
-	return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
 void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	// The user role is assigned to the type of delegate editor.
-	switch (index.model()->headerData(index.column(), Qt::Horizontal, Qt::UserRole).toInt())
+	switch (getEditorType(index))
 	{
 		case etDropDown:
 		{
 			auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
-			auto sl = index.model()->data(index, Qt::UserRole).toStringList();
+			auto sl = index.model()->data(index, OptionsRole).toStringList();
 			auto v = index.model()->data(index, Qt::EditRole);
-
 			cb->addItems(sl);
-			cb->setCurrentIndex((int)sl.indexOf(v.toString()));
+			cb->setCurrentIndex((int) sl.indexOf(v.toString()));
 			return;
 		}
 
@@ -59,9 +73,52 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 		{
 			auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
-			cb->addItems(index.model()->data(index, Qt::UserRole).toStringList());
-			cb->setCurrentIndex(index.model()->data(index, Qt::EditRole).toInt());
+			auto d = index.model()->data(index, OptionsRole);
+			if (d.canConvert<OptionsType>())
+			{
+				auto options = d.value<OptionsType>();
+				for (auto& e: options)
+				{
+					cb->addItem(e.second, e.first);
+				}
+				auto v = index.model()->data(index, Qt::EditRole);
+				auto idx = indexFromComboBox(cb, v);
+				cb->setCurrentIndex(idx);
+			}
+			else
+			{
+				auto sl = d.toStringList();
+				auto v = index.model()->data(index, Qt::EditRole);
+				cb->addItems(sl);
+				cb->setCurrentIndex((int) sl.indexOf(v.toString()));
+			}
 			return;
+		}
+
+		case etDropDownFlags:
+		{
+			auto lv = dynamic_cast<QListView*>(editor);
+			Q_ASSERT(lv);
+			auto d = index.model()->data(index, OptionsRole);
+			if (d.canConvert<OptionsType>())
+			{
+				auto options = d.value<OptionsType>();
+				auto model = new QStandardItemModel(0, 1);
+				auto flags = index.model()->data(index, Qt::EditRole).toInt();
+				for (auto& option: options)
+				{
+					auto item = new QStandardItem(option.second);
+					item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+					item->setData(flags & option.first.toInt() ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
+					item->setData(option.first);
+					model->appendRow(item);
+				}
+				lv->setModel(model);
+				const int maxItems = 6;
+				int nToShow = maxItems < model->rowCount() ? maxItems : model->rowCount();
+				lv->setMinimumSize(lv->width(), nToShow * lv->sizeHintForRow(0) + lv->lineWidth() * 2);
+			}
+			break;
 		}
 
 		case etShortcut:
@@ -79,16 +136,17 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			sb->setValue(index.model()->data(index, Qt::EditRole).toInt());
 			return;
 		}
-	}
-	// Call the initial method.
-	return QStyledItemDelegate::setEditorData(editor, index);
 
+		default:
+			// Call the initial method.
+			QStyledItemDelegate::setEditorData(editor, index);
+	}
 }
 
 void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	// The user role is assigned to the type of delegate editor.
-	switch ( model->headerData(index.column(), Qt::Horizontal, Qt::UserRole).toInt())
+	switch (getEditorType(index))
 	{
 		case etDropDown:
 		{
@@ -104,6 +162,26 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			Q_ASSERT(cb);
 			model->setData(index, cb->currentIndex(), Qt::EditRole);
 			return;
+		}
+
+		case etDropDownFlags:
+		{
+			auto lv = dynamic_cast<QListView*>(editor);
+			Q_ASSERT(lv);
+			int flags = 0;
+			if (auto m = dynamic_cast<QStandardItemModel*>(lv->model()))
+			{
+				for (int row = 0; row < m->rowCount(); row++)
+				{
+					auto item = m->item(row);
+					if (item->data(Qt::CheckStateRole) == Qt::Checked)
+					{
+						flags |= item->data().toInt();
+					}
+				}
+			}
+			model->setData(index, flags, Qt::EditRole);
+			break;
 		}
 
 		case etShortcut:
@@ -122,9 +200,10 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			return;
 		}
 
+		default:
+			// Call the initial method.
+			return QStyledItemDelegate::setModelData(editor, model, index);
 	}
-	// Call the initial method.
-	return QStyledItemDelegate::setModelData(editor, model, index);
 }
 
 void CommonItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const

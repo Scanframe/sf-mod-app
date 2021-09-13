@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		appSettings.restoreWindowRect("Dialog", &dlg);
 		dlg.setLayout(new QVBoxLayout(&dlg));
 		auto edit = new sf::InformationIdEdit(&dlg);
-		edit->setIdType(sf::Gii::ResultData);
+		edit->setTypeId(sf::Gii::ResultData);
 		dlg.layout()->addWidget(edit);
 		dlg.exec();
 		appSettings.saveWindowRect("Dialog", &dlg);

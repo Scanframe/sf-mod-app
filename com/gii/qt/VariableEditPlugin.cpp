@@ -82,8 +82,8 @@ QString VariableEditPlugin::domXml() const
   <property name="whatsThis" >
    <string>Special edit having name and unit label.</string>
   </property>
-  <property name="variableId">
-   <string></string>
+  <property name="idVariable">
+   <uLongLong>0</uLongLong>
   </property>
   <property name="converted">
    <bool>false</bool>
@@ -92,15 +92,6 @@ QString VariableEditPlugin::domXml() const
    <bool>false</bool>
   </property>
  </widget>
- <!-- Propery specification part -->
- <customwidgets>
-  <customwidget>
-   <class>sf::VariableEdit</class>
-   <propertyspecifications>
-    <stringpropertyspecification name="variableId" notr="true" type="singleline" />
-   </propertyspecifications>
-  </customwidget>
- </customwidgets>
 </ui>
 )";
 }

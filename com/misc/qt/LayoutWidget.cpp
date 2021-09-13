@@ -22,10 +22,9 @@ LayoutWidget* LayoutWidget::getLayoutWidgetOf(QObject* obj)
 	return nullptr;
 }
 
-PropertySheetDialog* LayoutWidget::openPropertyEditor(QObject* target)
+void LayoutWidget::openPropertyEditor(QObject* target)
 {
 	// Deliberately empty.
-	return nullptr;
 }
 
 void LayoutWidget::popupContextMenu(QObject* target, const QPoint& pos)

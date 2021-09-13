@@ -59,6 +59,12 @@ class _MISC_CLASS PropertyPage :public QWidget
 		[[nodiscard]] virtual bool isPageModified() const;
 
 		/**
+		 * @brief Allows validation of the changes made per page.
+		 * First page which return false is selected.
+		 */
+		[[nodiscard]] virtual bool canApplyPage() const;
+
+		/**
 		 * @brief Applies the changes made in this page.
 		 */
 		virtual void applyPage();

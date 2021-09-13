@@ -18,9 +18,8 @@ class Variable;
  */
 class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectExtension
 {
-
 	Q_OBJECT
-		Q_PROPERTY(QString variableId READ getVariableId WRITE setVariableId)
+		Q_PROPERTY(qulonglong idVariable READ getId WRITE setId)
 		Q_PROPERTY(bool converted READ getConverted WRITE setConverted)
 		Q_PROPERTY(bool readOnly READ getReadOnly WRITE setReadOnly)
 
@@ -38,12 +37,12 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		/**
 		 * @brief Property 'variableId' set method.
 		 */
-		void setVariableId(const QString&);
+		void setId(qulonglong id);
 
 		/**
 		 * @brief Property 'variableId' get method.
 		 */
-		[[nodiscard]] QString getVariableId() const;
+		[[nodiscard]] qulonglong getId() const;
 
 		/**
 		 * @brief Gets the reference to the underlying Variable instance.

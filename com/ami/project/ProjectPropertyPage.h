@@ -1,20 +1,20 @@
 #pragma once
 #include <misc/qt/PropertyPage.h>
-#include "AcquisitionAppModule.h"
+#include "ProjectAppModule.h"
 
 namespace sf
 {
 
-namespace Ui {class AcquisitionPropertyPage;}
+namespace Ui {class ProjectPropertyPage;}
 
-class AcquisitionPropertyPage :public PropertyPage
+class ProjectPropertyPage :public PropertyPage
 {
 		Q_OBJECT
 
 	public:
-		explicit AcquisitionPropertyPage(AcquisitionAppModule& am, QWidget* parent);
+		explicit ProjectPropertyPage(ProjectAppModule& am, QWidget* parent);
 
-		~AcquisitionPropertyPage() override;
+		~ProjectPropertyPage() override;
 
 		[[nodiscard]] QString getPageName() const override;
 
@@ -33,9 +33,9 @@ class AcquisitionPropertyPage :public PropertyPage
 		void stateSaveRestore(QSettings& settings, bool save) override;
 
 	private:
-		Ui::AcquisitionPropertyPage* ui;
+		Ui::ProjectPropertyPage* ui;
 
-		AcquisitionAppModule& _am;
+		ProjectAppModule& _am;
 };
 
 }

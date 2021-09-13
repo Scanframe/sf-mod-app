@@ -23,11 +23,11 @@ namespace sf
 {
 
 /**
- * @brief Calculates the offset for a given range and Set point.
+ * @brief Calculates the offset for a given range and set point.
  */
 template<class T, class S>
 inline
-S calc_offset(T value, T min, T max, S len, bool clip)
+S calculateOffset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;

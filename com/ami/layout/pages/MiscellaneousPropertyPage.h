@@ -1,8 +1,9 @@
 #pragma once
-
 #include <misc/qt/PropertyPage.h>
 #include <QWidget>
-#include <QLineEdit>
+
+class QLineEdit;
+class QLabel;
 
 namespace sf
 {
@@ -21,6 +22,8 @@ class MiscellaneousPropertyPage :public PropertyPage
 
 		[[nodiscard]] QString getPageName() const override;
 
+		bool canApplyPage() const override;
+
 		void applyPage() override;
 
 		void updatePage() override;
@@ -29,6 +32,7 @@ class MiscellaneousPropertyPage :public PropertyPage
 		Ui::MiscellaneousPropertyPage* ui;
 		QObject* _target;
 		QLineEdit* _targetLineEdit;
+		QLabel* _targetLabel;
 };
 
 }

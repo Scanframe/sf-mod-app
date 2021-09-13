@@ -28,7 +28,7 @@ Draw::Tick Draw::_tickListHorizontal[] = {
 	{100, 10},
 };
 
-bool Draw::Ruler
+bool Draw::ruler
 	(
 		QPainter& p,
 		ERulerOrientation ro,
@@ -121,7 +121,7 @@ bool Draw::Ruler
 					// Set the line color.
 					p.setPen(p_line);
 					// Scale into the real plot.
-					int yp = height - calc_offset(y_pos, start, stop, height, false);
+					int yp = height - calculateOffset(y_pos, start, stop, height, false);
 					// Adjust for last tick.
 					if (yp == height)
 					{
@@ -282,7 +282,7 @@ bool Draw::Ruler
 					// Set the line color.
 					p.setPen(p_line);
 					// Scale into the real plot.
-					int xp = calc_offset(x_pos, start, stop, width, false);
+					int xp = calculateOffset(x_pos, start, stop, width, false);
 					// Adjust for last tick.
 					if (xp == width)
 					{
@@ -406,7 +406,7 @@ bool Draw::Ruler
 	return rv;
 }
 
-bool Draw::GridLines
+bool Draw::gridLines
 	(
 		QPainter& p,
 		EGridOrientation go,
@@ -484,7 +484,7 @@ bool Draw::GridLines
 				if (go == goHorizontal)
 				{
 					// Scale into the real plot.
-					int p1 = len - calc_offset(pos, start, stop, len, false);
+					int p1 = len - calculateOffset(pos, start, stop, len, false);
 					// Adjust for last tick.
 					if (p1 == len)
 					{
@@ -498,7 +498,7 @@ bool Draw::GridLines
 				else
 				{
 					// Scale into the real plot.
-					int p1 = calc_offset(pos, start, stop, len, false);
+					int p1 = calculateOffset(pos, start, stop, len, false);
 					// Adjust for last tick.
 					if (p1 == len)
 					{
@@ -520,6 +520,28 @@ bool Draw::GridLines
 	p.restore();
 	// Return success or failure.
 	return rv;
+}
+
+bool Draw::textCross(QPainter& painter, const QRect& bounds, const QString& text, const QColor& color)
+{
+	auto pen = QPen(color);
+	pen.setWidth(1);
+	painter.setPen(color);
+	// Get font sizes to calculate needed widths and heights.
+	QFontMetrics fm(painter.font());
+	auto w_adjust = fm.maxWidth() / 4;
+	auto h_adjust = fm.height() / 4;
+	QRect trc = fm.boundingRect(text).adjusted(-w_adjust, -h_adjust, w_adjust, h_adjust);
+	// Move text rect to center of graph area
+	trc.moveCenter(bounds.center());
+	painter.drawRect(trc);
+	painter.drawText(trc,  Qt::AlignCenter, text);
+	// Draw a cross in the plot area.
+	painter.drawLine(trc.topLeft(), bounds.topLeft());
+	painter.drawLine(trc.bottomLeft(), bounds.bottomLeft());
+	painter.drawLine(trc.topRight(), bounds.topRight());
+	painter.drawLine(trc.bottomRight(), bounds.bottomRight());
+	return true;
 }
 
 }

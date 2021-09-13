@@ -28,6 +28,7 @@ set(SOURCES
 	gen/VariableHandler.cpp gen/VariableHandler.h
 	gen/VariableReference.cpp gen/VariableReference.h
 	gen/VariableScriptObject.cpp gen/VariableScriptObject.h
+	gen/GiiUtils.cpp gen/GiiUtils.h
 	gen/UnitConversionServer.cpp gen/UnitConversionServer.h
 	gen/UnitConversionServerEx.cpp gen/UnitConversionServerEx.h
 	gen/UnitConversion.cpp gen/UnitConversion.h
@@ -88,6 +89,7 @@ set(SOURCES_QT
 	qt/InformationItemModel.cpp qt/InformationItemModel.h
 	qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
 	qt/AscanGraph.cpp qt/AscanGraph.h
+	qt/IdPropertyList.cpp qt/IdPropertyList.h
 	qt/AscanGraphPlugin.cpp qt/AscanGraphPlugin.h
 	qt/InformationMonitor.cpp qt/InformationMonitor.h qt/InformationMonitor.ui
 	)

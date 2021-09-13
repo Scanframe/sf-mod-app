@@ -14,6 +14,7 @@
 #include <QMetaEnum>
 #include <QMessageBox>
 #include <QComboBox>
+#include <QFormLayout>
 
 #include "../global.h"
 
@@ -100,7 +101,6 @@ QRect operator-=(QRect& rc, const QPoint& pt)
 	return rc;
 }
 
-
 /**
  * @brief Inflates the passed rect on all sides using an integer.
  */
@@ -119,7 +119,6 @@ constexpr QRect inflated(const QRect& r, int sz)
 {
 	return r.adjusted(-sz, -sz, sz, sz);
 }
-
 
 namespace sf
 {
@@ -150,7 +149,6 @@ class _MISC_CLASS PaletteColors
 		//void styleMessageBox(QMessageBox& mb) const;
 };
 
-
 /**
  * @brief Keeps the application up-to-date with changes in the settings file.
  *
@@ -166,14 +164,17 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		 * @brief Constructor.
 		 */
 		explicit ApplicationSettings(QObject* parent = nullptr);
+
 		/**
 		 * @brief Destructor.
 		 */
 		~ApplicationSettings() override;
+
 		/**
 		 * @brief Sets the fileInfo
 		 */
 		void setFilepath(const QString& filepath, bool watch = false);
+
 		/**
 		 * @brief Gets the fileInfo.
 		 */
@@ -245,7 +246,7 @@ class _MISC_CLASS ApplicationSettings :public QObject
  * @param ct Connection Type.
  * @return Connection object.
  */
-_MISC_FUNC  QMetaObject::Connection connectByName
+_MISC_FUNC QMetaObject::Connection connectByName
 	(
 		const QWidget* widget,
 		const QString& sender_name,
@@ -270,8 +271,6 @@ _MISC_FUNC QStringList getObjectNamePath(const QObject* object);
  * @return On not found nullptr.
  */
 _MISC_FUNC QLayout* getWidgetLayout(QWidget* widget);
-
-
 
 /**
  * @brief Turns a QT enumerate type into a named key.
@@ -322,6 +321,32 @@ static T keyToEnum(QString key)
  */
 _MISC_FUNC int indexFromComboBox(QComboBox* comboBox, const QVariant& value, int default_index = -1);
 
+/**
+ * @brief Gets the position (row, role) from the passed target object in te form-layout.
+ *
+ * @param layout Form layout.
+ * @param target QLayout or QWidget type of object.
+ * @return Pair of values (row, role),. On failure row = -1.
+ */
+_MISC_FUNC QPair<int, QFormLayout::ItemRole> getLayoutPosition(QFormLayout* layout, QObject* target);
+
+/**
+ * @brief Gets the index from the passed target object in te box-layout.
+ *
+ * @param layout Box-layout.
+ * @param target QLayout(Item or QWidget type of object.
+ * @return Index position.
+ */
+_MISC_FUNC int getLayoutIndex(QBoxLayout* layout, QObject* target);
+
+/**
+ * @brief Expands or collapses children in a QTreeView.
+ *
+ * @param treeView Designated view
+ * @param expand True when to expand.
+ * @param index Index to child of which its children should expand or collapse.
+ */
+_MISC_FUNC void childrenExpandCollapse(QTreeView* treeView, bool expand, const QModelIndex& index = {});
 
 /**
  * @brief Resizes all columns to content of a tree view except the last column.
@@ -336,5 +361,11 @@ void resizeColumnsToContents(QTreeView* treeView)
 		treeView->resizeColumnToContents(i);
 	}
 }
+
+/**
+ * @brief Dumps the object properties in qDebug().
+ */
+_MISC_FUNC void dumpObjectProperties(QObject* obj);
+
 
 }

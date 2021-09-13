@@ -4,12 +4,16 @@
 #include <QFileDialog>
 #include <QSaveFile>
 #include <QCloseEvent>
+#include <QLayout>
 #include <misc/qt/Resource.h>
 #include <misc/qt/FormBuilder.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include <gii/qt/VariableWidgetBase.h>
-#include <ami/layout/pages/ObjectPropertyPage.h>
+#include <ami/layout/pages/PositionPropertyPage.h>
 #include <ami/layout/pages/MiscellaneousPropertyPage.h>
+#include <ami/layout/pages/AscanPropertyPage.h>
+#include <qt/AscanGraph.h>
+#include <ami/layout/pages/ContainerPropertyPage.h>
 #include "LayoutEditor.h"
 #include "pages/VariableIdPropertyPage.h"
 #include "pages/WidgetPropertyPage.h"
@@ -46,17 +50,15 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 			openPropertyEditor(_currentTarget);
 		}
 	});
-	auto actionRemove = new QAction(tr("&Remove"), _targetContextMenu);
-	actionRemove->setToolTip(tr("Remove this widget."));
-	actionRemove->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Remove), QPalette::ColorRole::ButtonText));
-	_targetContextMenu->addAction(actionRemove);
-	connect(actionRemove, &QAction::triggered, [&]()
+	auto actionLookup = new QAction(tr("&Look up"), _targetContextMenu);
+	actionLookup->setToolTip(tr("Look widget up in the tree."));
+	actionLookup->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Search), QPalette::ColorRole::ButtonText));
+	_targetContextMenu->addAction(actionLookup);
+	connect(actionLookup, &QAction::triggered, [&]()
 	{
 		if (_currentTarget)
 		{
-			_currentTarget->deleteLater();
-			_modified = true;
-			documentWasModified();
+			emit objectSelected(_currentTarget);
 		}
 	});
 }
@@ -91,11 +93,14 @@ void LayoutEditor::closeEvent(QCloseEvent* event)
 void LayoutEditor::newFile()
 {
 	static int sequenceNumber = 1;
+	_widget = new QWidget(this);
+	// Set the default form root object name.
+	_widget->setObjectName(_rootName);
+	documentWasModified();
 	_isUntitled = true;
 	_curFile = tr("document-%1.ui").arg(sequenceNumber++);
 	setWindowTitle(_curFile + "[*]");
 	_modified = true;
-	documentWasModified();
 }
 
 bool LayoutEditor::loadFile(const QString& fileName)
@@ -112,10 +117,14 @@ bool LayoutEditor::loadFile(const QString& fileName)
 	// Add the application directory as the plugin directory to find custom plugins.
 	builder.addPluginPath(QCoreApplication::applicationDirPath());
 	// Create widget from the loaded ui-file.
-	_widget = builder.load(&file, _scrollArea ? (QWidget*) _scrollArea : (QWidget*) this);
+	// Do not set parent when loading because it will mess up the QLabel buddy resolving by name.
+	_widget = builder.load(&file, nullptr);
 	// When loading is successful.
 	if (_widget)
 	{
+		// Now set the parent after successful loading and buddy resolving.
+		_widget->setParent(_scrollArea ? (QWidget*)_scrollArea : this);
+		//
 		if (!_widget->objectName().length())
 		{
 			// Set the root name.
@@ -173,10 +182,10 @@ bool LayoutEditor::saveFile(const QString& fileName, bool keep_name)
 		//
 		FormBuilder builder;
 		//
-		auto wgt = findChild<QWidget*>(_rootName, Qt::FindChildrenRecursively);
-		if (wgt)
+		//auto wgt = findChild<QWidget*>(_rootName, Qt::FindChildrenRecursively);
+		if (_widget)
 		{
-			builder.save(&file, wgt);
+			builder.save(&file, _widget);
 		}
 		if (!file.commit())
 		{
@@ -212,6 +221,12 @@ void LayoutEditor::documentWasModified()
 	auto flag = isModified();
 	setWindowModified(flag);
 	emit mdiSignals.modificationChanged(flag);
+}
+
+void LayoutEditor::documentModified()
+{
+	_modified = true;
+	documentWasModified();
 }
 
 QString LayoutEditor::currentFile() const
@@ -332,35 +347,56 @@ bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 	return QObject::eventFilter(watched, event);
 }
 
-PropertySheetDialog* LayoutEditor::openPropertyEditor(QObject* target)
+void LayoutEditor::openPropertyEditor(QObject* target)
 {
 	auto dlg = new PropertySheetDialog("LayoutObjectEditor", _settings, this);
 	// Make the dialog close
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
-	dlg->setWindowTitle(tr("Widget (%1) Properties").arg(target->objectName()));
-	// Add the object property page.
-	dlg->addPage(new ObjectPropertyPage(target, dlg));
+	// Set the window title using the objects name.
+	dlg->setWindowTitle(tr("Item Properties (%1) ").arg(target->objectName()));
 	// Add the miscellaneous property page.
 	dlg->addPage(new MiscellaneousPropertyPage(target, dlg));
+	//
+	bool flagContainer{false};
 	// When based of a widget.
 	if (auto w = dynamic_cast<QWidget*>(target))
 	{
+		// Widgets can be containers.
+		flagContainer = true;
+		// When derived from an ObjectExtension class.
+		if (auto oe = dynamic_cast<ObjectExtension*>(target))
+		{
+			flagContainer &= oe->getSaveChildren();
+		}
 		dlg->addPage(new WidgetPropertyPage(w, dlg));
 	}
-	// When based of the variable widget base class.
-	if (auto vwb = dynamic_cast<VariableWidgetBase*>(target))
+	// When it is a container.
+	if (flagContainer)
 	{
-		dlg->addPage(new VariableIdPropertyPage(vwb, dlg));
+		auto w = dynamic_cast<QWidget*>(target);
+		//if (ContainerPropertyPage::isContainer(QWidget*))
+		dlg->addPage(new ContainerPropertyPage(w, dlg));
+	}
+	// Add the position property page to change position in the layout.
+	dlg->addPage(new PositionPropertyPage(target, dlg));
+	// When based of the variable widget base class.
+	if (auto w = dynamic_cast<VariableWidgetBase*>(target))
+	{
+		// When base of a Variable widget base class it is never a .
+		dlg->addPage(new VariableIdPropertyPage(w, dlg));
+	}
+	if (auto w = dynamic_cast<AscanGraph*>(target))
+	{
+		dlg->addPage(new AscanPropertyPage(w, dlg));
 	}
 	// When the dialog was applied set the modified flag.
-	connect(dlg, &PropertySheetDialog::modified, [&]()
-	{
-		_modified = true;
-		documentWasModified();
-	});
-	// FixMe: Prevent multiple properties sheet dialogs per target using a shared and week pointer.
-	dlg->show();
-	return dlg;
+	connect(dlg, &PropertySheetDialog::modified, this, &LayoutEditor::documentModified);
+	//
+	dlg->setModal(true);
+	// Signal that an object is selected.
+	emit objectSelected(target);
+	//
+	dlg->exec();
 }
 
 ObjectHierarchyModel* LayoutEditor::getHierarchyModel()

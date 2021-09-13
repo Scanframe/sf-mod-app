@@ -775,7 +775,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		bool writeUpdate(std::ostream& os) const;
 
 		/**
-		 * @brief Read single current value and flags from stream.
+		 * @brief load single current value and flags from stream.
 		 *
 		 * If 'list' is other then the default that list is used to seek the according variable instead of the global list.
 		 * @param is
@@ -801,7 +801,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		static Definition getDefinition(const std::string& str);
 
 		/**
-		 * Read single current values from stream.
+		 * load single current values from stream.
 		 * If 'list' is other then a NULL_REF that list is used to seek the according variable instead of the global list.
 		 * @param is
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
@@ -1018,7 +1018,7 @@ bool Variable::setup(Variable::id_type id, bool set_did)
 	{
 		setDesiredId(id);
 	}
-	// When non global the reference members are copied.
+	// When non-global the reference members are copied.
 	return attachRef(getReferenceById(id));
 }
 

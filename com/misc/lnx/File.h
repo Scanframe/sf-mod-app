@@ -105,7 +105,7 @@ class _MISC_CLASS File
 		void write(const char* s);
 
 		/**
-		 * Write template function
+		 * read template function
 		 * @tparam T Type of the structure written.
 		 * @param t
 		 */
