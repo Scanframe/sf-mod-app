@@ -34,6 +34,8 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		 */
 		~VariableWidgetBase() override;
 
+		void addPropertyPages(sf::PropertySheetDialog* sheet) override;
+
 		/**
 		 * @brief Property 'variableId' set method.
 		 */

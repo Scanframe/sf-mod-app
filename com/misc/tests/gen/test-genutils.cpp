@@ -46,12 +46,20 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 
 	SECTION("sf::numberString", "Numeric value to std string.")
 	{
+		CHECK(sf::requiredDigits(0.0025, 0.01, 0.1) == 3);
+		CHECK(sf::requiredDigits(1, 0, 100) == 3);
+
 		CHECK(sf::ipow(29, 0) == 1);
 		CHECK(sf::ipow(27, 1) == 27);
 		CHECK(sf::ipow(24l, 5) == 7962624);
 
+		//CHECK(sf::numberString(101, 3) == "101");
+		CHECK(sf::numberString(123456.0l, 6) == "+123456");
+		CHECK(sf::numberString(123.1, 3) == "+123");
+		CHECK(sf::numberString(100.0l, 3) == "+100");
+		CHECK(sf::numberString(299.996e1l, 2) == "+3000");
+		CHECK(sf::numberString(299.996e4l, 2) == "+3000e+3");
 		CHECK(sf::numberString(-0.99999l, 2) == "-1.0");
-		CHECK(sf::numberString(299.996e1l, 2) == "+300");
 		CHECK(sf::numberString(1e-2L, 4) == "+10.00e-3");
 		CHECK(sf::numberString(123e-1L, 2) == "+12");
 		CHECK(sf::numberString(-1234567890e-7L, 6) == "-123.457");

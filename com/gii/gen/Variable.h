@@ -520,18 +520,26 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		[[nodiscard]] bool isReadOnly() const;
 
 		/**
-		 * @brief Gets the significant digits for this instance.
+		 * @brief Gets the normalized decimal point location for this instance.
 		 * @return Amount of digits.
 		 */
 		[[nodiscard]] int getSigDigits() const;
 
 		/**
-		 * @brief Gets the significant digits for this instance converted or not converted.
+		 * @brief Gets the normalized decimal point location for this instance converted or not converted.
 		 *
 		 * @param converted True when needing the converted amount.
 		 * @return Amount of digits.
 		 */
 		[[nodiscard]] int getSigDigits(bool converted) const;
+
+		/**
+		 * @brief Gets the required digits for this instance based on round, min and max values.
+		 * Converted or not the value is the same.
+		 * This method is useful for drawing a scale using #numberString()
+		 * @return Amount of digits.
+		 */
+		[[nodiscard]] int getRequiredDigits() const;
 
 		/**
 		 * @brief Return the variable default value.

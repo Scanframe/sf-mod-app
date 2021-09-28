@@ -24,14 +24,14 @@ ScriptAppModule::ScriptAppModule(const AppModuleInterface::Parameters& params)
 	};
 }
 
-void ScriptAppModule::initialize(bool init)
+void ScriptAppModule::initialize(InitializeStage stage)
 {
-	if (init)
+	if (stage == Initialize)
 	{
 		// Start all scripts.
 		_scriptManager.start();
 	}
-	else
+	else if (stage == Uninitialize)
 	{
 		_scriptManager.stop();
 	}

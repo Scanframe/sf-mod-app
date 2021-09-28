@@ -12,6 +12,7 @@ namespace sf
 
 Application::Application(int& argc, char** argv, int flags)
 	:QApplication(argc, argv, flags)
+	, _sustainInterval(500)
 {
 	// Call some static methods.
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
@@ -25,15 +26,24 @@ Application::Application(int& argc, char** argv, int flags)
 	fi.setFile(QString::fromStdString(sf::getConfigLocation()), fi.completeBaseName() + ".ini");
 	// Create settings instance.
 	_settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, QApplication::instance());
+	// Read the settings.
+	settingsReadWrite(false);
 	// Set the global settings for indirect opened dialogs to save and restore size and/or position.
 	setGlobalSettings(_settings);
 	//_settings = new QSettings(QSettings::Scope::UserScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	_moduleConfiguration = new ModuleConfiguration(_settings, this);
 	// When libraries are loaded create the module instances.
-	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&]()
+	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&](bool startup)
 	{
 		// Create the interface implementations (that are missing).
 		AppModuleInterface::instantiate(_settings, this);
+		// When not starting up the library is loaded from the dialog.
+		if (!startup)
+		{
+			// Then initialization stages need to be called on the new loaded library.
+			AppModuleInterface::initializeInstances(AppModuleInterface::Initialize);
+			AppModuleInterface::initializeInstances(AppModuleInterface::Finalize);
+		}
 	});
 	// Set the file path to the settings instance.
 	appSettings.setFilepath(fi.absoluteFilePath());
@@ -57,6 +67,22 @@ Application::~Application()
 	setGlobalSettings(nullptr);
 }
 
+void Application::settingsReadWrite(bool save)
+{
+	const auto keySustain = QString("Sustain");
+	//
+	_settings->beginGroup("Application");
+	if (save)
+	{
+		_settings->setValue(keySustain, _sustainInterval);
+	}
+	else
+	{
+		_sustainInterval = clip<int>(_settings->value(keySustain).toInt(), 20, 1000);
+	}
+	_settings->endGroup();
+}
+
 std::string Application::ConfigLocationHandler(const std::string& option)
 {
 	// InitializeBase using the application file path.
@@ -69,20 +95,20 @@ std::string Application::ConfigLocationHandler(const std::string& option)
 	return rv.toStdString();
 }
 
-void Application::initialize(bool init)
+void Application::initialize(AppModuleInterface::InitializeStage stage)
 {
-	if (init)
+	if (stage)
 	{
-		// Load the missing modules from the configuration.
-		_moduleConfiguration->load();
+		// Load the missing modules from the configuration and pass true for this load is .
+		_moduleConfiguration->load(true);
 		// Create the main window when not done already.
 		if (!_mainWindow)
 		{
 			_mainWindow = new MainWindow(_settings, this);
 		}
 	}
-	// Initializes all uninitialized module instances.
-	AppModuleInterface::initializeInstances(init);
+	// Initializes all module instances.
+	AppModuleInterface::initializeInstances(stage);
 }
 
 void Application::parseCommandline()

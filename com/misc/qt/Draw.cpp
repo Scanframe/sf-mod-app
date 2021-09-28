@@ -152,7 +152,7 @@ bool Draw::ruler
 						{
 							y = height - 1;
 						}
-						// Do not allow drawing out side the clip rect.
+						// Do not allow drawing outside the clip rect.
 						if (y < rect.top() || y >= rect.bottom())
 						{
 							continue;
@@ -168,8 +168,8 @@ bool Draw::ruler
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
 					auto text = QString::fromStdString(numberString<double>((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
-					// Get the size of the to be drawn text.
-					auto tr = fm.boundingRect(text);
+					// Get the size of the to be drawn text. Seems it is to narrow, so it is adjusted to fit the text.
+					auto tr = fm.boundingRect(text).adjusted(-1, 0, 1, 0);
 					// Paint the text values.
 					QPoint pt(0, yp - font_height / 2);
 					if (ro == roLeft)

@@ -24,4 +24,9 @@ bool ObjectExtension::getSaveChildren() const
 	return false;
 }
 
+void ObjectExtension::addPropertyPages(PropertySheetDialog* sheet)
+{
+	// Deliberate left empty.
+}
+
 }

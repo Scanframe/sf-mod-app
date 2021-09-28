@@ -14,7 +14,7 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 	Q_OBJECT
 
 	Q_SIGNALS:
-			void libraryLoaded();
+			void libraryLoaded(bool startup);
 
 	public:
 		/**
@@ -57,7 +57,7 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 		 *
 		 * @return True when at least a library was loaded.
 		 */
-		size_t load();
+		size_t load(bool startup);
 
 		/**
 		 * @brief Saves the module configuration to the settings.

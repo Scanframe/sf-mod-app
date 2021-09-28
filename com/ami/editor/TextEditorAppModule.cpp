@@ -43,7 +43,7 @@ QString TextEditorAppModule::getSvgIconResource() const
 	return ":icon/svg/text-editor";
 }
 
-void TextEditorAppModule::initialize(bool)
+void TextEditorAppModule::initialize(InitializeStage stage)
 {
 }
 

@@ -184,7 +184,7 @@ std::string RsaServer::getNameOffset(const ParamInfo& info)
 		switch (_acquisition->getType())
 		{
 			case atUltrasonic:
-				// Add channel offset when there are more then one channels.
+				// Add channel offset when there are more than one channels.
 				if (_acquisition->getChannelCount() > 1)
 				{
 					ofs += stringf("Channel %i|", info.Channel + 1);
@@ -192,7 +192,7 @@ std::string RsaServer::getNameOffset(const ParamInfo& info)
 				break;
 
 			case atEddyCurrent:
-				// Add numbered channel offset when there are more then one channels.
+				// Add numbered channel offset when there are more than one channels.
 				if (_acquisition->getChannelCount() > 1)
 				{
 					ofs += stringf("Channel %i|", info.Channel + 1);
@@ -221,7 +221,7 @@ std::string RsaServer::getDescription(const ParamInfo& info)
 	// Check if the parameter is a channel related parameter.
 	if (info.Channel != UINT_MAX && !(info.Flags & pfChannelSingle))
 	{
-		// Add channel offset when there are more then one channels.
+		// Add channel offset when there are more than one channels.
 		if (_acquisition->getChannelCount() > 1)
 		{
 			ofs += stringf(" Channel %i ", info.Channel + 1);
@@ -255,7 +255,7 @@ std::string RsaServer::getNameOffset(const ResultInfo& info)
 	// Check if the parameter is a channel related results.
 	if (info.Channel != UINT_MAX)
 	{
-		// Add channel offset when there are more then one channels.
+		// Add channel offset when there are more than one channels.
 		if (_acquisition->getChannelCount() > 1)
 		{
 			ofs += stringf("Channel %i|", info.Channel + 1);
@@ -276,7 +276,7 @@ std::string RsaServer::getDescription(const ResultInfo& info)
 	std::string ofs = _serverName;
 	// Check if the parameter is a channel related parameter.
 	if (info.Channel != UINT_MAX)
-	{ // Add channel offset when there are more then one channels.
+	{ // Add channel offset when there are more than one channels.
 		if (_acquisition->getChannelCount() > 1)
 		{
 			ofs += stringf(" Channel %i ", info.Channel + 1);
@@ -485,16 +485,14 @@ ResultData::Vector::size_type RsaServer::resultListFind(id_type id) const
  */
 unsigned CompareCsfFields(const std::string& s1, const std::string& s2)
 {
-	strings sl1, sl2;
-	for (auto l: {&sl1, &sl2})
-	{
-		l->split(s1, ',', '"');
-	}
 	unsigned rv = 0;
+	strings sl1, sl2;
+	sl1.split(s1, ',', '"');
+	sl2.split(s2, ',', '"');
 	auto count = std::max(sl1.count(), sl2.count());
 	for (size_t i = 0; i < count; i++)
 	{
-		if (sl1[i].length() != sl1[i].length())
+		if (sl1.at(i) != sl2.at(i))
 		{
 			// Set the bit of the field.
 			rv += 1 << i;
@@ -519,7 +517,7 @@ bool RsaServer::createVariable(Variable*& var, ParamInfo& info, const std::strin
 	}
 	// Set the variable global if export flag has not been set and the system is.
 	var->setGlobal(((info.Flags & (pfSystem | pfExport)) == pfSystem) ? false : true);
-	// Setup the variable.
+	// Set up the variable.
 	var->setup(setup);
 	// Check the creation of the variable
 	if (var->getId())
@@ -678,7 +676,7 @@ void RsaServer::evaluateInterfaceParams()
 	IdList ids;
 	// Get all the parameters.
 	_acquisition->enumParamIds(ids);
-	// Check if the list size is non zero.
+	// Check if the list size is non-zero.
 	if (!_variableVector.empty())
 	{
 		// Iterate backwards through the list of existing variables.
@@ -781,7 +779,7 @@ void RsaServer::evaluateInterfaceParams()
 				_acquisition->getParam(ei->_id, curval);
 				// Create a new one.
 				Variable* var = _variableVector[index];
-				// Check if the variable succesfully was created.
+				// Check if the variable successfully was created.
 				if (!createVariable(var, info, setup))
 				{ // Remove the current variable.
 					destroyVariable(var);
@@ -849,7 +847,7 @@ void RsaServer::evaluateInterfaceResults()
 		switch (_acquisition->getType())
 		{
 			case atUltrasonic:
-				// Check if old style nameing is required.
+				// Check if old style naming is required.
 				if (_compatible == 1 || _compatible == 2)
 				{
 					if (info.Gate != UINT_MAX)
@@ -1042,7 +1040,7 @@ void RsaServer::setLocked(bool lock)
 
 void RsaServer::checkReadOnly()
 {
-	// Setup the mask needed checking.
+	// Set up the mask needed checking.
 	int mask = 0;
 	// Iterate through the list fo variables.
 	for (auto var: _variableVector)
@@ -1070,7 +1068,7 @@ void RsaServer::serverVariableHandler
 		Variable::EEvent event,
 		const Variable& caller,
 		Variable& link,
-		bool sameinst
+		bool sameInst
 	)
 {
 	// get ID
@@ -1094,7 +1092,7 @@ void RsaServer::serverVariableHandler
 				// Temporary storage of current run mode.
 				bool runmode = _acquisition->getRunMode();
 				// When param notify function was called prevent unneeded extra work.
-				if (!sameinst || _handledParamId != castExtraInfo(&link)->_id)
+				if (!sameInst || _handledParamId != castExtraInfo(&link)->_id)
 				{
 					// Create a temporary value for the current value and the return value.
 					Value value(link.getCur());
@@ -1108,7 +1106,7 @@ void RsaServer::serverVariableHandler
 						SF_COND_RTTI_NOTIFY(flags & pfWriteAtOff, DO_CLOG, "Run Mode set OFF before parameter change.");
 					}
 					// Set parameter value to the current variable value.
-					// Skip the event because an unbreakable loop is emminent.
+					// Skip the event because an unbreakable loop is eminent.
 					_acquisition->paramSetGet(castExtraInfo(&link)->_id, value, true);
 					// Check if the variable is still valid.
 					// which means it means in this case it is not deleted by
@@ -1118,13 +1116,13 @@ void RsaServer::serverVariableHandler
 						link.setCur(value, true);
 					}
 				}
-				// Check if this parameter has effect on other the parameters geometry.
+				// Check if this parameter has effect on other parameter's geometry.
 				if (flags & pfEffectsParameter)
 				{
 					// If so  reevaluate the parameters.
 					evaluateInterfaceParams();
 				}
-				// Check if this parameter had effect on other the results geometry.
+				// Check if this parameter had an effect on other result's geometry.
 				if (flags & pfEffectsResult)
 				{ // Set the acquisition implementation to off and clear the current data.
 					_acquisition->setRunMode(false, true);

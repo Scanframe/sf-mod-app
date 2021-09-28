@@ -11,12 +11,9 @@
 #include <gii/qt/VariableWidgetBase.h>
 #include <ami/layout/pages/PositionPropertyPage.h>
 #include <ami/layout/pages/MiscellaneousPropertyPage.h>
-#include <ami/layout/pages/AscanPropertyPage.h>
-#include <qt/AscanGraph.h>
 #include <ami/layout/pages/ContainerPropertyPage.h>
-#include "LayoutEditor.h"
-#include "pages/VariableIdPropertyPage.h"
 #include "pages/WidgetPropertyPage.h"
+#include "LayoutEditor.h"
 
 namespace sf
 {
@@ -363,12 +360,13 @@ void LayoutEditor::openPropertyEditor(QObject* target)
 	{
 		// Widgets can be containers.
 		flagContainer = true;
+		dlg->addPage(new WidgetPropertyPage(w, dlg));
 		// When derived from an ObjectExtension class.
 		if (auto oe = dynamic_cast<ObjectExtension*>(target))
 		{
 			flagContainer &= oe->getSaveChildren();
+			oe->addPropertyPages(dlg);
 		}
-		dlg->addPage(new WidgetPropertyPage(w, dlg));
 	}
 	// When it is a container.
 	if (flagContainer)
@@ -379,16 +377,6 @@ void LayoutEditor::openPropertyEditor(QObject* target)
 	}
 	// Add the position property page to change position in the layout.
 	dlg->addPage(new PositionPropertyPage(target, dlg));
-	// When based of the variable widget base class.
-	if (auto w = dynamic_cast<VariableWidgetBase*>(target))
-	{
-		// When base of a Variable widget base class it is never a .
-		dlg->addPage(new VariableIdPropertyPage(w, dlg));
-	}
-	if (auto w = dynamic_cast<AscanGraph*>(target))
-	{
-		dlg->addPage(new AscanPropertyPage(w, dlg));
-	}
 	// When the dialog was applied set the modified flag.
 	connect(dlg, &PropertySheetDialog::modified, this, &LayoutEditor::documentModified);
 	//

@@ -99,7 +99,7 @@ QString AscanGraphPlugin::domXml() const
 
 QString AscanGraphPlugin::includeFile() const
 {
-	return QStringLiteral("gii/qt/AscanGraph.h");
+	return QStringLiteral("wgt/ascan/AscanGraph.h");
 }
 
 }

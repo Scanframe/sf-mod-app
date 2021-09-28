@@ -11,9 +11,11 @@ AscanPropertyPage::AscanPropertyPage(AscanGraph* target, QWidget* parent)
 	 ,_idPropertyList(target)
 {
 	ui->setupUi(this);
-	_idPropertyList.add("idTimeUnit", ui->iieIdTimeUnit);
 	_idPropertyList.add("idAmplitudeUnit", ui->iieIdAmplitudeUnit);
 	_idPropertyList.add("idAttenuation", ui->iieIdAttenuation);
+	_idPropertyList.add("idTimeUnit", ui->iieIdTimeUnit);
+	_idPropertyList.add("idDelay", ui->iieIdDelay);
+	_idPropertyList.add("idRange", ui->iieIdRange);
 	_idPropertyList.add("idData", ui->iieIdData);
 }
 

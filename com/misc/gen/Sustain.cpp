@@ -195,14 +195,15 @@ SustainWinTimer* globalSustainWinTimer{nullptr};
 
 bool setSustainTimer(int msec)
 {
+	if (msec <= 0)
+	{
+		return false;
+	}
 #if IS_QT
-	if (!globalSustainQtTimer && msec > 0)
+	delete_null(globalSustainQtTimer);
+	if (!globalSustainQtTimer)
 	{
 		globalSustainQtTimer = new SustainQtTimer();
-	}
-	else
-	{
-		delete_null(globalSustainQtTimer);
 	}
 	if (globalSustainQtTimer)
 	{
@@ -211,13 +212,10 @@ bool setSustainTimer(int msec)
 	}
 	return true;
 #elif IS_WIN
-	if (!timer && msec > 0)
+	delete_null(globalSustainWinTimer);
+	if (!globalSustainWinTimer)
 	{
 		globalSustainWinTimer = new SustainWinTimer();
-	}
-	else
-	{
-		delete_null(globalSustainWinTimer);
 	}
 	if (globalSustainWinTimer)
 	{

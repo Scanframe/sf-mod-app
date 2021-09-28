@@ -64,7 +64,7 @@ ModuleConfiguration::ModuleListType ModuleConfiguration::getList() const
 	return ml;
 }
 
-size_t ModuleConfiguration::load()
+size_t ModuleConfiguration::load(bool startup)
 {
 	// Return value initialization.
 	size_t rv = 0;
@@ -95,7 +95,7 @@ size_t ModuleConfiguration::load()
 	// When a lib was loaded emit the signal.
 	if (rv)
 	{
-		emit libraryLoaded();
+		emit libraryLoaded(startup);
 	}
 	// Signal the caller a library was loaded.
 	return rv;

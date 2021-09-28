@@ -84,7 +84,7 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 			case veLinked:
 			case veIdChanged:
 				_widget->applyReadOnly(_readOnly || link.isReadOnly());
-				// Connection function is called when items are added..
+				// Connection function is called when items are added.
 				_ignoreIndexChange = true;
 				// Remove all items.
 				_comboBoxValue->clear();

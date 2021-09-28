@@ -99,6 +99,15 @@ struct _MISC_CLASS TimeSpec :public timespec
 	}
 
 	/**
+	 * @brief Clear the this instance.
+	 */
+	inline
+	void clear()
+	{
+		tv_sec = 0; tv_nsec = 0;
+	}
+
+	/**
 	 * @brief Compare operator.
 	 */
 	inline

@@ -514,6 +514,73 @@ std::string unique(const std::string& s)
 	return {s.c_str(), s.length()};
 }
 
+int precision(double value)
+{
+	constexpr int len = std::numeric_limits<double>::digits10;
+	int i;
+	char* s = ecvt(value, len, &i, &i);
+	i = len;
+	while (i--)
+	{
+		if (s[i] != '0')
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+int digits(double value)
+{
+	constexpr int len = std::numeric_limits<double>::digits10;
+	int dec, sign;
+	char* s = ecvt(value, len, &dec, &sign);
+	int i = len;
+	while (i--)
+	{
+		if (s[i] != '0' || !i)
+		{
+			return -(dec - i - 1);
+		}
+	}
+	return -(len + dec - 1);
+}
+
+int magnitude(double value)
+{
+	if (value)
+	{
+		int dec, sign;
+		ecvt(value, std::numeric_limits<double>::digits10, &dec, &sign);
+		return dec;
+	}
+	return 0;
+}
+
+int requiredDigits(double roundVal, double minVal, double maxVal)
+{
+	int rv, dec, sign;
+	std::string s;
+#if IS_WIN
+	rv.resize( _CVTBUFSIZE + 1, '0');
+	_ecvt_s(s.data(), s.size(), stepVal, std::numeric_limits<double>::digits10, &dec, &sign);
+	s.resize(strlen(s.c_str()));
+	rv = static_cast<int>(trimRight(s, "0").length());
+#else
+	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
+	s.resize(std::numeric_limits<double>::max_digits10 + 1, '0');
+	ecvt_r(roundVal, std::numeric_limits<double>::digits10, &dec, &sign, s.data(), s.size());
+	s.resize(strlen(s.c_str()), '0');
+#endif
+	// Determine the amount of actual digits of the step value.
+	rv = static_cast<int>(trimRight(s, "0").length());
+	// Get magnitude of the absolute maximum amount of steps that can be made.
+	rv += magnitude(std::max(std::abs(maxVal), std::abs(minVal)) / roundVal);
+	//
+	rv += -1;
+	return rv;
+}
+
 size_t strncspn(const char* s, size_t n, const char* reject)
 {
 	// Iterate from zero to the maximum.

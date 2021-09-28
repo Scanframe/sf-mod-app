@@ -18,7 +18,7 @@ class Application :public QApplication
 
 		ModuleConfiguration& getModuleConfiguration();
 
-		void initialize(bool init = true);
+		void initialize(AppModuleInterface::InitializeStage stage);
 
 		MainWindow* getMainWindow();
 
@@ -45,7 +45,11 @@ class Application :public QApplication
 		 * TODO: Must be available from application property page to change.
 		 * @brief Holds the sustain interval in milliseconds.
 		 */
-		int _sustainInterval{1000};
+		int _sustainInterval;
+
+		friend class ApplicationPropertyPage;
+
+		void settingsReadWrite(bool save);
 };
 
 }

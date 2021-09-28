@@ -2,7 +2,6 @@
 #include <QMenu>
 #include <QSettings>
 #include <QWidget>
-#include <QStatusBar>
 #include "PropertySheetDialog.h"
 #include "ui_PropertySheetDialog.h"
 #include "Resource.h"
@@ -42,7 +41,7 @@ struct PropertySheetDialog::Private :QObject
 		}
 		// Restore the state of the dialog including the list view mode.
 		stateSaveRestore(false, nullptr);
-		// Create a action group.
+		// Create aN action group.
 		auto ag = new QActionGroup(menu);
 		ag->setExclusive(true);
 		//
@@ -287,8 +286,12 @@ void PropertySheetDialog::addPage(PropertyPage* page)
 	auto item = new QListWidgetItem(_p->ui->listWidget);
 	// Assign the page to the user data.
 	item->setData(Qt::ItemDataRole::UserRole, QVariant::fromValue(page));
+	// By default, select the first page.
 	// Make the item appear selected when the page is visible.
-	item->setSelected(!_p->_selectedPage.isEmpty() && page->objectName() == _p->_selectedPage);
+	if ((!_p->_selectedPage.isEmpty() && page->objectName() == _p->_selectedPage))
+	{
+		_p->ui->listWidget->setCurrentItem(item);
+	}
 	// Use the widgets window icon.
 	item->setIcon(page->getPageIcon());
 	// Set item name from the property page list name.
@@ -313,7 +316,7 @@ void PropertySheetDialog::applySheet()
 	(void)_p->apply();
 }
 
-void PropertySheetDialog::checkModified(QWidget* origin)
+void PropertySheetDialog::checkModified(QWidget* /*origin*/)
 {
 	// Check if one of the pages has been modified.
 	auto modified = isSheetModified();
@@ -327,6 +330,15 @@ void PropertySheetDialog::showEvent(QShowEvent* event)
 	QDialog::showEvent(event);
 	// Calling checkModified will enable or disable the buttons.
 	checkModified(nullptr);
+}
+
+int PropertySheetDialog::exec()
+{
+	if (_p->ui->listWidget->selectedItems().empty() && _p->ui->listWidget->count())
+	{
+		_p->ui->listWidget->setCurrentItem(_p->ui->listWidget->item(0));
+	}
+	return QDialog::exec();
 }
 
 }

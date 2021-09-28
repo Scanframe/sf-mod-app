@@ -55,6 +55,8 @@ class _MISC_CLASS PropertySheetDialog :public QDialog
 		 */
 		void applySheet();
 
+		int exec() override;
+
 	protected:
 		void showEvent(QShowEvent* event) override;
 

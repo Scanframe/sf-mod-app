@@ -157,13 +157,13 @@ bool PeakNormal(
 AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
 	:RsaInterface(parameters)
 	 , FChannelInfo(new TChannelInfo[EMU_CHANNELCOUNT])
-	 , SustainEntry(this, &AcquisitionEmulator::sustain, SustainBase::spTimer, nullptr)
+	 , SustainEntry(this, &AcquisitionEmulator::sustain, SustainBase::spDefault)
 {
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Constructor of " << parameters._mode);
 	// Disable the single shot timer.
 	SingleShotTimer.disable();
-	// Set the sustain local timer.
-	SustainEntry.setInterval(TimeSpec(0.5));
+	// Set the sustain local timer to limit the frequency to 20 (0.05s) when SustainBase::spTimer is set.
+	SustainEntry.setInterval(TimeSpec(0.05));
 	// Set the fixed flag when USPC21000 is selected.
 	if (parameters._mode == 1)
 	{
@@ -228,21 +228,22 @@ bool AcquisitionEmulator::getRunMode() const
 	return RunMode;
 }
 
-bool AcquisitionEmulator::setRunMode(bool runmode, bool clear)
+bool AcquisitionEmulator::setRunMode(bool runMode, bool clear)
 {
-	if (RunMode != runmode)
+	if (RunMode != runMode)
 	{
-		RunMode = runmode;
+		RunMode = runMode;
 	}
 	// When clear is set
 	if (clear)
 	{
+		SyncTimeStart = TimeSpec(getTime()).toDouble();
 		for (unsigned i = 0; i < ChannelCount; i++)
 		{
 			FChannelInfo[i].SyncCounter = 0;
+			FChannelInfo[i].SyncTimeOffset = 0.0;
 		}
 	}
-	(void) clear;
 	return true;
 }
 
@@ -290,7 +291,7 @@ void AcquisitionEmulator::TGateInfo::CalculateThreshold()
 	auto val = ThresholdValue; //calc_offset(ThresholdValue, 0.0, 100.0, 128, true);
 	val *= Polarity ? Polarity : 1;
 	val += Polarity ? 128 : 0;
-	Threshold = val;
+	Threshold = (unsigned) val;
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Threshold Level set to : " << val);
 }
 
@@ -536,14 +537,8 @@ bool AcquisitionEmulator::handleParam
 					if (setval)
 					{
 						ci.RepRate = setval->getFloat();
-						if (ci.RepRate)
-						{
-							SustainEntry.setInterval(TimeSpec(1.0 / ci.RepRate));
-						}
-						else
-						{
-							SustainEntry.disable();
-						}
+						//ci.SyncCounter = (time - SyncTimeStart + ci.SyncTimeOffset) * ci.RepRate;
+						ci.SyncTimeOffset = ((double) ci.SyncCounter / ci.RepRate) + SyncTimeStart - TimeSpec(getTime()).toDouble();
 					}
 					if (getval)
 					{
@@ -557,7 +552,7 @@ bool AcquisitionEmulator::handleParam
 						info->Description += "Repetition rate when sync is set to internal.";
 						info->Default.set(5.0);
 						info->Round.set(1.0);
-						info->Minimum.set(0.0);
+						info->Minimum.set(1.0);
 						info->Maximum.set(1000.0);
 					}
 					break;
@@ -656,8 +651,7 @@ bool AcquisitionEmulator::handleParam
 						info->Id = id;
 						info->Name = "Pop Manual";
 						info->Unit = "!";
-						info->Description += "Enables and generates manual POP index in the table."
-																 "Disables hardware generation of POP indices.";
+						info->Description += "Enables and generates manual POP index in the table. Disables hardware generation of POP indices.";
 						info->Default.set(0);
 						info->Round.set(1);
 						info->Minimum.set(0);
@@ -987,8 +981,7 @@ bool AcquisitionEmulator::handleParam
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT,
-					"Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
+				SF_RTTI_NOTIFY(DO_DEFAULT,"Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
 					return false;
 
 				case PID_GATE_NAME:
@@ -1472,8 +1465,7 @@ bool AcquisitionEmulator::handleResult(IdType id, ResultInfo* info, BufferInfo* 
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT, "Gate " << info->Gate << " Param ID "
-					<< stringf("0x%lX", id) << " does not exist!");
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
 					return false;
 
 				case RID_COPY:
@@ -1606,15 +1598,19 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 	// Check the current mode the emulator is now.
 	if (RunMode)
 	{
-		// Just to generate ? times more data.
-		for (int loops = 0; loops < 5; loops++)
+		// Amount of time (seconds) since the start of the run mode.
+		auto runTime = TimeSpec(t).toDouble() - SyncTimeStart;
+		//
+		for (int channel = 0; channel < ChannelCount; channel++)
 		{
-			//
-			for (int channel = 0; channel < ChannelCount; channel++)
+			auto& ci(FChannelInfo[channel]);
+			// When the sync mode is internal generate data.
+			if (!ci.SyncMode)
 			{
-				TChannelInfo& ci(FChannelInfo[channel]);
-				// When the sync mode is internal generate data.
-				if (!ci.SyncMode)
+				// Sync counter expected value.
+				uint32_t syncCount = std::floor((runTime + ci.SyncTimeOffset) * ci.RepRate);
+				// Generate the amount syncs which is needed so far.
+				while (ci.SyncCounter <= syncCount)
 				{
 					// Generate a result at each n-th sync.
 					if (ci.SyncCounter && ci.SyncCounter % ci.PopDivider == 0)
@@ -1786,27 +1782,26 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 									callParamHook(MAKE_ID(channel, gate, PID_GATE_AMP));
 									callParamHook(MAKE_ID(channel, gate, PID_GATE_TOF));
 								}
-							}
 								break;
+							}
 
 							case MID_COPY:
 								callResultHook(MAKE_ID(channel, gate, RID_COPY));
 								break;
 						}
 					}
-					// Increment the syn counter.
+					// Increment the sync counter.
 					FChannelInfo[channel].SyncCounter++;
 				}
-				// Check if the single shot has finished.
-				if (SingleShotTimer)
-				{
-					// Prevent reentry.
-					SingleShotTimer.disable();
-					// Update the client's parameter.
-					callParamHook(MAKE_ID(NO_CHANNEL, NO_GATE, PID_ONESHOTSTATE));
-				}
 			}
-			//
+			// Check if the single shot has finished.
+			if (SingleShotTimer)
+			{
+				// Prevent reentry.
+				SingleShotTimer.disable();
+				// Update the client's parameter.
+				callParamHook(MAKE_ID(NO_CHANNEL, NO_GATE, PID_ONESHOTSTATE));
+			}
 		}
 	}
 	// Allow reentry again.
@@ -1874,7 +1869,7 @@ void FillDataBuffer
 		double value = FormWave(i - delay1, delta, slope, freq);
 		value -= FormWave(i - delay2, delta, slope - 0.3, freq);
 		value -= FormWave(i - delay3, delta, slope - 0.6, freq);
-		// Add some noise dependant on the gain starting with 2%.
+		// Add some noise dependent on the gain starting with 2%.
 		value += 0.02 * double(rand()) / double(RAND_MAX);//  (gain*gain/10.0)
 		value *= gain;
 		// Clip after multiplying.

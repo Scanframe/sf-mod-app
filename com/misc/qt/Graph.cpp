@@ -54,7 +54,8 @@ void Graph::setRuler(Draw::ERulerOrientation ro, double start, double stop, int 
 	ri->enabled = digits > 0;
 	ri->start = start;
 	ri->stop = stop;
-	ri->digits = digits;
+	// Do not allow
+	ri->digits = clip(digits, 1, 10);
 	ri->unit = unit;
 }
 
@@ -84,7 +85,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		_left.rect = bounds;
 		_left.rect.setWidth(_left.size);
 		_left.bounds = _left.rect;
-		// The area allowed to paint in.
+		// The area allowed painting in.
 		auto area = _left.bounds;
 		// Draw background of ruler area.
 		if (_colors[cRulerBackground].isValid() && !_debug)
@@ -115,7 +116,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		_right.rect.setWidth(_right.size);
 		_right.rect.moveTo(QPoint(bounds.width() - _right.size, 0) + bounds.topLeft());
 		_right.bounds = _right.rect;
-		// The area allowed to paint in.
+		// The area allowed painting in.
 		auto area = _right.bounds;
 		// Draw background of ruler area.
 		if (_colors[cRulerBackground].isValid() && !_debug)
@@ -145,7 +146,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		_top.rect = bounds;
 		_top.rect.setHeight(_top.size);
 		_top.bounds = _top.rect;
-		// The area allowed to paint in.
+		// The area allowed painting in.
 		auto area = _top.bounds;
 		// Correction when having a left ruler.
 		if (_left.enabled)
@@ -176,7 +177,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		_bottom.rect.moveTo(QPoint(0, _bottom.rect.height() - _bottom.size) + bounds.topLeft());
 		_bottom.rect.setHeight(_bottom.size);
 		_bottom.bounds = _bottom.rect;
-		// The area allowed to paint in.
+		// The area allowed painting in.
 		auto area = _bottom.bounds;
 		// Correction when having a left ruler.
 		if (_left.enabled)

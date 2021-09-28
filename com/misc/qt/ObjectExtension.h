@@ -7,6 +7,10 @@
 
 namespace sf
 {
+
+// Forward definition.
+class PropertySheetDialog;
+
 /**
  * @brief Interface class to multiple inherit when the sf::FormWriter class
  * needs to be restricted in writing object properties.
@@ -30,6 +34,13 @@ class _MISC_CLASS ObjectExtension
 		virtual bool isRequiredProperty(const QString& name) = 0;
 
 		/**
+		 * @brief Adds the pages specific for this object.
+		 *
+		 * @param sheet Parent and property sheet for the page.
+		 */
+		virtual void addPropertyPages(sf::PropertySheetDialog* sheet);
+
+		/**
 		 * @brief Gets if the children needs saving by the FormBuilder class.
 		 *
 		 * @return False by default.
@@ -49,4 +60,4 @@ class _MISC_CLASS ObjectExtension
 		QObject* _object;
 };
 
-} // namespace
+}

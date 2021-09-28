@@ -14,7 +14,7 @@ class StringsObject :public ScriptObject
 			 , Strings(strings)
 			 , IsOwner(false)
 		{
-			// When the Strings member is empty create a string list our self.
+			// When the String's member is empty create a string list our self.
 			if (!Strings)
 			{
 				IsOwner = true;
@@ -78,7 +78,7 @@ const ScriptObject::IdInfo* StringsObject::getInfo(const std::string& name) cons
 	return ScriptObject::getInfoUnknown();
 }
 
-bool StringsObject::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flagset)
+bool StringsObject::getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set)
 {
 	//
 	switch (info->_index)
@@ -135,7 +135,7 @@ bool StringsObject::getSetValue(const IdInfo* info, Value* value, Value::vector_
 
 		case SID_TEXT:
 		{
-			if (flagset)
+			if (flag_set)
 			{
 				value->Set(Strings->Text);
 			}
@@ -148,7 +148,7 @@ bool StringsObject::getSetValue(const IdInfo* info, Value* value, Value::vector_
 
 		case SID_COMMATEXT:
 		{
-			if (flagset)
+			if (flag_set)
 			{
 				value->Set(Strings->CommaText);
 			}

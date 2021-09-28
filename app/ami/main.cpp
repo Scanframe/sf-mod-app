@@ -13,10 +13,11 @@ int main(int argc, char* argv[])
 	sf::Application::setApplicationVersion(QT_VERSION_STR);
 	// This call exists the application when
 	app.parseCommandline();
-	app.initialize(true);
+	app.initialize(AppModuleInterface::Initialize);
 	app.getMainWindow()->show();
+	app.initialize(AppModuleInterface::Finalize);
 	app.processCommandLine();
 	auto rv = sf::Application::exec();
-	app.initialize(false);
+	app.initialize(AppModuleInterface::Uninitialize);
 	return rv;
 }

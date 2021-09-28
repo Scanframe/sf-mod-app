@@ -18,7 +18,7 @@ class ProjectAppModule :public AppModuleInterface
 
 		~ProjectAppModule() override;
 
-		void initialize(bool init) override;
+		void initialize(InitializeStage stage) override;
 
 		void addPropertyPages(PropertySheetDialog*) override;
 
@@ -58,7 +58,11 @@ class ProjectAppModule :public AppModuleInterface
 
 		QAction* _actionLoadSettings{nullptr};
 
+		QString _settingsFilename;
+
 		QString _currentSettingsFile;
+
+		[[nodiscard]] QStringList getSettingsFilenames() const;
 };
 
 }

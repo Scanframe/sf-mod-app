@@ -277,7 +277,7 @@ struct _RSA_CLASS RsaTypes
 		/**
 		 * Holds an unique id for the current situation.
 		 */
-		int Id{0};
+		IdType Id{0};
 		/**
 		 * Flags
 		 */

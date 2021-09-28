@@ -154,7 +154,7 @@ AppModuleInterface::OpenFileClosure AppModuleInterface::callbackOpenFile;
 AppModuleInterface::AppModuleInterface(const AppModuleInterface::Parameters& parameters)
 	:QObject(parameters._parent)
 	 , _settings(parameters._settings)
-	 , _initialized(false)
+	 , _initializeStage(InitializeStage::Uninitialize)
 {
 }
 
@@ -174,18 +174,18 @@ void AppModuleInterface::instantiate(QSettings* settings, QObject* parent)
 	}
 }
 
-size_t AppModuleInterface::initializeInstances(bool init)
+size_t AppModuleInterface::initializeInstances(InitializeStage stage)
 {
 	size_t rv = 0;
 	for (auto i: _map.values())
 	{
-		// When not initialized skip it.
-		if (i->_initialized != init)
+		// Check if (next) stage is allowed or not done yet.
+		if (stage != i->_initializeStage && (stage > i->_initializeStage || stage == InitializeStage::Uninitialize))
 		{
-			// Set the initialization flag to prevent a second pass.
-			i->_initialized = init;
+			// Set the initialized member to prevent a second pass of the same value.
+			i->_initializeStage = stage;
 			// Call possible overloaded method.
-			i->initialize(init);
+			i->initialize(stage);
 			// Increment the return value.
 			rv++;
 		}
@@ -272,7 +272,7 @@ QString AppModuleInterface::getFileTypeFilters(bool all_files)
 	// Iterate over the map types.
 	for (auto ft: ftm)
 	{
-		// Format the filetypes as a open dialog filter.
+		// Format the filetypes as open dialog filter.
 		sl.append(QString("%1 (*.%2)").arg(ft->getName()).arg(ft->getSuffix()));
 	}
 	// Sort the entries by name.
@@ -302,7 +302,7 @@ QString AppModuleInterface::getFileTypeFilters() const
 	// Iterate over the map types.
 	for (auto ft: ftm)
 	{
-		// Format the filetypes as a open dialog filter.
+		// Format the filetypes as open dialog filter.
 		sl.append(QString("%1 (*.%2)").arg(ft->getName()).arg(ft->getSuffix()));
 	}
 	// Sort the entries by name.

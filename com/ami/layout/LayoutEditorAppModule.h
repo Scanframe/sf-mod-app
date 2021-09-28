@@ -14,7 +14,7 @@ class [[maybe_unused]] LayoutEditorAppModule :public AppModuleInterface
 
 		explicit LayoutEditorAppModule(const Parameters& params);
 
-		void initialize(bool init) override;
+		void initialize(InitializeStage stage) override;
 
 		void addPropertyPages(PropertySheetDialog*) override;
 

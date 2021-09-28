@@ -1,8 +1,8 @@
 #pragma once
 
 #include <misc/qt/PropertyPage.h>
-#include <gii/qt/AscanGraph.h>
 #include <qt/IdPropertyList.h>
+#include "AscanGraph.h"
 
 namespace sf
 {

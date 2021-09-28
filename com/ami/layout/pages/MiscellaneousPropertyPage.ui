@@ -58,7 +58,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="lblAlignmentVertical">
         <property name="text">
-         <string>Veritcal</string>
+         <string>Vertical</string>
         </property>
         <property name="buddy">
          <cstring>cbAlignmentVertical</cstring>

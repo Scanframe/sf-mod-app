@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ApplicationPropertyPage</class>
- <widget class="sf::PropertyPage" name="ApplicationPropertyPage">
+ <class>MainWindowPropertyPage</class>
+ <widget class="sf::PropertyPage" name="MainWindowPropertyPage">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ApplicationPropertyPage</string>
+   <string>MainWindowPropertyPage</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -27,9 +27,9 @@
     <number>4</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="gbApplication">
+    <widget class="QGroupBox" name="gbMdi">
      <property name="title">
-      <string>Application</string>
+      <string>Multi Document Interface</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
       <property name="horizontalSpacing">
@@ -51,43 +51,17 @@
        <number>4</number>
       </property>
       <item row="0" column="0">
-       <widget class="QLabel" name="AppDisplayName">
+       <widget class="QLabel" name="lblViewMode">
         <property name="text">
-         <string>&amp;Display name</string>
+         <string>&amp;View Mode</string>
         </property>
         <property name="buddy">
-         <cstring>leAppDisplayName</cstring>
+         <cstring>cbViewMode</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="leAppDisplayName"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblSustain">
-        <property name="toolTip">
-         <string>Interval in milliseconds of handling processes in the background.</string>
-        </property>
-        <property name="text">
-         <string>&amp;Sustain Interval</string>
-        </property>
-        <property name="buddy">
-         <cstring>sbSustain</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="sbSustain">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="minimum">
-         <number>20</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="cbViewMode"/>
       </item>
      </layout>
     </widget>

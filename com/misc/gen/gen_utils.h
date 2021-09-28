@@ -295,7 +295,7 @@ _MISC_FUNC std::string trimRight(std::string s, const std::string& t = " ");
 _MISC_FUNC std::string unique(const std::string& s);
 
 /**
- * Generates random numbers within a specified integer range.
+ * @brief Generates random numbers within a specified integer range.
  */
 template<typename T>
 T random(T start, T stop)
@@ -306,74 +306,44 @@ T random(T start, T stop)
 }
 
 /**
- * Returns the precision of the passed floating point value.
+ * @brief Returns the precision of the passed floating point value.
  * This is the amount of characters after the point without the trailing zeros.
  * When the value is 12300.00 the value returned is 3.
  * When the value is 0.0123 the value returned is also 3.
- * @tparam T  Floating point type.
  * @param value Floating point value
  * @return Amount of characters after the point without the trailing zeros.
  */
-template<typename T>
-int precision(T value)
-{
-	constexpr int len = std::numeric_limits<double>::digits10;
-	int i;
-	char* s = ecvt(value, len, &i, &i);
-	i = len;
-	while (i--)
-	{
-		if (s[i] != '0')
-		{
-			return i + 1;
-		}
-	}
-	return 0;
-}
+_MISC_FUNC int precision(double value);
 
 /**
- * Returns the amount of digits which are significant for the value.
+ * @brief Returns the amount of digits which are significant for the value.
  * When the value is 12300.00 the value returned is -2.
  * When the value is 0.0123 the value returned is 4.
- * @tparam T Floating point type.
- * @param value
+ * @param value Double value.
  * @return Amount of significant digits for the passed number.
  */
-template<typename T>
-int digits(T value)
-{
-	constexpr int len = std::numeric_limits<T>::digits10;
-	int dec, sign;
-	char* s = ecvt(value, len, &dec, &sign);
-	int i = len;
-	while (i--)
-	{
-		if (s[i] != '0' || !i)
-		{
-			return -(dec - i - 1);
-		}
-	}
-	return -(len + dec - 1);
-}
+_MISC_FUNC int digits(double value);
 
 /**
- * Returns the order of magnitude of the passed value.
+ * @brief Returns the order of magnitude of the passed value.
  * Examples:
  *  magnitude(0.001234) => -2
  *  magnitude(0.123400) =>  0
  *  magnitude(12340.00) =>  6
  */
-template<typename T>
-int magnitude(T value)
-{
-	if (value)
-	{
-		int dec, sign;
-		ecvt(value, std::numeric_limits<T>::digits10, &dec, &sign);
-		return dec;
-	}
-	return 0;
-}
+_MISC_FUNC int magnitude(double value);
+
+/**
+ * @brief Gets the amount of required digits needed when drawing a scale.
+ *
+ * This function is used in combination with #numberString() to provide the 'digits' argument.
+ *
+ * @param roundVal Value used for rounding or stepping.
+ * @param minVal Minimum value on the scale.
+ * @param maxVal Maximum value on the scale.
+ * @return Amount of digits required.
+ */
+_MISC_FUNC int requiredDigits(double roundVal, double minVal, double maxVal);
 
 /**
  * Fast integer power-of function.
@@ -464,8 +434,8 @@ char* itoa(T value, char* buffer, int base)
 		return buffer;
 	}
 	bool neg = false;
-	// In standard ltoa(), negative numbers are handled only with
-	// base 10. Otherwise numbers are considered unsigned.
+	// In standard ltoa(), negative numbers are handled only with base 10.
+	// Otherwise, numbers are considered unsigned.
 	if (value < 0 && base == 10)
 	{
 		neg = true;
@@ -563,7 +533,7 @@ T toTypeDef(const std::string& s, T def)
  * @return String
  */
 template<typename T>
-std::string numberString(T value, unsigned digits, bool sign_on = true)
+std::string numberString(T value, int digits, bool sign_on = true)
 {
 	std::string rv;
 	// Initialize some
@@ -609,9 +579,24 @@ std::string numberString(T value, unsigned digits, bool sign_on = true)
 		dec += 1;
 		rv.resize(digits);
 	}
-	// Calculate the exponent floored to a multiple of 3 when not a multiple of 3.
-	int exp = (dec % 3) ? (dec - 3) / 3 * 3 : dec;
-	// Correct the decimal position using the new exponent.
+	// Exponent to be calculated.
+	int exp;
+	// When the amount decimals needs rounding to multiple of 3.
+	if (dec % 3)
+	{
+		// Calculate the exponent floored to a multiple of 3 when not a multiple of 3.
+		exp = (dec - 3) / 3 * 3;
+	}
+		// When decimals and magnitude are the same.
+	else if (dec == magnitude(value))
+	{
+		exp = 0;
+	}
+	else
+	{
+		exp = dec;
+	}
+	// Correct the decimal position using the calculated exponent.
 	dec -= exp;
 	// Correction to avoid '0.' at the start when having enough resolution.
 	if (exp > 0 && !dec && rv.length() > 3)
@@ -633,7 +618,7 @@ std::string numberString(T value, unsigned digits, bool sign_on = true)
 		}
 		else if (dec > rv.length())
 		{
-			rv.append(dec - rv.length() - 1, '0');
+			rv.append(dec - rv.length(), '0');
 		}
 	}
 	// Only add a exponent value when non zero.
@@ -641,12 +626,11 @@ std::string numberString(T value, unsigned digits, bool sign_on = true)
 	{
 		rv.append(stringf(sign_on ? "e%+-d" : "e%d", exp));
 	}
-	// Prepend always the '-' sign but the plus sign only when sign_on is true.
+	// Always prepends the '-' sign but the plus sign only when sign_on is true.
 	if (sign || sign_on)
 	{
 		rv.insert(0, 1, sign ? '-' : '+');
 	}
-	//
 	return rv;
 }
 

@@ -1,6 +1,5 @@
 #include <QtWidgets>
 #include <QPlainTextEdit>
-#include "ApplicationPropertyPage.h"
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
 #include <misc/qt/ModuleConfiguration.h>
@@ -8,8 +7,8 @@
 #include <ami/iface/AppModuleInterface.h>
 #include <misc/gen/gen_utils.h>
 #include <misc/qt/Globals.h>
-#include "Application.h"
-#include "MainWindow.h"
+#include "ApplicationPropertyPage.h"
+#include "MainWindowPropertyPage.h"
 
 namespace sf
 {
@@ -326,7 +325,8 @@ void MainWindow::settingsPropertySheet()
 	sheet->setWindowTitle(tr("Application Settings"));
 	sheet->setWindowIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Settings), Qt::gray));
 	//
-	sheet->addPage(new ApplicationPropertyPage(this, sheet));
+	sheet->addPage(new ApplicationPropertyPage(_application, sheet));
+	sheet->addPage(new MainWindowPropertyPage(this, sheet));
 	// Adds all the property pages to the passed property sheet.
 	AppModuleInterface::addAllPropertyPages(sheet);
 	//
@@ -637,7 +637,7 @@ void MainWindow::settingsReadWrite(bool save)
 	const auto keyDisplayName = QString("DisplayName");
 	const auto keyViewMode = QString("ViewMode");
 	//
-	_settings->beginGroup("Application");
+	_settings->beginGroup("MainWindow");
 	if (save)
 	{
 		_settings->setValue(keyDisplayName, QApplication::applicationDisplayName());

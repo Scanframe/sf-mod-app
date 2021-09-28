@@ -49,10 +49,10 @@ UnitConversionAppModule::~UnitConversionAppModule()
 	}
 }
 
-void UnitConversionAppModule::initialize(bool init)
+void UnitConversionAppModule::initialize(InitializeStage stage)
 {
 	// Load the settings.
-	if (init)
+	if (stage)
 	{
 		//settingsReadWrite(false);
 	}

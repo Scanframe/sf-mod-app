@@ -88,10 +88,9 @@ set(SOURCES_QT
 	qt/VariableBarPlugin.cpp qt/VariableBarPlugin.h
 	qt/InformationItemModel.cpp qt/InformationItemModel.h
 	qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
-	qt/AscanGraph.cpp qt/AscanGraph.h
 	qt/IdPropertyList.cpp qt/IdPropertyList.h
-	qt/AscanGraphPlugin.cpp qt/AscanGraphPlugin.h
 	qt/InformationMonitor.cpp qt/InformationMonitor.h qt/InformationMonitor.ui
+	qt/VariableIdPropertyPage.cpp qt/VariableIdPropertyPage.h qt/VariableIdPropertyPage.ui
 	)
 
 list(APPEND SOURCES ${SOURCES_QT})

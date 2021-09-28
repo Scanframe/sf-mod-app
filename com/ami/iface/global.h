@@ -1,5 +1,5 @@
 /*
-This include file determines the the way the classes and functions in the
+This include-file determines the way the classes and functions in the
 library are exported when they are used as a dynamic or as application and static library.
 When building this Dynamic Library then _AMI_PKG (package) should be defined.
 
@@ -10,7 +10,7 @@ _list of the declaration modifiers for types:
 
 Add compiler definition flags:
 	* _AMI_PKG when building a dynamic library (package)
-	* _AMI_ARC when including in a compile or using it as an archive.
+	* _AMI_ARC when including compile-time or using it as an archive.
 */
 
 #pragma once

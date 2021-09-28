@@ -3,10 +3,12 @@
 #include <misc/qt/Draw.h>
 #include <misc/qt/Graph.h>
 #include <misc/qt/qt_utils.h>
+#include <misc/qt/PropertySheetDialog.h>
 #include <gen/InformationBase.h>
 #include <gen/Variable.h>
 #include <gen/ResultData.h>
 #include "AscanGraph.h"
+#include "AscanPropertyPage.h"
 
 namespace sf
 {
@@ -45,14 +47,105 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 		{
 			v->setHandler(this);
 		}
-		setRulers();
+		setRulerLeft();
+		setRulerBottom();
 		setGrid();
 	}
 
-	void setRulers()
+	void setRulerLeft()
 	{
-		_graph.setRuler(sf::Draw::roLeft, 0, 10, 2, "V");
-		_graph.setRuler(sf::Draw::roBottom, 0, 100, 4, "s");
+		bool converted = true;
+		QString unit = "%";
+		Value::flt_type start = 0;
+		Value::flt_type stop = 100;
+		Value::flt_type step = 1;
+		// Check if data is available.
+		if (_rData.getId())
+		{
+			// Get the attenuation value when the variable was attached.
+			if (_vAttenuation.getId())
+			{
+				_attenuation = _vAttenuation.getCur().getFloat();
+			}
+			else
+			{
+				_attenuation = 1.0;
+			}
+			// Check if the amplitude unit is present.
+			if (_vAmplitudeUnit.getId())
+			{
+				unit = QString::fromStdString(_vAmplitudeUnit.getUnit(converted));
+				step = _vAmplitudeUnit.getCur(converted).getFloat() / _attenuation;
+				start = step * -static_cast<Value::flt_type>(_rData.getValueOffset());
+				stop = step * static_cast<Value::flt_type>(_rData.getValueRange() - _rData.getValueOffset());
+			}
+			else
+			{
+				unit = "Amp";
+				step = 1;
+				start = -static_cast<Value::flt_type>(_rData.getValueOffset());
+				stop = static_cast<Value::flt_type>(_rData.getValueRange() - _rData.getValueOffset());
+			}
+		}
+		_graph.setRuler(sf::Draw::roLeft, start, stop, requiredDigits(step, start, stop), unit);
+	}
+
+	void setRulerBottom()
+	{
+		// Get the unit of the A-scan.
+		QString unit = "%";
+		Value::flt_type start = 0.0;
+		Value::flt_type range = 100.0;
+		Value::flt_type step = 1.0;
+		// When data is available.
+		if (_rData.getId())
+		{
+			// When the range of the copy result id is specified the value is used to calculate the range of graph.
+			if (_vRange.getId())
+			{
+				// Set the converted start value for the start value but when the
+				// delay variable is present it is assumed to be zero.
+				start = _vRange.convert(_vDelay.getCur()).getFloat();
+				// Get the converted range value.
+				range = _vRange.getCur(true).getFloat();
+				// Set the converted unit
+				unit = QString::fromStdString(_vRange.getUnit(true));
+			}
+				// When range variable is NOT present and time unit is.
+				// Then use block size and time unit to establish the range.
+			else if (_vTimeUnit.getId())
+			{
+				// When the delay parameter is present it is used to for conversion as well.
+				if (_vDelay.getId())
+				{
+					// Set the converted start value.
+					start = _vDelay.getCur(true).getFloat();
+					// Get the range of the A-scan by getting the block size.
+					range = _vDelay.convert(_vTimeUnit.getCur()).getFloat() * static_cast<Value::flt_type>(_rData.getBlockSize());
+					// Set the converted unit
+					unit = QString::fromStdString(_vDelay.getUnit(true));
+				}
+				else
+				{
+					// Delay variable is not present so the time unit is used for conversion.
+					// Get the range of the A-scan by getting the block size.
+					range = _vTimeUnit.getCur(true).getFloat() * static_cast<Value::flt_type>(_rData.getBlockSize());
+					// Set the converted unit
+					unit = QString::fromStdString(_vTimeUnit.getUnit(true));
+				}
+			}
+				// Only able to use block size to set range.
+				// Use the copy data block size to fill the bottom ruler.
+			else
+			{
+				// If Delay exists the value is presumed to be an offset in samples.
+				// When delay is not available the value is zero.
+				start = _vDelay.getCur().getFloat();
+				range = static_cast<Value::flt_type>(_rData.getBlockSize());
+				unit = "x";
+			}
+		}
+		_graph.setRuler(sf::Draw::roBottom, start, start + range, requiredDigits(step, start, range), unit);
 	}
 
 	void setGrid()
@@ -75,7 +168,29 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 
 	void variableEventHandler(VariableTypes::EEvent event, const Variable& caller, Variable& link, bool sameInst) override
 	{
+		switch (event)
+		{
+			default:
+				break;
 
+			case Variable::veIdChanged:
+			case Variable::veValueChange:
+			case Variable::veConverted:
+			{
+				if (&link == &_vAmplitudeUnit || &link == &_vAttenuation)
+				{
+					// Set the scale unit to amplitude unit variable unit.
+					setRulerLeft();
+				}
+				else
+				{
+					setRulerBottom();
+				}
+				// Redraw the ruler.
+				invalidate(false);
+				break;
+			}
+		}
 	}
 
 	void resultDataEventHandler(ResultDataTypes::EEvent event, const ResultData& caller, ResultData& link, const Range& range, bool sameInst) override
@@ -99,6 +214,9 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 			{
 				// Size the dynamic array to the needed size.
 				_polygon.resize(static_cast<qsizetype>(link.getBlockSize()));
+				// Set both rulers.
+				setRulerBottom();
+				setRulerLeft();
 				// Paint all.
 				invalidate(false);
 			}
@@ -164,7 +282,6 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 		if (!_rData.blockRead(offset, 1, buffer.data()))
 		{
 			SF_RTTI_NOTIFY(DO_CLOG, "blockRead() Failed!");
-			//PlotControl->Caption = "Error Retrieving Data !";
 		}
 		else
 		{
@@ -208,6 +325,10 @@ SF_IMPL_INFO_ID(AscanGraph, Data, _p->_rData)
 SF_IMPL_INFO_ID(AscanGraph, Attenuation, _p->_vAttenuation)
 
 SF_IMPL_INFO_ID(AscanGraph, TimeUnit, _p->_vTimeUnit)
+
+SF_IMPL_INFO_ID(AscanGraph, Delay, _p->_vDelay)
+
+SF_IMPL_INFO_ID(AscanGraph, Range, _p->_vRange)
 
 SF_IMPL_INFO_ID(AscanGraph, AmplitudeUnit, _p->_vAmplitudeUnit)
 
@@ -278,6 +399,11 @@ void AscanGraph::paintEvent(QPaintEvent* event)
 			_p->_graph.paintPlotCross(sp, tr("No Data"));
 		}
 	}
+}
+
+void AscanGraph::addPropertyPages(sf::PropertySheetDialog* sheet)
+{
+	sheet->addPage(new AscanPropertyPage(this, sheet));
 }
 
 bool AscanGraph::isRequiredProperty(const QString& name)

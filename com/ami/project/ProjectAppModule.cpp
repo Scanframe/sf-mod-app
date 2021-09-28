@@ -1,12 +1,13 @@
 #include <QMainWindow>
 #include <QToolBar>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDirIterator>
 #include <misc/gen/ConfigLocation.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include <misc/qt/Resource.h>
 #include <misc/qt/Globals.h>
 #include <gii/qt/InformationMonitor.h>
-#include <QFileDialog>
-#include <QMessageBox>
 #include "ProjectAppModule.h"
 #include "ProjectPropertyPage.h"
 
@@ -16,8 +17,8 @@ namespace sf
 ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 	:AppModuleInterface(params)
 	 , _settings(params._settings)
-	 ,	_projectConfig(new ProjectConfig)
-	 // TODO: Must be read from QSettings and option for auto read at start up.
+	 , _projectConfig(new ProjectConfig)
+	// TODO: Must be read from QSettings and option for auto read at start up.
 	 , _currentSettingsFile("default")
 {
 	settingsReadWrite(false);
@@ -117,11 +118,30 @@ ProjectAppModule::~ProjectAppModule()
 	delete _projectConfig;
 }
 
-void ProjectAppModule::initialize(bool init)
+void ProjectAppModule::initialize(InitializeStage stage)
 {
-	if (init)
+	switch (stage)
 	{
-		createDevices();
+		case AppModuleInterface::Initialize:
+			createDevices();
+			break;
+
+		case AppModuleInterface::Finalize:
+			// When a file is configured.
+			if (_settingsFilename.length())
+			{
+				auto fp = QDir(QString::fromStdString(getConfigLocation("settings"))).filePath(QString("%1.%2")
+					.arg(_settingsFilename).arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix())));
+				// Load the file.
+				if (!_projectConfig->settings().load(fp.toStdString()))
+				{
+					QMessageBox::information(getGlobalParent(), tr("Load Failed"), tr("Loading file '%1' failed!").arg(fp));
+				}
+			}
+			break;
+
+		case AppModuleInterface::Uninitialize:
+			break;
 	}
 }
 
@@ -156,21 +176,27 @@ void ProjectAppModule::settingsReadWrite(bool save)
 	{
 		return;
 	}
-	_settings->beginGroup("AppModule.Acquisition");
+	_settings->beginGroup("AppModule.Project");
 	QString keyDeviceUt("DeviceUt");
 	QString keyDeviceEt("DeviceEt");
 	QString keyDeviceMotion("DeviceMotion");
+	QString keyStorage("Storage");
+	QString keySettingsFilename("SettingsFilename");
 	if (!save)
 	{
 		_serverUtName = _settings->value(keyDeviceUt).toString();
 		_serverEtName = _settings->value(keyDeviceEt).toString();
 		_serverMotionName = _settings->value(keyDeviceMotion).toString();
+		_serverStorageName = _settings->value(keyStorage).toString();
+		_settingsFilename = _settings->value(keySettingsFilename).toString();
 	}
 	else
 	{
 		_settings->setValue(keyDeviceUt, _serverUtName);
 		_settings->setValue(keyDeviceEt, _serverEtName);
 		_settings->setValue(keyDeviceMotion, _serverMotionName);
+		_settings->setValue(keyStorage, _serverStorageName);
+		_settings->setValue(keySettingsFilename, _settingsFilename);
 	}
 	_settings->endGroup();
 }
@@ -246,6 +272,23 @@ void ProjectAppModule::addToolBars(QMainWindow* mainWindow)
 	//
 	toolBar->addAction(_actionMonitorVariable);
 	toolBar->addAction(_actionMonitorResultData);
+}
+
+QStringList ProjectAppModule::getSettingsFilenames() const
+{
+	QStringList rv;
+	auto suffix = QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix());
+	auto dir = QString::fromStdString(getConfigLocation("settings"));
+	QDirIterator di(dir, {QString("*.%1").arg(suffix)}, QDir::Filter::Files);
+	while (di.hasNext())
+	{
+		di.next();
+		auto name = di.fileName();
+		// Remove the suffix from the name.
+		name.truncate(di.fileName().length() - suffix.length() - 1);
+		rv.append(name);
+	}
+	return rv;
 }
 
 }

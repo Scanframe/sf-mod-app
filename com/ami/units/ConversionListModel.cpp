@@ -263,7 +263,7 @@ bool ConversionListModel::edit(QModelIndex index)
 				tr("Unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
 			continue;
 		}
-		// Set the dirty flag before an event is going to be send from the list modification.
+		// Set the dirty flag before an event is going to be sent from the list modification.
 		_dirty = true;
 		if (edit)
 		{
@@ -290,7 +290,7 @@ bool ConversionListModel::remove(QModelIndex index)
 {
 	if (index.isValid())
 	{
-		// Set the dirty flag before an event is going to be send from the list modification.
+		// Set the dirty flag before an event is going to be sent from the list modification.
 		_dirty = true;
 		auto pos = index.row();
 		beginRemoveRows(QModelIndex(), pos, pos);

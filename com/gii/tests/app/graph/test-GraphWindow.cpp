@@ -1,12 +1,11 @@
 #include "test-GraphWindow.h"
-#include "ui_test-GraphWindow.h"
-
 #include <iostream>
 #include <QAbstractButton>
 #include <QPainter>
 #include <misc/qt/CaptureListModel.h>
 #include <misc/qt/Draw.h>
 #include <misc/qt/Graph.h>
+#include "ui_test-GraphWindow.h"
 
 GraphWindow::GraphWindow(QWidget* parent)
 	:QDialog(parent)

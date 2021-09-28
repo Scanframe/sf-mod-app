@@ -10,7 +10,7 @@ or [GitHub](https://github.com/Scanframe/sf-mod-app).
 
 ## Hierarchy
 
-![Module hierarchy](hierarchy.svg)
+![Module hierarchy](manual/hierarchy.svg)
 
 **Legend**
 * **qt** : Qt Plugin Interface as used in Designer

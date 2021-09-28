@@ -2,21 +2,21 @@
 
 #include <QWidget>
 #include <misc/qt/PropertyPage.h>
-#include "Application.h"
+#include "MainWindow.h"
 
-namespace Ui {class ApplicationPropertyPage;}
+namespace Ui {class MainWindowPropertyPage;}
 
 namespace sf
 {
 
-class ApplicationPropertyPage :public PropertyPage
+class MainWindowPropertyPage :public PropertyPage
 {
 	Q_OBJECT
 
 	public:
-		explicit ApplicationPropertyPage(Application* app, PropertySheetDialog* parent = nullptr);
+		explicit MainWindowPropertyPage(MainWindow* mainWindow, PropertySheetDialog* parent = nullptr);
 
-		~ApplicationPropertyPage() override;
+		~MainWindowPropertyPage() override;
 
 		[[nodiscard]] QString getPageName() const override;
 
@@ -33,8 +33,8 @@ class ApplicationPropertyPage :public PropertyPage
 		void afterPageApply(bool was_modified) override;
 
 	private:
-		Ui::ApplicationPropertyPage* ui;
-		Application* _app;
+		Ui::MainWindowPropertyPage* ui;
+		MainWindow* _mainWindow;
 };
 
 }

@@ -1,9 +1,11 @@
 #include <QKeyEvent>
 #include <misc/qt/qt_utils.h>
-#include <gen/Variable.h>
-#include <gen/VariableHandler.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include "../gen/Variable.h"
+#include "../gen/VariableHandler.h"
 #include "VariableWidgetBase.h"
 #include "VariableWidgetBasePrivate.h"
+#include "VariableIdPropertyPage.h"
 
 namespace sf
 {
@@ -132,6 +134,13 @@ Variable& VariableWidgetBase::getVariable()
 const char* VariableWidgetBase::propertyNameEditorObject()
 {
 	return "editorObject";
+}
+
+void VariableWidgetBase::addPropertyPages(sf::PropertySheetDialog* sheet)
+{
+	// Even when empty now it could be filled later.
+	ObjectExtension::addPropertyPages(sheet);
+	sheet->addPage(new VariableIdPropertyPage(this, sheet));
 }
 
 }

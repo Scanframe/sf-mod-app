@@ -267,8 +267,8 @@ bool AppModuleList::submit()
 		_config->save(ml);
 		// Reset the dirty flag.
 		_dirty = false;
-		// Load the modules if the haven't already.
-		_config->load();
+		// Load the modules if the haven't already and pass 'false' for this is not happening at startup but manually.
+		_config->load(false);
 	}
 	return true;
 }

@@ -1,6 +1,7 @@
 #include <misc/qt/Resource.h>
 #include <rsa/iface/RsaInterface.h>
 #include <sto/iface/StorageInterface.h>
+#include <misc/qt/qt_utils.h>
 #include "ProjectPropertyPage.h"
 #include "ui_ProjectPropertyPage.h"
 
@@ -56,7 +57,15 @@ void ProjectPropertyPage::updatePage()
 	ui->cbDeviceEt->setCurrentIndex(clip<int>(ui->cbDeviceEt->findData(_am._serverEtName), 0, 99));
 	ui->cbDeviceMotion->setCurrentIndex(clip<int>(ui->cbDeviceMotion->findData(_am._serverMotionName), 0, 99));
 	ui->cbStorage->setCurrentIndex(clip<int>(ui->cbStorage->findData(_am._serverStorageName), 0, 99));
+	// Fill the settings file.
+	ui->cbSettingsFile->addItem(tr("None"));
+	for (auto& name: _am.getSettingsFilenames())
+	{
+		ui->cbSettingsFile->addItem(name, name);
+	}
+	ui->cbSettingsFile->setCurrentIndex(indexFromComboBox(ui->cbSettingsFile, _am._settingsFilename, 0));
 }
+
 
 void ProjectPropertyPage::applyPage()
 {
@@ -64,6 +73,7 @@ void ProjectPropertyPage::applyPage()
 	_am._serverEtName = ui->cbDeviceEt->currentData().toString();
 	_am._serverMotionName = ui->cbDeviceMotion->currentData().toString();
 	_am._serverStorageName = ui->cbDeviceEt->currentData().toString();
+	_am._settingsFilename = ui->cbSettingsFile->currentData().toString();
 }
 
 bool ProjectPropertyPage::isPageModified() const
@@ -73,6 +83,7 @@ bool ProjectPropertyPage::isPageModified() const
 	rv |= _am._serverEtName != ui->cbDeviceEt->currentData().toString();
 	rv |= _am._serverMotionName != ui->cbDeviceMotion->currentData().toString();
 	rv |= _am._serverStorageName != ui->cbStorage->currentData().toString();
+	rv |= _am._settingsFilename != ui->cbSettingsFile->currentData().toString();
 	return rv;
 }
 

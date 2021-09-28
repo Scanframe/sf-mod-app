@@ -227,7 +227,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Event handler for variables.
 		 */
-		void serverVariableHandler(Variable::EEvent event, const Variable& caller, Variable& linker, bool same_inst);
+		void serverVariableHandler(Variable::EEvent event, const Variable& caller, Variable& linker, bool sameInst);
 		/**
 		 * @brief Holds all created variables for the selected implementation.
 		 */

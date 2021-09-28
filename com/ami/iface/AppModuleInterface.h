@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitset>
 #include <QObject>
 #include <QMimeType>
 #include <QAbstractItemModel>
@@ -59,12 +60,24 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		static void instantiate(QSettings* settings, QObject* parent);
 
 		/**
+		 * Stages for a module.
+		 */
+		enum InitializeStage
+		{
+			/** Application is going to shutdown. */
+			Uninitialize = 0,
+			/** Application is starting up and module can configure.*/
+			Initialize,
+			/** All modules are done initializing and processing can start. */
+			Finalize,
+		};
+		/**
 		 * @brief Initializes all uninitialized instances or visa versa.
 		 *
-		 * @param init Determines initialization or uninitialization.
+		 * @param stage Determines what is done.
 		 * @return Amount of initialized instances.
 		 */
-		static size_t initializeInstances(bool init = true);
+		static size_t initializeInstances(InitializeStage stage);
 
 		/**
 		 * @brief Adds property pages from all modules to the passed sheet.
@@ -100,9 +113,9 @@ class _AMI_CLASS AppModuleInterface :public QObject
 
 		/**
 		 * @brief Called when al modules are loaded or when a module added.
-		 * @param init Determines initialization or uninitialization.
+		 * @param stage Determines initialization or uninitialization.
 		 */
-		virtual void initialize(bool init) = 0;
+		virtual void initialize(InitializeStage stage) = 0;
 
 		/**
 		 * @brief Gets the description of this instance.
@@ -293,9 +306,9 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		QList<AppModuleFileType> _fileTypes;
 		/**
-		 * Holds the flag if the module has been initialized.
+		 * @brief Holds the stage on the module's initialisation.
 		 */
-		bool _initialized;
+		InitializeStage _initializeStage;
 		/**
 		 * @brief Holds the instantiated module interfaces.
 		 */

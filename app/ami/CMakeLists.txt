@@ -32,6 +32,7 @@ set(SOURCES
 	res/resource.qrc
 	res/windows.rc
 	ApplicationPropertyPage.cpp ApplicationPropertyPage.h ApplicationPropertyPage.ui
+	MainWindowPropertyPage.cpp MainWindowPropertyPage.h MainWindowPropertyPage.ui
 	)
 
 # Add this for the headers in the autogen directory made by the *.ui files.

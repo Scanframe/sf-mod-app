@@ -15,7 +15,7 @@ class [[maybe_unused]] CodeEditorAppModule :public AppModuleInterface
 
 		explicit CodeEditorAppModule(const Parameters& params);
 
-		void initialize(bool init) override;
+		void initialize(InitializeStage stage) override;
 
 		void addPropertyPages(PropertySheetDialog*) override;
 

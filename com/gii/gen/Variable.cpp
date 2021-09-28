@@ -917,7 +917,7 @@ const Value& Variable::getCur() const
 
 const Value& Variable::getCur(bool converted) const
 {
-	return (converted && isConverted()) ? _reference->_convertCurValue : _reference->_curValue;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertCurValue : _reference->_curValue;
 }
 
 bool Variable::setCur(const Value& value, bool skip_self)
@@ -1500,7 +1500,7 @@ bool Variable::setConvertValues
 		}
 		// If the unit length is non-zero it always generates an event.
 		// Only when both length values are zero there is no event generated.
-		if (unit.length() || _reference->_convertUnit.length())
+		if (unit.length() || !_reference->_convertUnit.empty())
 		{
 			// Assigning the name will enable the conversion.
 			_reference->_convertUnit = unit;
@@ -1545,7 +1545,7 @@ bool Variable::setConvertValues(bool convert)
 		else
 		{
 			// Check if a conversion value must be disabled by checking the length of the conversion unit string as a sentry.
-			if (_reference->_convertUnit.length())
+			if (!_reference->_convertUnit.empty())
 			{
 				// Set the convert values to the original.
 				return setConvertValues("", Value(multiplier), Value(offset));
@@ -1566,7 +1566,7 @@ bool Variable::setConvert(bool enable)
 		// Make the change.
 		_converted = enable;
 		// Signal only if a conversion exists.
-		if (_reference->_convertUnit.length())
+		if (!_reference->_convertUnit.empty())
 		{
 			// Signal this event to this single instance.
 			emitEvent(veConverted, *this);
@@ -1579,7 +1579,7 @@ Value Variable::convert(const Value& value, bool to_org) const
 {
 	Value ret_val = value;
 	// Check if a conversion must be performed.
-	if (_reference->_convertUnit.length() && _reference->_type == Value::vitFloat)
+	if (!_reference->_convertUnit.empty() && _reference->_type == Value::vitFloat)
 	{
 		// Abort the operation when conversion fails.
 		if (!ret_val.setType(Value::vitFloat))
@@ -1880,7 +1880,7 @@ std::string Variable::getUnit(bool converted) const
 	}
 	else
 	{
-		return (converted && _reference->_convertUnit.length()) ? _reference->_convertUnit : _reference->_unit;
+		return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertUnit : _reference->_unit;
 	}
 }
 
@@ -1926,10 +1926,7 @@ bool Variable::isNumber() const
 
 bool Variable::isConverted() const
 {
-	return
-		_converted &&
-			_reference->_type == Value::vitFloat &&
-			_reference->_convertUnit.length();
+	return _converted && _reference->_type == Value::vitFloat &&	!_reference->_convertUnit.empty();
 }
 
 bool Variable::isTemporary()
@@ -1994,7 +1991,7 @@ const Value& Variable::getRnd() const
 
 const Value& Variable::getDef(bool converted) const
 {
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertDefValue : _reference->_defValue;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertDefValue : _reference->_defValue;
 }
 
 int Variable::getSigDigits() const
@@ -2002,24 +1999,29 @@ int Variable::getSigDigits() const
 	return isConverted() ? _reference->_convertSigDigits : _reference->_sigDigits;
 }
 
+int Variable::getRequiredDigits() const
+{
+	return requiredDigits(_reference->_rndValue.getFloat(), _reference->_minValue.getFloat(), _reference->_maxValue.getFloat());
+}
+
 const Value& Variable::getMin(bool converted) const
 {
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMinValue : _reference->_minValue;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertMinValue : _reference->_minValue;
 }
 
 const Value& Variable::getMax(bool converted) const
 {
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertMaxValue : _reference->_maxValue;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertMaxValue : _reference->_maxValue;
 }
 
 const Value& Variable::getRnd(bool converted) const
 {
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertRndValue : _reference->_rndValue;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertRndValue : _reference->_rndValue;
 }
 
 int Variable::getSigDigits(bool converted) const
 {
-	return (converted && _reference->_convertUnit.length()) ? _reference->_convertSigDigits : _reference->_sigDigits;
+	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertSigDigits : _reference->_sigDigits;
 }
 
 Value::EType Variable::getType() const

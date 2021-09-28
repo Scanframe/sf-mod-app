@@ -65,8 +65,6 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 	// ID that was used to fill static data.
 	id_type _currentId{std::numeric_limits<id_type>::max()};
 
-	bool _converted = true;
-
 	Gii::IdType _id{0};
 
 	QTreeWidgetItem* _itemCurrent{nullptr};
@@ -90,6 +88,8 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 		_variable.setHandler(this);
 		_resultData.setHandler(this);
 		//
+		_variable.setConvert(true);
+		//
 		ui->twProperties->setColumnCount(2);
 		ui->twProperties->setHeaderLabels({tr("Property"), tr("Value")});
 		ui->twProperties->setAlternatingRowColors(true);
@@ -107,7 +107,7 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 		{
 			if (_itemCurrent)
 			{
-				auto s = _variable.getCur(_converted).getString();
+				auto s = _variable.getCur().getString();
 				if (_variable.getStateCount())
 				{
 					auto state = _variable.getState(_variable.getCur(false));
@@ -119,6 +119,10 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 					{
 						_itemCurrent->setText(1, QString::fromStdString(_variable.getStateName(state) + " (" + s + ")"));
 					}
+				}
+				else
+				{
+					_itemCurrent->setText(1, QString::fromStdString(s));
 				}
 			}
 			if (_itemFlags)
@@ -168,8 +172,8 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 				auto twi = new QTreeWidgetItem();
 				if (field == -1)
 				{
-					twi->setText(0, "Current");
 					_itemCurrent = twi;
+					twi->setText(0, "Current");
 				}
 				else
 				{
@@ -181,7 +185,7 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 							break;
 
 						case vfId:
-							val = QString("0x%1").arg(_variable.getId());
+							val = QString("0x%1").arg(_variable.getId(), 0, 16);
 							break;
 
 						case vfName:
@@ -189,7 +193,7 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 							break;
 
 						case vfUnit:
-							val = QString::fromStdString(_variable.getUnit(_converted));
+							val = QString::fromStdString(_variable.getUnit());
 							break;
 
 						case vfType:
@@ -206,19 +210,19 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 							break;
 
 						case vfDefault:
-							val = QString::fromStdString(_variable.getDef(_converted).getString());
+							val = QString::fromStdString(_variable.getDef().getString());
 							break;
 
 						case vfRound:
-							val = QString::fromStdString(_variable.getRnd(_converted).getString());
+							val = QString::fromStdString(_variable.getRnd().getString() + " (" + itostr(_variable.getSigDigits()) + ')');
 							break;
 
 						case vfMinimum:
-							val = QString::fromStdString(_variable.getMin(_converted).getString());
+							val = QString::fromStdString(_variable.getMin().getString());
 							break;
 
 						case vfMaximum:
-							val = QString::fromStdString(_variable.getMax(_converted).getString());
+							val = QString::fromStdString(_variable.getMax().getString());
 							break;
 					}
 					twi->setText(1, val);

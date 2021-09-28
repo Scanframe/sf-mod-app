@@ -315,7 +315,7 @@ bool ScriptEditor::loadFile(const QString& filename)
 	// Check if closure is assigned.
 	if (callbackFindInterpreter)
 	{
-		// When a interpreter has been found.
+		// When an interpreter has been found.
 		if (auto interpreter = callbackFindInterpreter(fi.absoluteFilePath()))
 		{
 			// Assign the interpreter.

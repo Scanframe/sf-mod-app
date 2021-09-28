@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>399</width>
-    <height>313</height>
+    <width>387</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="lblDeviceUt">
         <property name="toolTip">
-         <string>Id for switching between multiple acquisition devices.</string>
+         <string>Ultrasonic acquisition device</string>
         </property>
         <property name="text">
          <string>&amp;Ultrasonic</string>
@@ -42,7 +42,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="lblDeviceMotion">
         <property name="toolTip">
-         <string>Id for switiching between multiple acquisition devices.</string>
+         <string>Motion controller device</string>
         </property>
         <property name="text">
          <string>&amp;Motion Controller</string>
@@ -55,7 +55,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="lblDeviceEt">
         <property name="toolTip">
-         <string>Id for switiching between multiple acquisition devices.</string>
+         <string>Eddy-current acquisition device</string>
         </property>
         <property name="text">
          <string>&amp;Eddy-current</string>
@@ -80,7 +80,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="lblStorage">
         <property name="toolTip">
-         <string>Id for switching between multiple acquisition devices.</string>
+         <string>Storage server implementation</string>
         </property>
         <property name="text">
          <string>&amp;Data</string>
@@ -92,6 +92,31 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="cbStorage"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbSettings">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblSettingsFile">
+        <property name="toolTip">
+         <string>Settings filename loaded at startup</string>
+        </property>
+        <property name="text">
+         <string>Startup &amp;File</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbStorage</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cbSettingsFile"/>
       </item>
      </layout>
     </widget>

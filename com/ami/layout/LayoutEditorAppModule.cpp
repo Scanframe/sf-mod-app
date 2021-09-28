@@ -95,7 +95,7 @@ void LayoutEditorAppModule::settingsReadWrite(bool save)
 
 }
 
-void LayoutEditorAppModule::initialize(bool init)
+void LayoutEditorAppModule::initialize(InitializeStage stage)
 {
 }
 

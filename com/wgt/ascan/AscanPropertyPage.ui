@@ -76,32 +76,6 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="lblTimeUnit">
-     <property name="toolTip">
-      <string>Id for the time unit used in the graph.</string>
-     </property>
-     <property name="statusTip">
-      <string>Show the converted unit.</string>
-     </property>
-     <property name="text">
-      <string>Time Unit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="sf::InformationIdEdit" name="iieIdTimeUnit">
-     <property name="minimumSize">
-      <size>
-       <width>100</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
     <widget class="QLabel" name="lblAmplitude">
      <property name="toolTip">
       <string>Id for the amplitude unit used in the graph.</string>
@@ -114,7 +88,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="2" column="1">
     <widget class="sf::InformationIdEdit" name="iieIdAmplitudeUnit">
      <property name="minimumSize">
       <size>
@@ -124,6 +98,84 @@
      </property>
      <property name="toolTip">
       <string>Id for the time unit used in the graph.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="lblTimeUnit">
+     <property name="toolTip">
+      <string>Id for the time unit used in the graph.</string>
+     </property>
+     <property name="statusTip">
+      <string>Show the converted unit.</string>
+     </property>
+     <property name="text">
+      <string>Time Unit</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="sf::InformationIdEdit" name="iieIdTimeUnit">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="sf::InformationIdEdit" name="iieIdDelay">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="lblDelay">
+     <property name="toolTip">
+      <string>Id for the time delay used in the graph.</string>
+     </property>
+     <property name="statusTip">
+      <string>Show the converted unit.</string>
+     </property>
+     <property name="text">
+      <string>Delay</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="lblRange">
+     <property name="toolTip">
+      <string>Id for the time range used in the graph.</string>
+     </property>
+     <property name="statusTip">
+      <string>Show the converted unit.</string>
+     </property>
+     <property name="text">
+      <string>Range</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="sf::InformationIdEdit" name="iieIdRange">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
