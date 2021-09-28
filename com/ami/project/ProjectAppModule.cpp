@@ -21,6 +21,8 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 	 , _currentSettingsFile("default")
 {
 	settingsReadWrite(false);
+	// TODO: Needs AMI interface change to make settings files open.
+	//addFileType(tr("Settings File"), QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix()));
 	//
 	_actionMonitorVariable = new QAction(Resource::getSvgIcon(":icon/svg/variable", QPalette::ButtonText), "Monitor Variable", this);
 	_actionMonitorResultData = new QAction(Resource::getSvgIcon(":icon/svg/resultdata", QPalette::ButtonText), "Monitor ResultData");
@@ -40,6 +42,7 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 			delete im;
 		}
 	});
+	//
 	connect(_actionMonitorResultData, &QAction::triggered, [&]()
 	{
 		Q_ASSERT(getGlobalParent());
@@ -53,6 +56,7 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 			delete im;
 		}
 	});
+	//
 	connect(_actionSaveSettings, &QAction::triggered, [&]()
 	{
 		Q_ASSERT(getGlobalParent());
@@ -66,7 +70,7 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 		{
 			dlg.fileSelected(_currentSettingsFile);
 		}
-		if (dlg.exec() == QDialog::Accepted)
+		if (dlg.exec() == QFileDialog::Accepted)
 		{
 			auto fl = dlg.selectedFiles();
 			if (!fl.empty())
@@ -79,6 +83,7 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 			}
 		}
 	});
+	//
 	connect(_actionLoadSettings, &QAction::triggered, [&]()
 	{
 		Q_ASSERT(getGlobalParent());
@@ -92,7 +97,7 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 		{
 			dlg.fileSelected(_currentSettingsFile);
 		}
-		if (dlg.exec() == QDialog::Accepted)
+		if (dlg.exec() == QFileDialog::Accepted)
 		{
 			auto fl = dlg.selectedFiles();
 			if (!fl.empty())

@@ -1,10 +1,23 @@
-# Qt Concept Documentation {#mainpage}
+# Modular Application Reference {#mainpage}
 
 <small>
 Generated from code by [Doxygen](https://www.doxygen.nl/) (_[GitHub](https://github.com/doxygen/doxygen.git)_).
 </small>
 
-View or clone the code from [GitLab](https://git.scanframe.com/shared).
+View or clone the code from [GitLab](https://git.scanframe.com/shared)
+or [GitHub](https://github.com/Scanframe/sf-mod-app).
+
+
+## Hierarchy
+
+![Module hierarchy](hierarchy.svg)
+
+**Legend**
+* **qt** : Qt Plugin Interface as used in Designer
+* **ami** : Application Module Interface
+* **gmi** : Generic Motion Interface
+* **rsa** : Repetive Signal Acquisition Interface
+* **smi** : Scan mode Interface
 
 ## Classes
 
@@ -17,7 +30,7 @@ Classes/Interfaces for exchanging information between application modules (dynam
 
 ### General
 
-Classes needed for general stuff.  
+#### Classes  
 
 * `::sf::Value`
 * `::sf::Range`
@@ -30,10 +43,20 @@ Classes needed for general stuff.
 * `::sf::TStaticSync`
 * `::sf::Resource`
 
-Classes needed for graphs.
+
+#### Template Classes
+
+* `::sf::TVector`
+* `::sf::TClosure`
+* `::sf::TListener`
+* `::sf::TDynamicBuffer`
+* `::sf::TClassRegistration`
+
+#### Qt Classes
 
 * `::sf::Draw`
 * `::sf::Graph`
+* `::sf::GlobalShortcut` (Windows/Linux)
   
 ### Script / Calculator
 
@@ -49,17 +72,6 @@ Unit conversion related functions and classes.
 * `::sf::UnitConverter`
 * `::sf::UnitConversionServer`
 
-### Miscellaneous Templates
-
-* `::sf::TVector`
-* `::sf::TClosure`
-* `::sf::TListener`
-* `::sf::TDynamicBuffer`
-* `::sf::TClassRegistration`
-
-### Miscellaneous Classes
-
-* `::sf::GlobalShortcut`
 
 ## Examples
 
