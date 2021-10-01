@@ -404,7 +404,7 @@ bool
 FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
 {
 	// Debug notify when trying to read zero bytes.
-	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried To load Zero Bytes of data!")
+	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried To read Zero bytes of data!")
 	// Debug notify when trying to read zero bytes.
 	SF_COND_RTTI_NOTIFY(!dst, DO_DEFAULT, "Passed NULL pointer for storing data!")
 	// Bail out here.

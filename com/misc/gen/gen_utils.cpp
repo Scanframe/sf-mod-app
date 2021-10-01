@@ -1,4 +1,3 @@
-
 #include <cstdarg>
 #include <ctime>
 #include <utility>
@@ -562,10 +561,10 @@ int requiredDigits(double roundVal, double minVal, double maxVal)
 	int rv, dec, sign;
 	std::string s;
 #if IS_WIN
-	rv.resize( _CVTBUFSIZE + 1, '0');
-	_ecvt_s(s.data(), s.size(), stepVal, std::numeric_limits<double>::digits10, &dec, &sign);
+	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
+	s.resize( _CVTBUFSIZE + 1, '0');
+	_ecvt_s(s.data(), s.size(), roundVal, std::numeric_limits<double>::digits10, &dec, &sign);
 	s.resize(strlen(s.c_str()));
-	rv = static_cast<int>(trimRight(s, "0").length());
 #else
 	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 	s.resize(std::numeric_limits<double>::max_digits10 + 1, '0');

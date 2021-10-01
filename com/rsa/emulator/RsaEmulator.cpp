@@ -42,6 +42,7 @@ namespace sf
 
 // Map default parameters to our own ID's.
 #define PID_CHANNELS       PID_MAP(apChannels)
+#define PID_AMPUNITS       PID_MAP(apAmplitudeUnit)
 #define PID_ERROR          PID_MAP(apError)
 // TCG is a non channel parameter now because of limited number
 // of params per channel.
@@ -173,7 +174,7 @@ AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
 	for (int i = 0; i < EMU_CHANNELCOUNT; i++)
 	{
 		FChannelInfo[i].GateCount = (FlagFixed) ? EMU_MAXGATES : 0;
-		FChannelInfo[i].TimeUnits = 1E-7;
+		FChannelInfo[i].TimeUnits = 1e-7;
 		FChannelInfo[i].Gain = 30;
 		FChannelInfo[i].RepRate = 1000;
 		FChannelInfo[i].PopDivider = 1;
@@ -195,7 +196,7 @@ AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
 		}
 	}
 	//*
-	// Dik hout zagen met planken methode.
+	// Dik hout zagen van planken methode.
 	// Get the current ids
 	IdList ids;
 	if (enumParamIds(ids))
@@ -372,6 +373,29 @@ bool AcquisitionEmulator::handleParam
 					info->Minimum.set(1);
 					info->Maximum.set(4);
 					info->Flags = pfSystem | pfEffectsParameter | pfEffectsResult;
+				}
+				break;
+
+			case PID_AMPUNITS:
+				if (setval)
+				{
+					AmplitudeUnit = setval->getFloat();
+				}
+				if (getval)
+				{
+					getval->set(AmplitudeUnit);
+				}
+				if (info)
+				{
+					info->Id = id;
+					info->Name = "Amplitude Unit";
+					info->Unit = "V";
+					info->Description += "Amplitude units of the digitiser single step.";
+					info->Default.set(0.01);
+					info->Round.set(0.001);
+					info->Minimum.set(0.001);
+					info->Maximum.set(0.05);
+					//info->Flags = pfSystem;
 				}
 				break;
 
@@ -677,8 +701,7 @@ bool AcquisitionEmulator::handleParam
 						info->Id = id;
 						info->Name = "Bidirectional Mode";
 						info->Unit = "!";
-						info->Description += "Reverses everyother scanline."
-																 "When popmanual is used.";
+						info->Description += "Reverses every other scanline. When manual POP is used.";
 						info->Default.set(0);
 						info->Round.set(1);
 						info->Minimum.set(0);
@@ -700,10 +723,10 @@ bool AcquisitionEmulator::handleParam
 						info->Name = "Time Unit";
 						info->Unit = "s";
 						info->Description += "Time in seconds that is used for the time dependant results.";
-						info->Default.set(1E-6);
-						info->Round.set(1E-7);
-						info->Minimum.set(1E-6);
-						info->Maximum.set(100E-6);
+						info->Default.set(1e-6);
+						info->Round.set(1e-8);
+						info->Minimum.set(1e-8);
+						info->Maximum.set(1e-6);
 						// info->States
 						info->Flags |= pfReadonly;
 					}
@@ -1270,6 +1293,7 @@ bool AcquisitionEmulator::enumParamIds(IdList& ids)
 	ids.add(MAKE_ID(NO_CHANNEL, NO_GATE, PID_ERROR));
 	ids.add(MAKE_ID(NO_CHANNEL, NO_GATE, PID_ONESHOTDELAY));
 	ids.add(MAKE_ID(NO_CHANNEL, NO_GATE, PID_ONESHOTSTATE));
+	ids.add(MAKE_ID(NO_CHANNEL, NO_GATE, PID_AMPUNITS));
 	// Add the TCG ID's
 	for (int i = 0; i < EMU_MAX_TCG_POINTS; i++)
 	{

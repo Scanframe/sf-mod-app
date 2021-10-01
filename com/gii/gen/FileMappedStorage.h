@@ -221,7 +221,7 @@ class _GII_CLASS FileMappedStorage
 
 				/**
 				 * @brief Locks the file map and returns the pointer to the memory.
-				 * load only (const version)
+				 * Read only (const version)
 				 * @return NULL on failure.
 				 */
 				[[nodiscard]] const void* lockMemory() const;

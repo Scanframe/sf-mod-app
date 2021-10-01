@@ -48,7 +48,7 @@ QString ProjectPropertyPage::getPageDescription() const
 
 QIcon ProjectPropertyPage::getPageIcon() const
 {
-	return Resource::getSvgIcon(":icon/svg/signal", QPalette::ColorRole::Text);
+	return Resource::getSvgIcon(":icon/svg/project", QPalette::ColorRole::Text);
 }
 
 void ProjectPropertyPage::updatePage()

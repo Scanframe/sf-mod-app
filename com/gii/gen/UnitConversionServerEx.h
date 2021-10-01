@@ -108,7 +108,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
 
 		/**
-		 * @brief load or write the conversion configuration to ini-profile.
+		 * @brief Read or write the conversion configuration to ini-profile.
 		 *
 		 * To make changes happen for existing conversions call #reinitialize().
 		 *

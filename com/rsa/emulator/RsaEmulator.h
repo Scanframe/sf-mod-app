@@ -59,9 +59,10 @@ class AcquisitionEmulator : public RsaInterface
 		bool RunMode{false};
 		// Holds the time the run mode was started.
 		double SyncTimeStart{0.0};
-		// Holds the flag for determining the fixed gate state or the
-		// dynamic gates.
+		// Holds the flag for determining the fixed gate state or the dynamic gates.
 		bool FlagFixed{false};
+		// Holds the digitiser´s amplitude unit.
+		double AmplitudeUnit{0.01};
 		// Holds the amount of channels supported by this interface.
 		unsigned ChannelCount{0};
 		//

@@ -53,7 +53,7 @@
       <string>Control cannot be used to change the value.</string>
      </property>
      <property name="text">
-      <string>load &amp;Only</string>
+      <string>&amp;Read Only</string>
      </property>
      <property name="buddy">
       <cstring>cbReadOnly</cstring>

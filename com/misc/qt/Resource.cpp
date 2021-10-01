@@ -126,8 +126,7 @@ QByteArray Resource::getSvg(QFile& file, const QColor& color, const QSize& size)
 		}
 		else
 		{
-			auto color_name = QString("rgba(%1,%2,%3,%4)").arg(color.red()).arg(color.green()).arg(color.blue()).arg(
-				color.alphaF());
+			auto color_name = QString("rgba(%1,%2,%3,%4)").arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alphaF());
 			elem.setAttribute("color", color_name.toUtf8());
 		}
 	}
@@ -163,7 +162,7 @@ QImage Resource::getSvgImage(const QString& resource, const QColor& color, const
 		qWarning() << QString("File '%1' does not exist.").arg(file.fileName());
 		return QImage(_warningLocation);
 	}
-	// Get the svg SVG content.
+	// Get the svg content.
 	auto ba = getSvg(file, color, size);
 	// When not valid return warning
 	if (!ba.length())
@@ -171,7 +170,7 @@ QImage Resource::getSvgImage(const QString& resource, const QColor& color, const
 		return QImage(_warningLocation);
 	}
 	// Get the SVG as an image.
-	auto img = QImage::fromData(ba.data(), "SVG");
+	auto img = QImage::fromData(ba, "SVG");
 	// Check if transparency is set on the requested color.
 	// This since Qt does not support rgba(...) colors in an SVG.
 	if (color.alpha() != 255)
@@ -195,7 +194,7 @@ QImage Resource::getSvgImage(const QString& resource, const QColor& color, const
 QIcon Resource::getSvgIcon(const QString& resource, const QColor& color, QSize size)
 {
 	// Non transparency simple conversion.
-	return QIcon(QPixmap::fromImage(getSvgImage(resource, color, size)));
+	return {QPixmap::fromImage(getSvgImage(resource, color, size))};
 }
 
 QIcon Resource::getSvgIcon(const QString& resource, QPalette::ColorRole role, QSize size)
@@ -206,38 +205,6 @@ QIcon Resource::getSvgIcon(const QString& resource, QPalette::ColorRole role, QS
 QIcon Resource::getSvgIcon(const QString& resource, const QPalette& palette, QPalette::ColorRole role, QSize size)
 {
 	return getSvgIcon(resource, palette.color(role), size);
-/*
-	// List to set the brightness value of HSV encoded color.
-	struct
-	{
-		QIcon::Mode mode;
-		float brightness;
-	} static modes[] =
-		{
-			{QIcon::Mode::Normal, 1.0},
-			{QIcon::Mode::Active, 1.2},
-			{QIcon::Mode::Selected, 1.2},
-			{QIcon::Mode::Disabled, 0.7},
-		};
-	// Get the color from the palette and role.
-	auto color = palette.color(palette.currentColorGroup(), role);
-	//qDebug() << palette.currentColorGroup() << role << "Luminance" <<  getColorLuminance(color);
-	// Create empty icon.
-	QIcon icon;
-	// Add pixmap for each mode.
-	for (auto mode: modes)
-	{
-		// Change the HSV brightness value.
-		auto img = getSvgImage(resource, getColor(color, mode.brightness), QSize(size, size));
-		// Add the pixmap to the resulting icon.
-		if (img.isNull())
-		{
-			img.load(_warningLocation);
-		}
-		icon.addPixmap(QPixmap::fromImage(img), mode.mode);
-	}
-	return icon;
-*/
 }
 
 }

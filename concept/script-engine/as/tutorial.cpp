@@ -235,7 +235,7 @@ int CompileScript(asIScriptEngine* engine)
 	int r;
 
 /*
-	// We will load the script from a file on the disk.
+	// We will read the script from a file on the disk.
 	FILE* f = fopen("tutorial.as", "rb");
 	if (f == nullptr)
 	{

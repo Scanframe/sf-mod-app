@@ -6,29 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>725</width>
-    <height>316</height>
+    <width>682</width>
+    <height>603</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="spacing">
-    <number>9</number>
-   </property>
-   <property name="leftMargin">
-    <number>4</number>
-   </property>
-   <property name="topMargin">
-    <number>4</number>
-   </property>
-   <property name="rightMargin">
-    <number>4</number>
-   </property>
-   <property name="bottomMargin">
-    <number>4</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="lblLargeTitle">
      <property name="sizePolicy">
@@ -64,366 +49,175 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QSplitter" name="splitter">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <widget class="QWidget" name="verticalLayoutWidget">
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="sf::VariableEdit" name="variableEdit1">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Sound velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="converted">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="focusFrame">
-          <bool>true</bool>
-         </property>
-         <property name="nameLevel">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="sf::VariableEdit" name="variableEdit2">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="converted">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="focusFrame">
-          <bool>true</bool>
-         </property>
-         <property name="nameLevel">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="sf::VariableEdit" name="variableEdit3">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="converted">
-          <bool>false</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="focusFrame">
-          <bool>true</bool>
-         </property>
-         <property name="nameLevel">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="sf::VariableBar" name="variableBar">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Variable bar used for progress or level indication.</string>
-         </property>
-         <property name="converted">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="nameLevel">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="sf::VariableCheckBox" name="variableCheckBox">
-         <property name="whatsThis">
-          <string>Special check box having name label.</string>
-         </property>
-         <property name="converted">
-          <bool>false</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="nameLevel">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="spacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <layout class="QFormLayout" name="formLayout">
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <property name="verticalSpacing">
-        <number>6</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lblVar1">
-         <property name="text">
-          <string>Followers Enabled</string>
-         </property>
-         <property name="buddy">
-          <cstring>varEdit1</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="sf::VariableEdit" name="varEdit1">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="whatsThis">
-          <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="converted">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="focusFrame">
-          <bool>true</bool>
-         </property>
-         <property name="nameLevel">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lblVar2">
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="text">
-          <string>Time of Flight</string>
-         </property>
-         <property name="buddy">
-          <cstring>varEdit2</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="sf::VariableEdit" name="varEdit2">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Special edit having name and unit label.</string>
-         </property>
-         <property name="converted">
-          <bool>false</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="focusFrame">
-          <bool>true</bool>
-         </property>
-         <property name="nameLevel">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="lblVar3">
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="text">
-          <string>Time of Flight</string>
-         </property>
-         <property name="buddy">
-          <cstring>spacer</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="sf::VariableBar" name="varBar2">
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>High speed velocity setting</string>
-         </property>
-         <property name="whatsThis">
-          <string>Variable bar used for progress or level indication.</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">sf--VariableBar
-{
-border: 2px solid green;
-}</string>
-         </property>
-         <property name="converted">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="nameLevel">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="lblVar3_2">
-         <property name="text">
-          <string>&amp;Just an ID</string>
-         </property>
-         <property name="buddy">
-          <cstring>informationIdEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="sf::InformationIdEdit" name="informationIdEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>300</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>IBeamCursor</cursorShape>
-         </property>
-         <property name="acceptDrops">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string>Information ID select edit.</string>
-         </property>
-         <property name="whatsThis">
-          <string>Information ID select edit with ID select dialog.</string>
-         </property>
-         <property name="text">
-          <string>0x10</string>
-         </property>
-         <property name="cursorPosition">
-          <number>4</number>
-         </property>
-         <property name="placeholderText">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+    <widget class="QGroupBox" name="verticalGroupBox">
+     <layout class="QFormLayout" name="formLayout">
+      <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="sf::VariableEdit" name="variableEdit1">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Sound velocity setting</string>
+        </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>16</uLongLong>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="focusFrame">
+         <bool>true</bool>
+        </property>
+        <property name="nameLevel">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="sf::VariableEdit" name="variableEdit2">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>High speed velocity setting</string>
+        </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>256</uLongLong>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="focusFrame">
+         <bool>true</bool>
+        </property>
+        <property name="nameLevel">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="sf::VariableEdit" name="variableEdit3">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>High speed velocity setting</string>
+        </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>256</uLongLong>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="focusFrame">
+         <bool>true</bool>
+        </property>
+        <property name="nameLevel">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="sf::VariableCheckBox" name="variableCheckBox">
+        <property name="whatsThis">
+         <string>Special check box having name label.</string>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>5</uLongLong>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="nameLevel">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="sf::VariableBar" name="variableBar">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>High speed velocity setting</string>
+        </property>
+        <property name="whatsThis">
+         <string>Variable bar used for progress or level indication.</string>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>256</uLongLong>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="nameLevel">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -442,11 +236,6 @@ border: 2px solid green;
    <class>sf::VariableCheckBox</class>
    <extends>QWidget</extends>
    <header>com/gii/qt/VariableCheckBox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::InformationIdEdit</class>
-   <extends>QLineEdit</extends>
-   <header>gii/qt/InformationIdEdit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

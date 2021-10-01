@@ -414,7 +414,7 @@ class _MISC_CLASS IniProfile
 				std::ostream& write(std::ostream& os);
 
 				/**
-				 * @brief load section from an input stream.
+				 * @brief Read section from an input stream.
 				 *
 				 * @param is Input stream.
 				 * @return True on success.

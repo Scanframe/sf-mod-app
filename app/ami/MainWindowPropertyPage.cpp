@@ -35,12 +35,12 @@ QIcon MainWindowPropertyPage::getPageIcon() const
 
 QString MainWindowPropertyPage::getPageName() const
 {
-	return tr("Main MDI Window");
+	return tr("MDI Window");
 }
 
 QString MainWindowPropertyPage::getPageDescription() const
 {
-	return tr("Main multi document interface window settings.");
+	return tr("Multi document interface main window settings.");
 }
 
 void MainWindowPropertyPage::updatePage()

@@ -983,7 +983,7 @@ bool Variable::loadCur(const Value& value) const
 	}
 	else
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, "Cannot load current value of non owning instance!")
+		SF_RTTI_NOTIFY(DO_DEFAULT, "Cannot read current value of non owning instance!")
 	}
 	// Signal failure or no change.
 	return false;

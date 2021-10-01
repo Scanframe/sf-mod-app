@@ -4,7 +4,6 @@ int counter = 0;
 object vFollowersEnabled = Variable("0x5,Unit Conversion|Followers Enabled,,ASP,,INTEGER,,1,1,0,1,Off=0,On=1");
 object vSoundVelocity = Variable("0x10,Unit Conversion|Sound Velocity,m/s,ASP,Sound velocity setting,FLOAT,,1,3123,0,10000");
 object vTimeOfFlight = Variable("0x100,Unit Conversion|Time of Flight,s,ASP,High speed velocity setting,FLOAT,,1e-6,12e-6,0,100e-6");
-object vAmpUnit = Variable("0x80001,Unit Conversion|Amplitude Unit,V,ASP,Digitizer amplitude unit.,FLOAT,,0.001,0.01,0.001,0.05");
 
 vSoundVelocity.OnValue = main;
 vTimeOfFlight.OnValue = main;
