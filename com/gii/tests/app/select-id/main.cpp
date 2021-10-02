@@ -111,9 +111,8 @@ int main(int argc, char* argv[])
 	sf::InformationTypes::Vector list;
 	sf::loadFromIni(list);
 	//
-	if (true)
+	if (false)
 	{
-		//
 		QDialog dlg;
 		appSettings.restoreWindowRect("Dialog", &dlg);
 		dlg.setLayout(new QVBoxLayout(&dlg));
@@ -122,17 +121,12 @@ int main(int argc, char* argv[])
 		dlg.layout()->addWidget(edit);
 		dlg.exec();
 		appSettings.saveWindowRect("Dialog", &dlg);
-
-		//qDebug() << sf::InformationSelectDialog::execute(settings, sf::InformationSelectDialog::Multiple, nullptr);
-		//qDebug() << sf::InformationSelectDialog::execute(settings, sf::InformationSelectDialog::Single, nullptr);
 	}
 	else
 	{
-		sf::InformationSelectDialog win;
-		if (win.exec() == QDialog::Accepted)
-		{
-			qDebug() << win.getSelectedIds();
-		}
+		sf::InformationSelectDialog isd;
+		auto ids = isd.execute(sf::Gii::Multiple);
+		qDebug() << ids;
 	}
 	// Remove all entries before deinitializing.
 	qDeleteAll(list);

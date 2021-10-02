@@ -91,7 +91,7 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 			// When the begin or end marker matches.
 			if (*(uint64_t*) buf.data(i) == (flag ? mark_end : mark_beg))
 			{
-				// When the begin marker has been found.
+				// When the begin-marker has been found.
 				if (!flag)
 				{
 					// Set the flag to find the end mark.
@@ -160,4 +160,4 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 	return false;
 }
 
-} // namespace sf
+}

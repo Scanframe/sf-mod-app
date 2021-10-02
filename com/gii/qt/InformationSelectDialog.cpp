@@ -74,9 +74,12 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 
 void InformationSelectDialog::childrenExpandCollapse(bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
 {
+	if (!ui->treeView->model())
+	{
+		return;
+	}
 	if (!index.isValid())
 	{
-		//childrenExpandCollapse(expand, ui->treeView->rootIndex());
 		int count = ui->treeView->model()->rowCount();
 		for (int i = 0; i < count; i++)
 		{

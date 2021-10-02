@@ -11,7 +11,11 @@ namespace sf
 inline
 static QString getGroupName()
 {
-	return QStringLiteral("AppModules");
+#if IS_WIN
+	return QStringLiteral("AppModules.Windows");
+#else
+	return QStringLiteral("AppModules.Linux");
+#endif
 }
 
 ModuleConfiguration::ModuleConfiguration(QSettings* settings, QObject* parent)

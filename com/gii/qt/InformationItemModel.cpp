@@ -448,10 +448,6 @@ void InformationItemModel::updateList()
 
 void InformationItemModel::toggleSelection(const QModelIndex& index)
 {
-	if (_mode != Gii::Single)
-	{
-		return;
-	}
 	auto item = static_cast<TreeItem*>(index.internalPointer());
 	// Folders can not be selected.
 	if (item->_type != TreeItem::dtFolder)

@@ -10,6 +10,7 @@
 #include <gen/dbgutils.h>
 #include <QLayout>
 #include <QFormLayout>
+#include <QFontDatabase>
 
 #include "qt_utils.h"
 
@@ -144,13 +145,13 @@ const QFileInfo& ApplicationSettings::fileInfo() const
 
 void ApplicationSettings::doStyleApplication(bool watch)
 {
-	// Form the ini's directory to relate too.
+	// Form the ini's directory to relate to.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// To use the same ini file in Linux and Windows a different prefix is used.
 #if IS_WIN
-	QString prefix = "Windows";
+	QString suffix = "Windows";
 #else
-	QString prefix = "Linux";
+	QString suffix = "Linux";
 #endif
 	// Create the settings instance.
 	QSettings settings(_fileInfo.absoluteFilePath(), QSettings::IniFormat);
@@ -159,7 +160,7 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	// Get the current font.
 	QFont font = QApplication::font();
 	// Start the *-Style ini section.
-	settings.beginGroup(prefix + "-Style");
+	settings.beginGroup("Style-" + suffix);
 	// Get the keys in the section to check existence in the ini-section.
 	auto keys = settings.childKeys();
 	// Check if settings can be written and the key does not exist.
@@ -182,6 +183,10 @@ void ApplicationSettings::doStyleApplication(bool watch)
 		settings.setValue(key, font.family());
 	}
 	font.setFamily(settings.value(key, font.family()).toString());
+//	for (auto fnm: QFontDatabase::families(QFontDatabase::Latin))
+//	{
+//		qInfo() << fnm;
+//	}
 	// Same as above.
 	if (settings.isWritable() && !keys.contains(key = "Font-PointSize"))
 	{
