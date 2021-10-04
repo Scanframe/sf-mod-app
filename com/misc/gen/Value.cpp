@@ -929,4 +929,18 @@ std::istream& operator>>(std::istream& is, Value& v)
 	return is;
 }
 
-}// namespace
+Value Value::calculateOffset(Value value, Value min, Value max, const Value& len, bool clip)
+{
+	Value z(0);
+// Sync the types.
+	z.setType(len.getType());
+	min.setType(value.getType());
+	max.setType(value.getType());
+	max -= min;
+	value -= min;
+	Value temp = (max && value) ? (value * Value(len) / max) : z;
+	return (clip) ? ((temp > len) ? len : (temp < z) ? z : temp) : temp;
+}
+
+
+}

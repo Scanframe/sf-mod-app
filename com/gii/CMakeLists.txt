@@ -25,6 +25,7 @@ set(SOURCES
 	gen/VariableTypes.h
 	gen/VariableStatic.cpp gen/VariableStatic.h
 	gen/Variable.cpp gen/Variable.h
+	gen/VariableIdList.cpp gen/VariableIdList.h
 	gen/VariableHandler.cpp gen/VariableHandler.h
 	gen/VariableReference.cpp gen/VariableReference.h
 	gen/VariableScriptObject.cpp gen/VariableScriptObject.h
@@ -73,6 +74,7 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES_QT
 	qt/res/icons.qrc
 	qt/Namespace.h
+	qt/Macros.h
 	qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h	qt/VariableWidgetBasePrivate.h
 	qt/InformationSelectDialog.cpp qt/InformationSelectDialog.h qt/InformationSelectDialog.ui
 	qt/VariableEdit.cpp qt/VariableEdit.h
@@ -94,7 +96,7 @@ set(SOURCES_QT
 	)
 
 list(APPEND SOURCES ${SOURCES_QT})
-list(APPEND LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
+list(APPEND LIBRARIES Qt::Widgets Qt::Designer)
 
 endif (SF_BUILD_QT)
 
@@ -102,7 +104,9 @@ endif (SF_BUILD_QT)
 # Generic sources.
 list(APPEND SOURCES)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})

@@ -1682,6 +1682,7 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 								ci.CopyBuf[i] = static_cast<uint8_t>(amp);
 							}
 							break;
+
 						case 2:
 							for (int i = 0; i < ci.CopyRange; i++)
 							{
@@ -1697,6 +1698,7 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 								ci.CopyBuf[i] = static_cast<uint8_t>(amp);
 							}
 							break;
+
 						case 3:
 							for (int i = 0; i < ci.CopyRange; i++)
 							{
@@ -1740,16 +1742,8 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 						{
 							case MID_PEAK:
 							{
-								//
-								gi.PeakFound = PeakNormal
-									(
-										gi.Polarity,
-										gi.Threshold,
-										gi.Range,
-										(uint8_t*) gi.CopyBuf.data(),
-										gi.PeakTof,
-										gi.PeakAmp
-									);
+								gi.PeakFound = PeakNormal(gi.Polarity, gi.Threshold, gi.Range, (uint8_t*) gi.CopyBuf.data(), gi.PeakTof,gi.PeakAmp);
+								//SF_RTTI_NOTIFY(DO_CLOG, "Gate: " << gate << " Tof: " << gi.PeakTof << " Amp: " << gi.PeakAmp)
 								// Correct found peak with delay and result offset.
 								gi.PeakTof += gi.Delay + TOF_OFFSET;
 /*

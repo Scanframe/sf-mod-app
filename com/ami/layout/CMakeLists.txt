@@ -26,7 +26,9 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer UiTools REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE
 	res/resource.qrc
 	LibMain.cpp
 	LayoutEditor.cpp LayoutEditor.h
@@ -42,9 +44,9 @@ add_library(${PROJECT_NAME} SHARED
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	Qt${QT_VERSION_MAJOR}::Widgets
-	Qt${QT_VERSION_MAJOR}::Designer
-	Qt${QT_VERSION_MAJOR}::UiTools
+	Qt::Widgets
+	Qt::Designer
+	Qt::UiTools
 	sf-misc
 	sf-gii
 	sf-ami

@@ -2,6 +2,8 @@
 #include "SfAnalogClockPlugin.h"
 
 #include <QtPlugin>
+#include <QtDesigner/QExtensionManager>
+#include <QtDesigner/QDesignerFormEditorInterface>
 
 namespace sf
 {
@@ -11,8 +13,9 @@ AnalogClockPlugin::AnalogClockPlugin(QObject* parent)
 {
 }
 
-void AnalogClockPlugin::initialize(QDesignerFormEditorInterface* /* core */)
+void AnalogClockPlugin::initialize(QDesignerFormEditorInterface* core)
 {
+	Q_UNUSED(core)
 	if (initialized)
 	{
 		return;
@@ -42,17 +45,17 @@ QString AnalogClockPlugin::group() const
 
 QIcon AnalogClockPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString AnalogClockPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString AnalogClockPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool AnalogClockPlugin::isContainer() const

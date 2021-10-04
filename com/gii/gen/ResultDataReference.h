@@ -81,7 +81,7 @@ struct ResultDataReference :ResultDataTypes
 	/**
 	 * List of result data instances attached to this reference.
 	 */
-	Vector _list;
+	PtrVector _list;
 };
 
 }

@@ -33,7 +33,7 @@ FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
 void FormDialog::resizeEvent(QResizeEvent* event)
 {
 	QDialog::resizeEvent(event);
-	emit resizing(event);
+	Q_EMIT resizing(event);
 }
 
 QSize FormDialog::sizeHint() const

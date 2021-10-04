@@ -528,12 +528,25 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 						// Remove the layout which has the widgets when it exists.
 						elem.removeChild(elem.firstChildElement("layout"));
 						// Remove all child widgets.
-						auto child = elem.firstChildElement("widget");
-						while(!child.isNull())
 						{
-							elem.removeChild(child);
-							// Move to next which is now the first again.
-							child = elem.firstChildElement("widget");
+							// Remove all child widgets.
+							auto child = elem.firstChildElement("widget");
+							while (!child.isNull())
+							{
+								elem.removeChild(child);
+								// Move to next which is now the first again.
+								child = elem.firstChildElement("widget");
+							}
+						}
+						// Remove all actions elements.
+						{
+							auto action = elem.firstChildElement("action");
+							while (!action.isNull())
+							{
+								elem.removeChild(action);
+								// Move to next which is now the first again.
+								action = elem.firstChildElement("action");
+							}
 						}
 					}
 				}
@@ -586,15 +599,14 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 			}
 		}
 		// QMetaEnum::fromType
-		QMetaEnum metaEnumShadow = QMetaEnum::fromType<QFrame::Shadow>();
-		QMetaEnum metaEnumShape = QMetaEnum::fromType<QFrame::Shape>();
+		auto metaEnumShadow = QMetaEnum::fromType<QFrame::Shadow>();
+		auto metaEnumShape = QMetaEnum::fromType<QFrame::Shape>();
 		// Get list of all widgets.
 		iterateDomElements(dom, root, [&](QDomElement& elem)
 		{
 			// All widget elements meeting the class names.
 			if (elem.nodeName() == "widget" && classes.contains(elem.attributes().namedItem("class").nodeValue()))
 			{
-				//
 				auto name = elem.attributes().namedItem("name").nodeValue();
 				//
 				if (frames.contains(name))
@@ -688,6 +700,42 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 					{
 						elem.insertBefore(createDomProperty(dom, "rightMargin", "number",
 							QString("%1").arg(margins.right())), elem.firstChildElement());
+					}
+				}
+			}
+		});
+	}
+	// Fix tool button elements.
+	{
+		QMap<QString, QToolButton*> buttons;
+		// Get all widgets derived from a frame.
+		for (auto button: widget->findChildren<QToolButton*>(QString(), Qt::FindChildrenRecursively))
+		{
+			if (!button->objectName().isEmpty())
+			{
+				buttons[button->objectName()] = button;
+			}
+		}
+		// Iterate through all dom elements
+		iterateDomElements(dom, root, [widget, &dom, &buttons](QDomElement& elem)
+		{
+			// Only check widget dom elements.
+			if (elem.nodeName() == "widget")
+			{
+				// Get the name attribute of the widget element.
+				auto attr = elem.attributes().namedItem("name");
+				// Check if the attribute is valid attribute and the name is not empty.
+				if (!attr.isNull() && !attr.nodeValue().isEmpty())
+				{
+					auto name = attr.nodeValue();
+					// When in the buttons map .
+					if (buttons.contains(name))
+					{
+						// Add the missing property toolButtonStyle.
+						auto style = QMetaEnum::fromType<Qt::ToolButtonStyle>().valueToKey(buttons[name]->toolButtonStyle());
+						elem.insertBefore(createDomProperty(dom, "toolButtonStyle", "enum", style), elem.firstChildElement());
+						auto arrow = QMetaEnum::fromType<Qt::ArrowType>().valueToKey(buttons[name]->arrowType());
+						elem.insertBefore(createDomProperty(dom, "arrowType", "enum", arrow), elem.firstChildElement());
 					}
 				}
 			}

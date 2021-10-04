@@ -5,7 +5,7 @@
 #include <gen/Variable.h>
 #include <test-GraphWindow.h>
 #if IS_WIN
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 int main(int argc, char* argv[])

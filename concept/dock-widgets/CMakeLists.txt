@@ -50,8 +50,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
-Qt${QT_VERSION_MAJOR}::Widgets 
-Qt${QT_VERSION_MAJOR}::PrintSupport 
+Qt::Widgets
+Qt::PrintSupport
 sf-misc
 )
 

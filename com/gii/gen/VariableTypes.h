@@ -30,9 +30,14 @@ class VariableTypes :public InformationTypes
 {
 	public:
 		/**
-		 * @brief Vector and Iterator for pointer to variables.
+		 * @brief Vector for pointers to variables.
 		 */
-		typedef TVector<Variable*> Vector;
+		typedef TVector<Variable*> PtrVector;
+
+		/**
+		 * @brief Vector for instances of variables.
+		 */
+		typedef TVector<Variable> Vector;
 
 		/**
 		 * @brief Types for internal use.

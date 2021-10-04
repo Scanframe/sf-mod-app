@@ -99,7 +99,7 @@ size_t ModuleConfiguration::load(bool startup)
 	// When a lib was loaded emit the signal.
 	if (rv)
 	{
-		emit libraryLoaded(startup);
+		Q_EMIT libraryLoaded(startup);
 	}
 	// Signal the caller a library was loaded.
 	return rv;

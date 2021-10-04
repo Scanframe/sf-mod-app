@@ -73,7 +73,7 @@
 #if IS_QT
 
 // Coverts the passed type into a name.
-#define SF_Q_RTTI_NAME(self) QString::fromStdString(_RTTI_NAME(self))
+#define SF_Q_RTTI_NAME(self) QString::fromStdString(SF_RTTI_NAME(self))
 // Define that converts a 'this' pointer to the class type name.
 #define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
 
@@ -228,12 +228,15 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 
 #if (SF_DEBUG_LEVEL == 1)
 
-#define SF_NORM_NOTIFY(f, a) {sf::debug_ostream(f) << a;}
-#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;}
-#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;}
-#define SF_COND_NORM_NOTIFY(p, f, a) {if (p) {SF_NORM_NOTIFY(f, a);}}
-#define SF_COND_CLASS_NOTIFY(p, f, a) {if (p) {SF_CLASS_NOTIFY(f, a);}}
-#define SF_COND_RTTI_NOTIFY(p, f, a) {if (p) {SF_RTTI_NOTIFY(f, a);}}
+#define SF_NORM_NOTIFY(f, a) {sf::debug_ostream(f) << a;} // NOLINT(bugprone-macro-parentheses)
+#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;} // NOLINT(bugprone-macro-parentheses)
+#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;} // NOLINT(bugprone-macro-parentheses)
+#define SF_COND_NORM_NOTIFY(p, f, a) {if (p) {SF_NORM_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
+#define SF_COND_CLASS_NOTIFY(p, f, a) {if (p) {SF_CLASS_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
+#define SF_COND_RTTI_NOTIFY(p, f, a) {if (p) {SF_RTTI_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
+#if IS_QT
+#define SF_Q_NOTIFY(a) {qDebug() << a;} // NOLINT(bugprone-macro-parentheses)
+#endif
 
 #elif (SF_DEBUG_LEVEL == 2)
 
@@ -243,6 +246,9 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 #define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
 #define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}
 #define _COND_RTTI_NOTIFY(p, f, a) {if (p) {_RTTI_NOTIFY(f, a);}}
+#if IS_QT
+#define SF_Q_NOTIFY(a) {qDebug() << a;} // NOLINT(bugprone-macro-parentheses)
+#endif
 
 #else // _DEBUG_LEVEL == 0
 
@@ -252,5 +258,8 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 #define _COND_NOTIFY(p, f, a) {}
 #define _COND_CLASS_NOTIFY(p, f, a) {}
 #define _COND_RTTI_NOTIFY(p, f, a) {}
+#if IS_QT
+#define SF_Q_NOTIFY(a) {}
+#endif
 
 #endif //DEBUG_LEVEL

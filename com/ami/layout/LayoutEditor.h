@@ -74,6 +74,8 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 		 */
 		void documentModified();
 
+		QDir getDirectory() const override;
+
 	Q_SIGNALS:
 		void objectSelected(QObject* obj);
 

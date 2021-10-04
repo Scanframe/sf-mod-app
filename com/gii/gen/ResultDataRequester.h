@@ -133,7 +133,7 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		/**
 		 * @brief Hook to result events.
 		 */
-		TResultDataLinkHandler<ResultDataRequester> _dataHandler;
+		TResultDataHandler<ResultDataRequester> _dataHandler;
 
 		/**
 		 * Result data event handler.
@@ -159,7 +159,7 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		/**
 		 * Data results.
 		 */
-		ResultData::Vector _rdDataList;
+		PtrVector _rdDataList;
 		/**
 		 * Timer implementation for timing out a request.
 		 */

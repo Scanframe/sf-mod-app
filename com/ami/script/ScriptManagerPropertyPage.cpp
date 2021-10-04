@@ -70,7 +70,7 @@ ScriptManagerPropertyPage::ScriptManagerPropertyPage(ScriptManager* manager, Pro
 		if (idx.isValid())
 		{
 			// Open the editor from index position.
-			emit openEditor(idx.row());
+			Q_EMIT openEditor(idx.row());
 			// Apply modifications.
 			_sheet->applySheet();
 			// Close the sheet.

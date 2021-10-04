@@ -26,7 +26,9 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE
 	res/resource.qrc
 	LibMain.cpp
 	UnitConversionAppModule.cpp UnitConversionAppModule.h
@@ -38,7 +40,7 @@ add_library(${PROJECT_NAME} SHARED
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer sf-misc sf-gii sf-ami)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets Qt::Designer sf-misc sf-gii sf-ami)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

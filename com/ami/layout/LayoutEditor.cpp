@@ -35,6 +35,8 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 	adjustSize();
 	//
 	_targetContextMenu = new QMenu(this);
+	// Sets the editor widget only so message boxes appear centered on the layout editor.
+	setConnections(this);
 	//
 	_actionEdit = new QAction(tr("&Edit"), _targetContextMenu);
 	_actionEdit->setToolTip(tr("Edit the properties of this widget."));
@@ -55,7 +57,7 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 	{
 		if (_currentTarget)
 		{
-			emit objectSelected(_currentTarget);
+			Q_EMIT objectSelected(_currentTarget);
 		}
 	});
 }
@@ -217,7 +219,7 @@ void LayoutEditor::documentWasModified()
 {
 	auto flag = isModified();
 	setWindowModified(flag);
-	emit mdiSignals.modificationChanged(flag);
+	Q_EMIT mdiSignals.modificationChanged(flag);
 }
 
 void LayoutEditor::documentModified()
@@ -382,7 +384,7 @@ void LayoutEditor::openPropertyEditor(QObject* target)
 	//
 	dlg->setModal(true);
 	// Signal that an object is selected.
-	emit objectSelected(target);
+	Q_EMIT objectSelected(target);
 	//
 	dlg->exec();
 }
@@ -396,6 +398,11 @@ ObjectHierarchyModel* LayoutEditor::getHierarchyModel()
 		_model->updateList(_widget);
 	}
 	return _model;
+}
+
+QDir LayoutEditor::getDirectory() const
+{
+	return QFileInfo(_curFile).absoluteDir();
 }
 
 }

@@ -23,7 +23,7 @@ if (SF_BUILD_QT)
 	file(GLOB TEST_SOURCES_QT "${CMAKE_CURRENT_SOURCE_DIR}/qt/test-*")
 	list(APPEND TEST_SOURCES ${TEST_SOURCES_QT}
 		)
-	list(APPEND TEST_LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
+	list(APPEND TEST_LIBRARIES Qt::Widgets Qt::Designer)
 endif (SF_BUILD_QT)
 
 # Tests need to be added as executables first

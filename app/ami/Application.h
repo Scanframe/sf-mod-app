@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <SingleInstance>
 #include <misc/qt/qt_utils.h>
 #include <misc/qt/ModuleConfiguration.h>
 #include "MainWindow.h"
@@ -30,11 +31,15 @@ class Application :public QApplication
 
 		std::string ConfigLocationHandler(const std::string& option);
 
+		void handleInstanceMessage(quint32 instanceId, const QByteArray& message);
+
 		ModuleConfiguration* _moduleConfiguration;
 
 		MainWindow* _mainWindow{nullptr};
 
 		QSettings* _settings{nullptr};
+
+		SingleInstance* _singleInstance{nullptr};
 
 		// Create instance to handle settings.
 		ApplicationSettings appSettings;
@@ -50,6 +55,8 @@ class Application :public QApplication
 		friend class ApplicationPropertyPage;
 
 		void settingsReadWrite(bool save);
+
+		bool _allowSecondary{false};
 };
 
 }

@@ -6,16 +6,18 @@ namespace sf
 
 Graph::Graph(const QPalette& palette)
 	:_colors({
-//	cText,
+//	cRulerText,
 	palette.color(QPalette::ColorRole::WindowText),
-//	cLine,
+//	cRulerLine,
 	palette.color(QPalette::ColorRole::Dark),
 //	cGrid,
 	palette.color(QPalette::ColorRole::AlternateBase),
 //	cRulerBackground,
 	palette.color(QPalette::ColorRole::Window),
 //	cGraphBackground,
-	palette.color(QPalette::ColorRole::Base)
+	palette.color(QPalette::ColorRole::Base),
+//	cGraphForeground,
+	palette.color(QPalette::ColorRole::Text)
 })
 {
 }
@@ -59,11 +61,8 @@ void Graph::setRuler(Draw::ERulerOrientation ro, double start, double stop, int 
 	ri->unit = unit;
 }
 
-const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
+void Graph::setBounds(const QFontMetrics& fm, const QRect& bounds)
 {
-	Draw draw;
-	// Get font sizes to calculate needed widths and heights.
-	QFontMetrics fm(painter.font());
 	// Font relative ruler sizes.
 	_left.size = fm.averageCharWidth() * 10 + _left.digits;
 	_right.size = fm.averageCharWidth() * 10 + _right.digits;
@@ -74,6 +73,13 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		_top.enabled ? _top.size : 0,
 		_right.enabled ? -_right.size : 0,
 		_bottom.enabled ? -_bottom.size : 0);
+}
+
+const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
+{
+	Draw draw;
+	// Get font sizes to calculate needed widths and heights.
+	setBounds(QFontMetrics(painter.font()), bounds);
 	// When the background is a valid color paint int.
 	if (_colors[cGraphBackground].isValid())
 	{
@@ -105,7 +111,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roLeft, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roLeft, _colors[cRulerLine], _colors[cRulerText],
 				_left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
 		}
 	}
@@ -136,7 +142,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roRight, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roRight, _colors[cRulerLine], _colors[cRulerText],
 				_right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
 		}
 	}
@@ -166,7 +172,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roTop, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roTop, _colors[cRulerLine], _colors[cRulerText],
 				_top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
 		}
 	}
@@ -197,7 +203,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roBottom, _colors[cLine], _colors[cText],
+			draw.ruler(painter, Draw::roBottom, _colors[cRulerLine], _colors[cRulerText],
 				_bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
 		}
 	}
@@ -205,13 +211,13 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 	if (_horizontal && !_debug)
 	{
 		auto ri = getRulerInfo(_horizontal);
-		draw.gridLines(painter, Draw::goHorizontal, _colors[cGrid], _plotArea, ri->start, ri->stop, ri->digits);
+		draw.gridLines(painter, Draw::goHorizontal, _colors[cGridLines], _plotArea, ri->start, ri->stop, ri->digits);
 	}
 	// Check if vertical grid is enabled.
 	if (_vertical && !_debug)
 	{
 		auto ri = getRulerInfo(_vertical);
-		draw.gridLines(painter, Draw::goVertical, _colors[cGrid], _plotArea, ri->start, ri->stop, ri->digits);
+		draw.gridLines(painter, Draw::goVertical, _colors[cGridLines], _plotArea, ri->start, ri->stop, ri->digits);
 	}
 	if (_debug)
 	{
@@ -235,7 +241,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 
 void Graph::paintPlotCross(QPainter& painter, const QString& text)
 {
-	Draw().textCross(painter, _plotArea, text, _colors[cText]);
+	Draw().textCross(painter, _plotArea, text, _colors[cGraphForeground]);
 }
 
 void Graph::setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro)

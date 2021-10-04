@@ -3,21 +3,26 @@ QWidget[specialStyle="form"]
  background-color: darkred;
 }
 
+/*
 QToolButton:hover
 {
 	background-color: darkorange;
 	border: 1px solid green;
 }
 
+sf--FormDialog#Popup
+{
+	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 lightblue, stop:1 yellow);
+	border: 1px solid black;
+}
+*/
+
+
 QWidget#Form
 {
-	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 orange, stop:1 lightblue);
+	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 lightblue, stop:1 khaki);
 }
 
-sf--VariableEdit[userprop="joehoe"] QLineEdit
-{
-	border: 1px solid red;
-}
 
 /*
 

@@ -26,7 +26,9 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer UiTools REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE
 	#res/resource.qrc
 	GiiCustomWidgets.cpp GiiCustomWidgets.h
 	AscanGraph.cpp AscanGraph.h
@@ -36,8 +38,11 @@ add_library(${PROJECT_NAME} SHARED
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	Qt${QT_VERSION_MAJOR}::Widgets
-	Qt${QT_VERSION_MAJOR}::Designer
+	Qt::Widgets
+	Qt::Designer
 	sf-misc
 	sf-gii
 	)
+	
+# Tell the compiled code a dynamic library (DL) is being build.
+target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)

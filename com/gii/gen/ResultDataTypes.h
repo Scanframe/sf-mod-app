@@ -28,7 +28,13 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		/**
 		 * @brief Vector for pointer to results.
 		 */
-		typedef TVector<ResultData*> Vector;
+		typedef TVector<ResultData*> PtrVector;
+
+		/**
+		 * @brief Vector for instances of results.
+		 */
+		typedef TVector<ResultData> Vector;
+
 		/**
 		 * @brief Type for internal use.
 		 */

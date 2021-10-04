@@ -233,11 +233,11 @@ class _GII_CLASS InformationServer :public InformationTypes
 		/**
 		 * @brief Lists of all variables, sorted by class.
 		 */
-		Variable::Vector _variableList[clMaxClass];
+		Variable::PtrVector _variableList[clMaxClass];
 		/**
 		 * @brief List of result-data pointers.
 		 */
-		ResultData::Vector _resultList;
+		ResultData::PtrVector _resultList;
 		/**
 		 * @brief Declaration of variable linker so event handler is linked.
 		 */

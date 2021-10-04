@@ -127,18 +127,23 @@ if (SF_BUILD_QT)
 		qt/Graph.cpp qt/Graph.h
 		qt/CommonItemDelegate.cpp qt/CommonItemDelegate.h
 		qt/LayoutWidget.cpp qt/LayoutWidget.h
+		qt/LayoutButton.cpp qt/LayoutButton.h
+		qt/LayoutButtonPlugin.cpp qt/LayoutButtonPlugin.h
 		qt/Globals.cpp qt/Globals.h
+		qt/Macros.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
 		)
 
 	list(APPEND SOURCES ${SOURCES_QT})
-	list(APPEND LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Designer)
+	list(APPEND LIBRARIES Qt::Widgets Qt::Designer)
 
 endif (SF_BUILD_QT)
 
 # Add the library to create.
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED qt/Macros.h)
+
+target_sources(${PROJECT_NAME} PRIVATE  ${SOURCES})
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.

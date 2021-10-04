@@ -150,7 +150,7 @@ void HierarchyViewer::removeObject()
 				if (auto obj = model->getObject(index))
 				{
 					// Signal the object is removed.
-					emit objectSelected();
+					Q_EMIT objectSelected();
 					// Remove the item also from the tree.
 					model->removeItem(index);
 					delete obj;
@@ -202,7 +202,7 @@ void HierarchyViewer::selectObject(QObject* obj)
 	{
 		auto index = _layoutEditor->getHierarchyModel()->getObjectIndex(obj);
 		ui->treeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-		emit objectSelected(index);
+		Q_EMIT objectSelected(index);
 		resizeColumnsToContents(ui->treeView);
 	}
 }

@@ -37,7 +37,7 @@ class _GII_CLASS ResultDataHandler :public ResultDataTypes
 };
 
 template<class T>
-class TResultDataLinkHandler :public ResultDataHandler
+class TResultDataHandler :public ResultDataHandler
 {
 	public:
 		/**
@@ -58,18 +58,18 @@ class TResultDataLinkHandler :public ResultDataHandler
 		 * @param pmf Pointer to member function.
 		 */
 		inline
-		TResultDataLinkHandler(T* _this, TPmf pmf)
+		TResultDataHandler(T* _this, TPmf pmf)
 			:_self(_this), _pmf(pmf) {}
 
 		/**
 		 * @brief Prevent copying.
 		 */
-		TResultDataLinkHandler(const TResultDataLinkHandler&) = delete;
+		TResultDataHandler(const TResultDataHandler&) = delete;
 
 		/**
 		 * @brief Prevent assignment.
 		 */
-		TResultDataLinkHandler& operator=(const ResultDataHandler&) = delete;
+		TResultDataHandler& operator=(const ResultDataHandler&) = delete;
 
 	private:
 		/**

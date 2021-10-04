@@ -11,7 +11,7 @@ macro(_populate_target_props TargetName Configuration LIB_LOCATION IMPLIB_LOCATI
 	# When this fails on a library which is part of the project the order of add_subdirectory(...) is incorrect.
 	_check_file_exists(${imported_location})
 	set_target_properties(${TargetName} PROPERTIES "IMPORTED_LOCATION_${Configuration}" ${imported_location})
-	if (NOT "${IMPLIB_LOCATION}" STREQUAL "")
+	if (NOT IMPLIB_LOCATION STREQUAL "")
 		set(imported_implib "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${IMPLIB_LOCATION}")
 		_check_file_exists(${imported_implib})
 		set_target_properties(${TargetName} PROPERTIES "IMPORTED_IMPLIB_${Configuration}" ${imported_implib})
@@ -51,12 +51,17 @@ endif ()
 function(_LocateOutputDir)
 	# InitializeBase return value variable.
 	set(_OutputDir "" PARENT_SCOPE)
+	if (DEFINED SF_CROSS_WINDOWS)
+		set(_BinDir "binwin")
+	else()
+		set(_BinDir "bin")
+	endif()
 	# Loop from 9 to 4 with step 1.
 	foreach (_Counter RANGE 0 4 1)
 		# Form the string to the parent directory.
 		string(REPEAT "/.." ${_Counter} _Sub)
 		# Get the real filepath which is looked for.
-		get_filename_component(_Dir "${CMAKE_CURRENT_LIST_DIR}${_Sub}/bin" REALPATH)
+		get_filename_component(_Dir "${CMAKE_CURRENT_LIST_DIR}${_Sub}/${_BinDir}" REALPATH)
 		# When the file inside is found Set the output directories and break the loop.
 		if (EXISTS "${_Dir}/__output__")
 			set(_OutputDir "${_Dir}" PARENT_SCOPE)
@@ -72,12 +77,13 @@ endfunction()
 ## Fatal error when not able to do so.
 ##
 function(_SetOutputDirs)
-	if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
+	if (CMAKE_PROJECT_NAME STREQUAL "${PROJECT_NAME}")
 		_LocateOutputDir()
 		# Check if the directory was found.
-		if (${_OutputDir} STREQUAL "")
+		if (_OutputDir STREQUAL "")
 			message(FATAL_ERROR "_SetOutputDirs() (${PROJECT_NAME}): Output directory could not be located")
 		else ()
+			message(STATUS "Output Directory (${PROJECT_NAME}): ${_OutputDir}")
 			# Set the directories accordingly in the parents scope.
 			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${_OutputDir}" PARENT_SCOPE)
 			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${_OutputDir}" PARENT_SCOPE)

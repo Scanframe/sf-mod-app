@@ -23,6 +23,8 @@ class _MISC_CLASS Draw
 		 */
 		enum ERulerOrientation :int
 		{
+			/** Disable value. */
+			roNone = 0x0,
 			/** Draws ruler as situated at the top of a graph. */
 			roTop = 0x1,
 			/** Draws ruler as situated at the bottom of a graph. */

@@ -89,6 +89,26 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblMultipleInstances">
+        <property name="toolTip">
+         <string>Determines if multiple instances can be started of this application</string>
+        </property>
+        <property name="text">
+         <string>&amp;Muliple Instances</string>
+        </property>
+        <property name="buddy">
+         <cstring>cbMultipleInstances</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="cbMultipleInstances">
+        <property name="text">
+         <string>yes/no</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

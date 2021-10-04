@@ -440,7 +440,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Server should be exported now.
 		REQUIRE(v_server.isExported());
 		// Check if server variable is now the only  available one.
-		REQUIRE(sf::Variable::getList() == sf::Variable::Vector{&v_server});
+		REQUIRE(sf::Variable::getList() == sf::Variable::PtrVector{&v_server});
 		//
 		REQUIRE(v_server.setCur(sf::Value(1.1), true));
 		// Make revert the export.

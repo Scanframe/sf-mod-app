@@ -38,7 +38,7 @@ else
 fi
 
 # Declare an array of string with type
-declare -a MODULES=("libsf-misc.so" "libsf-gii.so" "libsf-wgt-ascan.so" "libcustom-ui-plugin.so")
+declare -a MODULES=("libsf-misc.so" "libsf-gii.so" "libsf-wgt-ascan.so" "libsf-wgt-acq-ctrl.so" "libcustom-ui-plugin.so" "libtask-menu.so")
 # Iterate the string array using for loop
 for fn in "${MODULES[@]}" ; do
 

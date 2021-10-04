@@ -52,7 +52,7 @@ bool Draw::ruler
 	QPen p_line(color);
 	QPen p_text(font_color);
 	QRect rect(QPoint(0, 0), bounds.size());
-	// Area allowed to paint in. Adjust for the translation of the painter.
+	// Area allowed painting in. Adjust for the translation of the painter.
 	QRect area_rect(area - bounds.topLeft());
 	// Drawing text should not paint the background.
 	p.setBackgroundMode(Qt::TransparentMode);

@@ -37,7 +37,9 @@ class _MISC_CLASS FormDialog :public QDialog
 		void resizing(QResizeEvent* event);
 
 	protected:
-		// Overridden to emit resizing signal.
+		/**
+		 * @brief Overridden to emit resizing signal.
+		 */
 		void resizeEvent(QResizeEvent* event) override;
 
 	private:

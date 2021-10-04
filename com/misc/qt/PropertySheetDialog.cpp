@@ -249,7 +249,7 @@ struct PropertySheetDialog::Private :QObject
 		// Emit the modified signal when a page was applied.
 		if (!modified_pages.isEmpty())
 		{
-			emit _s->modified();
+			Q_EMIT _s->modified();
 		}
 		// Signal all was applied.
 		return true;

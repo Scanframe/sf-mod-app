@@ -5,7 +5,7 @@
 #include <misc/qt/qt_utils.h>
 #include <test-ScriptWindow.h>
 #if IS_WIN
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 int main(int argc, char* argv[])

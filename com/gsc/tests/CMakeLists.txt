@@ -14,7 +14,7 @@ set(TEST_LIBRARIES Catch2::Catch2 sf-misc sf-gsc)
 # Find the test sources.
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 
-list(APPEND TEST_LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets)
+list(APPEND TEST_LIBRARIES Qt::Widgets)
 
 # Tests need to be added as executables first
 add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})

@@ -131,7 +131,7 @@ void GlobalShortcut::Private::activateShortcut(quint32 nativeKey, quint32 native
 			{
 				if (GlobalShortcut* shortcut = _shortcuts.value(qMakePair(nativeKey, nativeMods)))
 				{
-					emit shortcut->activated(shortcut);
+					Q_EMIT shortcut->activated(shortcut);
 				}
 			});
 		}

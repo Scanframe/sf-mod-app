@@ -106,7 +106,7 @@ class _GII_CLASS FileMappedStorage
 		 * @param src Pointer to source of data.
 		 * @return True on success.
 		 */
-		bool blockWrite(size_type ofs, size_type sz, const void* src);
+		inline bool blockWrite(size_type ofs, size_type sz, const void* src);
 
 		/**
 		 * @brief Function that store blocks in several segments when needed.
@@ -115,7 +115,7 @@ class _GII_CLASS FileMappedStorage
 		 * @param dst Pointer to destination of data.
 		 * @return True on success.
 		 */
-		bool blockRead(size_type ofs, size_type sz, void* dst) const;
+		inline bool blockRead(size_type ofs, size_type sz, void* dst) const;
 
 		/**
 		 * @brief Gets the amount of blocks reserved.
@@ -155,7 +155,7 @@ class _GII_CLASS FileMappedStorage
 		/**
 		 * @brief Gets the amount of segments being recycled.
 		 */
-		[[nodiscard]] FileMappedStorage::size_type getRecycleCount() const;
+		[[nodiscard]] inline FileMappedStorage::size_type getRecycleCount() const;
 
 		/**
 		 * @brief Sets the recycle segment count.
@@ -203,33 +203,33 @@ class _GII_CLASS FileMappedStorage
 				 *
 				 * @return True if the when locked.
 				 */
-				[[nodiscard]] bool isLocked() const;
+				[[nodiscard]] inline bool isLocked() const;
 
 				/**
 				 * @brief Gets the size this instance.
 				 *
 				 * @return Size in bytes.
 				 */
-				[[nodiscard]] size_type getSize() const;
+				[[nodiscard]] inline size_type getSize() const;
 
 				/**
 				 * @brief Locks the global handle and returns the pointer to it.
 				 *
 				 * @return NULL on failure.
 				 */
-				void* lockMemory();
+				[[nodiscard]] inline void* lockMemory();
 
 				/**
 				 * @brief Locks the file map and returns the pointer to the memory.
 				 * Read only (const version)
 				 * @return NULL on failure.
 				 */
-				[[nodiscard]] const void* lockMemory() const;
+				[[nodiscard]] inline const void* lockMemory() const;
 
 				/**
 				 * @brief Unlocks the pointer to memory.
 				 */
-				void unlockMemory() const;
+				inline void unlockMemory() const;
 
 				/**
 				 * @brief Writes to the file mapped memory.
@@ -356,7 +356,7 @@ class _GII_CLASS FileMappedStorage
 				 *
 				 * @param ds Data store instance.
 				 */
-				explicit Lock(FileMappedStorage& ds);
+				explicit inline Lock(FileMappedStorage& ds);
 
 				/**
 				 * @brief Constructor.
@@ -364,7 +364,7 @@ class _GII_CLASS FileMappedStorage
 				 * @param ds Data store instance.
 				 * @param seg_idx Designated segment.
 				 */
-				Lock(FileMappedStorage& ds, size_type seg_idx);
+				inline Lock(FileMappedStorage& ds, size_type seg_idx);
 
 				/**
 				 * @brief Destructor.

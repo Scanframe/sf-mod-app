@@ -46,7 +46,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param id Identifying number.
 		 * @param set_desired When true the desired id is set as the passed id.
 		 */
-		explicit ResultData(id_type id, bool set_desired = false);
+		explicit inline ResultData(id_type id, bool set_desired = false);
 
 		/**
 		 * @brief Constructor for creating a completely new reference.
@@ -54,7 +54,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param definition Comma separated string with fields according the #EField enumerate.
 		 * @param id_ofs Offset added to the id passed in the string.
 		 */
-		explicit ResultData(const std::string& definition, ResultData::id_type id_ofs = 0);
+		explicit inline ResultData(const std::string& definition, ResultData::id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a new result using the passed definition structure.
@@ -62,7 +62,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param definition Definition structure.
 		 * @param id_ofs Offset given to the id.
 		 */
-		explicit ResultData(const Definition& definition, ResultData::id_type id_ofs = 0);
+		explicit inline ResultData(const Definition& definition, ResultData::id_type id_ofs = 0);
 
 		/**
 		 * @brief Overridden destructor.
@@ -76,7 +76,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param id_ofs Offset for the id in the definition string.
 		 * @return True when successful.
 		 */
-		bool setup(const std::string& definition, id_type id_ofs = 0);
+		inline bool setup(const std::string& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a new TResultDataReference from a structure for this instance.
@@ -93,7 +93,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param rd Instance to get the source reference from.
 		 * @return True when successful.
 		 */
-		bool setup(const ResultData& rd);
+		inline bool setup(const ResultData& rd);
 
 		/**
 		 * @brief Sets reference to other by id.
@@ -106,7 +106,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
-		bool setup(ResultData::id_type id, bool set_did = false);
+		inline bool setup(ResultData::id_type id, bool set_did = false);
 
 		/**
 		 * @brief Gets the setup string for this instance.
@@ -134,7 +134,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @return True when a change was made to the range and false if not.
 		 * @see #setAccessRange(const Range& rng, bool skip_self = false)
 		 */
-		bool setAccessRange(Range::size_type stop, bool skip_self = false);
+		inline bool setAccessRange(Range::size_type stop, bool skip_self = false);
 
 		/**
 		 * @brief Sets a event handler for this instance.
@@ -176,14 +176,14 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 *
 		 * @param data Pointer
 		 */
-		void setUserData(void* data);
+		inline void setUserData(void* data);
 
 		/**
 		 * @brief Gets the UserData void pointer data member.
 		 *
 		 * @return Pointer to cast.
 		 */
-		[[nodiscard]] void* getUserData() const;
+		[[nodiscard]] inline void* getUserData() const;
 
 		/**
 		 * @brief Gets the instance validity.
@@ -251,7 +251,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @brief Gets the desired id data member value.
 		 * @return Desired identifier.
 		 */
-		[[nodiscard]] id_type getDesiredId() const;
+		[[nodiscard]] inline id_type getDesiredId() const;
 
 		/**
 		 * @brief Gets the sequential Id of this instance.
@@ -298,15 +298,17 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 
 		/**
 		 * @brief Sets the data for this instance for user purposes.
-		 *
-		 * @param data
+		 * @param data Could be a pointer casted value.
 		 */
-		void setData(uint64_t data);
+		template<typename T>
+		inline void setData(T data);
 
 		/**
-		 * @brief Gets the data for this instance for user purposes set with #setData().
+		 * @brief Gets the data for this instance for user purposes Set with setData().
+		 * @return Could be a pointer casted value.
 		 */
-		[[nodiscard]] uint64_t getData() const;
+		template<typename T=uint64_t>
+		[[nodiscard]] inline T getData() const;
 
 		/**
 		 * @brief Gets the usage count of this result reference.
@@ -334,7 +336,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param rng Range depicting the block size.
 		 * @return Size of the buffer in Bytes.
 		 */
-		[[nodiscard]] size_type getBufferSize(const Range& rng) const;
+		[[nodiscard]] inline size_type getBufferSize(const Range& rng) const;
 
 		/**
 		 * @brief Gets the block size in bytes.
@@ -401,7 +403,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @return True on success false on failure and not valid.
 		 * @see #blockRead()
 		 */
-		bool blockRead(const Range& rng, void* dest, bool force = false) const;
+		inline bool blockRead(const Range& rng, void* dest, bool force = false) const;
 
 		/**
 		 * @brief Reads an range when this instance holds indices.
@@ -483,7 +485,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 *
 		 * @return The transaction id.
 		 */
-		[[nodiscard]] Range::id_type getTransId() const;
+		[[nodiscard]] inline Range::id_type getTransId() const;
 
 		/**
 		 * @brief For owners to writes data to storage in using an offset and size in blocks.
@@ -507,7 +509,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param auto_reserve Reserve file mapped memory when needed.
 		 * @see #blockWrite()
 		 */
-		bool blockWrite(const Range& rng, const void* src, bool auto_reserve = false);
+		inline bool blockWrite(const Range& rng, const void* src, bool auto_reserve = false);
 
 		/**
 		 * @brief Commits all validated ranges and to notifies assigned handlers.
@@ -547,7 +549,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param sz Size in blocks.
 		 * @see #commitValidations()
 		 */
-		void validateRange(Range::size_type ofs, Range::size_type sz);
+		inline void validateRange(Range::size_type ofs, Range::size_type sz);
 
 		/**
 		 * @brief Adds a validated range of blocks for committing later. Only available for owners.
@@ -578,7 +580,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param sz Size in blocks.
 		 * @return True when the request was excepted.
 		 */
-		bool requestRange(Range::size_type ofs, Range::size_type sz);
+		inline bool requestRange(Range::size_type ofs, Range::size_type sz);
 
 		/**
 		 * @brief Requests the a range in blocks to validate.
@@ -699,7 +701,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @brief Gets the byte size of this instance's type.
 		 * @return Size in bytes.
 		 */
-		[[nodiscard]] ResultData::size_type getTypeSize() const;
+		[[nodiscard]] inline ResultData::size_type getTypeSize() const;
 
 		/**
 		 * @brief Gets the significant bits of the type used for this result
@@ -728,7 +730,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * Useful in populating a selection dialog.
 		 * @return Vector of instance pointers.
 		 */
-		static Vector getList();
+		static PtrVector getList();
 
 		/**
 		 * @brief Gets the name of the passed field enumerate #EField.
@@ -752,7 +754,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @return Reference to instance.
 		 * @see #sf::ResultDataStatic::zero()
 		 */
-		static const ResultData& getInstanceById(id_type id, const Vector& list);
+		static const ResultData& getInstanceById(id_type id, const PtrVector& list);
 
 		/**
 		 * @brief Finds instance in passed vector. in vector with passed sequential ID and returns a
@@ -761,7 +763,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param list
 		 * @return
 		 */
-		static const ResultData& getInstanceBySequenceId(ResultData::id_type seq_id, const Vector& list);
+		static const ResultData& getInstanceBySequenceId(ResultData::id_type seq_id, const PtrVector& list);
 
 		/**
 		 * @brief Gets the total amount of bytes reserved by all instances.
@@ -778,7 +780,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param err_line Error line number.
 		 * @return True when no error occurred.
 		 */
-		static bool create(std::istream& is, Vector& list = null_ref<Vector>(), int& err_line = null_ref<int>());
+		static bool create(std::istream& is, PtrVector& list = null_ref<PtrVector>(), int& err_line = null_ref<int>());
 
 		/**
 		 * @brief Writes id and current access range and current flags to the stream.
@@ -798,7 +800,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param list Optional other list to use as source for instances.
 		 * @return True when successful.
 		 */
-		static bool readUpdate(std::istream& is, bool skip_self, Vector& list = null_ref<Vector>());
+		static bool readUpdate(std::istream& is, bool skip_self, PtrVector& list = null_ref<PtrVector>());
 
 		/**
 		 * Fills a definition structure from a string.
@@ -830,7 +832,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param rd Source instance
 		 * @return Lvalue
 		 */
-		ResultData& operator=(const ResultData& rd);
+		inline ResultData& operator=(const ResultData& rd);
 
 		/**
 		 * @brief Comparison operator.
@@ -838,7 +840,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 * @param rd Result data to compare.
 		 * @return True when the same.
 		 */
-		bool operator==(const ResultData& rd) const;
+		inline bool operator==(const ResultData& rd) const;
 
 		/**
 		 * @brief During events no instances should be deleted.
@@ -968,7 +970,7 @@ class _GII_CLASS ResultData :public InformationBase, public ResultDataTypes
 		 *
 		 * @return True when enabled.
 		 */
-		[[nodiscard]] bool isDebug() const;
+		[[nodiscard]] inline bool isDebug() const;
 		/**
 		 * @brief Gets the name of the passed #EEvent number.
 		 * @param event The event number.
@@ -1142,16 +1144,18 @@ ResultData::size_type ResultData::getTypeSize() const
 	return getTypeSize(getType());
 }
 
+template<typename T>
 inline
-void ResultData::setData(uint64_t data)
+void ResultData::setData(T data)
 {
-	_data = data;
+	_data = (uint64_t)data;
 }
 
-inline
-uint64_t ResultData::getData() const
+template<typename T>
+[[nodiscard]] inline
+T ResultData::getData() const
 {
-	return _data;
+	return (T)_data;
 }
 
 inline

@@ -86,7 +86,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Looks up a parameter which is represented by the interface id.
 		 */
-		[[nodiscard]] Variable::Vector::size_type variableListFind(id_type id) const;
+		[[nodiscard]] Variable::PtrVector::size_type variableListFind(id_type id) const;
 
 		/**
 		 * @brief Creates a variable with a extra info structure attached.
@@ -121,7 +121,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Looks up a result data which is represented by the interface id.
 		 */
-		[[nodiscard]] ResultData::Vector::size_type resultListFind(id_type id) const;
+		[[nodiscard]] ResultData::PtrVector::size_type resultListFind(id_type id) const;
 
 		/**
 		 * @brief Creates a variable with a extra info structure attached.
@@ -231,11 +231,11 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Holds all created variables for the selected implementation.
 		 */
-		Variable::Vector _variableVector;
+		Variable::PtrVector _variableVector;
 		/**
 		 * @brief Callback hook for result events.
 		 */
-		TResultDataLinkHandler<RsaServer> _serverResultDataHandler;
+		TResultDataHandler<RsaServer> _serverResultDataHandler;
 		/**
 		 * @brief Event handler for results.
 		 */
@@ -243,7 +243,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Holds all created results for this instance.
 		 */
-		ResultData::Vector _resultVector;
+		ResultData::PtrVector _resultVector;
 		/**
 		 * @brief Holds the device number passed at the constructor.
 		 */

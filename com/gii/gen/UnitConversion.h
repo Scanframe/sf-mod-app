@@ -104,7 +104,7 @@ class _GII_CLASS UnitConverter
 		 * @param unit Original unit.
 		 * @param sig_digits Original significant digits.
 		 */
-		UnitConverter(const std::string& unit, int sig_digits);
+		inline UnitConverter(const std::string& unit, int sig_digits);
 
 		/**
 		 * @brief Retrieves the unit conversion using the passed values.
@@ -146,21 +146,21 @@ class _GII_CLASS UnitConverter
 		 *
 		 * @return If no valid conversion the original unit is returned.
 		 */
-		[[nodiscard]] std::string getUnit() const;
+		[[nodiscard]] inline std::string getUnit() const;
 
 		/**
 		 * @brief Gets the significant digits after conversion.
 		 *
 		 * @return If no valid conversion the original unit is returned.
 		 */
-		[[nodiscard]] int getSigDigits() const;
+		[[nodiscard]] inline int getSigDigits() const;
 
 		/**
 		 * @brief Returns if there is a valid conversion present.
 		 *
 		 * @return True when valid.
 		 */
-		[[nodiscard]] bool isValid() const;
+		[[nodiscard]] inline bool isValid() const;
 
 		/**
 		 * @brief  Gets original value from the past converted value.
@@ -190,7 +190,7 @@ class _GII_CLASS UnitConverter
 		 *
 		 * Clearing makes this class pass through values unconverted.
 		 */
-		void clear();
+		inline void clear();
 
 	private:
 		/**

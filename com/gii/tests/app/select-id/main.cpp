@@ -10,7 +10,7 @@
 #include <gii/gen/Variable.h>
 #include <gen/ResultData.h>
 #if IS_WIN
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include "test-ini-content.h"
 

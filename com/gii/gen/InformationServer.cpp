@@ -141,7 +141,7 @@ void InformationServer::detachVariable(Variable* var)
 void InformationServer::attachResult(ResultData* res)
 {
 	auto i = _resultList.find(res);
-	if (i == ResultData::Vector::npos)
+	if (i == ResultData::PtrVector::npos)
 	{
 		_resultList.append(res);
 		// When initial flags has not the ARCHIVE flag set the archive

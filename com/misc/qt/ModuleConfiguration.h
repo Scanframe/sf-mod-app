@@ -72,7 +72,7 @@ class _MISC_CLASS ModuleConfiguration :public QObject
 		/**
 		 * @brief Gets the module library directory.
 		 */
-		[[nodiscard]] QSettings* getSettings();
+		[[nodiscard]] inline QSettings* getSettings();
 
 	private:
 		/**

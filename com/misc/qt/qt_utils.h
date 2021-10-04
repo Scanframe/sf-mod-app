@@ -120,6 +120,12 @@ constexpr QRect inflated(const QRect& r, int sz)
 	return r.adjusted(-sz, -sz, sz, sz);
 }
 
+inline
+QSize asQSize(const QPoint& pt)
+{
+	return {pt.x(), pt.y()};
+}
+
 namespace sf
 {
 
@@ -206,17 +212,27 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		 * @brief Called from setFilepath and the event handler.
 		 * @param watch
 		 */
-		void doStyleApplication(bool watch);
+		void doStyleApplication(bool readOnly, bool watch);
+		/**
+		 * Save and restores the window state of the passed widget.
+		 * @param name Name of the window widget.
+		 * @param widget The window widget.
+		 * @param save True for saving and false for restoring.
+		 */
+		void windowState(const QString& name, QWidget* widget, bool save);
 
 		/**
 		 * @brief File watcher instance.
 		 */
 		QFileSystemWatcher* _watcher;
 		/**
+		 * @brief Holds the timestamp of the last processed and watched file.
+		 */
+		QDateTime _lastModified;
+		/**
 		 * @brief File info structure of the ini-file.
 		 */
 		QFileInfo _fileInfo;
-
 		/**
 		 * @brief Holds system colors from startup.
 		 *
@@ -225,14 +241,6 @@ class _MISC_CLASS ApplicationSettings :public QObject
 		 * This class provides a solution to store the initial palette for example.
 		 */
 		PaletteColors _systemColors;
-
-		/**
-		 * Save and restores the window state of the passed widget.
-		 * @param name Name of the window widget.
-		 * @param widget The window widget.
-		 * @param save True for saving and false for restoring.
-		 */
-		void windowState(const QString& name, QWidget* widget, bool save);
 };
 
 /**

@@ -88,7 +88,7 @@ bool UnitConversionServer::Handler(UnitConversionEvent& ev)
 	}
 	else
 	{
-		SF_RTTI_NOTIFY(DO_CLOG, "Profile key '" << key << "' does not exist!")
+		SF_RTTI_NOTIFY(DO_CLOG, "Profile key '" << key << "' in section '" << section << "' does not exist!")
 	}
 	// Clear all returned values when not found.
 	ev._to_unit.clear();

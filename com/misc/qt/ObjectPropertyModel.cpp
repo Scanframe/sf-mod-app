@@ -1,6 +1,7 @@
 #include <bitset>
 #include <QMetaEnum>
 #include <QAbstractItemView>
+#include <QLineEdit>
 #include <QFormLayout>
 #include "CommonItemDelegate.h"
 #include "ObjectPropertyModel.h"
@@ -72,9 +73,17 @@ CommonItemDelegate::EEditorType getEditorType(QObject* obj, int index, bool dyna
 		}
 		return CommonItemDelegate::etDropDownIndex;
 	}
-	if (mt == QMetaType::fromType<QMargins>() || mt == QMetaType::fromType<QRect>() || mt == QMetaType::fromType<QSize>())
+	else if (mt == QMetaType::fromType<QMargins>() || mt == QMetaType::fromType<QRect>() || mt == QMetaType::fromType<QSize>())
 	{
 		return CommonItemDelegate::etEdit;
+	}
+	else if (mt == QMetaType::fromType<qulonglong>())
+	{
+		return CommonItemDelegate::etULongLong;
+	}
+	else if (mt == QMetaType::fromType<QColor>())
+	{
+		return CommonItemDelegate::etColorEdit;
 	}
 	return CommonItemDelegate::etDefault;
 }
@@ -217,7 +226,14 @@ void ObjectPropertyModel::setTarget(QObject* target)
 
 void ObjectPropertyModel::setDelegates(QAbstractItemView* view)
 {
-	view->setItemDelegate(new CommonItemDelegate(view));
+	auto cid = new CommonItemDelegate(view);
+	// Propagate the signal.
+	connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index)
+	{
+		auto propIdx = _indices.at(index.row());
+		Q_EMIT addLineEditActions(lineEdit, propIdx._obj, propIdx._index, propIdx._dynamic);
+	});
+	view->setItemDelegate(cid);
 }
 
 void ObjectPropertyModel::refresh()
@@ -333,6 +349,12 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 					auto size = propIdx._obj->property(mp.name()).value<QSize>();
 					return QString("%1,%2").arg(size.width()).arg(size.height());
 				}
+				else if (mt == QMetaType::fromType<qulonglong>())
+				{
+					// Show hexadecimal value.
+					return QString("0x%1").arg(propIdx._obj->property(mp.name()).value<qulonglong>(), 0, 16);
+				}
+				// Otherwise, just default.
 				return propIdx._obj->property(mp.name());
 			}
 		}
@@ -435,6 +457,9 @@ bool ObjectPropertyModel::setData(const QModelIndex& index, const QVariant& valu
 				propName = meta->property(propIdx._index).name();
 				typeId = meta->property(propIdx._index).typeId();
 			}
+			// Get the current value for comparison to emit an event.
+			auto curVal = propIdx._obj->property(propName);
+			//
 			QMetaType mt(typeId);
 			if (mt == QMetaType::fromType<QMargins>() || mt == QMetaType::fromType<QRect>())
 			{
@@ -473,10 +498,13 @@ bool ObjectPropertyModel::setData(const QModelIndex& index, const QVariant& valu
 			{
 				propIdx._obj->setProperty(propName, value);
 			}
+			// Signal that a property has changed when it did.
+			if (curVal != propIdx._obj->property(propName))
+			{
+				Q_EMIT changed(propIdx._obj, propIdx._index, propIdx._dynamic);
+			}
+			dataChanged(index, index);
 		}
-		dataChanged(index, index);
-		// Signal that a property has changes.
-		emit changed(propIdx._obj, propIdx._index, propIdx._dynamic);
 		return true;
 	}
 	return false;

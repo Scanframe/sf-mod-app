@@ -5,6 +5,7 @@
 #include "EditorPlugin.h"
 #include "PropertyPagePlugin.h"
 #include "ActionButtonPlugin.h"
+#include "LayoutButtonPlugin.h"
 
 namespace sf
 {
@@ -20,6 +21,7 @@ MiscCustomWidgets::MiscCustomWidgets(QObject* parent)
 	widgets.append(new ActionButtonPlugin(this));
 	widgets.append(new EditorPlugin(this));
 	widgets.append(new PropertyPagePlugin(this));
+	widgets.append(new LayoutButtonPlugin(this));
 }
 
 MiscCustomWidgets::~MiscCustomWidgets()

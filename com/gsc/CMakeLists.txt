@@ -25,7 +25,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 # Include libraries for all platforms.
-set(LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets sf-misc)
+set(LIBRARIES Qt::Widgets sf-misc)
 
 # Generic sources only STL dependent.
 set(SOURCES
@@ -55,7 +55,9 @@ else (NOT WIN32)
 endif (NOT WIN32)
 
 # Add the library to create.
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Add include directory '~/lib/Qt/<qt-ver>/gcc_64/include/QtGui/<qt-ver>/QtGui'
 target_include_directories(${PROJECT_NAME} PRIVATE "${QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")

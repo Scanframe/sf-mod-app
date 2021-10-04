@@ -149,10 +149,10 @@ ResultData::size_type ResultData::getInstanceCount()
 	return --count;
 }
 
-ResultData::Vector ResultData::getList()
+ResultData::PtrVector ResultData::getList()
 {
 	// Return value.
-	ResultData::Vector rv;
+	PtrVector rv;
 	// Set the vector to reserve the maximum expected size.
 	rv.reserve(ResultDataStatic::_references->size());
 	// Iterate through the references.
@@ -182,7 +182,7 @@ ResultDataReference* ResultData::getReferenceById(ResultDataTypes::id_type id)
 	return ResultDataStatic::zero()._reference;
 }
 
-const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id, const ResultData::Vector& list)
+const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id, const PtrVector& list)
 {
 	for (auto rd: list)
 	{
@@ -194,7 +194,7 @@ const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id, const
 	return ResultDataStatic::zero();
 }
 
-const ResultData& ResultData::getInstanceBySequenceId(ResultData::id_type seq_id, const ResultData::Vector& list)
+const ResultData& ResultData::getInstanceBySequenceId(ResultData::id_type seq_id, const PtrVector& list)
 {
 	for (auto rd: list)
 	{
@@ -429,7 +429,7 @@ ResultData::size_type ResultData::emitLocalEvent(EEvent event, const Range& rng,
 {
 	// Disable deletion of local instances.
 	ResultDataStatic::_globalActive++;
-	Vector ev_list;
+	PtrVector ev_list;
 	// Iterate through list and generate the results from which the event handler needs to be called.
 	for (auto res: _reference->_list)
 	{
@@ -457,7 +457,7 @@ ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng
 	// Disable deletion of instances.
 	ResultDataStatic::_globalActive++;
 	// Declare event list for instance pointers.
-	Vector ev_list;
+	PtrVector ev_list;
 	// Iterate through all references.
 	for (auto ref: *ResultDataStatic::_references)
 	{
@@ -488,7 +488,7 @@ ResultData::size_type ResultData::attachDesired()
 	// Disable deletion of instances.
 	ResultDataStatic::_globalActive++;
 	// Signal other event handler functions are called using a global predefined list.
-	Vector ev_list;
+	PtrVector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
 	for (auto ref: *ResultDataStatic::_references)
 	{
@@ -1381,7 +1381,7 @@ bool ResultData::writeUpdate(std::ostream& os) const
 	return !os.fail() && !os.bad();
 }
 
-bool ResultData::readUpdate(std::istream& is, bool skip_self, Vector& list)
+bool ResultData::readUpdate(std::istream& is, bool skip_self, PtrVector& list)
 {
 	std::string flags;
 	Range rng;
@@ -1462,7 +1462,7 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 	return def;
 }
 
-bool ResultData::create(std::istream& is, Vector& list, int& err_line)
+bool ResultData::create(std::istream& is, PtrVector& list, int& err_line)
 {
 	bool ret_val = true;
 	// result keeps track of the lines read

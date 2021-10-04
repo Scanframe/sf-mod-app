@@ -14,10 +14,13 @@ class CustomWidgets :public QObject, public QDesignerCustomWidgetCollectionInter
 	public:
 		explicit CustomWidgets(QObject* parent = nullptr);
 
-		QList<QDesignerCustomWidgetInterface*> customWidgets() const override;
+		[[nodiscard]] QList<QDesignerCustomWidgetInterface*> customWidgets() const override;
 
 	private:
 		QList<QDesignerCustomWidgetInterface*> widgets;
 };
+
+
+
 
 } // namespace

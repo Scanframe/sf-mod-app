@@ -12,7 +12,7 @@ DrawWidget::DrawWidget(QWidget* parent)
 void DrawWidget::paintEvent(QPaintEvent* event)
 {
 	QWidget::paintEvent(event);
-	emit paint(event);
+	Q_EMIT paint(event);
 }
 
 }

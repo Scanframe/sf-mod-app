@@ -42,4 +42,14 @@ bool LayoutWidget::getReadOnly() const
 	return _readOnly;
 }
 
+QDir LayoutWidget::getDirectory() const
+{
+	return {};
+}
+
+QString LayoutWidget::getSuffix()
+{
+	return "ui";
+}
+
 }

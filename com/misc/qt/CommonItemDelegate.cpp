@@ -1,12 +1,15 @@
 #include <bitset>
 #include <QComboBox>
-#include <QLineEdit>
 #include <QKeySequenceEdit>
 #include <QStandardItemModel>
 #include <QSpinBox>
 #include <QListView>
+#include <QAction>
+#include <QLineEdit>
+#include <QColorDialog>
 #include "CommonItemDelegate.h"
 #include "qt_utils.h"
+#include "Resource.h"
 
 namespace sf
 {
@@ -45,6 +48,40 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		case etSpinBox:
 		{
 			return new QSpinBox(parent);
+		}
+
+		case etULongLong:
+		{
+			auto lineEdit = new QLineEdit(parent);
+			// Remove the focus border so the looks the same as the default editor.
+			lineEdit->setStyleSheet(QString("%1 {border: 0;}").arg(lineEdit->metaObject()->className()));
+			// Allow setting some actions for this edit.
+			Q_EMIT addLineEditActions(lineEdit, index);
+			return lineEdit;
+		}
+
+		case etColorEdit:
+		{
+			auto lineEdit = new QLineEdit(parent);
+			// Remove the focus border so the looks the same as the default editor.
+			lineEdit->setStyleSheet(QString("%1 {border: 0;}").arg(lineEdit->metaObject()->className()));
+			//
+			auto action = lineEdit->addAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Edit), lineEdit->palette(), QPalette::Text),
+				QLineEdit::TrailingPosition);
+			connect(action, &QAction::triggered, [action]()
+			{
+				if (auto le = qobject_cast<QLineEdit*>(action->parent()))
+				{
+					QColorDialog dlg(QColor(le->text()), le);
+					dlg.setOption(QColorDialog::ShowAlphaChannel);
+					if (dlg.exec() == QDialog::Accepted)
+					{
+						le->setText(QVariant(dlg.currentColor()).toString());
+					}
+				}
+			});
+			//
+			return lineEdit;
 		}
 
 		default:
@@ -137,6 +174,14 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			return;
 		}
 
+		case etULongLong:
+		{
+			auto le = dynamic_cast<QLineEdit*>(editor);
+			Q_ASSERT(le);
+			le->setText(QString("0x%1").arg(index.model()->data(index, Qt::EditRole).value<qulonglong>(), 0, 16));
+			return;
+		}
+
 		default:
 			// Call the initial method.
 			QStyledItemDelegate::setEditorData(editor, index);
@@ -197,6 +242,14 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			auto sb = dynamic_cast<QSpinBox*>(editor);
 			Q_ASSERT(sb);
 			model->setData(index, sb->value(), Qt::EditRole);
+			return;
+		}
+
+		case etULongLong:
+		{
+			auto le = dynamic_cast<QLineEdit*>(editor);
+			Q_ASSERT(le);
+			model->setData(index, le->text().toULongLong(nullptr, 0), Qt::EditRole);
 			return;
 		}
 

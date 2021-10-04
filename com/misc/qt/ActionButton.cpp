@@ -58,7 +58,6 @@ void ActionButton::updateButtonStatusFromAction()
 		// Find sibling action.
 		a = parent()->findChild<QAction*>(_actionName, Qt::FindChildOption::FindDirectChildrenOnly);
 	}
-
 	// Skip when in designer.
 	if (!inDesigner())
 	{

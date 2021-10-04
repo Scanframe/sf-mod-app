@@ -64,7 +64,7 @@ struct VariableReference :public VariableTypes
 	/** Vector which holds all states of this instance.*/
 	State::Vector _states;
 	/** list of variables attached to this reference.*/
-	Vector _list;
+	PtrVector _list;
 	/**
 	 * Static this counter is increased if a local event is generated.<br>
 	 * It is decreased when it returns from the event handler.

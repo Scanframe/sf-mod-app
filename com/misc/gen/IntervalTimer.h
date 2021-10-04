@@ -24,7 +24,7 @@ class _MISC_CLASS IntervalTimer
 		/**
 		 * @brief Initializing constructor setting the elapse time using a timespec struct.
 		 */
-		explicit IntervalTimer(const timespec& t);
+		explicit inline IntervalTimer(const timespec& t);
 
 		/**
 		 * @brief Initializing constructor setting the elapse time in usec.
@@ -61,32 +61,32 @@ class _MISC_CLASS IntervalTimer
 		/**
 		 * @brief Enables the timer with the current interval time.
 		 */
-		void enable();
+		inline void enable();
 
 		/**
 		 * @brief Disables the timer.
 		 */
-		void disable();
+		inline void disable();
 
 		/**
 		 * @brief Gets timer enabled.
 		 *
 		 * @return True on enabled.
 		 */
-		[[nodiscard]] bool isEnabled() const;
+		[[nodiscard]] inline bool isEnabled() const;
 
 		/**
 		 * @brief Gets the set interval time in msec.
 		 *
 		 * @return Interval time.
 		 */
-		[[nodiscard]] const TimeSpec& getInterval() const;
+		[[nodiscard]] inline const TimeSpec& getInterval() const;
 		/**
 		 * @brief Gets the set interval time in msec.
 		 *
 		 * @return Interval time.
 		 */
-		[[nodiscard]] const TimeSpec& getTarget() const;
+		[[nodiscard]] inline const TimeSpec& getTarget() const;
 
 		/**
 		 * @brief Gets the time left in msec before function active becomes true.
@@ -123,7 +123,7 @@ class _MISC_CLASS IntervalTimer
 		 *
 		 * Used in if and while statements.
 		 */
-		explicit operator bool() const;
+		explicit inline operator bool() const;
 
 		 /**
 		  * This operator is used to minimize clock() calls by passing the value itself.
@@ -131,7 +131,7 @@ class _MISC_CLASS IntervalTimer
 		 * @param t Clock() value.
 		  * @return True if timer is active.
 		  */
-		bool operator()(const timespec& t) const;
+		 inline bool operator()(const timespec& t) const;
 
 	private:
 		/**

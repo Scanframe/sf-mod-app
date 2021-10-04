@@ -25,6 +25,7 @@ function ShowHelp()
 
   -c : Cleans build targets first (adds build option '--clean-first')
   -t : Add tests to the build configuration.
+  -w : Cross compile Windows on Linux using MinGW.
   -m : Create build directory and makefiles only.
   -b : Build target only.
   Where <sub-dir> is:
@@ -51,29 +52,37 @@ function ShowHelp()
 # Initialize arguments and switches.
 FLAG_CONFIG=false
 FLAG_BUILD=false
+# Flag for cross compiling for Windows from Linux.
+FLAG_CROSS_WINDOWS=false
+
 argument=()
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "hcbtm" opt; do
+	while getopts "hcbtmw" opt; do
 		case $opt in
 			h)
 				ShowHelp
 				exit 0
 				;;
 			c)
-			 	WriteLog "Clean first enabled"
+				WriteLog "Clean first enabled"
 				BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
 				;;
 			m)
-			 	WriteLog "Create build directory and makefiles only"
+				WriteLog "Create build directory and makefiles only"
 				FLAG_CONFIG=true
 				;;
 			b)
-			 	WriteLog "Build the given target only"
+				WriteLog "Build the given target only"
 				FLAG_BUILD=true
 				;;
 			t)
-			 	WriteLog "Include test builds"
+				WriteLog "Include test builds"
 				CONFIG_OPTIONS="${CONFIG_OPTIONS} -DSF_BUILD_TESTING=ON"
+				;;
+			w)
+				WriteLog "Cross compile for Windows"
+				FLAG_CROSS_WINDOWS=true
+				CONFIG_OPTIONS="${CONFIG_OPTIONS} -DSF_CROSS_WINDOWS=ON"
 				;;
 			\?)
 				WriteLog "Invalid option: -$OPTARG"
@@ -103,7 +112,12 @@ fi
 # Initialize variables.
 SOURCE_DIR="${argument[0]}"
 TARGET="all"
-BUILD_SUBDIR="cmake-build-debug"
+# Set the build-dir for the cross compile.
+if [[ $FLAG_CROSS_WINDOWS ]] ; then
+	BUILD_SUBDIR="cmake-build-wdebug"
+else
+	BUILD_SUBDIR="cmake-build-debug"
+fi
 
 # When second argument is not given all targets are build as the default.
 if [[ ! -z ${argument[1]} ]]; then
@@ -145,7 +159,6 @@ fi
 # Configure
 if ${FLAG_CONFIG} ; then
 # Configure debug
-#${CMAKE_BIN} -B "${BUILD_DIR}" --config "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
 ${CMAKE_BIN} -B "${BUILD_DIR}" "${SOURCE_DIR}" -G "${BUILD_GENERATOR}" ${CONFIG_OPTIONS}
 fi
 

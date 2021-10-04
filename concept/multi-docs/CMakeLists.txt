@@ -55,7 +55,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc)
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")

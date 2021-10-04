@@ -11,6 +11,7 @@
 #include <QLayout>
 #include <QFormLayout>
 #include <QFontDatabase>
+#include <QTimer>
 
 #include "qt_utils.h"
 
@@ -106,8 +107,13 @@ ApplicationSettings::~ApplicationSettings()
 
 void ApplicationSettings::onFileChance(const QString& file)
 {
-	// Do not Set file watches.
-	doStyleApplication(false);
+	QFileInfo fi(file);
+	if (_lastModified < fi.lastModified())
+	{
+		_lastModified = fi.lastModified();
+		// Do not Set file watches.
+		doStyleApplication(true, false);
+	}
 }
 
 void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
@@ -121,7 +127,7 @@ void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 			_watcher->removePaths(_watcher->files());
 		}
 		// Set the styling on the application.
-		doStyleApplication(watch);
+		doStyleApplication(false, watch);
 		// When watch
 		if (watch)
 		{
@@ -143,7 +149,7 @@ const QFileInfo& ApplicationSettings::fileInfo() const
 	return _fileInfo;
 }
 
-void ApplicationSettings::doStyleApplication(bool watch)
+void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 {
 	// Form the ini's directory to relate to.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
@@ -159,18 +165,17 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	QString key;
 	// Get the current font.
 	QFont font = QApplication::font();
-	// Start the *-Style ini section.
+	// Start the 'Style-???' ini section.
 	settings.beginGroup("Style-" + suffix);
 	// Get the keys in the section to check existence in the ini-section.
 	auto keys = settings.childKeys();
 	// Check if settings can be written and the key does not exist.
 	key = "App-Style";
-	if (settings.isWritable() && !keys.contains(key))
+	if (!readOnly && settings.isWritable() && !keys.contains(key))
 	{
-		settings.setValue(key, QApplication::style()->objectName());
+		settings.setValue(key, QApplication::style()->name());
 	}
-	QApplication::setStyle(settings.value(key, QApplication::style()->objectName()).toString());
-	auto app_style = QApplication::style()->name();
+	auto app_style = settings.value(key, QApplication::style()->name()).toString();
 	// Sentry and also the instance.
 	if (_systemColors.isEmpty())
 	{
@@ -178,7 +183,8 @@ void ApplicationSettings::doStyleApplication(bool watch)
 		QApplication::instance()->setProperty("systemColors", QVariant::fromValue<PaletteColors*>(&_systemColors));
 	}
 	// Same as above.
-	if (settings.isWritable() && !keys.contains(key = "Font-Family"))
+	key = "Font-Family";
+	if (!readOnly && settings.isWritable() && !keys.contains(key))
 	{
 		settings.setValue(key, font.family());
 	}
@@ -188,13 +194,16 @@ void ApplicationSettings::doStyleApplication(bool watch)
 //		qInfo() << fnm;
 //	}
 	// Same as above.
-	if (settings.isWritable() && !keys.contains(key = "Font-PointSize"))
+	key = "Font-PointSize";
+	if (!readOnly && settings.isWritable() && !keys.contains(key))
 	{
 		settings.setValue(key, font.pointSize());
 	}
-	font.setPointSize(settings.value(key, font.pointSize()).toInt());
+	auto font_size = settings.value(key, font.pointSize()).toInt();
+	font.setPointSize(font_size);
 	// Same as above.
-	if (settings.isWritable() && !keys.contains(key = "StyleSheet"))
+	key = "StyleSheet";
+	if (!readOnly && settings.isWritable() && !keys.contains(key))
 	{
 		settings.setValue(key, "");
 	}
@@ -221,35 +230,47 @@ void ApplicationSettings::doStyleApplication(bool watch)
 	settings.beginGroup("Palette-" + app_style);
 	// Keys to see which ones are missing.
 	keys = settings.childKeys();
-	QPalette palette = QApplication::palette();
-	QMetaEnum metaEnum = QMetaEnum::fromType<QPalette::ColorRole>();
+	auto palette = QApplication::palette();
+	auto metaEnum = QMetaEnum::fromType<QPalette::ColorRole>();
 	for (int i = 0; i < QPalette::ColorRole::NColorRoles; i++)
 	{
 		auto role = (QPalette::ColorRole) i;
 		// When the key does not exist write it with the current value.
-		if (settings.isWritable() && !keys.contains(key = metaEnum.valueToKey(role)))
+		key = metaEnum.valueToKey(role);
+		if (!readOnly && settings.isWritable() && !keys.contains(key))
 		{
 			settings.setValue(key, palette.color(role).name(QColor::HexArgb));
 		}
 		palette.setColor(role, QColor(settings.value(key, palette.color(role).name(QColor::HexArgb)).toString()));
 	}
 	settings.endGroup();
-	// SEt the font for the application.
+	// Set the application style before the font is set otherwise menu's and some controls got their font sizes reset.
+	QApplication::setStyle(app_style);
+	// Set the font for the application.
 	QApplication::setFont(font);
 	// Set the color pallet of the application.
 	QApplication::setPalette(palette);
 	// Write changes to disk.
-	settings.sync();
+	if (!readOnly)
+	{
+		settings.sync();
+	}
 }
 
 void ApplicationSettings::restoreWindowRect(const QString& win_name, QWidget* window)
 {
-	windowState(win_name, window, false);
+	if (window)
+	{
+		windowState(win_name, window, false);
+	}
 }
 
 void ApplicationSettings::saveWindowRect(const QString& win_name, QWidget* window)
 {
-	windowState(win_name, window, true);
+	if (window)
+	{
+		windowState(win_name, window, true);
+	}
 }
 
 void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool save)

@@ -244,7 +244,7 @@ void AppModuleList::toggleSelection(const QModelIndex& index)
 				state = Qt::CheckState::Unchecked;
 				break;
 		}
-		emit dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(0), {Qt::CheckStateRole});
+		Q_EMIT dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(0), {Qt::CheckStateRole});
 		_dirty = true;
 	}
 }

@@ -289,7 +289,7 @@ class _MISC_CLASS Thread
 		 * Enables debug logging.
 		 * @param yn True for debug output.
 		 */
-		void setDebug(bool yn);
+		inline void setDebug(bool yn);
 
 		/**
 		 * @brief Yield control of the current thread.
@@ -365,7 +365,7 @@ class _MISC_CLASS Thread
 				/**
 				* @brief Returns the error enumeration value.
 				*/
-				[[nodiscard]] EErrorType getErrorType() const;
+				[[nodiscard]] inline EErrorType getErrorType() const;
 
 			private:
 				/**
@@ -384,7 +384,10 @@ class _MISC_CLASS Thread
 		 */
 		const Thread& operator=(const Thread&) = delete;
 
-		bool isDebug() const;
+		/**
+		 * @brief Gets the debug flag.
+		 */
+		[[nodiscard]] inline bool isDebug() const;
 
 	protected:
 		/**

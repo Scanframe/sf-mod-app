@@ -1,6 +1,5 @@
 #include <QVariant>
 #include <QMdiArea>
-#include <QMetaEnum>
 #include "ApplicationPropertyPage.h"
 #include "ui_ApplicationPropertyPage.h"
 #include "Application.h"
@@ -42,6 +41,7 @@ void ApplicationPropertyPage::updatePage()
 	// Update controls with current values.
 	ui->leAppDisplayName->setText(QApplication::applicationDisplayName());
 	ui->sbSustain->setValue(_app->_sustainInterval);
+	ui->cbMultipleInstances->setChecked(_app->_allowSecondary);
 }
 
 bool ApplicationPropertyPage::isPageModified() const
@@ -49,6 +49,7 @@ bool ApplicationPropertyPage::isPageModified() const
 	bool rv = false;
 	rv |= ui->leAppDisplayName->text() != QApplication::applicationDisplayName();
 	rv |= ui->sbSustain->value() != _app->_sustainInterval;
+	rv |= ui->cbMultipleInstances->isChecked() != _app->_allowSecondary;
 	return rv;
 }
 
@@ -56,6 +57,7 @@ void ApplicationPropertyPage::applyPage()
 {
 	QApplication::setApplicationDisplayName(ui->leAppDisplayName->text());
 	_app->_sustainInterval = ui->sbSustain->value();
+	_app->_allowSecondary = ui->cbMultipleInstances->isChecked();
 }
 
 void ApplicationPropertyPage::afterPageApply(bool was_modified)

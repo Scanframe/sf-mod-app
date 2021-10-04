@@ -45,6 +45,16 @@ class _MISC_CLASS Graph
 		 */
 		void setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro);
 
+
+		/**
+		 * @brief Sets the bounding rectangle for the graph for painting in.
+		 *
+		 * Paints the graph passing the passed boundaries and the optional region when handling an event.
+		 * @param fontMetrics For calculating the ruler widths and heights.
+		 * @param bounds Boundary to paint in.
+		 */
+		void setBounds(const QFontMetrics& fontMetrics, const QRect& bounds);
+
 		/**
 		 * @brief Paints the graph.
 		 *
@@ -80,15 +90,17 @@ class _MISC_CLASS Graph
 		enum EColor
 		{
 			/** Color of unit and values.*/
-			cText,
+			cRulerText,
 			/** Color for lines of major and minor ticks.*/
-			cLine,
+			cRulerLine,
 			/** Color of the grid lines.*/
-			cGrid,
+			cGridLines,
 			/** Color of ruler background.*/
 			cRulerBackground,
-			/** Color of the graph area.*/
+			/** Color of the graph area background.*/
 			cGraphBackground,
+			/** Color of the graph.*/
+			cGraphForeground,
 		};
 
 		/**
@@ -138,7 +150,7 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Holds which ruler information is responsible.
 		 */
-		Draw::ERulerOrientation _horizontal{0}, _vertical{0};
+		Draw::ERulerOrientation _horizontal{Draw::roNone}, _vertical{Draw::roNone};
 
 		/**
 		 * @brief Gets the ruler information by orientation.

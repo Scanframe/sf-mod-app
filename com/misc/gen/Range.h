@@ -121,23 +121,23 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Default constructor.
 		 */
-		Range();
+		inline Range();
 
 		/**
 		 * @brief Move assignment operator is default.
 		 */
-		Range& operator= (Range&&) = default;
+		inline Range& operator= (Range&&) = default;
 
 		/**
 		 * @brief Copy constructor.
 		 * @param r
 		 */
-		Range(const Range& r);
+		inline Range(const Range& r);
 
 		/**
 		 * @brief Base class constructor.
 		 */
-		explicit Range(const RANGE& r);
+		explicit inline Range(const RANGE& r);
 
 		/**
 		 * @brief Initializing constructor.
@@ -145,7 +145,7 @@ class _MISC_CLASS Range :private RANGE
 		 * @param stop Start of the range.
 		 * @param id Identifier of the range.
 		 */
-		Range(size_type start, size_type stop, id_type id = 0);
+		inline Range(size_type start, size_type stop, id_type id = 0);
 
 		/**
 		 * @brief Swaps start and stop if the order is wrong.
@@ -164,7 +164,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief InitializeBase instance with other instance.
 		 */
-		Range& assign(const Range& r);
+		inline Range& assign(const Range& r);
 
 		/**
 		 * @brief InitializeBase instance with other instance.
@@ -174,32 +174,32 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * Copies the current instance to RANGE base struct.
 		 */
-		const Range& copyTo(RANGE& dst) const;
+		inline const Range& copyTo(RANGE& dst) const;
 
 		/**
 		 * @brief Const function to access the start of the range.
 		 */
-		[[nodiscard]] size_type getStart() const;
+		[[nodiscard]] inline size_type getStart() const;
 
 		/**
 		 * @brief Const function to access the stop of the range.
 		 */
-		[[nodiscard]] size_type getStop() const;
+		[[nodiscard]] inline size_type getStop() const;
 
 		/**
 		 * @brief Clears the range to an empty state.
 		 */
-		void clear();
+		inline void clear();
 
 		/**
 		 * @brief Returns the size of the range minimum is 1.
 		 */
-		[[nodiscard]] size_type getSize() const;
+		[[nodiscard]] inline size_type getSize() const;
 
 		/**
 		 * @brief Return true if the range is empty.
 		 */
-		[[nodiscard]] bool isEmpty() const;
+		[[nodiscard]] inline bool isEmpty() const;
 
 		/**
 		 * @brief Returns if the passed range have some overlap.
@@ -234,10 +234,7 @@ class _MISC_CLASS Range :private RANGE
 		 * @param rl_dst Destination list to receive the range(s) after splitting.
 		 * @return Amount ranges it was split into.
 		 */
-		size_type split(size_type seg_sz, Vector& rl_dst) const
-		{
-			return split(seg_sz, *this, rl_dst);
-		}
+		inline size_type split(size_type seg_sz, Vector& rl_dst) const;
 
 		/**
 		 * @brief Splits a range into segments bounded ranges according to the passed segment size.
@@ -263,12 +260,12 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Check if idx is within this range
 		 */
-		[[nodiscard]] bool isInRange(size_type idx) const;
+		[[nodiscard]] inline bool isInRange(size_type idx) const;
 
 		/**
 		 * @brief Boolean operator for testing content of this instance.
 		 */
-		explicit operator bool() const;
+		explicit inline operator bool() const;
 
 		/**
 		 * @brief All possible comparison results.<br>
@@ -379,32 +376,32 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Returns the owner id of this range.
 		 */
-		[[nodiscard]] id_type getId() const;
+		[[nodiscard]] inline id_type getId() const;
 
 		/**
 		 * @brief Set the owner id of this range.
 		 */
-		Range& setId(id_type id);
+		inline Range& setId(id_type id);
 
 		/**
 		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
-		Range& operator=(const Range& r);
+		inline Range& operator=(const Range& r);
 
 		/**
 		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
-		Range& operator=(const RANGE& r);
+		inline Range& operator=(const RANGE& r);
 
 		/**
 		 * @brief Tests if the range start and stop members are the same.
 		 */
-		bool operator==(const Range& r) const;
+		inline bool operator==(const Range& r) const;
 
 		/**
 		 * @brief Tests if the range start and stop members are not the same.
 		 */
-		bool operator!=(const Range& r) const;
+		inline bool operator!=(const Range& r) const;
 
 		/**
 		 * @brief Operator used for sorting.
@@ -412,7 +409,7 @@ class _MISC_CLASS Range :private RANGE
 		 * Empty ranges are always larger then non empty ones to be able to
 		 * move empty ones to the end of a vector.
 		 */
-		bool operator<(const Range& r) const;
+		inline bool operator<(const Range& r) const;
 
 		/**
 		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
@@ -422,7 +419,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
 		 */
-		Range& operator&=(const Range& r);
+		inline Range& operator&=(const Range& r);
 
 		/**
 		 * @brief Returns a new range which is a super Set of the two ranges.
@@ -436,7 +433,7 @@ class _MISC_CLASS Range :private RANGE
 		 *
 		 * A gap in between is bridged by the resulting.
 		 */
-		Range& operator+=(const Range& r);
+		inline Range& operator+=(const Range& r);
 
 		/**
 	   * @brief Exclude the range in the the other which could result in an single range (0),
@@ -455,14 +452,14 @@ class _MISC_CLASS Range :private RANGE
 		 * @param ofs Offset
 		 * @return Itself
 		 */
-		Range& offsetBy(size_type ofs);
+		inline Range& offsetBy(size_type ofs);
 
 		/**
 		 * @brief Shifts the range using the passed offset.
 		 *
 		 * @return The shifted range
 		 */
-		[[nodiscard]] Range offset(size_type ofs) const;
+		[[nodiscard]] inline Range offset(size_type ofs) const;
 
 		/**
 		 * @brief Not allowed operator.
@@ -593,6 +590,12 @@ inline
 Range::size_type Range::getSize() const
 {
 	return _stop - _start;
+}
+
+inline
+Range::size_type Range::split(size_type seg_sz, Vector& rl_dst) const
+{
+	return split(seg_sz, *this, rl_dst);
 }
 
 inline

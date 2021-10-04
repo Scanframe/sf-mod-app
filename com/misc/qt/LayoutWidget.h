@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QDir>
 #include "PropertySheetDialog.h"
 #include "../global.h"
 
@@ -55,6 +56,16 @@ class _MISC_CLASS LayoutWidget :public QWidget
 		 * @return On not found it returns a nullptr.
 		 */
 		static LayoutWidget* getLayoutWidgetOf(QObject* target);
+
+		/**
+		 * @brief Gets the directory of the loaded layout file.
+		 */
+		 [[nodiscard]] virtual QDir getDirectory() const;
+
+		/**
+		 * @brief Gets suffix used for layout files.
+		 */
+		static QString getSuffix();
 
 	private:
 		/**

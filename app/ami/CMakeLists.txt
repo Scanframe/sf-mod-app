@@ -23,9 +23,15 @@ set(CMAKE_AUTORCC ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(SfMisc REQUIRED)
+find_package(SfAmi REQUIRED)
+find_package(SingleInstance REQUIRED)
+
+# Set the actual target.
+add_executable(${PROJECT_NAME})
 
 # RC-files only seem to be compiled when building using MingW.
-set(SOURCES
+target_sources(${PROJECT_NAME} PRIVATE
 	main.cpp
 	Application.cpp Application.h
 	MainWindow.cpp MainWindow.h
@@ -37,9 +43,6 @@ set(SOURCES
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Set the actual target.
-add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
@@ -53,7 +56,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/../bin)
 #link_directories(AFTER ${CMAKE_BINARY_DIR}/../bin)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets sf-misc sf-ami)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-ami SingleInstance)
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")

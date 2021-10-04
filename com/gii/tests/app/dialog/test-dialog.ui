@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>349</width>
-    <height>211</height>
+    <width>507</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../misc/qt/res/resource.qrc">
+   <iconset>
     <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -58,8 +58,8 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="variableId">
-      <string>0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
      <property name="converted">
       <bool>true</bool>
@@ -81,8 +81,8 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="variableId">
-      <string notr="true">0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
     </widget>
    </item>
@@ -121,8 +121,8 @@
      <property name="whatsThis">
       <string>Variable bar used for progress or level indication.</string>
      </property>
-     <property name="variableId">
-      <string notr="true">0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
     </widget>
    </item>
@@ -132,7 +132,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="../../../misc/qt/res/resource.qrc">
+      <iconset>
        <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
      </property>
     </widget>
@@ -142,8 +142,8 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="variableId">
-      <string notr="true">0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
      <property name="readOnly">
       <bool>true</bool>
@@ -158,8 +158,8 @@
      <property name="whatsThis">
       <string>Variable bar used for progress or level indication.</string>
      </property>
-     <property name="variableId">
-      <string notr="true">0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
      <property name="converted">
       <bool>true</bool>
@@ -173,14 +173,14 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>sf::VariableBar</class>
+   <extends>QWidget</extends>
+   <header>gii/qt/VariableBar.h</header>
+  </customwidget>
+  <customwidget>
    <class>sf::VariableEdit</class>
    <extends>QWidget</extends>
    <header>com/gii/qt/VariableEdit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::VariableBar</class>
-   <extends>QWidget</extends>
-   <header>VariableBar.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

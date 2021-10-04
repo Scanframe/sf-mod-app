@@ -452,9 +452,9 @@ std::string RsaServer::createSetupString(const ResultInfo& info, long vid)
 	return rv;
 }
 
-Variable::Vector::size_type RsaServer::variableListFind(id_type id) const
+Variable::PtrVector::size_type RsaServer::variableListFind(id_type id) const
 {
-	for (Variable::Vector::size_type i = 0; i < _variableVector.size(); i++)
+	for (Variable::PtrVector::size_type i = 0; i < _variableVector.size(); i++)
 	{
 		ExtraInfo* ei = const_cast<RsaServer*>(this)->castExtraInfo(_variableVector[i]);
 		if (ei && ei->_id == id)
@@ -462,12 +462,12 @@ Variable::Vector::size_type RsaServer::variableListFind(id_type id) const
 			return i;
 		}
 	}
-	return Variable::Vector::npos;
+	return Variable::PtrVector::npos;
 }
 
-ResultData::Vector::size_type RsaServer::resultListFind(id_type id) const
+ResultData::PtrVector::size_type RsaServer::resultListFind(id_type id) const
 {
-	for (ResultData::Vector::size_type i = 0; i < _resultVector.size(); i++)
+	for (ResultData::PtrVector::size_type i = 0; i < _resultVector.size(); i++)
 	{
 		ExtraInfo* ei = const_cast<RsaServer*>(this)->castExtraInfo(_resultVector[i]);
 		if (ei && ei->_id == id)
@@ -475,7 +475,7 @@ ResultData::Vector::size_type RsaServer::resultListFind(id_type id) const
 			return i;
 		}
 	}
-	return Variable::Vector::npos;
+	return Variable::PtrVector::npos;
 }
 
 /**
@@ -687,7 +687,7 @@ void RsaServer::evaluateInterfaceParams()
 			// If the info struct is present continue.
 			if (ei)
 			{ // Check if the ID is found in not wanted list of ID's.
-				if (ids.find(ei->_id) == Variable::Vector::npos)
+				if (ids.find(ei->_id) == Variable::PtrVector::npos)
 				{
 					// Call the special function to delete a variable from the VarList.
 					destroyVariable(*it);
@@ -767,7 +767,7 @@ void RsaServer::evaluateInterfaceParams()
 		// Lookup an existing entry in the variable list.
 		auto index = variableListFind(id);
 		// When the entry was found check if it has to be changed.
-		if (index != Variable::Vector::npos)
+		if (index != Variable::PtrVector::npos)
 		{
 			ExtraInfo* ei = castExtraInfo(_variableVector[index]);
 			// If the setup string does match, the variable does not have
@@ -904,7 +904,7 @@ void RsaServer::evaluateInterfaceResults()
 		// Lookup an existing entry in the result list.
 		auto index = resultListFind(ids[i]);
 		// When the entry was found check if it has to be changed.
-		if (index != ResultData::Vector::npos)
+		if (index != ResultData::PtrVector::npos)
 		{
 			ResultData* res = _resultVector[index];
 			ExtraInfo* ei = castExtraInfo(res);
@@ -967,7 +967,7 @@ void RsaServer::destroyInterface()
 	for (auto it = _variableVector.rbegin(); it != _variableVector.rend(); it++)
 	{
 		destroyVariable(*it);
-		if (_variableVector.find(*it) != Variable::Vector::npos)
+		if (_variableVector.find(*it) != Variable::PtrVector::npos)
 		{
 			SF_RTTI_NOTIFY(DO_CERR, "Duplicate variable pointer found!");
 		}
@@ -976,7 +976,7 @@ void RsaServer::destroyInterface()
 	for (auto it = _resultVector.rbegin(); it != _resultVector.rend(); it++)
 	{
 		destroyResultData(*it);
-		if (_resultVector.find(*it) != ResultData::Vector::npos)
+		if (_resultVector.find(*it) != ResultData::PtrVector::npos)
 		{
 			SF_RTTI_NOTIFY(DO_CERR, "Duplicate result-data pointer found!");
 		}
@@ -1171,7 +1171,7 @@ void RsaServer::paramNotify(id_type id)
 			// Set the kind of sentry when handling a parameter.
 			_handledParamId = id;
 			auto i = variableListFind(id);
-			if (i != Variable::Vector::npos)
+			if (i != Variable::PtrVector::npos)
 			{
 				_variableVector[i]->setCur(value, false);
 			}
@@ -1196,7 +1196,7 @@ void RsaServer::resultNotify(InformationTypes::id_type id)
 	// Looks up a result data id.
 	auto idx = resultListFind(id);
 	// When found process the available.
-	if (idx != ResultData::Vector::npos)
+	if (idx != ResultData::PtrVector::npos)
 	{ // Get a pointer to the result.
 		ResultData* res = _resultVector[idx];
 		unsigned blkByteSize = res->getBufferSize(1);

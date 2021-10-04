@@ -133,7 +133,7 @@ class _MISC_CLASS IniProfile
 		 *
 		 * @return Amount of sections.
 		 */
-		[[nodiscard]] size_type getSectionCount() const;
+		[[nodiscard]] inline size_type getSectionCount() const;
 
 		/**
 		* @brief Get current or specific section name p is index in section list.
@@ -177,7 +177,7 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Removes a section by name.
 		 */
-		bool removeSection(const std::string& section);
+		inline bool removeSection(const std::string& section);
 
 		/**
 		 * @brief Removes a section by position.
@@ -335,7 +335,7 @@ class _MISC_CLASS IniProfile
 
 				bool read(std::istream& is);
 
-				[[nodiscard]] bool isValid() const;
+				[[nodiscard]] inline bool isValid() const;
 
 			private:
 				bool _cmtFlag{false};

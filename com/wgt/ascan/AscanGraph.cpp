@@ -16,7 +16,7 @@ namespace sf
 struct AscanGraph::Private :ResultDataHandler, VariableHandler
 {
 	AscanGraph* _w;
-	int margin{1};
+	int _margin{1};
 
 	Graph _graph;
 	QPolygon _polygon;
@@ -298,8 +298,8 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 				// Calculate value from result.
 				y = _rData.getValueU(buffer.data(x * typeSize));
 				// Scale into the bounds of the plot.
-				px = calculateOffset<ResultDataTypes::size_type, int>(x, 0, blockSize - 1, width, true);
-				py = calculateOffset<ResultDataTypes::size_type, int>(y, 0, maxValue - 1, height, true);
+				px = calculateOffset<size_type, int>(x, 0, blockSize - 1, width, true);
+				py = calculateOffset<size_type, int>(y, 0, maxValue - 1, height, true);
 				//
 				if (_attenuation > 0)
 				{
@@ -320,17 +320,17 @@ struct AscanGraph::Private :ResultDataHandler, VariableHandler
 
 };
 
-SF_IMPL_INFO_ID(AscanGraph, Data, _p->_rData)
+SF_IMPL_INFO_ID(AscanGraph, IdData, _p->_rData)
 
-SF_IMPL_INFO_ID(AscanGraph, Attenuation, _p->_vAttenuation)
+SF_IMPL_INFO_ID(AscanGraph, IdAttenuation, _p->_vAttenuation)
 
-SF_IMPL_INFO_ID(AscanGraph, TimeUnit, _p->_vTimeUnit)
+SF_IMPL_INFO_ID(AscanGraph, IdTimeUnit, _p->_vTimeUnit)
 
-SF_IMPL_INFO_ID(AscanGraph, Delay, _p->_vDelay)
+SF_IMPL_INFO_ID(AscanGraph, IdDelay, _p->_vDelay)
 
-SF_IMPL_INFO_ID(AscanGraph, Range, _p->_vRange)
+SF_IMPL_INFO_ID(AscanGraph, IdRange, _p->_vRange)
 
-SF_IMPL_INFO_ID(AscanGraph, AmplitudeUnit, _p->_vAmplitudeUnit)
+SF_IMPL_INFO_ID(AscanGraph, IdAmplitudeUnit, _p->_vAmplitudeUnit)
 
 AscanGraph::AscanGraph(QWidget* parent)
 	:QWidget(parent)
@@ -372,7 +372,7 @@ void AscanGraph::paintEvent(QPaintEvent* event)
 	//
 	auto rc = sp.style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
 	// Create 1 pixel spacing between border and
-	inflate(rc, -_p->margin);
+	inflate(rc, -_p->_margin);
 	// Paint the graph canvas en returns the remaining plot area.
 	auto prc = _p->_graph.paint(sp, rc, event->region());
 	// Generate new data when the area changed after a resize or so.
@@ -390,7 +390,7 @@ void AscanGraph::paintEvent(QPaintEvent* event)
 		if (_p->_dataAvail)
 		{
 			auto pen = QPen(palette().color(QPalette::ColorRole::Text));
-			pen.setWidth(2);
+			pen.setWidth(1);
 			sp.setPen(pen);
 			sp.drawPolyline(_p->_polygon);
 		}

@@ -11,6 +11,8 @@ namespace sf
  */
 class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
 {
+	Q_OBJECT
+
 	public:
 
 		/**
@@ -41,7 +43,16 @@ class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
 			etDropDownFlags,
 			etShortcut,
 			etSpinBox,
+			etULongLong,
+			etColorEdit,
 		};
+
+		/**
+		 * @brief Signal allowing adding actions to a line edit.
+		 * @param lineEdit Line edit in question.
+		 * @param index Index of the edited item.
+		 */
+		Q_SIGNAL void addLineEditActions(QLineEdit* lineEdit, const QModelIndex& index) const;
 
 		/**
 		 * @brief Constructor.

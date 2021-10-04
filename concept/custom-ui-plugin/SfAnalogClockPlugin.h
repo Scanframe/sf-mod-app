@@ -13,27 +13,27 @@ class AnalogClockPlugin :public QObject, public QDesignerCustomWidgetInterface
 	public:
 		explicit AnalogClockPlugin(QObject* parent = nullptr);
 
-		bool isContainer() const override;
+		void initialize(QDesignerFormEditorInterface* core) override;
 
-		bool isInitialized() const override;
+		[[nodiscard]] bool isContainer() const override;
 
-		QIcon icon() const override;
+		[[nodiscard]] bool isInitialized() const override;
 
-		QString domXml() const override;
+		[[nodiscard]] QIcon icon() const override;
 
-		QString group() const override;
+		[[nodiscard]] QString domXml() const override;
 
-		QString includeFile() const override;
+		[[nodiscard]] QString group() const override;
 
-		QString name() const override;
+		[[nodiscard]] QString includeFile() const override;
 
-		QString toolTip() const override;
+		[[nodiscard]] QString name() const override;
 
-		QString whatsThis() const override;
+		[[nodiscard]] QString toolTip() const override;
+
+		[[nodiscard]] QString whatsThis() const override;
 
 		QWidget* createWidget(QWidget* parent) override;
-
-		void initialize(QDesignerFormEditorInterface* core) override;
 
 	private:
 		bool initialized = false;

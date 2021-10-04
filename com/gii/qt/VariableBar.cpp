@@ -29,6 +29,10 @@ struct VariableBar::Private :QObject, PrivateBase
 	explicit Private(VariableBar* widget)
 		:_widget(widget)
 	{
+		// Make the widget get focus when clicked in.
+		_widget->setFocusPolicy(Qt::StrongFocus);
+		// Also, when using the keyboard.
+		_widget->setAttribute(Qt::WA_KeyboardFocusChange);
 		// Only link when not in design mode.
 		if (!ObjectExtension::inDesigner())
 		{
@@ -125,8 +129,6 @@ VariableBar::VariableBar(QWidget* parent)
 	:VariableWidgetBase(parent, this)
 {
 	_p = new Private(this);
-	setFocusPolicy(Qt::StrongFocus);
-	setAttribute(Qt::WA_KeyboardFocusChange);
 }
 
 bool VariableBar::isRequiredProperty(const QString& name)

@@ -96,7 +96,7 @@ bool Variable::setExport(bool global)
 	else
 	{
 		// Create a temporary vector pointers to variables that must be attached because attachRef() modifies '_list'.
-		Variable::Vector list;
+		Variable::PtrVector list;
 		// Set the vector to reserve the maximum expected size.
 		list.reserve(_reference->_list.size());
 		// Iterate through all variables having the global flag Set.
@@ -201,10 +201,10 @@ Variable::size_type Variable::getInstanceCount(bool global_only)
 	return --rv;
 }
 
-Variable::Vector Variable::getList()
+Variable::PtrVector Variable::getList()
 {
 	// Return value.
-	Variable::Vector rv;
+	PtrVector rv;
 	// Set the vector to reserve the maximum expected size.
 	rv.reserve(VariableStatic::_references->size());
 	// Iterate through the references.
@@ -234,7 +234,7 @@ VariableReference* Variable::getReferenceById(Variable::id_type id)
 	return VariableStatic::zero()._reference;
 }
 
-Variable& Variable::getInstanceById(Variable::id_type id, Variable::Vector& list)
+Variable& Variable::getInstanceById(Variable::id_type id, Variable::PtrVector& list)
 {
 	for (auto i: list)
 	{
@@ -696,7 +696,7 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 	// Disable deletion of local instances.
 	VariableStatic::_globalActive++;
 	// Temporary vector to allow changes to the queried vectors.
-	Vector ev_list;
+	PtrVector ev_list;
 	// Set vector to reserve max expected size.
 	ev_list.reserve(_reference->_list.size());
 	// Iterate through list and generate the variables from which the event handler needs to be called.
@@ -731,7 +731,7 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 	// Disable deletion of instances.
 	VariableStatic::_globalActive++;
 	// Declare event list for instance pointers.
-	Vector ev_list;
+	PtrVector ev_list;
 	// Iterate through all references.
 	for (auto ref: *VariableStatic::_references)
 	{
@@ -768,7 +768,7 @@ Variable::size_type Variable::attachDesired()
 	// Disable deletion of instances.
 	VariableStatic::_globalActive++;
 	// Signal other event handler functions are called using a global predefined list.
-	Vector ev_list;
+	PtrVector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
 	for (auto ref: *VariableStatic::_references)
 	{
@@ -1224,7 +1224,7 @@ bool Variable::writeUpdate(std::ostream& os) const
 }
 
 // Function used for process communication.
-bool Variable::readUpdate(std::istream& is, bool skip_self, Vector& list)
+bool Variable::readUpdate(std::istream& is, bool skip_self, PtrVector& list)
 {
 	Value value;
 	id_type id = 0;
@@ -1251,7 +1251,7 @@ bool Variable::write(std::ostream& os) const
 	return !os.fail() && !os.bad();
 }
 
-bool Variable::read(std::istream& is, bool skip_self, Vector& list)
+bool Variable::read(std::istream& is, bool skip_self, PtrVector& list)
 {
 	Value value;
 	id_type id = 0;
@@ -1268,7 +1268,7 @@ bool Variable::read(std::istream& is, bool skip_self, Vector& list)
 	return false;
 }
 
-bool Variable::create(std::istream& is, Variable::Vector& list, bool global, int& err_line)
+bool Variable::create(std::istream& is, Variable::PtrVector& list, bool global, int& err_line)
 {
 	bool ret_val = true;
 	// Variable keeps track of the lines read.

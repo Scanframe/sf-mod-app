@@ -51,7 +51,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 # The 'DEBUG_LEVEL' controls the debug output macro's.
 target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets)
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${PROJECT_NAME}")

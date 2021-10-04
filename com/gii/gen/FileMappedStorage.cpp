@@ -167,7 +167,7 @@ bool FileMappedStorage::cacheSegment(FileMappedStorage::size_type idx)
 
 void FileMappedStorage::uncacheSegment(FileMappedStorage::size_type idx)
 {
-	(void)idx;
+	(void) idx;
 	// Do nothing yet.
 }
 
@@ -202,7 +202,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 	// Check if count is non-zero before entering the do-while loop.
 	if (count)
 	{
-		// Write as long as count is larger then zero.
+		// Write as long as count is larger than zero.
 		do
 		{ // Lock the segment if it hasn't been locked yet.
 			cacheSegment(seg_i);
@@ -311,15 +311,14 @@ std::ostream& FileMappedStorage::writeStatus(std::ostream& os) const
 
 FileMappedStorage::Segment::Segment(FileMappedStorage::size_type sz)
 	:_fileMapper(*IFileMapper::instantiate(true))
-	, _size(sz)
+	 , _size(sz)
 {
 	// Use the system page file.
 	_fileMapper.initialize();
-	// Check if the size of the segment is larger then zero before allocating
+	// Check if the size of the segment is larger than zero before allocating
 	if (_size > 0)
 	{
-		// Added extra size (largest integer) to file map to allow casting at the end
-		// of memory possible without getting an exception.
+		// Added extra size (the largest integer) to file map to allow casting at the end of memory possible without getting an exception.
 		_fileMapper.createView(sz + sizeof(int64_t));
 	}
 }
@@ -387,7 +386,7 @@ FileMappedStorage::Segment::write(FileMappedStorage::size_type ofs, FileMappedSt
 		// Return false to indicate failure.
 		return false;
 	}
-	// Check for a write within the boundaries of this.
+	// Check for a write-call within the boundaries of this instance.
 	if (ofs + sz > _size)
 	{
 		// bring size into allowed range.
@@ -400,8 +399,7 @@ FileMappedStorage::Segment::write(FileMappedStorage::size_type ofs, FileMappedSt
 	return true;
 }
 
-bool
-FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
+bool FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
 {
 	// Debug notify when trying to read zero bytes.
 	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried To read Zero bytes of data!")
@@ -413,9 +411,10 @@ FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMappedSto
 		// Return false to indicate failure.
 		return false;
 	}
-	// Check for a write within the boundaries of this instance.
+	// Check for a read-call within the boundaries of this instance.
 	if (ofs + sz > _size)
-	{ // bring size into allowed range
+	{
+		// Bring size into allowed range
 		sz = clip<size_type>(sz, 0, _size - ofs);
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to read beyond end of memory!")
 	}
@@ -454,7 +453,7 @@ bool FileMappedStorage::Lock::acquire(FileMappedStorage::size_type seg_idx)
 		_data = _segment->lockMemory();
 		// Copy the index number for debugging purposes.
 		_segmentIndex = seg_idx;
-		(void)_segmentIndex;
+		(void) _segmentIndex;
 		return true;
 	}
 	return false;

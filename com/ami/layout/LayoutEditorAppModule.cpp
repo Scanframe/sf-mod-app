@@ -1,12 +1,15 @@
 #include <misc/qt/PropertySheetDialog.h>
 #include <QTreeView>
 #include <QFocusEvent>
+#include <QLineEdit>
 #include <misc/qt/qt_utils.h>
 #include <QUiLoader>
 #include <QCoreApplication>
 #include <misc/gen/ConfigLocation.h>
 #include <misc/qt/Globals.h>
+#include <misc/qt/Resource.h>
 #include <misc/qt/ObjectPropertyModel.h>
+#include <qt/InformationSelectDialog.h>
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
 #include "LayoutEditorPropertyPage.h"
@@ -18,7 +21,7 @@ LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameter
 	:AppModuleInterface(params)
 	 , _settings(params._settings)
 {
-	addFileType(tr("UI Layout File"), "ui");
+	addFileType(tr("UI Layout File"), LayoutWidget::getSuffix());
 	//
 	settingsReadWrite(false);
 	// Create pre configured global UI loader instance.
@@ -130,6 +133,28 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		auto model = new ObjectPropertyModel();
 		model->setDelegates(_tvProperties);
 		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);
+		// Make the qulonglong type QProperties have actions.
+		connect(model, &ObjectPropertyModel::addLineEditActions, _hierarchyViewer, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic)
+		{
+			for (auto isType: {Gii::ResultData, Gii::Variable})
+			{
+				auto action = lineEdit->addAction(
+					Resource::getSvgIcon(isType == Gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
+					QLineEdit::TrailingPosition);
+				connect(action, &QAction::triggered, [action, isType]()
+				{
+					if (auto le = qobject_cast<QLineEdit*>(action->parent()))
+					{
+						InformationSelectDialog dlg(le);
+						auto ids = dlg.execute(Gii::Single, isType);
+						if (!ids.isEmpty())
+						{
+							le->setText(QString("0x%1").arg(ids.first(), 0, 16));
+						}
+					}
+				});
+			}
+		});
 		_tvProperties->setModel(model);
 		_tvProperties->setAlternatingRowColors(true);
 		dock->setWidget(_tvProperties);

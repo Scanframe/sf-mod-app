@@ -21,25 +21,23 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
+#find_package(Qt6 COMPONENTS Core Gui Widgets UiPlugin Designer)
+
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
-	namespace.h
-	SfAnalogClock.cpp
-	SfAnalogClock.h
-	SfAnalogClockPlugin.cpp
-	SfAnalogClockPlugin.h
-	SfPushButton.cpp
-	SfPushButton.h
-	SfPushButtonPlugin.cpp
-	SfPushButtonPlugin.h
-	SfCustomWidgets.cpp
-	SfCustomWidgets.h
-)
+add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME} PRIVATE
+	SfAnalogClock.cpp SfAnalogClock.h
+	SfAnalogClockPlugin.cpp SfAnalogClockPlugin.h
+	SfPushButton.cpp SfPushButton.h
+	SfPushButtonPlugin.cpp SfPushButtonPlugin.h
+	SfCustomWidgets.cpp SfCustomWidgets.h
+	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::UiPlugin sf-misc)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets Qt::UiPlugin sf-misc)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

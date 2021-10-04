@@ -1,5 +1,8 @@
-#include <misc/gen/gen_utils.h>
+#include <iostream>
+#include <QMessageBox>
+#include <QMetaMethod>
 #include "SfPushButton.h"
+#include <misc/qt/Macros.h>
 
 /*
 Styling a custom control is as follows the '::' is replaced with '--' for the selector.
@@ -14,6 +17,8 @@ sf--PushButton
 
 namespace sf
 {
+
+SF_IMPL_PROP_GSN(qreal, PushButton, FloatSome, this->_floatSome, changed)
 
 PushButton::PushButton(QWidget* parent)
 	:ObjectExtension(this), QPushButton(parent)
@@ -60,4 +65,21 @@ QString PushButton::iconSource() const
 	return _iconSource;
 }
 
-} // namespace
+void PushButton::changed()
+{
+//	QMessageBox::information(this, "Changed", "Property Changed");
+	qDebug() << __FUNCTION__;
+}
+
+void PushButton::connectNotify(const QMetaMethod& signal)
+{
+	QObject::connectNotify(signal);
+	qDebug() << __FUNCTION__ << signal.name() << signal.methodSignature();
+}
+
+void PushButton::changed(void* p)
+{
+	qDebug() << __FUNCTION__ << p;
+}
+
+}
