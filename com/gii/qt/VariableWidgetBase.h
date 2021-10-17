@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <misc/qt/ObjectExtension.h>
+#include "Namespace.h"
 
 namespace sf
 {
@@ -39,12 +40,12 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		/**
 		 * @brief Property 'variableId' set method.
 		 */
-		void setId(qulonglong id);
+		void setId(Gii::IdType id);
 
 		/**
 		 * @brief Property 'variableId' get method.
 		 */
-		[[nodiscard]] qulonglong getId() const;
+		[[nodiscard]] Gii::IdType getId() const;
 
 		/**
 		 * @brief Gets the reference to the underlying Variable instance.

@@ -486,15 +486,15 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 
 			case SID_SLEEP:
 			{
-				auto usec = (*params)[0].getInteger();
-				_sleepTimer.set(usec);
+				_sleepTimer.set(TimeSpec((*params)[0].getFloat()));
 				// When the script is in step mode the caller should handle the sleep time.
 				if (!_flagStepMode)
 				{
-					// Wait until the the time elapses.
+					// Wait until the time elapses.
 					while (!_sleepTimer)
 					{
-						//TSustainBaseTableEntry::CallSustain();
+						// TODO: Should call event process from QT.
+						qWarning() << "Not implemented yet!";
 					}
 				}
 				result->set(0);

@@ -5,7 +5,6 @@
 #include <QLabel>
 #include <QTimer>
 #include <QGuiApplication>
-#include <misc/gen/dbgutils.h>
 #include <misc/gen/ScriptEngine.h>
 #include <misc/qt/qt_utils.h>
 #include "VariableWidgetBasePrivate.h"
@@ -180,10 +179,13 @@ VariableComboBox::VariableComboBox(QWidget* parent)
 
 void VariableComboBox::applyReadOnly(bool yn)
 {
-	setFocusPolicy(yn ? Qt::NoFocus : Qt::StrongFocus);
+	//setFocusPolicy(yn ? Qt::NoFocus : Qt::StrongFocus);
 	if (_p)
 	{
-		VariableComboBox::Private::cast(_p)->_comboBoxValue->setDisabled(yn);
+		auto cb = VariableComboBox::Private::cast(_p)->_comboBoxValue;
+		cb->setDisabled(yn);
+		// Make the style for readonly have effect on the widget.
+		cb->style()->polish(cb);
 	}
 }
 

@@ -489,7 +489,7 @@ QDomElement createDomProperty(QDomDocument& dom, const QString& name, const QStr
 	prop.appendChild(enu);
 	enu.appendChild(dom.createTextNode(value));
 	return prop;
-};
+}
 
 void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 {
@@ -609,7 +609,7 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 			{
 				auto name = elem.attributes().namedItem("name").nodeValue();
 				//
-				if (frames.contains(name))
+				if (!name.isEmpty() && frames.contains(name))
 				{
 					auto frm = frames[name];
 					// Defaults for a QFrame.
@@ -677,7 +677,7 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 				// Make the root widget force write the margin properties.
 				bool force = widget->layout() && widget->layout()->objectName() == name;
 				//
-				if (layouts.contains(name))
+				if (!name.isEmpty() && layouts.contains(name))
 				{
 					auto margins = layouts[name]->contentsMargins();
 					// When the margins are not equal the defaults.
@@ -729,7 +729,7 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 				{
 					auto name = attr.nodeValue();
 					// When in the buttons map .
-					if (buttons.contains(name))
+					if (!name.isEmpty() && buttons.contains(name))
 					{
 						// Add the missing property toolButtonStyle.
 						auto style = QMetaEnum::fromType<Qt::ToolButtonStyle>().valueToKey(buttons[name]->toolButtonStyle());

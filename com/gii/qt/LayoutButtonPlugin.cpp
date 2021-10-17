@@ -79,7 +79,7 @@ QString LayoutButtonPlugin::domXml() const
    <string>Custom push button connected to a action.</string>
   </property>
  </widget>
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::LayoutButton</class>
@@ -94,7 +94,7 @@ QString LayoutButtonPlugin::domXml() const
 
 QString LayoutButtonPlugin::includeFile() const
 {
-	return QStringLiteral("misc/qt/LayoutButton.h");
+	return QStringLiteral("gii/qt/LayoutButton.h");
 }
 
 }

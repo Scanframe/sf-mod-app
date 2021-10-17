@@ -12,11 +12,41 @@
 #include <QFormLayout>
 #include <QFontDatabase>
 #include <QTimer>
+#if IS_WIN
+#include <win/win_utils.h>
+#endif
 
 #include "qt_utils.h"
 
 namespace sf
 {
+
+QRect moveRectWithinRect(const QRect& outer, const QRect& inner)
+{
+	//auto sz = inner.size();
+	auto pos = inner.topLeft();
+	// When beyond the left of outer.
+	if (pos.y() < outer.y())
+	{
+		pos.setY(outer.y());
+	}
+	// When beyond the top of outer.
+	if (pos.x() < outer.x())
+	{
+		pos.setX(outer.x());
+	}
+	// When beyond the right of outer.
+	if (inner.right() > outer.right())
+	{
+		pos.setX(pos.x() + outer.right() - inner.right());
+	}
+	// When beyond the bottom of outer.
+	if (inner.bottom() > outer.bottom())
+	{
+		pos.setY(pos.y() + outer.bottom() - inner.bottom());
+	}
+	return {pos, inner.size()};
+}
 
 PaletteColors::PaletteColors(const QPalette& palette)
 {
@@ -155,7 +185,7 @@ void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// To use the same ini file in Linux and Windows a different prefix is used.
 #if IS_WIN
-	QString suffix = "Windows";
+	QString suffix = isRunningWine() ? "Wine" : "Windows";
 #else
 	QString suffix = "Linux";
 #endif

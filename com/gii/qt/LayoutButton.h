@@ -3,7 +3,9 @@
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <QToolButton>
 #include <QAction>
-#include "ObjectExtension.h"
+#include <misc/qt/ObjectExtension.h>
+#include <misc/qt/Macros.h>
+#include "Namespace.h"
 
 namespace sf
 {
@@ -11,7 +13,8 @@ namespace sf
 class QDESIGNER_WIDGET_EXPORT LayoutButton :public QToolButton, public ObjectExtension
 {
 	Q_OBJECT
-		Q_PROPERTY(QString layoutFile MEMBER _layoutFile)
+		Q_PROPERTY(QString layoutFile READ getLayoutFile WRITE setLayoutFile)
+		Q_PROPERTY(Gii::IdType idOffset READ getIdOffset WRITE setIdOffset)
 
 	public:
 		/**
@@ -31,18 +34,23 @@ class QDESIGNER_WIDGET_EXPORT LayoutButton :public QToolButton, public ObjectExt
 		void addPropertyPages(PropertySheetDialog* sheet) override;
 
 	protected:
+		/**
+		 * @brief Opens the the specified layout file in a form dialog as a popup window.
+		 */
 		void openLayout();
 
+		SF_DECL_PROP_GS(Gii::IdType, IdOffset)
+
+		SF_DECL_PROP_GRS(QString, LayoutFile)
+
 	private:
-		/**
-		 * @brief Holds the relative file to the layout ui-file.
-		 */
-		QString _layoutFile;
 
 		/**
-		 * @brief Holds the widget containing layout.
+		 * @brief Holds the shielded private data.
 		 */
-		QWidget* _layoutContainer;
+		struct Private;
+		Private* _p{nullptr};
+
 };
 
 }

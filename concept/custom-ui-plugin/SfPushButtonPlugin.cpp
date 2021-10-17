@@ -39,22 +39,22 @@ QString PushButtonPlugin::name() const
 
 QString PushButtonPlugin::group() const
 {
-	return QStringLiteral("ScanFrame Widgets");
+	return QStringLiteral("Display Widgets [Examples]");
 }
 
 QIcon PushButtonPlugin::icon() const
 {
-	return QIcon();
+	return {};
 }
 
 QString PushButtonPlugin::toolTip() const
 {
-	return QString();
+	return {};
 }
 
 QString PushButtonPlugin::whatsThis() const
 {
-	return QString();
+	return {};
 }
 
 bool PushButtonPlugin::isContainer() const
@@ -89,7 +89,7 @@ QString PushButtonPlugin::domXml() const
    <string>:logo/ico/scanframe</string>
   </property>
  </widget>
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::PushButton</class>

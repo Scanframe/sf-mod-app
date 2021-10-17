@@ -352,7 +352,7 @@ struct InformationMonitor::Private :VariableHandler, ResultDataHandler
 };
 
 InformationMonitor::InformationMonitor(QWidget* parent)
-	:QDialog(parent ?: getGlobalParent())
+	:QDialog(parent ? parent : getGlobalParent())
 	 , _p(new Private(this))
 {
 	_p->initialize();
@@ -383,7 +383,7 @@ void InformationMonitor::setId(Gii::TypeId typeId, Gii::IdType id)
 bool InformationMonitor::selectId(Gii::TypeId typeId, QWidget* parent)
 {
 	_p->ui->iieId->setTypeId(typeId);
-	return _p->ui->iieId->selectDialog(parent ?: getGlobalParent());
+	return _p->ui->iieId->selectDialog(parent ? parent : getGlobalParent());
 }
 
 }

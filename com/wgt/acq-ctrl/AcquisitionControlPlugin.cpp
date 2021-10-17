@@ -85,7 +85,7 @@ QString AcquisitionControlPlugin::domXml() const
 
 
 /*
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::AcquisitionControl</class>

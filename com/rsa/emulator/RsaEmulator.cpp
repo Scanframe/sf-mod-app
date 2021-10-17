@@ -34,11 +34,11 @@ namespace sf
 // Macro's for mapping result enumerates PID numbers.
 #define RID_MAP(n)         (n)
 #define RID_CHANNEL_MAP(n) ((n) & ~arChannel_Mask)
-#define RID_GATE_MAP(n)    ((n) & ~arGATE_Mask)
+#define RID_GATE_MAP(n)    ((n) & ~arGate_Mask)
 // Macro's for added result enumerates PID numbers.
 #define RID_ADDED(n)         (arLAST + (n))
 #define RID_CHANNEL_ADDED(n) ((arChannel_UserFirst + (n)) & ~arChannel_Mask)
-#define RID_GATE_ADDED(n)    ((arGATE_UserFirst + (n)) & ~arGate_Mask)
+#define RID_GATE_ADDED(n)    ((arGate_UserFirst + (n)) & ~arGate_Mask)
 
 // Map default parameters to our own ID's.
 #define PID_CHANNELS       PID_MAP(apChannels)
@@ -110,9 +110,9 @@ namespace sf
 #define RID_COPYDATA        RID_CHANNEL_MAP(arChannel_CopyData)
 #define RID_COPYINDEX       RID_CHANNEL_MAP(arChannel_CopyIndex)
 //
-#define RID_PEAK_AMP        RID_CHANNEL_ADDED(1)
-#define RID_PEAK_TOF        RID_CHANNEL_ADDED(2)
-#define RID_COPY            RID_CHANNEL_ADDED(3)
+#define RID_PEAK_AMP        RID_GATE_MAP(arGate_Amplitude)
+#define RID_PEAK_TOF        RID_GATE_MAP(arGate_TimeOfFlight)
+#define RID_COPY            RID_GATE_MAP(arGate_Copy)
 
 // Offset of zero level for TOF values.
 #define TOF_OFFSET      0x7FFFFF
@@ -293,7 +293,7 @@ void AcquisitionEmulator::TGateInfo::CalculateThreshold()
 	val *= Polarity ? Polarity : 1;
 	val += Polarity ? 128 : 0;
 	Threshold = (unsigned) val;
-	SF_RTTI_NOTIFY(DO_DEFAULT, "Threshold Level set to : " << val);
+	//SF_RTTI_NOTIFY(DO_DEFAULT, "Threshold Level set to : " << val);
 }
 
 bool AcquisitionEmulator::handleParam

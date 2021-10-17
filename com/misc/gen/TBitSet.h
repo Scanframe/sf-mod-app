@@ -23,27 +23,27 @@ class TBitSet
 		/**
 		 * @brief Tests if a bit has been Set.
 		 */
-		bool Has(int bit);
+		bool has(int bit);
 
 		/**
 		 * @brief Sets a single bit.
 		 */
-		void Set(int bit);
+		void set(int bit);
 
 		/**
-		 * @brief Sets a single bit.
+		 * @brief Resets a single bit.
 		 */
-		void Reset(int bit);
+		void reset(int bit);
 
 		/**
 		 * @brief Clears all bits.
 		 */
-		void Clear();
+		void clear();
 
 		/**
 		 * @brief Returns true if one of the bits has been Set.
 		 */
-		bool IsClear();
+		bool isClear();
 
 	private:
 		/**
@@ -55,15 +55,14 @@ class TBitSet
 template<size_t Size>
 inline
 TBitSet<Size>::TBitSet()
-	:_mask({0})
 {
 	(void) Size;
-	Clear();
+	clear();
 }
 
 template<size_t Size>
 inline
-bool TBitSet<Size>::Has(int bit)
+bool TBitSet<Size>::has(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -74,7 +73,7 @@ bool TBitSet<Size>::Has(int bit)
 
 template<size_t Size>
 inline
-void TBitSet<Size>::Set(int bit)
+void TBitSet<Size>::set(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -84,7 +83,7 @@ void TBitSet<Size>::Set(int bit)
 
 template<size_t Size>
 inline
-void TBitSet<Size>::Reset(int bit)
+void TBitSet<Size>::reset(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -94,14 +93,14 @@ void TBitSet<Size>::Reset(int bit)
 
 template<size_t Size>
 inline
-void TBitSet<Size>::Clear()
+void TBitSet<Size>::clear()
 {
 	(void) Size;
 	memset(&_mask, 0, sizeof(_mask));
 }
 
 template<size_t Size>
-bool TBitSet<Size>::IsClear()
+bool TBitSet<Size>::isClear()
 {
 	(void) Size;
 	for (size_t i = 0; i < sizeof(_mask) / sizeof(int); i++)

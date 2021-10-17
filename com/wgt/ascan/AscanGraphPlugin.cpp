@@ -85,7 +85,7 @@ QString AscanGraphPlugin::domXml() const
 
 
 /*
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::AscanGraph</class>

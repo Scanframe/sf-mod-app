@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
   <property name="objectName">
    <string notr="true">Form</string>
   </property>
@@ -9,12 +12,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
-    <height>975</height>
+    <width>1225</width>
+    <height>902</height>
    </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="rightMargin">
@@ -34,20 +34,20 @@
    </property>
    <item>
     <widget class="QLabel" name="label">
-     <property name="objectName">
-      <string notr="true">label</string>
-     </property>
      <property name="lineWidth">
       <number>2</number>
+     </property>
+     <property name="objectName">
+      <string notr="true">label</string>
      </property>
      <property name="margin">
       <number>4</number>
      </property>
-     <property name="text">
-      <string>&lt;html>&lt;head/>&lt;body>&lt;p align="center">&lt;h1>RSA Server Test&lt;/h1>&lt;/p>&lt;/body>&lt;/html></string>
-     </property>
      <property name="wordWrap">
       <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>&lt;html>&lt;head/>&lt;body>&lt;p align="center">&lt;h1>RSA Server Test&lt;/h1>&lt;/p>&lt;/body>&lt;/html></string>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
@@ -102,22 +102,22 @@
          <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QFormLayout" name="formLayout_2">
-         <property name="objectName">
-          <string notr="true">formLayout_2</string>
-         </property>
          <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="objectName">
+          <string notr="true">formLayout_2</string>
          </property>
          <item column="0" row="0">
           <widget class="QLabel" name="lblDelay">
            <property name="objectName">
             <string notr="true">lblDelay</string>
            </property>
-           <property name="text">
-            <string>A-scan Delay</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Delay for the A-scan result of this channel.</string>
+           </property>
+           <property name="text">
+            <string>A-scan Delay</string>
            </property>
            <property name="buddy">
             <cstring>vAscanDelay</cstring>
@@ -126,6 +126,12 @@
          </item>
          <item column="1" row="0">
           <widget class="sf::VariableEdit" name="vAscanDelay">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vAscanDelay</string>
            </property>
@@ -135,20 +141,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
            <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Delay for the A-scan result of this channel.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
-           </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
            </property>
           </widget>
          </item>
@@ -157,11 +157,11 @@
            <property name="objectName">
             <string notr="true">lblRange</string>
            </property>
-           <property name="text">
-            <string>A-scan Range</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Range for the A-scan result of this channel.</string>
+           </property>
+           <property name="text">
+            <string>A-scan Range</string>
            </property>
            <property name="buddy">
             <cstring>vAscanRange</cstring>
@@ -170,6 +170,12 @@
          </item>
          <item column="1" row="1">
           <widget class="sf::VariableEdit" name="vAscanRange">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vAscanRange</string>
            </property>
@@ -179,20 +185,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic Range for the A-scan result of this channel.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic Range for the A-scan result of this channel.</string>
            </property>
           </widget>
          </item>
@@ -201,11 +201,11 @@
            <property name="objectName">
             <string notr="true">lblvGateCount</string>
            </property>
-           <property name="text">
-            <string>Ultrasonic Gates</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Amount of gates selection.</string>
+           </property>
+           <property name="text">
+            <string>Ultrasonic Gates</string>
            </property>
            <property name="buddy">
             <cstring>vGateCount</cstring>
@@ -214,6 +214,9 @@
          </item>
          <item column="1" row="2">
           <widget class="sf::VariableComboBox" name="vGateCount">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGateCount</string>
            </property>
@@ -223,17 +226,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
-            <bool>false</bool>
-           </property>
            <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic Amount of gates selection.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -242,11 +242,11 @@
            <property name="objectName">
             <string notr="true">lblvRepRate</string>
            </property>
-           <property name="text">
-            <string>Ultrasonic Rep.Rate</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Repetition rate when sync is set to internal.</string>
+           </property>
+           <property name="text">
+            <string>Ultrasonic Rep.Rate</string>
            </property>
            <property name="buddy">
             <cstring>vRepRate</cstring>
@@ -255,6 +255,9 @@
          </item>
          <item column="1" row="3">
           <widget class="sf::VariableEdit" name="vRepRate">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vRepRate</string>
            </property>
@@ -264,17 +267,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic Repetition rate when sync is set to internal.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -283,11 +283,11 @@
            <property name="objectName">
             <string notr="true">lblvReceiverGain</string>
            </property>
-           <property name="text">
-            <string>Ultrasonic Receiver Gain</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Receiver gain of this channel.</string>
+           </property>
+           <property name="text">
+            <string>Ultrasonic Receiver Gain</string>
            </property>
            <property name="buddy">
             <cstring>vReceiverGain</cstring>
@@ -296,6 +296,9 @@
          </item>
          <item column="1" row="4">
           <widget class="sf::VariableEdit" name="vReceiverGain">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vReceiverGain</string>
            </property>
@@ -305,17 +308,14 @@
            <property name="nameLevel">
             <number>3</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic Receiver gain of this channel.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -340,22 +340,22 @@
          <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QFormLayout" name="formLayout">
-         <property name="objectName">
-          <string notr="true">formLayout</string>
-         </property>
          <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="objectName">
+          <string notr="true">formLayout</string>
          </property>
          <item column="0" row="0">
           <widget class="QLabel" name="label_8">
            <property name="objectName">
             <string notr="true">label_8</string>
            </property>
-           <property name="text">
-            <string>Amplitude Unit</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Amplitude units of the digitiser single step.</string>
+           </property>
+           <property name="text">
+            <string>Amplitude Unit</string>
            </property>
            <property name="buddy">
             <cstring>veAmpUnit</cstring>
@@ -364,6 +364,12 @@
          </item>
          <item column="1" row="0">
           <widget class="sf::VariableEdit" name="veAmpUnit">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">veAmpUnit</string>
            </property>
@@ -373,20 +379,14 @@
            <property name="nameLevel">
             <number>1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic Amplitude units of the digitiser single step.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic Amplitude units of the digitiser single step.</string>
            </property>
           </widget>
          </item>
@@ -395,11 +395,11 @@
            <property name="objectName">
             <string notr="true">label_9</string>
            </property>
-           <property name="text">
-            <string>Time Unit</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Time in seconds that is used for the time dependant results.</string>
+           </property>
+           <property name="text">
+            <string>Time Unit</string>
            </property>
            <property name="buddy">
             <cstring>veTimeUnit</cstring>
@@ -408,6 +408,12 @@
          </item>
          <item column="1" row="1">
           <widget class="sf::VariableEdit" name="veTimeUnit">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">veTimeUnit</string>
            </property>
@@ -417,20 +423,14 @@
            <property name="nameLevel">
             <number>1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic Time in seconds that is used for the time dependant results.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic Time in seconds that is used for the time dependant results.</string>
            </property>
           </widget>
          </item>
@@ -439,11 +439,11 @@
            <property name="objectName">
             <string notr="true">lblRectify</string>
            </property>
-           <property name="text">
-            <string>A-scan Rectify</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic A-scan rectification mode.</string>
+           </property>
+           <property name="text">
+            <string>A-scan Rectify</string>
            </property>
            <property name="buddy">
             <cstring>Rectify</cstring>
@@ -452,6 +452,9 @@
          </item>
          <item column="1" row="2">
           <widget class="sf::VariableComboBox" name="Rectify">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">Rectify</string>
            </property>
@@ -461,17 +464,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic A-scan rectification mode.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -480,11 +480,11 @@
            <property name="objectName">
             <string notr="true">lblPop</string>
            </property>
-           <property name="text">
-            <string>Pop Manual</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Enables and generates manual POP index in the table. Disables hardware generation of POP indices.</string>
+           </property>
+           <property name="text">
+            <string>Pop Manual</string>
            </property>
            <property name="buddy">
             <cstring>vaPop</cstring>
@@ -493,6 +493,9 @@
          </item>
          <item column="1" row="3">
           <widget class="sf::VariableComboBox" name="vaPop">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vaPop</string>
            </property>
@@ -502,17 +505,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic Enables and generates manual POP index in the table. Disables hardware generation of POP indices.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -521,11 +521,11 @@
            <property name="objectName">
             <string notr="true">lblvIfPos</string>
            </property>
-           <property name="text">
-            <string>IF Position</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Interface position.</string>
+           </property>
+           <property name="text">
+            <string>IF Position</string>
            </property>
            <property name="buddy">
             <cstring>vIfPos</cstring>
@@ -534,6 +534,9 @@
          </item>
          <item column="1" row="4">
           <widget class="sf::VariableEdit" name="vIfPos">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfPos</string>
            </property>
@@ -543,22 +546,25 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
+           <property name="converted">
+            <bool>true</bool>
+           </property>
            <property name="toolTip">
             <string>Ultrasonic Interface position.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item column="1" row="5">
           <widget class="sf::VariableComboBox" name="varState">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">varState</string>
            </property>
@@ -568,20 +574,14 @@
            <property name="nameLevel">
             <number>1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Generic information server state Server</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
-           </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
            </property>
           </widget>
          </item>
@@ -590,11 +590,11 @@
            <property name="objectName">
             <string notr="true">label_5</string>
            </property>
-           <property name="text">
-            <string>State</string>
-           </property>
            <property name="toolTip">
             <string>Generic information server state Server</string>
+           </property>
+           <property name="text">
+            <string>State</string>
            </property>
            <property name="buddy">
             <cstring>varState</cstring>
@@ -622,22 +622,22 @@
          <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QFormLayout" name="formLayout_5">
-         <property name="objectName">
-          <string notr="true">formLayout_5</string>
-         </property>
          <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="objectName">
+          <string notr="true">formLayout_5</string>
          </property>
          <item column="0" row="0">
           <widget class="QLabel" name="lblIfDelay">
            <property name="objectName">
             <string notr="true">lblIfDelay</string>
            </property>
-           <property name="text">
-            <string>IF Gate Delay</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Delay.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Delay</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateDelay</cstring>
@@ -646,6 +646,12 @@
          </item>
          <item column="1" row="0">
           <widget class="sf::VariableEdit" name="vIfGateDelay">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateDelay</string>
            </property>
@@ -655,20 +661,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic IF Gate Delay.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic IF Gate Delay.</string>
            </property>
           </widget>
          </item>
@@ -677,11 +677,11 @@
            <property name="objectName">
             <string notr="true">lblIfGateRange</string>
            </property>
-           <property name="text">
-            <string>IF Gate Range</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Time range.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Range</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateRange</cstring>
@@ -690,6 +690,12 @@
          </item>
          <item column="1" row="1">
           <widget class="sf::VariableEdit" name="vIfGateRange">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateRange</string>
            </property>
@@ -699,20 +705,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic IF Gate Time range.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic IF Gate Time range.</string>
            </property>
           </widget>
          </item>
@@ -721,11 +721,11 @@
            <property name="objectName">
             <string notr="true">lblvIfGateSlaved</string>
            </property>
-           <property name="text">
-            <string>IF Gate Slaved</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Slaves to previous gate or not.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Slaved</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateSlaved</cstring>
@@ -734,6 +734,9 @@
          </item>
          <item column="1" row="2">
           <widget class="sf::VariableComboBox" name="vIfGateSlaved">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateSlaved</string>
            </property>
@@ -743,17 +746,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
+           <property name="converted">
+            <bool>true</bool>
+           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Slaves to previous gate or not.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -762,11 +762,11 @@
            <property name="objectName">
             <string notr="true">lblvIfGateMethod</string>
            </property>
-           <property name="text">
-            <string>IF Gate Method</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Method selector.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Method</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateMethod</cstring>
@@ -775,6 +775,9 @@
          </item>
          <item column="1" row="3">
           <widget class="sf::VariableComboBox" name="vIfGateMethod">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateMethod</string>
            </property>
@@ -784,17 +787,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Method selector.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -803,11 +803,11 @@
            <property name="objectName">
             <string notr="true">lblvIfGatePolarity</string>
            </property>
-           <property name="text">
-            <string>IF Gate Polarity</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Negative or positive peak detection.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Polarity</string>
            </property>
            <property name="buddy">
             <cstring>vIfGatePolarity</cstring>
@@ -816,6 +816,9 @@
          </item>
          <item column="1" row="4">
           <widget class="sf::VariableComboBox" name="vIfGatePolarity">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGatePolarity</string>
            </property>
@@ -825,17 +828,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Negative or positive peak detection.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -844,11 +844,11 @@
            <property name="objectName">
             <string notr="true">lblvIfGateAmp</string>
            </property>
-           <property name="text">
-            <string>IF Gate Threshold</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Peak threshold level.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Threshold</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateAmp</cstring>
@@ -860,11 +860,11 @@
            <property name="objectName">
             <string notr="true">lblvIfGateTof</string>
            </property>
-           <property name="text">
-            <string>IF Gate Range</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic IF Gate Time range.</string>
+           </property>
+           <property name="text">
+            <string>IF Gate Range</string>
            </property>
            <property name="buddy">
             <cstring>vIfGateTof</cstring>
@@ -873,6 +873,12 @@
          </item>
          <item column="1" row="5">
           <widget class="sf::VariableEdit" name="vIfGateAmp">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateAmp</string>
            </property>
@@ -882,25 +888,25 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic IF Gate Peak threshold level.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic IF Gate Peak threshold level.</string>
            </property>
           </widget>
          </item>
          <item column="1" row="6">
           <widget class="sf::VariableEdit" name="vIfGateTof">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vIfGateTof</string>
            </property>
@@ -910,20 +916,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic IF Gate Time range.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic IF Gate Time range.</string>
            </property>
           </widget>
          </item>
@@ -948,22 +948,22 @@
          <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QFormLayout" name="formLayout_3">
-         <property name="objectName">
-          <string notr="true">formLayout_3</string>
-         </property>
          <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="objectName">
+          <string notr="true">formLayout_3</string>
          </property>
          <item column="0" row="0">
           <widget class="QLabel" name="lblGate1Delay">
            <property name="objectName">
             <string notr="true">lblGate1Delay</string>
            </property>
-           <property name="text">
-            <string>n/a</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Delay.</string>
+           </property>
+           <property name="text">
+            <string>Gate 1 Delay</string>
            </property>
            <property name="buddy">
             <cstring>vGate1Delay</cstring>
@@ -972,6 +972,12 @@
          </item>
          <item column="1" row="0">
           <widget class="sf::VariableEdit" name="vGate1Delay">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGate1Delay</string>
            </property>
@@ -981,20 +987,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic Gate 1 Delay.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic Gate 1 Delay.</string>
            </property>
           </widget>
          </item>
@@ -1003,11 +1003,11 @@
            <property name="objectName">
             <string notr="true">lblGate1Range</string>
            </property>
-           <property name="text">
-            <string>n/a</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Time range.</string>
+           </property>
+           <property name="text">
+            <string>Gate 1 Range</string>
            </property>
            <property name="buddy">
             <cstring>vGate1Range</cstring>
@@ -1016,6 +1016,12 @@
          </item>
          <item column="1" row="1">
           <widget class="sf::VariableEdit" name="vGate1Range">
+           <property name="whatsThis">
+            <string>Special edit having name and unit label.</string>
+           </property>
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGate1Range</string>
            </property>
@@ -1025,20 +1031,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="toolTip">
-            <string>Ultrasonic Gate 1 Time range.</string>
-           </property>
-           <property name="focusFrame">
+           <property name="converted">
             <bool>true</bool>
            </property>
-           <property name="whatsThis">
-            <string>Special edit having name and unit label.</string>
+           <property name="toolTip">
+            <string>Ultrasonic Gate 1 Time range.</string>
            </property>
           </widget>
          </item>
@@ -1047,11 +1047,11 @@
            <property name="objectName">
             <string notr="true">lblvGate1Slaved</string>
            </property>
-           <property name="text">
-            <string>n/a</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Slaves to previous gate or not.</string>
+           </property>
+           <property name="text">
+            <string>Gate 1 Slaved</string>
            </property>
            <property name="buddy">
             <cstring>vGate1Slaved</cstring>
@@ -1060,6 +1060,9 @@
          </item>
          <item column="1" row="2">
           <widget class="sf::VariableComboBox" name="vGate1Slaved">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGate1Slaved</string>
            </property>
@@ -1069,17 +1072,14 @@
            <property name="nameLevel">
             <number>2</number>
            </property>
-           <property name="converted">
-            <bool>true</bool>
-           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
+           <property name="converted">
+            <bool>true</bool>
+           </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Slaves to previous gate or not.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1088,11 +1088,11 @@
            <property name="objectName">
             <string notr="true">lblvGate1Method</string>
            </property>
-           <property name="text">
-            <string>n/a</string>
-           </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Method selector.</string>
+           </property>
+           <property name="text">
+            <string>Gate 1 Method</string>
            </property>
            <property name="buddy">
             <cstring>vGate1Method</cstring>
@@ -1101,6 +1101,9 @@
          </item>
          <item column="1" row="3">
           <widget class="sf::VariableComboBox" name="vGate1Method">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGate1Method</string>
            </property>
@@ -1110,17 +1113,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Ultrasonic Gate 1 Method selector.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1129,11 +1129,11 @@
            <property name="objectName">
             <string notr="true">lblvGate1Store</string>
            </property>
-           <property name="text">
-            <string>n/a</string>
-           </property>
            <property name="toolTip">
             <string>Enables storing of Ultrasonic Gate 1 data.</string>
+           </property>
+           <property name="text">
+            <string>Gate 1 Enable</string>
            </property>
            <property name="buddy">
             <cstring>vGate1Store</cstring>
@@ -1142,6 +1142,9 @@
          </item>
          <item column="1" row="4">
           <widget class="sf::VariableComboBox" name="vGate1Store">
+           <property name="focusFrame">
+            <bool>true</bool>
+           </property>
            <property name="objectName">
             <string notr="true">vGate1Store</string>
            </property>
@@ -1151,17 +1154,14 @@
            <property name="nameLevel">
             <number>-1</number>
            </property>
-           <property name="converted">
+           <property name="readOnly">
             <bool>false</bool>
            </property>
-           <property name="readOnly">
+           <property name="converted">
             <bool>false</bool>
            </property>
            <property name="toolTip">
             <string>Enables storing of Ultrasonic Gate 1 data.</string>
-           </property>
-           <property name="focusFrame">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1196,32 +1196,47 @@
    </item>
    <item>
     <widget class="sf::AcquisitionControl" name="acquisitionControl">
-     <property name="idGate3Range">
+     <property name="idGate2TrackRange">
       <uLongLong>0</uLongLong>
      </property>
-     <property name="idGate1Tof">
-      <uLongLong>132257</uLongLong>
-     </property>
-     <property name="thresholdDrag">
-      <bool>true</bool>
-     </property>
-     <property name="gripHeight">
-      <number>10</number>
-     </property>
-     <property name="valueMax">
-      <number>0</number>
+     <property name="idCopyRange">
+      <uLongLong>132103</uLongLong>
      </property>
      <property name="idGate0Delay">
       <uLongLong>132162</uLongLong>
      </property>
-     <property name="idGate1Delay">
-      <uLongLong>132194</uLongLong>
+     <property name="idGate1Amp">
+      <uLongLong>132256</uLongLong>
      </property>
-     <property name="idGate2Threshold">
-      <uLongLong>132295</uLongLong>
+     <property name="idTcgEnable">
+      <uLongLong>132133</uLongLong>
      </property>
-     <property name="idCopyDelay">
-      <uLongLong>132102</uLongLong>
+     <property name="sizePolicy">
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="idGate0Amp">
+      <uLongLong>132192</uLongLong>
+     </property>
+     <property name="idGate2Amp">
+      <uLongLong>132320</uLongLong>
+     </property>
+     <property name="idGate2Tof">
+      <uLongLong>132321</uLongLong>
+     </property>
+     <property name="idGate2SlavedTo">
+      <uLongLong>132292</uLongLong>
+     </property>
+     <property name="idTcgRange">
+      <uLongLong>132145</uLongLong>
+     </property>
+     <property name="thresholdDrag">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>Acquisition control</string>
      </property>
      <property name="colorBackground">
       <color>
@@ -1230,94 +1245,29 @@
        <blue>80</blue>
       </color>
      </property>
-     <property name="idCopyData">
-      <uLongLong>132098</uLongLong>
+     <property name="idGate1Threshold">
+      <uLongLong>132231</uLongLong>
      </property>
-     <property name="idGate3Amp">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idTcgRange">
-      <uLongLong>132145</uLongLong>
-     </property>
-     <property name="idTcgEnable">
-      <uLongLong>132133</uLongLong>
-     </property>
-     <property name="idsTcgGain">
-      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
-     </property>
-     <property name="idGate0Threshold">
-      <uLongLong>132167</uLongLong>
-     </property>
-     <property name="idGate1TrackRange">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idsTcgTime">
-      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
-     </property>
-     <property name="idGate3SlavedTo">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idGate3Threshold">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idGate3TrackRange">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idTcgDelay">
-      <uLongLong>132144</uLongLong>
-     </property>
-     <property name="idGate0Range">
-      <uLongLong>132163</uLongLong>
-     </property>
-     <property name="idGate1Amp">
-      <uLongLong>132256</uLongLong>
-     </property>
-     <property name="idTcgSlavedTo">
-      <uLongLong>132143</uLongLong>
-     </property>
-     <property name="idCopyIndex">
-      <uLongLong>132099</uLongLong>
-     </property>
-     <property name="objectName">
-      <string notr="true">acquisitionControl</string>
-     </property>
-     <property name="idGate0SlavedTo">
-      <uLongLong>132164</uLongLong>
-     </property>
-     <property name="idGate0Amp">
-      <uLongLong>132192</uLongLong>
-     </property>
-     <property name="thresholdLinked">
-      <bool>true</bool>
-     </property>
-     <property name="colorGridLines">
-      <color alpha="80">
-       <red>255</red>
-       <green>0</green>
-       <blue>255</blue>
-      </color>
+     <property name="valueMax">
+      <number>0</number>
      </property>
      <property name="idGate0Tof">
       <uLongLong>132193</uLongLong>
      </property>
-     <property name="idTimeUnit">
-      <uLongLong>132101</uLongLong>
+     <property name="idCopyDelay">
+      <uLongLong>132102</uLongLong>
      </property>
-     <property name="idGate2Amp">
-      <uLongLong>132320</uLongLong>
+     <property name="whatsThis">
+      <string>Acquisition control using GII interface.</string>
      </property>
-     <property name="colorTcgLine">
-      <color>
-       <red>0</red>
-       <green>0</green>
-       <blue>255</blue>
-      </color>
-     </property>
-     <property name="idGate1Range">
-      <uLongLong>132195</uLongLong>
-     </property>
-     <property name="idGateCount">
+     <property name="idCopyIndex">
       <uLongLong>132099</uLongLong>
+     </property>
+     <property name="idsTcgTime">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
+     </property>
+     <property name="idGate2Range">
+      <uLongLong>132291</uLongLong>
      </property>
      <property name="colorTcgRange">
       <color>
@@ -1326,8 +1276,8 @@
        <blue>255</blue>
       </color>
      </property>
-     <property name="idGate3Delay">
-      <uLongLong>0</uLongLong>
+     <property name="idTcgDelay">
+      <uLongLong>132144</uLongLong>
      </property>
      <property name="colorAdjustmentLine">
       <color>
@@ -1336,29 +1286,82 @@
        <blue>192</blue>
       </color>
      </property>
-     <property name="toolTip">
-      <string>Acquisition control</string>
+     <property name="idGate0Range">
+      <uLongLong>132163</uLongLong>
      </property>
-     <property name="idGate1SlavedTo">
-      <uLongLong>132228</uLongLong>
-     </property>
-     <property name="idIfShift">
+     <property name="idGate3Range">
       <uLongLong>0</uLongLong>
      </property>
-     <property name="idGate2Tof">
-      <uLongLong>132321</uLongLong>
+     <property name="colorGridLines">
+      <color alpha="80">
+       <red>255</red>
+       <green>0</green>
+       <blue>255</blue>
+      </color>
      </property>
-     <property name="idGate2Delay">
-      <uLongLong>132290</uLongLong>
+     <property name="gripHeight">
+      <number>10</number>
      </property>
-     <property name="idGate1Threshold">
-      <uLongLong>132231</uLongLong>
+     <property name="thresholdLinked">
+      <bool>true</bool>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy vsizetype="Preferred" hsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+     <property name="idGate3Delay">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idTcgSlavedTo">
+      <uLongLong>132143</uLongLong>
+     </property>
+     <property name="objectName">
+      <string notr="true">acquisitionControl</string>
+     </property>
+     <property name="idGate3TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate2Threshold">
+      <uLongLong>132295</uLongLong>
+     </property>
+     <property name="colorTcgLine">
+      <color>
+       <red>0</red>
+       <green>0</green>
+       <blue>255</blue>
+      </color>
+     </property>
+     <property name="idGate0SlavedTo">
+      <uLongLong>132164</uLongLong>
+     </property>
+     <property name="idGate1Tof">
+      <uLongLong>132257</uLongLong>
+     </property>
+     <property name="idGate1Range">
+      <uLongLong>132195</uLongLong>
+     </property>
+     <property name="idGate3Amp">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate1Delay">
+      <uLongLong>132194</uLongLong>
+     </property>
+     <property name="idGate0TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGateCount">
+      <uLongLong>132099</uLongLong>
+     </property>
+     <property name="idGate0Threshold">
+      <uLongLong>132167</uLongLong>
+     </property>
+     <property name="idGate3SlavedTo">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate1TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3Threshold">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idCopyData">
+      <uLongLong>132098</uLongLong>
      </property>
      <property name="colorForeground">
       <color>
@@ -1367,25 +1370,22 @@
        <blue>0</blue>
       </color>
      </property>
-     <property name="idGate2TrackRange">
-      <uLongLong>0</uLongLong>
+     <property name="idGate1SlavedTo">
+      <uLongLong>132228</uLongLong>
      </property>
-     <property name="whatsThis">
-      <string>Acquisition control using GII interface.</string>
+     <property name="idsTcgGain">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
      </property>
-     <property name="idCopyRange">
-      <uLongLong>132103</uLongLong>
-     </property>
-     <property name="idGate0TrackRange">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idGate2SlavedTo">
-      <uLongLong>132292</uLongLong>
-     </property>
-     <property name="idGate2Range">
-      <uLongLong>132291</uLongLong>
+     <property name="idGate2Delay">
+      <uLongLong>132290</uLongLong>
      </property>
      <property name="idGate3Tof">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idTimeUnit">
+      <uLongLong>132101</uLongLong>
+     </property>
+     <property name="idIfShift">
       <uLongLong>0</uLongLong>
      </property>
     </widget>

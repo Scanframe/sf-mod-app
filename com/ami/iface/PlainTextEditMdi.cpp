@@ -30,7 +30,7 @@ void PlainTextEditMdi::setEditor(QPlainTextEdit* editor, QWidget* container)
 {
 	_editor = editor;
 	Q_ASSERT(_editor);
-	_container = container ?: editor;
+	_container = container ? container : editor;
 }
 
 void PlainTextEditMdi::cut()

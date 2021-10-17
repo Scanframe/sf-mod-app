@@ -513,7 +513,7 @@ bool RsaServer::createVariable(Variable*& var, ParamInfo& info, const std::strin
 	}
 	else
 	{
-		SF_RTTI_NOTIFY(DO_CLOG, "Recreating " << var->getName());
+		//SF_RTTI_NOTIFY(DO_CLOG, "Recreating " << var->getName());
 	}
 	// Set the variable global if export flag has not been set and the system is.
 	var->setGlobal(((info.Flags & (pfSystem | pfExport)) == pfSystem) ? false : true);
@@ -582,7 +582,7 @@ bool RsaServer::createResultData(ResultData*& res, ResultInfo& info, const std::
 	}
 	else
 	{
-		SF_RTTI_NOTIFY(DO_CLOG, "Recreating " << res->getName());
+		//SF_RTTI_NOTIFY(DO_CLOG, "Recreating " << res->getName());
 	}
 	// Set up the result-data instance.
 	res->setup(setup);
@@ -916,7 +916,7 @@ void RsaServer::evaluateInterfaceResults()
 				auto fields = CompareCsfFields(setup, ei->_setupString);
 				if ((fields & ~(1L << ResultData::rfFlags)) == 0)
 				{
-					SF_RTTI_NOTIFY(DO_CLOG, "Applying new Flags " << res->getName());
+					//SF_RTTI_NOTIFY(DO_CLOG, "Applying new Flags " << res->getName());
 					// rfeFLAGS
 					flags_type flags = ResultData::flgShare;
 					// When not generating data the result is put in recycle mode.

@@ -9,7 +9,7 @@
 #include <QGuiApplication>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/ScriptEngine.h>
-#include <misc/qt/LayoutWidget.h>
+#include "LayoutWidget.h"
 #include "VariableWidgetBasePrivate.h"
 
 namespace sf
@@ -17,7 +17,7 @@ namespace sf
 
 struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 {
-	VariableCheckBox* _widget{nullptr};
+	VariableCheckBox* _w{nullptr};
 	QHBoxLayout* _layout{nullptr};
 	QLabel* _labelName{nullptr};
 	QLabel* _labelNameAlt{nullptr};
@@ -38,8 +38,9 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 	};
 
 	explicit Private(VariableCheckBox* widget)
-		:_widget(widget)
+		:_w(widget)
 	{
+		_w->_p = this;
 		_labelName = new QLabel("&Name");
 		_editValue = new CheckBox("Value");
 		//
@@ -48,7 +49,7 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 		// Allow name with hot key for instant focus.
 		_labelName->setBuddy(_editValue);
 		// Format using Horizontal layout.
-		_layout = new QHBoxLayout(_widget);
+		_layout = new QHBoxLayout(_w);
 		// Clear margins for now.
 		_layout->setContentsMargins(0, 0, 0, 0);
 		// Add the widgets in the right order of appearance.
@@ -56,9 +57,9 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 		_layout->addWidget(_editValue);
 		_layout->setStretchFactor(_editValue, 1);
 		// Allows setting tab order in designer.
-		_widget->setFocusPolicy(Qt::StrongFocus);
+		_w->setFocusPolicy(Qt::StrongFocus);
 		// Then when getting focus pass it to the child line edit widget.
-		_widget->setFocusProxy(_editValue);
+		_w->setFocusProxy(_editValue);
 		//
 		QObject::connect(_editValue, &QCheckBox::clicked, this, &VariableCheckBox::Private::onClicked);
 		// Only link when not in design mode.
@@ -84,18 +85,14 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 	{
 		if (QGuiApplication::keyboardModifiers() ==(Qt::ControlModifier | Qt::ShiftModifier))
 		{
-			if (auto lw = LayoutWidget::getLayoutWidgetOf(_widget))
+			if (auto lw = LayoutWidget::getLayoutWidgetOf(_w))
 			{
-				lw->popupContextMenu(_widget, _editValue->mapToGlobal(pos));
+				lw->popupContextMenu(_w, _editValue->mapToGlobal(pos));
 				return;
 			}
 		}
 	}
 
-	void setReadOnly(bool yn) // NOLINT(readability-make-member-function-const)
-	{
-		_editValue->setAttribute(Qt::WA_TransparentForMouseEvents, yn);
-	}
 	void variableEventHandler
 		(
 			EEvent event,
@@ -110,8 +107,8 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 			case veLinked:
 			case veIdChanged:
 			{
-				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
-				_widget->setToolTip(QString::fromStdString(link_var.getDescription()));
+				_w->applyReadOnly(_readOnly || link_var.isReadOnly());
+				_w->setToolTip(QString::fromStdString(link_var.getDescription()));
 				auto state = _variable.getState(link_var.getCur());
 				_editValue->setChecked(!!state);
 				_editValue->setText(QString::fromStdString(_variable.getStateName(state)));
@@ -123,7 +120,7 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 				if (_labelNameAlt)
 				{
 					_labelNameAlt->setText(_labelName->text());
-					_labelNameAlt->setToolTip(_widget->toolTip());
+					_labelNameAlt->setToolTip(_w->toolTip());
 				}
 				break;
 
@@ -136,7 +133,7 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 			}
 
 			case veFlagsChange:
-				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
+				_w->applyReadOnly(_readOnly || link_var.isReadOnly());
 				break;
 
 			default:
@@ -178,7 +175,7 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 	void connectLabelNameAlt()
 	{
 		// Try finding label where this widget is its buddy.
-		if (auto label = findLabelByBuddy(_widget))
+		if (auto label = findLabelByBuddy(_w))
 		{
 			// Hide original label.
 			_labelName->setVisible(false);
@@ -202,16 +199,19 @@ void VariableCheckBox::Private::CheckBox::keyPressEvent(QKeyEvent* event)
 VariableCheckBox::VariableCheckBox(QWidget* parent)
 	:VariableWidgetBase(parent, this)
 {
-	_p = new VariableCheckBox::Private(this);
+	// Is assigning itself to '_p' member.
+	new VariableCheckBox::Private(this);
 }
 
 void VariableCheckBox::applyReadOnly(bool yn)
 {
+	// Set focus policy on the container.
 	setFocusPolicy(yn ? Qt::NoFocus : Qt::StrongFocus);
-	if (_p)
-	{
-		VariableCheckBox::Private::cast(_p)->setReadOnly(yn);
-	}
+	auto cb = VariableCheckBox::Private::cast(_p)->_editValue;
+	//cb->setAttribute(Qt::WA_TransparentForMouseEvents, yn);
+	cb->setEnabled(!yn);
+	// Make the style for readonly have effect on the widget.
+	cb->style()->polish(cb);
 }
 
 bool VariableCheckBox::isRequiredProperty(const QString& name)

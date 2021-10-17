@@ -1,3 +1,4 @@
+#include <misc/gen/Thread.h>
 #include "Application.h"
 #if IS_WIN
 #include <windows.h>
@@ -7,6 +8,7 @@ using namespace sf;
 
 int main(int argc, char* argv[])
 {
+	std::cout << "Stack size = " << Thread::getCurrentStackSize() << std::endl;
 	Q_INIT_RESOURCE(resource);
 	// Initialize the application with some defaults.
 	Application::setOrganizationName("Scanframe");

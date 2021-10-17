@@ -171,7 +171,7 @@ void InformationServer::detachResult(ResultData* res)
 
 void InformationServer::clearValidations()
 {
-	SF_RTTI_NOTIFY(DO_DEFAULT, "Clear Validations of " << _resultList.size() << " results.");
+	//SF_RTTI_NOTIFY(DO_CLOG, "Clear Validations of " << _resultList.size() << " results.");
 	for (auto r: _resultList)
 	{
 		r->clearValidations();

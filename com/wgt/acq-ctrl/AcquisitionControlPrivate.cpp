@@ -1,9 +1,8 @@
 #include <QLabel>
-#include <QList>
 #include <QToolTip>
 #include <misc/gen/gen_utils.h>
-#include <misc/qt/Draw.h>
 #include <misc/qt/qt_utils.h>
+#include <misc/qt/Draw.h>
 #include "AcquisitionControlPrivate.h"
 
 namespace sf
@@ -39,6 +38,7 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	 , _infoWindow(new InfoWindow(_w))
 	 , _idsTcgTime(_tcg.TimeVars)
 	 , _idsTcgGain(_tcg.GainVars)
+	 ,_debug(false)
 {
 	// Make the widget get focus when clicked in.
 	_w->setFocusPolicy(Qt::StrongFocus);
@@ -51,24 +51,25 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	//
 	for (int i = 0; i < MaxGates; i++)
 	{
+		Gate& gt(_gates[i]);
 		// Set the structures gate number for reference.
-		_gates[i].Gate = i;
+		gt.Gate = i;
 		// Set handlers and set the data pointer for gate variables.
-		_gates[i].VDelay.setHandler(&_gateVarHandler);
-		_gates[i].VDelay.setData(&_gates[i]);
-		_gates[i].VRange.setHandler(&_gateVarHandler);
-		_gates[i].VRange.setData(&_gates[i]);
-		_gates[i].VThreshold.setHandler(&_gateVarHandler);
-		_gates[i].VThreshold.setData(&_gates[i]);
-		_gates[i].VSlavedTo.setHandler(&_gateVarHandler);
-		_gates[i].VSlavedTo.setData(&_gates[i]);
-		_gates[i].VTrackRange.setHandler(&_gateVarHandler);
-		_gates[i].VTrackRange.setData(&_gates[i]);
+		gt.VDelay.setData(&gt);
+		gt.VDelay.setHandler(&_gateVarHandler);
+		gt.VRange.setData(&gt);
+		gt.VRange.setHandler(&_gateVarHandler);
+		gt.VThreshold.setData(&gt);
+		gt.VThreshold.setHandler(&_gateVarHandler);
+		gt.VSlavedTo.setData(&gt);
+		gt.VSlavedTo.setHandler(&_gateVarHandler);
+		gt.VTrackRange.setData(&gt);
+		gt.VTrackRange.setHandler(&_gateVarHandler);
 		// Set handler for gate results.
-		_gates[i].RAmp.setHandler(&_gateResHandler);
-		_gates[i].RAmp.setData(&_gates[i]);
-		_gates[i].RTof.setHandler(&_gateResHandler);
-		_gates[i].RTof.setData(&_gates[i]);
+		gt.RAmp.setData(&gt);
+		gt.RAmp.setHandler(&_gateResHandler);
+		gt.RTof.setData(&gt);
+		gt.RTof.setHandler(&_gateResHandler);
 	}
 	// Link the variable handler functions.
 	_vTimeUnit.setHandler(&_rulerHandler);
@@ -84,14 +85,14 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	_idsTcgGain.onChange.assign([&](void* p) {TcgIdChange(p);});
 	// Hook the TCG handler to TCG variables setting the data field
 	// to UINT_MAX to make a possible switch int the handler.
-	_vTcgEnable.setHandler(&_tcgVarHandler);
 	_vTcgEnable.setData(std::numeric_limits<uint64_t>::max());
-	_vTcgDelay.setHandler(&_tcgVarHandler);
+	_vTcgEnable.setHandler(&_tcgVarHandler);
 	_vTcgDelay.setData(std::numeric_limits<uint64_t>::max());
-	_vTcgRange.setHandler(&_tcgVarHandler);
+	_vTcgDelay.setHandler(&_tcgVarHandler);
 	_vTcgRange.setData(std::numeric_limits<uint64_t>::max());
-	_vTcgSlavedTo.setHandler(&_tcgVarHandler);
+	_vTcgRange.setHandler(&_tcgVarHandler);
 	_vTcgSlavedTo.setData(std::numeric_limits<uint64_t>::max());
+	_vTcgSlavedTo.setHandler(&_tcgVarHandler);
 	// Initialize the bottom ruler.
 	SetBottomRuler();
 	// Initialize the left ruler.
@@ -115,6 +116,7 @@ void AcquisitionControl::Private::mouseCapture(bool capture)
 
 void AcquisitionControl::Private::invalidatePlotRect(const QRect& rect) const
 {
+	// When debugging invalidate it all.
 	if (rect.isEmpty())
 	{
 		_w->update(_graph.getPlotArea());
@@ -193,7 +195,6 @@ bool AcquisitionControl::Private::setCanDraw()
 	}
 	// Allow any changes to take place.
 	invalidatePlotRect();
-	SF_RTTI_NOTIFY(DO_DEFAULT, "FFlagCanDraw = " << (_flagCanDraw ? "true" : "false"));
 	return _flagCanDraw;
 }
 
@@ -242,8 +243,7 @@ bool AcquisitionControl::Private::getDisplayRangeVert(sdata_type& minVal, sdata_
 void AcquisitionControl::Private::SetLeftRuler()
 {
 	// When the copy data result is available.
-	Value::flt_type minVal;
-	Value::flt_type maxVal;
+	Value::flt_type minVal, maxVal;
 	Value::flt_type step = 1.0;
 	if (getDisplayRangeVert(minVal, maxVal))
 	{
@@ -275,11 +275,8 @@ void AcquisitionControl::Private::SetBottomRuler()
 {
 	// Get the unit of the ascan.
 	std::string unit = "x";
-	Value::flt_type start = 0.0;
-	Value::flt_type range = 100.0;
-	Value::flt_type step = 1.0;
-	// When the range of the copy result id is specified the that value is used
-	// to calculate the range of plot.
+	Value::flt_type start{0.0}, range{100.0}, step{1.0};
+	// When the range of the copy result id is specified the that value is used to calculate the range of plot.
 	if (_vCopyRange.getId())
 	{
 		// Set the converted start value for the start value but when the
@@ -296,7 +293,8 @@ void AcquisitionControl::Private::SetBottomRuler()
 	{
 		// When the delay parameter is present it is used to for conversion as well.
 		if (_vCopyDelay.getId())
-		{ // Set the converted start value.
+		{
+			// Set the converted start value.
 			start = _vCopyDelay.getCur(true).getFloat();
 			// Get the range of the ascan by getting the block size.
 			range = _vCopyDelay.convert(_vTimeUnit.getCur()).getFloat() * static_cast<Value::flt_type>(_rCopyData.getBlockSize());
@@ -344,7 +342,7 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 	// On read success.
 	if (!_rCopyData.blockRead(ofs, 1, buffer.data()))
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, "BlockRead() Failed!");
+		SF_Q_NOTIFY("BlockRead() Failed!");
 	}
 	else
 	{
@@ -523,7 +521,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 		{
 			count = std::min(_tcg.TimeVars.size(), _tcg.GainVars.size());
 		}
-		// Get the count for which both time and gain ID's are present and
+		// Get the count for which both time and gain IDs are present and
 		// the time value is non-zero.
 		Value dac_last(0.0);
 		for (Variable::PtrVector::size_type i = 0; i < count; i++)
@@ -540,7 +538,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 				dac_last = _tcg.TimeVars[i].getCur();
 			}
 		}
-		// Bail out when no valid time gain ID's are found.
+		// Bail out when no valid time gain IDs are found.
 		if (!count)
 		{
 			// Check if the TCG was draw before.
@@ -592,7 +590,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 			tcgDelay += _gates[0].VDelay.getCur().getFloat();
 			tcgDelay -= plotDelay;
 		}
-			// When the TCG is not slaved but from the intial pulse.
+			// When the TCG is not slaved but from the initial pulse.
 		else if (_tcg.SlavedTo == -1)
 		{
 			tcgDelay -= plotDelay;
@@ -605,7 +603,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 	}
 	else
 	{
-		// When no gates are available use calculations as for the intial pulse.
+		// When no gates are available use calculations as for the initial pulse.
 		tcgDelay -= plotDelay;
 	}
 	//
@@ -671,8 +669,6 @@ void AcquisitionControl::Private::generateTcgData(int point)
 	invalidatePlotRect((_tcg.Rect | irc).adjusted(1, 1, 1, 1));
 	// Update the rectangle of the actual data.
 	_tcg.Rect = irc;
-	//
-	SF_Q_NOTIFY("TCG Rect " << _tcg.Rect);
 }
 
 void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
@@ -725,7 +721,6 @@ void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
 		// Compare the previous and new rectangles.
 		if (prev_rc != gt.Rect)
 		{
-			SF_Q_NOTIFY(__FUNCTION__ << "Rect:" << gt.Rect);
 			// When a change is there redraw both regions on the screen.
 			invalidatePlotRect(gt.Rect);
 			invalidatePlotRect(prev_rc);
@@ -771,7 +766,7 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 			// Add the delay of the slaved gate.
 			gateDelayOfs += sgt.VDelay.getCur().getFloat();
 		}
-			// Check for artificial way of slaving.
+			// Check for artificial (-2) way of slaving.
 			// Actual gate delay is IF delay + gate delay.
 		else if (gt.SlavedTo == -2)
 		{
@@ -779,7 +774,7 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 			gateDelayOfs += _gates[0].VDelay.getCur().getFloat();
 		}
 		// Check if the variables must be set from the rectangle first.
-		if (fromRect && i == (unsigned) _gripGate)
+		if (fromRect && i == _gripGate)
 		{
 			// Prevent division by zero.
 			if (std::abs(pixelRatio) > std::numeric_limits<Value::flt_type>::denorm_min())
@@ -842,7 +837,6 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		// Compare the previous and new rectangles.
 		if (prevRect != gt.Rect)
 		{
-			//SF_Q_NOTIFY(__FUNCTION__ << "Rect:" << gt.Rect);
 			// When a change is there redraw both regions on the screen.
 			invalidatePlotRect(gt.Rect);
 			invalidatePlotRect(prevRect);
@@ -890,21 +884,21 @@ const char* AcquisitionControl::Private::getStateName(int state)
 	switch (state)
 	{
 		case psError:
-			return "ERROR";
+			return "Error";
 		case psIdle:
-			return "IDLE";
+			return "Idle";
 		case psGetCopy:
-			return "GET_COPY";
+			return "GetCopy";
 		case psProcessCopy:
-			return "PRC_COPY";
+			return "PrcCopy";
 		case psTryGate:
-			return "TRY_GATE";
+			return "TryGate";
 		case psApply:
-			return "APPLY";
+			return "Apply";
 		case psReady:
-			return "READY";
+			return "Ready";
 		case psWait:
-			return "WAIT";
+			return "Wait";
 		default:
 			return "Unknown";
 	}
@@ -929,7 +923,7 @@ bool AcquisitionControl::Private::_setState(EState state) // NOLINT(misc-no-recu
 
 bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no-recursion)
 {
-	int oldprev = _statePrevious;
+	int oldPrevious = _statePrevious;
 	// Update the previous state.
 	if (_stateCurrent != psWait)
 	{
@@ -940,7 +934,7 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 	// Do some debug printing in case of an error.
 	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error!\n"
 		<< txt << '\n' << "SetState("
-		<< getStateName(oldprev) << "=>"
+		<< getStateName(oldPrevious) << "=>"
 		<< getStateName(_statePrevious) << "=>"
 		<< getStateName(_stateCurrent)
 		<< ")");
@@ -952,7 +946,7 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 
 bool AcquisitionControl::Private::waitForState(EState state)
 {
-	//SF_RTTI_NOTIFY(DO_CLOG, "WaitForState(" << GetStateName(state) << ")" << " CopyRange" << FWork.CopyRange);
+//	SF_RTTI_NOTIFY(DO_CLOG, "WaitForState(" << getStateName(state) << ")" << " CopyRange" << _work.CopyRange);
 	_stateToWaitFor = state;
 	_stateCurrent = psWait;
 	// Reset the timer to generate an error when waiting takes too long.
@@ -1008,7 +1002,8 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			{
 				// Check if the range is valid if not request it.
 				if (!_rCopyIndex.isRangeValid(_work.CopyRange))
-				{ // Request the needed range.
+				{
+					// Request the needed range.
 					_work.IndexReq = _rCopyIndex.requestRange(_work.CopyRange);
 					// Check for an error on making the request.
 					if (!_work.IndexReq)
@@ -1033,7 +1028,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 					return setError("Failed to make request for copy data result");
 				}
 			}
-			// When requests were made and thus the data was not valid yet we must wait.
+			// When requests were made and thus the data was not valid yet, we must wait.
 			if (_work.IndexReq || _work.CopyReq)
 			{
 				// Make the state machine wait for the request events.
@@ -1043,7 +1038,8 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 
 			// When the data was available we skip waiting and continue to next statement.
 		case psProcessCopy:
-		{ // No index request can be out for the asynchronous results at this stage.
+		{
+			// No index request can be out for the asynchronous results at this stage.
 			if (_work.IndexReq || _work.CopyReq)
 			{
 				return setError("Impossible request(s) are still out");
@@ -1055,7 +1051,8 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 				return _setState(psApply);
 			}
 			// Read the index from the result.
-			Range::size_type index;
+			// But initialize the 64bit value first since the read index can be 32bit.
+			data_type index = 0;
 			if (!_rCopyIndex.blockRead(_work.CopyRange, &index))
 			{
 				return setError("Copy index result failed");
@@ -1078,7 +1075,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 				if (gi.RAmp.getId())
 				{ // And the accessible range to create a gate common accessible range.
 					rng &= gi.RAmp.getAccessRange();
-					// Id used as a flag.
+					// The id is used as a flag.
 					rng.setId(1);
 				}
 				// Only check on those who are available.
@@ -1086,7 +1083,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 				{
 					// And the accessible range to create a gate common accessible range.
 					rng &= gi.RTof.getAccessRange();
-					// Id used as a flag.
+					// The id is used as a flag.
 					rng.setId(1);
 				}
 			}
@@ -1101,14 +1098,13 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			if (rng.getSize() == 0)
 			{
 				// Clear the gate event bits before waiting.
-				_work.GateAccessEvent.reset();
+				_work.GateAccessEvent.clear();
 				// Try this stage again until a timout error is generated.
 				return waitForState(psTryGate);
 			}
 			else
 			{
-				// Check if the range read from the copy index result is contained
-				// by common gate range.
+				// Check if the range read from the copy index result is contained by common gate range.
 				if (!rng.isInRange(_work.GateRange.getStart()))
 				{
 					// Try this stage again until a timout error is generated.
@@ -1139,7 +1135,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 						}
 					}
 				}
-				// Only check on those TOF's which are available.
+				// Only check on those TOFs which are available.
 				if (gi.RTof.getId())
 				{
 					// Check if the range is valid, if not request it.
@@ -1160,7 +1156,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 				}
 			}
 			// If requests were made continue with state WAIT.
-			if (_work.GateAmpReq.any() && _work.GateTofReq.any())
+			if (!_work.GateAmpReq.isClear() && !_work.GateTofReq.isClear())
 			{
 				// Make the plot wait for an event.
 				return waitForState(psWait);
@@ -1190,10 +1186,10 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 					{
 						gi.FlagAmp = false;
 					}
-					// Only check if the time-of-flight result is avialable.
+					// Only check if the time-of-flight result is available.
 					if (gi.RTof.getId())
 					{
-						unsigned tof = 0;
+						data_type tof = 0;
 						gi.FlagTof = gi.RTof.blockRead(_work.GateRange, &tof);
 						if (!gi.FlagTof)
 						{
@@ -1241,7 +1237,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			{
 				case psApply:
 					// If requests are still out continue waiting.
-					if (_work.GateAmpReq.any() || _work.GateAmpReq.any())
+					if (!_work.GateAmpReq.isClear() || !_work.GateTofReq.isClear())
 					{
 						break;
 					}
@@ -1257,7 +1253,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 
 				case psTryGate:
 					// Continue as long as no gate access changes happened.
-					if (!_work.GateAccessEvent.any())
+					if (_work.GateAccessEvent.isClear())
 					{
 						break;
 					}
@@ -1289,7 +1285,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 
 		case ResultData::reIdChanged:
 		{
-			// Set the bottom ruler. It is possible that it is dependant on the block size.
+			// Set the bottom ruler. It is possible that it is dependent on the block size.
 			if (&link == &_rCopyData)
 			{
 				SetBottomRuler();
@@ -1400,6 +1396,7 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 	Q_UNUSED(sameInst)
 	// Get info pointer from assigned data set in the constructor.
 	Gate& gi(*link.getData<Gate*>());
+	//
 	switch (event)
 	{
 		default:
@@ -1407,7 +1404,7 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 
 		case ResultData::reAccessChange:
 			// Set the access event bit for this gate.
-			_work.GateAccessEvent.set(gi.Gate, true);
+			_work.GateAccessEvent.set(gi.Gate);
 			// TODO: Could call ProcessState here when some conditions are met.
 			break;
 
@@ -1416,13 +1413,13 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 			if (&link == &gi.RAmp)
 			{
 				// Was a got range event expected?
-				if (_work.GateAmpReq.test(gi.Gate))
+				if (_work.GateAmpReq.has(gi.Gate))
 				{
 					// Was this the expected range.
 					if (rng == _work.GateRange)
 					{
 						// Request was received.
-						_work.GateAmpReq.set(gi.Gate, false);
+						_work.GateAmpReq.reset(gi.Gate);
 						// Make the plot try to process the data so far.
 						if (_stateCurrent == psWait)
 						{
@@ -1442,13 +1439,13 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 			else if (&link == &gi.RTof)
 			{
 				// Was a got range event expected?
-				if (_work.GateTofReq.test(gi.Gate))
+				if (_work.GateTofReq.has(gi.Gate))
 				{
 					// Was this the expected range.
 					if (rng == _work.GateRange)
 					{
 						// Request was received.
-						_work.GateTofReq.set(gi.Gate, false);
+						_work.GateTofReq.reset(gi.Gate);
 						// Make the plot try to process the data so far.
 						if (_stateCurrent == psWait)
 						{
@@ -1470,7 +1467,7 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 	}
 }
 
-void AcquisitionControl::Private::RulerHandler(Variable::EEvent event, const Variable& callvar, Variable& linkvar, bool sameInst)
+void AcquisitionControl::Private::RulerHandler(Variable::EEvent event, const Variable& callVar, Variable& linkVar, bool sameInst)
 {
 	Q_UNUSED(sameInst);
 	switch (event)
@@ -1612,51 +1609,51 @@ void AcquisitionControl::Private::GateVarHandler(Variable::EEvent event, const V
 	}
 }
 
-AcquisitionControl::Private::EGrip AcquisitionControl::Private::GetGateGrip(const QPoint& pt, int* gate)
+AcquisitionControl::Private::EGrip AcquisitionControl::Private::GetGateGrip(const QPoint& point, int* gate)
 {
+	// Initialize the return values.
+	EGrip rv = gNONE;
+	int gt = -1;
 	// Search for a grip in the list of grips to return.
 	for (int i = 0; i < _gateCount; i++)
 	{
 		// Fast local reference.
 		QRect& rc(_gates[i].GripRect);
 		// Check whether the cursor in this gate area.
-		if (rc.contains(pt))
+		if (rc.contains(point))
 		{
-			if (gate)
-			{
-				*gate = i;
-			}
+			gt = i;
 			// Divide in three section. Left middle and right.
 			int w = rc.width() / 3;
 			// When zero default to the middle grip.
 			if (!w)
 			{
-				return gMIDDLE;
+				rv = gMIDDLE;
 			}
 			else
 			{
-				if (pt.x() >= rc.left() && pt.x() < rc.left() + w)
+				if (point.x() >= rc.left() && point.x() < rc.left() + w)
 				{
-					return gLEFT;
+					rv = gLEFT;
 				}
-				else if (pt.x() >= rc.right() - w && pt.x() < rc.right())
+				else if (point.x() >= rc.right() - w && point.x() < rc.right())
 				{
-					return gRIGHT;
+					rv = gRIGHT;
 				}
 				else
 				{
-					return _thresholdDrag ? gMIDDLE : gRIGHT;
+					rv = _thresholdDrag ? gMIDDLE : gRIGHT;
 				}
 			}
 		}
 	}
-	// Position was not of a grip position.
+	// Check if pointer was set.
 	if (gate)
 	{
-		*gate = -1;
+		*gate = gt;
 	}
 	// If non was grabbed return that as well.
-	return gNONE;
+	return rv;
 }
 
 Qt::CursorShape AcquisitionControl::Private::getCursorShape(EGrip grip) const
@@ -1675,7 +1672,7 @@ Qt::CursorShape AcquisitionControl::Private::getCursorShape(EGrip grip) const
 			break;
 
 		case gMIDDLE:
-			shape = Qt::CursorShape::SizeVerCursor;
+			shape = Qt::CursorShape::SplitVCursor;
 			break;
 
 		case gRIGHT:
@@ -1687,9 +1684,13 @@ Qt::CursorShape AcquisitionControl::Private::getCursorShape(EGrip grip) const
 
 void AcquisitionControl::Private::setCursorShape(Qt::CursorShape shape) const
 {
-	auto cc = _w->cursor();
-	cc.setShape(shape);
-	_w->setCursor(cc);
+	// Reduce overhead, only when the shape should really change.
+	if (_w->cursor().shape() != shape)
+	{
+		auto cc = _w->cursor();
+		cc.setShape(shape);
+		_w->setCursor(cc);
+	}
 }
 
 void AcquisitionControl::Private::geoResize(const QSize &size, const QSize &previousSize)
@@ -1708,9 +1709,12 @@ void AcquisitionControl::Private::geoResize(const QSize &size, const QSize &prev
 	}
 }
 
-void AcquisitionControl::Private::mouseMove(Qt::KeyboardModifiers modifiers, QPoint pt)
+void AcquisitionControl::Private::mouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point)
 {
+	Q_UNUSED(button);
 	Q_UNUSED(modifiers);
+	// Correct for the possible rulers offset.
+	auto pt = point - _graph.getPlotArea().topLeft();
 	// Check if sizing.
 	if (!_flagSizing)
 	{
@@ -1718,11 +1722,10 @@ void AcquisitionControl::Private::mouseMove(Qt::KeyboardModifiers modifiers, QPo
 		EGrip grip = GetGateGrip(pt);
 		// Set the cursor according to the grip.
 		setCursorShape(getCursorShape(grip));
-		// Make the cursor even update when the mouse is captured.
-		//ForceCursor(PlotControl);
 		// TODO: Should be done in separate function.
-		if (grip == gNONE)
+		if (grip == gNONE && !_tcg.Grips.isEmpty())
 		{
+			// While dragging the gate the _tcg get corrupted.
 			for (auto& g: _tcg.Grips)
 			{
 				if (g.contains(pt))
@@ -1734,8 +1737,6 @@ void AcquisitionControl::Private::mouseMove(Qt::KeyboardModifiers modifiers, QPo
 	}
 	else
 	{
-		// After the first move change the cursor for easier positioning.
-		setCursorShape(Qt::CursorShape::ArrowCursor);
 		// Can only drag when frozen.
 		if (_flagFrozen)
 		{
@@ -1750,31 +1751,38 @@ void AcquisitionControl::Private::mouseMove(Qt::KeyboardModifiers modifiers, QPo
 			gt.GripRect.moveTo(gt.GripOffset + _gripOffset);
 			_gripRectNext = gt.GripRect;
 			updateRect |= _gripRectNext;
-			invalidatePlotRect(updateRect);
-			//
-			SF_Q_NOTIFY("Offsetting grip to:" << _gripOffset);
+			// Add extra 1 pixel to invalidate.
+			invalidatePlotRect(inflated(updateRect, 1));
 		}
 	}
 }
 
-void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::KeyboardModifiers modifier, QPoint pt)
+void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::KeyboardModifiers modifier, QPoint point)
 {
 	Q_UNUSED(modifier)
+	if (!_w->hasMouseTracking())
+	{
+		return;
+	}
+	// Correct for the possible rulers offset.
+	auto pt = point - _graph.getPlotArea().topLeft();
 	// Check for the correct button to be pressed.
 	if (button == Qt::MouseButton::LeftButton)
 	{
 		// Always capture the mouse input when the left button is down.
 		mouseCapture(true);
-		// Freeze current values for the plot.
-		_flagFrozen = true;
+		if (!_debug && _w->hasMouseTracking())
+		{
+			// Freeze current values for the plot.
+			_flagFrozen = true;
+		}
 		// Get the current left point for grabbing.
 		_grabPoint = pt;
 		// Look for a grip area.
 		_gripGrabbed = GetGateGrip(_grabPoint, &_gripGate);
 		//
-		if (_gripGrabbed != gNONE)
+		if (_gripGrabbed != gNONE )
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Grabbed a grip...");
 			// Set the sizing flag to true.
 			_flagSizing = true;
 			// Clear the current offset.
@@ -1789,7 +1797,7 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		_infoWindow->setPosition(_w->mapToGlobal(pt));
 		_infoWindow->setOffset(QPoint(15, 10));
 		// Get the name of the gate number which was gripped.
-		QString gatename = _gripGate ? QString("Gate %1").arg(_gripGate) : QString("IF Gate");
+		QString gateName = _gripGate ? QString("Gate %1").arg(_gripGate) : QString("IF Gate");
 		// Show the hint window which gate is grabbed.
 		switch (_gripGrabbed)
 		{
@@ -1797,15 +1805,15 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 				_infoWindow->setText("");
 
 			case gMIDDLE:
-				_infoWindow->setText("Threshold " + gatename);
+				_infoWindow->setText("Threshold " + gateName);
 				break;
 
 			case gLEFT:
-				_infoWindow->setText("Position " + gatename);
+				_infoWindow->setText("Position " + gateName);
 				break;
 
 			case gRIGHT:
-				_infoWindow->setText("Size " + gatename);
+				_infoWindow->setText("Size " + gateName);
 				break;
 		}
 		// Activate the gate hint.
@@ -1813,23 +1821,32 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 	}
 }
 
-void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint pt)
+void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point)
 {
 	Q_UNUSED(modifiers)
-	Q_UNUSED(pt)
+	if (!_w->hasMouseTracking())
+	{
+		return;
+	}
+	// Correct for the possible rulers offset.
+	auto pt = point - _graph.getPlotArea().topLeft();
 	// Check for the left mouse button getting up.
 	if (button == Qt::MouseButton::LeftButton)
 	{
+		// After the first move change the cursor for easier positioning.
+		setCursorShape(getCursorShape(GetGateGrip(pt)));
 		// Disable the capturing of the mouse.
 		mouseCapture(false);
 		// Deactivate the hint window.
 		_infoWindow->setActive(false);
 		// Unfreeze the plot.
-		_flagFrozen = false;
+		if (!_debug)
+		{
+			_flagFrozen = false;
+		}
 		//
 		if (_flagSizing)
 		{
-			SF_Q_NOTIFY("Stopped grabbing a grip..." << _gripOffset);
 			// Set the variables according to the rectangles on the screen.
 			switch (_gripGrabbed)
 			{
@@ -1840,6 +1857,7 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 					_gates[_gripGate].Rect += QPoint(0, _gripOffset.height());
 					_gripRectNext = _gates[_gripGate].Rect;
 					_flagGateVerticalPos = true;
+					setGateVerticalPos(true);
 					break;
 
 				case gLEFT:
@@ -1868,10 +1886,23 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 	}
 }
 
-void AcquisitionControl::Private::focusOut()
+void AcquisitionControl::Private::focus(bool yn)
 {
-	// Always unfreeze the plot on focus exit.
-	_flagFrozen = false;
+	if (yn)
+	{
+		_w->setMouseTracking(true);
+	}
+	else
+	{
+		_w->setMouseTracking(false);
+		setCursorShape(Qt::ArrowCursor);
+		if (!_debug)
+		{
+			// Always unfreeze the plot on focus exit.
+			_flagFrozen = false;
+		}
+	}
+
 }
 
 void AcquisitionControl::Private::keyDown(int key, Qt::KeyboardModifiers modifiers)
@@ -1880,7 +1911,7 @@ void AcquisitionControl::Private::keyDown(int key, Qt::KeyboardModifiers modifie
 	// Freeze the plot when the control key is pressed down.
 	if (modifiers.testFlag(Qt::KeyboardModifier::ControlModifier))
 	{
-		_flagFrozen = true;
+		_flagFrozen = !_flagFrozen;
 	}
 }
 
@@ -1976,7 +2007,6 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 				{
 					QSize sz(6, 0);
 					painter.setPen(gi._color);
-					//SF_Q_NOTIFY("Bounds:" << bounds << "PeakPos:" << gi.PeakPos);
 					painter.drawLine(gi.PeakPos + sz, gi.PeakPos - sz);
 					painter.drawLine(gi.PeakPos.x(), bounds.top(), gi.PeakPos.x(), bounds.bottom());
 				}
@@ -1996,7 +2026,7 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			// When sizing the plot is frozen, so we need to use the previous information and the changed info from the dragged gate.
 			if (!_flagSizing)
 			{
-				// Update the grip rect with the starting position.
+				// Update the grip rect with the starting rectangle.
 				gt.GripRect = gt.Rect;
 				// Put rectangle on dynamic or static location when slaved.
 				if (gt.SlavedTo >= 0)
@@ -2008,28 +2038,20 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 					gt.GripRect += QPoint(xOfs, 0);
 				}
 			}
-			else
-			{
-				if (i == 1)
-				{
-					SF_Q_NOTIFY("GripRect:" << gt.GripRect);
-				}
-			}
 			// Rectangle to work with.
-			QRect src = gt.GripRect;
-			//SF_Q_NOTIFY("Gate:" << i << "Bounds:" << bounds << "Rect:" << gt.Rect);
+			QRect grc = gt.GripRect;
 			// Decrease by 1 so the line is not drawn outside the rectangle.
-			src.setRight(src.right() - 1);
+			grc.setRight(grc.right() - 1);
 			// Set the gate color for drawing.
 			painter.setPen(gt._color);
 			// Draw the gate beginning.
-			painter.drawLine(src.topLeft(), src.bottomLeft());
+			painter.drawLine(grc.topLeft(), grc.bottomLeft());
 			// Draw the gate ending.
-			painter.drawLine(src.topRight(), src.bottomRight());
+			painter.drawLine(grc.topRight(), grc.bottomRight());
 			// Middle of the rectangle.
-			QSize sz(0, src.size().height() / 2);
+			QSize sz(0, grc.size().height() / 2);
 			// Draw the gate line
-			painter.drawLine(src.topLeft() + sz, src.topRight() + sz);
+			painter.drawLine(grc.topLeft() + sz, grc.topRight() + sz);
 			// Only for gate 0 which is the interface gate.
 			if (gt.TrackWidth >= 0)
 			{
@@ -2040,8 +2062,8 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 				x1 = clip(x1, 0, width - gt.TrackWidth);
 				// Decrease by 1 so the line is not drawn outside the rectangle.
 				int x2 = x1 + gt.TrackWidth - 1;
-				painter.drawLine(src.topLeft() + QPoint(x1, 0), src.bottomLeft() + QPoint(x1, 0));
-				painter.drawLine(src.topLeft() + QPoint(x2, 0), src.bottomLeft() + QPoint(x2, 0));
+				painter.drawLine(grc.topLeft() + QPoint(x1, 0), grc.bottomLeft() + QPoint(x1, 0));
+				painter.drawLine(grc.topLeft() + QPoint(x2, 0), grc.bottomLeft() + QPoint(x2, 0));
 			}
 		}
 		//
@@ -2054,6 +2076,16 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			// Calculate an offset position on fixed 10% of the width.
 			QPoint ofs(bounds.width() / 10, 0);
 			painter.drawLine(bounds.topLeft() + ofs, bounds.bottomLeft() + ofs);
+		}
+		// Draw some debugging stuff.
+		if (_debug)
+		{
+			QColor color(QColorConstants::White);
+			color.setAlpha(60);
+			for (int i = 0; i < _gateCount; i++)
+			{
+				painter.fillRect(inflated(_gates[i].GripRect, 1), color);
+			}
 		}
 		return true;
 	}

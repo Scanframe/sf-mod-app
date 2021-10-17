@@ -40,7 +40,7 @@ QString AnalogClockPlugin::name() const
 
 QString AnalogClockPlugin::group() const
 {
-	return QStringLiteral("ScanFrame Widgets");
+	return QStringLiteral("Display Widgets [Examples]");
 }
 
 QIcon AnalogClockPlugin::icon() const

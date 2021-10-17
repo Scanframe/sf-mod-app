@@ -3,9 +3,26 @@
 namespace sf
 {
 
+struct LayoutWidget::Private
+{
+
+	LayoutWidget*_w;
+
+	Gii::IdType _idOffset{};
+
+	bool _readOnly{true};
+
+	explicit Private(LayoutWidget* widget)
+	:_w(widget)
+	{
+		_w->_p = this;
+	}
+};
+
 LayoutWidget::LayoutWidget(QWidget* parent, Qt::WindowFlags f)
 :QWidget(parent, f)
 {
+	new Private(this);
 }
 
 LayoutWidget* LayoutWidget::getLayoutWidgetOf(QObject* obj)
@@ -34,12 +51,12 @@ void LayoutWidget::popupContextMenu(QObject* target, const QPoint& pos)
 
 void LayoutWidget::setReadOnly(bool ro)
 {
-	_readOnly = ro;
+	_p->_readOnly = ro;
 }
 
 bool LayoutWidget::getReadOnly() const
 {
-	return _readOnly;
+	return _p->_readOnly;
 }
 
 QDir LayoutWidget::getDirectory() const
@@ -50,6 +67,16 @@ QDir LayoutWidget::getDirectory() const
 QString LayoutWidget::getSuffix()
 {
 	return "ui";
+}
+
+Gii::IdType LayoutWidget::getIdOffset() const
+{
+	return _p->_idOffset;
+}
+
+void LayoutWidget::setIdOffset(Gii::IdType idOfs) const
+{
+	_p->_idOffset = idOfs;
 }
 
 }

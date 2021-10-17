@@ -484,9 +484,13 @@ struct _RSA_CLASS RsaTypes
 		arChannel_CopyIndex = 0x4003,
 		/** Free number from here. */
 		arChannel_UserFirst = 0x401F,
-		/**
+		/*
 		 * Gate results from here.
 		 */
+		/** Delay of the ultrasonic gate in seconds. */
+		arGate_Amplitude = 0x8001,
+		arGate_TimeOfFlight = 0x8002,
+		arGate_Copy = 0x8003,
 		/** Mask to detect gated result. */
 		arGate_Mask = 0x8000,
 		/** Free gate results numbers from here. */

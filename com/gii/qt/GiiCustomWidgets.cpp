@@ -6,6 +6,8 @@
 #include "VariableCheckBoxPlugin.h"
 #include "VariableComboBoxPlugin.h"
 #include "InformationIdEditPlugin.h"
+#include "LayoutWidgetPlugin.h"
+#include "LayoutButtonPlugin.h"
 
 namespace sf
 {
@@ -23,6 +25,8 @@ GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 	widgets.append(new VariableCheckBoxPlugin(this));
 	widgets.append(new VariableComboBoxPlugin(this));
 	widgets.append(new InformationIdEditPlugin(this));
+	widgets.append(new LayoutWidgetPlugin(this));
+	widgets.append(new LayoutButtonPlugin(this));
 }
 
 GiiCustomWidgets::~GiiCustomWidgets()

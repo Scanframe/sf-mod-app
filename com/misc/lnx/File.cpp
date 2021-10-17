@@ -208,7 +208,7 @@ void File::write(const File& file, size_t pos, size_t sz, size_t buf_sz)
 	// Create buffer top copy chunks of data.
 	DynamicBuffer buf;
 	// Set the reserved size for the max allowed chunk of data.
-	buf.reserve(buf_sz ?: 1024 * 16);
+	buf.reserve(buf_sz ? buf_sz : 1024 * 16);
 	//
 	for (size_t ws = 0; ws < sz; ws += buf.size())
 	{

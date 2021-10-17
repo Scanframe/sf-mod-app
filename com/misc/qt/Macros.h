@@ -85,6 +85,19 @@ void Class::set##Name(Type val) \
 }
 
 /**
+ * @brief Implements referenced setter.
+ * @param Type Type of the property.
+ * @param Class Class name to implement the methods in.
+ * @param Name Suffix of the setXXX method being implemented.
+ * @param Instance The instance the setter is writing.
+ */
+#define SF_IMPL_PROP_RS(Type, Class, Name, Instance) \
+void Class::set##Name(const Type& val) \
+{ \
+ Instance = val; \
+}
+
+/**
  * @brief Implements referenced setter with notification function.
  * @param Type Type of the property.
  * @param Class Class name to implement the methods in.
@@ -112,6 +125,12 @@ void Class::set##Name(const Type& val) \
 #define SF_IMPL_PROP_GS(Type, Class, Name, Instance) \
 SF_IMPL_PROP_G(Type, Class, Name, Instance) \
 SF_IMPL_PROP_S(Type, Class, Name, Instance)
+
+
+#define SF_IMPL_PROP_GRS(Type, Class, Name, Instance) \
+SF_IMPL_PROP_G(Type, Class, Name, Instance) \
+SF_IMPL_PROP_RS(Type, Class, Name, Instance)
+
 
 /**
  * @brief Implements unreferenced setter and unreferenced getter with notification function.

@@ -15,12 +15,12 @@ class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget, public ObjectExtension
 {
 	Q_OBJECT
 		// Need full namespace for this property macro.
-		Q_PROPERTY(sf::Gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit);
-		Q_PROPERTY(sf::Gii::IdType idDelay READ getIdDelay WRITE setIdDelay);
-		Q_PROPERTY(sf::Gii::IdType idRange READ getIdRange WRITE setIdRange);
-		Q_PROPERTY(sf::Gii::IdType idAmplitudeUnit READ getIdAmplitudeUnit WRITE setIdAmplitudeUnit);
-		Q_PROPERTY(sf::Gii::IdType idData READ getIdData WRITE setIdData);
-		Q_PROPERTY(sf::Gii::IdType idAttenuation READ getIdAttenuation WRITE setIdAttenuation);
+		Q_PROPERTY(sf::Gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
+		Q_PROPERTY(sf::Gii::IdType idDelay READ getIdDelay WRITE setIdDelay)
+		Q_PROPERTY(sf::Gii::IdType idRange READ getIdRange WRITE setIdRange)
+		Q_PROPERTY(sf::Gii::IdType idAmplitudeUnit READ getIdAmplitudeUnit WRITE setIdAmplitudeUnit)
+		Q_PROPERTY(sf::Gii::IdType idData READ getIdData WRITE setIdData)
+		Q_PROPERTY(sf::Gii::IdType idAttenuation READ getIdAttenuation WRITE setIdAttenuation)
 
 	public:
 		explicit AscanGraph(QWidget* parent = nullptr);

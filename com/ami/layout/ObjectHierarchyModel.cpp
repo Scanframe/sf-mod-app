@@ -255,7 +255,7 @@ void ObjectHierarchyModel::addChild(QObject* obj, TreeItem* parent) // NOLINT(mi
 			}
 		}
 	}
-};
+}
 
 void ObjectHierarchyModel::updateList(QObject* root)
 {

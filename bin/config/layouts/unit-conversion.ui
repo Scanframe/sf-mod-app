@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
@@ -6,62 +6,104 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>682</width>
-    <height>603</height>
+    <width>1390</width>
+    <height>920</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="objectName">
+   <string notr="true">Form</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="rightMargin">
+    <number>11</number>
+   </property>
+   <property name="leftMargin">
+    <number>11</number>
+   </property>
+   <property name="bottomMargin">
+    <number>11</number>
+   </property>
+   <property name="topMargin">
+    <number>11</number>
+   </property>
+   <property name="objectName">
+    <string notr="true">verticalLayout</string>
+   </property>
    <item>
     <widget class="QLabel" name="lblLargeTitle">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+     <property name="margin">
+      <number>4</number>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color :  lightgrey;</string>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
      <property name="lineWidth">
       <number>2</number>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:24pt; font-weight:700; color:#ad7300;&quot;&gt;Unit Conversion Test Layout&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
-     <property name="margin">
-      <number>4</number>
+     <property name="text">
+      <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;meta charset="utf-8" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:24pt; font-weight:700; color:#ad7300;">Unit Conversion Test Layout&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+     </property>
+     <property name="objectName">
+      <string notr="true">lblLargeTitle</string>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy vsizetype="Minimum" hsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="verticalGroupBox">
+     <property name="title">
+      <string/>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="objectName">
+      <string notr="true">verticalGroupBox</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
      <layout class="QFormLayout" name="formLayout">
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
       <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
        <number>1</number>
       </property>
       <property name="topMargin">
        <number>1</number>
       </property>
-      <property name="rightMargin">
-       <number>1</number>
+      <property name="objectName">
+       <string notr="true">formLayout</string>
       </property>
-      <property name="bottomMargin">
-       <number>1</number>
+      <property name="spacing">
+       <number>6</number>
       </property>
       <item row="0" column="0">
        <widget class="sf::VariableEdit" name="variableEdit1">
@@ -74,23 +116,26 @@ p, li { white-space: pre-wrap; }
         <property name="toolTip">
          <string>Sound velocity setting</string>
         </property>
-        <property name="whatsThis">
-         <string>Special edit having name and unit label.</string>
-        </property>
-        <property name="idVariable" stdset="0">
-         <uLongLong>16</uLongLong>
-        </property>
-        <property name="converted">
-         <bool>true</bool>
-        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
         <property name="focusFrame">
          <bool>true</bool>
         </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">variableEdit1</string>
+        </property>
+        <property stdset="0" name="idVariable">
+         <uLongLong>16</uLongLong>
+        </property>
         <property name="nameLevel">
          <number>-1</number>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -105,23 +150,26 @@ p, li { white-space: pre-wrap; }
         <property name="toolTip">
          <string>High speed velocity setting</string>
         </property>
-        <property name="whatsThis">
-         <string>Special edit having name and unit label.</string>
-        </property>
-        <property name="idVariable" stdset="0">
-         <uLongLong>256</uLongLong>
-        </property>
-        <property name="converted">
-         <bool>true</bool>
-        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
         <property name="focusFrame">
          <bool>true</bool>
         </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">variableEdit2</string>
+        </property>
+        <property stdset="0" name="idVariable">
+         <uLongLong>256</uLongLong>
+        </property>
         <property name="nameLevel">
          <number>1</number>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -136,42 +184,48 @@ p, li { white-space: pre-wrap; }
         <property name="toolTip">
          <string>High speed velocity setting</string>
         </property>
-        <property name="whatsThis">
-         <string>Special edit having name and unit label.</string>
-        </property>
-        <property name="idVariable" stdset="0">
-         <uLongLong>256</uLongLong>
-        </property>
-        <property name="converted">
-         <bool>false</bool>
-        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
         <property name="focusFrame">
          <bool>true</bool>
         </property>
+        <property name="whatsThis">
+         <string>Special edit having name and unit label.</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">variableEdit3</string>
+        </property>
+        <property stdset="0" name="idVariable">
+         <uLongLong>256</uLongLong>
+        </property>
         <property name="nameLevel">
          <number>1</number>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item row="4" column="0">
        <widget class="sf::VariableCheckBox" name="variableCheckBox">
-        <property name="whatsThis">
-         <string>Special check box having name label.</string>
-        </property>
-        <property name="idVariable" stdset="0">
-         <uLongLong>5</uLongLong>
-        </property>
-        <property name="converted">
-         <bool>false</bool>
-        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
+        <property name="whatsThis">
+         <string>Special check box having name label.</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">variableCheckBox</string>
+        </property>
+        <property stdset="0" name="idVariable">
+         <uLongLong>5</uLongLong>
+        </property>
         <property name="nameLevel">
          <number>-1</number>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -186,20 +240,23 @@ p, li { white-space: pre-wrap; }
         <property name="toolTip">
          <string>High speed velocity setting</string>
         </property>
-        <property name="whatsThis">
-         <string>Variable bar used for progress or level indication.</string>
-        </property>
-        <property name="idVariable" stdset="0">
-         <uLongLong>256</uLongLong>
-        </property>
-        <property name="converted">
-         <bool>true</bool>
-        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
+        <property name="whatsThis">
+         <string>Variable bar used for progress or level indication.</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">variableBar</string>
+        </property>
+        <property stdset="0" name="idVariable">
+         <uLongLong>256</uLongLong>
+        </property>
         <property name="nameLevel">
          <number>-1</number>
+        </property>
+        <property name="converted">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -207,37 +264,19 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
+    <spacer>
+     <property name="sizeHint">
       <size>
        <width>20</width>
        <height>40</height>
       </size>
      </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
     </spacer>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>sf::VariableBar</class>
-   <extends>QWidget</extends>
-   <header>gii/qt/VariableBar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::VariableEdit</class>
-   <extends>QWidget</extends>
-   <header>com/gii/qt/VariableEdit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>sf::VariableCheckBox</class>
-   <extends>QWidget</extends>
-   <header>com/gii/qt/VariableCheckBox.h</header>
-  </customwidget>
- </customwidgets>
- <resources/>
  <connections/>
 </ui>

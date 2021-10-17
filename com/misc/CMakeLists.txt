@@ -126,9 +126,6 @@ if (SF_BUILD_QT)
 		qt/EditorPlugin.cpp qt/EditorPlugin.h
 		qt/Graph.cpp qt/Graph.h
 		qt/CommonItemDelegate.cpp qt/CommonItemDelegate.h
-		qt/LayoutWidget.cpp qt/LayoutWidget.h
-		qt/LayoutButton.cpp qt/LayoutButton.h
-		qt/LayoutButtonPlugin.cpp qt/LayoutButtonPlugin.h
 		qt/Globals.cpp qt/Globals.h
 		qt/Macros.h
 		qt/res/resource.qrc

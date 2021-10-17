@@ -129,6 +129,9 @@ QSize asQSize(const QPoint& pt)
 namespace sf
 {
 
+_MISC_FUNC QRect moveRectWithinRect(const QRect& outer, const QRect& inner);
+
+
 /**
  * @brief Type to hold
  */

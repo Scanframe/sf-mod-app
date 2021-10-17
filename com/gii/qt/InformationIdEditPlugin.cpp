@@ -80,7 +80,7 @@ QString InformationIdEditPlugin::domXml() const
    <string>Information ID select edit with ID select dialog.</string>
   </property>
  </widget>
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::VariableEdit</class>

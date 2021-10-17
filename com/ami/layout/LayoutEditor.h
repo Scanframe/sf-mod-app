@@ -4,7 +4,7 @@
 #include <QMenu>
 #include <QScrollArea>
 #include <QSettings>
-#include <misc/qt/LayoutWidget.h>
+#include <gii/qt/LayoutWidget.h>
 #include <ami/iface/MultiDocInterface.h>
 #include "ObjectHierarchyModel.h"
 

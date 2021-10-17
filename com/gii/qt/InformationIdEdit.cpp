@@ -2,7 +2,7 @@
 #include <QStyle>
 #include <QGuiApplication>
 #include <misc/qt/Resource.h>
-#include <misc/qt/LayoutWidget.h>
+#include "LayoutWidget.h"
 #include "InformationSelectDialog.h"
 #include "InformationIdEdit.h"
 
@@ -56,7 +56,7 @@ void InformationIdEdit::resizeEvent(QResizeEvent*)
 
 bool InformationIdEdit::selectDialog(QWidget* parent)
 {
-	auto ids = InformationSelectDialog(parent ?: btnOpenDialog).execute(Gii::Single, _typeId);
+	auto ids = InformationSelectDialog(parent ? parent : btnOpenDialog).execute(Gii::Single, _typeId);
 	// Only when not empty set the ID.
 	if (!ids.empty())
 	{

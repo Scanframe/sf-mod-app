@@ -130,7 +130,7 @@ void Application::handleInstanceMessage(quint32 instanceId, const QByteArray& me
 {
 	// TODO: Open files passed in the message.
 	qDebug() << __FUNCTION__ << message;
-};
+}
 
 void Application::parseCommandline()
 {

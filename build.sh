@@ -9,6 +9,9 @@ LOCAL_QT_ROOT="${HOME}/lib/Qt"
 BUIlD_OPTIONS=
 # Initialize the config options.
 CONFIG_OPTIONS=
+# Amount of CPU cores to use for compiling.
+CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+
 
 # Writes to stderr.
 #
@@ -113,7 +116,7 @@ fi
 SOURCE_DIR="${argument[0]}"
 TARGET="all"
 # Set the build-dir for the cross compile.
-if [[ $FLAG_CROSS_WINDOWS ]] ; then
+if [[ $FLAG_CROSS_WINDOWS = true ]] ; then
 	BUILD_SUBDIR="cmake-build-wdebug"
 else
 	BUILD_SUBDIR="cmake-build-debug"
@@ -126,8 +129,7 @@ fi
 
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]]; then
 	echo "Windows NT detected."
-	# CMAKE_BIN="/cygdrive/p/Qt/Tools/CMake_64/bin/cmake"
-	CMAKE_BIN="CMD /C P:\Qt\Tools\CMake_64\bin\cmake.exe"
+	CMAKE_BIN="CMD /C cmake.exe"
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
 	BUILD_GENERATOR="MinGW Makefiles"
 	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
@@ -164,6 +166,5 @@ fi
 
 # Build/Compile
 if ${FLAG_BUILD} ; then
-	CPU_CORES_TO_USE="$(($(nproc --all) -1))"
 	${CMAKE_BIN} --build "${BUILD_DIR}" --target "${TARGET}" ${BUIlD_OPTIONS} -- -j ${CPU_CORES_TO_USE}
 fi

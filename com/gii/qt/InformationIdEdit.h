@@ -19,7 +19,7 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public Object
 		// Declarations in these macros are made private.
 	Q_OBJECT
 		// Need full namespace for this property macro.
-		Q_PROPERTY(sf::Gii::TypeId typeId READ getTypeId WRITE setTypeId);
+		Q_PROPERTY(sf::Gii::TypeId typeId READ getTypeId WRITE setTypeId)
 
 	public:
 		/**

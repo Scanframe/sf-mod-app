@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>243</width>
+    <height>80</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <property name="horizontalSpacing">
+    <number>6</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>6</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lblvDeviceGateCount">
+     <property name="toolTip">
+      <string>Ultrasonic Amount of gates selection.</string>
+     </property>
+     <property name="text">
+      <string>Gates</string>
+     </property>
+     <property name="buddy">
+      <cstring>vDeviceGateCount</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="sf::VariableComboBox" name="vDeviceGateCount">
+     <property name="toolTip">
+      <string>Ultrasonic Amount of gates selection.</string>
+     </property>
+     <property name="idVariable" stdset="0">
+      <uLongLong>132099</uLongLong>
+     </property>
+     <property name="converted">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="focusFrame">
+      <bool>true</bool>
+     </property>
+     <property name="nameLevel">
+      <number>1</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="lblDeviceState">
+     <property name="toolTip">
+      <string>Generic information server state Server</string>
+     </property>
+     <property name="text">
+      <string>State</string>
+     </property>
+     <property name="buddy">
+      <cstring>vDeviceState</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="sf::VariableComboBox" name="vDeviceState">
+     <property name="toolTip">
+      <string>Generic information server state Server</string>
+     </property>
+     <property name="whatsThis">
+      <string>Special edit having name and unit label.</string>
+     </property>
+     <property name="idVariable" stdset="0">
+      <uLongLong>131072</uLongLong>
+     </property>
+     <property name="converted">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="focusFrame">
+      <bool>true</bool>
+     </property>
+     <property name="nameLevel">
+      <number>1</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::VariableComboBox</class>
+   <extends>QWidget</extends>
+   <header>com/gii/qt/VariableComboBox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -8,7 +8,7 @@
 #include <QGuiApplication>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/ScriptEngine.h>
-#include <misc/qt/LayoutWidget.h>
+#include "LayoutWidget.h"
 #include "VariableWidgetBasePrivate.h"
 
 namespace sf
@@ -230,7 +230,10 @@ void VariableEdit::applyReadOnly(bool yn)
 	setFocusPolicy(yn ? Qt::NoFocus : Qt::StrongFocus);
 	if (_p)
 	{
-		VariableEdit::Private::cast(_p)->_editValue->setReadOnly(yn);
+		auto e = VariableEdit::Private::cast(_p)->_editValue;
+		e->setReadOnly(yn);
+		// Make the style for readonly have effect on the widget.
+		e->style()->polish(e);
 	}
 }
 

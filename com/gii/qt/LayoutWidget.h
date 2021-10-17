@@ -2,16 +2,17 @@
 
 #include <QWidget>
 #include <QDir>
-#include "PropertySheetDialog.h"
+#include <misc/qt/PropertySheetDialog.h>
+#include "Namespace.h"
 #include "../global.h"
 
 namespace sf
 {
 
 /**
- * Base class for loading Widgets from a ui-file when used in an editor.
+ * Base class for loading Widgets from a ui-file when used in an editor for example.
  */
-class _MISC_CLASS LayoutWidget :public QWidget
+class _GII_CLASS LayoutWidget :public QWidget
 {
 	Q_OBJECT
 
@@ -67,11 +68,22 @@ class _MISC_CLASS LayoutWidget :public QWidget
 		 */
 		static QString getSuffix();
 
-	private:
 		/**
-		 * @brief Holds the readonly flag.
+		 * @brief Gets the id offset for all Gii widgets.
+		 * Only applied when a layout is loaded.
 		 */
-		bool _readOnly{true};
+		[[nodiscard]] Gii::IdType getIdOffset() const;
+
+		/**
+		 * @brief Sets id offset for all Gii widgets.
+		 * Only applied when a layout is loaded.
+		 */
+	void setIdOffset(Gii::IdType idOfs) const;
+
+	private:
+
+		struct Private;
+		Private* _p{nullptr};
 };
 
 }

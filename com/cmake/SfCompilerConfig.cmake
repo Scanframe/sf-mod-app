@@ -68,6 +68,9 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 		if (WIN32)
 			# Needed for Windows since Catch2 is creating a huge obj file.
 			add_compile_options(-m64 -Wa,-mbig-obj)
+		else ()
+			# For detecting memory errors.
+			add_compile_options(--pedantic-error #[[-fsanitize=address]])
 		endif ()
 	endif ()
 endif ()

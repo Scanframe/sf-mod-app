@@ -2,6 +2,7 @@
 
 #include <misc/gen/Sustain.h>
 #include <misc/gen/TClosure.h>
+#include <misc/gen/TBitSet.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/qt/Graph.h>
 #include <gii/gen/Variable.h>
@@ -34,13 +35,13 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 
 	void keyDown(int key, Qt::KeyboardModifiers);
 
-	void mouseDown(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint pt);
+	void mouseDown(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point);
 
-	void mouseUp(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint pt);
+	void mouseUp(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point);
 
-	void mouseMove(Qt::KeyboardModifiers modifiers, QPoint pt);
+	void mouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point);
 
-	void focusOut();
+	void focus(bool yn);
 
 	void mouseCapture(bool capture);
 
@@ -70,7 +71,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	// Hook for the sustain interface.
 	TSustain<AcquisitionControl::Private> SustainEntry;
 	// Reference to the timer of the sustain entry.
-	ElapseTimer _timeoutTimer{2000000};
+	ElapseTimer _timeoutTimer{TimeSpec(2.0)};
 
 	// Sustain function.
 	bool sustain(const timespec& t);
@@ -206,8 +207,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 		// Related results.
 		ResultData RTof;
 		ResultData RAmp;
-		// Holds the rectangle sized and positioned to the delay and range
-		// of the gate without slaved peak information.
+		// Holds the rectangle sized and positioned to the delay and range of the gate without slaved peak information.
 		QRect Rect{0, 0, 0, 0};
 		// Holds the last drawn screen position. Used to find a grip after drawing.
 		QRect GripRect{0, 0, 0, 0};
@@ -228,7 +228,9 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 		int TrackWidth{0};
 		// Color of the gate.
 		QColor _color{QColorConstants::Yellow};
-	} _gates[MaxGates];
+	};
+	// Create vector which checks memory overrun.
+	TVector<Gate> _gates{MaxGates};
 
 	// Triggers calling setHorizontalGatePos() in sustain.
 	bool _flagGateHorizontalPos{false};
@@ -317,9 +319,9 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 			// Clear all fields.
 			IndexReq = false;
 			CopyReq = false;
-			GateAmpReq.reset();
-			GateTofReq.reset();
-			GateAccessEvent.reset();
+			GateAmpReq.clear();
+			GateTofReq.clear();
+			GateAccessEvent.clear();
 			CopyRange.clear();
 			GateRange.clear();
 		}
@@ -333,19 +335,20 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 		// Range of a single entry into the synchronous gate results.
 		Range GateRange;
 		// Bit mask for checking gate requests.
-		std::bitset<MaxGates> GateAmpReq;
-		std::bitset<MaxGates> GateTofReq;
+		TBitSet<MaxGates> GateAmpReq;
+		TBitSet<MaxGates> GateTofReq;
 		// Bit set to true when waiting gate access changed.
-		std::bitset<MaxGates> GateAccessEvent;
+		TBitSet<MaxGates> GateAccessEvent;
 		//
 	} _work;
 
 	//
 	// Properties section
 	//
-	int _gripHeight{4};
 	// The absolute maximum drawable signal value.
 	int _valueMax{0};
+	// Height for the grips.
+	int _gripHeight{4};
 	// Makes the threshold be changed using dragging.
 	bool _thresholdDrag{true};
 	// The value of the threshold is linked to the value range of the data.
@@ -368,6 +371,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	// Hold the TCG Gain variables ID's.
 	VariableIdList _idsTcgGain;
 
+	bool _debug;
 };
 
 }

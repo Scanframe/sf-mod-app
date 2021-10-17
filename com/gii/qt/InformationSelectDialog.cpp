@@ -70,7 +70,7 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 			_selectedId = index.isValid() ? _itemModel->getId(index) : 0;
 		}
 	});
-};
+}
 
 void InformationSelectDialog::childrenExpandCollapse(bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
 {
@@ -133,7 +133,7 @@ InformationTypes::IdVector InformationSelectDialog::getSelectedIds() const
 
 InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode mode, Gii::TypeId idType, QSettings* settings)
 {
-	_settings = settings ?: getGlobalSettings();
+	_settings = settings ? settings : getGlobalSettings();
 	_mode = mode;
 	// Delete previous model when it exists.
 	delete_null(_itemModel);

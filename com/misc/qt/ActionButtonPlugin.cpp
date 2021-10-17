@@ -79,7 +79,7 @@ QString ActionButtonPlugin::domXml() const
    <string>Custom push button connected to a action.</string>
   </property>
  </widget>
- <!-- Propery specification part -->
+ <!-- Property specification part -->
  <customwidgets>
   <customwidget>
    <class>sf::ActionButton</class>

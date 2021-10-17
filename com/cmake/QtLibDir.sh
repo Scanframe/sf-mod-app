@@ -24,7 +24,7 @@ function GetLocalQtDir()
 		exit 1
 	fi
 	# Find the newest Qt library installed.
-	LocalQtDir="$(/usr/bin/find "${LOCAL_QT_ROOT}/" -maxdepth 1 -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
+	LocalQtDir="$(find "${LOCAL_QT_ROOT}/" -maxdepth 1 -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
 	if [[ -z "${LocalQtDir}" ]] ; then
 		WriteLog "Could not find local installed Qt directory."
 		exit 1

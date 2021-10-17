@@ -36,8 +36,13 @@ void AcquisitionControl::mousePressEvent(QMouseEvent* event)
 void AcquisitionControl::mouseReleaseEvent(QMouseEvent* event)
 {
 	QWidget::mouseReleaseEvent(event);
-
 	_p->mouseUp(event->button(), event->modifiers(), event->pos());
+}
+
+void AcquisitionControl::mouseMoveEvent(QMouseEvent* event)
+{
+	QWidget::mouseMoveEvent(event);
+	_p->mouseMove(event->button(), event->modifiers(), event->pos());
 }
 
 void AcquisitionControl::initStyleOption(QStyleOptionFrame* option) const
@@ -108,10 +113,17 @@ bool AcquisitionControl::isRequiredProperty(const QString& name)
 	return true;
 }
 
+
+void AcquisitionControl::focusInEvent(QFocusEvent* event)
+{
+	QWidget::focusInEvent(event);
+	_p->focus(true);
+}
+
 void AcquisitionControl::focusOutEvent(QFocusEvent* event)
 {
 	QWidget::focusOutEvent(event);
-	_p->focusOut();
+	_p->focus(false);
 }
 
 void AcquisitionControl::resizeEvent(QResizeEvent* event)
@@ -120,7 +132,7 @@ void AcquisitionControl::resizeEvent(QResizeEvent* event)
 	_p->geoResize(event->size(), event->oldSize());
 }
 
-SF_IMPL_PROP_GSN(int, AcquisitionControl, GripHeight, _p->_gripGate, _p->propertyChange)
+SF_IMPL_PROP_GSN(int, AcquisitionControl, GripHeight, _p->_gripHeight, _p->propertyChange)
 
 SF_IMPL_PROP_GSN(int, AcquisitionControl, ValueMax, _p->_valueMax, _p->propertyChange)
 
