@@ -1326,7 +1326,8 @@ bool AcquisitionEmulator::enumParamIds(IdList& ids)
 		// Add gate parameters
 		unsigned gates = FChannelInfo[channel].GateCount;
 		for (unsigned gate = 0; gate < gates; gate++)
-		{ // Fast local reference.
+		{
+			// Fast local reference.
 			TGateInfo& gi(ci.GateInfo[gate]);
 			//
 			ids.add(MAKE_ID(channel, gate, PID_GATE_DELAY));

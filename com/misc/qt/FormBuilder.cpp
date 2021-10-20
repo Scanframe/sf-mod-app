@@ -29,6 +29,8 @@ bool isDispensablePropertyByName(QObject* obj, const QString& name)
 			"windowModified",
 			"windowFilePath",
 			"palette",
+			// The cursor seems to be stored somehow in some cases, so we get rid of it completely
+			"cursor",
 		};
 		// Check if passed property name is in the keys list.
 		return std::any_of(&keys[0], &keys[sizeof(keys) / sizeof(keys[0])], [name](const char* prop)

@@ -52,7 +52,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	void invalidatePlotRect(const QRect& rect = {}) const;
 
 	// Responds to a change in the one of the TCG Variable ID lists.
-	void TcgIdChange(void* sender);
+	void tcgIdChange(void* sender);
 
 	// Sets the bottom ruler according the current variable values.
 	void setBottomRuler();
@@ -69,9 +69,9 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	bool setCanDraw();
 
 	// Hook for the sustain interface.
-	TSustain<AcquisitionControl::Private> SustainEntry;
+	TSustain<AcquisitionControl::Private> sustainEntry;
 	// Reference to the timer of the sustain entry.
-	ElapseTimer _timeoutTimer{TimeSpec(2.0)};
+	ElapseTimer _timeoutTimer;
 
 	// Sustain function.
 	bool sustain(const timespec& t);
@@ -79,15 +79,15 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	// List of types of grips.
 	enum EGrip
 	{
-		gNONE = 0,
-		gLEFT,   // For delay
-		gMIDDLE, // For position and if so selected the threshold.
-		gRIGHT,  // For range
+		gNoGrip = 0,
+		gLeftGrip,   // For delay
+		gMiddleGrip, // For position and if so selected the threshold.
+		gRightGrip,  // For range
 	};
 
 	// Check the passed point with the gate grips.
 	// When gate is non-null the gate number is returned.
-	EGrip GetGateGrip(const QPoint& pt, int* gate = nullptr);
+	EGrip getGateGrip(const QPoint& pt, int* gate = nullptr);
 
 	// Gets the cursor shape from the passed grip.
 	[[nodiscard]] Qt::CursorShape getCursorShape(EGrip grip) const;
@@ -110,34 +110,34 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	Range _lastRange;
 
 	// Handles the variable which the rulers depend on.
-	void RulerHandler(Variable::EEvent, const Variable&, Variable&, bool);
+	void handlerRulerVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-	TVariableHandler<AcquisitionControl::Private> _rulerHandler{this, &AcquisitionControl::Private::RulerHandler};
+	TVariableHandler<AcquisitionControl::Private> _rulerHandler{this, &AcquisitionControl::Private::handlerRulerVariable};
 
 	// Handles the variable which the TCG drawing depends on.
-	void TcgVarHandler(Variable::EEvent, const Variable&, Variable&, bool);
+	void handlerTcgVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-	TVariableHandler<AcquisitionControl::Private> _tcgVarHandler{this, &AcquisitionControl::Private::TcgVarHandler};
+	TVariableHandler<AcquisitionControl::Private> _tcgVarHandler{this, &AcquisitionControl::Private::handlerTcgVariable};
 
 	// Handles the variable which others depend on.
-	void DefaultVarHandler(Variable::EEvent, const Variable&, Variable&, bool);
+	void handlerDefaultVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-	TVariableHandler<AcquisitionControl::Private> _defaultVarHandler{this, &AcquisitionControl::Private::DefaultVarHandler};
+	TVariableHandler<AcquisitionControl::Private> _defaultVarHandler{this, &AcquisitionControl::Private::handlerDefaultVariable};
 
 	// Handle gate variable changes.
-	void GateVarHandler(Variable::EEvent, const Variable&, Variable&, bool);
+	void handlerGateVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-	TVariableHandler<AcquisitionControl::Private> _gateVarHandler{this, &AcquisitionControl::Private::GateVarHandler};
+	TVariableHandler<AcquisitionControl::Private> _gateVarHandler{this, &AcquisitionControl::Private::handlerGateVariable};
 
 	// Handles copy and copy index data result events.
-	void CopyResHandler(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
+	void handlerCopyResult(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
 
-	TResultDataHandler<AcquisitionControl::Private> _copyResHandler{this, &AcquisitionControl::Private::CopyResHandler};
+	TResultDataHandler<AcquisitionControl::Private> _copyResHandler{this, &AcquisitionControl::Private::handlerCopyResult};
 
 	// Handles synchronous data events.
-	void GateResHandler(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
+	void handlerGateResult(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
 
-	TResultDataHandler<AcquisitionControl::Private> _gateResHandler{this, &AcquisitionControl::Private::GateResHandler};
+	TResultDataHandler<AcquisitionControl::Private> _gateResHandler{this, &AcquisitionControl::Private::handlerGateResult};
 
 	// Data result.
 	ResultData _rCopyData;
@@ -253,7 +253,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	// Current absolute displacement from the start of grabbing a gate.
 	QSize _gripOffset{0, 0};
 	// Hold the type of grip that was grabbed.
-	EGrip _gripGrabbed{gNONE};
+	EGrip _gripGrabbed{gNoGrip};
 	// Holds the flag when sizing is at hand.
 	bool _flagSizing{false};
 	// Gate which has been grabbed.
@@ -295,7 +295,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	EState _stateToWaitFor{psIdle};
 
 	// Sets the new state and acts on it.
-	bool _setState(EState state);
+	bool setState(EState state);
 
 	// Sets the error state.
 	// Returns always false for ease in functions.

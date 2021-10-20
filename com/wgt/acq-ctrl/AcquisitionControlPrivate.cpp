@@ -34,11 +34,12 @@ class InfoWindow :public QLabel
 
 AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	:_w(widget)
-	 , SustainEntry(this, &AcquisitionControl::Private::sustain)
+	 , sustainEntry(this, &AcquisitionControl::Private::sustain)
 	 , _infoWindow(new InfoWindow(_w))
 	 , _idsTcgTime(_tcg.TimeVars)
 	 , _idsTcgGain(_tcg.GainVars)
-	 ,_debug(false)
+	 , _timeoutTimer{TimeSpec(1.0)}
+	 , _debug(false)
 {
 	// Make the widget get focus when clicked in.
 	_w->setFocusPolicy(Qt::StrongFocus);
@@ -81,8 +82,8 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	_rCopyData.setHandler(&_copyResHandler);
 	_rCopyIndex.setHandler(&_copyResHandler);
 	// Hook change handler to the list.
-	_idsTcgTime.onChange.assign([&](void* p) {TcgIdChange(p);});
-	_idsTcgGain.onChange.assign([&](void* p) {TcgIdChange(p);});
+	_idsTcgTime.onChange.assign([&](void* p) {tcgIdChange(p);});
+	_idsTcgGain.onChange.assign([&](void* p) {tcgIdChange(p);});
 	// Hook the TCG handler to TCG variables setting the data field
 	// to UINT_MAX to make a possible switch int the handler.
 	_vTcgEnable.setData(std::numeric_limits<uint64_t>::max());
@@ -164,7 +165,7 @@ void AcquisitionControl::Private::propertyChange(void* field)
 	_w->update();
 }
 
-void AcquisitionControl::Private::TcgIdChange(void*)
+void AcquisitionControl::Private::tcgIdChange(void*)
 {
 	for (size_t i = 0; i < _tcg.TimeVars.size(); i++)
 	{
@@ -326,8 +327,7 @@ void AcquisitionControl::Private::setBottomRuler()
 	}
 	// Set bottom ruler.
 	_graph.setRuler(sf::Draw::roBottom, start, start + range, requiredDigits(step, start, range), QString::fromStdString(unit));
-	//
-	SF_Q_NOTIFY("Start:" << start << "Range:" << range << "Digits:" << requiredDigits(step, start, range))
+	// Refresh the whole graph.
 	_w->update();
 }
 
@@ -458,7 +458,7 @@ void AcquisitionControl::Private::generatePeakData()
 		if (gi.FlagTof)
 		{
 			// Calculate the time of flight of the tof in samples.
-			Value::flt_type tof = sampleTime * static_cast<Value::flt_type>(gi.PeakTof);
+			auto tof = sampleTime * static_cast<Value::flt_type>(gi.PeakTof);
 			// Check if the gate is slaved to another.
 			if (gi.SlavedTo >= 0)
 			{
@@ -466,7 +466,6 @@ void AcquisitionControl::Private::generatePeakData()
 				// if the gates are cascaded then loop and add the times up
 				while (j >= 0)
 				{
-					// Check if TOF result is available.
 					if (_gates[j].FlagTof)
 					{
 						tof += sampleTime * static_cast<Value::flt_type>(_gates[j].PeakTof);
@@ -477,7 +476,7 @@ void AcquisitionControl::Private::generatePeakData()
 			}
 				// Check for artificial way of slaving.
 				// Actual gate delay is IF delay + gate delay.
-			else if (gi.SlavedTo == -2)
+			else if (gi.SlavedTo == -2 && gi.Gate != 0)
 			{
 				// Just add the delay of the IF gate.
 				tof += _gates[0].VDelay.getCur().getFloat();
@@ -488,8 +487,7 @@ void AcquisitionControl::Private::generatePeakData()
 		// Check if AMP value was present.
 		if (gi.FlagAmp)
 		{
-			ResultData::sdata_type minVal = 0;
-			ResultData::sdata_type maxVal = 0;
+			ResultData::sdata_type minVal{0}, maxVal{0};
 			// Check if the display range could be established.
 			if (getDisplayRangeVert(minVal, maxVal))
 			{
@@ -776,7 +774,7 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		}
 			// Check for artificial (-2) way of slaving.
 			// Actual gate delay is IF delay + gate delay.
-		else if (gt.SlavedTo == -2)
+		else if (gt.SlavedTo == -2 && gt.Gate != 0)
 		{
 			// Just add the delay of the IF gate.
 			gateDelayOfs += _gates[0].VDelay.getCur().getFloat();
@@ -801,7 +799,8 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 				// Update delay variables.
 				// When this update causes a change.
 				if (gt.VDelay.setCur(Value(delay), true))
-				{ // When it is the Interface gate and the TCG is artificially slaved.
+				{
+					// When it is the Interface gate and the TCG is artificially slaved.
 					if (i == 0 && _tcg.SlavedTo == -2)
 					{
 						// Make the TCG curve be recalculated.
@@ -817,6 +816,7 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		// Calculate the offset of the gate in pixels
 		int gateWidth = static_cast<int>(gateRange * pixelRatio);
 		int gateOffset;
+		//
 		if (gt.SlavedTo < 0)
 		{
 			gateOffset = static_cast<int>((gateDelay - plotDelay + gateDelayOfs) * pixelRatio);
@@ -912,7 +912,7 @@ const char* AcquisitionControl::Private::getStateName(int state)
 	}
 }
 
-bool AcquisitionControl::Private::_setState(EState state) // NOLINT(misc-no-recursion)
+bool AcquisitionControl::Private::setState(EState state) // NOLINT(misc-no-recursion)
 {
 	// Only change the previous state when the state is not psWAIT.
 	if (_stateCurrent != psWait)
@@ -947,7 +947,7 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 		<< getStateName(_stateCurrent)
 		<< ")");
 	// Recover from the error.
-	_setState(psIdle);
+	setState(psIdle);
 	// Always return false for being able to use it as a return value.
 	return false;
 }
@@ -1001,7 +1001,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			if (rng.getSize() == 0)
 			{
 				// Till next result event.
-				return _setState(psIdle);
+				return setState(psIdle);
 			}
 			// Get the last common index to work on.
 			_work.CopyRange.set({rng.getStop() - 1, rng.getStop()});
@@ -1056,7 +1056,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			// done for now and the new data can be applied.
 			if (_gateCount == 0 || !_dynamicGates)
 			{
-				return _setState(psApply);
+				return setState(psApply);
 			}
 			// Read the index from the result.
 			// But initialize the 64bit value first since the read index can be 32bit.
@@ -1099,7 +1099,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			if (!rng.getId())
 			{
 				// No gate results were valid at all so just apply what is generated so far.
-				return _setState(psApply);
+				return setState(psApply);
 			}
 
 			// Possibly the gates haven't some data yet.
@@ -1228,7 +1228,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			// Make window update the plot.
 			invalidatePlotRect();
 			// Signal that plot is ready for next one.
-			return _setState(psReady);
+			return setState(psReady);
 		}
 
 		case psWait:
@@ -1249,7 +1249,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 					{
 						break;
 					}
-					return _setState(psApply);
+					return setState(psApply);
 
 				case psProcessCopy:
 					// If requests are still out continue waiting.
@@ -1257,7 +1257,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 					{
 						break;
 					}
-					return _setState(psProcessCopy);
+					return setState(psProcessCopy);
 
 				case psTryGate:
 					// Continue as long as no gate access changes happened.
@@ -1266,7 +1266,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 						break;
 					}
 					// Try the state again.
-					return _setState(psTryGate);
+					return setState(psTryGate);
 
 				default:
 					// Cannot wait for any other state.
@@ -1279,7 +1279,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 	return true;
 }
 
-void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
+void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	switch (event)
@@ -1326,7 +1326,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 			invalidatePlotRect();
 			// Clear the work data structure to start over.
 			_work.Clear();
-			_setState(psIdle);
+			setState(psIdle);
 			break;
 		}
 
@@ -1337,7 +1337,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 				// Trigger the generation of new plot data.
 				if (_stateCurrent == psIdle || _stateCurrent == psReady)
 				{
-					_setState(psGetCopy);
+					setState(psGetCopy);
 				}
 				//
 				if ((!_dynamicGates && &link == &_rCopyData) ||
@@ -1346,7 +1346,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 					// Trigger the generation of new plot data.
 					if (_stateCurrent == psIdle || _stateCurrent == psReady)
 					{
-						_setState(psGetCopy);
+						setState(psGetCopy);
 					}
 				}
 			}
@@ -1399,7 +1399,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 	}
 }
 
-void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
+void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	// Get info pointer from assigned data set in the constructor.
@@ -1475,7 +1475,7 @@ void AcquisitionControl::Private::GateResHandler(ResultData::EEvent event, const
 	}
 }
 
-void AcquisitionControl::Private::RulerHandler(Variable::EEvent event, const Variable& callVar, Variable& linkVar, bool sameInst)
+void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, const Variable& callVar, Variable& linkVar, bool sameInst)
 {
 	Q_UNUSED(sameInst);
 	switch (event)
@@ -1506,7 +1506,7 @@ void AcquisitionControl::Private::RulerHandler(Variable::EEvent event, const Var
 	}
 }
 
-void AcquisitionControl::Private::DefaultVarHandler(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
+void AcquisitionControl::Private::handlerDefaultVariable(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	switch (event)
@@ -1529,7 +1529,7 @@ void AcquisitionControl::Private::DefaultVarHandler(Variable::EEvent event, cons
 	}
 }
 
-void AcquisitionControl::Private::TcgVarHandler(Variable::EEvent event, const Variable&, Variable& link, bool sameInst)
+void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, const Variable&, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	switch (event)
@@ -1565,7 +1565,7 @@ void AcquisitionControl::Private::TcgVarHandler(Variable::EEvent event, const Va
 	}
 }
 
-void AcquisitionControl::Private::GateVarHandler(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
+void AcquisitionControl::Private::handlerGateVariable(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	// Cast the Data property of the variable to the local gate entry.
@@ -1617,10 +1617,10 @@ void AcquisitionControl::Private::GateVarHandler(Variable::EEvent event, const V
 	}
 }
 
-AcquisitionControl::Private::EGrip AcquisitionControl::Private::GetGateGrip(const QPoint& point, int* gate)
+AcquisitionControl::Private::EGrip AcquisitionControl::Private::getGateGrip(const QPoint& point, int* gate)
 {
 	// Initialize the return values.
-	EGrip rv = gNONE;
+	EGrip rv = gNoGrip;
 	int gt = -1;
 	// Search for a grip in the list of grips to return.
 	for (int i = 0; i < _gateCount; i++)
@@ -1636,21 +1636,21 @@ AcquisitionControl::Private::EGrip AcquisitionControl::Private::GetGateGrip(cons
 			// When zero default to the middle grip.
 			if (!w)
 			{
-				rv = gMIDDLE;
+				rv = gMiddleGrip;
 			}
 			else
 			{
 				if (point.x() >= rc.left() && point.x() < rc.left() + w)
 				{
-					rv = gLEFT;
+					rv = gLeftGrip;
 				}
 				else if (point.x() >= rc.right() - w && point.x() < rc.right())
 				{
-					rv = gRIGHT;
+					rv = gRightGrip;
 				}
 				else
 				{
-					rv = _thresholdDrag ? gMIDDLE : gRIGHT;
+					rv = _thresholdDrag ? gMiddleGrip : gRightGrip;
 				}
 			}
 		}
@@ -1671,19 +1671,19 @@ Qt::CursorShape AcquisitionControl::Private::getCursorShape(EGrip grip) const
 	switch (grip)
 	{
 		default:
-		case gNONE:
+		case gNoGrip:
 			shape = Qt::CursorShape::ArrowCursor;
 			break;
 
-		case gLEFT:
+		case gLeftGrip:
 			shape = Qt::CursorShape::SplitHCursor;
 			break;
 
-		case gMIDDLE:
+		case gMiddleGrip:
 			shape = Qt::CursorShape::SplitVCursor;
 			break;
 
-		case gRIGHT:
+		case gRightGrip:
 			shape = Qt::CursorShape::SizeHorCursor;
 			break;
 	}
@@ -1701,7 +1701,7 @@ void AcquisitionControl::Private::setCursorShape(Qt::CursorShape shape) const
 	}
 }
 
-void AcquisitionControl::Private::geoResize(const QSize &size, const QSize &previousSize)
+void AcquisitionControl::Private::geoResize(const QSize& size, const QSize& previousSize)
 {
 	if (_flagCanDraw)
 	{
@@ -1727,11 +1727,11 @@ void AcquisitionControl::Private::mouseMove(Qt::MouseButton button, Qt::Keyboard
 	if (!_flagSizing)
 	{
 		// Set the current grip.
-		EGrip grip = GetGateGrip(pt);
+		EGrip grip = getGateGrip(pt);
 		// Set the cursor according to the grip.
 		setCursorShape(getCursorShape(grip));
 		// TODO: Should be done in separate function.
-		if (grip == gNONE && !_tcg.Grips.isEmpty())
+		if (grip == gNoGrip && !_tcg.Grips.isEmpty())
 		{
 			// While dragging the gate the _tcg get corrupted.
 			for (auto& g: _tcg.Grips)
@@ -1787,9 +1787,9 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		// Get the current left point for grabbing.
 		_grabPoint = pt;
 		// Look for a grip area.
-		_gripGrabbed = GetGateGrip(_grabPoint, &_gripGate);
+		_gripGrabbed = getGateGrip(_grabPoint, &_gripGate);
 		//
-		if (_gripGrabbed != gNONE )
+		if (_gripGrabbed != gNoGrip)
 		{
 			// Set the sizing flag to true.
 			_flagSizing = true;
@@ -1809,18 +1809,18 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		// Show the hint window which gate is grabbed.
 		switch (_gripGrabbed)
 		{
-			case gNONE:
+			case gNoGrip:
 				_infoWindow->setText("");
 
-			case gMIDDLE:
+			case gMiddleGrip:
 				_infoWindow->setText("Threshold " + gateName);
 				break;
 
-			case gLEFT:
+			case gLeftGrip:
 				_infoWindow->setText("Position " + gateName);
 				break;
 
-			case gRIGHT:
+			case gRightGrip:
 				_infoWindow->setText("Size " + gateName);
 				break;
 		}
@@ -1842,7 +1842,7 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 	if (button == Qt::MouseButton::LeftButton)
 	{
 		// After the first move change the cursor for easier positioning.
-		setCursorShape(getCursorShape(GetGateGrip(pt)));
+		setCursorShape(getCursorShape(getGateGrip(pt)));
 		// Disable the capturing of the mouse.
 		mouseCapture(false);
 		// Deactivate the hint window.
@@ -1861,20 +1861,20 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 				default:
 					break;
 
-				case gMIDDLE:
+				case gMiddleGrip:
 					_gates[_gripGate].Rect += QPoint(0, _gripOffset.height());
 					_gripRectNext = _gates[_gripGate].Rect;
 					_flagGateVerticalPos = true;
 					setGateVerticalPos(true);
 					break;
 
-				case gLEFT:
+				case gLeftGrip:
 					_gates[_gripGate].Rect += QPoint(_gripOffset.width(), 0);
 					_gripRectNext = _gates[_gripGate].Rect;
 					setGateHorizontalPos(true);
 					break;
 
-				case gRIGHT:
+				case gRightGrip:
 					_gates[_gripGate].Rect.setRight(_gates[_gripGate].Rect.right() + _gripOffset.width());
 					// Do not allow negative width value.
 					if (_gates[_gripGate].Rect.width() < 0)
@@ -1991,7 +1991,7 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			// Draw the poly line.
 			painter.drawPolyline(_tcg.Points.data(), static_cast<int>(_tcg.Points.size()));
 			// Draw then TCG grip rectangles on the line.
-			for (auto & g : _tcg.Grips)
+			for (auto& g: _tcg.Grips)
 			{
 				painter.fillRect(g, _colorTcgLine);
 			}
