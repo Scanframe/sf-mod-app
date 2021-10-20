@@ -38,7 +38,7 @@ bool Draw::ruler
 		const QRect& area,
 		double start,
 		double stop,
-		unsigned digits,
+		int digits,
 		const QString& unit
 	) const
 {
@@ -94,7 +94,7 @@ bool Draw::ruler
 				int dist_prec = abs((int) std::stod(tmp));
 				// Pick the nearest from the list.
 				int ticks = 0;
-				for (auto& i : _tickListVertical)
+				for (auto& i: _tickListVertical)
 				{
 					if (i.Value >= dist_prec)
 					{
@@ -105,7 +105,7 @@ bool Draw::ruler
 					}
 				}
 				// Get the nearest value to start with dealing when inverted.
-				double real_start = start - std::fmod(start, std::abs(dist)) * (inverted ? -1.0 : 1.0);
+				double real_start = start - fmodulo(start, dist);
 				// Calculate the pixels between two values.
 				int dist_height = static_cast<int>(std::round(dist / units_per_pixel));
 				// Specify the end position.
@@ -115,8 +115,7 @@ bool Draw::ruler
 				// Y-point where the last text was drawn.
 				int last_yp = -1;
 				// Iterate through the positions on the screen.
-				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos <
-					end_pos); y_pos += dist) // NOLINT(cert-flp30-c)
+				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos < end_pos); y_pos += dist) // NOLINT(cert-flp30-c)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -254,7 +253,7 @@ bool Draw::ruler
 				int dist_prec = abs((int) std::stod(tmp));
 				// Pick the nearest from the list.
 				int ticks = 0;
-				for (auto& i : _tickListHorizontal)
+				for (auto& i: _tickListHorizontal)
 				{
 					if (i.Value >= dist_prec)
 					{
@@ -265,7 +264,7 @@ bool Draw::ruler
 					}
 				}
 				// Get the nearest value to start with dealing when inverted.
-				double real_start = start + std::fmod(start, std::abs(dist)) * (inverted ? -1.0 : 1.0);
+				double real_start = start - fmodulo(start, dist);
 				// Calculate the pixels between two values.
 				int dist_width = static_cast<int>(std::round(dist / units_per_pixel));
 				// Specify the end position.
@@ -276,8 +275,7 @@ bool Draw::ruler
 				int last_xp = 0;
 				QRect last_tr;
 				// Iterate through the positions on the ruler.
-				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos <
-					end_pos); x_pos += dist) // NOLINT(cert-flp30-c)
+				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos < end_pos); x_pos += dist) // NOLINT(cert-flp30-c)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -464,7 +462,7 @@ bool Draw::gridLines
 			// Get the value from the list that has a nice dist value.
 			int dist_prec = abs((int) std::stod(tmp));
 			// Pick the nearest from the list.
-			for (auto& i : (go == goHorizontal) ? _tickListVertical : _tickListHorizontal)
+			for (auto& i: (go == goHorizontal) ? _tickListVertical : _tickListHorizontal)
 			{
 				if (i.Value >= dist_prec)
 				{
@@ -474,7 +472,7 @@ bool Draw::gridLines
 				}
 			}
 			// Get the nearest value to start with dealing when inverted.
-			double real_start = start - std::fmod(start, std::abs(dist)) * (inverted ? -1.0 : 1.0);
+			double real_start = start - fmodulo(start, dist);
 			// Determine the end position of the loop.
 			double end_pos = stop + dist;
 			// Iterate through the positions on the screen.
@@ -490,7 +488,7 @@ bool Draw::gridLines
 					{
 						p1 = len - 1;
 					}
-					if (p1 >= 0)
+					if (p1 >= 0 && p1 < len)
 					{
 						p.drawLine(QPoint(0, p1), QPoint(rect.width() - 1, p1));
 					}
@@ -504,7 +502,7 @@ bool Draw::gridLines
 					{
 						p1 = len - 1;
 					}
-					if (p1 < len)
+					if (p1 >= 0 && p1 < len)
 					{
 						p.drawLine(QPoint(p1, 0), QPoint(p1, rect.height() - 1));
 					}
@@ -535,7 +533,7 @@ bool Draw::textCross(QPainter& painter, const QRect& bounds, const QString& text
 	// Move text rect to center of graph area
 	trc.moveCenter(bounds.center());
 	painter.drawRect(trc);
-	painter.drawText(trc,  Qt::AlignCenter, text);
+	painter.drawText(trc, Qt::AlignCenter, text);
 	// Draw a cross in the plot area.
 	painter.drawLine(trc.topLeft(), bounds.topLeft());
 	painter.drawLine(trc.bottomLeft(), bounds.bottomLeft());

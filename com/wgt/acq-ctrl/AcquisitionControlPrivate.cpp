@@ -94,9 +94,9 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	_vTcgSlavedTo.setData(std::numeric_limits<uint64_t>::max());
 	_vTcgSlavedTo.setHandler(&_tcgVarHandler);
 	// Initialize the bottom ruler.
-	SetBottomRuler();
+	setBottomRuler();
 	// Initialize the left ruler.
-	SetLeftRuler();
+	setLeftRuler();
 	// Update some fields controlled by properties. (mainly colors).
 	propertyChange(nullptr);
 	// Enable the grid.
@@ -138,9 +138,13 @@ void AcquisitionControl::Private::propertyChange(void* field)
 	{
 		_flagGateVerticalPos = true;
 	}
+	if (field == &_gridEnabled)
+	{
+		setGrid(_gridEnabled);
+	}
 	if (field == &_valueMax)
 	{
-		SetLeftRuler();
+		setLeftRuler();
 		_flagGateVerticalPos = true;
 	}
 	// When field is the nullptr, update it.
@@ -240,7 +244,7 @@ bool AcquisitionControl::Private::getDisplayRangeVert(sdata_type& minVal, sdata_
 	return false;
 }
 
-void AcquisitionControl::Private::SetLeftRuler()
+void AcquisitionControl::Private::setLeftRuler()
 {
 	// When the copy data result is available.
 	Value::flt_type minVal, maxVal;
@@ -249,12 +253,12 @@ void AcquisitionControl::Private::SetLeftRuler()
 	{
 		// Set the left ruler according the maximum value.
 		_graph.setRuler(sf::Draw::roLeft, minVal, maxVal, requiredDigits(step, minVal, maxVal), "Amp");
-
 	}
 	else
 	{
 		_graph.setRuler(sf::Draw::roLeft, 0, 100, 1, "n/a");
 	}
+	_w->update();
 }
 
 void AcquisitionControl::Private::setGrid(bool enabled)
@@ -269,9 +273,10 @@ void AcquisitionControl::Private::setGrid(bool enabled)
 		_graph.setGrid(Draw::goVertical, Draw::roNone);
 		_graph.setGrid(Draw::goHorizontal, Draw::roNone);
 	}
+	_w->update();
 }
 
-void AcquisitionControl::Private::SetBottomRuler()
+void AcquisitionControl::Private::setBottomRuler()
 {
 	// Get the unit of the ascan.
 	std::string unit = "x";
@@ -321,6 +326,9 @@ void AcquisitionControl::Private::SetBottomRuler()
 	}
 	// Set bottom ruler.
 	_graph.setRuler(sf::Draw::roBottom, start, start + range, requiredDigits(step, start, range), QString::fromStdString(unit));
+	//
+	SF_Q_NOTIFY("Start:" << start << "Range:" << range << "Digits:" << requiredDigits(step, start, range))
+	_w->update();
 }
 
 bool AcquisitionControl::Private::generateCopyData(const Range& range)
@@ -1288,7 +1296,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 			// Set the bottom ruler. It is possible that it is dependent on the block size.
 			if (&link == &_rCopyData)
 			{
-				SetBottomRuler();
+				setBottomRuler();
 			}
 			//
 			if (&link == &_rCopyIndex)
@@ -1301,7 +1309,7 @@ void AcquisitionControl::Private::CopyResHandler(ResultData::EEvent event, const
 			// Update the left ruler when the copy result changes.
 			if (&link == &_rCopyData)
 			{
-				SetLeftRuler();
+				setLeftRuler();
 				_flagGateVerticalPos = true;
 			}
 			break;
@@ -1481,13 +1489,13 @@ void AcquisitionControl::Private::RulerHandler(Variable::EEvent event, const Var
 			// Set the FFlagCanDraw if possible.
 			setCanDraw();
 			// Set the bottom ruler depending on the hooked variables.
-			SetBottomRuler();
+			setBottomRuler();
 			break;
 		}
 
 		case Variable::veValueChange:
 		{
-			SetBottomRuler();
+			setBottomRuler();
 			// Recalculate gate positions on screen.
 			_flagGateVerticalPos = true;
 			_flagGateHorizontalPos = true;
@@ -2071,8 +2079,9 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 		//
 		if (_colorAdjustmentLine.isValid() && bounds.width() > 0)
 		{
-			painter.setPen(_colorAdjustmentLine);
-			painter.setPen(Qt::PenStyle::DotLine);
+			QPen pen(_colorAdjustmentLine);
+			pen.setStyle(Qt::DashDotLine);
+			painter.setPen(pen);
 			// Calculate an offset position on fixed 10% of the width.
 			QPoint ofs(bounds.width() / 10, 0);
 			painter.drawLine(bounds.topLeft() + ofs, bounds.bottomLeft() + ofs);

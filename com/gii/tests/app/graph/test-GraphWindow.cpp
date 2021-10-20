@@ -16,6 +16,12 @@ GraphWindow::GraphWindow(QWidget* parent)
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	connect(ui->drawWidget, &sf::DrawWidget::paint, this, &GraphWindow::onPaint);
 	connect(ui->slider, &QSlider::valueChanged, this, &GraphWindow::onSlider);
+	connect(ui->leValueStart, &QLineEdit::textChanged, [&](){
+		ui->drawWidget->update();
+	});
+	connect(ui->leValueStop, &QLineEdit::textChanged, [&](){
+		ui->drawWidget->update();
+	});
 	for (auto i: {ui->cbDebug, ui->cbLeft, ui->cbRight, ui->cbTop, ui->cbBottom})
 	{
 		connect(i, &QCheckBox::clicked, [&]()
@@ -48,9 +54,12 @@ void GraphWindow::onPaint(QPaintEvent* event)
 	{
 		graph.setRuler(sf::Draw::roTop, 0, 10, 2, "X1");
 	}
+	auto start = ui->leValueStart->text().toDouble();
+	auto stop = ui->leValueStop->text().toDouble();
+
 	if (ui->cbBottom->isChecked())
 	{
-		graph.setRuler(sf::Draw::roBottom, 0, 100, 5, "s");
+		graph.setRuler(sf::Draw::roBottom, start, stop, 3, "s");
 		//graph.setRuler(sf::Draw::roBottom, 0, 10, 2, "X2");
 	}
 	//

@@ -140,6 +140,8 @@ SF_IMPL_PROP_GSN(bool, AcquisitionControl, ThresholdDrag, _p->_thresholdDrag, _p
 
 SF_IMPL_PROP_GSN(bool, AcquisitionControl, ThresholdLinked, _p->_thresholdLinked, _p->propertyChange)
 
+SF_IMPL_PROP_GSN(bool, AcquisitionControl, GridEnabled, _p->_gridEnabled, _p->propertyChange)
+
 SF_IMPL_PROP_GSN(QColor, AcquisitionControl, ColorForeground, _p->_colorForeground, _p->propertyChange)
 
 SF_IMPL_PROP_GSN(QColor, AcquisitionControl, ColorBackground, _p->_colorBackground, _p->propertyChange)

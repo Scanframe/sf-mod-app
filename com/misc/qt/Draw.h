@@ -60,7 +60,7 @@ class _MISC_CLASS Draw
 				const QRect& area,
 				double start,
 				double stop,
-				unsigned digits,
+				int digits,
 				const QString& unit
 			) const;
 

@@ -31,7 +31,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 
 	bool draw(QPainter& painter, const QRect& bounds, const QRegion& region);
 
-	void geoResize(const QSize &size, const QSize &previousSize);
+	void geoResize(const QSize& size, const QSize& previousSize);
 
 	void keyDown(int key, Qt::KeyboardModifiers);
 
@@ -55,10 +55,10 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	void TcgIdChange(void* sender);
 
 	// Sets the bottom ruler according the current variable values.
-	void SetBottomRuler();
+	void setBottomRuler();
 
 	// Sets the left ruler according the current result values.
-	void SetLeftRuler();
+	void setLeftRuler();
 
 	// Returns the vertical display range depending on the settings.
 	bool getDisplayRangeVert(double& minVal, double& maxVal) const;
@@ -97,6 +97,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 
 	// Sets the gates from value or screen rect.
 	void setGateHorizontalPos(bool fromRect = false);
+
 	void setGateVerticalPos(bool fromRect = false);
 
 	// Signal handler for when properties change and passes the field pointer.
@@ -353,6 +354,8 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	bool _thresholdDrag{true};
 	// The value of the threshold is linked to the value range of the data.
 	bool _thresholdLinked{true};
+	// Determines if the grid is drawn.
+	bool _gridEnabled{true};
 
 	// Foreground color for the graph area.
 	QColor _colorForeground{QColorConstants::Green};

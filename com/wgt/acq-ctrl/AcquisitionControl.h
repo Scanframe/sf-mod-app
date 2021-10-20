@@ -67,6 +67,10 @@ class AcquisitionControl :public QWidget, public ObjectExtension
 
 		SF_DECL_PROP_GS(bool, ThresholdLinked)
 
+		Q_PROPERTY(bool gridEnabled READ getGridEnabled WRITE setGridEnabled)
+
+		SF_DECL_PROP_GS(bool, GridEnabled)
+
 		Q_PROPERTY(QColor colorForeground READ getColorForeground WRITE setColorForeground)
 
 		SF_DECL_PROP_GS(QColor, ColorForeground)
