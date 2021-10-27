@@ -40,14 +40,14 @@ namespace
 {
 enum
 {
-	cName,
+	vcName,
 	vcId,
-	cType,
+	vcType,
 	vcUnit,
 	vcFlags,
 	vcValue,
 	vcDescription,
-	cColumnCount
+	vcColumnCount,
 };
 
 enum
@@ -99,17 +99,14 @@ QModelIndex InformationItemModel::parent(const QModelIndex& child) const
 	{
 		return {};
 	}
-
-	auto* childItem = static_cast<TreeItem*>(child.internalPointer());
-	auto* parentItem = childItem->_parentItem;
-
+	auto childItem = static_cast<TreeItem*>(child.internalPointer());
+	auto parentItem = childItem->_parentItem;
 	if (parentItem == _rootItem)
 	{
 		return {};
 	}
-
-	auto row = childItem->_parentItem ? static_cast<int>(childItem->_parentItem->_childItems.indexOf(childItem)) : 0;
-	return createIndex(row, 0, parentItem);
+	auto row = childItem->_parentItem->_parentItem->_childItems.indexOf(childItem->_parentItem);
+	return createIndex((int)row, 0, parentItem);
 }
 
 QVariant InformationItemModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -124,7 +121,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 					return QString("Field %1").arg(section);
 				case vcId:
 					return QString(tr("Id"));
-				case cName:
+				case vcName:
 					return QString(tr("Name"));
 				case vcValue:
 					return QString(tr("Value"));
@@ -132,7 +129,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 					return QString(tr("Description"));
 				case vcUnit:
 					return QString(tr("Unit"));
-				case cType:
+				case vcType:
 					return QString(tr("Type"));
 				case vcFlags:
 					return QString(tr("Flags"));
@@ -166,6 +163,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 
 int InformationItemModel::columnCount(const QModelIndex& parent) const
 {
+/*
 	if (parent.isValid())
 	{
 		if (auto parentItem = static_cast<TreeItem*>(parent.internalPointer()))
@@ -179,7 +177,8 @@ int InformationItemModel::columnCount(const QModelIndex& parent) const
 			}
 		}
 	}
-	return (_idType == Gii::Variable) ? static_cast<int>(cColumnCount) : static_cast<int>(rcColumnCount);
+*/
+	return (_idType == Gii::Variable) ? static_cast<int>(vcColumnCount) : static_cast<int>(rcColumnCount);
 }
 
 int InformationItemModel::rowCount(const QModelIndex& parent) const
@@ -210,7 +209,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 	{
 		if (role == Qt::CheckStateRole)
 		{
-			if (_mode == Gii::Multiple && index.column() == cName && item->_type != TreeItem::dtFolder)
+			if (_mode == Gii::Multiple && index.column() == vcName && item->_type != TreeItem::dtFolder)
 			{
 				return item->_selected ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
 			}
@@ -229,7 +228,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						}
 						return QString("0x%1").arg(item->_id, 0, 16);
 
-					case cName:
+					case vcName:
 						return item->_name;
 
 					case vcValue:
@@ -253,7 +252,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						}
 						return QString::fromStdString(Variable::getInstanceById(item->_id).getUnit());
 
-					case cType:
+					case vcType:
 						if (item->_type == TreeItem::dtFolder)
 						{
 							return {};
@@ -412,7 +411,12 @@ void InformationItemModel::updateList()
 {
 	if (_idType == Gii::Variable)
 	{
-		for (auto v: Variable::getList())
+		auto vl = Variable::getList();
+		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool
+		{
+			return v1->getName() < v2->getName();
+		});
+		for (auto v: vl)
 		{
 			QStringList namePath;
 			strings sl;
@@ -429,7 +433,12 @@ void InformationItemModel::updateList()
 	}
 	else if (_idType == Gii::ResultData)
 	{
-		for (auto r: ResultData::getList())
+		auto rl = ResultData::getList();
+		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool
+		{
+			return r1->getName() < r2->getName();
+		});
+		for (auto r: rl)
 		{
 			QStringList namePath;
 			strings sl;

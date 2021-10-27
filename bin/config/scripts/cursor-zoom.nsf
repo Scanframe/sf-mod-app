@@ -1,0 +1,723 @@
+//-----------------------------------------------
+// Script Specific parameters, the 0x90000 range.
+//-----------------------------------------------
+// 0x9F000   ID range for Analysis.
+// 0x9E000   ID range for Acquisition.
+//   0x9E100 Gate 1 related
+//   0x9E200 Gate 2 related
+// 0x9E700   ID range for TCG Builder until
+// 0x9EF00   end of range for TCG Builder.
+// 0x99000   ID range for Project parameters.
+
+// Local vars.
+int idxDelay;
+int idxRange;
+// Used in detection of AQ script.
+int idOffsetFile;
+int idOffsetCommon;
+// Prefix for the variable names generated.
+string namePrefix;
+//-------------------------------------------------
+// Connect to the AQ/AN script switch.
+object VOtherScript = Create("Variable", 0x9EFFF);
+// Test if we are the first creating this variable.
+if (VOtherScript.Id)
+{
+// Parameter exists, this is analysis.
+	// File and Script parameter offset are standard values.
+	idOffsetFile = 0x40000000;
+	idOffsetCommon = 0x1000;
+	namePrefix = "AN|";
+	writelog("Creating an Analysis script.\n");
+}
+else
+{ // Parameter does not exist, this is Acquisition.
+	//Create the Script switch parameter to signal other script.
+	VOtherScript = Create("Variable", "0x9EFFF,Script|Cursor|Other Script,,S,Script Use only.,INTEGER,,1,0");
+	// File and Script parameter offset is Zero
+	idOffsetFile = 0x0000;
+	idOffsetCommon = 0x0000;
+	namePrefix = "AQ|";
+	writelog("Creating a Acquisition script.\n");
+}
+
+// Import of variable determining the display unit.
+object VDisplayMode = Create("Variable", 0x99102);
+
+// Sound velocity parameters imports from project/file.
+object VMaterialVel = Variable(0x99004 + idOffsetFile);
+object VMediumVel   = Variable(0x99003 + idOffsetFile);
+object VIndexCount = Variable(0x5F011 + idOffsetFile);
+
+// UT Data results import.
+object RUt1IfTofData = Create("ResultData", 0x20442, idOffsetFile);
+object RUt1g1TofData = Create("ResultData", 0x20482, idOffsetFile);
+object RUt1g2TofData = Create("ResultData", 0x204C2, idOffsetFile);
+object RUt1g1AmpData = Create("ResultData", 0x20481, idOffsetFile);
+object RUt1g2AmpData = Create("ResultData", 0x204C1, idOffsetFile);
+object RUt1PopData   = Create("ResultData", 0x20401, idOffsetFile);
+
+// ET Data results import.
+object REt1XData = Create("ResultData", 0x30520, idOffsetFile);
+object REt1YData = Create("ResultData", 0x30620, idOffsetFile);
+object REt1PopData = Create("ResultData", 0x30401, idOffsetFile);
+
+// The PP ect data is not stored in the file.
+int idOffsetTemp = 0x0;
+if (idOffsetFile != 0) 
+{
+	idOffsetTemp = 0x400;
+}
+object REt1PpData = Create("ResultData", 0x72401, idOffsetTemp);
+
+// Connection to the current motion system for return to defect.
+object VTrgPosX = Create("Variable", 0x40030);
+object VTrgAccX = Create("Variable", 0x40032);
+object VTrgVelX = Create("Variable", 0x40031);
+object VTrgPosY = Create("Variable", 0x40430);
+object VTrgAccY = Create("Variable", 0x40432);
+object VTrgVelY = Create("Variable", 0x40431);
+object VModeX = Create("Variable", 0x40003);
+object VModeY = Create("Variable", 0x40403);
+object VMovToPos = Create("Variable", 0x43C03);
+
+// Connect to some results, when it is an Analysis script.
+if (idOffsetCommon)
+{
+	RUt1PopData.OnAccess = lblNewData;
+	REt1PopData.OnAccess = lblNewData;
+	RUt1IfTofData.OnAccess = lblNewData;
+	RUt1g1TofData.OnAccess = lblNewData;
+	RUt1g2TofData.OnAccess = lblNewData;
+	RUt1g1AmpData.OnAccess = lblNewData;
+	RUt1g2AmpData.OnAccess = lblNewData;
+	REt1XData.OnAccess = lblNewData;
+	REt1YData.OnAccess = lblNewData;
+	REt1PpData.OnAccess = lblNewData;
+}
+else
+{
+	RUt1PopData.OnAccess = lblMeasureStart;
+	REt1PopData.OnAccess = lblMeasureStart;
+}
+
+// Cursor intermediate exports.
+object VCursorIndex = Create("Variable", "0x9E001,Script|Cursor|" +	namePrefix + "Index,,S,"
+	"Data index value at cursor event position.,INTEGER,xxx,1,0", idOffsetCommon);
+object VCursorPopIndex = Create("Variable", "0x9E002,Script|Cursor|" + 	namePrefix + "Pop Index,,S,"
+	"Pop index value at cursor event time.,INTEGER,xxx,1,0", idOffsetCommon);
+object VCursorFraction = Create("Variable", "0x9E003,Script|Cursor|" + namePrefix + "Fraction,*,S,"
+	 "Fraction value when a scan is clicked.,FLOAT,,1E-6,0.5,1E-6,1.0", idOffsetCommon);
+// Ultrasonic values.
+object VCursorUt1g1Amp = Create("Variable", "0x9E114,Script|Cursor|" + 	namePrefix + "Ultrasonic|Gate 1|Amplitude,%,S,"
+	"Ultrasonic Amplitude Gate 1 value at cursor event position.,INTEGER,,1,0,0,255", idOffsetCommon);
+object VCursorUt1g2Amp = Create("Variable", "0x9E214,Script|Cursor|" + namePrefix + "Ultrasonic|Gate 2|Amplitude,%,S,"
+	"Ultrasonic Amplitude Gate 2 value at cursor event position.,INTEGER,,1,0,0,255", idOffsetCommon);
+// UT Place holders for variables setup at
+object VCursorUt1IfTof = Create("Variable", 0x9E015, idOffsetCommon);
+object VCursorUt1g1Tof = Create("Variable", 0x9E115, idOffsetCommon);
+object VCursorUt1g2Tof = Create("Variable", 0x9E215, idOffsetCommon);
+
+// EddyCurrent exports.
+object VCursorEt1XAmp = Create("Variable", "0x9E116,Script|Cursor|" + namePrefix + "Eddy Current|Ch1|X-signal|Amplitude,a/d,S,"
+	"EddyCurrent X-Amplitude value at cursor event position.,INTEGER,,1,0,0,255", idOffsetCommon);
+object VCursorEt1YAmp = Create("Variable", "0x9E216,Script|Cursor|" + namePrefix + "Eddy Current|Ch1|Y-signal|Amplitude,a/d,S,"
+	"EddyCurrent Y-Amplitude value at cursor event position.,INTEGER,,1,0,0,255", idOffsetCommon);
+object VCursorEt1PpAmp = Create("Variable", "0x9E316,Script|Cursor|" + namePrefix + "Eddy Current|Ch1|Pp-signal|Amplitude,a/d,S,"
+	"EddyCurrent Peak Peak Amplitude value at cursor event position.,INTEGER,,1,0,0,255", idOffsetCommon);
+
+// To link in the strip-chart.
+object VMaxVal = Create("Variable", "0x9E117,Script|Cursor|" + 	namePrefix + "Eddy Current|Amplitude|Max,,S,"
+	"Eddy-current Maximal amp at cursor event position.,FLOAT,,0.001,0,-4.0,4.0", idOffsetCommon);
+object VMinVal = Create("Variable", "0x9E118,Script|Cursor|" + namePrefix + "Eddy Current|Amplitude|Min,,S,"
+	"Eddy-current Minimal amp at cursor event position.,FLOAT,,0.001,0,-4.0,4.0", idOffsetCommon);
+
+// Other cursor stuff.
+object VCursorEvent = Create("Variable", "0x9E006,Script|Cursor|" + namePrefix + "Event,,S,"
+	"Contains mouseup/down bool mouse button and shift state.,INTEGER,,1,0", idOffsetCommon);
+object VScanDelay = Create("Variable", "0x9E007,Script|Cursor|" + namePrefix + "Zoom|ScanDelay,*,S,"
+	"Delay of start of plot.,INTEGER,,1,0,0,10000", idOffsetCommon);
+object VScanRange = Create("Variable", "0x9E008,Script|Cursor|" + namePrefix + "Zoom|ScanRange,*,S,"
+	"Range of plot.,INTEGER,,1,0", idOffsetCommon);
+object VScanLeft = Create("Variable", "0x9E009,Script|Cursor|" + namePrefix + "Zoom|ScanLeft,*,S,"
+	"Zoom Left Fraction of plot.,FLOAT,,1E-6,0.0,0.0,1.0", idOffsetCommon);
+object VScanRight = Create("Variable", "0x9E00A,Script|Cursor|" + namePrefix + "Zoom|ScanRight,*,S,"
+	"Zoom Right Fraction of plot.,FLOAT,,1E-6,1.0,0.0,1.0", idOffsetCommon);
+
+// Special for stripchart.
+object VCursorStatus = Create("Variable", "0x9E00B,Script|Cursor|" + namePrefix + "Status,,S,"
+	"Contains mouse up/down.,INTEGER,,1,0", idOffsetCommon);
+
+// For special zooming.
+object VPanLeft = Create("Variable", "0x9E022,Script|Cursor|" + namePrefix + "Zoom|PanLeft,!,S,"
+	"Pans Zoomed C-scan to the left.,INTEGER,,1,0,0,1,>=0,>|=1", idOffsetCommon);
+object VPanRight = Create("Variable", "0x9E023,Script|Cursor|" + 	namePrefix + "Zoom|PanRight,!,S,"
+	"Pans Zoomed C-scan to the right.,INTEGER,xxx,1,0,0,1,<=0,|<=1", idOffsetCommon);
+object VPanUp = Create("Variable", "0x9E024,Script|Cursor|" + namePrefix + "Zoom|PanUp,!,S,"
+	"Pans Zoomed C-scan Up.,INTEGER,,1,0,0,1,^=0,>|=1", idOffsetCommon);
+object VPanDown = Create("Variable", "0x9E025,Script|Cursor|" + namePrefix + "Zoom|PanDown,!,S,"
+	"Pans Zoomed C-scan Down.,INTEGER,xxx,1,0,0,1,v=0,|<=1", idOffsetCommon);
+
+// Export for ET Peak to Peak filter.
+object VPtpRange = Create("Variable", "0x9E026,Script|Filter|" +	namePrefix + "PtpRange,p,S,"
+	"Range for Peak to Peak filter.,INTEGER,xxx,1,100,2,1000", idOffsetCommon);
+
+// Exports for stripcharts.
+// Delay parameter for a stripchart display.
+object VStripDelay = Create("Variable", "0x9E027,Script|Cursor|" +	namePrefix + "Strip Chart|Delay,s,"
+	"S,Delay for the Strip-chart display,FLOAT,,0.01,0.0,0.0,3600.0", idOffsetCommon);
+// Range parameter for a strip-chart display.
+object VStripRange = Create("Variable", "0x9E028,Script|Cursor|" +	namePrefix + "Strip Chart|Range,s,"
+	"SP,Range for the Strip-chart display,FLOAT,,0.01,60.0,0.001,3600.0", idOffsetCommon);
+
+
+// Attach cursor handlers.
+VCursorIndex.OnValue = lblClickIndex;
+VCursorPopIndex.OnValue = lblClickPopIndex;
+VCursorFraction.OnValue = lblClickFraction;
+VCursorEvent.OnValue = lblClickMouse;
+VCursorStatus.OnValue = lblClickStatus;
+
+// Attach panning handlers.
+VPanLeft.OnValue = lblPanLeft;
+VPanRight.OnValue = lblPanRight;
+VPanUp.OnValue = lblPanUp;
+VPanDown.OnValue = lblPanDown;
+
+// UT Gate related imports.
+object VGate1Delay = Create("Variable", 0x20442, idOffsetFile);
+object VGate1Range = Create("Variable", 0x20443, idOffsetFile);
+object VGate2Delay = Create("Variable", 0x20482, idOffsetFile);
+object VGate2Range = Create("Variable", 0x20483, idOffsetFile);
+//
+object VUtTimeUnit = Create("Variable", 0x20405, idOffsetFile);
+object VUtAmpUnit =  Create("Variable", 0x20005, idOffsetFile);
+//
+object VEtTimeUnit = Create("Variable", 0x30405, idOffsetFile);
+object VEtAmpUnit =  Create("Variable", 0x30005, idOffsetFile);
+
+// Link the params to response functions/labels.
+VUtTimeUnit.OnValue = lblTimeUnit;
+VEtTimeUnit.OnValue = lblTimeUnit;
+VUtTimeUnit.OnId = lblTimeUnit;
+VEtTimeUnit.OnId = lblTimeUnit;
+
+// Link project.
+object VProjMethod = Create("Variable", 0x5F006, idOffsetFile);
+object VProjSurfaceSpeed = Create("Variable", 0x5F201, idOffsetFile);
+object VProjDensityMode = Create("Variable", 0x5F104, idOffsetFile);
+object VProjScanDensity = Create("Variable", 0x5F102, idOffsetFile);
+
+//
+// Global declaration of variables used.
+//
+// Copy of the VUtTimeUnit value, set in lblTimeUnit function.
+float UtTimeUnit;
+// Copy of the VEtTimeUnit value, set in lblTimeUnit function.
+float EtTimeUnit;
+// Entry sentry.
+int eventSentry = 0;
+// For use with Pan functions.
+float delta;
+// Indicates that when the mouse is released the findplace must be executed.
+int flagFindPlace = 0;
+//
+float FUt1g1Amp;
+float FUt1g2Amp;
+float FUt1IfTof;
+float FUt1g1Tof;
+float FUt1g2Tof;
+float FEt1XAmp;
+float FEt1YAmp;
+float FEt1PpAmp;
+//
+object hintWin;// = Create("HintWindow");
+if (hintWin)
+{
+	// Show hint window at cursor position
+	hintWin.Position = 1;
+	hintWin.Offset(30, -50);
+}
+
+gosub lblInitialize;
+writelog("Script: Cursor and zoom engine initialized.....\n");
+exit("Script Initialized");
+
+:main;
+	return;
+
+:lblInitialize;
+	if (VUtTimeUnit.Id != 0)
+		UtTimeUnit = VUtTimeUnit.Cur;
+	else
+		EtTimeUnit = 0.0;
+	//
+	if (VUtTimeUnit.Id != 0)
+		EtTimeUnit = VEtTimeUnit.Cur;
+	else
+		EtTimeUnit = 0.0;
+	//
+	VCursorUt1IfTof.Setup
+	(
+		str(idOffsetCommon + 0x9E015) + ",Script|Cursor|" + namePrefix + "Ultrasonic|IF Gate|Tof,s,SP,"
+		"UT IF Gate Tof value at clicked position.,FLOAT,," +
+		UtTimeUnit + ",0," + UtTimeUnit + ",1"
+	);
+	VCursorUt1g1Tof.Setup
+	(
+		str(idOffsetCommon + 0x9E115) + ",Script|Cursor|" + namePrefix + "Ultrasonic|Gate 1|Tof,s,SP,"
+		"UT Gate 1 Tof value at clicked position.,FLOAT,," +
+		UtTimeUnit + ",0," + UtTimeUnit + ",1"
+	);
+	VCursorUt1g2Tof.Setup
+	(
+		str(idOffsetCommon + 0x9E215) + ",Script|Cursor|" + namePrefix + "Ultrasonic|Gate 2|Tof,s,SP,"
+		"UT Gate 2 Tof value at clicked position.,FLOAT,," +
+		UtTimeUnit + ",0," + UtTimeUnit + ",1"
+	);
+	return;
+
+:lblTimeUnit;
+	gosub lblInitialize;
+	//
+	if (VProjMethod.Cur == "Circle")
+	{
+		// m / m/s  = s = Time unit.
+		// 1 = Dynamic
+		if (VProjDensityMode.Cur==1)
+		{
+			EtTimeUnit = VProjScanDensity.Cur / VProjSurfaceSpeed.Cur;
+		}
+		else
+		{
+		 ;// Unknown yet...
+		}
+	}
+	return;
+
+// Local declarations....
+float ut0;
+float ut1;
+float ut2;
+float utd0;
+float utd1;
+float utd2;
+// tmp vars.
+int ua1;
+int ua2;
+float ea1;
+float ea2;
+float ea3;
+int uad1;
+int uad2;
+float ead1;
+float ead2;
+float ead3;
+string position;
+string hintText;
+
+// Calculations are made with UT results and parmas.
+:lblShowHint;
+	// When the index is negative the control could not provide the information.
+	if (VCursorIndex.Cur < 0)
+		return;
+	// Left Click with nothing => Cursor Event.
+	if (VCursorEvent.Cur == 17)
+	{
+		if (!VCursorPopIndex.Cur)
+		{
+			idxDelay = 0;
+			idxRange = RUt1PopData.Data(0);
+		}
+		else
+		{
+			idxDelay = RUt1PopData.Data(VCursorPopIndex.Cur - 1);
+			idxRange = RUt1PopData.Data(VCursorPopIndex.Cur) - idxDelay;
+		}
+		//writelog("UtPop[",VCursorPopIndex.Cur,"], Range[",idxRange,"], ");
+		if (!VCursorPopIndex.Cur)
+		{
+			idxDelay = 0;
+			idxRange = RUt1PopData.Data(0);
+		}
+		else
+		{
+			idxDelay = REt1PopData.Data(VCursorPopIndex.Cur - 1);
+			idxRange = REt1PopData.Data(VCursorPopIndex.Cur) - idxDelay;
+		}
+		//writelog("EtPop[",VCursorPopIndex.Cur,"], Range[",idxRange,"]\n");
+		// Read UT data
+		FUt1g1Amp = VCursorUt1g1Amp.Cur;
+		FUt1g2Amp = VCursorUt1g2Amp.Cur;
+		FUt1IfTof = VCursorUt1IfTof.Cur;
+		FUt1g1Tof = VCursorUt1g1Tof.Cur;
+		FUt1g2Tof = VCursorUt1g2Tof.Cur;
+		// Read ET data
+		FEt1XAmp = VCursorEt1XAmp.Cur;
+		FEt1YAmp = VCursorEt1YAmp.Cur;
+		FEt1PpAmp = VCursorEt1PpAmp.Cur;
+		ua1 = FUt1g1Amp;
+		ua2 = FUt1g2Amp;
+		// Check if an amplitude unit present.
+		if (VUtAmpUnit.Id)
+		{
+			ua1 = ua1 * VUtAmpUnit.Cur;
+			ua2 = ua2 * VUtAmpUnit.Cur;
+		}
+		ea1 = FEt1XAmp * VEtAmpUnit.Cur;
+		ea2 = FEt1YAmp * VEtAmpUnit.Cur;
+		ea3 = FEt1PpAmp * VEtAmpUnit.Cur;
+		ea1 = round(ea1, 0.001);
+		ea2 = round(ea2, 0.001);
+		ea3 = round(ea3, 0.001);
+		//
+		hintText = "Absolute:";
+		// What unit to display.
+		if (VDisplayMode.Cur == 0)
+		{
+			// Display in micro seconds.
+			ut0 = FUt1IfTof * 1E6;
+			ut1 = FUt1g1Tof * 1E6;
+			ut2 = FUt1g2Tof * 1E6;
+			// Add eddy current text when it exists.
+			if (REt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n ET Amp XYP = " + ea1 + VEtAmpUnit.Unit + "/ " +
+					ea2 + VEtAmpUnit.Unit + "/ " + ea3 + VEtAmpUnit.Unit;
+			}
+			// Add ultrasonic text when it exists.
+			if (RUt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n UT Amp 1/2 = " + ua1 + " %/ " + ua2 + " %" +
+					"\n UT Tof 1/2 = " + 1.0 * ut1 + " \xB5" + VUtTimeUnit.Unit + "/ " +
+					ut2 + " \xB5" + VUtTimeUnit.Unit +
+					"\n UT Tof IF  = " + 1.0 * ut0 + " \xB5" + VUtTimeUnit.Unit;
+			}
+		}
+		else
+		{
+			// Display in distance now only mm.
+			ut0 = FUt1IfTof * VMediumVel.Cur * 0.5E3;
+			ut1 = FUt1g1Tof * VMaterialVel.Cur * 0.5E3;
+			ut2 = FUt1g2Tof * VMaterialVel.Cur * 0.5E3;
+			ut0 = round(ut0, 0.001);
+			ut1 = round(ut1, 0.001);
+			ut2 = round(ut2, 0.001);
+			// Add ultrasonic text when it exists.
+			if (REt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n ET Amp XYP = " + ea1 + VEtAmpUnit.Unit + "/ " + ea2 +
+					VEtAmpUnit.Unit + "/ " + ea3 + VEtAmpUnit.Unit;
+			}
+			// Add eddy current text when it exists.
+			if (RUt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n UT Amp 1/2 = " + ua1 + " %/ " + ua2 + " %" +
+					"\n UT Tof 1/2 = " + 1.0 * ut1 + " mm/ " + ut2 + " mm" +
+					"\n UT Tof IF  = " + 1.0 * ut0 + " mm";
+			}
+		}
+		if (hintWin)
+		{
+			hintWin.Text = hintText;
+			hintWin.Offset(30,-50);
+			hintWin.Active = 1;
+		}
+	}
+	// Left Click with Shift => Diff cursor Event.
+	else if (VCursorEvent.Cur == 19)
+	{
+		// Calculate values convert.
+		uad1 = FUt1g1Amp - VCursorUt1g1Amp.Cur;
+		uad2 = FUt1g2Amp - VCursorUt1g2Amp.Cur;
+		// IS a implitude unit present.
+		if (VUtAmpUnit.Id)
+		{
+			uad1 = uad1 * VUtAmpUnit.Cur;
+			uad2 = uad2 * VUtAmpUnit.Cur;
+		}
+		ead1 = (FEt1XAmp - VCursorEt1XAmp.Cur) * VEtAmpUnit.Cur;
+		ead2 = (FEt1YAmp - VCursorEt1YAmp.Cur) * VEtAmpUnit.Cur;
+		ead3 = (FEt1PpAmp - VCursorEt1PpAmp.Cur) * VEtAmpUnit.Cur;
+		ead1 = round(ead1, 0.001);
+		ead2 = round(ead2, 0.001);
+		ead3 = round(ead3, 0.001);
+		// Update Window.
+		hintText = "Difference:";
+		// What unit to display.
+		if (VDisplayMode.Cur == 0)
+		{
+			utd0 = (FUt1IfTof - VCursorUt1IfTof.Cur) * 1E6;
+			utd1 = (FUt1g1Tof - VCursorUt1g1Tof.Cur) * 1E6;
+			utd2 = (FUt1g2Tof - VCursorUt1g2Tof.Cur) * 1E6;
+			// Add eddy current text when it exists.
+			if (REt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n ET Amp XYP = " + ead1 + VEtAmpUnit.Unit + "/ " + ead2 +
+					VEtAmpUnit.Unit + "/ " + ead3 + VEtAmpUnit.Unit;
+			}
+			// Add eddy current text when it exists.
+			if (RUt1PopData.Id != 0)
+			{
+				hintText = hintText +
+					"\n UT Amp 1/2 = " + uad1 + " %/ " + uad2 + " %" +
+					"\n UT Tof 1/2 = " + utd1 + " \xB5" + VUtTimeUnit.Unit + "/ " +
+					utd2 + " \xB5" + VUtTimeUnit.Unit +
+					"\n UT Tof IF  = " + ut0 + " \xB5" + VUtTimeUnit.Unit;
+			}
+		}
+		else
+		{
+			utd0 = (FUt1IfTof - VCursorUt1IfTof.Cur) * VMediumVel.Cur * 0.5E3;
+			utd1 = (FUt1g1Tof - VCursorUt1g1Tof.Cur) * VMaterialVel.Cur * 0.5E3;
+			utd2 = (FUt1g2Tof - VCursorUt1g2Tof.Cur) * VMaterialVel.Cur * 0.5E3;
+			// Add eddy current text when it exists.
+			if (REt1PopData.Id != 0)
+			{
+				hintText = hintText + "\n ET Amp XYP = " + ead1 + VEtAmpUnit.Unit + "/ " + ead2;
+			}
+			// Add eddy current text when it exists.
+			if (RUt1PopData.Id != 0)
+			{
+				hintText = hintText + VEtAmpUnit.Unit + "/ " + ead3 + VEtAmpUnit.Unit +
+					"\n UT Amp 1/2 = " + uad1 + " %/ " + uad2 + " %" +
+					"\n UT Tof 1/2 = " + utd1 + " mm/ " + utd2 + " mm" +
+					"\n UT Tof IF  = " + utd0 + " mm";
+			}
+		}
+		if (hintWin)
+		{
+			hintWin.Text = hintText;
+			hintWin.Offset(-30,-50);
+			hintWin.Active = 1;
+		}
+	}
+	return;
+
+:lblFindPlace;
+// Left Click with Alt => FindPlace Event.
+	writelog("Script: Find Place.\n");
+//	if (Project())
+//	{
+//		// see if Project().State == 21 is evaluating.
+//		if ((Project().State == 21) && Project().ScanSelected)
+//		{
+//			if (LayoutDialog("FindPlace", configdir + "lay\\VLB FindPlace", 1)==1) // OK=1
+//			{
+//				// Move to cursor position.
+//				Project().ScanActivate(Project().ScanIndex);
+//				Project().FindPlace(VCursorPopIndex.Cur, VCursorFraction.Cur);
+////        speak("Motion has started.",1);
+//			}
+//		}
+//		else
+//			speak("Sorry, no move possible. Not evaluating at the moment!",0);
+//	}
+	return;
+
+:lblClickIndex;
+//  writelog("Script: AN Cursor index" +  VCursorIndex.Cur + "\n");
+//  writelog("Script: UtIfToF " +  RUt1IfTofData.Data(VCursorIndex.Cur) + "\n");
+	VCursorUt1g1Amp.Cur = RUt1g1AmpData.Data(VCursorIndex.Cur);
+	VCursorUt1g2Amp.Cur = RUt1g2AmpData.Data(VCursorIndex.Cur);
+	VCursorUt1IfTof.Cur = VUtTimeUnit.Cur * RUt1IfTofData.Data(VCursorIndex.Cur);
+	VCursorUt1g1Tof.Cur = VUtTimeUnit.Cur * RUt1g1TofData.Data(VCursorIndex.Cur);
+	VCursorUt1g2Tof.Cur = VUtTimeUnit.Cur * RUt1g2TofData.Data(VCursorIndex.Cur);
+	VCursorEt1XAmp.Cur = REt1XData.Data(VCursorIndex.Cur);
+	VCursorEt1YAmp.Cur = REt1YData.Data(VCursorIndex.Cur);
+	VCursorEt1PpAmp.Cur = REt1PpData.Data(VCursorIndex.Cur);
+	// Show the amp and tof values.
+	gosub lblShowHint;
+	return;
+
+:lblClickPopIndex;
+	// Handle event for ECT stripchart display.
+	gosub lblTrackStrip;
+	return;
+
+:lblClickFraction;
+	return;
+
+// Mouse down event.
+:lblClickMouse;
+	//  writelog("Event:", VCursorEvent.Cur, "PopIdx,Frac:", VCursorPopIndex.Cur, VCursorFraction.Cur,"\n");
+	if ((VCursorEvent.Cur & 1) == 0)
+	{
+		// Make sure it is not visible.
+		if (hintWin)
+			hintWin.Active = 0;
+		if (flagFindPlace)
+		{
+			flagFindPlace = 0;
+			// Execute Find place function.
+			gosub lblFindPlace;
+		}
+	}
+	else
+	{
+		// Clear FindPlace flag when only Alt key is released.
+		flagFindPlace = 0;
+		// See what needs to be done.
+		if (VCursorEvent.Cur == 21)
+			flagFindPlace = 1;
+		else if ((VCursorEvent.Cur == 19) || (VCursorEvent.Cur == 17))
+			{
+				// Display hint window.
+				gosub lblShowHint;
+				// Handle event for ECT strip-chart display.
+				gosub lblTrackStrip;
+			}
+
+	}
+	return;
+
+:lblClickStatus;
+	if (eventSentry) return;
+	eventSentry = 1;
+	// Convert mouse down in strip-chart to mouse down in c-scan.
+	VCursorEvent.Cur = 17 * VCursorStatus.Cur;
+	eventSentry = 0;
+	return;
+
+:lblPanLeft;
+	if (VPanLeft.Cur)
+	{
+		delta = (VScanRight.Cur - VScanLeft.Cur)/4;
+		VPanRight.Cur = 0;
+		if ((VScanRight + delta) < 1.0 )
+		{
+			VScanLeft.Cur = VScanLeft.Cur + delta;
+			VScanRight.Cur = VScanRight.Cur + delta;
+		}
+		else
+		{
+			VScanLeft.Cur = 1.0 - (delta*4.0);
+			VScanRight.Cur = 1.0;
+		}
+		VPanLeft.Cur = 0;
+	}
+	return;
+
+:lblPanRight;
+	if (VPanRight.Cur)
+	{
+		delta = (VScanRight.Cur - VScanLeft.Cur)/4;
+		VPanLeft.Cur = 0;
+		if ((VScanLeft.Cur - delta) > 0.0 )
+		{
+			VScanLeft.Cur = VScanLeft.Cur - delta;
+			VScanRight.Cur = VScanRight.Cur - delta;
+		}
+		else
+		{
+			VScanLeft.Cur = 1.0;
+			VScanRight.Cur = 1.0 - (delta*4.0);
+		}
+		VPanRight.Cur = 0;
+	}
+	return;
+
+:lblPanUp;
+	if (VPanUp.Cur)
+	{
+		delta = VScanRange.Cur/4.0;
+		VPanDown.Cur = 0;
+		if ((VScanDelay.Cur + delta + VScanRange) <= RUt1PopData.BlockCount)
+			VScanDelay.Cur = VScanDelay.Cur + delta;
+		else
+			VScanDelay.Cur = VScanRange.Cur + RUt1PopData.BlockCount;
+		VPanUp.Cur = 0;
+	}
+	return;
+
+:lblPanDown;
+	if (VPanDown.Cur)
+	{
+		delta = VScanRange.Cur/4.0;
+		VPanUp.Cur = 0;
+		if ((VScanDelay.Cur - delta) >= 0)
+			VScanDelay.Cur = VScanDelay.Cur - delta;
+		else
+			VScanDelay.Cur = 0;
+		VPanDown.Cur = 0;
+	}
+	return;
+
+:lblNewData;
+	writelog("New data.");
+	// This is only for Analysis.
+	if (idOffsetCommon == 0)
+		return;
+	if (RUt1PopData.BlockCount || REt1PopData.BlockCount)
+	{
+		//
+		VScanDelay.Cur = 0;
+		if (RUt1PopData.BlockCount)
+			VScanRange.Cur = RUt1PopData.BlockCount;
+		else
+			VScanRange.Cur = REt1PopData.BlockCount;
+		VScanRight.Cur = 1;
+		VScanLeft.Cur = 0;
+		// This is a hack to make sure data is present for cursor hint display.
+		// Make sure all data is loaded.
+		RUt1g1TofData.Request(0, -1);
+		RUt1g2TofData.Request(0, -1);
+		RUt1g1AmpData.Request(0, -1);
+		RUt1g2AmpData.Request(0, -1);
+		RUt1IfTofData.Request(0, -1);
+		RUt1PopData.Request(0, -1);
+		REt1XData.Request(0, -1);
+		REt1YData.Request(0, -1);
+		REt1PpData.Request(0, -1);
+	}
+	return;
+
+:lblMeasureStart;
+	// This is only for Acquisition.
+	if (idOffsetCommon != 0)
+		return;
+	if (RUt1PopData.BlockCount || REt1PopData.BlockCount)
+	{
+		// Reset some values.
+		VScanDelay.Cur = 0;
+		VScanRight.Cur = 1;
+		VScanLeft.Cur = 0;
+		VScanRange.Cur = VIndexCount.Cur;
+		VStripDelay.Cur = 0;
+		VStripRange.Cur = 10;
+	}
+	return;
+
+// Update strip-chart with one scan line of the scan.
+:lblTrackStrip;
+	// This is only for Analysis.
+	if (idOffsetFile == 0)
+		return;
+	// Check if data is present by checking the ID for non zero.
+	if (REt1PopData.Id && REt1PpData.Id)
+	{ // Take special action when the pop cursor index is zero.
+		if (!VCursorPopIndex.Cur)
+		{
+			writelog("CursorPopIndex is ZERO.\n");
+			idxDelay = 0;
+			idxRange = REt1PopData.Data(0);
+		}
+		else
+		{
+			idxDelay = REt1PopData.Data(VCursorPopIndex.Cur - 1);
+			idxRange = REt1PopData.Data(VCursorPopIndex.Cur) - idxDelay;
+		}
+		// Apply the scan zooming parameters.
+		idxDelay = idxDelay + VScanLeft.Cur * idxRange;
+		idxRange = idxRange * (VScanRight.Cur - VScanLeft.Cur);
+		idxDelay = REt1PpData.BlockCount - idxDelay - idxRange;
+		// Convert index to seconds.
+		VStripDelay.Cur = VEtTimeUnit.Cur * idxDelay;
+		VStripRange.Cur = VEtTimeUnit.Cur * idxRange;
+	}
+	return;

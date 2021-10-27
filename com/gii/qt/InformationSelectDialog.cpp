@@ -1,8 +1,8 @@
 #include "InformationSelectDialog.h"
 #include "ui_InformationSelectDialog.h"
-
 #include <QDialogButtonBox>
 #include <QAction>
+#include <QTimer>
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
 #include <misc/qt/Globals.h>
@@ -13,12 +13,20 @@ namespace sf
 InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	:QDialog(parent)
 	 , ui(new Ui::InformationSelectDialog)
+	 , _proxyModel(new QSortFilterProxyModel(this))
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
+	// Set some properties for the proxy to do its job properly.
+	_proxyModel->setDynamicSortFilter(false);
+	_proxyModel->setRecursiveFilteringEnabled(true);
+	_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	// Assign the proxy for allowing filtering by name.
+	ui->treeView->setModel(_proxyModel);
 	//
 	ui->treeView->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
+
 	// Create the actions for the buttons.
 	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>
 		{
@@ -37,15 +45,16 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	});
 	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index)
 	{
-		if (auto m = dynamic_cast<InformationItemModel*>(ui->treeView->model()))
+		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
 			if (_mode == Gii::Multiple)
 			{
-				m->toggleSelection(index);
+				m->toggleSelection(getSourceModelIndex(index));
 			}
 			else
 			{
-				if (!m->isFolder(index))
+				auto idx = getSourceModelIndex(index);
+				if (!m->isFolder(idx))
 				{
 					accept();
 				}
@@ -66,18 +75,22 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	{
 		if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 		{
-			auto index = ui->treeView->selectionModel()->selectedIndexes().first();
+			auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
 			_selectedId = index.isValid() ? _itemModel->getId(index) : 0;
 		}
 	});
+	connect(ui->leSearch, &QLineEdit::textChanged, this, &InformationSelectDialog::applyFilter, Qt::QueuedConnection);
+}
+
+void InformationSelectDialog::applyFilter(const QString& filter)
+{
+	_proxyModel->setFilterFixedString(filter);
+	// Expand when searching otherwise collapse.
+	expandTreeView(ui->treeView, true);
 }
 
 void InformationSelectDialog::childrenExpandCollapse(bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
 {
-	if (!ui->treeView->model())
-	{
-		return;
-	}
 	if (!index.isValid())
 	{
 		int count = ui->treeView->model()->rowCount();
@@ -142,7 +155,7 @@ InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode m
 	// Fill the model.
 	_itemModel->updateList();
 	// Assign the model.
-	ui->treeView->setModel(_itemModel);
+	_proxyModel->setSourceModel(_itemModel);
 	// Resize the columns.
 	resizeColumnsToContents(ui->treeView);
 	// Restore the settings for this instance.

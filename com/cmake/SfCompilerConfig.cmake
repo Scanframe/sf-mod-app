@@ -70,7 +70,7 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 			add_compile_options(-m64 -Wa,-mbig-obj)
 		else ()
 			# For detecting memory errors.
-			add_compile_options(--pedantic-error #[[-fsanitize=address]])
+			add_compile_options(--pedantic-errors #[[-fsanitize=address]])
 		endif ()
 	endif ()
 endif ()

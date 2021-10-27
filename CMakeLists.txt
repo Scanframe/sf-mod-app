@@ -48,5 +48,5 @@ add_subdirectory(app)
 add_subdirectory(manual)
 
 add_subdirectory(concept/custom-ui-plugin)
-#add_subdirectory(concept/task-menu)
+add_subdirectory(concept/treemodel)
 

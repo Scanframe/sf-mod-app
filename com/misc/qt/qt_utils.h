@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include <QFormLayout>
+#include <QAbstractProxyModel>
 
 #include "../global.h"
 
@@ -351,15 +352,6 @@ _MISC_FUNC QPair<int, QFormLayout::ItemRole> getLayoutPosition(QFormLayout* layo
 _MISC_FUNC int getLayoutIndex(QBoxLayout* layout, QObject* target);
 
 /**
- * @brief Expands or collapses children in a QTreeView.
- *
- * @param treeView Designated view
- * @param expand True when to expand.
- * @param index Index to child of which its children should expand or collapse.
- */
-_MISC_FUNC void childrenExpandCollapse(QTreeView* treeView, bool expand, const QModelIndex& index = {});
-
-/**
  * @brief Resizes all columns to content of a tree view except the last column.
  * @param treeView
  */
@@ -377,6 +369,45 @@ void resizeColumnsToContents(QTreeView* treeView)
  * @brief Dumps the object properties in qDebug().
  */
 _MISC_FUNC void dumpObjectProperties(QObject* obj);
+
+/**
+ * @brief Gets the model type pointer from the passed abstract model pointer.
+ *
+ * @tparam T Model type derived from QAbstractItemModel
+ * @param am Pointer to model.
+ * @return Non-null when found.
+ */
+template <typename T>
+T* getSourceModel(const QAbstractItemModel* am)
+{
+	// First check if the passed abstract model is the model we look for.
+	if (auto m = dynamic_cast<const T*>(am))
+	{
+		return const_cast<T*>(m);
+	}
+	// Secondly, when a proxy is used.
+	if (auto apm = dynamic_cast<const QAbstractProxyModel*>(am))
+	{
+		if (auto m = dynamic_cast<T*>(apm->sourceModel()))
+		{
+			return const_cast<T*>(m);
+		}
+	}
+	return nullptr;
+}
+
+/**
+ * @brief Gets the source index in case a proxy model has been used.
+ */
+_MISC_FUNC QModelIndex getSourceModelIndex(const QModelIndex& index);
+
+/**
+ * @brief Expands or collapses a tree view's items.
+ * @param tv TreeView
+ * @param expand True to expand false to collapse.
+ * @param index Optional child index. Defaults to the root item.
+ */
+_MISC_FUNC void expandTreeView(QTreeView* tv, bool expand = true, const QModelIndex& index = {});
 
 
 }

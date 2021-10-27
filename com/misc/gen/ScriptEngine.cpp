@@ -606,7 +606,7 @@ void ScriptEngine::eatWhite()
 	}
 }
 
-bool ScriptEngine::operator_(Value& result, DataCode& left)
+bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-recursion)
 {
 	// Get operator character
 	char oper1 = _cmd[_pos];
@@ -821,7 +821,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)
 	return true;
 }
 
-bool ScriptEngine::partial(Value& result)
+bool ScriptEngine::partial(Value& result) // NOLINT(misc-no-recursion)
 {
 	Value locres;
 	DataCode left(this);
@@ -838,7 +838,7 @@ bool ScriptEngine::partial(Value& result)
 	return true;
 }
 
-bool ScriptEngine::arith(Value& result, DataCode& left)
+bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recursion)
 {
 	eatWhite();
 	if (_cmd[_pos] == '(')
@@ -1095,7 +1095,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 		//
 		return true;
 	}
-	// Start of string parameter i.e. "\"mijn naam\"" " is haas\n" .
+	// Start of string parameter i.e. "\"my great\"" " example\n" .
 	if (_cmd[_pos] == '"')
 	{
 		// Holds the characters.
@@ -1145,7 +1145,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left)
 	return setError(aeUnexpectedCharacter);
 }
 
-bool ScriptEngine::getParameter(Value& value)
+bool ScriptEngine::getParameter(Value& value) // NOLINT(misc-no-recursion)
 {
 	value.setType(value.vitUndefined);
 	do

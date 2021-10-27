@@ -15,4 +15,5 @@ _SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(ascan)
+add_subdirectory(bscan)
 add_subdirectory(acq-ctrl)

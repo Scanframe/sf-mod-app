@@ -41,15 +41,11 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 
 	void mouseMove(Qt::MouseButton button, Qt::KeyboardModifiers modifiers, QPoint point);
 
+	// Called when getting or losing focus.
 	void focus(bool yn);
 
-	void mouseCapture(bool capture);
-
-	/**
-	 * @brief Invalidates the passed rectangle and when empty the whole area.
-	 * @param rect Optional rectangle to invalidate.
-	 */
-	void invalidatePlotRect(const QRect& rect = {}) const;
+	// Invalidates the passed rectangle and when empty the whole area.
+	void invalidate(const QRect& rect = {}) const;
 
 	// Responds to a change in the one of the TCG Variable ID lists.
 	void tcgIdChange(void* sender);
@@ -69,7 +65,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	bool setCanDraw();
 
 	// Hook for the sustain interface.
-	TSustain<AcquisitionControl::Private> sustainEntry;
+	TSustain<AcquisitionControl::Private> _sustainEntry;
 	// Reference to the timer of the sustain entry.
 	ElapseTimer _timeoutTimer;
 

@@ -46,14 +46,14 @@ namespace
 {
 enum
 {
-	cName,
-	cType,
-	cColumnCount
+	vcName,
+	vcType,
+	vcColumnCount
 };
 
 enum
 {
-	cLayout = cColumnCount
+	cLayout = vcColumnCount
 };
 
 }
@@ -93,17 +93,14 @@ QModelIndex ObjectHierarchyModel::parent(const QModelIndex& child) const
 	{
 		return {};
 	}
-
-	auto* childItem = static_cast<TreeItem*>(child.internalPointer());
-	auto* parentItem = childItem->_parentItem;
-
+	auto childItem = static_cast<TreeItem*>(child.internalPointer());
+	auto parentItem = childItem->_parentItem;
 	if (parentItem == _rootItem)
 	{
 		return {};
 	}
-
-	auto row = childItem->_parentItem ? static_cast<int>(childItem->_parentItem->_childItems.indexOf(childItem)) : 0;
-	return createIndex(row, 0, parentItem);
+	auto row = childItem->_parentItem->_parentItem->_childItems.indexOf(childItem->_parentItem);
+	return createIndex((int)row, 0, parentItem);
 }
 
 QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -114,9 +111,9 @@ QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientati
 		{
 			default:
 				return QString("Field %1").arg(section);
-			case cName:
+			case vcName:
 				return QString(tr("Name"));
-			case cType:
+			case vcType:
 				return QString(tr("Type"));
 			case cLayout:
 				return QString(tr("Layout"));
@@ -127,7 +124,7 @@ QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientati
 
 int ObjectHierarchyModel::columnCount(const QModelIndex& parent) const
 {
-	return cColumnCount;
+	return vcColumnCount;
 }
 
 int ObjectHierarchyModel::rowCount(const QModelIndex& parent) const
@@ -168,14 +165,14 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 		{
 			switch (index.column())
 			{
-				case cName:
+				case vcName:
 					if (!item->_object)
 					{
 						return {};
 					}
 					return item->_object->objectName();
 
-				case cType:
+				case vcType:
 				{
 					if (!item->_object)
 					{

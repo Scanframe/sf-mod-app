@@ -216,6 +216,7 @@ ScriptObject::ip_type ScriptInterpreter::Instruction::getJumpIp() const
 
 ScriptInterpreter::ip_type ScriptInterpreter::addInstruction(Instruction::EInstr instr, ip_type ip, pos_type pos, const std::string& script)
 {
+	(void)pos;
 	CodePos cp(_codeLine, _codePos);
 	_instructions.add(Instruction(instr, (ip < 0) ? (ip_type) _instructions.size() + 1 : ip, cp, script));
 	_currentInstructionPtr = (ip_type)(_instructions.size() - 1);
@@ -453,7 +454,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 					}
 				}
 				std::ostream& os(_outputStream ? *_outputStream : std::clog);
-				os << _scriptName << ": " << s;
+				os << SF_RTTI_NAME(*this) << '(' << _scriptName << ") " << s;
 				result->set(0);
 				break;
 			}
@@ -828,15 +829,15 @@ bool ScriptInterpreter::getScript(std::string& script, char ending)
 		lth++;
 		auto pos = _codePos + lth;
 		// Check if this is the last character in the script.
-		if (_command[pos] == 0)
+		if (_command[pos] == '\0')
 		{
-			return setError(aeUnexpectedEnd, "end-of-script");
+			return setError(aeUnexpectedEnd, std::string(&_command[_codePos]).substr(0, 40));
 		}
 		// Do nothing when between quotes.
 		if (between_quotes)
 		{
 			// When a slash character sequence is detected step over it.
-			if (_command[pos] == '\\' && _command[pos + 1] != 0)
+			if (_command[pos] == '\\' && _command[pos] != 0)
 			{
 				// Always skip next character when
 				lth++;
@@ -1076,10 +1077,8 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 		const IdInfo* info = getInfo(name);
 		switch (info->_id)
 		{
-
 			case idUnknown:
-				setError(aeUnknownIdentifier, name);
-				break;
+				return setError(aeUnknownIdentifier, name);
 
 			case idKeyword:
 			{
@@ -1314,7 +1313,7 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 				return false;
 			}
 			// Test of while loop
-			// jump while scope if non zero
+			// jump while scope if non-zero
 			auto ipt = addInstruction(Instruction::eiTestJump, -1, pos, script);
 			// compile while scope
 			doCompile();
@@ -1429,7 +1428,11 @@ bool ScriptInterpreter::compile(const char* cmd)
 	// Do the actual compilation.
 	while (!getError())
 	{
-		doCompile();
+		if (!doCompile())
+		{
+			setState(esError);
+			return false;
+		}
 		skipWhite();
 		if (_command[_codePos] == '\0')
 		{
@@ -1529,7 +1532,8 @@ void ScriptInterpreter::callFunction(ip_type ip, bool step_mode)
 					doStep();
 					// Stop the loop when stack is back to the original state.
 					if (_stack.size() <= stack_pos)
-					{ // Set the state back to the previous value.
+					{
+						// Set the state back to the previous value.
 						setState(prev_state);
 						// Break the while loop.
 						break;
@@ -1839,22 +1843,29 @@ ScriptInterpreter::EState ScriptInterpreter::Execute(EExecMode exec_mode)
 
 void ScriptInterpreter::setState(EState exec_state)
 {
-	_prevState = _currentState;
-	// const cast so direct accessing of member generates a compile error.
-	*(EState*) &_currentState = exec_state;
-	// When going into error.
-	if (_currentState == esError && _prevState != esError)
+	if (_currentState != exec_state)
 	{
-		// Set the error instruction pointer too.
-		_errorInstructionPtr = _currentInstructionPtr;
+		// Update previous state member..
+		_prevState = _currentState;
+		// const cast so direct accessing of member generates a compile error.
+		*const_cast<EState*>(&_currentState) = exec_state;
+		// When going into error.
+		if (_currentState == esError && _prevState != esError)
+		{
+			// Set the error instruction pointer too.
+			_errorInstructionPtr = _currentInstructionPtr;
+		}
+		// Clear the error instruction pointer when the error is turned off.
+		if (_currentState != esError)
+		{
+			_errorInstructionPtr = -1;
+		}
+		// Notify listeners when it matters.
+		if (_currentState < esRunning && _prevState < esRunning)
+		{
+			_emitterChange.callListeners(this);
+		}
 	}
-	// Clear the error instruction pointer when the error is turned off.
-	if (_currentState != esError)
-	{
-		_errorInstructionPtr = -1;
-	}
-	// Notify listeners.
-	_emitterChange.callListeners(this);
 }
 
 ScriptInterpreter::CodePos ScriptInterpreter::getErrorPos() const
@@ -1867,7 +1878,8 @@ ScriptInterpreter::CodePos ScriptInterpreter::getErrorPos() const
 	{
 		CodePos pos;
 		if (_errorInstructionPtr > 0)
-		{ // Get the position of the instruction in the code.
+		{
+			// Get the position of the instruction in the code.
 			pos = _instructions[_errorInstructionPtr]._codePos;
 			// Add offset of the error.
 			pos._offset += ScriptEngine::getPos();

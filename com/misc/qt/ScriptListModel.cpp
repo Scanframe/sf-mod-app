@@ -21,8 +21,8 @@ enum EInstructionColumn
 
 enum EVariableColumn
 {
-	cName = 0,
-	cType,
+	vcName = 0,
+	vcType,
 	vcValue,
 	vcMaxColumns
 };
@@ -48,17 +48,17 @@ void ScriptListModel::refresh()
 	switch (_mode)
 	{
 		case mInstructions:
-			sz = (int) _interpreter->getInstructions().size();
+			sz = static_cast<int>(_interpreter->getInstructions().size());
 			break;
 
 		case mVariables:
-			sz = (int) _interpreter->getVariables().size();
+			sz = static_cast<int>(_interpreter->getVariables().size());
 			break;
 
 		default:
 			break;
 	}
-	beginInsertRows(QModelIndex(), 0, (int) -1);
+	beginInsertRows(QModelIndex(), 0, -1);
 	insertRows(0, sz);
 	endInsertRows();
 }
@@ -97,9 +97,9 @@ QVariant ScriptListModel::headerData(int section, Qt::Orientation orientation, i
 	{
 		switch (section)
 		{
-			case cName:
+			case vcName:
 				return QString(tr("Name"));
-			case cType:
+			case vcType:
 				return QString(tr("Type"));
 			case vcValue:
 				return QString(tr("Value"));
@@ -132,7 +132,12 @@ Qt::ItemFlags ScriptListModel::flags(const QModelIndex& index) const
 		case mVariables:
 			if (index.column() == vcValue)
 			{
-				flags |= Qt::ItemFlag::ItemIsEditable;
+				// Only non-custom values can be edited.
+				auto& ids = _interpreter->getVariables();
+				if (index.row() < ids.size() && ids.at(index.row())->_value.getType() != Value::EType::vitCustom)
+				{
+					flags |= Qt::ItemFlag::ItemIsEditable;
+				}
 			}
 			break;
 
@@ -151,10 +156,10 @@ int ScriptListModel::rowCount(const QModelIndex& parent) const
 	switch (_mode)
 	{
 		case mInstructions:
-			return (int) _interpreter->getInstructions().size();
+			return static_cast<int>(_interpreter->getInstructions().size());
 
 		case mVariables:
-			return (int) _interpreter->getVariables().size();
+			return static_cast<int>(_interpreter->getVariables().size());
 
 		default:
 			return 0;
@@ -190,7 +195,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 						auto ip = iis.at(index.row()).getJumpIp();
 						if (ip >= 0)
 						{
-							return (int) ip;
+							return static_cast<int>(ip);
 						}
 						else
 						{
@@ -198,9 +203,9 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 						}
 					}
 					case icLine:
-						return (int) iis.at(index.row())._codePos._line;
+						return static_cast<int>(iis.at(index.row())._codePos._line);
 					case icPosition:
-						return (int) iis.at(index.row())._codePos._offset;
+						return static_cast<int>(iis.at(index.row())._codePos._offset);
 					case icScript:
 						return QString::fromStdString(iis.at(index.row())._script);
 				}
@@ -219,9 +224,10 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 			{
 				switch (index.column())
 				{
-					case cName:
+					case vcName:
 						return QString::fromStdString(ids.at(index.row())->_name);
-					case cType:
+
+					case vcType:
 					{
 						auto& value = ids.at(index.row())->_value;
 						// Custom types are script objects.
@@ -234,8 +240,20 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 						}
 						return Value::getType(value.getType());
 					}
+
 					case vcValue:
+					{
+						auto& value = ids.at(index.row())->_value;
+						// Custom types are script objects.
+						if (value.getType() == Value::EType::vitCustom)
+						{
+							if (auto obj = _interpreter->castToObject(value))
+							{
+								return QString::fromStdString(obj->getStatusText());
+							}
+						}
 						return QString::fromStdString(ids.at(index.row())->_value.getString());
+					}
 				}
 			}
 			else if (role == Qt::EditRole)

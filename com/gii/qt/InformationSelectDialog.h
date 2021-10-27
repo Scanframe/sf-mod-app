@@ -5,6 +5,7 @@
 #include <QAbstractButton>
 #include <QTreeView>
 #include <QSettings>
+#include <QSortFilterProxyModel>
 #include "Namespace.h"
 
 namespace sf
@@ -28,9 +29,13 @@ class _GII_CLASS InformationSelectDialog :public QDialog
 
 		void stateSaveRestore(bool save);
 
+		void applyFilter(const QString& filter);
+
 		Ui::InformationSelectDialog* ui;
 
 		QSettings* _settings{nullptr};
+
+		QSortFilterProxyModel* _proxyModel;
 
 		sf::InformationItemModel* _itemModel{nullptr};
 

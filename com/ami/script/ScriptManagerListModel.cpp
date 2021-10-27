@@ -10,7 +10,7 @@ namespace
 
 enum EColumn
 {
-	cName = 0,
+	vcName = 0,
 	cScriptState,
 	cBackground,
 	cShortcut,
@@ -47,7 +47,7 @@ QVariant ScriptManagerListModel::headerData(int section, Qt::Orientation orienta
 	{
 		switch (section)
 		{
-			case cName:
+			case vcName:
 				return QString(tr("Name"));
 			case cScriptState:
 				return QString(tr("State"));
@@ -104,7 +104,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -123,7 +123,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -142,7 +142,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				return CommonItemDelegate::etEdit;
 			case cBackground:
 				return CommonItemDelegate::etDropDownIndex;
@@ -161,7 +161,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
@@ -201,7 +201,7 @@ bool ScriptManagerListModel::setData(const QModelIndex& index, const QVariant& v
 		auto& entry = _manager->_list[index.row()];
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				entry->setDisplayName(value.toString());
 				break;
 			case cBackground:

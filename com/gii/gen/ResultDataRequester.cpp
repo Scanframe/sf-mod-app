@@ -6,34 +6,23 @@
 namespace sf
 {
 
-/**
- * Sustain timer loop time for checking on possible errors.
- */
-#define SUSTAIN_TIME {1, 0}
-/**
- * Default time for state machine to wait for an state change.
- */
-#define DEF_TIMEOUT_TIME {30, 0}
-
 ResultDataRequester::ResultDataRequester()
 	:_sustain(this, &ResultDataRequester::sustain, _sustain.spTimer)
-	 , _dataHandler(this, &ResultDataRequester::resultCallback)
-	 , _timeoutTimer(DEF_TIMEOUT_TIME)
+	 , _handlerData(this, &ResultDataRequester::resultCallback)
+// Default time for state machine to wait for a state change.
+	 , _timeoutTimer({1, 0})
 	 , _handler(nullptr)
 	 , _rdIndex(nullptr)
 	// Is used for debugging timing of the state machine.
 	 , _byPass(false)
 {
 	// Timer is just needed for testing the timeout.
-	_sustain.setInterval(SUSTAIN_TIME);
+	_sustain.setInterval({1, 0});
 }
 
 ResultDataRequester::~ResultDataRequester()
 {
-	if (_rdIndex)
-	{
-		_rdIndex->setHandler(nullptr);
-	}
+	release();
 }
 
 void ResultDataRequester::reset()
@@ -53,9 +42,26 @@ void ResultDataRequester::reset()
 	}
 }
 
-void ResultDataRequester::SetLink(ResultDataHandler* link)
+void ResultDataRequester::setHandler(ResultDataHandler* handler)
 {
-	_handler = link;
+	_handler = handler;
+}
+
+void ResultDataRequester::release()
+{
+	// Release the index result-data.
+	if (_rdIndex)
+	{
+		_rdIndex->setHandler(nullptr);
+		_rdIndex = nullptr;
+	}
+	// Release the index result-data.
+	for (auto rd: _rdDataList)
+	{
+		rd->setHandler(nullptr);
+	}
+	// Clear the list of data results.
+	_rdDataList.clear();
 }
 
 void ResultDataRequester::attachIndex(ResultData* rd)
@@ -75,9 +81,9 @@ void ResultDataRequester::attachIndex(ResultData* rd)
 		if (_rdIndex)
 		{
 			// Check if the result is already hooked to a handler.
-			SF_COND_RTTI_NOTIFY(rd->getHandler(), DO_DEFAULT, "Index result is already linked to a handler!")
+			SF_COND_RTTI_NOTIFY(rd->getHandler(), DO_CLOG, "Index result is already linked to a handler!")
 			// Link the handler.
-			rd->setHandler(&_dataHandler);
+			rd->setHandler(&_handlerData);
 		}
 		// Reset the state machine when a change was eminent.
 		reset();
@@ -89,7 +95,7 @@ void ResultDataRequester::attachData(ResultData* rd)
 	if (rd)
 	{
 		// Remove
-		if (_rdDataList.find(rd) != UINT_MAX)
+		if (_rdDataList.find(rd) != InformationTypes::npos)
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to assign data result twice!")
 			return;
@@ -97,13 +103,12 @@ void ResultDataRequester::attachData(ResultData* rd)
 		// Add to the list of data results.
 		_rdDataList.add(rd);
 		//
-		rd->setHandler(&_dataHandler);
+		rd->setHandler(&_handlerData);
 		// Reset the state machine when a change was eminent.
 		reset();
-		//
+		// Assign the index of the result list in the result's data field.
 		for (unsigned i = 0; i < _rdDataList.count(); i++)
 		{
-			// Assign the index of the result list in the results data field.
 			_rdDataList[i]->setData(i);
 		}
 	}
@@ -116,8 +121,8 @@ void ResultDataRequester::detachData(ResultData* rd)
 	if (idx != UINT_MAX)
 	{
 		// Check if the handler was reassigned.
-		SF_COND_RTTI_NOTIFY(rd->getHandler() != &_dataHandler, DO_DEFAULT, "Linked handler was reassigned!")
-		// Unlink the the handler.
+		SF_COND_RTTI_NOTIFY(rd->getHandler() != &_handlerData, DO_CLOG, "Linked handler was reassigned!")
+		// Unlink the handler.
 		rd->setHandler(nullptr);
 		// Remove result pointer from the list.
 		_rdDataList.detachAt(idx);
@@ -132,7 +137,7 @@ void ResultDataRequester::resultCallback
 		const ResultData& caller,
 		ResultData& link,
 		const Range& rng,
-		bool same_inst
+		bool sameInst
 	)
 {
 	// Disable global events to pass beyond here.
@@ -146,13 +151,16 @@ void ResultDataRequester::resultCallback
 		// Handle the requester events.
 		switch (event)
 		{
+			default:
+				break;
+
 			case ResultData::reIdChanged:
 			case ResultData::reClear:
 			{
 				// When an id changes the state machine must be reset.
 				reset();
-			}
 				break;
+			}
 
 			case ResultData::reAccessChange:
 				if (&link != _rdIndex)
@@ -162,11 +170,12 @@ void ResultDataRequester::resultCallback
 						break;
 					}
 					// Check if this result has to catch up.
-					if (_work._dataAccess.Has(link.getData()))
-					{ // Check if the result has caught up with the working range of the index.
-						if (rng.isWithinOther(_work._range))
+					if (_work._dataAccess.Has(link.getData<int>()))
+					{
+						// Check if the result has caught up with the working range of the index.
+						if (rng.isWithinSelf(_work._range))
 						{
-							_work._dataAccess.Unset(link.getData());
+							_work._dataAccess.Unset(link.getData<int>());
 						}
 						// Speed up thing by calling process when waiting is over.
 						if (!_work._dataAccess.Bits)
@@ -182,7 +191,7 @@ void ResultDataRequester::resultCallback
 				{
 					if (!_work._indexRequest)
 					{
-						setError("Index GOTRANGE event not expected");
+						setError("Index GotRange event not expected");
 					}
 					// Reset the flag.
 					_work._indexRequest = false;
@@ -191,12 +200,12 @@ void ResultDataRequester::resultCallback
 				}
 				else
 				{
-					if (!_work._dataRequest.Has(link.getData()))
+					if (!_work._dataRequest.Has(link.getData<int>()))
 					{
-						setError("Data GOTRANGE event not expected");
+						setError("Data GotRange event not expected");
 					}
 					// Clear the bit of the request placed.
-					_work._dataRequest.Unset(link.getData());
+					_work._dataRequest.Unset(link.getData<int>());
 					// Speed up thing by calling process wen waiting is over.
 					if (!_work._dataRequest.Bits)
 					{
@@ -204,15 +213,12 @@ void ResultDataRequester::resultCallback
 					}
 					break;
 				}
-
-			default:
-				break;
 		}
 	}
 	// Emit the event.
 	if (_handler)
 	{
-		_handler->resultDataEventHandler(event, caller, link, rng, same_inst);
+		_handler->resultDataEventHandler(event, caller, link, rng, sameInst);
 	}
 }
 
@@ -231,7 +237,7 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 	}
 }
 
-bool ResultDataRequester::sustain(const timespec& t)
+bool ResultDataRequester::sustain(const timespec&)
 {
 	// Processes the current state when not waiting for an event.
 	if (_state != drsReady)
@@ -244,24 +250,28 @@ bool ResultDataRequester::sustain(const timespec& t)
 
 const char* ResultDataRequester::getStateName(int state)
 {
+	if (state == -2)
+	{
+		state = _state;
+	}
 	switch (state)
 	{
 		case drsError:
-			return "ERROR";
+			return "Error";
 		case drsReady:
-			return "READY";
+			return "Ready";
 		case drsGetIndex:
-			return "GETINDEX";
+			return "GetIndex";
 		case drsReadIndex:
-			return "READINDEX";
+			return "ReadIndex";
 		case drsGetData:
-			return "GETDATA";
+			return "GetData";
 		case drsApply:
-			return "APPLY";
+			return "Apply";
 		case drsTryData:
-			return "TRYDATA";
+			return "TryData";
 		case drsWait:
-			return "WAIT";
+			return "Wait";
 		default:
 			return "Unknown";
 	}
@@ -269,33 +279,37 @@ const char* ResultDataRequester::getStateName(int state)
 
 bool ResultDataRequester::setState(ResultDataRequester::EState state)
 {
+	if (_state == drsError)
+	{
+		return false;
+	}
 	// Only change the previous state when the state is not psWAIT.
 	if (_state != drsWait)
 	{
-		_previousState = _state;
+		_statePrevious = _state;
 	}
 	// Assign the new state value.
 	_state = state;
 	// No waiting when state was set with this function.
-	_waitForState = drsReady;
-	//
+	_stateWait = drsReady;
+	// Signal success.
 	return true;
 }
 
-bool ResultDataRequester::setError(const std::string& txt)
+bool ResultDataRequester::setError(const std::string& text)
 {
-	auto old_prev = _previousState;
+	auto old_prev = _statePrevious;
 	// Update the previous state.
 	if (_state != drsWait)
 	{
-		_previousState = _state;
+		_statePrevious = _state;
 	}
 	// Assign the new state first so that msg boxes can appear.
 	_state = drsError;
 	// Do some debug printing in case of an error.
 	SF_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '"
-		<< txt << "'. SetState(" << getStateName(old_prev) << "=>"
-		<< getStateName(_previousState) << "=>" << getStateName(_state)	<< ")" << _work._index << _work._range << '!')
+		<< text << "'. SetState(" << getStateName(old_prev) << "=>"
+		<< getStateName(_statePrevious) << "=>" << getStateName(_state) << ")" << _work._index << _work._range)
 	//
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Resetting the state machine.")
 	// Reset the state machine after each error.
@@ -306,8 +320,8 @@ bool ResultDataRequester::setError(const std::string& txt)
 
 bool ResultDataRequester::waitForState(ResultDataRequester::EState state)
 {
-	//RTTI_NOTIFY(DO_DEFAULT, "WaitForState(" << GetStateName(state) << ")" << FWork.Index << FWork.Range);
-	_waitForState = state;
+	SF_RTTI_NOTIFY(DO_CLOG, "WaitForState(" << getStateName(state) << ")" << _work._index << _work._range);
+	_stateWait = state;
 	_state = drsWait;
 	// Reset the timer to generate an error when waiting takes too long.
 	_timeoutTimer.reset();
@@ -321,9 +335,10 @@ bool ResultDataRequester::requestIndex(const Range& range)
 	if (_state != drsReady || range.isEmpty())
 	{
 		return false;
-	}// SetError("Not ready to accept an other request");
+	}
+	// SetError("Not ready to accept another request");
 	// Check if the requested range is in the accessible range.
-	if (!_rdIndex->getAccessRange().isWithinOther(range))
+	if (!_rdIndex->getAccessRange().isWithinSelf(range))
 	{
 		return setError("Index request was invalid");
 	}
@@ -331,7 +346,8 @@ bool ResultDataRequester::requestIndex(const Range& range)
 	_work._index = range;
 	// Trigger the state machine to go to work.
 	if (setState(drsGetIndex))
-	{ // This could speed up things.
+	{
+		// This could speed up things.
 		process();
 		return true;
 	}
@@ -359,7 +375,7 @@ bool ResultDataRequester::requestData(const Range& range)
 	return false;
 }
 
-bool ResultDataRequester::process()
+bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 {
 	//
 	switch (_state)
@@ -397,18 +413,17 @@ bool ResultDataRequester::process()
 			{
 				return setError("Index read failed");
 			}
-			//_RTTI_NOTIFY(DO_DBGSTR, "INDEXREAD: Work" << FWork.Index << FWork.Range)
+			//SF_RTTI_NOTIFY(DO_CLOG, "Index read: Work" << _work._index << _work._range)
 			// When the data was available waiting is not needed.
 
 		case drsTryData:
 			// Check data pointed to by the retrieved range is accessible at the moment.
-			for (unsigned i = 0; i < _rdDataList.count(); i++)
+			for (int i = 0; i < _rdDataList.count(); i++)
 			{
 				// Results which are not linked are ignored.
 				if (_rdDataList[i]->getId())
 				{
-					Range rng = _rdDataList[i]->getAccessRange();
-					if (!rng.isWithinOther(_work._range))
+					if (!_rdDataList[i]->getAccessRange().isWithinSelf(_work._range))
 					{
 						_work._dataAccess.Set(i);
 					}
@@ -426,7 +441,7 @@ bool ResultDataRequester::process()
 			}
 
 		case drsGetData:
-			for (unsigned i = 0; i < _rdDataList.count(); i++)
+			for (int i = 0; i < _rdDataList.count(); i++)
 			{
 				// Results which are not linked are ignored.
 				if (_rdDataList[i]->getId())
@@ -498,18 +513,23 @@ bool ResultDataRequester::process()
 				// Disable timer to prevent reentry.
 				_timeoutTimer.disable();
 				// Check which result caused the timeout.
-				for (unsigned i = 0; i < _rdDataList.count(); i++)
+				for (int i = 0; i < _rdDataList.count(); i++)
 				{
-					if (_work._dataRequest.Has(i)) SF_RTTI_NOTIFY(DO_DEFAULT, "Data Req " << _work._range
-						<< " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
-					if (_work._dataAccess.Has(i)) SF_RTTI_NOTIFY(DO_DEFAULT, "Data Access " << _work._range
-						<< " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
+					if (_work._dataRequest.Has(i))
+					{
+						SF_RTTI_NOTIFY(DO_DEFAULT, "Data Req " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
+					}
+					if (_work._dataAccess.Has(i))
+					{
+						SF_RTTI_NOTIFY(DO_DEFAULT,
+							"Data Access " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
+					}
 				}
 				// Set error state.
 				return setError("Wait timer timed out");
 			}
 			//
-			switch (_waitForState)
+			switch (_stateWait)
 			{
 				case drsApply:
 					// If requests are still out continue waiting.
@@ -518,7 +538,7 @@ bool ResultDataRequester::process()
 						break;
 					}
 					// Enter the next state.
-					if (setState(_waitForState))
+					if (setState(_stateWait))
 					{
 						return process();
 					}
@@ -528,13 +548,13 @@ bool ResultDataRequester::process()
 					}
 
 				case drsReadIndex:
-					// If request is still out continue waiting.
+					// If request is still out, continue waiting.
 					if (_work._indexRequest)
 					{
 						break;
 					}
 					// Enter the next state.
-					if (setState(_waitForState))
+					if (setState(_stateWait))
 					{
 						return process();
 					}
@@ -551,7 +571,7 @@ bool ResultDataRequester::process()
 						break;
 					}
 					// Enter the next state.
-					if (setState(_waitForState))
+					if (setState(_stateWait))
 					{
 						return process();
 					}
@@ -570,4 +590,12 @@ bool ResultDataRequester::process()
 	return true;
 }
 
-} // namespace
+std::ostream& ResultDataRequester::getStatus(std::ostream& os)
+{
+	os << "State (prev > cur): " << getStateName(_statePrevious) << " > " << getStateName(_state) << std::endl
+		<< "Work Index: " << _work._index << std::endl
+		<< "Work Range: " << _work._range << std::endl;
+	return os;
+}
+
+}

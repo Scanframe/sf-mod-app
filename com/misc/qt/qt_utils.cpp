@@ -435,26 +435,6 @@ int getLayoutIndex(QBoxLayout* layout, QObject* target)
 	return -1;
 }
 
-void childrenExpandCollapse(QTreeView* treeView, bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
-{
-	if (!index.isValid())
-	{
-		//childrenExpandCollapse(expand, ui->treeView->rootIndex());
-		int count = treeView->model()->rowCount();
-		for (int i = 0; i < count; i++)
-		{
-			childrenExpandCollapse(treeView, expand, treeView->model()->index(i, 0));
-		}
-		return;
-	}
-	int childCount = index.model()->rowCount(index);
-	for (int i = 0; i < childCount; i++)
-	{
-		childrenExpandCollapse(treeView, expand, treeView->model()->index(i, 0, index));
-	}
-	expand ? treeView->expand(index) : treeView->collapse(index);
-}
-
 void dumpObjectProperties(QObject* obj)
 {
 	auto mo = obj->metaObject();
@@ -475,6 +455,47 @@ void dumpObjectProperties(QObject* obj)
 		}
 	}
 	while ((mo = mo->superClass()));
+}
+
+QModelIndex getSourceModelIndex(const QModelIndex& index)
+{
+	// Check if a proxy is used.
+	if (auto apm = dynamic_cast<const QAbstractProxyModel*>(index.model()))
+	{
+		return apm->mapToSource(index);
+	}
+	// Whe not pass the index.
+	return index;
+}
+
+void doExpandTreeView(QTreeView* tv, bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
+{
+	if (!index.isValid())
+	{
+		return;
+	}
+	tv->setExpanded(index, expand);
+	int childCount = index.model()->rowCount(index);
+	for (int i = 0; i < childCount; i++)
+	{
+		doExpandTreeView(tv, expand, tv->model()->index(i, 0, index));
+	}
+}
+
+void expandTreeView(QTreeView* tv, bool expand, const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		doExpandTreeView(tv, expand, index);
+	}
+	else
+	{
+		int count = tv->model()->rowCount();
+		for (int i = 0; i < count; i++)
+		{
+			doExpandTreeView(tv, expand, tv->model()->index(i, 0));
+		}
+	}
 }
 
 }

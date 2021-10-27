@@ -1,4 +1,3 @@
-// Just some comment
 int counter = 0;
 // Create variable object.
 object vFollowersEnabled = Variable("0x5,Unit Conversion|Followers Enabled,,ASP,,INTEGER,,1,1,0,1,Off=0,On=1");
@@ -7,9 +6,11 @@ object vTimeOfFlight = Variable("0x100,Unit Conversion|Time of Flight,s,ASP,High
 
 vSoundVelocity.OnValue = main;
 vTimeOfFlight.OnValue = main;
+vFollowersEnabled.OnValue = main;
 
 vSoundVelocity.SkipEvent = 0;
 vTimeOfFlight.SkipEvent = 0;
+
 // Exit for initialization.
 exit(0); 
 

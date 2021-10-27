@@ -90,7 +90,7 @@ CommonItemDelegate::EEditorType getEditorType(QObject* obj, int index, bool dyna
 
 enum EColumn
 {
-	cName = 0,
+	vcName = 0,
 	cValue,
 	cMaxColumns
 };
@@ -98,7 +98,7 @@ enum EColumn
 enum EColumnIgnore
 {
 	cIgnored = cMaxColumns,
-	cType
+	vcType
 };
 
 CommonItemDelegate::OptionsType getEnumOptions(const QMetaEnum& me)
@@ -251,9 +251,9 @@ QVariant ObjectPropertyModel::headerData(int section, Qt::Orientation orientatio
 	{
 		switch (section)
 		{
-			case cName:
+			case vcName:
 				return QString(tr("Name"));
-			case cType:
+			case vcType:
 				return QString(tr("Type"));
 			case cValue:
 				return QString(tr("Value"));
@@ -302,7 +302,7 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case cName:
+			case vcName:
 				// Negative index indicates a dynamic property.
 				if (propIdx._dynamic)
 				{
@@ -310,7 +310,7 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				}
 				return QString("%1::%2").arg(meta->property(propIdx._index).enclosingMetaObject()->className()).arg(meta->property(propIdx._index).name());
 
-			case cType:
+			case vcType:
 				// Negative index indicates a dynamic property.
 				if (propIdx._dynamic)
 				{

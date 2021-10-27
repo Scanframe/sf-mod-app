@@ -78,7 +78,7 @@ class _MISC_CLASS ScriptObject
 			 */
 			int _paramCount{0};
 			/**
-			 * @brief Pointer referring to TInfoObject if nullptr it is a static entry.
+			 * @brief Pointer referring to info object. If nullptr it is a static entry.
 			 */
 			void* _data{nullptr};
 		};
@@ -99,6 +99,10 @@ class _MISC_CLASS ScriptObject
 		[[nodiscard]] virtual const IdInfo* getInfo(const std::string& name) const = 0;
 
 		/**
+		 * @brief Gets the status text of this object for debugging purposes.
+		 */
+		virtual std::string getStatusText();
+		/**
 		 * @brief Gets or sets the a passed data member. Must be overloaded in derived class.
 		 */
 		virtual bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) = 0;
@@ -111,7 +115,7 @@ class _MISC_CLASS ScriptObject
 		/**
 		 * @brief Gets the reference count.
 		 */
-		[[nodiscard]] int getRefCount() const
+		[[nodiscard]] inline int getRefCount() const
 		{
 			return _refCount;
 		}
@@ -134,7 +138,7 @@ class _MISC_CLASS ScriptObject
 		/**
 		 * @brief Gets the script object owner.
 		 */
-		ScriptObject* getParent()
+		inline ScriptObject* getParent()
 		{
 			return _parent;
 		}
@@ -142,7 +146,7 @@ class _MISC_CLASS ScriptObject
 		/**
 		 * @brief Gets the script object owner.
 		 */
-		const ScriptObject* getParent() const
+		[[nodiscard]] inline const ScriptObject* getParent() const
 		{
 			return _parent;
 		}

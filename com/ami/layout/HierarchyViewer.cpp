@@ -12,6 +12,7 @@ namespace sf
 HierarchyViewer::HierarchyViewer(QWidget* parent)
 	:QWidget(parent)
 	 , ui(new Ui::HierarchyViewer)
+	 , _proxyModel(new QSortFilterProxyModel(this))
 {
 	ui->setupUi(this);
 	// Create the actions for the buttons.
@@ -28,6 +29,11 @@ HierarchyViewer::HierarchyViewer(QWidget* parent)
 		std::get<1>(t)->setToolTip(std::get<3>(t));
 		std::get<0>(t)->setDefaultAction(std::get<1>(t));
 	}
+	// Set some properties for the proxy to do its job properly.
+	_proxyModel->setDynamicSortFilter(false);
+	_proxyModel->setRecursiveFilteringEnabled(true);
+	_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	ui->treeView->setModel(_proxyModel);
 	// Create  context menu for tree view.
 	ui->treeView->setContextMenuPolicy(Qt::ActionsContextMenu);
 	for (auto a: {_actionEdit, _actionAdd, _actionRemove})
@@ -37,17 +43,22 @@ HierarchyViewer::HierarchyViewer(QWidget* parent)
 	//
 	connect(_actionCollapseAll, &QAction::triggered, [&]()
 	{
-		childrenExpandCollapse(ui->treeView, false);
+		expandTreeView(ui->treeView, false);
 	});
 	connect(_actionExpandAll, &QAction::triggered, [&]()
 	{
-		childrenExpandCollapse(ui->treeView, true);
+		expandTreeView(ui->treeView, true);
 	});
 	connect(ui->treeView, &QTreeView::doubleClicked, this, &HierarchyViewer::editObject);
 	connect(_actionEdit, &QAction::triggered, this, &HierarchyViewer::editObject);
 	connect(_actionAdd, &QAction::triggered, this, &HierarchyViewer::addObject);
 	connect(_actionRemove, &QAction::triggered, this, &HierarchyViewer::removeObject);
 	connect(ui->treeView, &QTreeView::clicked, this, &HierarchyViewer::objectSelected);
+	connect(ui->leSearch, &QLineEdit::textChanged, [&](const QString& text)
+	{
+		_proxyModel->setFilterFixedString(text);
+		expandTreeView(ui->treeView);
+	});
 }
 
 HierarchyViewer::~HierarchyViewer()
@@ -76,9 +87,9 @@ QObject* HierarchyViewer::objectSelected(const QModelIndex &index)
 	}
 	if (idx.isValid())
 	{
-		if (auto m = dynamic_cast<const ObjectHierarchyModel*>(index.model()))
+		if (auto m = getSourceModel<ObjectHierarchyModel>(index.model()))
 		{
-			rv = m->getObject(idx);
+			rv = m->getObject(getSourceModelIndex(index));
 		}
 	}
 	objectSelectChange(rv);
@@ -89,8 +100,10 @@ void HierarchyViewer::editObject()
 {
 	if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 	{
-		auto index = ui->treeView->selectionModel()->selectedIndexes().first();
-		if (auto model = dynamic_cast<ObjectHierarchyModel*>(ui->treeView->model()))
+		// Get the first and also only selected index.
+		// When a proxy is used, convert the index mapped to the source.
+		auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
+		if (auto model = getSourceModel<ObjectHierarchyModel>(ui->treeView->model()))
 		{
 			if (auto obj = model->getObject(index))
 			{
@@ -105,8 +118,10 @@ void HierarchyViewer::addObject()
 {
 	if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 	{
-		auto index = ui->treeView->selectionModel()->selectedIndexes().first();
-		if (auto model = dynamic_cast<ObjectHierarchyModel*>(ui->treeView->model()))
+		// Get the first and also only selected index.
+		// When a proxy is used, convert the index mapped to the source.
+		auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
+		if (auto model = getSourceModel<ObjectHierarchyModel>(ui->treeView->model()))
 		{
 			if (auto obj = model->getObject(index))
 			{
@@ -116,11 +131,18 @@ void HierarchyViewer::addObject()
 					{
 						auto dialog = new AddItemDialog(this);
 						auto children = dialog->execute(widget->layout());
-						for (auto child: children)
-						{
-							model->insertItemAt(index, child);
-						}
 						delete dialog;
+						if (!children.empty())
+						{
+							// When using a proxy model list this is needed.
+							Q_EMIT model->layoutAboutToBeChanged();
+							for (auto child: children)
+							{
+								model->insertItemAt(index, child);
+							}
+							// When using a proxy model list this is needed.
+							Q_EMIT model->layoutChanged();
+						}
 						// Signal the layout editor the document has modified.
 						if (children.count())
 						{
@@ -139,9 +161,10 @@ void HierarchyViewer::removeObject()
 	if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 	{
 		// Get the first and also only selected index.
-		auto index = ui->treeView->selectionModel()->selectedIndexes().first();
+		// When a proxy is used, convert the index mapped to the source.
+		auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
 		// Get the correct pointer of the model.
-		if (auto model = dynamic_cast<ObjectHierarchyModel*>(ui->treeView->model()))
+		if (auto model = getSourceModel<ObjectHierarchyModel>(ui->treeView->model()))
 		{
 			// Prevent removing row the root.
 			if (!model->isRoot(index))
@@ -151,9 +174,13 @@ void HierarchyViewer::removeObject()
 				{
 					// Signal the object is removed.
 					Q_EMIT objectSelected();
+					// When using a proxy model list this is needed.
+					Q_EMIT model->layoutAboutToBeChanged();
 					// Remove the item also from the tree.
 					model->removeItem(index);
 					delete obj;
+					// When using a proxy model list this is needed.
+					Q_EMIT model->layoutChanged();
 					// Signal the layout editor the document has modified.
 					documentModified();
 				}
@@ -169,8 +196,8 @@ void HierarchyViewer::setEditor(sf::LayoutEditor* editor)
 		_layoutEditor = editor;
 		if (_layoutEditor)
 		{
-			ui->treeView->setModel(_layoutEditor->getHierarchyModel());
-			childrenExpandCollapse(ui->treeView, true);
+			_proxyModel->setSourceModel(_layoutEditor->getHierarchyModel());
+			expandTreeView(ui->treeView, true);
 			resizeColumnsToContents(ui->treeView);
 			// Clear selected object.
 			objectSelected({});
@@ -182,7 +209,7 @@ void HierarchyViewer::setEditor(sf::LayoutEditor* editor)
 			// Clear selected object.
 			objectSelected({});
 			// Clear the set modal.
-			ui->treeView->setModel(nullptr);
+			_proxyModel->setSourceModel(nullptr);
 		}
 	}
 }

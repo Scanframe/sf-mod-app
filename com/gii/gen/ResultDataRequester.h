@@ -10,6 +10,7 @@ namespace sf
 
 /**
  * @brief Handles requests and events for indexed data sources.
+ *
  * #sf::ResultData instances can be attached to this type of instance to handle
  * request on multiple results for when all data must be available at a time for processing.
  */
@@ -17,7 +18,7 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 {
 	public:
 		/**
-		 * Additional local user result data events.
+		 * @brief Additional local user result data events.
 		 */
 		enum EReqEvent
 		{
@@ -34,145 +35,94 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		};
 
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		ResultDataRequester();
 
 		/**
-		 * Virtual destructor.
+		 * @brief Virtual destructor.
 		 */
 		virtual ~ResultDataRequester();
 
 		/**
-		 * Links the single index result data entry to this instance.
-		 * @param rd
+		 * @brief Links the single index result-data entry to this instance.
 		 */
 		void attachIndex(ResultData* rd);
 
 		/**
-		 * Hooks the result data entries to this instance.
-		 * @param rd
+		 * @brief Hooks the result-data entries to this instance.
 		 */
 		void attachData(ResultData* rd);
 
 		/**
-		 * Unhooks the result data entries to this instance.
-		 * @param rd
+		 * @brief Unhooks the result-data entries to this instance.
 		 */
 		void detachData(ResultData* rd);
 
 		/**
-		 * Requests a range of the data using a single index range.
-		 * @return
+		 * @brief Releases all the result-data entries and set handlers.
+		 *
+		 * When both result-data instances and the requester are part of a class.
+		 * This method must called from the owners destructor to prevent crashing.
 		 */
-		bool requestIndex(size_type index);
+		void release();
 
 		/**
-		 * Requests a range of the data using multiple index ranges.
+		 * @brief Requests a range of the data using a single index range.
+		 * @return True on success.
+		 */
+		inline bool requestIndex(size_type index);
+
+		/**
+		 * @brief Requests a range of the data using multiple index ranges.
 		 * @param range
-		 * @return
+		 * @return True on success.
 		 */
 		bool requestIndex(const Range& range);
 
 		/**
-		 * Directly requests a range of the data without using the index.
+		 * @brief Directly requests a range of the data without using the index.
 		 * @param range
-		 * @return
+		 * @return True on success.
 		 */
 		bool requestData(const Range& range);
 
 		/**
-		 * Sets the time-out in ms in which a request is allowed too take
-		 * before it is timed out. A value of zero. makes it wait indefinitely.
-		 * @param timeout
+		 * @brief Sets the time-out in ms in which a request is allowed too take before it is timed out.
+		 * A value of zero. makes it wait indefinitely.
 		 */
-		void setTimeout(clock_t timeout);
+		inline void setTimeout(const TimeSpec& timeout);
 
 		/**
-		 * Called when results are attached or detached and when a time-out occurred.
+		 * @brief Called when results are attached or detached and when a time-out occurred.
 		 * Sets all members to their initial state.
 		 */
 		void reset();
 
 		/**
-		 * Returns the index range the requester is working on or has done.
-		 * @return
+		 * @brief Gets the index range the requester is working on or has done.
 		 */
-		[[nodiscard]] const Range& getIndexRange() const;
+		[[nodiscard]] inline const Range& getIndexRange() const;
 
 		/**
-		 * Returns the data range the requester is working on or has done.
-		 * @return
+		 * @brief Gets the data range the requester is working on or has done.
 		 */
-		[[nodiscard]] const Range& getDataRange() const;
+		[[nodiscard]] inline const Range& getDataRange() const;
 
 		/**
-		 * Sets an event handler for this instance to which all result events
-		 * are rerouted after it handled its own stuff.
-		 * Passing NULL wil disable the link.
-		 * @param link
+		 * @brief Sets an event handler for this instance to which all result events are rerouted after it handled its own stuff.
+		 *
+		 * @param handler Passing nullptr wil disable the link.
 		 */
-		void SetLink(ResultDataHandler* link);
+		void setHandler(ResultDataHandler* handler);
 
 		/**
-		 * Returns the linked handler hook object.
+		 * @brief Returns the linked handler hook object.
 		 */
-		[[nodiscard]] const ResultDataHandler* getLink() const;
-
-	private:
-		/**
-		 * Hook to sustain interface.
-		 */
-		TSustain<ResultDataRequester> _sustain;
+		[[nodiscard]] inline const ResultDataHandler* getHandler() const;
 
 		/**
-		 * Called from sustain interface.
-		 */
-		bool sustain(const timespec& t);
-
-		/**
-		 * @brief Hook to result events.
-		 */
-		TResultDataHandler<ResultDataRequester> _dataHandler;
-
-		/**
-		 * Result data event handler.
-		 * @param event
-		 * @param caller
-		 * @param link
-		 * @param rng
-		 * @param same_inst
-		 */
-		void resultCallback
-			(
-				ResultDataTypes::EEvent event,
-				const ResultData& caller,
-				ResultData& link,
-				const Range& rng,
-				bool same_inst
-			);
-
-		/**
-		 * Index result.
-		 */
-		ResultData* _rdIndex{nullptr};
-		/**
-		 * Data results.
-		 */
-		PtrVector _rdDataList;
-		/**
-		 * Timer implementation for timing out a request.
-		 */
-		ElapseTimer _timeoutTimer;
-
-		/**
-		 * Processes
-		 * @return
-		 */
-		bool process();
-
-		/**
-		 * Enumerate for state levels.
+		 * @brief Enumerate for states.
 		 */
 		enum EState
 		{
@@ -195,63 +145,108 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		};
 
 		/**
-		 * Returns the name of the state.
-		 * @param state
-		 * @return
+		 * @brief Gets the name of the state.
+		 *
+		 * @param state When -2 is passed the current state is returned.
+		 * @return String of the state.
 		 */
-		const char* getStateName(int state);
+		const char* getStateName(int state = -2);
 
 		/**
-		 * Holds the current state.
+		 * Gets the current state from the requester.
+		 */
+		[[nodiscard]] inline EState getState() const;
+
+		/**
+		 * @brief For debugging purposes only it writes the status to the output stream.
+		 */
+		std::ostream& getStatus(std::ostream& os);
+
+	private:
+		/**
+		 * @brief Hook to sustain interface.
+		 */
+		TSustain<ResultDataRequester> _sustain;
+
+		/**
+		 * @brief Called from sustain interface.
+		 */
+		bool sustain(const timespec& t);
+
+		/**
+		 * @brief Hook to result events.
+		 */
+		TResultDataHandler<ResultDataRequester> _handlerData;
+
+		/**
+		 * @brief Result data event handler.
+		 */
+		void resultCallback(ResultDataTypes::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst);
+
+		/**
+		 * @brief Index result.
+		 */
+		ResultData* _rdIndex{nullptr};
+		/**
+		 * @brief Data results linked.
+		 */
+		PtrVector _rdDataList;
+		/**
+		 * @brief Timer implementation for timing out a request.
+		 */
+		ElapseTimer _timeoutTimer;
+
+		/**
+		 * @brief Processes
+		 */
+		bool process();
+
+		/**
+		 * @brief Holds the current state.
 		 */
 		EState _state{drsReady};
 		/**
-		 * Holds the previous state.
+		 * @brief Holds the previous state.
 		 */
-		EState _previousState{drsReady};
+		EState _statePrevious{drsReady};
 		/**
-		 * State which the sustain will move to requests are met.
+		 * @brief State which the sustain will move to requests are met.
 		 */
-		EState _waitForState{drsReady};
+		EState _stateWait{drsReady};
 
 		/**
-		 * Sets the new state and acts on it.
-		 * @param state
-		 * @return
+		 * @brief Sets the new state and acts on it.
 		 */
 		bool setState(EState state);
 
 		/**
-		 * Sets the error state.
-		 * Return always false for ease in functions.
-		 * @param txt
-		 * @return
+		 * @brief Sets the error state.
+		 * @param text Error text.
+		 * @return Always false for ease in functions.
 		 */
-		bool setError(const std::string& txt);
+		bool setError(const std::string& text);
 
 		/**
-		 * Sets the wait state member to the passed value and the state machine
+		 * @brief Sets the wait state member to the passed value and the state machine
 		 * waits for some conditions before continuing by setting the passed state.
 		 * When conditions are not met in time an error is generated.
 		 * When reset is true the timer is reset.
-		 * @param state
-		 * @return
 		 */
 		bool waitForState(EState state);
 
 		/**
-		 * Calls event handler passing own local events.
+		 * @brief Calls event handler passing own local events.
 		 * @param event
 		 */
 		void passIndexEvent(EReqEvent event);
 
 		/**
-		 * Structure holding data to work on.
+		 * @brief Structure holding data to work on.
 		 */
 		struct WorkData
 		{
 			/**
-			 * Default constructor.
+			 * @brief Default constructor.
 			 */
 			WorkData()
 			{
@@ -259,7 +254,7 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 			}
 
 			/**
-			 * Clears all dat members to their initial state.
+			 * @brief Clears all dat members to their initial state.
 			 */
 			void clear()
 			{
@@ -272,55 +267,61 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 			}
 
 			/**
-			 * Data range of a request.
+			 * @brief Data range of a request.
 			 */
 			Range _range;
 			/**
-			 * Index range of a request.
+			 * @brief Index range of a request.
 			 */
 			Range _index;
 			/**
-			 * True when a request index was made.
+			 * @brief True when a request index was made.
 			 */
-			bool _indexRequest{false};
+			bool _indexRequest{};
 			/**
-			 * True when a request data was made and it must be waited for.
+			 * @brief True when a request data was made and it must be waited for.
 			 */
 			TSet<int> _dataRequest;
 			/**
-			 * True when it must wait for results to catch up with the index result.
+			 * @brief True when it must wait for results to catch up with the index result.
 			 */
 			TSet<int> _dataAccess;
 		};
 
 		/**
-		 * Holds request working/status information.
+		 * @brief Holds request working/status information.
 		 */
 		WorkData _work;
 		/**
-		 * Pointer to ResultDataEventHandler function.
+		 * @brief Pointer to ResultDataEventHandler function.
 		 */
 		ResultDataHandler* _handler;
 		/**
-		 * Used to enable by pass of event handling. Can be enabled when debugging.
+		 * @brief Used to enable by pass of event handling. Can be enabled when debugging.
 		 */
 		bool _byPass;
 };
 
 inline
-void ResultDataRequester::setTimeout(clock_t timeout)
+ResultDataRequester::EState ResultDataRequester::getState() const
+{
+	return _state;
+}
+
+inline
+void ResultDataRequester::setTimeout(const TimeSpec& timeout)
 {
 	_timeoutTimer.set(timeout);
 }
 
 inline
-bool ResultDataRequester::requestIndex(size_type  index)
+bool ResultDataRequester::requestIndex(size_type index)
 {
 	return requestIndex(Range(index, index + 1));
 }
 
 inline
-const ResultDataHandler* ResultDataRequester::getLink() const
+const ResultDataHandler* ResultDataRequester::getHandler() const
 {
 	return _handler;
 }
@@ -337,4 +338,4 @@ const Range& ResultDataRequester::getDataRange() const
 	return _work._range;
 }
 
-} // namespace
+}

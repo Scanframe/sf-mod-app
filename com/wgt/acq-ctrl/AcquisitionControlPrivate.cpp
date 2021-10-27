@@ -34,7 +34,7 @@ class InfoWindow :public QLabel
 
 AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	:_w(widget)
-	 , sustainEntry(this, &AcquisitionControl::Private::sustain)
+	 , _sustainEntry(this, &AcquisitionControl::Private::sustain)
 	 , _infoWindow(new InfoWindow(_w))
 	 , _idsTcgTime(_tcg.TimeVars)
 	 , _idsTcgGain(_tcg.GainVars)
@@ -109,13 +109,7 @@ AcquisitionControl::Private::~Private()
 	Q_UNUSED(this)
 }
 
-void AcquisitionControl::Private::mouseCapture(bool capture)
-{
-	Q_UNUSED(capture)
-	// TODO: Needs implementation.
-}
-
-void AcquisitionControl::Private::invalidatePlotRect(const QRect& rect) const
+void AcquisitionControl::Private::invalidate(const QRect& rect) const
 {
 	// When debugging invalidate it all.
 	if (rect.isEmpty())
@@ -199,7 +193,7 @@ bool AcquisitionControl::Private::setCanDraw()
 		}
 	}
 	// Allow any changes to take place.
-	invalidatePlotRect();
+	invalidate();
 	return _flagCanDraw;
 }
 
@@ -551,7 +545,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 			if (!_tcg.Points.empty() || _tcg.AreaLeft != _tcg.AreaRight)
 			{
 				// If so invalidate the while plot to clear it.
-				invalidatePlotRect();
+				invalidate();
 			}
 			// Clear the poly line.
 			_tcg.Points.clear();
@@ -672,7 +666,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 		// SF_RTTI_NOTIFY(DO_DEFAULT, "TCG Point " << (i+1) << ": " << FTcg.Points[i+1]);
 	}
 	// Invalidate only the effected area which is the previous and the new one.
-	invalidatePlotRect((_tcg.Rect | irc).adjusted(1, 1, 1, 1));
+	invalidate((_tcg.Rect | irc).adjusted(1, 1, 1, 1));
 	// Update the rectangle of the actual data.
 	_tcg.Rect = irc;
 }
@@ -728,8 +722,8 @@ void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
 		if (prev_rc != gt.Rect)
 		{
 			// When a change is there redraw both regions on the screen.
-			invalidatePlotRect(gt.Rect);
-			invalidatePlotRect(prev_rc);
+			invalidate(gt.Rect);
+			invalidate(prev_rc);
 		}
 	}
 }
@@ -846,8 +840,8 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		if (prevRect != gt.Rect)
 		{
 			// When a change is there redraw both regions on the screen.
-			invalidatePlotRect(gt.Rect);
-			invalidatePlotRect(prevRect);
+			invalidate(gt.Rect);
+			invalidate(prevRect);
 		}
 	}
 }
@@ -940,8 +934,8 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 	// Assign the new state first so that msg boxes can appear.
 	_stateCurrent = psError;
 	// Do some debug printing in case of an error.
-	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error!\n"
-		<< txt << '\n' << "SetState("
+	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error! "
+		<< txt << " SetState("
 		<< getStateName(oldPrevious) << "=>"
 		<< getStateName(_statePrevious) << "=>"
 		<< getStateName(_stateCurrent)
@@ -1226,7 +1220,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			// Clear work data for next time.
 			_work.Clear();
 			// Make window update the plot.
-			invalidatePlotRect();
+			invalidate();
 			// Signal that plot is ready for next one.
 			return setState(psReady);
 		}
@@ -1288,7 +1282,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			break;
 
 		case ResultData::reInvalid:
-			invalidatePlotRect();
+			invalidate();
 			break;
 
 		case ResultData::reIdChanged:
@@ -1323,7 +1317,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			// TODO: Set some default peak positions.
 			_flagNoData = true;
 			//
-			invalidatePlotRect();
+			invalidate();
 			// Clear the work data structure to start over.
 			_work.Clear();
 			setState(psIdle);
@@ -1550,7 +1544,7 @@ void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, con
 			if (&link == &_vTcgEnable)
 			{
 				generateTcgData(-1);
-				invalidatePlotRect();
+				invalidate();
 			}
 			else
 			{
@@ -1713,7 +1707,7 @@ void AcquisitionControl::Private::geoResize(const QSize& size, const QSize& prev
 		_flagGateVerticalPos = true;
 		_flagGateHorizontalPos = true;
 		// Redraw the plot client area.
-		invalidatePlotRect();
+		invalidate();
 	}
 }
 
@@ -1760,7 +1754,7 @@ void AcquisitionControl::Private::mouseMove(Qt::MouseButton button, Qt::Keyboard
 			_gripRectNext = gt.GripRect;
 			updateRect |= _gripRectNext;
 			// Add extra 1 pixel to invalidate.
-			invalidatePlotRect(inflated(updateRect, 1));
+			invalidate(inflated(updateRect, 1));
 		}
 	}
 }
@@ -1777,9 +1771,7 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 	// Check for the correct button to be pressed.
 	if (button == Qt::MouseButton::LeftButton)
 	{
-		// Always capture the mouse input when the left button is down.
-		mouseCapture(true);
-		if (!_debug && _w->hasMouseTracking())
+		if (!_debug)
 		{
 			// Freeze current values for the plot.
 			_flagFrozen = true;
@@ -1843,8 +1835,6 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 	{
 		// After the first move change the cursor for easier positioning.
 		setCursorShape(getCursorShape(getGateGrip(pt)));
-		// Disable the capturing of the mouse.
-		mouseCapture(false);
 		// Deactivate the hint window.
 		_infoWindow->setActive(false);
 		// Unfreeze the plot.
@@ -1889,7 +1879,7 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 			// Reset the sizing flag.
 			_flagSizing = false;
 			//
-			invalidatePlotRect();
+			invalidate();
 		}
 	}
 }

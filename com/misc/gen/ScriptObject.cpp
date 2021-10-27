@@ -57,4 +57,9 @@ void ScriptObject::setParent(ScriptObject* parent)
 	_parent = parent;
 }
 
+std::string ScriptObject::getStatusText()
+{
+	return getTypeName();
+}
+
 }

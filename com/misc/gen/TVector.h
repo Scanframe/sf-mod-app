@@ -580,4 +580,4 @@ typename TVector<T>::size_type TVector<T>::find(const T& t) const
 	return npos;
 }
 
-} // namespace
+}

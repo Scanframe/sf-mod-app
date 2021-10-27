@@ -42,7 +42,7 @@ ScriptObject::IdInfo ResultDataScriptObject::_info[] =
 	};
 
 ResultDataScriptObject::ResultDataScriptObject(const ScriptObject::Parameters& params)
-	:ScriptObject("Variable", params._parent)
+	:ScriptObject("ResultData", params._parent)
 	 , ResultData()
 {
 	// Link the handler.
@@ -53,7 +53,13 @@ ResultDataScriptObject::ResultDataScriptObject(const ScriptObject::Parameters& p
 		// When  a number assume it is an id.
 		if (params._arguments->at(0).isNumber())
 		{
-			setup(params._arguments->at(0).getInteger(), true);
+			auto id = params._arguments->at(0).getInteger();
+			// In case of a second parameter it is the id offset.
+			if (params._arguments->size() > 1)
+			{
+				id += params._arguments->at(1).getInteger();
+			}
+			setup(id, true);
 		}
 		else
 		{
@@ -276,6 +282,22 @@ void ResultDataScriptObject::resultDataEventHandler(ResultDataTypes::EEvent even
 		default:
 			break;
 	}
+}
+
+std::string ResultDataScriptObject::getStatusText()
+{
+	std::string rv;
+	if (!getId())
+	{
+		rv.append("? ");
+	}
+	rv += "0x" + itostr(isOwner() ? getId() : getDesiredId(), 16);
+	if (getId())
+	{
+		rv += ' ' + getCurFlagsString();
+		rv += ' ' + getName();
+	}
+	return rv;
 }
 
 }

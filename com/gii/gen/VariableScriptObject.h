@@ -14,6 +14,8 @@ class VariableScriptObject :public ScriptObject, public Variable, private Variab
 	public:
 		explicit VariableScriptObject(const Parameters& params);
 
+		std::string getStatusText() override;
+
 	protected:
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 

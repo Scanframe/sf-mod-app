@@ -14,6 +14,8 @@ class ResultDataScriptObject :public ScriptObject, public ResultData, private Re
 	public:
 		explicit ResultDataScriptObject(const Parameters& params);
 
+		std::string getStatusText() override;
+
 	protected:
 
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;

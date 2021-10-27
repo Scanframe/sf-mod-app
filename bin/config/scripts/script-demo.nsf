@@ -1,0 +1,34 @@
+// Just some comment
+int counter = 0;
+// Create variable object.
+object vFormVisible = Variable("0x92004,Script|Test|Visible1,,S,,INTEGER,,1,0,0,1,Hide=0,Show=1");
+object vVisible = Create("Variable", "0x92004,Script|Test|Visible2,,S,,INTEGER,,1,0,0,1,Hide=0,Show=1", 1);
+object vHighSpeed = Create("Variable", "0x92004,Script|Test|High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20", 2);
+
+vFormVisible.OnValue = lblReport1;
+vVisible.OnValue = lblReport2;
+
+vFormVisible.SkipEvent = 0;
+vVisible.SkipEvent = 0;
+
+// Exit for initialization.
+exit(0); 
+
+:main;
+	// Increment the counter.
+	counter = counter + 1;
+	// Toggle.
+	vFormVisible.Cur = !vFormVisible.Cur;
+	//
+	writelog("Counter", counter, "\n");
+	return;
+
+:lblReport1;
+	// Write the new value to log.
+	writelog("Report1", vFormVisible.Name(2), vFormVisible.CurStr, "\n");
+	return;
+
+:lblReport2;
+	// Write the new value to log.
+	writelog("Report2", vVisible.Name(2), vVisible.CurStr, "\n");
+	return;

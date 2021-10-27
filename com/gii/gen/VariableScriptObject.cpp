@@ -62,10 +62,16 @@ VariableScriptObject::VariableScriptObject(const ScriptObject::Parameters& param
 	// Need at least 2 arguments since the first is the object type name.
 	if (params._arguments && !params._arguments->empty())
 	{
-		// When  a number assume it is an id.
+		// When the first argument is number assume it is an id.
 		if (params._arguments->at(0).isNumber())
 		{
-			setup(params._arguments->at(0).getInteger(), true);
+			auto id = params._arguments->at(0).getInteger();
+			// In case of a second parameter it is the id offset.
+			if (params._arguments->size() > 1)
+			{
+				id += params._arguments->at(1).getInteger();
+			}
+			setup(id, true);
 		}
 		else
 		{
@@ -149,10 +155,7 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 		{
 			if (flag_set)
 			{
-				if (!setCur(*value, _skipEvent))
-				{
-					SF_RTTI_NOTIFY(DO_DEFAULT, "Current value of '" << getName() << "' could not be set!");
-				}
+				setCur(*value, _skipEvent);
 			}
 			else
 			{
@@ -340,6 +343,22 @@ void VariableScriptObject::variableEventHandler(VariableTypes::EEvent event, con
 		default:
 			break;
 	}
+}
+
+std::string VariableScriptObject::getStatusText()
+{
+	std::string rv;
+	if (!getId())
+	{
+		rv.append("? ");
+	}
+	rv += "0x" + itostr(isOwner() ? getId() : getDesiredId(), 16);
+	if (getId())
+	{
+		rv += ' ' + getCurFlagsString();
+		rv += ' ' + getName();
+	}
+	return rv;
 }
 
 }

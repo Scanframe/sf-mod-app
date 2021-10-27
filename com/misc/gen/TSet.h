@@ -5,10 +5,8 @@ namespace sf
 
 /**
  * @brief Template class for managing bit maks preferably when bits are defined as enumerate values.
- *
- * @todo Needs second template type as used integer type.
  */
-template<class T>
+template<typename T = int, typename S = int>
 struct TSet
 {
 	/**
@@ -19,7 +17,7 @@ struct TSet
 	/**
 	 * @brief initialize constructor.
 	 */
-	explicit TSet(int bits) :Bits(bits) {}
+	explicit TSet(S bits) :Bits(bits) {}
 
 	/**
 	 * @brief Copy constructor.
@@ -40,7 +38,7 @@ struct TSet
 	 */
 	bool Has(T bit) const
 	{
-		return (Bits & (1L << bit)) > 0;
+		return (Bits & (1ull << bit)) > 0;
 	}
 
 	/**
@@ -48,7 +46,7 @@ struct TSet
 	 */
 	TSet& Set(T bit)
 	{
-		Bits |= (1L << bit);
+		Bits |= (1ull << bit);
 		return *this;
 	}
 
@@ -57,7 +55,7 @@ struct TSet
 	 */
 	TSet& Unset(T bit)
 	{
-		Bits &= ~(1L << bit);
+		Bits &= ~(1ull << bit);
 		return *this;
 	}
 
@@ -103,7 +101,7 @@ struct TSet
 	/**
 	 * @brief Holds the actual bits.
 	 */
-	int Bits;
+	S Bits;
 };
 
 }

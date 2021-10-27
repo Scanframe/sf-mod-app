@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QSortFilterProxyModel>
 #include "ObjectHierarchyModel.h"
 #include "LayoutEditor.h"
 
@@ -51,6 +52,8 @@ class HierarchyViewer :public QWidget
 		QObject* objectSelected(const QModelIndex &index = {});
 
 		Ui::HierarchyViewer* ui;
+
+		QSortFilterProxyModel* _proxyModel{nullptr};
 
 		QAction* _actionCollapseAll{nullptr};
 		QAction* _actionExpandAll{nullptr};

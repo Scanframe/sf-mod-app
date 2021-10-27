@@ -24,8 +24,8 @@ struct ScriptEditor::ScriptEditor::Private :ListenerList
 	explicit Private(QSettings* settings, ScriptEditor* editor)
 		:_settings(settings)
 	{
-		_smlInstructions = new ScriptListModel(editor);
-		_smlVariables = new ScriptListModel(editor);
+		_slmInstructions = new ScriptListModel(editor);
+		_slmVariables = new ScriptListModel(editor);
 	}
 
 	~Private()
@@ -35,8 +35,8 @@ struct ScriptEditor::ScriptEditor::Private :ListenerList
 	}
 
 	QSharedPointer<ScriptInterpreter> _interpreter{};
-	ScriptListModel* _smlInstructions{nullptr};
-	ScriptListModel* _smlVariables{nullptr};
+	ScriptListModel* _slmInstructions{nullptr};
+	ScriptListModel* _slmVariables{nullptr};
 	QSettings* _settings{nullptr};
 	QString _curFile;
 	bool _isUntitled{true};
@@ -56,9 +56,9 @@ ScriptEditor::ScriptEditor(QSettings* settings, QWidget* parent)
 	// Set the editor form the MDI.
 	setEditor(ui->pteSource, this);
 	// Create the model list for instructions.
-	ui->tvInstructions->setModel(_p._smlInstructions);
+	ui->tvInstructions->setModel(_p._slmInstructions);
 	// Create the model list for variables.
-	ui->tvVariables->setModel(_p._smlVariables);
+	ui->tvVariables->setModel(_p._slmVariables);
 	// Create connections for the editor to enable MDI actions.
 	setConnections(ui->pteSource);
 	ui->tvInstructions->header()->setStretchLastSection(true);
@@ -136,7 +136,7 @@ void ScriptEditor::updateStatus()
 	ui->leError->setText(_p._interpreter->getErrorText());
 	ui->teReason->setText(QString::fromStdString(_p._interpreter->getErrorReason()));
 	// Get the current instruction pointer.
-	auto instr = (int) _p._interpreter->getInstructionPtr();
+	auto instr = static_cast<int>(_p._interpreter->getInstructionPtr());
 	// Check if the pointer is valid.
 	if (instr >= 0)
 	{
@@ -169,7 +169,7 @@ void ScriptEditor::onActionCompile()
 	//
 	if (!_p._interpreter->compile(src.c_str()))
 	{
-		qWarning() << "Compile failed:" << _p._interpreter->getError() << _p._interpreter->getErrorReason();
+		qWarning() << "Compile failed:" << _p._interpreter->getErrorText() << _p._interpreter->getErrorReason();
 	}
 	//
 	dynamic_cast<ScriptListModel*>(ui->tvVariables->model())->refresh();
@@ -253,7 +253,10 @@ void ScriptEditor::moveCursorToInstruction(int row)
 		cur.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, _script.getInstructions().at(row)._codePos._line);
 	*/
 	// Set the absolute position in the document.
-	cur.setPosition((int) _p._interpreter->getInstructions().at(row)._codePos._offset);
+	if (!_p._interpreter->getInstructions().isEmpty())
+	{
+		cur.setPosition((int) _p._interpreter->getInstructions().at(row)._codePos._offset);
+	}
 	// Apply the new cursor.
 	ui->pteSource->setTextCursor(cur);
 }
@@ -287,8 +290,8 @@ void ScriptEditor::setInterpreter(const QSharedPointer<ScriptInterpreter>& inter
 	// Assign the new shared pointer.
 	_p._interpreter = interpreter;
 	// Assign the pointer to the module lists.
-	_p._smlInstructions->setInterpreter(_p._interpreter.get(), ScriptListModel::mInstructions);
-	_p._smlVariables->setInterpreter(_p._interpreter.get(), ScriptListModel::mVariables);
+	_p._slmInstructions->setInterpreter(_p._interpreter.get(), ScriptListModel::mInstructions);
+	_p._slmVariables->setInterpreter(_p._interpreter.get(), ScriptListModel::mVariables);
 	// Highlight the keywords and so on.
 	new ScriptHighlighter(_p._interpreter.get(), ui->pteSource->document());
 	//
