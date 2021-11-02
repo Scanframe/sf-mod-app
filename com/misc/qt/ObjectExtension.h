@@ -46,12 +46,23 @@ class _MISC_CLASS ObjectExtension
 		 * @return False by default.
 		 */
 		[[nodiscard]] virtual bool getSaveChildren() const;
+
 		/**
 		 * @brief Gets the designer status.
 		 * @return True when in the designer application.
 		 */
 		static bool inDesigner();
 
+		/**
+		 * @brief Return if the passed object has this type as parent.
+		 *
+		 * It starts by testing the passed object itself.
+		 *
+		 * @param obj Object to start with in the search.
+		 * @param first When false is passed it returns the last one found in the path.
+		 * @return True when a parent was found that matches.
+		 */
+		static QObject* getExtensionParent(QObject* obj, bool first = true);
 
 	private:
 		/**

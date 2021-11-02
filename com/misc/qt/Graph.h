@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Draw.h"
 #include <QPainter>
 #include <QPalette>
-#include "Draw.h"
-#include "../global.h"
 #include "../gen/gen_utils.h"
+#include "../global.h"
 
 namespace sf
 {

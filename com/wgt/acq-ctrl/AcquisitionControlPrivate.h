@@ -14,7 +14,7 @@
 namespace sf
 {
 
-class InfoWindow;
+class HintWindow;
 
 struct AcquisitionControl::Private :QObject, InformationTypes
 {
@@ -259,7 +259,7 @@ struct AcquisitionControl::Private :QObject, InformationTypes
 	QRect _gripRect{0, 0, 0, 0};
 	QRect _gripRectNext{0, 0, 0, 0};
 	// Special window designed to show floating hints.
-	InfoWindow* _infoWindow;
+	HintWindow* _infoWindow;
 
 	// Calculates the screen lines for drawing.
 	bool generateCopyData(const Range& range);

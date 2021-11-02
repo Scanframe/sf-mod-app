@@ -1,6 +1,7 @@
 #include <QLabel>
 #include <QToolTip>
 #include <misc/gen/gen_utils.h>
+#include <misc/qt/HintWindow.h>
 #include <misc/qt/qt_utils.h>
 #include <misc/qt/Draw.h>
 #include "AcquisitionControlPrivate.h"
@@ -8,34 +9,10 @@
 namespace sf
 {
 
-class InfoWindow :public QLabel
-{
-	public:
-		explicit InfoWindow(QWidget* parent)
-			:QLabel(parent)
-		{
-		}
-
-		void setPosition(QPoint pt)
-		{
-			Q_UNUSED(pt)
-		}
-
-		void setOffset(QPoint pt)
-		{
-			Q_UNUSED(pt)
-		}
-
-		void setActive(bool active)
-		{
-			Q_UNUSED(active)
-		}
-};
-
 AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	:_w(widget)
 	 , _sustainEntry(this, &AcquisitionControl::Private::sustain)
-	 , _infoWindow(new InfoWindow(_w))
+	 , _infoWindow(new HintWindow(_w))
 	 , _idsTcgTime(_tcg.TimeVars)
 	 , _idsTcgGain(_tcg.GainVars)
 	 , _timeoutTimer{TimeSpec(1.0)}
@@ -49,6 +26,8 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	_w->setAttribute(Qt::WA_TranslucentBackground);
 	_w->setAttribute(Qt::WA_NoSystemBackground);
 	_w->setAttribute(Qt::WA_StyledBackground);
+	// Offset the position from where is clicked.
+	_infoWindow->setOffset(QPoint(15, 14));
 	//
 	for (int i = 0; i < MaxGates; i++)
 	{
@@ -1795,7 +1774,6 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		}
 		// Set the position and offset of the hint window.
 		_infoWindow->setPosition(_w->mapToGlobal(pt));
-		_infoWindow->setOffset(QPoint(15, 10));
 		// Get the name of the gate number which was gripped.
 		QString gateName = _gripGate ? QString("Gate %1").arg(_gripGate) : QString("IF Gate");
 		// Show the hint window which gate is grabbed.
@@ -1817,7 +1795,10 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 				break;
 		}
 		// Activate the gate hint.
-		_infoWindow->setActive(true);
+		if (_gripGrabbed != gNoGrip)
+		{
+			_infoWindow->setActive(true);
+		}
 	}
 }
 

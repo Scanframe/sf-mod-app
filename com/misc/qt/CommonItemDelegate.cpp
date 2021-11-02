@@ -7,9 +7,11 @@
 #include <QAction>
 #include <QLineEdit>
 #include <QColorDialog>
+#include <QPlainTextEdit>
 #include "CommonItemDelegate.h"
 #include "qt_utils.h"
 #include "Resource.h"
+#include "Editor.h"
 
 namespace sf
 {
@@ -31,23 +33,30 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 	{
 		case etDropDown:
 		case etDropDownIndex:
-		{
 			return new QComboBox(parent);
-		}
 
 		case etDropDownFlags:
-		{
 			return new QListView(parent);
-		}
 
 		case etShortcut:
-		{
 			return new QKeySequenceEdit(parent);
-		}
 
 		case etSpinBox:
-		{
 			return new QSpinBox(parent);
+
+		case etStringList:
+		{
+			auto pte = new Editor(parent);
+/*
+			auto sp = pte->sizePolicy();
+			sp.setVerticalPolicy(QSizePolicy::Maximum);
+			pte->setSizePolicy(sp);
+			pte->setMinimumHeight(pte->fontMetrics().xHeight() * 5);
+			pte->setContentsMargins(0, 0, 0, 0);
+			pte->resize(-1, );
+*/
+			pte->setMinimumSize(0, pte->fontMetrics().height() * 7);
+			return pte;
 		}
 
 		case etULongLong:
@@ -174,6 +183,14 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			return;
 		}
 
+		case etStringList:
+		{
+			auto pte = dynamic_cast<QPlainTextEdit*>(editor);
+			Q_ASSERT(pte);
+			pte->setPlainText(index.model()->data(index, Qt::EditRole).toStringList().join('\n'));
+			return;
+		}
+
 		case etULongLong:
 		{
 			auto le = dynamic_cast<QLineEdit*>(editor);
@@ -242,6 +259,14 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			auto sb = dynamic_cast<QSpinBox*>(editor);
 			Q_ASSERT(sb);
 			model->setData(index, sb->value(), Qt::EditRole);
+			return;
+		}
+
+		case etStringList:
+		{
+			auto pte = dynamic_cast<QPlainTextEdit*>(editor);
+			Q_ASSERT(pte);
+			model->setData(index, pte->toPlainText().split('\n'), Qt::EditRole);
 			return;
 		}
 

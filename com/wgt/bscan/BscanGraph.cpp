@@ -2,6 +2,7 @@
 #include <QStylePainter>
 #include <misc/qt/PropertySheetDialog.h>
 #include <misc/qt/qt_utils.h>
+#include <QGuiApplication>
 #include "BscanGraph.h"
 #include "BscanGraphPrivate.h"
 #include "BscanPropertyPage.h"
@@ -112,6 +113,40 @@ bool BscanGraph::isRequiredProperty(const QString& name)
 QSize BscanGraph::minimumSizeHint() const
 {
 	return {200, 100};
+}
+
+void BscanGraph::mousePressEvent(QMouseEvent* event)
+{
+	// Set the capture flag.
+	_p->_cursor.Captured = true;
+	// Pass the event to the mouse handling routine.
+	_p->localMouse(Private::MousePress, event->modifiers(), event->buttons(), event->pos(), true);
+}
+
+void BscanGraph::mouseReleaseEvent(QMouseEvent* event)
+{
+	// Reset the capture flag.
+	_p->_cursor.Captured = false;
+	// Pass the event to the cursor handling routine.
+	_p->localMouse(Private::MouseRelease, event->modifiers(), event->buttons(), event->pos(), true);
+}
+
+void BscanGraph::mouseMoveEvent(QMouseEvent* event)
+{
+	if (_p->_cursor.Captured)
+	{
+		_p->localMouse(Private::MouseMove, event->modifiers(), event->buttons(), event->pos(), true);
+	}
+}
+
+void BscanGraph::keyPressEvent(QKeyEvent* event)
+{
+	_p->localMouse(Private::KeyPress, event->modifiers(), QGuiApplication::mouseButtons(),{}, true);
+}
+
+void BscanGraph::keyReleaseEvent(QKeyEvent* event)
+{
+	_p->localMouse(Private::KeyRelease, event->modifiers(), QGuiApplication::mouseButtons(),{}, true);
 }
 
 }

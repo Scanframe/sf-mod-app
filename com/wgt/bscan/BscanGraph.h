@@ -71,20 +71,23 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 		void paintEvent(QPaintEvent* event) override;
 
 		void resizeEvent(QResizeEvent* event) override;
-/*
-
-		void keyPressEvent(QKeyEvent* event) override;
 
 		void mousePressEvent(QMouseEvent* event) override;
 
 		void mouseReleaseEvent(QMouseEvent* event) override;
 
+		void mouseMoveEvent(QMouseEvent* event) override;
+
+		void keyPressEvent(QKeyEvent* event) override;
+
+		void keyReleaseEvent(QKeyEvent* event) override;
+/*
+
 		void focusInEvent(QFocusEvent* event) override;
 
 		void focusOutEvent(QFocusEvent* event) override;
-
-		void mouseMoveEvent(QMouseEvent* event) override;
 */
+
 
 		void initStyleOption(QStyleOptionFrame* option) const;
 

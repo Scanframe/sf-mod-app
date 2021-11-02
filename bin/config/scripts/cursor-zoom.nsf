@@ -231,12 +231,12 @@ float FEt1XAmp;
 float FEt1YAmp;
 float FEt1PpAmp;
 //
-object hintWin;// = Create("HintWindow");
+object hintWin = Create("HintWindow");
 if (hintWin)
 {
 	// Show hint window at cursor position
 	hintWin.Position = 1;
-	hintWin.Offset(30, -50);
+	hintWin.Offset(30, 50);
 }
 
 gosub lblInitialize;

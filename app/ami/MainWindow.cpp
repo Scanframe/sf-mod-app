@@ -35,10 +35,15 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	_mdiArea->setTabsMovable(true);
 	//_mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
 	_mdiArea->setViewMode(QMdiArea::ViewMode::TabbedView);
-
+	//
 	setCentralWidget(_mdiArea);
 	connect(_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::mdiSubActivated);
-
+	//
+	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface*
+	{
+		return openFile(filename);
+	};
+	//
 	createActions();
 	createStatusBar();
 	createDockWindows();
@@ -47,22 +52,18 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	setUnifiedTitleAndToolBarOnMac(true);
 	//
 	setAcceptDrops(true);
+	// Show the dock widgets tabs at the top for all areas.
+	setTabPosition(Qt::AllDockWidgetAreas, QTabWidget::North);
 	//
 	settingsReadWrite(false);
 	//
 	recentFilesReadWrite(false);
-	//
+	// Restore the saved state it any.
 	stateSaveRestore(false);
-	//
-	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface*
-	{
-		return openFile(filename);
-	};
 }
 
 MainWindow::~MainWindow()
 {
-	stateSaveRestore(true);
 	// Reset the global parent.
 	setGlobalParent(nullptr);
 }
@@ -91,13 +92,19 @@ void MainWindow::stateSaveRestore(bool save)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
+	// Try closing all sub windows.
 	_mdiArea->closeAllSubWindows();
+	// If one ignored the closing abort the closing of the application.
 	if (_mdiArea->currentSubWindow())
 	{
+		// Abort by ignoring.
 		event->ignore();
 	}
 	else
 	{
+		// Save now before (dock)widgets change.
+		stateSaveRestore(true);
+		//
 		event->accept();
 	}
 	// Make the application quit after the main window closes.
@@ -766,8 +773,8 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 void MainWindow::createDockWindows()
 {
-	auto list = AppModuleInterface::createAllDockingWidgets(this);
-	for (auto dock: list)
+	dockWidgets = AppModuleInterface::createAllDockingWidgets(this);
+	for (auto dock: dockWidgets)
 	{
 		addDockWidget(Qt::RightDockWidgetArea, dock);
 	}

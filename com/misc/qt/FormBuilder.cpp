@@ -10,6 +10,7 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QLabel>
+#include <QTabWidget>
 #include "ObjectExtension.h"
 #include "FormBuilder.h"
 
@@ -738,6 +739,66 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 						elem.insertBefore(createDomProperty(dom, "toolButtonStyle", "enum", style), elem.firstChildElement());
 						auto arrow = QMetaEnum::fromType<Qt::ArrowType>().valueToKey(buttons[name]->arrowType());
 						elem.insertBefore(createDomProperty(dom, "arrowType", "enum", arrow), elem.firstChildElement());
+					}
+				}
+			}
+		});
+	}
+	// Fix non-implemented types for elements.
+	{
+		// List of meta types that are not supported
+		QList<QMetaType> metaTypes;
+		metaTypes << QMetaType::fromType<QTabWidget::TabPosition>();
+		metaTypes << QMetaType::fromType<QTabWidget::TabShape>();
+		//
+		QMap<QString, QWidget*> wl;
+		// Get all widgets derived from a frame.
+		for (auto wgt: widget->findChildren<QWidget*>(QString(), Qt::FindChildrenRecursively))
+		{
+			if (!wgt->objectName().isEmpty())
+			{
+				wl[wgt->objectName()] = wgt;
+			}
+		}
+		// Iterate through all dom elements
+		iterateDomElements(dom, root, [widget, &dom, &wl, &metaTypes](QDomElement& elem)
+		{
+			// Only check widget dom elements.
+			if (elem.nodeName() == "widget")
+			{
+				// Get the name attribute of the widget element.
+				auto attr = elem.attributes().namedItem("name");
+				// Check if the attribute is valid attribute and the name is not empty.
+				if (!attr.isNull() && !attr.nodeValue().isEmpty())
+				{
+					auto name = attr.nodeValue();
+					// When in the widgets list.
+					if (!name.isEmpty() && wl.contains(name))
+					{
+						// Add the missing properties.
+						auto w = wl[name];
+						auto mo = w->metaObject();
+						do
+						{
+							for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)
+							{
+								const auto& prop = mo->property(i);
+								if (prop.isWritable() && prop.isDesignable())
+								{
+									QMetaType mp(prop.typeId());
+									// Check if the property is not implemented yet.
+									if (metaTypes.indexOf(mp) >= 0)
+									{
+										if (prop.enumerator().isValid())
+										{
+											auto value = prop.enumerator().valueToKey(w->property(prop.name()).toInt());
+											elem.insertBefore(createDomProperty(dom, prop.name(), "enum", value), elem.firstChildElement());
+										}
+									}
+								}
+							}
+						}
+						while ((mo = mo->superClass()));
 					}
 				}
 			}

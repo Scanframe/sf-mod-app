@@ -1,5 +1,8 @@
 #include "VariableCheckBox.h"
-
+#include "VariableWidgetBasePrivate.h"
+#include "LayoutData.h"
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/ScriptEngine.h>
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QCheckBox>
@@ -7,10 +10,6 @@
 #include <QMenu>
 #include <QTimer>
 #include <QGuiApplication>
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/ScriptEngine.h>
-#include "LayoutWidget.h"
-#include "VariableWidgetBasePrivate.h"
 
 namespace sf
 {
@@ -68,9 +67,6 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 			_variable.setHandler(this);
 		}
 		QTimer::singleShot(0, this, &VariableCheckBox::Private::connectLabelNameAlt);
-		// The edit value gets handler for the context menu.
-		_editValue->setContextMenuPolicy(Qt::CustomContextMenu);
-		connect(_editValue, &QCheckBox::customContextMenuRequested, this, &VariableCheckBox::Private::createContextMenu);
 	}
 
 	~Private() override
@@ -79,18 +75,6 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 		_variable.setHandler(nullptr);
 		delete _labelName;
 		delete _editValue;
-	}
-
-	void createContextMenu(const QPoint& pos) const
-	{
-		if (QGuiApplication::keyboardModifiers() ==(Qt::ControlModifier | Qt::ShiftModifier))
-		{
-			if (auto lw = LayoutWidget::getLayoutWidgetOf(_w))
-			{
-				lw->popupContextMenu(_w, _editValue->mapToGlobal(pos));
-				return;
-			}
-		}
 	}
 
 	void variableEventHandler
@@ -144,7 +128,7 @@ struct VariableCheckBox::Private :QObject, VariableWidgetBase::PrivateBase
 
 	void updateValue(bool skip)
 	{
-		// Can have only to states.
+		// Can have only two states.
 		if (_variable.getStateCount() == 2)
 		{
 			Variable::size_type state = _editValue->isChecked();

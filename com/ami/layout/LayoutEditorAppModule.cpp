@@ -1,18 +1,19 @@
-#include <misc/qt/PropertySheetDialog.h>
-#include <QTreeView>
-#include <QFocusEvent>
-#include <QLineEdit>
-#include <misc/qt/qt_utils.h>
-#include <QUiLoader>
-#include <QCoreApplication>
-#include <misc/gen/ConfigLocation.h>
-#include <misc/qt/Globals.h>
-#include <misc/qt/Resource.h>
-#include <misc/qt/ObjectPropertyModel.h>
-#include <qt/InformationSelectDialog.h>
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
 #include "LayoutEditorPropertyPage.h"
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/qt_utils.h>
+#include <misc/gen/ConfigLocation.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/Resource.h>
+#include <gii/qt/LayoutData.h>
+#include <misc/qt/ObjectPropertyModel.h>
+#include <qt/InformationSelectDialog.h>
+#include <QTreeView>
+#include <QFocusEvent>
+#include <QLineEdit>
+#include <QCoreApplication>
+#include <QUiLoader>
 
 namespace sf
 {
@@ -21,7 +22,7 @@ LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameter
 	:AppModuleInterface(params)
 	 , _settings(params._settings)
 {
-	addFileType(tr("UI Layout File"), LayoutWidget::getSuffix());
+	addFileType(tr("UI Layout File"), LayoutData::getFileSuffix());
 	//
 	settingsReadWrite(false);
 	// Create pre configured global UI loader instance.

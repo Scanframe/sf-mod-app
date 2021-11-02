@@ -6,9 +6,9 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::LayoutButton custom widget.
+ * @brief Interface class to create a #sf::VariableEdit custom widget.
  */
-class LayoutWidgetPlugin :public QObject, public QDesignerCustomWidgetInterface
+class LayoutTabsPlugin :public QObject, public QDesignerCustomWidgetInterface
 {
 	Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
@@ -17,7 +17,7 @@ class LayoutWidgetPlugin :public QObject, public QDesignerCustomWidgetInterface
 		/**
 		 * @brief Constructor.
 		 */
-		explicit LayoutWidgetPlugin(QObject* parent = nullptr);
+		explicit LayoutTabsPlugin(QObject* parent = nullptr);
 
 		/**
 		 * @brief Overridden from base class.

@@ -39,8 +39,14 @@ class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
 				QSettings* _settings;
 		};
 
-		// Constructor.
+		/**
+		 * @brief Constructor.
+		 */
 		explicit Editor(QWidget* parent = nullptr);
+		/**
+		 * @brief Destructor.
+		 */
+		~Editor() override;
 
 		void setConfiguration(const Configuration& cfg);
 
@@ -81,12 +87,8 @@ class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
 		// Forward definition.
 		class LineNumberArea;
 
-		QString curFile;
-		bool isUntitled;
-		QWidget* lineNumberArea;
-		int spacingNumber;
-		// Color for background of current line.
-		QColor curLineColor;
+		struct Private;
+		Private& _p;
 };
 
 }

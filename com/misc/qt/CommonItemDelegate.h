@@ -45,6 +45,7 @@ class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
 			etSpinBox,
 			etULongLong,
 			etColorEdit,
+			etStringList
 		};
 
 		/**

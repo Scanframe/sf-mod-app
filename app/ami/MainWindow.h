@@ -146,6 +146,8 @@ class MainWindow :public QMainWindow
 
 		QStringList _recentFiles;
 
+		AppModuleInterface::DockWidgetList dockWidgets;
+
 		void createAppModuleToolBars();
 };
 

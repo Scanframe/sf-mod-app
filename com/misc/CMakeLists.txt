@@ -127,6 +127,8 @@ if (SF_BUILD_QT)
 		qt/Graph.cpp qt/Graph.h
 		qt/CommonItemDelegate.cpp qt/CommonItemDelegate.h
 		qt/Globals.cpp qt/Globals.h
+		qt/HintWindow.cpp qt/HintWindow.h
+		qt/FindReplaceDialog.cpp qt/FindReplaceDialog.h
 		qt/Macros.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc

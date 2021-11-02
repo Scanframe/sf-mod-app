@@ -1,4 +1,8 @@
 #include "VariableEdit.h"
+#include "VariableWidgetBasePrivate.h"
+#include "LayoutData.h"
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/ScriptEngine.h>
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -6,10 +10,6 @@
 #include <QMenu>
 #include <QTimer>
 #include <QGuiApplication>
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/ScriptEngine.h>
-#include "LayoutWidget.h"
-#include "VariableWidgetBasePrivate.h"
 
 namespace sf
 {
@@ -76,18 +76,27 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		}
 		// Execute after the layout is loaded, so the label can be found for sure.
 		QTimer::singleShot(0, this, &VariableEdit::Private::connectLabelNameAlt);
-		// The edit value gets handler for the context menu.
-		_editValue->setContextMenuPolicy(Qt::CustomContextMenu);
-		connect(_editValue, &QLineEdit::customContextMenuRequested, this, &VariableEdit::Private::createContextMenu);
+		// Get the lout data.
+		auto ld = LayoutData::from(_widget);
+		// When found and the layout is not readonly.
+		if (ld && !ld->getReadOnly())
+		{
+			// The edit value gets handler for the context menu.
+			_editValue->setContextMenuPolicy(Qt::CustomContextMenu);
+			// Connect the context menu signal.
+			connect(_editValue, &QLineEdit::customContextMenuRequested, this, &VariableEdit::Private::createContextMenu);
+		}
 	}
 
+	// This method is used to create a on-standard menu.
 	void createContextMenu(const QPoint& pos) const
 	{
-		if (QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
+		// When modifiers are met for the context menu.
+		if (LayoutData::hasMenuModifiers())
 		{
-			if (auto lw = LayoutWidget::getLayoutWidgetOf(_widget))
+			if (auto ld = LayoutData::from(_widget))
 			{
-				lw->popupContextMenu(_widget, _editValue->mapToGlobal(pos));
+				ld->popupContextMenu(_widget, _editValue->mapToGlobal(pos));
 				return;
 			}
 		}
@@ -95,6 +104,7 @@ struct VariableEdit::Private :QObject, VariableWidgetBase::PrivateBase
 		menu->exec(_editValue->mapToGlobal(pos));
 		delete menu;
 	}
+
 
 	~Private() override
 	{

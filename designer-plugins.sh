@@ -2,25 +2,23 @@
 #set -x
 
 # Get the script directory.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 # Location of the users Qt installed files
 LOCAL_QT_ROOT="${HOME}/lib/Qt"
 
 # Writes to stderr.
 #
-function WriteLog()
-{
-	echo "$@" 1>&2;
+function WriteLog() {
+	echo "$@" 1>&2
 }
 
 # Find newest local Qt version directory.
 #
-function GetLocalQtDir()
-{
+function GetLocalQtDir() {
 	local LocalQtDir
 	LocalQtDir="$(find "${LOCAL_QT_ROOT}" -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
-	if [[  -z "${LocalQtDir}" ]] ; then
+	if [[ -z "${LocalQtDir}" ]]; then
 		WriteLog "Could not find local installed Qt directory."
 		exit 1
 	fi
@@ -30,7 +28,7 @@ function GetLocalQtDir()
 # Form the actual plugin target directory
 TARGET="$(GetLocalQtDir)/gcc_64/plugins/designer"
 
-if [[ ! -d "${TARGET}" ]] ; then
+if [[ ! -d "${TARGET}" ]]; then
 	WriteLog "Qt Designer plugin directory not found!"
 	exit 1
 else
@@ -38,15 +36,23 @@ else
 fi
 
 # Declare an array of string with type
-declare -a MODULES=("libsf-misc.so" "libsf-gii.so" "libsf-wgt-ascan.so" "libsf-wgt-bscan.so" "libsf-wgt-acq-ctrl.so" "libcustom-ui-plugin.so" "libtask-menu.so")
+declare -a MODULES=(
+	"libsf-misc.so"
+	"libsf-gii.so"
+	"libsf-wgt-ascan.so"
+	"libsf-wgt-bscan.so"
+	"libsf-wgt-layout.so"
+	"libsf-wgt-acq-ctrl.so"
+	"libcustom-ui-plugin.so"
+	"libtask-menu.so"
+)
 # Iterate the string array using for loop
-for fn in "${MODULES[@]}" ; do
+for fn in "${MODULES[@]}"; do
 
-	if [[ -f "${TARGET}/${fn}" ]] ; then
+	if [[ -f "${TARGET}/${fn}" ]]; then
 		WriteLog "Skipping existing: ${fn}"
 	else
 		ln -s "${DIR}/bin/${fn}" "${TARGET}/${fn}"
 	fi
 
 done
-

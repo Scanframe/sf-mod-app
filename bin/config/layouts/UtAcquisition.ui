@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
- <class>Form</class>
- <widget name="Form" class="QWidget">
+ <class>FormRoot</class>
+ <widget name="FormRoot" class="QWidget">
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -9,25 +9,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1079</width>
-    <height>882</height>
+    <width>966</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="objectName">
-   <string notr="true">Form</string>
+   <string notr="true">FormRoot</string>
   </property>
   <layout name="verticalLayout" class="QVBoxLayout">
    <property name="rightMargin">
-    <number>2</number>
+    <number>12</number>
    </property>
    <property name="leftMargin">
-    <number>2</number>
+    <number>12</number>
    </property>
    <property name="bottomMargin">
-    <number>2</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
-    <number>2</number>
+    <number>12</number>
    </property>
    <property name="spacing">
     <number>2</number>
@@ -67,11 +67,11 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+D</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;Device</string>
@@ -79,14 +79,14 @@
         <property name="layoutFile">
          <string>UtDevice</string>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="objectName">
          <string notr="true">tbUtDevice</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+D</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -99,11 +99,11 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+A</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;A-scan</string>
@@ -111,14 +111,14 @@
         <property name="layoutFile">
          <string>UtAscan</string>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="objectName">
          <string notr="true">tbAscan</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+A</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -131,11 +131,11 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+P</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;Pulser</string>
@@ -143,14 +143,14 @@
         <property name="layoutFile">
          <string>UtPulser</string>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="objectName">
          <string notr="true">tbPulser</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+P</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -163,11 +163,11 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+R</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;Receiver</string>
@@ -175,14 +175,14 @@
         <property name="layoutFile">
          <string>UtReceiver</string>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="objectName">
          <string notr="true">tbReceiver</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+R</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -195,11 +195,14 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+I</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;If Gate</string>
@@ -207,17 +210,14 @@
         <property name="layoutFile">
          <string>UtGate</string>
         </property>
-        <property name="autoRepeatDelay">
-         <number>0</number>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="objectName">
          <string notr="true">tbIfGate</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+I</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -230,11 +230,14 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+1</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="idOffset">
+         <uLongLong>64</uLongLong>
         </property>
         <property name="text">
          <string>Gate &amp;1</string>
@@ -242,17 +245,14 @@
         <property name="layoutFile">
          <string>UtGate</string>
         </property>
-        <property name="autoRepeatDelay">
-         <number>0</number>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="objectName">
          <string notr="true">tbGate1</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>64</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+1</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -265,11 +265,14 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+2</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="idOffset">
+         <uLongLong>128</uLongLong>
         </property>
         <property name="text">
          <string>Gate &amp;2</string>
@@ -277,17 +280,14 @@
         <property name="layoutFile">
          <string>UtGate</string>
         </property>
-        <property name="autoRepeatDelay">
-         <number>0</number>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="objectName">
          <string notr="true">tbGate2</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>128</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+2</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -300,11 +300,11 @@
         <property name="toolButtonStyle">
          <enum>ToolButtonTextBesideIcon</enum>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="shortcut">
+         <string>Alt+E</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
         </property>
         <property name="text">
          <string>&amp;Emulator</string>
@@ -312,14 +312,14 @@
         <property name="layoutFile">
          <string>UtEmulator</string>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="objectName">
          <string notr="true">tbEmulator</string>
-        </property>
-        <property name="idOffset">
-         <uLongLong>0</uLongLong>
-        </property>
-        <property name="shortcut">
-         <string>Alt+E</string>
         </property>
         <addaction name=""/>
        </widget>
@@ -342,20 +342,27 @@
    </item>
    <item>
     <widget name="acquisitionControl" class="sf::AcquisitionControl">
-     <property name="idGate2TrackRange">
-      <uLongLong>0</uLongLong>
+     <property name="idTcgRange">
+      <uLongLong>132145</uLongLong>
      </property>
-     <property name="idGate0TrackRange">
-      <uLongLong>0</uLongLong>
+     <property name="idCopyDelay">
+      <uLongLong>132102</uLongLong>
      </property>
-     <property name="idTcgEnable">
-      <uLongLong>132133</uLongLong>
+     <property name="colorGridLines">
+      <color alpha="64">
+       <red>0</red>
+       <green>170</green>
+       <blue>255</blue>
+      </color>
      </property>
      <property name="idGate3Amp">
       <uLongLong>0</uLongLong>
      </property>
      <property name="idGateCount">
       <uLongLong>132099</uLongLong>
+     </property>
+     <property name="idGate2Tof">
+      <uLongLong>132290</uLongLong>
      </property>
      <property name="colorAdjustmentLine">
       <color>
@@ -364,17 +371,32 @@
        <blue>0</blue>
       </color>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+     <property name="idGate3Tof">
+      <uLongLong>0</uLongLong>
      </property>
-     <property name="idTcgRange">
-      <uLongLong>132145</uLongLong>
+     <property name="idGate1TrackRange">
+      <uLongLong>0</uLongLong>
      </property>
-     <property name="idGate0SlavedTo">
-      <uLongLong>132164</uLongLong>
+     <property name="idGate0TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idTcgDelay">
+      <uLongLong>132144</uLongLong>
+     </property>
+     <property name="idCopyData">
+      <uLongLong>132098</uLongLong>
+     </property>
+     <property name="idsTcgTime">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
+     </property>
+     <property name="idGate0Amp">
+      <uLongLong>132161</uLongLong>
+     </property>
+     <property name="idGate0Delay">
+      <uLongLong>132162</uLongLong>
+     </property>
+     <property name="gripHeight">
+      <number>6</number>
      </property>
      <property name="colorTcgRange">
       <color>
@@ -383,11 +405,38 @@
        <blue>255</blue>
       </color>
      </property>
-     <property name="idGate1Delay">
+     <property name="idGate1Tof">
       <uLongLong>132226</uLongLong>
      </property>
-     <property name="idCopyData">
-      <uLongLong>132098</uLongLong>
+     <property name="idGate1Threshold">
+      <uLongLong>132231</uLongLong>
+     </property>
+     <property name="idGate0Range">
+      <uLongLong>132163</uLongLong>
+     </property>
+     <property name="valueMax">
+      <number>0</number>
+     </property>
+     <property name="thresholdDrag">
+      <bool>true</bool>
+     </property>
+     <property name="idGate2Threshold">
+      <uLongLong>132295</uLongLong>
+     </property>
+     <property name="gridEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="idGate2Delay">
+      <uLongLong>132290</uLongLong>
+     </property>
+     <property name="idCopyRange">
+      <uLongLong>132103</uLongLong>
+     </property>
+     <property name="objectName">
+      <string notr="true">acquisitionControl</string>
+     </property>
+     <property name="idsTcgGain">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
      </property>
      <property name="colorBackground">
       <color alpha="192">
@@ -396,17 +445,23 @@
        <blue>0</blue>
       </color>
      </property>
-     <property name="idGate2Amp">
-      <uLongLong>132289</uLongLong>
+     <property name="idGate2SlavedTo">
+      <uLongLong>132292</uLongLong>
+     </property>
+     <property name="idGate2Range">
+      <uLongLong>132291</uLongLong>
+     </property>
+     <property name="idGate1Amp">
+      <uLongLong>132225</uLongLong>
+     </property>
+     <property name="idCopyIndex">
+      <uLongLong>132099</uLongLong>
      </property>
      <property name="thresholdLinked">
       <bool>true</bool>
      </property>
-     <property name="idGate0Delay">
-      <uLongLong>132162</uLongLong>
-     </property>
-     <property name="idsTcgTime">
-      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
+     <property name="idGate3Threshold">
+      <uLongLong>0</uLongLong>
      </property>
      <property name="colorTcgLine">
       <color>
@@ -415,40 +470,61 @@
        <blue>255</blue>
       </color>
      </property>
-     <property name="idCopyRange">
-      <uLongLong>132103</uLongLong>
+     <property name="idTcgEnable">
+      <uLongLong>132133</uLongLong>
      </property>
-     <property name="idGate2Tof">
-      <uLongLong>132290</uLongLong>
-     </property>
-     <property name="idsTcgGain">
-      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
-     </property>
-     <property name="gridEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="idGate3SlavedTo">
+     <property name="idGate3Delay">
       <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate2Amp">
+      <uLongLong>132289</uLongLong>
+     </property>
+     <property name="idGate0Threshold">
+      <uLongLong>132167</uLongLong>
+     </property>
+     <property name="idGate0SlavedTo">
+      <uLongLong>132164</uLongLong>
+     </property>
+     <property name="idGate0Tof">
+      <uLongLong>132162</uLongLong>
+     </property>
+     <property name="idGate1SlavedTo">
+      <uLongLong>132228</uLongLong>
+     </property>
+     <property name="idGate1Delay">
+      <uLongLong>132226</uLongLong>
+     </property>
+     <property name="idGate2TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idTcgSlavedTo">
+      <uLongLong>132143</uLongLong>
      </property>
      <property name="idGate3TrackRange">
       <uLongLong>0</uLongLong>
      </property>
-     <property name="idGate3Threshold">
+     <property name="idGate3SlavedTo">
       <uLongLong>0</uLongLong>
      </property>
-     <property name="idGate1Threshold">
-      <uLongLong>132231</uLongLong>
+     <property name="whatsThis">
+      <string>Acquisition control using GII interface.</string>
      </property>
-     <property name="idGate0Amp">
-      <uLongLong>132161</uLongLong>
+     <property name="idTimeUnit">
+      <uLongLong>132101</uLongLong>
      </property>
-     <property name="idGate3Tof">
+     <property name="idIfShift">
       <uLongLong>0</uLongLong>
      </property>
-     <property name="objectName">
-      <string notr="true">acquisitionControl</string>
+     <property name="idGate1Range">
+      <uLongLong>132227</uLongLong>
      </property>
-     <property name="idGate3Delay">
+     <property name="sizePolicy">
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="idGate3Range">
       <uLongLong>0</uLongLong>
      </property>
      <property name="colorForeground">
@@ -458,133 +534,57 @@
        <blue>0</blue>
       </color>
      </property>
-     <property name="idGate2SlavedTo">
-      <uLongLong>132292</uLongLong>
-     </property>
-     <property name="idGate2Threshold">
-      <uLongLong>132295</uLongLong>
-     </property>
-     <property name="idGate2Range">
-      <uLongLong>132291</uLongLong>
-     </property>
-     <property name="idCopyDelay">
-      <uLongLong>132102</uLongLong>
-     </property>
-     <property name="idGate0Range">
-      <uLongLong>132163</uLongLong>
-     </property>
-     <property name="idTimeUnit">
-      <uLongLong>132101</uLongLong>
-     </property>
-     <property name="valueMax">
-      <number>0</number>
-     </property>
-     <property name="idTcgDelay">
-      <uLongLong>132144</uLongLong>
-     </property>
-     <property name="idIfShift">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="idTcgSlavedTo">
-      <uLongLong>132143</uLongLong>
-     </property>
-     <property name="idGate1Tof">
-      <uLongLong>132226</uLongLong>
-     </property>
-     <property name="idGate1SlavedTo">
-      <uLongLong>132228</uLongLong>
-     </property>
-     <property name="idGate0Threshold">
-      <uLongLong>132167</uLongLong>
-     </property>
-     <property name="idGate1Amp">
-      <uLongLong>132225</uLongLong>
-     </property>
-     <property name="idGate2Delay">
-      <uLongLong>132290</uLongLong>
-     </property>
-     <property name="idGate1Range">
-      <uLongLong>132227</uLongLong>
-     </property>
-     <property name="idGate3Range">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="colorGridLines">
-      <color alpha="64">
-       <red>0</red>
-       <green>170</green>
-       <blue>255</blue>
-      </color>
-     </property>
-     <property name="gripHeight">
-      <number>6</number>
-     </property>
-     <property name="idGate1TrackRange">
-      <uLongLong>0</uLongLong>
-     </property>
-     <property name="whatsThis">
-      <string>Acquisition control using GII interface.</string>
-     </property>
-     <property name="thresholdDrag">
-      <bool>true</bool>
-     </property>
-     <property name="idGate0Tof">
-      <uLongLong>132162</uLongLong>
-     </property>
-     <property name="idCopyIndex">
-      <uLongLong>132099</uLongLong>
-     </property>
     </widget>
    </item>
    <item>
     <widget name="wgtBscan" class="sf::BscanGraph">
+     <property name="idScanLeft">
+      <uLongLong>647177</uLongLong>
+     </property>
+     <property name="idScanRange">
+      <uLongLong>647176</uLongLong>
+     </property>
+     <property name="idScanRight">
+      <uLongLong>647178</uLongLong>
+     </property>
      <property name="idIndex">
       <uLongLong>132097</uLongLong>
      </property>
      <property name="IdCursorEvent">
       <uLongLong>647174</uLongLong>
      </property>
-     <property name="idTimeRange">
-      <uLongLong>132103</uLongLong>
-     </property>
-     <property name="idTimeUnit">
-      <uLongLong>132101</uLongLong>
-     </property>
-     <property name="idScanLeft">
-      <uLongLong>647177</uLongLong>
-     </property>
-     <property name="idScanRight">
-      <uLongLong>647178</uLongLong>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+     <property name="idCursorIndex">
+      <uLongLong>647169</uLongLong>
      </property>
      <property name="idScanDelay">
       <uLongLong>647175</uLongLong>
      </property>
-     <property name="idCursorIndex">
-      <uLongLong>647169</uLongLong>
+     <property name="idCursorFraction">
+      <uLongLong>647171</uLongLong>
+     </property>
+     <property name="idTimeRange">
+      <uLongLong>132103</uLongLong>
+     </property>
+     <property name="IdCursorPopIndex">
+      <uLongLong>647170</uLongLong>
      </property>
      <property name="idTimeDelay">
       <uLongLong>132102</uLongLong>
      </property>
-     <property name="idScanRange">
-      <uLongLong>647176</uLongLong>
-     </property>
-     <property name="objectName">
-      <string notr="true">wgtBscan</string>
-     </property>
-     <property name="idCursorFraction">
-      <uLongLong>647171</uLongLong>
+     <property name="idTimeUnit">
+      <uLongLong>132101</uLongLong>
      </property>
      <property name="idData">
       <uLongLong>132098</uLongLong>
      </property>
-     <property name="IdCursorPopIndex">
-      <uLongLong>647170</uLongLong>
+     <property name="sizePolicy">
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="objectName">
+      <string notr="true">wgtBscan</string>
      </property>
     </widget>
    </item>

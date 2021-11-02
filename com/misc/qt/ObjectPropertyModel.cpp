@@ -41,7 +41,12 @@ const char* ignoreList[] = {
 	"inputMethodHints",
 	"cursor",
 	// QLabel
-	"pixmap"
+	"pixmap",
+	// QLayout
+	"leftMargin",
+	"rightMargin",
+	"topMargin",
+	"bottomMargin",
 };
 
 bool ignored(const char* name)
@@ -84,6 +89,10 @@ CommonItemDelegate::EEditorType getEditorType(QObject* obj, int index, bool dyna
 	else if (mt == QMetaType::fromType<QColor>())
 	{
 		return CommonItemDelegate::etColorEdit;
+	}
+	else if (mt == QMetaType::fromType<QStringList>())
+	{
+		return CommonItemDelegate::etStringList;
 	}
 	return CommonItemDelegate::etDefault;
 }
@@ -182,7 +191,7 @@ void ObjectPropertyModel::setTarget(QObject* target)
 			for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)
 			{
 				const auto& prop = mo->property(i);
-				if (prop.isWritable() && prop.isDesignable())
+				if (prop.isWritable() && prop.isDesignable() && !prop.isAlias())
 				{
 					if (!ignored(prop.name()))
 					{
@@ -196,8 +205,7 @@ void ObjectPropertyModel::setTarget(QObject* target)
 		auto names = obj->dynamicPropertyNames();
 		for (int ni = 0; ni < names.count(); ni++)
 		{
-			// Do not add Qt's own dynamic added properties.
-			if (!names.at(ni).startsWith("_q_"))
+			if (!ignored(names.at(ni)) && !names.at(ni).startsWith("_q_"))
 			{
 				_indices.append({obj, ni, true});
 			}
@@ -311,7 +319,7 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				return QString("%1::%2").arg(meta->property(propIdx._index).enclosingMetaObject()->className()).arg(meta->property(propIdx._index).name());
 
 			case vcType:
-				// Negative index indicates a dynamic property.
+				// Check if dynamic or not.
 				if (propIdx._dynamic)
 				{
 					return propIdx._obj->property(propIdx._obj->dynamicPropertyNames().at(propIdx._index)).typeName();
@@ -353,6 +361,11 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				{
 					// Show hexadecimal value.
 					return QString("0x%1").arg(propIdx._obj->property(mp.name()).value<qulonglong>(), 0, 16);
+				}
+				else if (mt == QMetaType::fromType<QStringList>())
+				{
+					// Show the joined lines.
+					return propIdx._obj->property(mp.name()).toStringList().join('\n');
 				}
 				// Otherwise, just default.
 				return propIdx._obj->property(mp.name());

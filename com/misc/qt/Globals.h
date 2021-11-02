@@ -9,6 +9,8 @@ class QUiLoader;
 
 class QWidget;
 
+class QIODevice;
+
 namespace sf
 {
 
@@ -43,7 +45,7 @@ _MISC_FUNC QWidget* setGlobalParent(QWidget* parent);
 _MISC_FUNC QWidget* getGlobalParent();
 
 /**
- * @brief Sets global UI loader class for.
+ * @brief Sets global UI loader class.
  *
  * @param uiLoader New instance.
  * @return Previous instance.
@@ -56,5 +58,19 @@ _MISC_FUNC QUiLoader* setGlobalUiLoader(QUiLoader* uiLoader);
  * @return Current global instance when set otherwise nullptr is returned.
  */
 _MISC_FUNC QUiLoader* getGlobalUiLoader();
+
+/**
+ * @brief Loads the form from the passed UI file.
+ *
+ * This function prevents mandatory linking of the Qt::Designer library.
+ */
+_MISC_FUNC QWidget* FormBuilderLoad(QIODevice* io, QWidget* parent);
+
+/**
+ * @brief Saves the widget to the passed file.
+ *
+ * This function prevents mandatory linking of the Qt::Designer library.
+ */
+_MISC_FUNC void FormBuilderSave(QIODevice* io, QWidget* widget);
 
 }

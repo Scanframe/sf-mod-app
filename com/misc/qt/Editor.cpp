@@ -1,18 +1,82 @@
+#include "Editor.h"
+#include "FindReplaceDialog.h"
+#include "../gen/gen_utils.h"
+#include "../qt/Globals.h"
+#include "qt_utils.h"
 #include <QtWidgets>
 #include <QPainter>
 #include <QTextBlock>
-#include <QFileInfo>
 #include <QTextStream>
-#include <QLabel>
 #include <QMessageBox>
-#include <QGuiApplication>
-#include <QFileDialog>
 #include <QSaveFile>
-#include <gen/gen_utils.h>
-#include "Editor.h"
 
 namespace sf
 {
+
+struct Editor::Private
+{
+	explicit Private(Editor* editor)
+		:_editor(editor)
+		 , _actionFind(editor)
+		 ,_settings(getGlobalSettings())
+	{
+		_editor->addAction(&_actionFind);
+		_actionFind.setShortcut(QKeySequence(tr("Ctrl+F", "Find|Replace")));
+		connect(&_actionFind, &QAction::triggered, [&]()
+		{
+			if (!_dlgFindReplace)
+			{
+				_dlgFindReplace = new FindReplaceDialog(_editor);
+				_dlgFindReplace->setEditor(_editor);
+				connect(_dlgFindReplace, &QDialog::finished, [&]()
+				{
+					stateSaveRestore(true);
+				});
+			}
+			if (_dlgFindReplace->isVisible())
+			{
+				_dlgFindReplace->activateWindow();
+			}
+			else
+			{
+				stateSaveRestore(false);
+				_dlgFindReplace->show();
+			}
+
+		});
+	}
+
+	void stateSaveRestore(bool save) const
+	{
+		if (!_settings || !_dlgFindReplace)
+		{
+			return;
+		}
+		_settings->beginGroup(getObjectNamePath(_dlgFindReplace).join('.').prepend("State."));
+		QString key("State");
+		if (save)
+		{
+			_settings->setValue(key, _dlgFindReplace->saveGeometry());
+		}
+		else
+		{
+			_dlgFindReplace->restoreGeometry(_settings->value(key).toByteArray());
+		}
+		_settings->endGroup();
+	}
+
+	Editor* _editor;
+	QString curFile;
+	bool isUntitled{true};
+	QWidget* lineNumberArea{nullptr};
+	int spacingNumber{1};
+	// Color for background of current line.
+	QColor curLineColor;
+	QAction _actionFind;
+	FindReplaceDialog* _dlgFindReplace{nullptr};
+	QSettings* _settings;
+
+};
 
 Editor::Configuration::Configuration(QSettings* settings)
 	:_settings(settings)
@@ -74,10 +138,8 @@ class Editor::LineNumberArea :public QWidget
 
 Editor::Editor(QWidget* parent)
 	:QPlainTextEdit(parent)
+	 , _p(*new Private(this))
 	 , ObjectExtension(this)
-	 , isUntitled(true)
-	 , spacingNumber(1)
-	 , lineNumberArea(nullptr)
 {
 	setWindowIcon(QIcon(":icon/svg/code-editor"));
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -93,19 +155,24 @@ Editor::Editor(QWidget* parent)
 	setUndoRedoEnabled(true);
 }
 
+Editor::~Editor()
+{
+	delete &_p;
+}
+
 void Editor::setConfiguration(const Configuration& cfg)
 {
-	curLineColor = cfg.darkMode ? QColorConstants::DarkYellow.darker() : QColor(255, 250, 227);
+	_p.curLineColor = cfg.darkMode ? QColorConstants::DarkYellow.darker() : QColor(255, 250, 227);
 	if (cfg.showGutter)
 	{
-		lineNumberArea = new LineNumberArea(this);
+		_p.lineNumberArea = new LineNumberArea(this);
 		connect(this, &Editor::blockCountChanged, this, &Editor::updateLineNumberAreaWidth);
 		connect(this, &Editor::updateRequest, this, &Editor::updateLineNumberArea);
 		updateLineNumberAreaWidth(0);
 	}
 	else
 	{
-		delete_null(lineNumberArea);
+		delete_null(_p.lineNumberArea);
 	}
 	// Change the default editor colors.
 	QPalette pal(palette());
@@ -131,7 +198,7 @@ int Editor::lineNumberAreaWidth()
 	}
 	int space = fontMetrics().horizontalAdvance(QChar('9'));
 	// Spacing is half a single character advance and a pixel for the border.
-	spacingNumber = space / 2 + 1;
+	_p.spacingNumber = space / 2 + 1;
 	// Add on digit for spacing and an extra 2 pixels for a border.
 	space *= (digits + 1) + 2;
 	//
@@ -145,15 +212,15 @@ void Editor::updateLineNumberAreaWidth(int /* newBlockCount */)
 
 void Editor::updateLineNumberArea(const QRect& rect, int dy)
 {
-	if (lineNumberArea)
+	if (_p.lineNumberArea)
 	{
 		if (dy)
 		{
-			lineNumberArea->scroll(0, dy);
+			_p.lineNumberArea->scroll(0, dy);
 		}
 		else
 		{
-			lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+			_p.lineNumberArea->update(0, rect.y(), _p.lineNumberArea->width(), rect.height());
 		}
 	}
 	if (rect.contains(viewport()->rect()))
@@ -166,9 +233,9 @@ void Editor::resizeEvent(QResizeEvent* e)
 {
 	QPlainTextEdit::resizeEvent(e);
 	QRect cr = contentsRect();
-	if (lineNumberArea)
+	if (_p.lineNumberArea)
 	{
-		lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+		_p.lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 	}
 }
 
@@ -178,7 +245,7 @@ void Editor::highlightCurrentLine()
 	if (!isReadOnly())
 	{
 		QTextEdit::ExtraSelection selection;
-		selection.format.setBackground(curLineColor);
+		selection.format.setBackground(_p.curLineColor);
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
 		selection.cursor = textCursor();
 		selection.cursor.clearSelection();
@@ -189,7 +256,7 @@ void Editor::highlightCurrentLine()
 
 void Editor::lineNumberAreaPaintEvent(QPaintEvent* event)
 {
-	QPainter painter(lineNumberArea);
+	QPainter painter(_p.lineNumberArea);
 	painter.fillRect(event->rect(), palette().alternateBase());
 	// Draw the border.
 	painter.setPen(Qt::lightGray);
@@ -205,7 +272,7 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent* event)
 		{
 			QString number = QString::number(blockNumber + 1);
 			painter.setPen(palette().color(QPalette::ColorRole::WindowText));
-			painter.drawText(-spacingNumber, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignRight, number);
+			painter.drawText(-_p.spacingNumber, top, _p.lineNumberArea->width(), fontMetrics().height(), Qt::AlignRight, number);
 		}
 		block = block.next();
 		top = bottom;

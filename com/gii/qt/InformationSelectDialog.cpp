@@ -26,7 +26,6 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	ui->treeView->setModel(_proxyModel);
 	//
 	ui->treeView->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
-
 	// Create the actions for the buttons.
 	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>
 		{

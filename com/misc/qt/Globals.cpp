@@ -1,7 +1,8 @@
-#include <optional>
-#include <cassert>
-#include <gen/Exception.h>
 #include "Globals.h"
+#include "FormBuilder.h"
+#include <gen/Exception.h>
+#include <QWidget>
+#include <QCoreApplication>
 
 namespace sf
 {
@@ -12,6 +13,12 @@ namespace
 	QSettings* GlobalSettings{nullptr};
 	QWidget* GlobalParent{nullptr};
 	QUiLoader* GlobalUiLoader{nullptr};
+	QFormBuilder* GlobalFormBuilder{nullptr};
+
+	__attribute__((constructor)) void Cleanup()
+	{
+		delete GlobalFormBuilder;
+	}
 }
 
 QSettings* setGlobalSettings(QSettings* settings)
@@ -51,6 +58,30 @@ QUiLoader* getGlobalUiLoader()
 	return GlobalUiLoader;
 }
 
+QWidget* FormBuilderLoad(QIODevice* io, QWidget* parent)
+{
+	if (!GlobalFormBuilder)
+	{
+		// Create out form builder to load a layout.
+		GlobalFormBuilder = new FormBuilder();
+		// Add the application directory as the plugin directory to find custom plugins.
+		GlobalFormBuilder->addPluginPath(QCoreApplication::applicationDirPath());
+	}
+	// Create widget from the loaded ui-file.
+	return GlobalFormBuilder->load(io, parent);
+}
 
+void FormBuilderSave(QIODevice* io, QWidget* widget)
+{
+	if (!GlobalFormBuilder)
+	{
+		// Create out form builder to load a layout.
+		GlobalFormBuilder = new FormBuilder();
+		// Add the application directory as the plugin directory to find custom plugins.
+		GlobalFormBuilder->addPluginPath(QCoreApplication::applicationDirPath());
+	}
+	// Save widget to the ui-file.
+	GlobalFormBuilder->save(io, widget);
+}
 
 }

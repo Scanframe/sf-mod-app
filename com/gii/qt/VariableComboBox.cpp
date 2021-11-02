@@ -52,8 +52,6 @@ struct VariableComboBox::Private :QObject, VariableWidgetBase::PrivateBase
 		_widget->setFocusProxy(_comboBoxValue);
 		// Execute after the layout is loaded, so the label can be found for sure.
 		QTimer::singleShot(0, this, &VariableComboBox::Private::connectLabelNameAlt);
-		// The edit value gets handler for the context menu.
-		_comboBoxValue->setContextMenuPolicy(Qt::CustomContextMenu);
 	}
 
 	~Private() override

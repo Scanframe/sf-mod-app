@@ -376,7 +376,7 @@ bool BscanGraph::Private::sustain(const timespec& ts)
 		// Do not generate new data until enabled to do so when the data is drawn.
 		_generateTimer.disable();
 		// Check if a next range to generate is valid for data generation.
-		if  (_rangeCurrent != _rangeNext)
+		if (_rangeCurrent != _rangeNext)
 		{
 			// Generate the new data from the range.
 			if (generateData(_rangeNext))
@@ -464,12 +464,12 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 						// Check button left button is active.
 						if (modifiers.second.testAnyFlags(Qt::LeftButton | Qt::RightButton))
 						{
-							localMouse(meDOWN, modifiers.first, modifiers.second, pt, false);
+							localMouse(MousePress, modifiers.first, modifiers.second, pt, false);
 						}
 					}
 					else
 					{
-						localMouse(meUP, modifiers.first, modifiers.second, pt, false);
+						localMouse(MouseRelease, modifiers.first, modifiers.second, pt, false);
 					}
 					break;
 				}
@@ -497,7 +497,7 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 					_cursor.Fraction = _cursor.VFraction.getCur().getFloat();
 					if (_cursor.Active)
 					{
-						localMouse(meMOVE, bitMaskToModifiers(_cursor.Event).first, Qt::MouseButtons(), pt, false);
+						localMouse(MouseMove, bitMaskToModifiers(_cursor.Event).first, Qt::MouseButtons(), pt, false);
 					}
 					break;
 				}
@@ -507,12 +507,12 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 	}
 }
 
-void BscanGraph::Private::localMouse(BscanGraph::Private::EMouseEvent me,
-	Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, const QPoint& pt, bool local)
+void BscanGraph::Private::localMouse(EKeyMouseEvent me, Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, const QPoint& pt, bool local)
 {
 	switch (me)
 	{
-		case meKEY:
+		case KeyPress:
+		case KeyRelease:
 			if (_cursor.Active)
 			{
 				// Set the left button too.
@@ -524,7 +524,7 @@ void BscanGraph::Private::localMouse(BscanGraph::Private::EMouseEvent me,
 			}
 			break;
 
-		case meDOWN:
+		case MousePress:
 			// Cursor is active on left button
 			if (buttons.testFlag(Qt::LeftButton))
 			{
@@ -554,7 +554,7 @@ void BscanGraph::Private::localMouse(BscanGraph::Private::EMouseEvent me,
 			}
 			break;
 
-		case meMOVE:
+		case MouseMove:
 			if (_cursor.Active)
 			{
 				if (_zoomActive)
@@ -578,7 +578,7 @@ void BscanGraph::Private::localMouse(BscanGraph::Private::EMouseEvent me,
 			}
 			break;
 
-		case meUP:
+		case MouseRelease:
 			if (_cursor.Active)
 			{
 				_cursor.Active = false;

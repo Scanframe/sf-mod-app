@@ -168,10 +168,17 @@ struct BscanGraph::Private
 	void zoomBox(const QPoint& pt, bool down);
 
 	// Event enumerate for passing to the event function.
-	enum EMouseEvent {meDOWN, meMOVE, meUP, meKEY};
+	enum EKeyMouseEvent
+	{
+		MousePress,
+		MouseMove,
+		MouseRelease,
+		KeyPress,
+		KeyRelease
+	};
 
 	// Event handling routine for local or remote events.
-	void localMouse(BscanGraph::Private::EMouseEvent me, Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, const QPoint& pt, bool local);
+	void localMouse(Private::EKeyMouseEvent me, Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, const QPoint& pt, bool local);
 };
 
 }

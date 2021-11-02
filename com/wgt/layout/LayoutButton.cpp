@@ -1,13 +1,12 @@
+#include "LayoutButton.h"
+#include <misc/qt/FormDialog.h>
+#include <misc/qt/qt_utils.h>
+#include <gii/qt/LayoutData.h>
+#include <misc/qt/Globals.h>
 #include <QMessageBox>
 #include <QLayout>
 #include <QScreen>
-#include <QCoreApplication>
-#include <misc/qt/FormBuilder.h>
-#include <misc/qt/FormDialog.h>
 #include <QGuiApplication>
-#include <misc/qt/qt_utils.h>
-#include "LayoutButton.h"
-#include "LayoutWidget.h"
 
 namespace sf
 {
@@ -62,38 +61,35 @@ void LayoutButton::addPropertyPages(PropertySheetDialog* sheet)
 
 void LayoutButton::openLayout()
 {
-	auto lw = LayoutWidget::getLayoutWidgetOf(this);
-	if (lw)
+	if (auto ld = LayoutData::from(this))
 	{
 		// From the filename.
-		QString fn = _p->_layoutFile + '.' + LayoutWidget::getSuffix();
+		QString fn = _p->_layoutFile + '.' + LayoutData::getFileSuffix();
 		// Create file device.
-		QFile file(lw->getDirectory().absoluteFilePath(fn));
+		QFile file(ld->getDirectory().absoluteFilePath(fn));
 		// Check if the file exists.
 		if (!file.open(QFile::ReadOnly | QFile::Text))
 		{
 			QMessageBox mb(this);
 			mb.setIcon(QMessageBox::QMessageBox::Warning);
 			mb.setWindowTitle(tr("Open file failed!"));
-			mb.setText(tr("Could open file '%1'\nin directory\n'%2'").arg(fn).arg(lw->getDirectory().path()));
+			mb.setText(tr("Could open file '%1'\nin directory\n'%2'").arg(fn).arg(ld->getDirectory().path()));
 			mb.exec();
 			return;
 		}
 		// Create the popup dialog as the parent for the layout.
-		auto dlg = new FormDialog(this, Qt::Popup);
+		QScopedPointer dlg(new FormDialog(this, Qt::Popup));
 		// Offset used for the ID's in GII widgets.
 		dlg->setProperty("idOffset", getIdOffset());
 		// TODO: Work-around using a dummy widget for https://bugreports.qt.io/browse/QTBUG-96693
 		// Set no parent to work around the bug.
-		auto cw = new LayoutWidget(nullptr);
-		// Offset used for the ID's in GII widgets.
-		cw->setIdOffset(getIdOffset());
-		// Create out form builder to load a layout.
-		FormBuilder builder;
-		// Add the application directory as the plugin directory to find custom plugins.
-		builder.addPluginPath(QCoreApplication::applicationDirPath());
-		// Create widget from the loaded ui-file.
-		_p->_layoutContainer = builder.load(&file, cw);
+		QScopedPointer cw(new QWidget(nullptr));
+		// Create data object for dependent widgets.
+		auto ldc = new LayoutData(cw.get());
+		ldc->setIdOffset(ld->getIdOffset() + getIdOffset());
+		ldc->setDirectory(QFileInfo(file).absoluteDir());
+		// Create widget from the ui-file.
+		_p->_layoutContainer = FormBuilderLoad(&file, cw.get());
 		// When loading was not successful.
 		if (!_p->_layoutContainer)
 		{
@@ -106,7 +102,10 @@ void LayoutButton::openLayout()
 		}
 		else
 		{
-			_p->_layoutContainer->setParent(dlg);
+			// Set dialog the as the parent for the container.
+			_p->_layoutContainer->setParent(dlg.get());
+			// Make the container widget the parent for the layout data.
+			ldc->setParent(_p->_layoutContainer);
 			// Prepend the name of the object for optional styling.
 			_p->_layoutContainer->setObjectName(QString("%1Popup").arg(_p->_layoutContainer->objectName()));
 			// Position to actually move to.
@@ -150,8 +149,6 @@ void LayoutButton::openLayout()
 			}
 			dlg->exec();
 		}
-		delete dlg;
-		delete cw;
 	}
 }
 

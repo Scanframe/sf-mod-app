@@ -12,7 +12,7 @@ namespace sf
 /**
  * Base class for loading Widgets from a ui-file when used in an editor for example.
  */
-class _GII_CLASS LayoutWidget :public QWidget
+class _GII_CLASS LayoutData :public QObject
 {
 	Q_OBJECT
 
@@ -20,7 +20,7 @@ class _GII_CLASS LayoutWidget :public QWidget
 		/**
 		 * @brief Constructor as QWidget.
 		 */
-		explicit LayoutWidget(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+		explicit LayoutData(QObject* parent = nullptr);
 
 		/**
 		 * @brief Opens a property editor dialog for the given target in a derived class.
@@ -56,7 +56,12 @@ class _GII_CLASS LayoutWidget :public QWidget
 		 * @param target Target object in the layout.
 		 * @return On not found it returns a nullptr.
 		 */
-		static LayoutWidget* getLayoutWidgetOf(QObject* target);
+		static LayoutData* from(QObject* target);
+
+		/**
+		 * @brief Returns true when the modifier are met for the context menu to popup.
+		 */
+		static bool hasMenuModifiers();
 
 		/**
 		 * @brief Gets the directory of the loaded layout file.
@@ -64,9 +69,15 @@ class _GII_CLASS LayoutWidget :public QWidget
 		 [[nodiscard]] virtual QDir getDirectory() const;
 
 		/**
+		 * @brief Gets the directory of the loaded layout file.
+		 * Only has effect when #getDirectory() is not overridden.
+		 */
+		void setDirectory(const QDir& directory);
+
+		/**
 		 * @brief Gets suffix used for layout files.
 		 */
-		static QString getSuffix();
+		static QString getFileSuffix();
 
 		/**
 		 * @brief Gets the id offset for all Gii widgets.
@@ -78,7 +89,7 @@ class _GII_CLASS LayoutWidget :public QWidget
 		 * @brief Sets id offset for all Gii widgets.
 		 * Only applied when a layout is loaded.
 		 */
-	void setIdOffset(Gii::IdType idOfs) const;
+	void setIdOffset(Gii::IdType idOffset) const;
 
 	private:
 

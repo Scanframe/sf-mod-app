@@ -1,8 +1,8 @@
-#include <QDebug>
-#include "ObjectExtension.h"
 #include "MiscCustomWidgets.h"
-#include "DrawWidgetPlugin.h"
+#include <QDebug>
 #include "EditorPlugin.h"
+#include "ObjectExtension.h"
+#include "DrawWidgetPlugin.h"
 #include "PropertyPagePlugin.h"
 #include "ActionButtonPlugin.h"
 

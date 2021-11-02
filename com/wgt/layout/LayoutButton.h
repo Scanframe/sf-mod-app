@@ -5,7 +5,7 @@
 #include <QAction>
 #include <misc/qt/ObjectExtension.h>
 #include <misc/qt/Macros.h>
-#include "Namespace.h"
+#include <gii/qt/Namespace.h>
 
 namespace sf
 {

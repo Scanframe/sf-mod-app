@@ -2,9 +2,9 @@
 #include <QStyle>
 #include <QGuiApplication>
 #include <misc/qt/Resource.h>
-#include "LayoutWidget.h"
 #include "InformationSelectDialog.h"
 #include "InformationIdEdit.h"
+#include "LayoutData.h"
 
 namespace sf
 {
@@ -27,22 +27,6 @@ InformationIdEdit::InformationIdEdit(QWidget* parent)
 	setId(0);
 	// signals, clear lineEdit if btn pressed; change btn visibility on input
 	connect(btnOpenDialog, &QToolButton::clicked, [&](){selectDialog();});
-	// Context menu in case it needs to be modified.
-	setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(this, &QLineEdit::customContextMenuRequested, [&](const QPoint& pos)
-	{
-		if (QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
-		{
-			if (auto lw = LayoutWidget::getLayoutWidgetOf(this))
-			{
-				lw->popupContextMenu(this, mapToGlobal(pos));
-				return;
-			}
-		}
-		auto menu = createStandardContextMenu();
-		menu->exec(mapToGlobal(pos));
-		delete menu;
-	});
 	// Limit the amount of characters by default. (enough for 64 bit hex value)
 	setMaxLength(24);
 }

@@ -1,17 +1,17 @@
 #pragma once
 
 #include <QWidget>
+#include <QDir>
 #include <QMenu>
 #include <QScrollArea>
 #include <QSettings>
-#include <gii/qt/LayoutWidget.h>
 #include <ami/iface/MultiDocInterface.h>
 #include "ObjectHierarchyModel.h"
 
 namespace sf
 {
 
-class LayoutEditor :public LayoutWidget, public MultiDocInterface
+class LayoutEditor :public QWidget, public MultiDocInterface
 {
 	Q_OBJECT
 
@@ -56,11 +56,16 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 
 		bool eventFilter(QObject* watched, QEvent* event) override;
 
-		void popupContextMenu(QObject* target, const QPoint& pos) override;
-
-		void openPropertyEditor(QObject* target) override;
-
 		ObjectHierarchyModel* getHierarchyModel();
+
+		[[nodiscard]] QDir getDirectory() const;
+
+		void popupContextMenu(QObject* target, const QPoint& pos);
+
+		void openPropertyEditor(QObject* target);
+
+		void setReadOnly(bool readOnly);
+
 
 	public Q_SLOTS:
 
@@ -74,8 +79,6 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 		 */
 		void documentModified();
 
-		QDir getDirectory() const override;
-
 	Q_SIGNALS:
 		void objectSelected(QObject* obj);
 
@@ -85,6 +88,10 @@ class LayoutEditor :public LayoutWidget, public MultiDocInterface
 		void resizeEvent(QResizeEvent* event) override;
 
 	private:
+
+		struct Data;
+		Data* _layoutEditorData;
+
 		void setCurrentFile(const QString& fileName);
 
 		[[nodiscard]] QString strippedName(const QString& fullFileName) const;

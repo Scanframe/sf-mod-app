@@ -37,7 +37,7 @@ QString LayoutButtonPlugin::name() const
 
 QString LayoutButtonPlugin::group() const
 {
-	return QStringLiteral("ScanFrame Widgets");
+	return QStringLiteral("ScanFrame Layout Widgets");
 }
 
 QIcon LayoutButtonPlugin::icon() const
@@ -63,7 +63,7 @@ bool LayoutButtonPlugin::isContainer() const
 QString LayoutButtonPlugin::domXml() const
 {
 	return R"(<ui language="c++">
- <widget class="sf::LayoutButton" name="LayoutButton">
+ <widget class="sf::LayoutButton" name="layoutButton">
   <property name="geometry">
    <rect>
     <x>0</x>

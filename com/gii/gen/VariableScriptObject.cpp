@@ -176,8 +176,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			{
 				*value = getDef();
 			}
-		}
 			break;
+		}
 
 		case SID_RND:
 		{

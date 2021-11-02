@@ -6,7 +6,7 @@
 #include "VariableWidgetBase.h"
 #include "VariableWidgetBasePrivate.h"
 #include "VariableIdPropertyPage.h"
-#include "LayoutWidget.h"
+#include "LayoutData.h"
 
 namespace sf
 {
@@ -73,9 +73,9 @@ void VariableWidgetBase::setId(qulonglong id)
 	// When not in the designer set the variable id.
 	if (!inDesigner())
 	{
-		if (auto lw = LayoutWidget::getLayoutWidgetOf(this))
+		if (auto ld = LayoutData::from(this))
 		{
-			id += lw->getIdOffset();
+			id += ld->getIdOffset();
 		}
 		_p->_variable.setup(id, true);
 	}

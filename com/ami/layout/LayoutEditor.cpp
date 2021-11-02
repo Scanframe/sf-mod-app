@@ -1,3 +1,14 @@
+#include "LayoutEditor.h"
+#include "pages/WidgetPropertyPage.h"
+#include <misc/qt/Resource.h>
+#include <misc/qt/FormBuilder.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/Globals.h>
+#include <gii/qt/LayoutData.h>
+#include <gii/qt/VariableWidgetBase.h>
+#include <ami/layout/pages/PositionPropertyPage.h>
+#include <ami/layout/pages/MiscellaneousPropertyPage.h>
+#include <ami/layout/pages/ContainerPropertyPage.h>
 #include <QGuiApplication>
 #include <QApplication>
 #include <QMessageBox>
@@ -5,26 +16,50 @@
 #include <QSaveFile>
 #include <QCloseEvent>
 #include <QLayout>
-#include <misc/qt/Resource.h>
-#include <misc/qt/FormBuilder.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include <gii/qt/VariableWidgetBase.h>
-#include <ami/layout/pages/PositionPropertyPage.h>
-#include <ami/layout/pages/MiscellaneousPropertyPage.h>
-#include <ami/layout/pages/ContainerPropertyPage.h>
-#include "pages/WidgetPropertyPage.h"
-#include "LayoutEditor.h"
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
+struct LayoutEditor::Data :LayoutData
+{
+	explicit Data(LayoutEditor* parent)
+	:LayoutData(parent)
+	, _layoutEditor(parent)
+	{
+	}
+
+	void popupContextMenu(QObject* target, const QPoint& pos) override
+	{
+		_layoutEditor->popupContextMenu(target, pos);
+	}
+
+	void openPropertyEditor(QObject* target) override
+	{
+		if (!getReadOnly())
+		{
+			_layoutEditor->openPropertyEditor(target);
+		}
+	}
+
+	[[nodiscard]] QDir getDirectory() const override
+	{
+		return _layoutEditor->getDirectory();
+	}
+	//
+	LayoutEditor* _layoutEditor;
+};
+
 LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
-	:LayoutWidget(parent)
+	:QWidget(parent)
 	 , MultiDocInterface()
 	 , _settings(settings)
 	 , _isUntitled(true)
 	 , _rootName("FormRoot")
+	// Add the layout data object for widgets to find.
+	, _layoutEditorData(new LayoutEditor::Data(this))
 {
+
 /*
 	_scrollArea = new QScrollArea(this);
 	_scrollArea->setFrameShape(QFrame::Shape::Box);
@@ -111,13 +146,17 @@ bool LayoutEditor::loadFile(const QString& fileName)
 		return false;
 	}
 	QGuiApplication::setOverrideCursor(Qt::WaitCursor);
-	// Create out form builder to load a layout.
-	FormBuilder builder;
-	// Add the application directory as the plugin directory to find custom plugins.
-	builder.addPluginPath(QCoreApplication::applicationDirPath());
-	// Create widget from the loaded ui-file.
+	// file nam eif used by the _layoutEditorData instance.
+	setCurrentFile(fileName);
+	// TODO: Work-around using a dummy widget for https://bugreports.qt.io/browse/QTBUG-96693
+	QScopedPointer dummy(new QWidget);
+	dummy->setObjectName("LoadDummy");
+	// Assign the layout-data object.
+	_layoutEditorData->setParent(dummy.get());
 	// Do not set parent when loading because it will mess up the QLabel buddy resolving by name.
-	_widget = builder.load(&file, nullptr);
+	_widget = FormBuilderLoad(&file, dummy.get());
+	// Restore the parent after loading.
+	_layoutEditorData->setParent(this);
 	// When loading is successful.
 	if (_widget)
 	{
@@ -140,9 +179,7 @@ bool LayoutEditor::loadFile(const QString& fileName)
 		// Set the widget onto the layout.
 		//_scrollArea->setWidget(widget);
 	}
-
 	QGuiApplication::restoreOverrideCursor();
-	setCurrentFile(fileName);
 	// TODO: install event filter for all children up the tree.
 	if (_widget)
 	{
@@ -178,13 +215,9 @@ bool LayoutEditor::saveFile(const QString& fileName, bool keep_name)
 	if (file.open(QFile::WriteOnly | QFile::Text))
 	{
 		QTextStream out(&file);
-		//
-		FormBuilder builder;
-		//
-		//auto wgt = findChild<QWidget*>(_rootName, Qt::FindChildrenRecursively);
 		if (_widget)
 		{
-			builder.save(&file, _widget);
+			FormBuilderSave(&file, _widget);
 		}
 		if (!file.commit())
 		{
@@ -193,8 +226,7 @@ bool LayoutEditor::saveFile(const QString& fileName, bool keep_name)
 	}
 	else
 	{
-		errorMessage = tr("Cannot open file %1 for writing:\n%2.")
-			.arg(QDir::toNativeSeparators(fileName), file.errorString());
+		errorMessage = tr("Cannot open file %1 for writing:\n%2.").arg(QDir::toNativeSeparators(fileName), file.errorString());
 	}
 	QGuiApplication::restoreOverrideCursor();
 	//
@@ -307,24 +339,6 @@ void LayoutEditor::develop()
 	qDebug() << "Written to " << fn.prepend("file://");
 }
 
-void LayoutEditor::popupContextMenu(QObject* target, const QPoint& pos)
-{
-	if (!getReadOnly())
-	{
-		_currentTarget = target;
-		auto p = _currentTarget->property(VariableWidgetBase::propertyNameEditorObject());
-		if (p.isValid())
-		{
-			_currentTarget = p.value<QObject*>();
-		}
-		// Set the text of the menu's action using the class name of the target.
-		_actionEdit->setText(QString("&Edit (%1)").arg(QString(_currentTarget->metaObject()->className()).split("::").last()));
-		//
-		_targetContextMenu->exec(pos);
-		_currentTarget = nullptr;
-	}
-}
-
 bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 {
 	// Intercept mouse button pressed when layout is editable.
@@ -334,16 +348,49 @@ bool LayoutEditor::eventFilter(QObject* watched, QEvent* event)
 		if (auto mouseEvent = dynamic_cast<QMouseEvent*>(event))
 		{
 			// Check if it was the right mouse button.
-			if (mouseEvent->button() == Qt::MouseButton::RightButton && QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier))
+			if (mouseEvent->button() == Qt::MouseButton::RightButton && LayoutData::hasMenuModifiers())
 			{
 				// When in widget resides in a splitter, events of the widgets do not pass here.
 				// So get the widget under the global position.
-				watched = QApplication::widgetAt(mouseEvent->globalPosition().toPoint());
-				popupContextMenu(watched, mouseEvent->globalPosition().toPoint());
+				auto widget = QApplication::widgetAt(mouseEvent->globalPosition().toPoint());
+				// When the object/widget is contained by object also derived from sf::ObjectExtension use that parent for the popup menu.
+				if (auto obj = ObjectExtension::getExtensionParent(widget, false))
+				{
+					popupContextMenu(obj, mouseEvent->globalPosition().toPoint());
+				}
+				else
+				{
+					popupContextMenu(widget, mouseEvent->globalPosition().toPoint());
+				}
 			}
 		}
 	}
 	return QObject::eventFilter(watched, event);
+}
+
+void LayoutEditor::setReadOnly(bool readOnly)
+{
+	_layoutEditorData->setReadOnly(readOnly);
+}
+
+QDir LayoutEditor::getDirectory() const
+{
+	return QFileInfo(_curFile).absoluteDir();
+}
+
+void LayoutEditor::popupContextMenu(QObject* target, const QPoint& pos)
+{
+	_currentTarget = target;
+	auto p = _currentTarget->property(VariableWidgetBase::propertyNameEditorObject());
+	if (p.isValid())
+	{
+		_currentTarget = p.value<QObject*>();
+	}
+	// Set the text of the menu's action using the class name of the target.
+	_actionEdit->setText(QString("&Edit (%1)").arg(QString(_currentTarget->metaObject()->className()).split("::").last()));
+	//
+	_targetContextMenu->exec(pos);
+	_currentTarget = nullptr;
 }
 
 void LayoutEditor::openPropertyEditor(QObject* target)
@@ -398,11 +445,6 @@ ObjectHierarchyModel* LayoutEditor::getHierarchyModel()
 		_model->updateList(_widget);
 	}
 	return _model;
-}
-
-QDir LayoutEditor::getDirectory() const
-{
-	return QFileInfo(_curFile).absoluteDir();
 }
 
 }

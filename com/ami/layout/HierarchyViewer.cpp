@@ -208,7 +208,7 @@ void HierarchyViewer::setEditor(sf::LayoutEditor* editor)
 		{
 			// Clear selected object.
 			objectSelected({});
-			// Clear the set modal.
+			// Clear the set model.
 			_proxyModel->setSourceModel(nullptr);
 		}
 	}
@@ -227,7 +227,7 @@ void HierarchyViewer::selectObject(QObject* obj)
 {
 	if (_layoutEditor)
 	{
-		auto index = _layoutEditor->getHierarchyModel()->getObjectIndex(obj);
+		auto index = _proxyModel->mapFromSource(_layoutEditor->getHierarchyModel()->getObjectIndex(obj));
 		ui->treeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
 		Q_EMIT objectSelected(index);
 		resizeColumnsToContents(ui->treeView);

@@ -29,4 +29,22 @@ void ObjectExtension::addPropertyPages(PropertySheetDialog* sheet)
 	// Deliberate left empty.
 }
 
+QObject* ObjectExtension::getExtensionParent(QObject* obj, bool first)
+{
+	QObject* rv = nullptr;
+	while (obj)
+	{
+		if (dynamic_cast<ObjectExtension*>(obj))
+		{
+			if (first)
+			{
+				return obj;
+			}
+			rv = obj;
+		}
+		obj = obj->parent();
+	}
+	return first ? nullptr : rv;
+}
+
 }

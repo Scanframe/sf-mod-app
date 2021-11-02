@@ -73,11 +73,10 @@ struct PropertySheetDialog::Private :QObject
 		// Enable the context menu.
 		ui->listWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 		// Connect the context menu signal.
-		connect(ui->listWidget, &QWidget::customContextMenuRequested, [&, menu](QPoint pos) -> void
-			{
-				menu->popup(ui->listWidget->viewport()->mapToGlobal(pos));
-			}
-		);
+		connect(ui->listWidget, &QWidget::customContextMenuRequested, [&, menu](QPoint pos)
+		{
+			menu->popup(ui->listWidget->viewport()->mapToGlobal(pos));
+		});
 		// Connect the needed signals.
 		connect(ui->btnCancel, &QPushButton::clicked, _s, &PropertySheetDialog::close);
 		connect(ui->btnOkay, &QPushButton::clicked, this, &Private::applyClose);

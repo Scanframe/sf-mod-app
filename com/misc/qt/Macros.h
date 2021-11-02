@@ -167,3 +167,21 @@ SF_IMPL_PROP_RSN(Type, Class, Name, Instance, NotifyFunc)
 #define SF_IMPL_PROP_RGRSN(Type, Class, Name, Instance, NotifyFunc) \
 SF_IMPL_PROP_RG(Type, Class, Name, Instance) \
 SF_IMPL_PROP_RSN(Type, Class, Name, Instance, NotifyFunc)
+
+/**
+ * @brief Implements referenced setter and referenced getter with notification function.
+ * @param Type Type of the property.
+ * @param Class Class name to implement the methods in.
+ * @param Name Suffix of the getXXX and setXXX methods being implemented.
+ * @param Instance The instance the getter and setter is reading and writing the property from and to.
+ * @param Property Name of the property.
+ */
+#define SF_IMPL_PROP_GSP(Type, Class, Name, Instance, Property) \
+Type Class::get##Name() const \
+{ \
+  return Instance->property(#Property).value<Type>(); \
+} \
+void Class::set##Name(Type val) \
+{ \
+  Instance->setProperty(#Property, QVariant::fromValue<Type>(val)); \
+}

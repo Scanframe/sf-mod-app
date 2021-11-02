@@ -24,7 +24,7 @@ set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer UiTools REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiTools REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED)
 
@@ -45,7 +45,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt::Widgets
-	Qt::Designer
 	Qt::UiTools
 	sf-misc
 	sf-gii

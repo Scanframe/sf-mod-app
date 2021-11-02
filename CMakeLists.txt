@@ -48,5 +48,5 @@ add_subdirectory(app)
 add_subdirectory(manual)
 
 add_subdirectory(concept/custom-ui-plugin)
-add_subdirectory(concept/treemodel)
+add_subdirectory(concept/dock-widgets)
 
