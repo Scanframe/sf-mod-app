@@ -4,17 +4,21 @@ object vFollowersEnabled = Variable("0x5,Unit Conversion|Followers Enabled,,ASP,
 object vSoundVelocity = Variable("0x10,Unit Conversion|Sound Velocity,m/s,ASP,Sound velocity setting,FLOAT,,1,3123,0,10000");
 object vTimeOfFlight = Variable("0x100,Unit Conversion|Time of Flight,s,ASP,High speed velocity setting,FLOAT,,1e-6,12e-6,0,100e-6");
 
-vSoundVelocity.OnValue = main;
-vTimeOfFlight.OnValue = main;
+object vIfGateDelay = Variable(0x20442);
+
+//vSoundVelocity.OnValue = main;
+//vTimeOfFlight.OnValue = main;
 vFollowersEnabled.OnValue = main;
 
-vSoundVelocity.SkipEvent = 0;
-vTimeOfFlight.SkipEvent = 0;
+//vSoundVelocity.SkipEvent = 0;
+//vTimeOfFlight.SkipEvent = 0;
 
 // Exit for initialization.
 exit(0); 
 
 :main;
 	// Write the new value to log.
-	writelog("Report", vTimeOfFlight.Name(0), vTimeOfFlight.CurStr, vTimeOfFlight.Unit, "\n");
+//	writelog("Report", vTimeOfFlight.Name(0), vTimeOfFlight.CurStr, vTimeOfFlight.Unit, "\n");
+	writelog("Report", vIfGateDelay.Name(0), vIfGateDelay.CurStr, vIfGateDelay.Unit, "\n");
+
 	return;

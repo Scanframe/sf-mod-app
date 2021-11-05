@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Window</class>
+ <widget class="QWidget" name="Window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>772</width>
+    <height>352</height>
+   </rect>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,2">
+     <item>
+      <widget class="sf::DrawWidget" name="drawWidget">
+       <property name="toolTip">
+        <string>Widget for drawing</string>
+       </property>
+       <property name="whatsThis">
+        <string>Widget for drawing stuff into.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="sf::VariableBar" name="variableBar">
+       <property name="toolTip">
+        <string>Progress bar</string>
+       </property>
+       <property name="whatsThis">
+        <string>Variable bar used for progress or level indication.</string>
+       </property>
+       <property name="idVariable" stdset="0">
+        <uLongLong>16</uLongLong>
+       </property>
+       <property name="converted">
+        <bool>true</bool>
+       </property>
+       <property name="nameLevel">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="sf::VariableEdit" name="variableEdit">
+       <property name="toolTip">
+        <string>A frame containing an edit.</string>
+       </property>
+       <property name="whatsThis">
+        <string>Special edit having name and unit label.</string>
+       </property>
+       <property name="idVariable" stdset="0">
+        <uLongLong>16</uLongLong>
+       </property>
+       <property name="converted">
+        <bool>true</bool>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="nameLevel">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="lwProperties"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="buttons">
+     <item>
+      <widget class="QPushButton" name="btnProperties">
+       <property name="text">
+        <string>Properties</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="sbUsedColors">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+       <property name="value">
+        <number>32</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnClose">
+       <property name="text">
+        <string>&amp;Close</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::VariableBar</class>
+   <extends>QWidget</extends>
+   <header>gii/qt/VariableBar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::VariableEdit</class>
+   <extends>QWidget</extends>
+   <header>gii/qt/VariableEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::DrawWidget</class>
+   <extends>QWidget</extends>
+   <header>misc/qt/DrawWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -135,7 +135,7 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		model->setDelegates(_tvProperties);
 		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);
 		// Make the qulonglong type QProperties have actions.
-		connect(model, &ObjectPropertyModel::addLineEditActions, _hierarchyViewer, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic)
+		connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic)
 		{
 			for (auto isType: {Gii::ResultData, Gii::Variable})
 			{

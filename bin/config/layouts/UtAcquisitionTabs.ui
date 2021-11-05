@@ -1,0 +1,444 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>FormRoot</class>
+ <widget name="FormRoot" class="QWidget" native="true">
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>894</width>
+    <height>534</height>
+   </rect>
+  </property>
+  <property name="objectName">
+   <string notr="true">FormRoot</string>
+  </property>
+  <layout name="verticalLayout" class="QVBoxLayout">
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>1</number>
+   </property>
+   <property name="objectName">
+    <string notr="true">verticalLayout</string>
+   </property>
+   <item>
+    <widget name="toolButtons" class="QWidget" native="true">
+     <property name="objectName">
+      <string notr="true">toolButtons</string>
+     </property>
+     <layout name="horizontalLayout" class="QHBoxLayout">
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <property name="objectName">
+       <string notr="true">horizontalLayout</string>
+      </property>
+      <item>
+       <widget name="tbUtDevice" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtDevice</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;Device</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbUtDevice</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+D</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbAscan" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtAscan</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;A-scan</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbAscan</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+A</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbPulser" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtPulser</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;Pulser</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbPulser</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+P</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbReceiver" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtReceiver</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;Receiver</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbReceiver</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+R</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbIfGate" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtGate</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;If Gate</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbIfGate</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+I</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbGate1" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtGate</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>64</uLongLong>
+        </property>
+        <property name="text">
+         <string>Gate &amp;1</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbGate1</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+1</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbGate2" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtGate</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>128</uLongLong>
+        </property>
+        <property name="text">
+         <string>Gate &amp;2</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbGate2</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+2</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <widget name="tbEmulator" class="sf::LayoutButton">
+        <property name="arrowType">
+         <enum>UpArrow</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="layoutFile">
+         <string>UtEmulator</string>
+        </property>
+        <property name="idOffset">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="text">
+         <string>&amp;Emulator</string>
+        </property>
+        <property name="objectName">
+         <string notr="true">tbEmulator</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="shortcut">
+         <string>Alt+E</string>
+        </property>
+        <addaction name=""/>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="sizeHint">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget name="widget" class="QWidget" native="true">
+     <property name="objectName">
+      <string notr="true">widget</string>
+     </property>
+     <layout name="horizontalLayout_2" class="QHBoxLayout">
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="objectName">
+       <string notr="true">horizontalLayout_2</string>
+      </property>
+      <item>
+       <widget name="layoutTabs1" class="sf::LayoutTabs">
+        <property name="tabShape">
+         <enum>Rounded</enum>
+        </property>
+        <property name="tabPosition">
+         <enum>West</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
+        </property>
+        <property name="currentIndex">
+         <number>3</number>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>598021</uLongLong>
+        </property>
+        <property name="tabsConfig">
+         <stringlist>
+          <string>Device|0|UtDevice</string>
+          <string>A-Scan|0|UtAscan</string>
+          <string>&amp;If Gate|0x0|UtGate</string>
+          <string>Gate &amp;1|0x40|UtGate</string>
+          <string>Gate &amp;2|0x80|UtGate</string>
+         </stringlist>
+        </property>
+        <property name="objectName">
+         <string notr="true">layoutTabs1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget name="layoutTabs2" class="sf::LayoutTabs">
+        <property name="tabShape">
+         <enum>Rounded</enum>
+        </property>
+        <property name="tabPosition">
+         <enum>West</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="converted">
+         <bool>false</bool>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <property name="idVariable" stdset="0">
+         <uLongLong>0</uLongLong>
+        </property>
+        <property name="tabsConfig">
+         <stringlist>
+          <string>A-scan|0|UtAcquisitionControl</string>
+          <string>B-scan|0|UtBscan</string>
+         </stringlist>
+        </property>
+        <property name="objectName">
+         <string notr="true">layoutTabs2</string>
+        </property>
+        <property name="whatsThis">
+         <string>Special widget containing multiple layouts.</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Preferred" hsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections/>
+</ui>

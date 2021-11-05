@@ -261,5 +261,4 @@ const QRect& Graph::getPlotArea() const
 	return _plotArea;
 }
 
-
 }

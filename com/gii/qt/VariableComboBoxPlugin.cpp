@@ -98,7 +98,7 @@ QString VariableComboBoxPlugin::domXml() const
 
 QString VariableComboBoxPlugin::includeFile() const
 {
-	return QStringLiteral("com/gii/qt/VariableComboBox.h");
+	return QStringLiteral("gii/qt/VariableComboBox.h");
 }
 
 } // namespace

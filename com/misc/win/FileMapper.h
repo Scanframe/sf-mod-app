@@ -26,7 +26,7 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		~FileMapper() override;
 
 		/**
-		 * Makes this instance use the the passed file
+		 * Makes this instance use the passed file
 		 * @param filename
 		 * @return True on success.
 		 */

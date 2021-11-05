@@ -1,3 +1,7 @@
+#include "PropertySheetDialog.h"
+#include "PropertyPage.h"
+#include "../gen/gen_utils.h"
+#include "Resource.h"
 #include <QSpinBox>
 #include <QDateTimeEdit>
 #include <QCheckBox>
@@ -11,10 +15,6 @@
 #include <QKeySequenceEdit>
 #include <QLabel>
 #include <QGroupBox>
-#include <gen/gen_utils.h>
-#include "PropertySheetDialog.h"
-#include "PropertyPage.h"
-#include "Resource.h"
 
 namespace sf
 {

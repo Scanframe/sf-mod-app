@@ -33,7 +33,19 @@ S calculateOffset(T value, T min, T max, S len, bool clip)
 	value -= min;
 	S temp = (max && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max) : (len * value) / max) : 0;
 	// Clip when required.
-	return (clip) ? ((temp > len) ? len : (temp < S(0)) ? S(0) : temp) : temp;
+	if (clip)
+	{
+		// When the len is a negative value.
+		if (len < 0)
+		{
+			return ((temp < len) ? len : (temp > S(0)) ? S(0) : temp);
+		}
+		else
+		{
+			return ((temp > len) ? len : (temp < S(0)) ? S(0) : temp);
+		}
+	}
+	return temp;
 }
 
 /**
@@ -731,5 +743,10 @@ _MISC_FUNC bool fileRename(const std::string& old_path, const std::string& new_p
  * @brief Finds the files using the passed wildcard.
  */
 _MISC_FUNC bool fileFind(sf::strings& files, const std::string& wildcard);
+
+/**
+ * @brief Returns the thread count from the current process.
+ */
+_MISC_FUNC size_t getThreadCount();
 
 }

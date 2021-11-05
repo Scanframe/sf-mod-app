@@ -1,5 +1,6 @@
 # Set the target name using the project name as a base name.
-set(TEST_APP_TARGET "${PROJECT_NAME}-test-app-graph")
+get_filename_component(SF_PROJECT_SUFFIX ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+set(TEST_APP_TARGET "${PROJECT_NAME}-test-app-${SF_PROJECT_SUFFIX}")
 
 # Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
@@ -15,9 +16,6 @@ add_executable(${TEST_APP_TARGET}
 
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${TEST_APP_TARGET}")
-
-# I'm using C++17 in the test.
-target_compile_features(${TEST_APP_TARGET} PRIVATE cxx_std_17)
 
 # Should be linked to the main library, as well as the Catch2 testing library.
 target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt::Designer pthread sf-misc sf-gii sf-wgt-ascan)

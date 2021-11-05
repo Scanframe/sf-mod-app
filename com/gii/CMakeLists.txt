@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("sf-gii" LANGUAGES CXX VERSION 0.1.0)
+project("sf-gii" LANGUAGES CXX)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../cmake")
@@ -145,7 +145,7 @@ if (SF_BUILD_TESTING)
 	add_subdirectory(tests/app/graph)
 	add_subdirectory(tests/app/dialog)
 	add_subdirectory(tests/app/select-id)
-endif (SF_BUILD_TESTING)
+endif ()
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

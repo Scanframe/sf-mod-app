@@ -1,9 +1,10 @@
 #pragma once
 
+#include "../global.h"
+#include "../gen/InformationBase.h"
 #include <QtCore/qglobal.h>
 #include <QtCore/qtmetamacros.h>
-#include <gen/InformationBase.h>
-#include "../global.h"
+#include <QMetaObject>
 
 namespace sf::Gii
 {

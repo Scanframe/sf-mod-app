@@ -435,7 +435,7 @@ timespec getTime(bool realTime)
 #if IS_WIN
 	if (clock_gettime(realTime ? CLOCK_REALTIME :	CLOCK_MONOTONIC, &ct))
 #else
-	if (clock_gettime(realTime ? CLOCK_REALTIME :	CLOCK_MONOTONIC_COARSE, &ct))
+	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
 #endif
 	{
 		throw ExceptionSystemCall("clock_gettime", errno, nullptr, __FUNCTION__);

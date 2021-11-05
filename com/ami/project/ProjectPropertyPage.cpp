@@ -96,8 +96,4 @@ void ProjectPropertyPage::afterPageApply(bool was_modified)
 	}
 }
 
-void ProjectPropertyPage::stateSaveRestore(QSettings& settings, bool save)
-{
-}
-
 }

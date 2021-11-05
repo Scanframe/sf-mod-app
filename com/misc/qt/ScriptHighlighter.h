@@ -14,7 +14,7 @@ namespace sf
 /**
  * @brief Highlighter of a document class used by edit widgets.
  *
- * Highlights the the document according the passed script interpreter.
+ * Highlights the document according the passed script interpreter.
  */
 class _MISC_CLASS ScriptHighlighter :public QSyntaxHighlighter
 {

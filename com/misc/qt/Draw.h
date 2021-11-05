@@ -25,14 +25,14 @@ class _MISC_CLASS Draw
 		{
 			/** Disable value. */
 			roNone = 0x0,
-			/** Draws ruler as situated at the top of a graph. */
-			roTop = 0x1,
-			/** Draws ruler as situated at the bottom of a graph. */
-			roBottom = 0x2,
 			/** Draws ruler as situated at the left of a graph. */
-			roLeft = 0x4,
+			roLeft = 0x1,
 			/** Draws ruler as situated at the right of a graph. */
-			roRight = 0x8
+			roRight = 0x2,
+			/** Draws ruler as situated at the top of a graph. */
+			roTop = 0x4,
+			/** Draws ruler as situated at the bottom of a graph. */
+			roBottom = 0x8,
 		};
 
 		/**

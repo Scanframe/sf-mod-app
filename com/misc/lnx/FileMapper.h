@@ -60,7 +60,7 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		void* getPtr() override;
 
 		/**
-		 * Locks the the set area.
+		 * Locks the set area.
 		 * Returns NULL on failure.
 		 * @tparam T Type of the pointer
 		 * @param readonly Flag making the resulting pointer readonly.
@@ -73,7 +73,7 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		}
 
 		/**
-		 * Unlocks the the set area and syncs the data when sync is set.
+		 * Unlocks the set area and syncs the data when sync is set.
 		 */
 		void unlock(bool sync = false);
 
@@ -109,7 +109,7 @@ class _MISC_CLASS FileMapper :public IFileMapper
 
 	private:
 		/**
-		 * Locks the the set area.
+		 * Locks the set area.
 		 * Returns NULL on failure.
 		 */
 		void* doLock(bool readonly);

@@ -112,25 +112,24 @@ Thread::handle_type Thread::start(const Thread::Attributes& attr)
 	{
 		return _handle;
 	}
-	// Setting termination flag to false to enable restart of thread.
+	// Setting termination-flag to 'false' to enable restart of thread.
 	_terminationRequested = false;
 	// Reset the exit code.
 	_exitCode.Code = -1;
 	// Allow thread creation function modify members.
 	//lock.release();
 	// Create the actual thread.
-	auto error = ::pthread_create(&_handle, attr, [](void* self) -> void*
+	auto error = ::pthread_create(&_handle, attr, +[](void* self) -> void*
 	{
-		int64_t ec(static_cast<Thread*>(self)->create());
-#if IS_WIN
-		// Windows does not return the exit code through pthread_join.
+		intptr_t ec(static_cast<Thread*>(self)->create());
+		// Windows does not return the exit code through pthread_join().
+		// Besides, when the thread terminates by itself pthread_join() is never called.
 		static_cast<Thread*>(self)->_exitCode.Code = ec;
-#endif
 		// Return the integer exit code as pointer.
 		return (void*) ec;
 	}, this);
 	// Reacquire the lock to access data members.
-//	lock.acquire();
+	//lock.acquire();
 	// On error thread creating throw an exception.
 	if (error != 0)
 	{
@@ -207,7 +206,7 @@ void Thread::waitForExit()
 		lock.release();
 		// Give the other thread time to handle.
 		yieldToOther();
-		// Try joining the the thread for a limited time.
+		// Try joining the thread for a limited time.
 		int error = ::pthread_timedjoin_np(_handle, &_exitCode.Ptr, &TimeSpec().setTimeOfDay().add(_terminationTime));
 		// Acquire the lock again to safely access the data members.
 		lock.acquire();
@@ -247,7 +246,7 @@ void Thread::waitForExit()
 */
 			}
 /*
-			// Joining the the thread again.
+			// Joining the thread again.
 			if (!error)
 */
 			{
@@ -358,7 +357,7 @@ int Thread::create()
 	//Mutex::Lock lock(thread->_mutex);
 	// Assign the thread first.
 	_threadId = getCurrentId();
-	// When on windows install a signal handler which when received throws an exception.
+	// When on Windows install a signal handler which when received throws an exception.
 #if !IS_WIN
 	// Enable the cancel state for this thread.
 	::pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
@@ -378,7 +377,7 @@ int Thread::create()
 		auto func = [](void* ptr) -> void
 		{
 			auto& thread(*(static_cast<Thread*>(ptr)));
-			// Call the non static and maybe derived function.
+			// Call the non-static and maybe derived function.
 			thread.cleanup();
 			SF_COND_NORM_NOTIFY(thread._debug, DO_DEFAULT,
 				SF_RTTI_NAME(thread) << SF_CLS_SEP << "Planning to reset data members... " << getCurrentId())
@@ -401,7 +400,7 @@ int Thread::create()
 			// Notify start function calling thread its is running.
 			_condition.notifyAll(_mutex);
 			lock.release();
-			// Call the non static and overloaded function.
+			// Call the non-static and overloaded function.
 			exit_code = run();
 			// Locking for cleanup call.
 			lock.acquire();

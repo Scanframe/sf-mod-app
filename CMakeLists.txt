@@ -2,8 +2,18 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Check if this is a cross compile for windows.
-if (SF_CROSS_WINDOWS)
+if (DEFINED SF_CROSS_WINDOWS)
+	# Find the Windows cross compiler
+	find_program(SF_CROSS_COMPILER "x86_64-w64-mingw32-c++-posix")
+	if (NOT EXISTS ${SF_CROSS_COMPILER})
+		message("Windows cross compiler not found.")
+		return()
+	endif ()
 	set(CMAKE_TOOLCHAIN_FILE com/cmake/SfWindowsToolChain.cmake)
+endif ()
+
+if (NOT WIN32)
+	set(CMAKE_TOOLCHAIN_FILE com/cmake/SfLinuxToolChain.cmake#[[ CACHE PATH "" FORCE]])
 endif ()
 
 # Set the global project name.
@@ -13,11 +23,13 @@ project("qt-concepts"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
 	)
 
+
 # Enable test builds from the root file by default for now.
 # So the test targets are listed and can be executed.
 if (WIN32)
 	# Disabled for Windows for now since MingW linker takes minutes to link Catch2 archive.
-	set(SF_BUILD_TESTING OFF)
+	#set(SF_BUILD_TESTING OFF)
+	set(SF_BUILD_TESTING ON)
 else ()
 	set(SF_BUILD_TESTING ON)
 endif ()
@@ -46,7 +58,5 @@ _SetOutputDirs()
 add_subdirectory(com)
 add_subdirectory(app)
 add_subdirectory(manual)
-
-add_subdirectory(concept/custom-ui-plugin)
-add_subdirectory(concept/dock-widgets)
+add_subdirectory(concept)
 

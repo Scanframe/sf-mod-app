@@ -314,7 +314,7 @@ class _MISC_CLASS Thread
 		 *
 		 * @return True when completed and false when interrupted.
 		 */
-		[[nodiscard]] bool sleep(const TimeSpec& ts, bool alertable = true) const;
+		bool sleep(const TimeSpec& ts, bool alertable = true) const; // NOLINT(modernize-use-nodiscard)
 
 		/**
 		 * @brief Return the current thread handle.
@@ -450,15 +450,15 @@ class _MISC_CLASS Thread
 		 */
 		Condition _condition;
 		/**
-		 * @brief Holds the exit code of the the terminated thread.
+		 * @brief Holds the exit code of the terminated thread.
 		 */
-		union {void* Ptr; int64_t Code;} _exitCode{nullptr};
+		union {void* Ptr; intptr_t Code;} _exitCode{nullptr};
 		/**
 		 * @brief Debug flag.
 		 */
-		 bool _debug{false};
+		bool _debug{false};
 
-		 friend void installSignalHandlers();
+		friend void installSignalHandlers();
 };
 
 inline
@@ -514,20 +514,28 @@ Thread::ThreadError::EErrorType Thread::ThreadError::getErrorType() const
 class _MISC_CLASS ThreadClosure :public Thread, public TClosure<int, Thread&>
 {
 	public:
-		explicit ThreadClosure(const func_type& f)
-			:Thread(), TClosure<int, Thread&>(f) {}
+		/**
+		 * @brief Default constructor.
+		 */
+		ThreadClosure()
+			:Thread(), TClosure<int, Thread&>()
+		{
+		}
+
+		/**
+		 * @brief Thread run function assigment constructor.
+		 * @param func Function ruin by the thread.
+		 */
+		explicit ThreadClosure(const func_type& func)
+			:Thread(), TClosure<int, Thread&>(func)
+		{
+		}
 
 	protected:
 		/**
 		 * Overrides run function and calls the closure assigned one.
 		 */
 		int run() override;
-
-	private:
-		/**
-		 * Holds the closure to the run function.
-		 */
-		func_type _run;
 };
 
 }

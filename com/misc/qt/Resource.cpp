@@ -54,7 +54,12 @@ const char* Resource::_iconResources[] =
 		":icon/svg/search",
 		":icon/svg/form",
 		":icon/svg/container",
-		":icon/svg/widget"
+		":icon/svg/widget",
+		":icon/svg/palette",
+		":icon/svg/position",
+		":icon/svg/location",
+		":icon/svg/tools",
+		":icon/svg/graph",
 	};
 
 int Resource::_defaultIconSize = 128;

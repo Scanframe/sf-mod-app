@@ -162,6 +162,17 @@ SF_IMPL_PROP_RSN(Type, Class, Name, Instance, NotifyFunc)
  * @param Class Class name to implement the methods in.
  * @param Name Suffix of the getXXX and setXXX methods being implemented.
  * @param Instance The instance the getter and setter is reading and writing.
+ */
+#define SF_IMPL_PROP_RGRS(Type, Class, Name, Instance) \
+SF_IMPL_PROP_RG(Type, Class, Name, Instance) \
+SF_IMPL_PROP_RS(Type, Class, Name, Instance)
+
+/**
+ * @brief Implements referenced setter and referenced getter with notification function.
+ * @param Type Type of the property.
+ * @param Class Class name to implement the methods in.
+ * @param Name Suffix of the getXXX and setXXX methods being implemented.
+ * @param Instance The instance the getter and setter is reading and writing.
  * @param NotifyFunc Must be of type void(void*)
  */
 #define SF_IMPL_PROP_RGRSN(Type, Class, Name, Instance, NotifyFunc) \

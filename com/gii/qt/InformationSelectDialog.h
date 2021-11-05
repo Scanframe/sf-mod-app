@@ -1,12 +1,12 @@
 #pragma once
 
+#include "../qt/InformationItemModel.h"
+#include "Namespace.h"
 #include <QDialog>
-#include <qt/InformationItemModel.h>
 #include <QAbstractButton>
 #include <QTreeView>
 #include <QSettings>
 #include <QSortFilterProxyModel>
-#include "Namespace.h"
 
 namespace sf
 {

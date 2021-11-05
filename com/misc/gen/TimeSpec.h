@@ -268,7 +268,7 @@ struct _MISC_CLASS TimeSpec :public timespec
 	TimeSpec& randomize(double factor = 0.1);
 
 	/**
-	 * @brief Assign the the current time.
+	 * @brief Assign the current time.
 	 *
 	 * @return Itself.
 	 */

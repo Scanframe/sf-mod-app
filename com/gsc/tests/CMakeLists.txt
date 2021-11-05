@@ -22,9 +22,6 @@ add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})
 # Sets the extension of the generated binary.
 _SetBinarySuffix("${TEST_TARGET}")
 
-# I'm using C++17 in the test
-target_compile_features(${TEST_TARGET} PRIVATE cxx_std_17)
-
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.
 	target_compile_definitions(${TEST_TARGET} PRIVATE TARGET_QT)

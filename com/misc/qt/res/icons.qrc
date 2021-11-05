@@ -1,5 +1,5 @@
 <!DOCTYPE RCC>
-<!-- Generated at: 2021-09-07T13:11:42CEST:::z -->
+<!-- Generated at: 2021-11-17T14:29:53CET:::z -->
 <RCC version="1.0">
 	<qresource prefix="icon/png/">
 		<file alias="warning">icon/warning.png</file>
@@ -30,14 +30,18 @@
 		<file alias="expand">icon/expand.svg</file>
 		<file alias="folder">icon/folder.svg</file>
 		<file alias="form">icon/form.svg</file>
+		<file alias="graph">icon/graph.svg</file>
 		<file alias="hand">icon/hand.svg</file>
 		<file alias="initialize">icon/initialize.svg</file>
+		<file alias="location">icon/location.svg</file>
 		<file alias="menu">icon/menu.svg</file>
 		<file alias="new">icon/new.svg</file>
 		<file alias="okay">icon/okay.svg</file>
 		<file alias="open-folder">icon/open-folder.svg</file>
 		<file alias="open">icon/open.svg</file>
+		<file alias="palette">icon/palette.svg</file>
 		<file alias="paste">icon/paste.svg</file>
+		<file alias="position">icon/position.svg</file>
 		<file alias="redo">icon/redo.svg</file>
 		<file alias="reload">icon/reload.svg</file>
 		<file alias="remove">icon/remove.svg</file>
@@ -50,6 +54,7 @@
 		<file alias="step">icon/step.svg</file>
 		<file alias="stop">icon/stop.svg</file>
 		<file alias="submit">icon/submit.svg</file>
+		<file alias="tools">icon/tools.svg</file>
 		<file alias="unchecked">icon/unchecked.svg</file>
 		<file alias="undo">icon/undo.svg</file>
 		<file alias="widget">icon/widget.svg</file>

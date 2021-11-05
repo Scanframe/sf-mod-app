@@ -1,5 +1,5 @@
-#include <gen/Variable.h>
-#include <gen/ResultData.h>
+#include <gii/gen/Variable.h>
+#include <gii/gen/ResultData.h>
 
 __attribute__((constructor)) void LibraryInitialize()
 {

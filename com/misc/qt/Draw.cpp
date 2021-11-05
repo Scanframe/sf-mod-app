@@ -1,6 +1,6 @@
-#include <gen/gen_utils.h>
-#include <qt/qt_utils.h>
 #include "Draw.h"
+#include "../gen/gen_utils.h"
+#include "../qt/qt_utils.h"
 
 namespace sf
 {

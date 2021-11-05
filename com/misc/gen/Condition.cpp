@@ -58,11 +58,13 @@ bool Condition::wait(Mutex& mutex)
 		int error = ::pthread_cond_wait(&Cond, Mutex);
 		// In case of an error throw an exception.
 		if (error)
+		{
 			throw ExceptionSystemCall("pthread_cond_wait", error, typeid(*this).name(), __FUNCTION__);
+		}
 	}
 	catch (TThread::TerminateException& tt)
 	{
-		RTTI_NOTIFY(DO_DEFAULT, tt.what());
+		SF_RTTI_NOTIFY(DO_DEFAULT, tt.what());
 		retval = false;
 	}
 	*/
@@ -92,8 +94,8 @@ bool Condition::wait(Mutex& mutex, const TimeSpec& timeout)
 		if (error == ETIMEDOUT)
 		{
 			rv = false;
-			// In case of a real error throw an exception.
 		}
+			// In case of a real error throw an exception.
 		else if (error)
 		{
 			throw ExceptionSystemCall("pthread_cond_timedwait", error, typeid(*this).name(), __FUNCTION__);

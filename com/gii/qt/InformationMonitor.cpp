@@ -1,12 +1,9 @@
-#include <gen/Variable.h>
-#include <gen/ResultData.h>
-#include <gen/VariableHandler.h>
-#include <gen/ResultDataHandler.h>
-#include <QLabel>
-#include <misc/gen/ScriptGlobalEntry.h>
-#include <misc/qt/Globals.h>
 #include "InformationMonitor.h"
 #include "ui_InformationMonitor.h"
+#include "../gen/Variable.h"
+#include "../gen/ResultData.h"
+#include <misc/gen/ScriptGlobalEntry.h>
+#include <misc/qt/Globals.h>
 
 namespace sf
 {

@@ -58,7 +58,12 @@ class _MISC_CLASS Resource
 				Search,
 				Form,
 				Container,
-				Widget
+				Widget,
+				Palette,
+				Position,
+				Location,
+				Tools,
+				Graph,
 		};
 
 		/**

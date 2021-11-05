@@ -8,7 +8,7 @@
 #include <gii/qt/InformationSelectDialog.h>
 #include <gii/qt/InformationIdEdit.h>
 #include <gii/gen/Variable.h>
-#include <gen/ResultData.h>
+#include <gii/gen/ResultData.h>
 #if IS_WIN
 #include <windows.h>
 #endif

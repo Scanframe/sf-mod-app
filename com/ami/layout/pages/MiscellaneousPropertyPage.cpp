@@ -1,10 +1,11 @@
+#include "ui_MiscellaneousPropertyPage.h"
+#include "MiscellaneousPropertyPage.h"
+#include <misc/qt/qt_utils.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/Resource.h>
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QLabel>
-#include <misc/qt/qt_utils.h>
-#include <misc/gen/dbgutils.h>
-#include "MiscellaneousPropertyPage.h"
-#include "ui_MiscellaneousPropertyPage.h"
 
 namespace sf
 {
@@ -70,6 +71,11 @@ MiscellaneousPropertyPage::~MiscellaneousPropertyPage()
 QString MiscellaneousPropertyPage::getPageName() const
 {
 	return tr("Miscellaneous");
+}
+
+QIcon MiscellaneousPropertyPage::getPageIcon() const
+{
+	return Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Tools), QPalette::Text);
 }
 
 bool MiscellaneousPropertyPage::isPageModified() const

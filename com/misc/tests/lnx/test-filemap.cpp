@@ -62,7 +62,7 @@ TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
 		//std::clog << ss.str();
 		// Sizes must be the same.
 		REQUIRE(ss.str().length() == sz);
-		// Also the the MD5 hash on both must be the same.
+		// Also the MD5 hash on both must be the same.
 		REQUIRE(sf::md5(std::string(ss.str())) == sf::md5(ptr, sz));
 
 		// Release the locked pointer.

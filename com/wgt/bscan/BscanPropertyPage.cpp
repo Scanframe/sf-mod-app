@@ -1,5 +1,6 @@
 #include "BscanPropertyPage.h"
 #include "ui_BscanPropertyPage.h"
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
@@ -27,6 +28,11 @@ BscanPropertyPage::~BscanPropertyPage()
 QString BscanPropertyPage::getPageName() const
 {
 	return tr("Bscan Graph");
+}
+
+QIcon BscanPropertyPage::getPageIcon() const
+{
+	return Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Graph), QPalette::Text);
 }
 
 bool BscanPropertyPage::isPageModified() const

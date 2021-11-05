@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gen/Variable.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include "gii/gen/UnitConversionServer.h"
+#include "Variable.h"
 #include "gii/global.h"
+#include "gii/gen/UnitConversionServer.h"
+#include <misc/qt/PropertySheetDialog.h>
 
 namespace sf
 {
@@ -92,7 +92,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		/**
 		 * @brief Gets the name of the followers section.
 		 */
-		const char* getFollowersSectionName() const;
+		[[nodiscard]] const char* getFollowersSectionName() const;
 
 	protected:
 		/**

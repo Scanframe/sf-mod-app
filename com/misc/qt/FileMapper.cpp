@@ -72,18 +72,18 @@ void FileMapper::createView(size_t sz)
 		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Cannot set a mapped instance!");
 	}
 	// Assign the size.
-	_size = sz;
+	_size = static_cast<qint64>(sz);
 	// Open then file.
 	if (!_file.open())
 	{
 		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"open '%s': (%i) %s", _file.fileName().toStdString().c_str(), _file.error(), _file.errorString().toStdString().c_str());
+			"open '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
 	}
 	// Resize the file.
 	if (!_file.resize(_size))
 	{
 		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"resize '%s': (%i) %s", _file.fileName().toStdString().c_str(), _file.error(), _file.errorString().toStdString().c_str());
+			"resize '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
 	}
 }
 

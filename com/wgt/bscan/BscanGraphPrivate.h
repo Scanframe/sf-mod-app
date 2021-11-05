@@ -1,9 +1,10 @@
 #pragma once
-#include <misc/qt/Graph.h>
+#include "BscanGraph.h"
+#include <pal/iface/PaletteServer.h>
 #include <gii/gen/ResultData.h>
 #include <gii/gen/Variable.h>
-#include <gen/ResultDataRequester.h>
-#include "BscanGraph.h"
+#include <gii/gen/ResultDataRequester.h>
+#include <misc/qt/Graph.h>
 
 namespace sf
 {
@@ -12,7 +13,11 @@ struct BscanGraph::Private
 {
 	BscanGraph* _w;
 	int _margin{1};
-
+	int _heightPalette{16};
+	// Holds the area left for painting after a primitive has been painted.
+	QRect _area{};
+	// Rectangle to invalidate when the palette changes.
+	QRect _rcPalette{};
 	Graph _graph;
 
 	ResultData _rIndex;
@@ -24,6 +29,9 @@ struct BscanGraph::Private
 	// Handles request for index bundled data.
 	ResultDataRequester _requester;
 
+	// Holds the palette server for this graph.
+	PaletteServer _paletteServer;
+
 	// Constructor.
 	explicit Private(BscanGraph* widget);
 
@@ -34,9 +42,7 @@ struct BscanGraph::Private
 
 	void setRulerBottom();
 
-	void invalidate(bool graphAreaOnly) const;
-
-	void invalidate(const QRect& rect = {}) const;
+	void updatePlotArea(const QRect& rect) const;
 
 	// Link all handlers.
 	void initialize();
@@ -179,6 +185,9 @@ struct BscanGraph::Private
 
 	// Event handling routine for local or remote events.
 	void localMouse(Private::EKeyMouseEvent me, Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, const QPoint& pt, bool local);
+
+	// Paints the graph after adjusting for the border.
+	void paint(QPainter& painter, QPaintEvent* event);
 };
 
 }

@@ -1,13 +1,12 @@
-#include <QSettings>
-#include <QFileInfo>
-#include <QDir>
-#include <QCoreApplication>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include <misc/gen/ConfigLocation.h>
 #include "UnitConversionAppModule.h"
 #include "ConversionDialog.h"
 #include "UnitConversionPropertyPage.h"
+#include <misc/qt/qt_utils.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/gen/ConfigLocation.h>
+#include <QSettings>
+#include <QFileInfo>
+#include <QCoreApplication>
 
 namespace sf
 {
@@ -15,6 +14,7 @@ namespace sf
 UnitConversionAppModule::UnitConversionAppModule(const AppModuleInterface::Parameters& params)
 	:AppModuleInterface(params)
 	 , _settings(params._settings)
+	 ,_ucs()
 {
 	// Form the path to the configuration settings file.
 	_configFilePath = QFileInfo(QString::fromStdString(getConfigLocation()), QFileInfo(getLibraryFilename()).baseName() + ".cfg").absoluteFilePath();

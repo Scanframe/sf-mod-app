@@ -22,6 +22,8 @@ class MiscellaneousPropertyPage :public PropertyPage
 
 		[[nodiscard]] QString getPageName() const override;
 
+		QIcon getPageIcon() const override;
+
 		bool canApplyPage() const override;
 
 		void applyPage() override;

@@ -253,7 +253,7 @@ TEST_CASE("sf::ResultData", "[result]")
 		sf::ResultData::size_type blocks = 10;
 		// Check if the needed bytes are calculated right.
 		REQUIRE(r_server.getBufferSize(blocks) == r_server.getTypeSize() * r_server.getBlockSize() * blocks);
-		// Create buffer buffer with some additional space to check overflow.
+		// Create buffer with some additional space to check overflow.
 		sf::TVector<uint8_t> write_buf(r_server.getBufferSize(blocks));
 		// Fill buffer with data.
 		for (size_t i = 0; i < write_buf.size(); i++) {write_buf[i] = (uint8_t) (i + 'A');}

@@ -3,6 +3,8 @@ object Profile = Create("IniFile");
 Profile.Path = "scripts.ini";
 print("Ini Path:", Profile.Path, "\n");
 
+// For controlling the threshold of the amplitude palette.
+object VAmplitudeThreshold = Variable("0x99010,Project|Amplitude Palette|Threshold,%,SAP,Test variable for amplitude palette.,FLOAT,,1.0,80.0,0.0,100.0");
 //
 // 0x99000 Calculation parameters.
 // 0x91000 Control parameters

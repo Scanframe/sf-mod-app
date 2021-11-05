@@ -6,6 +6,12 @@
 namespace sf
 {
 
+/**
+ * @brief Encapsulates the std::function() template
+ *
+ * @tparam Result Return type of the function.
+ * @tparam Args Variable amount of function arguments.
+ */
 template<typename Result, typename... Args>
 class TClosure
 {
@@ -44,7 +50,7 @@ class TClosure
 		}
 
 		/**
-		 * @brief Binds a non static class member function to this instance.
+		 * @brief Binds a non-static class member function to this instance.
 		 *
 		 * Short for passing a std::bind(...) result the #assign().<br>
 		 * For example:
@@ -53,10 +59,10 @@ class TClosure
 		 *
 		 * TClosure<bool, const char*, int> c2
 		 *
-		 * c2.assign(std::bind(&MyClass::method, this, std::placeholders::_1, std::placeholders::_2))
+		 * c2.assign(&MyClass::method, this, std::placeholders::_1, std::placeholders::_2)
 		 * ```
-		 * @tparam ClassType type having the to be called method.
-		 * @tparam MethodType type from the passed class type.
+		 * @tparam ClassType Type having the to be called method.
+		 * @tparam MethodType Type from the passed class type.
 		 * @tparam BoundArgs Only std::placeholders::_? enumeration values. (see std::bind)
 		 *
 		 * @param cls Pointer of the class having the passed method.
@@ -83,7 +89,7 @@ class TClosure
 		/**
 		 * @brief Closure assignment operator.
 		 */
-		TClosure& operator=(TClosure c)
+		TClosure& operator=(const TClosure& c)
 		{
 			_func = c._func;
 			return *this;
@@ -92,7 +98,7 @@ class TClosure
 		/**
 		 * @brief Closure assignment operator.
 		 */
-		TClosure& operator=(func_type f)
+		TClosure& operator=(const func_type& f)
 		{
 			_func = f;
 			return *this;

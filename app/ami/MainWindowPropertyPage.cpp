@@ -9,6 +9,7 @@
 
 namespace sf
 {
+
 MainWindowPropertyPage::MainWindowPropertyPage(MainWindow* mainWindow, PropertySheetDialog* parent)
 	:PropertyPage(parent)
 	 , ui(new Ui::MainWindowPropertyPage)

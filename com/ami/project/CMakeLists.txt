@@ -28,7 +28,7 @@ set(CMAKE_AUTORCC ON)
 
 # Find the needed packages.
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED)
 
@@ -40,7 +40,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets Qt::Designer sf-misc sf-gii sf-ami sf-rsa sf-sto sf-ipj)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-gii sf-ami sf-rsa sf-sto sf-ipj)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

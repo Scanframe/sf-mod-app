@@ -1,0 +1,5 @@
+sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10
+sudo apt install libstdc++-10-dev libstdc++-10-doc
+
+
+g++-10 -x c++ -std=c++2a -dM -E - </dev/null | grep -i GNU

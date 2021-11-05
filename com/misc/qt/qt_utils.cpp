@@ -1,3 +1,8 @@
+#include "qt_utils.h"
+#if IS_WIN
+#include "../win/win_utils.h"
+#endif
+#include "../gen/dbgutils.h"
 #include <QApplication>
 #include <QFont>
 #include <QStyle>
@@ -7,16 +12,9 @@
 #include <QFileInfo>
 #include <QWidget>
 #include <QFileSystemWatcher>
-#include <gen/dbgutils.h>
 #include <QLayout>
 #include <QFormLayout>
-#include <QFontDatabase>
 #include <QTimer>
-#if IS_WIN
-#include <win/win_utils.h>
-#endif
-
-#include "qt_utils.h"
 
 namespace sf
 {

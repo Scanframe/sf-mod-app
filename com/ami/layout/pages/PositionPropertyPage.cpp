@@ -1,5 +1,6 @@
 #include <QFormLayout>
 #include <misc/qt/qt_utils.h>
+#include <misc/qt/Resource.h>
 #include "PositionPropertyPage.h"
 #include "ui_PositionPropertyPage.h"
 
@@ -53,6 +54,11 @@ QString PositionPropertyPage::getPageName() const
 QString PositionPropertyPage::getPageDescription() const
 {
 	return tr("Manipulation of the items position in the layout or widget.");
+}
+
+QIcon PositionPropertyPage::getPageIcon() const
+{
+	return Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Position), QPalette::Text);
 }
 
 bool PositionPropertyPage::isPageModified() const

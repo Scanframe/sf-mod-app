@@ -1,11 +1,12 @@
 #pragma once
 
-#include <misc/qt/PropertyPage.h>
-#include <qt/IdPropertyList.h>
 #include "BscanGraph.h"
+#include <qt/IdPropertyList.h>
+#include <misc/qt/PropertyPage.h>
 
 namespace sf
 {
+
 namespace Ui {class BscanPropertyPage;}
 
 class BscanPropertyPage :public PropertyPage
@@ -21,6 +22,8 @@ class BscanPropertyPage :public PropertyPage
 
 		[[nodiscard]] QString getPageName() const override;
 
+		QIcon getPageIcon() const override;
+
 		void applyPage() override;
 
 		void updatePage() override;
@@ -32,4 +35,3 @@ class BscanPropertyPage :public PropertyPage
 };
 
 }
-

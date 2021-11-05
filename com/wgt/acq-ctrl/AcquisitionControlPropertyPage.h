@@ -21,6 +21,8 @@ class AcquisitionControlPropertyPage :public PropertyPage
 
 		[[nodiscard]] QString getPageName() const override;
 
+		QIcon getPageIcon() const override;
+
 		void applyPage() override;
 
 		void updatePage() override;

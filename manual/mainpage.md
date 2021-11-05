@@ -16,8 +16,11 @@ or [GitHub](https://github.com/Scanframe/sf-mod-app).
 * **qt** : Qt Plugin Interface as used in Designer
 * **ami** : Application Module Interface
 * **gmi** : Generic Motion Interface
-* **rsa** : Repetive Signal Acquisition Interface
+* **rsa** : Repetitive Signal Acquisition Interface
 * **smi** : Scan mode Interface
+* **gii** : Generic Information Interface
+
+Most of the modules get, set exchange their data using the **gii** and is thus omitted.
 
 ## Classes
 

@@ -44,7 +44,7 @@ struct
 struct VarEvent :sf::VariableTypes
 {
 	VarEvent(sf::Variable::EEvent event, const sf::Variable* call_var, const sf::Variable* link_var, bool same_inst,
-		id_type id, std::string any = "")
+		id_type id, std::string any = {})
 		:_event(event), _call_var(call_var), _link_var(link_var), _same_inst(same_inst), _id(id), _any(std::move(any)) {}
 
 	EEvent _event;

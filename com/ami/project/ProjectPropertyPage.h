@@ -30,8 +30,6 @@ class ProjectPropertyPage :public PropertyPage
 
 		void afterPageApply(bool was_modified) override;
 
-		void stateSaveRestore(QSettings& settings, bool save) override;
-
 	private:
 		Ui::ProjectPropertyPage* ui;
 

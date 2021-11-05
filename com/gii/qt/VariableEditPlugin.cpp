@@ -98,7 +98,7 @@ QString VariableEditPlugin::domXml() const
 
 QString VariableEditPlugin::includeFile() const
 {
-	return QStringLiteral("com/gii/qt/VariableEdit.h");
+	return QStringLiteral("gii/qt/VariableEdit.h");
 }
 
 } // namespace

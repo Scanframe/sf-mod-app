@@ -195,7 +195,9 @@ void VariableBar::paintEvent(QPaintEvent* event)
 	inflate(rc, -p->margin);
 	// Set designer text as default.
 	QString text("Value Unit");
-	auto pos = rc.size().width() / 2;
+	// Initialize the position.
+	auto pos = rc.width() / 2;
+	// When not designing.
 	if (!inDesigner())
 	{
 		// Get variable as a reference.
@@ -205,17 +207,13 @@ void VariableBar::paintEvent(QPaintEvent* event)
 	}
 	// First part.
 	sp.setClipRect(QRect(rc.topLeft(), QSize(pos, rc.height())));
-	sp.setBrush(palette().color(QPalette::Highlight));
-	sp.setPen(Qt::NoPen);
-	sp.drawRect(rc);
+	sp.fillRect(rc, palette().color(QPalette::Highlight));
 	sp.setClipRect(rc);
 	sp.setPen(QPen(palette().color(QPalette::HighlightedText)));
 	sp.drawText(rc, Qt::AlignCenter, text);
 	// Second part.
-	sp.setClipRect(QRect(QPoint(pos, 0), rc.bottomRight()));
-	sp.setBrush(palette().color(QPalette::Base));
-	sp.setPen(Qt::NoPen);
-	sp.drawRect(rc);
+	sp.setClipRect(QRect(rc.topLeft() + QPoint(pos + 1, 0), rc.bottomRight()));
+	sp.fillRect(rc, palette().color(QPalette::Base));
 	sp.setPen(QPen(palette().color(QPalette::Text)));
 	sp.drawText(rc, Qt::AlignCenter, text);
 }

@@ -45,7 +45,6 @@ class _MISC_CLASS Graph
 		 */
 		void setGrid(Draw::EGridOrientation go, Draw::ERulerOrientation ro);
 
-
 		/**
 		 * @brief Sets the bounding rectangle for the graph for painting in.
 		 *
@@ -129,22 +128,39 @@ class _MISC_CLASS Graph
 		 */
 		struct RulerInfo
 		{
-			// Ruler enabled flag.
+			/**
+			 * @brief Ruler enabled flag.
+			 */
 			bool enabled{false};
-			// Ruler start value.
+			/**
+			 * @brief Ruler start value.
+			 */
 			double start{0};
-			// Ruler stop value.
+			/**
+			 * @brief Ruler stop value.
+			 */
 			double stop{0};
-			// Precision digits.
+			/**
+			 * @brief Precision digits.
+			 */
 			int digits{3};
-			// Unit text.
+			/**
+			 * @brief Unit text.
+			 */
 			QString unit;
-			// Bounds for value texts.
+			/**
+			 * @brief Bounds of the ruler area for painting value texts i.e.
+			 */
 			QRect bounds;
-			// Rectangle for the ticks.
+			/**
+			 * @brief Rectangle for the ticks.
+			 */
 			QRect rect;
-			// Calculated ruler size (width/height).
+			/**
+			 * @brief Calculated ruler size (width/height).
+			 */
 			int size{100};
+
 		} _top, _left, _right, _bottom;
 
 		/**

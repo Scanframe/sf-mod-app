@@ -109,7 +109,7 @@ bool Mutex::acquire(bool try_lock)
 		else if (error)
 		{
 			throw ExceptionSystemCall("pthread_mutex_trylock", error, typeid(*this).name(), __FUNCTION__);
-			// Lock was success full on no error.
+			// Lock was successful on no error.
 		}
 		else
 		{

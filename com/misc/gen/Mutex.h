@@ -40,23 +40,23 @@ class _MISC_CLASS Mutex
 		}
 
 		/**
-		 * Locking class for easy locking and unlocking by destructor.
+		 * @brief Locking class for easy locking and unlocking by destructor.
 		 */
 		class _MISC_CLASS Lock
 		{
 			public:
 				/**
-				 * Constructor.
+				 * @brief Constructor.
 				 */
 				explicit Lock(const Mutex& mutex, bool try_lock = false);
 
 				/**
-				 * Destructor.
+				 * @brief Destructor.
 				 */
 				~Lock();
 
 				/**
-				 * Returns true when if it was acquired.
+				 * @brief Returns true when if it was acquired.
 				 */
 				bool acquire(bool try_lock = false);
 
@@ -67,7 +67,7 @@ class _MISC_CLASS Mutex
 				bool release();
 
 				/**
-				 * Returns true if the class was locked. Always true when try_lock is false.
+				 * @brief Returns true if the class was locked. Always true when try_lock is false.
 				 */
 				explicit operator bool() const
 				{
@@ -76,16 +76,16 @@ class _MISC_CLASS Mutex
 
 			private:
 				/**
-				 * Copy constructor to prevent copying.
+				 * @brief Copy constructor to prevent copying.
 				 */
 				Lock(const Lock& lock);
 
 				/**
-				 * Holds the mutex reference.
+				 * @brief Holds the mutex reference.
 				 */
 				Mutex& _mutexRef;
 				/**
-				 * Holds the state of the lock for the destructor.
+				 * @brief Holds the state of the lock for the destructor.
 				 */
 				bool _locked{false};
 		};
@@ -94,37 +94,37 @@ class _MISC_CLASS Mutex
 
 	private:
 		/**
-		 * Holds the actual handle of the OS.
+		 * @brief Holds the actual handle of the OS.
 		 */
 		::pthread_mutex_t _mutex{0};
 
 		/**
-		 * Copy Destructor.
+		 * @brief Copy Destructor.
 		 */
 		Mutex(const Mutex&);
 
 		/**
-		 * Copy operator.
+		 * @brief Copy operator.
 		 */
 		const Mutex& operator=(const Mutex&);
 
 		/**
-		 * Arbitrary test whether the mutex is destroyed or not.
+		 * @brief Arbitrary test whether the mutex is destroyed or not.
 		 */
 		bool isMutexDestroyed();
 
 		/**
-		 * Using memset to clear the mutex used.
+		 * @brief Using memset to clear the mutex used.
 		 */
 		void clearMutex();
 
 		/**
-		 * For locking without TLock instance.
+		 * @brief For locking without TLock instance.
 		 */
 		bool acquire(bool try_lock);
 
 		/**
-		* Releases the mutex.
+		* @brief Releases the mutex.
 		*/
 		void release();
 };

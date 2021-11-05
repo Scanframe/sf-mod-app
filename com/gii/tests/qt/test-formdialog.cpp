@@ -1,13 +1,12 @@
+#include <gii/gen/Variable.h>
+#include <gii/gen/UnitConversionServer.h>
+#include <misc/qt/FormDialog.h>
 #include <catch2/catch.hpp>
-
 #include <QFileDialog>
 #include <QCoreApplication>
 #include <QTimer>
-#include <misc/qt/FormDialog.h>
 #include <QTemporaryDir>
 #include <QStandardPaths>
-#include <gen/Variable.h>
-#include <gen/UnitConversionServer.h>
 
 extern int debug_level;
 

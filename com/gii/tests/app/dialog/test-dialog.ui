@@ -180,7 +180,7 @@
   <customwidget>
    <class>sf::VariableEdit</class>
    <extends>QWidget</extends>
-   <header>com/gii/qt/VariableEdit.h</header>
+   <header>gii/qt/VariableEdit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

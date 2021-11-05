@@ -27,6 +27,8 @@ class PositionPropertyPage :public PropertyPage
 
 		[[nodiscard]] QString getPageDescription() const override;
 
+		QIcon getPageIcon() const override;
+
 		void applyPage() override;
 
 		void updatePage() override;

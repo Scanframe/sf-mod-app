@@ -708,48 +708,14 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 			}
 		});
 	}
-	// Fix tool button elements.
-	{
-		QMap<QString, QToolButton*> buttons;
-		// Get all widgets derived from a frame.
-		for (auto button: widget->findChildren<QToolButton*>(QString(), Qt::FindChildrenRecursively))
-		{
-			if (!button->objectName().isEmpty())
-			{
-				buttons[button->objectName()] = button;
-			}
-		}
-		// Iterate through all dom elements
-		iterateDomElements(dom, root, [widget, &dom, &buttons](QDomElement& elem)
-		{
-			// Only check widget dom elements.
-			if (elem.nodeName() == "widget")
-			{
-				// Get the name attribute of the widget element.
-				auto attr = elem.attributes().namedItem("name");
-				// Check if the attribute is valid attribute and the name is not empty.
-				if (!attr.isNull() && !attr.nodeValue().isEmpty())
-				{
-					auto name = attr.nodeValue();
-					// When in the buttons map .
-					if (!name.isEmpty() && buttons.contains(name))
-					{
-						// Add the missing property toolButtonStyle.
-						auto style = QMetaEnum::fromType<Qt::ToolButtonStyle>().valueToKey(buttons[name]->toolButtonStyle());
-						elem.insertBefore(createDomProperty(dom, "toolButtonStyle", "enum", style), elem.firstChildElement());
-						auto arrow = QMetaEnum::fromType<Qt::ArrowType>().valueToKey(buttons[name]->arrowType());
-						elem.insertBefore(createDomProperty(dom, "arrowType", "enum", arrow), elem.firstChildElement());
-					}
-				}
-			}
-		});
-	}
 	// Fix non-implemented types for elements.
 	{
 		// List of meta types that are not supported
 		QList<QMetaType> metaTypes;
 		metaTypes << QMetaType::fromType<QTabWidget::TabPosition>();
 		metaTypes << QMetaType::fromType<QTabWidget::TabShape>();
+		metaTypes << QMetaType::fromType<Qt::ToolButtonStyle>();
+		metaTypes << QMetaType::fromType<Qt::ArrowType>();
 		//
 		QMap<QString, QWidget*> wl;
 		// Get all widgets derived from a frame.
@@ -778,6 +744,13 @@ void FormBuilder::fixSavingProperties(QWidget* widget, QDomDocument& dom)
 						// Add the missing properties.
 						auto w = wl[name];
 						auto mo = w->metaObject();
+						// When this is a basic QWidget class add the native 'true' property so the designer does not convert it to a layout.
+						if (w->metaObject()->metaType() == QMetaType::fromType<QWidget>())
+						{
+							auto w_attr = dom.createAttribute("native");
+							w_attr.setValue("true");
+							elem.setAttributeNode(w_attr);
+						}
 						do
 						{
 							for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)

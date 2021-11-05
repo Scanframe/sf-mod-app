@@ -60,7 +60,7 @@ struct Allocator
  *
  * @tparam Alloc Allocator type.
  */
-template <class Alloc=Allocator>
+template<typename Alloc=Allocator>
 class TDynamicBuffer
 {
 	public:
@@ -68,22 +68,27 @@ class TDynamicBuffer
 		 * @brief Default constructor.
 		 */
 		TDynamicBuffer();
+
 		/**
 		 * @brief Copy constructor.
 		 */
 		TDynamicBuffer(const TDynamicBuffer& db);
+
 		/**
 		 * @brief Initializing constructor.
 		 */
 		explicit TDynamicBuffer(size_t sz);
+
 		/**
 		 *  @brief Destructor
 		 */
 		~TDynamicBuffer();
+
 		/**
 		 * @brief Reserves the array but does leave the data in tact.
 		 */
 		void reserve(size_t sz, bool shrink = false);
+
 		/**
 		 * @brief Resizes the array but does leave the data in tact.
 		 *
@@ -91,103 +96,135 @@ class TDynamicBuffer
 		 * @param shrink
 		 */
 		void resize(size_t sz, bool shrink = false);
+
 		/**
 		 * @brief Sets an virtual offset to the buffer.
 		 */
 		void offset(size_t ofs);
+
 		/**
 		 * @brief Returns the current offset.
 		 */
 		[[nodiscard]] size_t offset() const;
+
 		/**
 		 * @brief Returns the byte size of the buffer.
 		 */
 		size_t size();
+
 		/**
 		 * @brief Returns the byte size of the buffer.
 		 */
 		[[nodiscard]] size_t size() const;
+
 		/**
-		 * Returns the reserved size of this instance.
+		 * @brief Gets the reserved size of this instance.
 		 */
 		[[nodiscard]] size_t reserved() const;
+
 		/**
-		 * Returns a pointer to the start of the buffer.
+		 * @brief Gets a void pointer to the start of the buffer.
 		 */
 		void* data();
-
-		template<typename T>
-		T* ptr(size_t offset = 0)
-		{
-			// Compensate for the offset.
-			offset += _reference->_offset;
-			return (T*)((char*) _reference->_data + offset);
-		}
 
 		/**
 		 * Returns a const pointer to the start of the buffer.
 		 */
 		[[nodiscard]] const void* data() const;
+
 		/**
-		 * Returns a character pointer to the start of the buffer.
+		 * @brief Gets a character pointer to the start of the buffer.
 		 */
 		char* c_str();
+
 		/**
-		 * Returns a const character pointer to the start of the buffer.
+		 * @brief Gets a const character pointer to the start of the buffer.
 		 */
 		[[nodiscard]] const char* c_str() const;
+
 		/**
-		 * Grows the array to the specified size but keeps the current data intact.
+		 * @brief Gets a typed pointer to the specified given offset the start of the buffer.
+		 */
+		template<typename T>
+		T* ptr(size_t offset = 0)
+		{
+			return reinterpret_cast<T*>(static_cast<char*>(_reference->_data) + (offset + _reference->_offset));
+		}
+
+		/**
+		 * @brief Gets a typed pointer to the specified given offset the start of the buffer.
+		 */
+		template<typename T>
+		T* ptr(size_t offset = 0) const
+		{
+			return reinterpret_cast<T*>(static_cast<char*>(_reference->_data) + (offset + _reference->_offset));
+		}
+
+		/**
+		 * @brief Grows the array to the specified size but keeps the current data intact.
 		 */
 		void grow(size_t sz);
+
 		/**
 		 * Zeros all current memory size or all reserved.
 		 */
 		void zero(bool reserved = false);
+
 		/**
-		 * Sets all memory to the given character.
+		 * @brief Sets all memory to the given character.
 		 * When reserved is true not only the current size but all of it.
 		 */
 		void set(int c = 0, bool reserved = false);
+
 		/**
-		 * Returns a void pointer with a byte offset from the start.
+		 * @brief Gets a void pointer with a byte offset from the start.
 		 */
 		void* data(size_t offset);
+
 		/**
-		 * Returns a const void pointer with a byte offset from the start.
+		 * @brief Gets a const void pointer with a byte offset from the start.
 		 */
 		[[nodiscard]] const void* data(size_t offset) const;
+
 		/**
-		 * Cast operator to pointer.
+		 * @brief Cast operator to void pointer.
 		 */
 		explicit operator void*();
+
 		/**
-		 * Const cast operators to pointer.
+		 * @brief Const cast operators to pointer.
 		 */
 		explicit operator const char*() const;
+
 		/**
-		 * Cast operator to pointer.
+		 * @brief Cast operator to a character pointer.
 		 */
 		explicit operator char*();
+
 		/**
-		 * Const cast operators to pointers.
+		 * @brief Const cast operator to void pointer.
 		 */
 		explicit operator const void*() const;
+
 		/**
-		 * Character operator to access a single byte element.
+		 * @brief Character array operator to access a single byte element.
 		 */
 		char& operator[](size_t i);
+
 		/**
-		 * Const character operator to access a single byte element.
+		 * @brief Const character array operator to access a single byte element.
 		 */
 		char operator[](size_t i) const;
+
 		/**
-		 * Assignment operators.
+		 * @brief Assignment operators.
 		 */
 		TDynamicBuffer& operator=(const TDynamicBuffer& db);
 
 	private:
-		// Structure which to keep track of the buffer when passed between instances.
+		/**
+		 * @brief Structure which to keep track of the buffer when passed between instances.
+		 */
 		struct Reference
 		{
 			typename Alloc::handle_t Handle;
@@ -204,49 +241,49 @@ class TDynamicBuffer
 		} * _reference;
 };
 
-template <class Alloc>
+template<class Alloc>
 inline
 size_t TDynamicBuffer<Alloc>::size()
 {
 	return _reference->_size - _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 size_t TDynamicBuffer<Alloc>::size() const
 {
 	return _reference->_size - _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 void* TDynamicBuffer<Alloc>::data()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 const void* TDynamicBuffer<Alloc>::data() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 char* TDynamicBuffer<Alloc>::c_str()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 const char* TDynamicBuffer<Alloc>::c_str() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 void* TDynamicBuffer<Alloc>::data(size_t offset)
 {
@@ -255,7 +292,7 @@ void* TDynamicBuffer<Alloc>::data(size_t offset)
 	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 {
@@ -264,7 +301,7 @@ const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 char TDynamicBuffer<Alloc>::operator[](size_t i) const
 {
@@ -278,7 +315,7 @@ char TDynamicBuffer<Alloc>::operator[](size_t i) const
 	return (static_cast<char*>(_reference->_data))[i];
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 char& TDynamicBuffer<Alloc>::operator[](size_t i)
 {
@@ -290,8 +327,7 @@ char& TDynamicBuffer<Alloc>::operator[](size_t i)
 	return (static_cast<char*>(_reference->_data))[i];
 }
 
-template <class Alloc>
-inline
+template<class Alloc>
 TDynamicBuffer<Alloc>& TDynamicBuffer<Alloc>::operator=(const TDynamicBuffer<Alloc>& db)
 {
 	// Prevent self copying.
@@ -320,36 +356,35 @@ TDynamicBuffer<Alloc>& TDynamicBuffer<Alloc>::operator=(const TDynamicBuffer<All
 	return *this;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::operator void*()
 {
 	return _reference->_data;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::operator const void*() const
 {
 	return _reference->_data;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::operator char*()
 {
 	return _reference->_data;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::operator const char*() const
 {
 	return _reference->_data;
 }
 
-template <class Alloc>
-inline
+template<class Alloc>
 TDynamicBuffer<Alloc>::TDynamicBuffer()
 {
 	_reference = new Reference;
@@ -360,7 +395,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer()
 	_reference->_usage = 1;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::TDynamicBuffer(const TDynamicBuffer& db)
 {
@@ -368,8 +403,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer(const TDynamicBuffer& db)
 	_reference->_usage++;
 }
 
-template <class Alloc>
-inline
+template<class Alloc>
 TDynamicBuffer<Alloc>::TDynamicBuffer(size_t sz)
 {
 	_reference = new Reference;
@@ -381,7 +415,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer(size_t sz)
 	resize(sz);
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 TDynamicBuffer<Alloc>::~TDynamicBuffer()
 {
@@ -397,8 +431,7 @@ TDynamicBuffer<Alloc>::~TDynamicBuffer()
 	}
 }
 
-template <class Alloc>
-inline
+template<class Alloc>
 void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 {
 	if (sz == 0)
@@ -435,7 +468,7 @@ void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 	}
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 void TDynamicBuffer<Alloc>::offset(size_t ofs)
 {
@@ -443,15 +476,14 @@ void TDynamicBuffer<Alloc>::offset(size_t ofs)
 	_reference->_offset = ofs;
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 size_t TDynamicBuffer<Alloc>::offset() const
 {
 	return _reference->_offset;
 }
 
-template <class Alloc>
-inline
+template<class Alloc>
 void TDynamicBuffer<Alloc>::resize(size_t sz, bool shrink)
 {
 	// When resizing to zero the offset can ben cleared too.
@@ -469,7 +501,7 @@ void TDynamicBuffer<Alloc>::resize(size_t sz, bool shrink)
 	_reference->_size = sz;
 }
 
-template <class Alloc>
+template<class Alloc>
 void TDynamicBuffer<Alloc>::grow(size_t sz)
 {
 	// Compensate with the offset.
@@ -506,21 +538,21 @@ void TDynamicBuffer<Alloc>::grow(size_t sz)
 	}
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 void TDynamicBuffer<Alloc>::set(int c, bool reserved)
 {
 	memset(_reference->_data, c, reserved ? _reference->_allocated : _reference->_size);
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 void TDynamicBuffer<Alloc>::zero(bool reserved)
 {
 	set(0, reserved);
 }
 
-template <class Alloc>
+template<class Alloc>
 inline
 size_t TDynamicBuffer<Alloc>::reserved() const
 {
@@ -532,4 +564,4 @@ size_t TDynamicBuffer<Alloc>::reserved() const
  */
 typedef TDynamicBuffer<Allocator> DynamicBuffer;
 
-} // namespace
+}

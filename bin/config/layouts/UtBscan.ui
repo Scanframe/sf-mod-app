@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1338</width>
+    <height>881</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="objectName">
+   <string notr="true">Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="objectName">
+    <string notr="true">verticalLayout</string>
+   </property>
+   <item>
+    <widget class="sf::BscanGraph" name="wgtBscan">
+     <property name="idIndex">
+      <uLongLong>132097</uLongLong>
+     </property>
+     <property name="idCursorFraction">
+      <uLongLong>647171</uLongLong>
+     </property>
+     <property name="idTimeUnit">
+      <uLongLong>132101</uLongLong>
+     </property>
+     <property name="idTimeRange">
+      <uLongLong>132103</uLongLong>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="IdCursorEvent">
+      <uLongLong>647174</uLongLong>
+     </property>
+     <property name="objectName">
+      <string notr="true">wgtBscan</string>
+     </property>
+     <property name="IdCursorPopIndex">
+      <uLongLong>647170</uLongLong>
+     </property>
+     <property name="idScanLeft">
+      <uLongLong>647177</uLongLong>
+     </property>
+     <property name="paletteServer">
+      <stringlist>
+       <string>Simple</string>
+       <string>mode=ShiftHsv</string>
+       <string>colorFrom=#ab0000</string>
+       <string>colorTo=#0000ff</string>
+       <string>colorCenter=#00000000</string>
+       <string>formula=</string>
+      </stringlist>
+     </property>
+     <property name="idCursorIndex">
+      <uLongLong>647169</uLongLong>
+     </property>
+     <property name="idTimeDelay">
+      <uLongLong>132102</uLongLong>
+     </property>
+     <property name="idData">
+      <uLongLong>132098</uLongLong>
+     </property>
+     <property name="idScanRight">
+      <uLongLong>647178</uLongLong>
+     </property>
+     <property name="idScanRange">
+      <uLongLong>647176</uLongLong>
+     </property>
+     <property name="idScanDelay">
+      <uLongLong>647175</uLongLong>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections/>
+</ui>

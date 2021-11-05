@@ -380,13 +380,13 @@ class _GII_CLASS FileMappedStorage
 				bool acquire(size_type seg_idx);
 
 				/**
-				 * Gets the segment acquired status.
+				 * @brief Gets the segment acquired status.
 				 * @return True when acquired.
 				 */
 				[[nodiscard]] bool isAcquired() const;
 
 				/**
-				 * Gets the segment acquired status.
+				 * @brief Gets the segment acquired status.
 				 * @return True when acquired.
 				 */
 				explicit operator bool() const;

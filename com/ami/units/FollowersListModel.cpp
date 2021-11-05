@@ -30,6 +30,8 @@ FollowersListModel::FollowersListModel(UnitConversionServerEx* ucs, QObject* par
 
 void FollowersListModel::update()
 {
+	// Empty the list before filling.
+	_list.clear();
 	// Select the section to get the key value map.
 	if (_ucs->getProfile().selectSection(_ucs->getFollowersSectionName()))
 	{

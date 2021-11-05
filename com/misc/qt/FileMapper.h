@@ -79,11 +79,11 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		 */
 		uchar* _ptr{nullptr};
 		/**
-		 * Holds the mapped view size.
+		 * Holds the mapped view offset.
 		 */
 		qint64 _offset{0};
 		/**
-		 * Holds the mapped view offset.
+		 * Holds the mapped view size.
 		 */
 		qint64 _size{0};
 };

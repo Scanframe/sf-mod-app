@@ -90,7 +90,7 @@ size_t ModuleConfiguration::load(bool startup)
 			auto func = (SF_DL_NAME_FUNC_TYPE) lib.resolve(SF_DL_NAME_FUNC_NAME);
 			if (func)
 			{
-				func(it.key().toStdString().c_str());
+				func(it.key().toLocal8Bit());
 			}
 			// Increment the return value.
 			rv++;

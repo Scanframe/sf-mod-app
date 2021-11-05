@@ -14,8 +14,9 @@ namespace sf
 
 // Forward definition.
 class PropertySheetDialog;
+
 /**
- * Base class for the repetitive signal acquisition interface.
+ * @brief Base class for the repetitive signal acquisition interface.
  */
 class _RSA_CLASS RsaInterface :public RsaTypes
 {
@@ -189,7 +190,8 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @param channel Channel number and when UINT_MAX  it is ignored.
 		 * @return True on success.
 		 */
-		[[nodiscard]] virtual IdType getParamId(EDefaultParam param, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
+		[[nodiscard]] virtual IdType
+		getParamId(EDefaultParam param, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
 
 		/**
 		 * @brief Gets all interface parameters ids.
@@ -217,7 +219,8 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @param channel Channel number and when UINT_MAX tels the argument is ignored.
 		 * @return True on success.
 		 */
-		[[nodiscard]] virtual IdType getResultId(EDefaultResult result, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
+		[[nodiscard]] virtual IdType
+		getResultId(EDefaultResult result, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
 
 		/**
 		 * @brief Gets interface results ids.

@@ -13,8 +13,9 @@ namespace sf
 
 // Forward definition.
 class PropertySheetDialog;
+
 /**
- * Base class for the repetitive signal acquisition interface.
+ * @brief Base class for the interface.
  */
 class _STO_CLASS StorageInterface
 {
@@ -69,7 +70,7 @@ class _STO_CLASS StorageInterface
 		// Holds flag of implementation initialization.
 		bool _initialized;
 
-		// Declarations of static functions and data members to be able to create registered RSA implementations.
+		// Declarations of static functions and data members to be able to create registered implementations.
 	SF_DECL_IFACE(StorageInterface, StorageInterface::Parameters, Interface)
 
 };

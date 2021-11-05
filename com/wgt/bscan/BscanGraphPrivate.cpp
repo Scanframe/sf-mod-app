@@ -49,12 +49,14 @@ Value::int_type toBitMask(Qt::KeyboardModifiers modifiers, Qt::MouseButtons butt
 	return mask.Bits;
 }
 
+// TODO: Must be moved to a library eventually.
 bool bitMaskToButtonDown(Value::int_type bitMask)
 {
 	// Test the fist bit for the button down.
 	return (bitMask & 0x1) < 0;
 }
 
+// TODO: Must be moved to a library eventually.
 QPair<Qt::KeyboardModifiers, Qt::MouseButtons> bitMaskToModifiers(Value::int_type bitMask)
 {
 	TSet<Value::int_type, Value::int_type> mask(bitMask);
@@ -83,6 +85,7 @@ QPair<Qt::KeyboardModifiers, Qt::MouseButtons> bitMaskToModifiers(Value::int_typ
 BscanGraph::Private::Private(BscanGraph* widget)
 	:_w(widget)
 	 , _graph(widget->palette())
+	 , _paletteServer()
 	 , _sustain{this, &BscanGraph::Private::sustain, SustainBase::spTimer}
 {
 	// Make the widget get focus when clicked in.
@@ -121,6 +124,15 @@ void BscanGraph::Private::initialize()
 	_requester.attachIndex(&_rIndex);
 	// Bind the data result to the request handler object.
 	_requester.attachData(&_rData);
+	//
+	connect(&_paletteServer, &PaletteServer::changed, [&]()
+	{
+		if (_rcPalette.isValid())
+		{
+			_w->update(_rcPalette);
+		}
+		_w->update(_graph.getPlotArea());
+	});
 	//
 	setRulerLeft();
 	setRulerBottom();
@@ -193,28 +205,13 @@ void BscanGraph::Private::setRulerBottom()
 	_graph.setRuler(sf::Draw::roBottom, start, start + range, requiredDigits(step, start, range), unit);
 }
 
-void BscanGraph::Private::invalidate(const QRect& rect) const
+void BscanGraph::Private::updatePlotArea(const QRect& rect) const
 {
 	// When debugging invalidate it all.
-	if (rect.isEmpty())
+	if (!rect.isEmpty())
 	{
-		_w->update(_graph.getPlotArea());
-	}
-	else
-	{
+		// Update rectangle withing the plot area by adding the offset.
 		_w->update(rect + _graph.getPlotArea().topLeft());
-	}
-}
-
-void BscanGraph::Private::invalidate(bool graphAreaOnly) const
-{
-	if (graphAreaOnly)
-	{
-		_w->update(_graph.getPlotArea());
-	}
-	else
-	{
-		_w->update();
 	}
 }
 
@@ -231,8 +228,8 @@ void BscanGraph::Private::handlerVariable(VariableTypes::EEvent event, const Var
 		case Variable::veConverted:
 		{
 			setRulerBottom();
-			// Redraw the ruler.
-			invalidate(false);
+			// Redraw the ruler by updating the whole area.
+			_w->update(_area);
 			break;
 		}
 	}
@@ -325,7 +322,18 @@ bool BscanGraph::Private::draw(QPainter& painter, const QRect& rect, const QRegi
 		// Draw the image into the graph area.
 		if (!_image.isNull())
 		{
-			painter.drawImage(rect, _image);
+			// Check if the palette server has an implementation.
+			if (_paletteServer.isAvailable())
+			{
+				// Convert the image to an 8-bit indexed format and set the color table for each index.
+				auto img = _image.convertToFormat(QImage::Format_Indexed8);
+				img.setColorTable(_paletteServer.getColorTable());
+				painter.drawImage(rect, img);
+			}
+			else
+			{
+				painter.drawImage(rect, _image);
+			}
 		}
 		// Now we draw other things
 		drawMark(painter, _mark);
@@ -384,7 +392,7 @@ bool BscanGraph::Private::sustain(const timespec& ts)
 				// Update the current range also used as a sentry.
 				_rangeCurrent = _rangeNext;
 				// Invalidate plot area.
-				invalidate(true);
+				_w->update(_graph.getPlotArea());
 			}
 		}
 	}
@@ -721,7 +729,7 @@ void BscanGraph::Private::reinitialize(bool clear)
 		// Make the draw function call for new data.
 		_skippedAccessRange = _rIndex.getAccessRange();
 		// Clear plot before use.
-		invalidate(true);
+		_w->update(_graph.getPlotArea());
 		// Clear the current request.
 		_requester.reset();
 		// Update rulers with new values.
@@ -742,15 +750,15 @@ void BscanGraph::Private::mark(const QPoint& pt, bool active)
 	if (active)
 	{
 		// Invalidate old rect.
-		invalidate(_mark.Rect);
+		updatePlotArea(_mark.Rect);
 		// Calculate new rect.
 		_mark.Rect = inflated({_mark.Pt, _mark.Pt}, _mark.Radius);
 		// Invalidate new rect.
-		invalidate(_mark.Rect);
+		updatePlotArea(_mark.Rect);
 	}
 	else
 	{ // Make the plot redraw the affected area.
-		invalidate(_mark.Rect);
+		updatePlotArea(_mark.Rect);
 		// Clear accumulated rectangle.
 		_mark.Rect = {};
 	}
@@ -798,7 +806,7 @@ void BscanGraph::Private::zoomBox(const QPoint& pt, bool down)
 	if (_mark.Active)
 	{
 		// Make plot erase old zoom box.
-		invalidate(inflated(_mark.Rect, 1));
+		updatePlotArea(inflated(_mark.Rect, 1));
 		// Make new zoom rect.
 		_mark.Rect = QRect(_mark.Pt, pt).normalized();
 	}
@@ -836,7 +844,7 @@ void BscanGraph::Private::zoomBox(const QPoint& pt, bool down)
 		Reinitialize(true);
 		*/
 		// Invalidate old rect.
-		invalidate(_mark.Rect);
+		updatePlotArea(_mark.Rect);
 	}
 }
 
@@ -890,6 +898,40 @@ bool BscanGraph::Private::getData(const Range& index)
 		return false;
 	}
 	return true;
+}
+
+void BscanGraph::Private::paint(QPainter& painter, QPaintEvent* event)
+{
+	auto rect = _area;
+	// When the color table is enabled.
+	if (_heightPalette)
+	{
+		auto p2 = rect.bottomRight();
+		// Adjust for the color table at the bottom.
+		rect.adjust(0, 0, 0, -_heightPalette);
+		// Set the color table bounds.
+		_rcPalette = QRect(rect.bottomLeft(), p2);
+	}
+	else
+	{
+		// Make the palette rectangle invalid.
+		_rcPalette = {};
+	}
+	// Paint the graph canvas en returns the remaining plot area.
+	auto prc = _graph.paint(painter, rect, event->region());
+	// Check if the region to update intersects with
+	if (event->region().intersects(prc))
+	{
+		if (!draw(painter, prc, event->region()))
+		{
+			_graph.paintPlotCross(painter, tr("No Data"));
+		}
+	}
+	// Check if the region needs updating.
+	if (_heightPalette && event->region().intersects(_rcPalette))
+	{
+		_paletteServer.paint(painter, _rcPalette);
+	}
 }
 
 }

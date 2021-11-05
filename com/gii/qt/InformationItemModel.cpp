@@ -1,10 +1,9 @@
-#include <misc/qt/qt_utils.h>
-#include <gen/Variable.h>
-
-#include <utility>
-#include <misc/qt/Resource.h>
-#include <gen/ResultData.h>
 #include "InformationItemModel.h"
+#include "../gen/Variable.h"
+#include "../gen/ResultData.h"
+#include <misc/qt/qt_utils.h>
+#include <misc/qt/Resource.h>
+#include <utility>
 
 namespace sf
 {

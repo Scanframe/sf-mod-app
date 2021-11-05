@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.14)
 # Set the project name.
-project("sf-misc" LANGUAGES CXX VERSION 0.1.0)
+project("sf-misc" LANGUAGES CXX)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../cmake")
@@ -22,34 +22,36 @@ set(LIBRARIES pthread)
 set(SOURCES
 	global.h
 	gen/target.h
-	gen/Sustain.h gen/Sustain.cpp
+	gen/Sustain.cpp gen/Sustain.h
 	gen/IFileMapper.cpp gen/IFileMapper.h
-	gen/gen_utils.h	gen/gen_utils.cpp
-	gen/dbgutils.h gen/dbgutils.cpp
-	gen/TimeSpec.h gen/TimeSpec.cpp
-	gen/IntervalTimer.h gen/IntervalTimer.cpp
-	gen/ElapseTimer.h gen/ElapseTimer.cpp
-	gen/PerformanceTimer.h gen/PerformanceTimer.cpp
+	gen/gen_utils.cpp gen/gen_utils.h
+	gen/dbgutils.cpp gen/dbgutils.h
+	gen/TimeSpec.cpp gen/TimeSpec.h
+	gen/IntervalTimer.cpp gen/IntervalTimer.h
+	gen/ElapseTimer.cpp gen/ElapseTimer.h
+	gen/PerformanceTimer.cpp gen/PerformanceTimer.h
 	gen/Value.h	gen/Value.cpp
-	gen/ScriptObject.h gen/ScriptObject.cpp
-	gen/ScriptEngine.h gen/ScriptEngine.cpp
-	gen/ScriptInterpreter.cpp gen/ScriptInterpreter.h gen/ScriptInterpreter_p.h
+	gen/ScriptObject.cpp gen/ScriptObject.h
+	gen/ScriptEngine.cpp gen/ScriptEngine.h
+	gen/ScriptInterpreter.cpp gen/ScriptInterpreter.h
 	gen/ScriptGlobalObject.cpp gen/ScriptGlobalObject.h
 	gen/ScriptGlobalEntry.cpp gen/ScriptGlobalEntry.h
+	gen/IniProfile.cpp gen/IniProfile.h
+	gen/DynamicLibraryInfo.cpp gen/DynamicLibraryInfo.h
+	gen/ConfigLocation.cpp gen/ConfigLocation.h
+	gen/LineBuffer.cpp gen/LineBuffer.h
+	gen/Exception.cpp gen/Exception.h
+	gen/Range.cpp gen/Range.h
+	gen/RangeManager.cpp gen/RangeManager.h
+	gen/Mutex.cpp gen/Mutex.h
+	gen/Thread.cpp gen/Thread.h
+	gen/Semaphore.cpp gen/Semaphore.h
+	gen/ThreadRelay.cpp gen/ThreadRelay.h
+	gen/Condition.cpp gen/Condition.h
+	gen/Sync.h
+	gen/TClassRegistration.h
 	gen/TDynamicBuffer.h
 	gen/TDynamicArray.h
-	gen/IniProfile.h gen/IniProfile.cpp
-	gen/DynamicLibraryInfo.h gen/DynamicLibraryInfo.cpp
-	gen/TClassRegistration.h
-	gen/LineBuffer.h gen/LineBuffer.cpp
-	gen/Exception.h gen/Exception.cpp
-	gen/Range.h	gen/Range.cpp
-	gen/RangeManager.h gen/RangeManager.cpp
-	gen/Mutex.h gen/Mutex.cpp
-	gen/Thread.h gen/Thread.cpp
-	gen/Condition.h gen/Condition.cpp
-	gen/ConfigLocation.h gen/ConfigLocation.cpp
-	gen/Sync.h
 	gen/TVector.h
 	gen/TStrings.h
 	gen/TListener.h
@@ -129,6 +131,7 @@ if (SF_BUILD_QT)
 		qt/Globals.cpp qt/Globals.h
 		qt/HintWindow.cpp qt/HintWindow.h
 		qt/FindReplaceDialog.cpp qt/FindReplaceDialog.h
+		qt/QThreadClosure.h
 		qt/Macros.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
@@ -179,7 +182,8 @@ if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
 	add_subdirectory(tests/app/threads)
 	add_subdirectory(tests/app/script)
-endif(SF_BUILD_TESTING)
+	add_subdirectory(tests/app/mutex)
+endif()
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

@@ -130,7 +130,7 @@ bool RangeManager::setAccessible(const Range::Vector& rl, Range::Vector& rl_req)
 			_managedRange += i;
 		}
 	}
-	// Exclude the the range sections that have become accessible from the current actual requests.
+	// Exclude the range sections that have become accessible from the current actual requests.
 	_actualRequests.exclude(rl);
 	// Merge the new accessibles with the current ones.
 	_accessibles.merge(rl);

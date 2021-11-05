@@ -188,7 +188,7 @@ void File::write(const void* buf, size_t sz, size_t* written)
 	{
 		setErrorNo((int) errno);
 		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"Writting to '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
+			"Writing to '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
 	}
 		// Check if all was written
 	else if ((size_t) wr != sz)
@@ -208,7 +208,7 @@ void File::write(const File& file, size_t pos, size_t sz, size_t buf_sz)
 	// Create buffer top copy chunks of data.
 	DynamicBuffer buf;
 	// Set the reserved size for the max allowed chunk of data.
-	buf.reserve(buf_sz ? buf_sz : 1024 * 16);
+	buf.reserve(buf_sz ? buf_sz : (1024ul * 16));
 	//
 	for (size_t ws = 0; ws < sz; ws += buf.size())
 	{
@@ -227,7 +227,7 @@ void File::write(const File& file, size_t pos, size_t sz, size_t buf_sz)
 
 void File::read(DynamicBuffer buf, size_t pos, size_t sz) const
 {
-	// Make the buffer have enough space to accomodate the the requested
+	// Make the buffer have enough space to accomodate the requested
 	// size and for a possible the terminating nul character.
 	buf.reserve(sz);
 	// Resize the buffer to what was read.
@@ -354,7 +354,7 @@ void File::getStat(stat_type& stat) const
 				"Statting file '%s' on descriptor failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 	}
-		// Do the stat function on the the filename.
+		// Do the stat function on the filename.
 		// Check if the file exists.
 	else if (!::access(_path.c_str(), F_OK))
 	{

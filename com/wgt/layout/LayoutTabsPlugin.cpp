@@ -96,7 +96,7 @@ QString LayoutTabsPlugin::domXml() const
 
 QString LayoutTabsPlugin::includeFile() const
 {
-	return QStringLiteral("com/gii/qt/LayoutTabs.h");
+	return QStringLiteral("gii/qt/LayoutTabs.h");
 }
 
 }

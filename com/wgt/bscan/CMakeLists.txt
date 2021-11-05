@@ -9,7 +9,9 @@ list(APPEND CMAKE_PREFIX_PATH "../../cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
+find_package(SfMisc CONFIG REQUIRED)
 find_package(SfGii CONFIG REQUIRED)
+find_package(SfPal CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
@@ -43,6 +45,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt::Designer
 	sf-misc
 	sf-gii
+	sf-pal
 	)
 	
 # Tell the compiled code a dynamic library (DL) is being build.

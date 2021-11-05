@@ -1,5 +1,6 @@
 #include "AcquisitionControlPropertyPage.h"
 #include "ui_AcquisitionControlPropertyPage.h"
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
@@ -27,6 +28,11 @@ AcquisitionControlPropertyPage::~AcquisitionControlPropertyPage()
 QString AcquisitionControlPropertyPage::getPageName() const
 {
 	return tr("Acquisition Control");
+}
+
+QIcon AcquisitionControlPropertyPage::getPageIcon() const
+{
+	return Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Graph), QPalette::Text);
 }
 
 bool AcquisitionControlPropertyPage::isPageModified() const

@@ -210,8 +210,8 @@ void UnitConversionServerEx::convertVariable(Variable& var, bool regular)
 		// If so use the entry convert function.
 		if (it != _map.end())
 		{
-			(*it).second->convertVariable(var.getOwner());
-			done = true;
+			done = (*it).second->convertVariable(var.getOwner());
+			//done = true;
 		}
 	}
 	if (!done)

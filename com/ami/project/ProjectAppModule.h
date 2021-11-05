@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ami/iface/AppModuleInterface.h>
-#include <rsa/iface/RsaServer.h>
-#include <gen/Variable.h>
 #include <ipj/ProjectConfig.h>
+#include <rsa/iface/RsaServer.h>
+#include <gii/gen/Variable.h>
 
 namespace sf
 {

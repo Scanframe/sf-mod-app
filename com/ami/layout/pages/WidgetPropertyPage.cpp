@@ -1,5 +1,6 @@
 #include <QMetaEnum>
 #include <misc/qt/qt_utils.h>
+#include <misc/qt/Resource.h>
 #include "WidgetPropertyPage.h"
 #include "ui_WidgetPropertyPage.h"
 
@@ -28,6 +29,11 @@ WidgetPropertyPage::~WidgetPropertyPage()
 QString WidgetPropertyPage::getPageName() const
 {
 	return tr("Widget");
+}
+
+QIcon WidgetPropertyPage::getPageIcon() const
+{
+	return Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Widget), QPalette::Text);
 }
 
 bool WidgetPropertyPage::isPageModified() const

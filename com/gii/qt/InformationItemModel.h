@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../global.h"
+#include <gii/gen/InformationBase.h>
+#include "Namespace.h"
 #include <QIcon>
 #include <QAbstractItemModel>
-#include <gen/InformationBase.h>
-#include "Namespace.h"
-#include "../global.h"
 
 namespace sf
 {

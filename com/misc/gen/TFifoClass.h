@@ -80,17 +80,17 @@ class TFifoClass
 		/**
 		 * @brief Returns if current contained buffer data size is zero.
 		 */
-		bool empty() const;
+		[[nodiscard]] bool empty() const;
 
 		/**
 		 * @brief Returns current buffer contained data size.
 		 */
-		size_type size() const;
+		[[nodiscard]] size_type size() const;
 
 		/**
 		 * @brief Returns maximum containable size.
 		 */
-		size_type sizeMax() const
+		[[nodiscard]] size_type sizeMax() const
 		{
 			return (_valid) ? (_bufSize - 1) : 0;
 		}
@@ -98,7 +98,7 @@ class TFifoClass
 		/**
 		 * @brief Returns remaining available size.
 		 */
-		size_type sizeRemain() const
+		[[nodiscard]] size_type sizeRemain() const
 		{
 			return _valid ? (sizeMax() - size()) : 0;
 		}
@@ -106,7 +106,7 @@ class TFifoClass
 		/**
 		 * @brief Returns 1 if object is valid else 0
 		 */
-		bool isValid() const
+		[[nodiscard]] bool isValid() const
 		{
 			return _valid;
 		}
@@ -114,7 +114,7 @@ class TFifoClass
 		/**
 		 * @brief Returns '1' if object is full else 0
 		 */
-		bool isFull() const
+		[[nodiscard]] bool isFull() const
 		{
 			return sizeRemain() ? 0 : 1;
 		}
@@ -147,12 +147,12 @@ class TFifoClass
 		/**
 		 * @brief Access function for private member.
 		 */
-		size_type getTail() const;
+		[[nodiscard]] size_type getTail() const;
 
 		/**
 		 * @brief Access function for private member.
 		 */
-		size_type getHead() const;
+		[[nodiscard]] size_type getHead() const;
 
 		/**
 		 * @brief Access function for private member.

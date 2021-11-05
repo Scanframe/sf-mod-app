@@ -98,7 +98,7 @@ QString VariableCheckBoxPlugin::domXml() const
 
 QString VariableCheckBoxPlugin::includeFile() const
 {
-	return QStringLiteral("com/gii/qt/VariableCheckBox.h");
+	return QStringLiteral("gii/qt/VariableCheckBox.h");
 }
 
 } // namespace

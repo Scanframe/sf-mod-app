@@ -279,7 +279,7 @@ void PropertySheetDialog::addPage(PropertyPage* page)
 	// Connect the controls after the update not before.
 	for (auto w: page->connectControls())
 	{
-		qDebug() << __FUNCTION__  << "Not connected: " << w->objectName();
+		qDebug() << metaObject()->className() << __FUNCTION__  << "Not connected: " << w->objectName();
 	}
 	// Add an item to the list view.
 	auto item = new QListWidgetItem(_p->ui->listWidget);

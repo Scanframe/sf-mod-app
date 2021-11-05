@@ -436,7 +436,7 @@ class _MISC_CLASS Range :private RANGE
 		inline Range& operator+=(const Range& r);
 
 		/**
-	   * @brief Exclude the range in the the other which could result in an single range (0),
+	   * @brief Exclude the range in the other which could result in an single range (0),
 	   * an additional second range (1) or in an single empty range (-1).
 	   *
 		 * @param r Range excluded from this one.

@@ -35,7 +35,7 @@ class QDESIGNER_WIDGET_EXPORT LayoutButton :public QToolButton, public ObjectExt
 
 	protected:
 		/**
-		 * @brief Opens the the specified layout file in a form dialog as a popup window.
+		 * @brief Opens the specified layout file in a form dialog as a popup window.
 		 */
 		void openLayout();
 

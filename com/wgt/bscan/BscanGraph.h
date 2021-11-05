@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QtUiPlugin/QDesignerExportWidget>
-#include <QWidget>
-#include <QPaintEvent>
-#include <misc/qt/ObjectExtension.h>
 #include <gii/qt/Macros.h>
+#include <misc/qt/ObjectExtension.h>
+#include <misc/qt/Macros.h>
+#include <QtUiPlugin/QDesignerExportWidget>
+#include <QPaintEvent>
+#include <QWidget>
 
 class QStyleOptionFrame;
 
@@ -28,6 +29,7 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 		Q_PROPERTY(sf::Gii::IdType idScanRange READ getIdScanRange WRITE setIdScanRange)
 		Q_PROPERTY(sf::Gii::IdType idScanLeft READ getIdScanLeft WRITE setIdScanLeft)
 		Q_PROPERTY(sf::Gii::IdType idScanRight READ getIdScanRight WRITE setIdScanRight)
+		Q_PROPERTY(QStringList paletteServer READ getPaletteServer WRITE setPaletteServer)
 
 	public:
 		explicit BscanGraph(QWidget* parent = nullptr);
@@ -66,6 +68,8 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 
 		SF_DECL_INFO_ID(IdScanRight)
 
+		SF_DECL_PROP_RGRS(QStringList, PaletteServer)
+
 	protected:
 
 		void paintEvent(QPaintEvent* event) override;
@@ -81,14 +85,12 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 		void keyPressEvent(QKeyEvent* event) override;
 
 		void keyReleaseEvent(QKeyEvent* event) override;
-/*
 
+/*
 		void focusInEvent(QFocusEvent* event) override;
 
 		void focusOutEvent(QFocusEvent* event) override;
 */
-
-
 		void initStyleOption(QStyleOptionFrame* option) const;
 
 	private:

@@ -1,6 +1,5 @@
-#include <sys/time.h> // NOLINT(modernize-deprecated-headers)
-#include <gen/gen_utils.h>
 #include "ElapseTimer.h"
+#include <sys/time.h> // NOLINT(modernize-deprecated-headers)
 
 namespace sf
 {

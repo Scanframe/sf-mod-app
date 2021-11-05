@@ -1,9 +1,9 @@
+#include <test-GraphWindow.h>
+#include <gii/gen/Variable.h>
+#include <misc/qt/qt_utils.h>
 #include <QApplication>
 #include <QTimer>
 #include <QDir>
-#include <misc/qt/qt_utils.h>
-#include <gen/Variable.h>
-#include <test-GraphWindow.h>
 #if IS_WIN
 #include <windows.h>
 #endif

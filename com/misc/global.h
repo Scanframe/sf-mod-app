@@ -1,5 +1,5 @@
 /*
-This include file determines the the way the classes and functions in the
+This include-file determines the way the classes and functions in the
 library are exported when they are used as a dynamic or as application and static library.
 When building this Dynamic Library then _MISC_PKG (package) should be defined.
 

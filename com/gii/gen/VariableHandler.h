@@ -46,7 +46,7 @@ class TVariableHandler :public VariableHandler
 		/**
 		 * @brief Required event handler type.
 		 */
-		typedef void (T::*TPmf)(EEvent event, const Variable& caller, Variable& link, bool same_inst);
+		typedef void (T::*TPmf)(EEvent event, const Variable& caller, Variable& link, bool sameInst);
 
 		/**
 		 * @brief Constructor for assigning the pointer of the member function.

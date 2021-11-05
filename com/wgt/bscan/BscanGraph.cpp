@@ -36,6 +36,15 @@ SF_IMPL_INFO_ID(BscanGraph, IdScanLeft, _p->_scan.VLeft)
 
 SF_IMPL_INFO_ID(BscanGraph, IdScanRight, _p->_scan.VRight)
 
+void BscanGraph::setPaletteServer(const QStringList& props)
+{
+	_p->_paletteServer.setImplementationProperties(props);
+}
+
+const QStringList& BscanGraph::getPaletteServer() const
+{
+	return _p->_paletteServer.getImplementationProperties();
+}
 
 BscanGraph::BscanGraph(QWidget* parent)
 	:QWidget(parent)
@@ -67,27 +76,18 @@ void BscanGraph::initStyleOption(QStyleOptionFrame* option) const
 
 void BscanGraph::paintEvent(QPaintEvent* event)
 {
-	QWidget::paintEvent(event);
 	QStyleOptionFrame panel;
 	initStyleOption(&panel);
 	// Create painter for this widget.
 	QStylePainter sp(this);
 	// Use base function to draw the focus rectangle having the right color as a regular edit widget.
 	sp.drawPrimitive(QStyle::PE_PanelLineEdit, panel);
-	//
-	auto rc = sp.style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
-	// Create 1 pixel spacing between border and
-	inflate(rc, -_p->_margin);
-	// Paint the graph canvas en returns the remaining plot area.
-	auto prc = _p->_graph.paint(sp, rc, event->region());
-	// Check if the region to update intersects with
-	if (event->region().intersects(prc))
-	{
-		if (!_p->draw(sp, prc, event->region()))
-		{
-			_p->_graph.paintPlotCross(sp, tr("No Data"));
-		}
-	}
+	// Get graph bounding rectangle.
+	_p->_area = sp.style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
+	// Create 1 pixel spacing between border and the graph.
+	inflate(_p->_area, -_p->_margin);
+	// Paint the actual graph and palette.
+	_p->paint(sp, event);
 }
 
 void BscanGraph::resizeEvent(QResizeEvent* event)
@@ -103,6 +103,7 @@ void BscanGraph::resizeEvent(QResizeEvent* event)
 void BscanGraph::addPropertyPages(sf::PropertySheetDialog* sheet)
 {
 	sheet->addPage(new BscanPropertyPage(this, sheet));
+	_p->_paletteServer.addPropertyPages(sheet);
 }
 
 bool BscanGraph::isRequiredProperty(const QString& name)

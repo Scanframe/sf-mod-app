@@ -49,7 +49,9 @@ ln -sf "${QT_LIB_DIR}/gcc_64/libexec" "${ROOT_DIR}/${QT_VER}/mingw81_64/libexec"
 ##
 ## Create symlinks for applications needed in the make files.
 ##
-for fn in "qtpaths" "qmake" "androiddeployqt" "androidtestrunner" ; do
+for fn in "qtpaths" "qmake" \
+	"qmldom" "qmllint" "qmlformat" "qmlprofiler" "qmlprofiler" "qmltime" "qmlplugindump" "qmltestrunner"\
+	"androiddeployqt" "androidtestrunner" ; do
 	if [[ ! -f "${QT_LIB_DIR}/gcc_64/bin/${fn}" ]] ; then
 		WriteLog "Missing file to symlink: ${QT_LIB_DIR}/gcc_64/bin/${fn}"
 	else

@@ -17,10 +17,31 @@ namespace sf
 
 struct LayoutTabs::Private :QObject, VariableWidgetBase::PrivateBase
 {
+	struct TabWidget :QTabWidget
+	{
+		explicit TabWidget(QWidget* parent)
+			:QTabWidget(parent) {}
+
+		// Fix for keeping the same size after changing the tab index.
+		[[nodiscard]] QSize sizeHint() const override
+		{
+			return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::sizeHint();
+		}
+
+		// Fix for keeping the same size after changing the tab index.
+		[[nodiscard]] QSize minimumSizeHint() const override
+		{
+			return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::minimumSizeHint();
+		}
+
+		// Holds the size hint when layouts have been loaded.
+		QSize _fixedSizeHint;
+	};
+
 	QStringList _tabsConfig;
 	LayoutTabs* _w{nullptr};
 	QVBoxLayout* _layout{nullptr};
-	QTabWidget* _tabWidget{nullptr};
+	TabWidget* _tabWidget{nullptr};
 
 	static LayoutTabs::Private* cast(PrivateBase* data)
 	{
@@ -31,7 +52,7 @@ struct LayoutTabs::Private :QObject, VariableWidgetBase::PrivateBase
 		:_w(widget)
 	{
 		_w->_p = this;
-		_tabWidget = new QTabWidget(_w);
+		_tabWidget = new TabWidget(_w);
 		// Name the widget for ease of reference.
 		_tabWidget->setObjectName("tabWidget");
 		// Format using Horizontal layout.
@@ -148,11 +169,21 @@ void LayoutTabs::setTabsConfig(const QStringList& sl)
 
 void LayoutTabs::Private::recreateTabs()
 {
+	// Grows to the
+	QRect rcCombined;
 	// Delete the current tabs in reversed order.
 	for (int i = _tabWidget->count(); i > 0;)
 	{
 		delete _tabWidget->widget(--i);
 	}
+	// Reset this member so the size is invalid.
+	_tabWidget->_fixedSizeHint = {};
+	// Add the tab passing an empty widget and empty tab name.
+	_tabWidget->addTab(new QWidget(), "");
+	// Get the size of an empty tab.
+	QSize szFirst = _tabWidget->sizeHint();
+	// Delete it after retrieving the size.
+	delete _tabWidget->widget(0);
 	// Get the needed parent layout widget to retrieve the directory.
 	auto plw = ObjectExtension::inDesigner() ? nullptr : LayoutData::from(_w);
 	// Iterate through the string list.
@@ -201,8 +232,8 @@ void LayoutTabs::Private::recreateTabs()
 			}
 			else
 			{
-				// After loading set the parent.
-				tab->setParent(_tabWidget);
+				// Grow to the largest geometry of all layouts.
+				rcCombined |= tab->geometry();
 				// Assign a new parent for the layout-data instance.
 				ldc->setParent(tab);
 				// Add the tab passing the widget and name.
@@ -218,10 +249,17 @@ void LayoutTabs::Private::recreateTabs()
 			_tabWidget->addTab(tab, fields.at(0));
 		}
 	}
+	// Make the minimum size hint fixed to fix a sizing problem when the tab index changes.
+	if (!_tabWidget->_fixedSizeHint.isValid() && _tabWidget->count() && plw)
+	{
+		_tabWidget->_fixedSizeHint = rcCombined.size() + szFirst;
+	}
 }
 
 SF_IMPL_PROP_GSP(QTabWidget::TabPosition, LayoutTabs, TabPosition, LayoutTabs::Private::cast(_p)->_tabWidget, tabPosition)
+
 SF_IMPL_PROP_GSP(QTabWidget::TabShape, LayoutTabs, TabShape, LayoutTabs::Private::cast(_p)->_tabWidget, tabShape)
+
 SF_IMPL_PROP_GSP(int, LayoutTabs, CurrentIndex, LayoutTabs::Private::cast(_p)->_tabWidget, currentIndex)
 
 }

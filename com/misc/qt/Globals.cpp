@@ -1,6 +1,6 @@
-#include "Globals.h"
 #include "FormBuilder.h"
-#include <gen/Exception.h>
+#include "../gen/Exception.h"
+#include "Globals.h"
 #include <QWidget>
 #include <QCoreApplication>
 

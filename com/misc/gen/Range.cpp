@@ -268,7 +268,7 @@ Range::Vector Range::Vector::extract(const Range::Vector& rl, Range::Vector& rl_
 	auto itc = rl.begin();
 	// Compare value.
 	ECompare cmp;
-	// Iterate through the the sorted vector out of which elements are to be extracted.
+	// Iterate through the sorted vector out of which elements are to be extracted.
 	Vector::size_type i = 0;
 	while (i < size() && itc != rl.end())
 	{
@@ -361,7 +361,7 @@ Range::Vector& Range::Vector::rearrange()
 Range::Vector& Range::Vector::merge(const Range::Vector& rl_add)
 {
 	add(rl_add);
-	// Rearrange the the vector as it should.
+	// Rearrange the vector as it should.
 	return rearrange();
 }
 

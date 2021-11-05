@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>537</width>
+    <height>247</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="sf::AcquisitionControl" name="acquisitionControl">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="whatsThis">
+      <string>Acquisition control using GII interface.</string>
+     </property>
+     <property name="gripHeight">
+      <number>6</number>
+     </property>
+     <property name="valueMax">
+      <number>0</number>
+     </property>
+     <property name="thresholdDrag">
+      <bool>true</bool>
+     </property>
+     <property name="thresholdLinked">
+      <bool>true</bool>
+     </property>
+     <property name="gridEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="colorForeground">
+      <color>
+       <red>0</red>
+       <green>255</green>
+       <blue>0</blue>
+      </color>
+     </property>
+     <property name="colorBackground">
+      <color alpha="192">
+       <red>0</red>
+       <green>0</green>
+       <blue>0</blue>
+      </color>
+     </property>
+     <property name="colorTcgLine">
+      <color>
+       <red>0</red>
+       <green>0</green>
+       <blue>255</blue>
+      </color>
+     </property>
+     <property name="colorTcgRange">
+      <color>
+       <red>0</red>
+       <green>255</green>
+       <blue>255</blue>
+      </color>
+     </property>
+     <property name="colorAdjustmentLine">
+      <color>
+       <red>255</red>
+       <green>0</green>
+       <blue>0</blue>
+      </color>
+     </property>
+     <property name="colorGridLines">
+      <color alpha="64">
+       <red>0</red>
+       <green>170</green>
+       <blue>255</blue>
+      </color>
+     </property>
+     <property name="idTimeUnit">
+      <uLongLong>132101</uLongLong>
+     </property>
+     <property name="idGateCount">
+      <uLongLong>132099</uLongLong>
+     </property>
+     <property name="idIfShift">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idCopyData">
+      <uLongLong>132098</uLongLong>
+     </property>
+     <property name="idCopyIndex">
+      <uLongLong>132099</uLongLong>
+     </property>
+     <property name="idCopyDelay">
+      <uLongLong>132102</uLongLong>
+     </property>
+     <property name="idCopyRange">
+      <uLongLong>132103</uLongLong>
+     </property>
+     <property name="idTcgEnable">
+      <uLongLong>132133</uLongLong>
+     </property>
+     <property name="idTcgDelay">
+      <uLongLong>132144</uLongLong>
+     </property>
+     <property name="idTcgRange">
+      <uLongLong>132145</uLongLong>
+     </property>
+     <property name="idTcgSlavedTo">
+      <uLongLong>132143</uLongLong>
+     </property>
+     <property name="idGate0Delay">
+      <uLongLong>132162</uLongLong>
+     </property>
+     <property name="idGate0Range">
+      <uLongLong>132163</uLongLong>
+     </property>
+     <property name="idGate0Threshold">
+      <uLongLong>132167</uLongLong>
+     </property>
+     <property name="idGate0SlavedTo">
+      <uLongLong>132164</uLongLong>
+     </property>
+     <property name="idGate0TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate0Tof">
+      <uLongLong>132162</uLongLong>
+     </property>
+     <property name="idGate0Amp">
+      <uLongLong>132161</uLongLong>
+     </property>
+     <property name="idGate1Delay">
+      <uLongLong>132226</uLongLong>
+     </property>
+     <property name="idGate1Range">
+      <uLongLong>132227</uLongLong>
+     </property>
+     <property name="idGate1Threshold">
+      <uLongLong>132231</uLongLong>
+     </property>
+     <property name="idGate1SlavedTo">
+      <uLongLong>132228</uLongLong>
+     </property>
+     <property name="idGate1TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate1Tof">
+      <uLongLong>132226</uLongLong>
+     </property>
+     <property name="idGate1Amp">
+      <uLongLong>132225</uLongLong>
+     </property>
+     <property name="idGate2Delay">
+      <uLongLong>132290</uLongLong>
+     </property>
+     <property name="idGate2Range">
+      <uLongLong>132291</uLongLong>
+     </property>
+     <property name="idGate2Threshold">
+      <uLongLong>132295</uLongLong>
+     </property>
+     <property name="idGate2SlavedTo">
+      <uLongLong>132292</uLongLong>
+     </property>
+     <property name="idGate2TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate2Tof">
+      <uLongLong>132290</uLongLong>
+     </property>
+     <property name="idGate2Amp">
+      <uLongLong>132289</uLongLong>
+     </property>
+     <property name="idGate3Delay">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3Range">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3Threshold">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3SlavedTo">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3TrackRange">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3Tof">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idGate3Amp">
+      <uLongLong>0</uLongLong>
+     </property>
+     <property name="idsTcgTime">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
+     </property>
+     <property name="idsTcgGain">
+      <cstring>0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0</cstring>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::AcquisitionControl</class>
+   <extends>QWidget</extends>
+   <header>wgt/acq-ctrl/AcquisitionControl.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

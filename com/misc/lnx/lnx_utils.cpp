@@ -19,6 +19,29 @@ pid_t gettid() noexcept
 	return (pid_t)::syscall(SYS_gettid);
 }
 
+size_t getThreadCount()
+{
+	char buf[512];
+	auto fd = open("/proc/self/stat", O_RDONLY);
+	if (fd == -1)
+	{
+		return 0;
+	}
+	size_t count = 0;
+	if (read(fd, buf, sizeof(buf)) > 0)
+	{
+		char* s = strchr(buf, ')');
+		if (s != nullptr)
+		{
+			// Read 18th integer field after the command name
+			for (int field = 0; *s != ' ' || ++field < 18; s++) {}
+			count = atoi(s + 1);
+		}
+	}
+	close(fd);
+	return count;
+}
+
 bool kb_hit()
 {
 	struct timeval tv{};

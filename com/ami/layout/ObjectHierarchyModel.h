@@ -1,8 +1,8 @@
 #pragma once
 
+#include <gii/gen/InformationBase.h>
 #include <QAbstractItemModel>
 #include <QIcon>
-#include <gen/InformationBase.h>
 
 namespace sf
 {

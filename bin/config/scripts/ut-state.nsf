@@ -1,0 +1,9 @@
+object varState= Create("Variable", 0x20000);
+return;
+
+:main;
+// Wait for 2.5 seconds.
+sleep(1.1);
+// Set the Run mode.
+varState.Cur = 1;
+return;
