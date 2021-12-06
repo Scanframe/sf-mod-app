@@ -6,7 +6,7 @@ When building this Dynamic Library then _IFACE_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:        _IFACE_CLASS
 	Function calls: _IFACE_FUNC _IFACE_CALL
-	_data:           _IFACE_DATA
+	Data:           _IFACE_DATA
 
 Add compiler definition flags:
 	* _IFACE_PKG when building a dynamic library (package)

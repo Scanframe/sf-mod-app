@@ -1,11 +1,13 @@
+#include "Value.h"
+#include "TDynamicBuffer.h"
+#include "gen_utils.h"
+#include "gnu_compat.h"
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include <cfenv>
 #include <sstream>
 #include <malloc.h>
-#include "TDynamicBuffer.h"
-#include "Value.h"
-#include "gen_utils.h"
 
 namespace sf
 {
@@ -158,7 +160,11 @@ Value& Value::set(int type, const void* content, size_t size)
 			_size = sizeof(_data._int);
 			if (content)
 			{
+#if IS_MSVC
+				memcpy_s(&_data._int, sizeof(_data._int), content, _size);
+#else
 				memcpy(&_data._int, content, _size);
+#endif
 			}
 			else
 			{
@@ -170,7 +176,11 @@ Value& Value::set(int type, const void* content, size_t size)
 			_size = sizeof(flt_type);
 			if (content)
 			{
+#if IS_MSVC
+				memcpy_s(&_data._flt, sizeof(_data._flt), content, _size);
+#else
 				memcpy(&_data._flt, content, _size);
+#endif
 			}
 			else
 			{
@@ -187,8 +197,11 @@ Value& Value::set(int type, const void* content, size_t size)
 					_size = maxString;
 				}
 				_data._ptr = (char*)malloc(_size + _sizeExtra);
-				//_data._ptr = malloc();
+#if IS_MSVC
+				memcpy_s(_data._ptr, sizeof(_data._ptr), content, _size);
+#else
 				memcpy(_data._ptr, content, _size);
+#endif
 				_data._ptr[_size - 1] = '\0';
 			}
 			else
@@ -211,7 +224,11 @@ Value& Value::set(int type, const void* content, size_t size)
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
+#if IS_MSVC
+				memcpy_s(_data._ptr, _size, content, _size);
+#else
 				memcpy(_data._ptr, content, _size);
+#endif
 			}
 			else
 			{
@@ -228,7 +245,11 @@ Value& Value::set(int type, const void* content, size_t size)
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
+#if IS_MSVC
+				memcpy_s(_data._ptr, _size, content, _size);
+#else
 				memcpy(_data._ptr, content, _size);
+#endif
 			}
 			else
 			{
@@ -314,11 +335,19 @@ Value& Value::set(const Value& v)
 		if (_type >= vitString)
 		{
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
+#if IS_MSVC
+			memcpy_s(_data._ptr, _size + _sizeExtra, v._data._ptr, _size);
+#else
 			memcpy(_data._ptr, v._data._ptr, _size);
+#endif
 		}
 		else
 		{
+#if IS_MSVC
+			memcpy_s(&_data, _size, &v._data, _size);
+#else
 			memcpy(&_data, &v._data, _size);
+#endif
 		}
 	}
 	return *this;
@@ -426,9 +455,15 @@ std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
 			else
 			{
 				// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
-				char buf[std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5];
+				std::array<char, std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5> buf{};
 				// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
-				std::string s(gcvt(_data._flt, std::numeric_limits<flt_type>::digits10, buf));
+#if IS_MSVC
+				_gcvt_s
+				gcvt(buf.data(), buf.size(), _data._flt, std::numeric_limits<flt_type>::digits10);
+#else
+				gcvt(_data._flt, std::numeric_limits<flt_type>::digits10, buf.data());
+#endif
+				std::string s(buf.data());
 				// Only needed for Windows since it adds a trailing '.' even when not required.
 				return s.erase(s.find_last_not_of('.') + 1);
 			}

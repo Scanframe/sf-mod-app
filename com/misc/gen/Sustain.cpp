@@ -34,7 +34,7 @@ SustainBase::SustainBase(PtrVector* vector, int priority)
 		enable();
 	}
 	// Order on the priority of the entry priority 0 is the highest.
-	unsigned i = _list->count();
+	size_t i = _list->count();
 	// Find the insert position based on the entry priority.
 	while (i)
 	{
@@ -56,7 +56,7 @@ SustainBase::~SustainBase()
 		// Cleanup the default vector if the vector is empty.
 		if (_list == _defaultVector)
 		{
-			unsigned count = _defaultVector->count();
+			size_t count = _defaultVector->count();
 			if (!count)
 			{
 				delete_null(_defaultVector);

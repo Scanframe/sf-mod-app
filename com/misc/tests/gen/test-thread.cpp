@@ -234,7 +234,7 @@ TEST_CASE("sf::Thread", "[generic][thread]")
 		Worker worker;
 		threadRelay = std::make_unique<ThreadRelay>();
 		Mutex mutex;
-		TVector<int> results;
+		TVector<Thread::id_type> results;
 		//
 		ThreadClosure tc1([&results, &worker, &mutex](Thread& thread) -> int
 		{
@@ -283,7 +283,7 @@ TEST_CASE("sf::Thread", "[generic][thread]")
 		// Since the threads are released in an unpredictable way we need to sort them before comparing.
 		std::sort(results.begin(), results.end());
 		// Compare the results with what is expected.
-		CHECK(results == TVector<int>{tid + 1, tid + 3, tid + 6});
+		CHECK(results == TVector<Thread::id_type>{tid + 1, tid + 3, tid + 6});
 	}
 }
 

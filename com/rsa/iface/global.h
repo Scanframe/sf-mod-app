@@ -6,7 +6,7 @@ When building this Dynamic Library then _RSA_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _RSA_CLASS
 	Function: _RSA_FUNC
-	_data:     _RSA_DATA
+	Data:     _RSA_DATA
 
 Add compiler definition flags:
 	* _RSA_PKG when building a dynamic library (package)

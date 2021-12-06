@@ -57,7 +57,7 @@ class _MISC_CLASS ThreadRelay :public Sync
 		/**
 		 * @brief Base class for the ThreadRelay::Relay0,1,2,3 templates for storing in a list.
 		 */
-		class RelayBase
+		class _MISC_CLASS RelayBase
 		{
 			public:
 				/**

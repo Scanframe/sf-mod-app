@@ -26,8 +26,8 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="variableId">
-      <string>0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
      <property name="converted">
       <bool>false</bool>
@@ -42,8 +42,8 @@
      <property name="whatsThis">
       <string>Special edit having name and unit label.</string>
      </property>
-     <property name="variableId">
-      <string>0x1</string>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
      </property>
      <property name="converted">
       <bool>true</bool>

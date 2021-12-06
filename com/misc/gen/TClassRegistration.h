@@ -138,11 +138,11 @@ class TClassRegistration
 		/**
 		 * @brief Constructor for the base class.
 		 */
-		TClassRegistration<T, P>(entries_t& entries); // NOLINT(google-explicit-constructor)
+		inline TClassRegistration<T, P>(entries_t& entries); // NOLINT(google-explicit-constructor)
 		/**
 		 * @brief Copy constructor
 		 */
-		TClassRegistration<T, P>(const TClassRegistration<T, P>& inst);
+		inline TClassRegistration<T, P>(const TClassRegistration<T, P>& inst);
 
 		/**
 		 * @brief Assignment operator
@@ -164,7 +164,7 @@ class TClassRegistration
 		 * @param description Description of the class.
 		 * @param callback Callback function to create instance of the class.
 		 */
-		size_t registerClass(const char* name, const char* description, const callback_t& callback);
+		inline size_t registerClass(const char* name, const char* description, const callback_t& callback);
 
 		/**
 		 * @brief Find a registered class structure index.
@@ -172,7 +172,7 @@ class TClassRegistration
 		 * @param name Registered name of the class.
 		 * @return Non zero index/position of the class in the registration list where Zero means not found.
 		 */
-		[[nodiscard]] size_t indexOf(const std::string& name) const;
+		[[nodiscard]] inline size_t indexOf(const std::string& name) const;
 
 		/**
 		 * @brief Find and create registered class by name.
@@ -181,7 +181,7 @@ class TClassRegistration
 		 * @param params Parameter type instance for the constructor.
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
-		T* create(const std::string& name, const P& params) const;
+		inline T* create(const std::string& name, const P& params) const;
 
 		/**
 		 * @brief Function create registered class by index.
@@ -190,7 +190,7 @@ class TClassRegistration
 		 * @param params Parameter structure.
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
-		T* create(size_t index, const P& params) const;
+		inline T* create(size_t index, const P& params) const;
 
 		/**
 		 * @brief Returns the amount of registered entries.

@@ -6,7 +6,7 @@ When building this Dynamic Library then _GII_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _GII_CLASS
 	Function: _GII_FUNC
-	_data:    _GII_DATA
+	Data:     _GII_DATA
 
 Add compiler definition flags:
 	* _GII_PKG when building a dynamic library (package)

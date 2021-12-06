@@ -318,9 +318,6 @@ class TVector :public std::vector<T>
 			return this;
 		}
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "HidingNonVirtualFunction"
-
 		/**
 		 * @brief Array operator
 		 *
@@ -346,8 +343,6 @@ class TVector :public std::vector<T>
 		{
 			return base_type::at(i);
 		}
-
-#pragma clang diagnostic pop
 
 		/**
 		 * Writes the content to an output stream.
@@ -411,10 +406,10 @@ class TIterator
 		explicit TIterator(const base_t& v)
 		{
 			_vector = const_cast<base_t*>(&v);
-			restart(0, v.size());
+			restart(0, _vector->size());
 		}
 
-		TIterator(const base_t& v, unsigned start, unsigned stop)
+		TIterator(const base_t& v, size_t start, size_t stop)
 		{
 			_vector = &v;
 			restart(start, stop);

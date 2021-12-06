@@ -20,8 +20,15 @@ Defines these with true (1) or false (0):
 	#define IS_GNU 0
 #endif
 
-// Check when the GNU compiler is active for a Windows target.
-#if IS_GNU && defined(WIN32)
+// Check when the MSVC compiler is active for a Windows target.
+#if defined(_MSC_VER)
+	#define IS_MSVC 1
+#else
+	#define IS_MSVC 0
+#endif
+
+// Check when a compiler is active for a Windows target.
+#if defined(WIN32)
 	#define IS_WIN 1
 #else
 	#define IS_WIN 0
@@ -56,15 +63,21 @@ Defines these with true (1) or false (0):
 #endif
 
 #if IS_WIN
-//#define TARGET_EXPORT __declspec(dllexport)
-//#define TARGET_IMPORT __declspec(dllimport)
-#define TARGET_EXPORT __attribute__ ((dllexport))
-#define TARGET_IMPORT __attribute__ ((dllimport))
-#define TARGET_HIDDEN __attribute__((visibility("hidden")))
+	#if IS_GNU
+		#define TARGET_EXPORT __attribute__ ((dllexport))
+		#define TARGET_IMPORT __attribute__ ((dllimport))
+		#define TARGET_HIDDEN __attribute__((visibility("hidden")))
+	#elif IS_MSVC
+		#define TARGET_EXPORT __declspec(dllexport)
+		#define TARGET_IMPORT __declspec(dllimport)
+		#define TARGET_HIDDEN
+	#else
+		#error "Failed to detect compiler."
+	#endif
 #else
-#define TARGET_EXPORT __attribute__((visibility("default")))
-#define TARGET_IMPORT
-#define TARGET_HIDDEN __attribute__((visibility("hidden")))
+	#define TARGET_EXPORT __attribute__((visibility("default")))
+	#define TARGET_IMPORT
+	#define TARGET_HIDDEN __attribute__((visibility("hidden")))
 #endif
 
 // Report current targeted result.
@@ -73,8 +86,17 @@ Defines these with true (1) or false (0):
 	#if IS_GNU
 		#pragma message ("GNU compiler")
 	#endif
+// Report the Windows target.
 	#if IS_WIN
 		#pragma message ("Windows build")
+	#endif
+// Report the GNU C++ compiler.
+	#if IS_GNU
+		#pragma message ("GNU C++ Compiler")
+	#endif
+// Report the Visual C++ compiler.
+	#if IS_MSVC
+		#pragma message ("Visual C++ Compiler")
 	#endif
 // Report the QT is linked.
 	#if IS_QT

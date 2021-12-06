@@ -1,65 +1,25 @@
-# Gets the Qt directory given by the bash script 'QtLibDir.sh'
-#
-function(_GetQtLibDir VarOut)
-	if (WIN32)
-		set(_Command "C:\\cygwin64\\bin\\bash.exe")
-		string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/QtLibDir.sh")
-	else ()
-		set(_Command "bash")
-		set(_Script "${SfMacros_DIR}/QtLibDir.sh")
-	endif ()
-	execute_process(COMMAND "${_Command}" "${_Script}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
-	# Validate the exit code.
-	if (_ExitCode GREATER "0")
-		message(FATAL_ERROR "Failed execution of script: ${_Script}")
-	endif ()
-	set(${VarOut} "${_Result}" PARENT_SCOPE)
-endfunction()
-
-#TODO: This QT stuff should probably be in its own cmake package file so it can be omitted in non Qt builds.
-# Set the Qt Library location variable.
-if (NOT DEFINED QT_DIRECTORY)
-	_GetQtLibDir(QT_DIRECTORY)
-	message(STATUS "Qt Directory: ${QT_DIRECTORY}")
-	# When changing this CMAKE_PREFIX_PATH remove the 'cmake-build-xxxx' directory
-	# since it weirdly keeps the previous selected CMAKE_PREFIX_PATH
-	if (WIN32)
-		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/mingw81_64")
-		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/mingw81_64/include")
-	else ()
-		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/gcc_64")
-		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/gcc_64/include")
-	endif ()
-endif ()
-
-# Set the Qt directory variable.
-if (NOT DEFINED QT_PLUGINS_DIR)
-	if (NOT QT_DIRECTORY STREQUAL "")
-		if (WIN32)
-			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/mingw81_64/plugins")
-		else ()
-			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/gcc_64/plugins")
-		endif ()
-	endif ()
-	message(STATUS "Designer Plugins Dir: ${QT_PLUGINS_DIR}")
-endif ()
-
 if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
+	set(CMAKE_CXX_STANDARD 20)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	# Do not export all by default in Linux.
 	if (NOT WIN32)
 		add_definitions("-fvisibility=hidden")
 	endif ()
-	# Generate an error on undefined (imported) symbols on dyn libs
-	# because the error appears only at load-time.
-	add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
-	# Suppressing the warning that out-of-line inline functions are redeclared.
-	if (WIN32)
-		add_link_options(-Wno-inconsistent-dllimport)
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		# Generate an error on undefined (imported) symbols on dyn libs
+		# because the error appears only at load-time.
+		add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
+		# Suppressing the warning that out-of-line inline functions are redeclared.
+		if (WIN32)
+			add_link_options(-Wno-inconsistent-dllimport)
+		endif ()
 	endif ()
-	set(CMAKE_CXX_STANDARD 20)
-	set(CMAKE_CXX_STANDARD_REQUIRED ON)
-	#set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
-	# When GNU compiler is used Set some options.
+	# When MSVC compiler is used set some options.
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+		add_compile_options("-Zc:__cplusplus")
+	endif()
+	#set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
+	# When GNU compiler is used set some options.
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 		if (WIN32)
@@ -70,4 +30,47 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 			add_compile_options(--pedantic-errors #[[-fsanitize=address]])
 		endif ()
 	endif ()
+	# Workaround for using a network drive on Windows.
+	_WorkAroundSmbShare()
+	#
+	message(STATUS "CMake Version: ${CMAKE_VERSION}")
+	message(STATUS "CMake System : ${CMAKE_SYSTEM}")
+	message(STATUS "CMake System Name: ${CMAKE_SYSTEM_NAME}")
+	message(STATUS "CMake System Info File: ${CMAKE_SYSTEM_INFO_FILE}")
+	message(STATUS "CMake System Processor: ${CMAKE_SYSTEM_PROCESSOR}")
+endif ()
+
+#TODO: This QT stuff should probably be in its own cmake package file so it can be omitted in non Qt builds.
+# Set the Qt Library location variable.
+if (NOT DEFINED QT_DIRECTORY)
+	_GetQtVersionDirectory(QT_DIRECTORY)
+	message(STATUS "Qt Version Directory: ${QT_DIRECTORY}")
+	# When changing this CMAKE_PREFIX_PATH remove the 'cmake-build-xxxx' directory
+	# since it weirdly keeps the previous selected CMAKE_PREFIX_PATH
+	if (WIN32)
+		if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+			set(QT_LIBS_SUBDIRECTORY "msvc2019_64")
+		else()
+			set(QT_LIBS_SUBDIRECTORY "mingw_64")
+		endif()
+		message(STATUS "Qt Libraries: ${QT_LIBS_SUBDIRECTORY}")
+		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/${QT_LIBS_SUBDIRECTORY}")
+		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/${QT_LIBS_SUBDIRECTORY}/include")
+	else ()
+		list(PREPEND CMAKE_PREFIX_PATH "${QT_DIRECTORY}/gcc_64")
+		set(QT_INCLUDE_DIRECTORY "${QT_DIRECTORY}/gcc_64/include")
+	endif ()
+endif ()
+
+# Set the Qt directory variable.
+if (NOT DEFINED QT_PLUGINS_DIR)
+	#message(FATAL_ERROR "######## Fix this depending on the compiler type. ############")
+	if (NOT QT_DIRECTORY STREQUAL "")
+		if (WIN32)
+			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/mingw_64/plugins")
+		else ()
+			set(QT_PLUGINS_DIR "${QT_DIRECTORY}/gcc_64/plugins")
+		endif ()
+	endif ()
+	message(STATUS "Designer Plugins Dir: ${QT_PLUGINS_DIR}")
 endif ()

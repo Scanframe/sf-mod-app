@@ -40,6 +40,17 @@ All projects are configured to drop the result into the **`./bin`** directory.
 The usage is `./build.sh <directory>`.<br>
 Where the directory is any with a `CMakelists.txt` project file in it.
 
+On Ubuntu 20.04 LTS in order to use the GCC 10 compiler the next packages need to be installed.
+
+```bash
+sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10 libstdc++-10-dev libstdc++-10-doc
+```
+Check with this command the C++20 GNU defined values.  
+```bash
+g++-10 -x c++ -std=c++2a -dM -E - </dev/null | grep -i GNU
+```
+
+
 #### Windows Build
 
 Install **Cygwin** to build this project the same way as for Linux using the same bash script.

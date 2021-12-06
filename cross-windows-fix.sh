@@ -23,13 +23,15 @@ SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 # Root for the Windows Qt installed MinGW files.
 ROOT_DIR="/mnt/server/userdata/project/PROG/Qt"
 # Get the Qt installed directory.
-QT_LIB_DIR="$(bash "${SCRIPT_DIR}/com/cmake/QtLibDir.sh")"
+QT_VER_DIR="$(bash "${SCRIPT_DIR}/com/cmake/QtLibDir.sh")"
 # Qt version on Linux.
-QT_VER="$(basename "${QT_LIB_DIR}")"
+QT_VER="$(basename "${QT_VER_DIR}")"
+# Qt lib sub directory build by certain compiler version.
+QT_LIB_SUB="mingw_64"
 # Directory where the Linux Qt library cmake files are located.
-DIR_FROM="${QT_LIB_DIR}/gcc_64/lib/cmake"
+DIR_FROM="${QT_VER_DIR}/gcc_64/lib/cmake"
 # Directory where the Windows Qt library cmake files are located.
-DIR_TO="${ROOT_DIR}/${QT_VER}/mingw81_64/lib/cmake"
+DIR_TO="${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/lib/cmake"
 
 if [[ ! -d "${DIR_FROM}" ]]; then
 	WriteLog "Directory '${DIR_FROM}' does not exist!"
@@ -44,19 +46,19 @@ fi
 ##
 ## Create symlink in from ~/lib/Qt/6.2.0/gcc_64/libexec to ${ROOT_DIR}
 ##
-ln -sf "${QT_LIB_DIR}/gcc_64/libexec" "${ROOT_DIR}/${QT_VER}/mingw81_64/libexec"
+ln -sf "${QT_VER_DIR}/gcc_64/libexec" "${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/libexec"
 
 ##
 ## Create symlinks for applications needed in the make files.
 ##
 for fn in "qtpaths" "qmake" \
-	"qmldom" "qmllint" "qmlformat" "qmlprofiler" "qmlprofiler" "qmltime" "qmlplugindump" "qmltestrunner"\
-	"androiddeployqt" "androidtestrunner" ; do
-	if [[ ! -f "${QT_LIB_DIR}/gcc_64/bin/${fn}" ]] ; then
-		WriteLog "Missing file to symlink: ${QT_LIB_DIR}/gcc_64/bin/${fn}"
+	"qmldom" "qmllint" "qmlformat" "qmlprofiler" "qmlprofiler" "qmltime" "qmlplugindump" \
+	"qmltestrunner"	"androiddeployqt" "androidtestrunner" ; do
+	if [[ ! -f "${QT_VER_DIR}/gcc_64/bin/${fn}" ]] ; then
+		WriteLog "Missing file to symlink: ${QT_VER_DIR}/gcc_64/bin/${fn}"
 	else
-		WriteLog "Symlink to: ${QT_LIB_DIR}/gcc_64/bin/${fn}"
-		ln -sf "${QT_LIB_DIR}/gcc_64/bin/${fn}" "${ROOT_DIR}/${QT_VER}/mingw81_64/bin"
+		WriteLog "Symlink to: ${QT_VER_DIR}/gcc_64/bin/${fn}"
+		ln -sf "${QT_VER_DIR}/gcc_64/bin/${fn}" "${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/bin"
 	fi
 done
 

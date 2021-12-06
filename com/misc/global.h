@@ -6,7 +6,7 @@ When building this Dynamic Library then _MISC_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _MISC_CLASS
 	Function: _MISC_FUNC
-	_data:     _MISC_DATA
+	Data:     _MISC_DATA
 
 Add compiler definition flags:
 	* _MISC_PKG when building a dynamic library (package)

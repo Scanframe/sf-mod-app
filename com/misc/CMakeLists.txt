@@ -61,6 +61,7 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
+	gen/gw_utils.cpp
 	)
 
 if (NOT WIN32)

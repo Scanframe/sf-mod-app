@@ -2,7 +2,6 @@
 #include <misc/qt/qt_utils.h>
 #include <misc/qt/PropertySheetDialog.h>
 #include "../gen/Variable.h"
-#include "../gen/VariableHandler.h"
 #include "VariableWidgetBase.h"
 #include "VariableWidgetBasePrivate.h"
 #include "VariableIdPropertyPage.h"

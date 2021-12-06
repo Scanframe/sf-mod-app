@@ -6,7 +6,7 @@ When building this Dynamic Library then _IPJ_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _IPJ_CLASS
 	Function: _IPJ_FUNC
-	_data:     _IPJ_DATA
+	Data:     _IPJ_DATA
 
 Add compiler definition flags:
 	* _IPJ_PKG when building a dynamic library (package)

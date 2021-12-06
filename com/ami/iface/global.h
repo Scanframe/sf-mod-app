@@ -6,7 +6,7 @@ When building this Dynamic Library then _AMI_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _AMI_CLASS
 	Function: _AMI_FUNC
-	_data:    _AMI_DATA
+	Data:     _AMI_DATA
 
 Add compiler definition flags:
 	* _AMI_PKG when building a dynamic library (package)

@@ -6,7 +6,7 @@ When building this Dynamic Library then _GSC_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _GSC_CLASS
 	Function: _GSC_FUNC
-	_data:    _GSC_DATA
+	Data:     _GSC_DATA
 
 Add compiler definition flags:
 	* _GSC_PKG when building a dynamic library (package)

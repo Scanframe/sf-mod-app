@@ -1,19 +1,27 @@
+#include "gen_utils.h"
+#include "target.h"
+#include "gnu_compat.h"
 #include <cstdarg>
 #include <ctime>
 #include <utility>
-#include <cxxabi.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <libgen.h>
+#if IS_GNU
+	#include <cxxabi.h>
+	#include <dirent.h>
+	#include <unistd.h>
+	#include <libgen.h>
+	#include <cstdlib>
+#elif IS_MSVC
+	#include <direct.h>
+#endif
 #include "Exception.h"
 #include "dbgutils.h"
-#include "gen_utils.h"
-#include "target.h"
 #include "TimeSpec.h"
-
 #if IS_WIN
-#include <windows.h>
+	#if IS_GNU
+		#include <windows.h>
+	#else
+		#include <Windows.h>
+	#endif
 #endif
 
 namespace sf
@@ -71,7 +79,7 @@ size_t stringHex(const char* hexstr, void* buffer, size_t size)
 		return -1;
 	}
 	// Get the amount of bytes to convert.
-	unsigned chars = strlen(hexstr);
+	size_t chars = strlen(hexstr);
 	// Check string length.
 	if (!chars)
 	{
@@ -166,7 +174,7 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 				// Check if code above did the conversion.
 				if (!escaped)
 				{
-					// Al characters below the space are control characters and should hex.
+					// All characters below the space are control characters and should hex.
 					if (ch < ' ')
 					{
 						// Add the character as a hexadecimal 2 character code.
@@ -351,10 +359,11 @@ std::string getLine(std::istream& is)
 std::string getWorkingDirectory()
 {
 #if IS_WIN
-	const size_t sz = 4096;
-	char* buf = (char*) malloc(sz);
-	scope_free<char> sf(buf);
-	return getcwd(buf, sz - 1);
+	constexpr int sz = 4096;
+	std::string rv;
+	rv.resize(sz, 0);
+	rv.resize(strlen(getcwd(rv.data(), sz)));
+	return rv;
 #else
 	auto dir = get_current_dir_name();
 	std::string rv(dir);
@@ -375,8 +384,8 @@ std::string::value_type getDirectorySeparator()
 std::string getExecutableFilepath()
 {
 #if IS_WIN
-	std::string rv(PATH_MAX, '\0');
-	rv.resize(::GetModuleFileNameA(NULL, rv.data(), rv.capacity()));
+	std::string rv(MAX_PATH, '\0');
+	rv.resize(::GetModuleFileNameA(nullptr, rv.data(), rv.capacity()));
 	return rv;
 #else
 	std::string rv(PATH_MAX, '\0');
@@ -401,11 +410,15 @@ std::string getExecutableName()
 
 std::string demangle(const char* name)
 {
+#if IS_GNU
 	int status;
 	char* nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
 	std::string rv(nm);
 	free(nm);
 	return rv;
+#else
+	return name;
+#endif
 }
 
 namespace
@@ -433,9 +446,9 @@ timespec getTime(bool realTime)
 {
 	timespec ct{};
 #if IS_WIN
-	if (clock_gettime(realTime ? CLOCK_REALTIME :	CLOCK_MONOTONIC, &ct))
+	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC, &ct))
 #else
-	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
+		if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
 #endif
 	{
 		throw ExceptionSystemCall("clock_gettime", errno, nullptr, __FUNCTION__);
@@ -515,13 +528,16 @@ std::string unique(const std::string& s)
 
 int precision(double value)
 {
+	constexpr size_t sz = 64;
+	auto buf = (char*) malloc(sz);
+	scope_free sf(buf);
 	constexpr int len = std::numeric_limits<double>::digits10;
 	int i;
-	char* s = ecvt(value, len, &i, &i);
+	ecvt_r(value, len, &i, &i, buf, sz);
 	i = len;
 	while (i--)
 	{
-		if (s[i] != '0')
+		if (buf[i] != '0')
 		{
 			return i + 1;
 		}
@@ -531,13 +547,16 @@ int precision(double value)
 
 int digits(double value)
 {
+	constexpr size_t sz = 64;
+	auto buf = (char*) malloc(sz);
+	scope_free sf(buf);
 	constexpr int len = std::numeric_limits<double>::digits10;
 	int dec, sign;
-	char* s = ecvt(value, len, &dec, &sign);
+	ecvt_r(value, len, &dec, &sign, buf, sz);
 	int i = len;
 	while (i--)
 	{
-		if (s[i] != '0' || !i)
+		if (buf[i] != '0' || !i)
 		{
 			return -(dec - i - 1);
 		}
@@ -547,10 +566,18 @@ int digits(double value)
 
 int magnitude(double value)
 {
-	if (value)
+	if (value != 0.0)
 	{
+/*
 		int dec, sign;
 		ecvt(value, std::numeric_limits<double>::digits10, &dec, &sign);
+		return dec;
+*/
+		constexpr int digits = std::numeric_limits<double>::digits10;
+		constexpr size_t buf_sz = 64;
+		auto buf = (char*) alloca(buf_sz);
+		int dec, sign;
+		ecvt_r(value, digits, &dec, &sign, buf, buf_sz);
 		return dec;
 	}
 	return 0;
@@ -560,17 +587,11 @@ int requiredDigits(double roundVal, double minVal, double maxVal)
 {
 	int rv, dec, sign;
 	std::string s;
-#if IS_WIN
-	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
-	s.resize( _CVTBUFSIZE + 1, '0');
-	_ecvt_s(s.data(), s.size(), roundVal, std::numeric_limits<double>::digits10, &dec, &sign);
-	s.resize(strlen(s.c_str()));
-#else
+	s.reserve(64);
 	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 	s.resize(std::numeric_limits<double>::max_digits10 + 1, '0');
 	ecvt_r(roundVal, std::numeric_limits<double>::digits10, &dec, &sign, s.data(), s.size());
 	s.resize(strlen(s.c_str()), '0');
-#endif
 	// Determine the amount of actual digits of the step value.
 	rv = static_cast<int>(trimRight(s, "0").length());
 	// Get magnitude of the absolute maximum amount of steps that can be made.

@@ -6,7 +6,7 @@ When building this Dynamic Library then _STO_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _STO_CLASS
 	Function: _STO_FUNC
-	_data:     _STO_DATA
+	Data:     _STO_DATA
 
 Add compiler definition flags:
 	* _STO_PKG when building a dynamic library (package)

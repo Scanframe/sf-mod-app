@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../global.h"
 #include <exception>
 #include <string>
-#include "../global.h"
 
 namespace sf
 {

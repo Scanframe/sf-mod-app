@@ -34,7 +34,8 @@ struct
 {
 	std::string operator()(const sf::Value& v)
 	{
-		return dynamic_cast<std::ostringstream&>(std::ostringstream() << v).str();
+		std::ostringstream os;
+		return dynamic_cast<std::ostringstream&>(os << v).str();
 	}
 } Helper;
 

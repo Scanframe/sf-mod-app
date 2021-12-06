@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cxxabi.h>
+#include <algorithm>
 #include "Exception.h"
 #if IS_WIN
 #  include "../win/win_utils.h"
@@ -19,7 +20,11 @@ ExceptionBase::ExceptionBase()
 ExceptionBase::ExceptionBase(const ExceptionBase& ex)
 	:_msg(new char[BUF_SIZE])
 {
-	::strncpy(_msg, ex._msg, BUF_SIZE);
+#if IS_GNU && !IS_WIN
+	::strncpy(_msg, ex._msg, std::min<size_t>(BUF_SIZE, strlen(ex._msg)));
+#else
+	::strncpy_s(_msg, BUF_SIZE, ex._msg, strlen(ex._msg));
+#endif
 }
 
 ExceptionBase::~ExceptionBase() noexcept

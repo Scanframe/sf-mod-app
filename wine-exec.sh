@@ -11,9 +11,11 @@ function WriteLog()
 # Get this script's directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # Get the Qt installed directory.
-QT_LIB_DIR="$(bash "${DIR}/com/cmake/QtLibDir.sh")"
+QT_VER_DIR="$(bash "${DIR}/com/cmake/QtLibDir.sh" "${DIR}/../../project/PROG/Qt")"
 # Qt version on Linux.
-QT_VER="$(basename "${QT_LIB_DIR}")"
+QT_VER="$(basename "${QT_VER_DIR}")"
+# Qt lib sub directory build by certain compiler version.
+QT_LIB_SUB="mingw_64"
 # Form the binary target directory for cross Windows builds.
 DIR_BIN_WIN="$(realpath "${DIR}/binwin")"
 # Location of MinGW DLLs.
@@ -21,7 +23,7 @@ DIR_MINGW_DLL="/usr/x86_64-w64-mingw32/lib"
 # Location of MinGW DLLs 2.
 DIR_MINGW_DLL2="/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
 # Location of Qt DLLs 2.
-DIR_QT_DLL="$(realpath "${DIR}/../../project/PROG/Qt/${QT_VER}/mingw81_64/bin")"
+DIR_QT_DLL="$(realpath "${DIR}/../../project/PROG/Qt/${QT_VER}/${QT_LIB_SUB}/bin")"
 # Wine command.
 WINE_BIN="wine64"
 

@@ -6,7 +6,7 @@ When building this Dynamic Library then _PAL_PKG (package) should be defined.
 _list of the declaration modifiers for types:
 	classes:  _PAL_CLASS
 	Function: _PAL_FUNC
-	_data:    _PAL_DATA
+	Data:     _PAL_DATA
 
 Add compiler definition flags:
 	* _PAL_PKG when building a dynamic library (package)

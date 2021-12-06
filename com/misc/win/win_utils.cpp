@@ -1,5 +1,4 @@
 #include "win_utils.h"
-#include <windows.h>
 #include <tlhelp32.h>
 #include <cstring>
 
