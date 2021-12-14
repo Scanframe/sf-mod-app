@@ -1,11 +1,11 @@
+#include "Application.h"
+#include <misc/gen/ConfigLocation.h>
+#include <misc/gen/gen_utils.h>
+#include <misc/gen/Sustain.h>
+#include <misc/qt/Globals.h>
+#include <QCommandLineParser>
 #include <QFileInfo>
 #include <QDir>
-#include <misc/gen/ConfigLocation.h>
-#include <QCommandLineParser>
-#include <misc/gen/gen_utils.h>
-#include <misc/qt/Globals.h>
-#include <misc/gen/Sustain.h>
-#include "Application.h"
 
 namespace sf
 {

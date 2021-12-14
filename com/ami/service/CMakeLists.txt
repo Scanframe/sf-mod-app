@@ -26,18 +26,26 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network REQUIRED)
 
+# Add the library to create.
 add_library(${PROJECT_NAME} SHARED)
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE
 	res/resource.qrc
 	LibMain.cpp
-	SocketServer.cpp SocketServer.h
-	ServerConnection.cpp ServerConnection.h
+	ServiceAppModule.cpp ServiceAppModule.h
+	ServicePropertyPage.cpp ServicePropertyPage.h ServicePropertyPage.ui
 	SocketClient.cpp SocketClient.h
+	SocketServer.cpp SocketServer.h
+	ServerConnector.cpp ServerConnector.h
+	ServerConnection.cpp ServerConnection.h
+	ClientConnection.cpp ClientConnection.h
 	InformationPacket.h
+	BufferChopper.cpp BufferChopper.h
+	BufferStitcher.cpp BufferStitcher.h
 	InformationService.cpp InformationService.h
-	InformationServiceAppModule.cpp InformationServiceAppModule.h
-	InformationServicePropertyPage.cpp InformationServicePropertyPage.h InformationServicePropertyPage.ui
+	VariableCollector.cpp VariableCollector.h
 	)
 
 # Link the Qt widgets library.
@@ -63,3 +71,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _AMI_PKG)
 
 # Set the include directory for this library when it is imported by another sub project.
 #set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/")
+
+# Testing only available if this is the main app
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
+if (SF_BUILD_TESTING)
+	add_subdirectory(tests)
+endif ()

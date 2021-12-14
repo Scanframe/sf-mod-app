@@ -61,7 +61,7 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
-	gen/gw_utils.cpp
+	gen/Md5Hash.cpp gen/Md5Hash.h
 	)
 
 if (NOT WIN32)
@@ -77,7 +77,8 @@ set(SOURCES_LNX
 	)
 
 list(APPEND SOURCES ${SOURCES_LNX})
-list(APPEND LIBRARIES OpenSSL::Crypto)
+
+#list(APPEND LIBRARIES OpenSSL::Crypto)
 
 else (NOT WIN32)
 
@@ -103,6 +104,7 @@ if (SF_BUILD_QT)
 
 	# Qt dependent sources.
 	set(SOURCES_QT
+		qt/Macros.h
 		qt/qt_utils.cpp qt/qt_utils.h
 		qt/CaptureListModel.cpp qt/CaptureListModel.h
 		qt/Resource.h	qt/Resource.cpp
@@ -132,7 +134,8 @@ if (SF_BUILD_QT)
 		qt/Globals.cpp qt/Globals.h
 		qt/HintWindow.cpp qt/HintWindow.h
 		qt/FindReplaceDialog.cpp qt/FindReplaceDialog.h
-		qt/QThreadClosure.h
+		qt/QtThreadClosure.h
+		qt/QtSync.cpp qt/QtSync.h
 		qt/Macros.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
@@ -144,7 +147,9 @@ if (SF_BUILD_QT)
 endif (SF_BUILD_QT)
 
 # Add the library to create.
-add_library(${PROJECT_NAME} SHARED qt/Macros.h)
+add_library(${PROJECT_NAME} SHARED)
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE  ${SOURCES})
 

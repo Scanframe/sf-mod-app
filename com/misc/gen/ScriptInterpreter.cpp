@@ -1,4 +1,5 @@
 #include "ScriptInterpreter.h"
+#include "ScriptInterpreter_p.h"
 #include "Exception.h"
 #include "Sustain.h"
 #include "IniProfile.h"
@@ -6,8 +7,11 @@
 	#include <QApplication>
 	#include <QWidget>
 #include <utility>
+#include <cstdlib>
 #endif
-#include "ScriptInterpreter_p.h"
+#if IS_WIN
+#include <windows.h>
+#endif
 
 #define MAX_IDENT_LENGTH 64
 
@@ -15,32 +19,32 @@ namespace sf
 {
 
 // Speed index defines
-#define SID_COMPILER_START (-10000)
+#define SID_COMPILER_START -10000
 #define SID_VARS          SID_COMPILER_START
 #define SID_LABELS       (SID_COMPILER_START - 1)
-#define SID_EXIT         (SID_COMPILER_START - 2)
-#define SID_PRINT        (SID_COMPILER_START - 3)
-#define SID_WRITELOG     (SID_COMPILER_START - 4)
-#define SID_BEEP         (SID_COMPILER_START - 5)
-#define SID_CLOCK        (SID_COMPILER_START - 6)
-#define SID_CLS          (SID_COMPILER_START - 7)
-#define SID_SETTIMEOUT   (SID_COMPILER_START - 8)
-#define SID_READPROFILE  (SID_COMPILER_START - 9)
-#define SID_WRITEPROFILE (SID_COMPILER_START -10)
-#define SID_SHUTDOWNSYS  (SID_COMPILER_START -11)
-#define SID_EXITPROCESS  (SID_COMPILER_START -12)
-#define SID_SHELLEXEC    (SID_COMPILER_START -13)
-#define SID_GETENVIRON   (SID_COMPILER_START -14)
-#define SID_GETCONFIGDIR (SID_COMPILER_START -15)
-#define SID_SPEAK        (SID_COMPILER_START -16)
-#define SID_SLEEP        (SID_COMPILER_START -17)
-#define SID_RELINQUISH   (SID_COMPILER_START -18)
-#define SID_FOCUSWINDOW  (SID_COMPILER_START -19)
-#define SID_TRACE        (SID_COMPILER_START -20)
-#define SID_GETUSERNAME  (SID_COMPILER_START -21)
-#define SID_CREATE       (SID_COMPILER_START -22)
-#define SID_TIME         (SID_COMPILER_START -23)
-#define SID_DATE         (SID_COMPILER_START -24)
+#define SID_EXIT         (SID_COMPILER_START -  2)
+#define SID_PRINT        (SID_COMPILER_START -  3)
+#define SID_WRITELOG     (SID_COMPILER_START -  4)
+#define SID_BEEP         (SID_COMPILER_START -  5)
+#define SID_CLOCK        (SID_COMPILER_START -  6)
+#define SID_CLS          (SID_COMPILER_START -  7)
+#define SID_SETTIMEOUT   (SID_COMPILER_START -  8)
+#define SID_READPROFILE  (SID_COMPILER_START -  9)
+#define SID_WRITEPROFILE (SID_COMPILER_START - 10)
+#define SID_SHUTDOWNSYS  (SID_COMPILER_START - 11)
+#define SID_EXITPROCESS  (SID_COMPILER_START - 12)
+#define SID_SHELLEXEC    (SID_COMPILER_START - 13)
+#define SID_GETENVIRON   (SID_COMPILER_START - 14)
+#define SID_GETCONFIGDIR (SID_COMPILER_START - 15)
+#define SID_SPEAK        (SID_COMPILER_START - 16)
+#define SID_SLEEP        (SID_COMPILER_START - 17)
+#define SID_RELINQUISH   (SID_COMPILER_START - 18)
+#define SID_FOCUSWINDOW  (SID_COMPILER_START - 19)
+#define SID_TRACE        (SID_COMPILER_START - 20)
+#define SID_GETUSERNAME  (SID_COMPILER_START - 21)
+#define SID_CREATE       (SID_COMPILER_START - 22)
+#define SID_TIME         (SID_COMPILER_START - 23)
+#define SID_DATE         (SID_COMPILER_START - 24)
 
 // Timeout value for script when not in stepping mode. 10 seconds for debugging purposes.
 //#define SCRIPT_TIMEOUT 10000000
@@ -49,6 +53,7 @@ namespace sf
 ScriptInterpreter::ScriptInterpreter()
 	:ScriptEngine()
 	 , _scriptName("<unknown>")
+	 ,_emitterChange()
 {
 	_command = "";
 	_currentInstructionPtr = -1;
@@ -656,8 +661,17 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 			}
 
 			case SID_GETENVIRON:
+			{
+#if IS_WIN
+				std::string s(4096, 0);
+				size_t sz{0};
+				::GetEnvironmentVariableA((*params)[0].getString().c_str(), s.data(), s.max_size());
+				result->set(s);
+#else
 				result->set(getenv((*params)[0].getString().c_str()));
+#endif
 				break;
+			}
 
 			case SID_GETUSERNAME:
 			{

@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 
 #include <iostream>
 #include <sstream>
@@ -6,8 +6,9 @@
 
 TEST_CASE("sf::Range", "[generic][range]")
 {
+	using Catch::Matchers::Equals;
+
 	sf::RangeCompareExact = true;
-	using Catch::Equals;
 
 	SECTION("get*/is* Methods Self")
 	{
@@ -103,7 +104,8 @@ TEST_CASE("sf::Range", "[generic][range]")
 
 	SECTION("Exclude Function")
 	{
-		sf::Range r, rest;
+		sf::Range r;
+		sf::Range rest;
 
 		// Single result.
 		CHECK(r.assign(10, 40).exclude({80, 90}, rest) == 1);
@@ -236,4 +238,3 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 
 	sf::RangeCompareExact = false;
 }
-

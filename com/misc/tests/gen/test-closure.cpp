@@ -1,11 +1,11 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <misc/gen/TClosure.h>
 #include <iostream>
 #include <misc/gen/gen_utils.h>
 
 TEST_CASE("sf::Closure", "[generic]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	//	std::cout << "C++ std: " << __cplusplus << std::endl;
 	typedef sf::TClosure<std::string, const char*, int> my_closure_type;

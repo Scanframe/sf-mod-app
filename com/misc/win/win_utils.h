@@ -11,12 +11,17 @@
 	#endif
 #endif
 
-
-_MISC_FUNC int strerror_r(int errnum, char* buf, size_t buflen);
-
 namespace sf
 {
 
+/**
+ * @brief Determines if the application is running using Wine.
+ */
 _MISC_FUNC bool isRunningWine();
+
+/**
+ * @brief Gets the main thread id.
+ */
+_MISC_FUNC DWORD getMainThreadId();
 
 }

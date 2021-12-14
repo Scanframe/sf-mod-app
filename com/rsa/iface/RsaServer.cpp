@@ -638,7 +638,7 @@ void RsaServer::destroyVariable(Variable* var)
 		// Cast the data of the variable;
 		ExtraInfo* ei = castExtraInfo(var);
 		//
-		SF_COND_RTTI_NOTIFY(IsDebug(), DO_CLOG, "Destroying Variable: " << var->getName());
+		SF_COND_RTTI_NOTIFY(isDebug(), DO_CLOG, "Destroying Variable: " << var->getName());
 		// Delete the structure if it exists.
 		delete_null(ei);
 		// Delete the variable.
@@ -662,7 +662,7 @@ void RsaServer::destroyResultData(ResultData* res)
 		// Cast the data of the variable;
 		ExtraInfo* ei = castExtraInfo(res);
 		//
-		SF_COND_RTTI_NOTIFY(IsDebug(), DO_CLOG, "Destroying ResultData: " << res->getName());
+		SF_COND_RTTI_NOTIFY(isDebug(), DO_CLOG, "Destroying ResultData: " << res->getName());
 		// Delete the structure if it exists.
 		delete_null(ei);
 		// Delete the variable.

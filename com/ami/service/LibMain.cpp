@@ -1,5 +1,5 @@
 #include <ami/iface/AppModuleInterface.h>
-#include "InformationServiceAppModule.h"
+#include "ServiceAppModule.h"
 
 namespace sf
 {
@@ -13,7 +13,7 @@ SF_DL_INFORMATION("Information Service",
 SF_REG_CLASS
 (
 	AppModuleInterface, AppModuleInterface::Parameters, Interface,
-	InformationServiceAppModule,
+	ServiceAppModule,
 	"InformationService", "Information service."
 )
 

@@ -165,12 +165,17 @@ _MISC_FUNC unsigned int GetDefaultDebugOutput();
  * @brief Gets the debug status
  * @return True if debugging is passed at the command line.
  */
-_MISC_FUNC bool IsDebug();
+_MISC_FUNC bool isDebug();
 
+/**
+ * @brief Gets the debugger active status.
+ * @return True if a debugger is attached at startup.
+ */
+_MISC_FUNC bool isDebuggerActive();
 /**
  * @brief Causes a break when debugging.
  */
-_MISC_FUNC void DebugBreak();
+_MISC_FUNC void debugBreak();
 
 /**
  * @brief Demangles the passed rtti mangled type name.

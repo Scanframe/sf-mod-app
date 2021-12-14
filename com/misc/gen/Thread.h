@@ -324,8 +324,14 @@ class _MISC_CLASS Thread
 		static handle_type getCurrentHandle();
 
 		/**
-		 * @brief Returns the current thread ID.
-		 * @return Thread Id.
+		 * @brief Gets the main thread ID.
+		 * @return Main thread Id.
+		 */
+		static id_type getMainId();
+
+		/**
+		 * @brief Gets the current thread ID.
+		 * @return Current thread Id.
 		 */
 		static id_type getCurrentId();
 

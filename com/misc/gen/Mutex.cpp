@@ -1,6 +1,6 @@
-#include <cstring>
 #include "Mutex.h"
 #include "gen/Exception.h"
+#include <cstring>
 
 namespace sf
 {
@@ -52,12 +52,12 @@ Mutex::Lock::~Lock()
 	release();
 }
 
-bool Mutex::Lock::acquire(bool try_lock)
+bool Mutex::Lock::acquire(bool try_lock, const TimeSpec& timeout)
 {
 	// Only when not locked.
 	if (!_locked && !_mutexRef.isMutexDestroyed())
 	{
-		_locked = _mutexRef.acquire(try_lock);
+		_locked = _mutexRef.acquire(try_lock, timeout);
 	}
 	return _locked;
 }
@@ -90,42 +90,52 @@ void Mutex::clearMutex()
 	memset(&_mutex, 0, sizeof(_mutex));
 }
 
-bool Mutex::acquire(bool try_lock)
+bool Mutex::acquire(bool try_lock, const TimeSpec& timeout)
 {
-	bool locked = true;
+	int error;
 	// When try locking is requested.
 	if (try_lock)
 	{
-		// Initialize variable.
-		locked = true;
-		// Make the OS call to try locking.
-		int error = ::pthread_mutex_trylock(const_cast<pthread_mutex_t*>(&_mutex));
-		// Check for an BUSY error which means the lock failed.
-		if (error == EBUSY)
+		if (timeout)
 		{
-			locked = false;
-			// In case of an error throw an exception.
+			// Get the realtime clock and add the timeout to get the absolute time needed for the call.
+			auto tm = TimeSpec(getTime(true)).add(timeout);
+			error = ::pthread_mutex_timedlock(const_cast<pthread_mutex_t*>(&_mutex), &tm);
+			// Check for an ETIMEDOUT error which means locking failed.
+			if (error == ETIMEDOUT)
+			{
+				// Signal not locked.
+				return false;
+			}
 		}
-		else if (error)
+		else
+		{
+			// Make the OS call to try locking.
+			error = ::pthread_mutex_trylock(const_cast<pthread_mutex_t*>(&_mutex));
+			// Check for an EBUSY error which means locking failed.
+			if (error == EBUSY)
+			{
+				// Signal not locked.
+				return false;
+			}
+		}
+		// In case of an error throw an exception.
+		if (error)
 		{
 			throw ExceptionSystemCall("pthread_mutex_trylock", error, typeid(*this).name(), __FUNCTION__);
 			// Lock was successful on no error.
 		}
-		else
-		{
-			locked = true;
-		}
 	}
 	else
 	{
-		int error = ::pthread_mutex_lock(const_cast<pthread_mutex_t*>(&_mutex));
+		error = ::pthread_mutex_lock(const_cast<pthread_mutex_t*>(&_mutex));
 		if (error)
 		{
 			throw ExceptionSystemCall("pthread_mutex_lock", error, typeid(*this).name(), __FUNCTION__);
 		}
 	}
 	// Return when acquire succeeded.
-	return locked;
+	return true;
 }
 
 void Mutex::release()

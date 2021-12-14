@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
+
 #include <misc/gen/gen_utils.h>
 #include <unistd.h>
 
@@ -9,7 +10,7 @@ namespace sf
 
 TEST_CASE("sf::General-Utils", "[generic][utils]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 #if false
 	SECTION("Type Sizes")
@@ -21,6 +22,22 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 			<< std::endl;
 	}
 #endif
+
+	SECTION("sf::LocaleNumStr", "Number string conversions.")
+	{
+		double value = 12345.67890123;
+		int precision = 4;
+		precision = sf::clip(precision, 0, std::numeric_limits<double>::digits10);
+		std::cout << "sf::stringf: " << sf::stringf("%.*lf", precision, value) << std::endl;
+
+		auto* strValue = "12345.67890123";
+		value = sf::stod(strValue, nullptr);
+		std::cout << "std::to_string: " << std::to_string(value) << std::endl;
+
+
+		//std::cout << (value) << std::endl;
+		CHECK(std::to_string(value) == strValue);
+	}
 
 	SECTION("sf::calculateOffset", "Offset calculation.")
 	{

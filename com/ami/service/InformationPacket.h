@@ -8,26 +8,52 @@ namespace sf
 /**
  * @brief Packet manipulation class.
  */
-class Packet
+class InformationPacket
 {
 	public:
 		/**
 		 * @brief Enumeration packet types used in the packet header.
 		 */
-		enum EType : uint8_t
+		enum EType :uint8_t
 		{
 			/**
-			 * Send version to compare get same version and pass what data to subscribe to.
+			 * @brief Send version to compare get same version and pass what data to subscribe to.
 			 */
 			tInitialize = 0,
 			/**
-			 * Sends a packet and it should return it only incrementing the counter.
+			 * @brief Sends a packet and it should return it only incrementing the counter.
 			 */
-			tPingPong = 0,
+			tPingPong,
 			tVariableInfo,
 			tVariable,
 			tResultData,
 		};
+
+		/**
+		 * @brief Default constructor.
+		 */
+		InformationPacket() = default;
+
+		/**
+		 * @brief Default constructor.
+		 */
+		static size_t headerSize()
+		{
+			return sizeof(Header);
+		}
+
+		/**
+		 * @brief Allocates the memory needed for the packet.
+		 */
+		template<typename T>
+		T* allocatePayload(EType type)
+		{
+			_buffer.resize(sizeof(Header) + sizeof(T));
+			auto* hdr = _buffer.ptr<Header>();
+			hdr->size = _buffer.size();
+			hdr->type = type;
+			return _buffer.ptr<T>(sizeof(Header));
+		}
 
 // Make the compiler use 1 byte alignment.
 #pragma pack(push, 1)
@@ -42,7 +68,7 @@ class Packet
 			 */
 			EType type{};
 			/**
-			 * @brief size of the data attached.
+			 * @brief size of the data attached in the payload.
 			 */
 			uint32_t size{0};
 			/**
@@ -73,12 +99,16 @@ class Packet
 		/**
 		 * @brief Packet payload for #tPingPong type.
 		 */
-		struct PayloadPing
+		struct PayloadPingPong
 		{
 			/**
-			 * @brief Counter to be incremented by 1 by the server and send back.
+			 * @brief Counter to be decremented by 1 by the server and send back and vise versa until the counter is zero.
 			 */
-			uint32_t counter{0};
+			int32_t counter{0};
+			/**
+			 * @brief Some null terminated string.
+			 */
+			char str[64]{};
 		};
 
 // Restore compiler previous alignment.
@@ -93,6 +123,14 @@ class Packet
 		}
 
 		/**
+		 * @brief Gets the header of the current packet.
+		 */
+		[[nodiscard]] Header& getHeader()
+		{
+			return *_buffer.ptr<Header>();
+		}
+
+		/**
 		 * @brief Gets a typed payload of the current packet.
 		 */
 		template<typename T>
@@ -100,6 +138,48 @@ class Packet
 		{
 			assert(getHeader().size < sizeof(T));
 			return *_buffer.ptr<T>(sizeof(Header));
+		}
+
+		/**
+		 * @brief Gets a typed payload of the current packet.
+		 */
+		template<typename T>
+		T& getPayload()
+		{
+			assert(getHeader().size < sizeof(T));
+			return *_buffer.ptr<T>(sizeof(Header));
+		}
+
+		/**
+		 * @brief Gets the data pointer of the buffer.
+		 */
+		[[nodiscard]] const char* data() const
+		{
+			return _buffer.ptr<char>();
+		}
+
+		/**
+		 * @brief Gets the data pointer of the buffer.
+		 */
+		[[nodiscard]] char* data()
+		{
+			return _buffer.ptr<char>();
+		}
+
+		/**
+		 * @brief Gets the size of the packet buffer.
+		 */
+		[[nodiscard]] size_t size() const
+		{
+			return _buffer.size();
+		}
+
+		/**
+		 * @brief Resizes the buffer to include the .
+		 */
+		void resizePayload(size_t sz)
+		{
+			return _buffer.resize(sizeof(Header) + sz);
 		}
 
 	private:

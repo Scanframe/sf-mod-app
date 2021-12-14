@@ -1,6 +1,8 @@
 #include "gen_utils.h"
-#include "target.h"
 #include "gnu_compat.h"
+#include "dbgutils.h"
+#include "Exception.h"
+#include "TimeSpec.h"
 #include <cstdarg>
 #include <ctime>
 #include <utility>
@@ -13,9 +15,6 @@
 #elif IS_MSVC
 	#include <direct.h>
 #endif
-#include "Exception.h"
-#include "dbgutils.h"
-#include "TimeSpec.h"
 #if IS_WIN
 	#if IS_GNU
 		#include <windows.h>
@@ -30,11 +29,11 @@ namespace sf
 std::string stringf(const char* fmt, ...)
 {
 	const size_t sz = 4096;
-	auto buf = static_cast<char*>(malloc(sz));
+	auto* buf = static_cast<char*>(malloc(sz));
 	scope_free<char> sf(buf);
 	va_list argptr;
 	va_start(argptr, fmt);
-	vsnprintf(buf, sz, fmt, argptr);
+	(void) vsnprintf(buf, sz, fmt, argptr);
 	va_end(argptr);
 	return &buf[0];
 }
@@ -362,10 +361,10 @@ std::string getWorkingDirectory()
 	constexpr int sz = 4096;
 	std::string rv;
 	rv.resize(sz, 0);
-	rv.resize(strlen(getcwd(rv.data(), sz)));
+	rv.resize(strlen(_getcwd(rv.data(), sz)));
 	return rv;
 #else
-	auto dir = get_current_dir_name();
+	auto* dir = get_current_dir_name();
 	std::string rv(dir);
 	free(dir);
 	return rv;
@@ -426,7 +425,8 @@ namespace
 
 timespec startTime{0, 0};
 
-__attribute__((constructor)) void initializeStartTime()
+//__attribute__((constructor)) void initializeStartTime()
+SF_CONSTRUCTOR_COMPAT_FUNC(initializeStartTime)
 {
 #if IS_WIN
 	clock_gettime(CLOCK_MONOTONIC, &startTime);
@@ -667,14 +667,19 @@ bool getFiles(strings& files, std::string directory, std::string wildcard) // NO
 	DIR* dp;
 	dirent* dirp;
 	// Prevent errors from printing by checking the access.
+#if IS_WIN
+	if (_access(directory.c_str(), F_OK | X_OK))
+#else
 	if (access(directory.c_str(), F_OK | X_OK))
-	{
+#endif
+		{
 		return false;
 	}
 	//
 	if ((dp = ::opendir(directory.c_str())) == nullptr)
 	{
-		std::cerr << "Error(" << errno << ") " << strerror(errno) << " " << directory << std::endl;
+		char buffer[BUFSIZ];
+		std::cerr << "Error(" << errno << ") " << strerror_r(errno, buffer, sizeof(buffer)) << " " << directory << std::endl;
 		return false;
 	}
 	//
@@ -703,9 +708,14 @@ std::string fileDirName(const std::string& path)
 
 bool fileUnlink(const std::string& path)
 {
+#if IS_WIN
+	if (::_unlink(path.c_str()) == -1)
+#else
 	if (::unlink(path.c_str()) == -1)
+#endif
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n" << strerror(errno))
+		char buffer[BUFSIZ];
+		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n" << ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}
 	return true;
@@ -715,7 +725,8 @@ bool fileRename(const std::string& old_path, const std::string& new_path)
 {
 	if (std::rename(old_path.c_str(), new_path.c_str()) == -1)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << strerror(errno))
+		char buffer[BUFSIZ];
+		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}
 	return true;
@@ -723,12 +734,82 @@ bool fileRename(const std::string& old_path, const std::string& new_path)
 
 bool fileExists(const char* path)
 {
+#if IS_WIN
+	return !::_access(path, F_OK);
+#else
 	return !::access(path, F_OK);
+#endif
 }
 
 bool fileFind(sf::strings& files, const std::string& path)
 {
 	return sf::getFiles(files, fileDirName(path), fileBaseName(path));
+}
+
+std::string gcvtString(double value, int digits)
+{
+	char buf[std::numeric_limits<double>::max_digits10 + std::numeric_limits<double>::max_exponent10 + 5];
+	// Fix it so the decimal point is used to convert to the string.
+	auto* lc_prev = setlocale(LC_NUMERIC, "C");
+	// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
+#if IS_WIN
+	_gcvt_s(buf, sizeof(buf), value, digits);
+#else
+	// Convert the string.
+	gcvt(value, digits, buf);
+#endif
+	// Check if a previous locale was returned and restore it.
+	if (lc_prev)
+	{
+		(void) setlocale(LC_NUMERIC, lc_prev);
+	}
+	// Return the value.
+	return {buf};
+}
+
+long double stold(const char* ptr, char** end_ptr)
+{
+	// Fix it so the decimal point is used to convert the string.
+	auto* lc_prev = setlocale(LC_NUMERIC, "C");
+	// Convert the string.
+	auto rv = std::strtold(ptr, end_ptr);
+	// Check if a previous locale was returned.
+	if (lc_prev)
+	{
+		(void) setlocale(LC_NUMERIC, lc_prev);
+	}
+	// Return the value.
+	return rv;
+}
+
+double stod(const char* ptr, char** end_ptr)
+{
+	// Fix it so the decimal point is used to convert the string.
+	auto* lc_prev = setlocale(LC_NUMERIC, "C");
+	// Convert the string.
+	auto rv = std::strtod(ptr, end_ptr);
+	// Check if a previous locale was returned.
+	if (lc_prev)
+	{
+		lc_prev = setlocale(LC_NUMERIC, lc_prev);
+	}
+	// Return the value.
+	return rv;
+}
+
+float stof(const char* ptr, char** end_ptr)
+{
+	// Fix it so the decimal point is used to convert the string.
+	auto* lc_prev = setlocale(LC_NUMERIC, "C");
+	// Convert the string.
+	auto rv = std::strtof(ptr, end_ptr);
+	// Check if a previous locale was returned.
+	if (lc_prev)
+	{
+		(void) setlocale(LC_NUMERIC, lc_prev);
+	}
+	// Return the value.
+	return rv;
 }
 
 }

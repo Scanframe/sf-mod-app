@@ -6,6 +6,9 @@ find_package(SfCatch2 CONFIG REQUIRED)
 
 set(TEST_LIBRARIES Catch2::Catch2 sf-misc)
 
+# Crypto library is not needed anymore since MD5 is deprecated and a solution is provided.
+#list(APPEND TEST_LIBRARIES OpenSSL::Crypto)
+
 # Find the test sources.
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gen/test-*")
 

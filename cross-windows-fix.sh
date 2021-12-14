@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ###
 ### This script is Qt version and directory locations specific.
 ###
@@ -21,7 +21,7 @@ function WriteLog()
 # Directory of this script.
 SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 # Root for the Windows Qt installed MinGW files.
-ROOT_DIR="/mnt/server/userdata/project/PROG/Qt"
+QT_WIN_DIR="${HOME}/lib/QtWin"
 # Get the Qt installed directory.
 QT_VER_DIR="$(bash "${SCRIPT_DIR}/com/cmake/QtLibDir.sh")"
 # Qt version on Linux.
@@ -31,7 +31,9 @@ QT_LIB_SUB="mingw_64"
 # Directory where the Linux Qt library cmake files are located.
 DIR_FROM="${QT_VER_DIR}/gcc_64/lib/cmake"
 # Directory where the Windows Qt library cmake files are located.
-DIR_TO="${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/lib/cmake"
+DIR_TO="${QT_WIN_DIR}/${QT_VER}/${QT_LIB_SUB}/lib/cmake"
+# To allow dry run.
+#CMD_PF="echo"
 
 if [[ ! -d "${DIR_FROM}" ]]; then
 	WriteLog "Directory '${DIR_FROM}' does not exist!"
@@ -43,22 +45,37 @@ if [[ ! -d "${DIR_TO}" ]]; then
 	exit 1
 fi
 
-##
-## Create symlink in from ~/lib/Qt/6.2.0/gcc_64/libexec to ${ROOT_DIR}
-##
-ln -sf "${QT_VER_DIR}/gcc_64/libexec" "${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/libexec"
+# Ask for permission
+read -rp "Continue [y/N]?" && if [[ $REPLY = [yY] ]]
+then
+	WriteLog "Starting..."
+else
+	exit 0
+fi
 
 ##
-## Create symlinks for applications needed in the make files.
+## Create symlink in from ~/lib/Qt/6.2.0/gcc_64/libexec to ${QT_WIN_DIR}
+##
+WriteLog "Create symlink to required '${QT_WIN_DIR}/${QT_VER}/${QT_LIB_SUB}/libexec'"
+${CMD_PF} ln -sf "${QT_VER_DIR}/gcc_64/libexec" "${QT_WIN_DIR}/${QT_VER}/${QT_LIB_SUB}/libexec"
+
+##
+## Create symlinks or dummies for applications needed in the make files.
 ##
 for fn in "qtpaths" "qmake" \
-	"qmldom" "qmllint" "qmlformat" "qmlprofiler" "qmlprofiler" "qmltime" "qmlplugindump" \
-	"qmltestrunner"	"androiddeployqt" "androidtestrunner" ; do
+	"qmldom" "qmllint" "qmlformat" "qmlprofiler" "qmlprofiler" "qmltime" "qmlplugindump" "qmltc" \
+	"qmltestrunner"	"androiddeployqt" "androidtestrunner" "windeployqt" "qmlls" ; do
 	if [[ ! -f "${QT_VER_DIR}/gcc_64/bin/${fn}" ]] ; then
-		WriteLog "Missing file to symlink: ${QT_VER_DIR}/gcc_64/bin/${fn}"
+		WriteLog "Creating dummy to missing binary file to symlink: ${QT_VER_DIR}/gcc_64/bin/${fn}"
+		cat <<EOD > "${QT_WIN_DIR}/${QT_VER}/${QT_LIB_SUB}/bin/${fn}"
+#!/bin/bash
+###
+### Dummy executable to fool Windows cmake files.
+###
+EOD
 	else
-		WriteLog "Symlink to: ${QT_VER_DIR}/gcc_64/bin/${fn}"
-		ln -sf "${QT_VER_DIR}/gcc_64/bin/${fn}" "${ROOT_DIR}/${QT_VER}/${QT_LIB_SUB}/bin"
+		WriteLog "Creating symlink to: ${QT_VER_DIR}/gcc_64/bin/${fn}"
+		${CMD_PF} ln -sf "${QT_VER_DIR}/gcc_64/bin/${fn}" "${QT_WIN_DIR}/${QT_VER}/${QT_LIB_SUB}/bin"
 	fi
 done
 
@@ -77,24 +94,26 @@ popd > /dev/null || exit
 
 # Iterate through the files.
 for fn in "${files[@]}" ; do
-	WriteLog "Copying: $fn"
-	cp "${DIR_FROM}/${fn}" "${DIR_TO}/${fn}"
+	WriteLog "Overwriting CMake files using Linux version: $fn"
+	${CMD_PF} cp "${DIR_FROM}/${fn}" "${DIR_TO}/${fn}"
+	if [[ $fn == "Qt6CoreTools/Qt6CoreToolsTargets-relwithdebinfo.cmake" ]] ; then
+		cat <<EOF >> "${DIR_TO}/${fn}"
+
+# ===================================================================================================
+# == Appended from Windows version because it is missed when cross compiling on Linux for Windows. ==
+# ===================================================================================================
+
+# Import target "Qt6::windeployqt" for configuration "RelWithDebInfo"
+set_property(TARGET Qt6::windeployqt APPEND PROPERTY IMPORTED_CONFIGURATIONS RELWITHDEBINFO)
+set_target_properties(Qt6::windeployqt PROPERTIES
+  IMPORTED_LOCATION_RELWITHDEBINFO "\${_IMPORT_PREFIX}/bin/windeployqt"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS Qt6::windeployqt )
+list(APPEND _IMPORT_CHECK_FILES_FOR_Qt6::windeployqt "\${_IMPORT_PREFIX}/bin/windeployqt" )
+
+EOF
+
+
+	fi
 done
-
-#
-# Files needed to find.
-#
-
-#	Qt6AxContainerTools/Qt6AxContainerToolsTargets-relwithdebinfo.cmake
-#	Qt6AxServerTools/Qt6AxServerToolsTargets-relwithdebinfo.cmake
-#	Qt6DBusTools/Qt6DBusToolsTargets-relwithdebinfo.cmake
-#	Qt6GuiTools/win/Qt6GuiToolsTargets-relwithdebinfo.cmake
-#	Qt6LinguistTools/Qt6LinguistToolsTargets-relwithdebinfo.cmake
-#	Qt6QmlTools/Qt6QmlToolsTargets-relwithdebinfo.cmake
-#	Qt6RemoteObjectsTools/Qt6RemoteObjectsToolsTargets-relwithdebinfo.cmake
-#	Qt6ScxmlTools/Qt6ScxmlToolsTargets-relwithdebinfo.cmake
-#	Qt6SerialBusTools/Qt6SerialBusToolsTargets-relwithdebinfo.cmake
-#	Qt6ToolsTools/Qt6ToolsToolsTargets-relwithdebinfo.cmake
-#	Qt6WidgetsTools/Qt6WidgetsToolsTargets-relwithdebinfo.cmake
-
-

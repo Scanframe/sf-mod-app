@@ -46,13 +46,14 @@ class _MISC_CLASS ThreadRelay :public Sync
 
 		/**
 		 * @brief Called by main thread for instance. When a lock of this calling thread is requested.
+		 * @return Amount of calls made.
 		 */
-		void checkForWork();
+		int checkForWork();
 
 		/**
-		 * @brief The calling thread takes thread execution ownership.
+		 * @brief The calling thread takes thread execution ownership when zero is passed or sets it when not zero.
 		 */
-		void makeOwner();
+		void makeOwner(Thread::id_type threadId = 0);
 
 		/**
 		 * @brief Base class for the ThreadRelay::Relay0,1,2,3 templates for storing in a list.
@@ -71,7 +72,7 @@ class _MISC_CLASS ThreadRelay :public Sync
 				virtual ~RelayBase() = default;
 
 				/**
-				 * @brief Pure virtual function to override in the derived template.
+				 * @brief Pure virtual function to override in the derived template class to call a method.
 				 */
 				virtual void call() = 0;
 
@@ -217,7 +218,7 @@ class _MISC_CLASS ThreadRelay :public Sync
 		// Thread in which the methods are called to be called in.
 		Thread::id_type _threadId;
 		// List containing the instance waiting to be called.
-		std::vector<RelayBase*> _list;
+		std::vector<RelayBase*> _list{};
 };
 
 inline

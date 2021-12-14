@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include <misc/gen/ConfigLocation.h>
 #include <misc/gen/gen_utils.h>
@@ -31,8 +31,6 @@ struct ConfigHandler
 
 TEST_CASE("sf::ConfigLocation", "[calc]")
 {
-	using Catch::Equals;
-	using Catch::Matches;
 
 	SECTION("NoHandler", "No handler installed")
 	{

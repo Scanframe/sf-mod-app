@@ -29,16 +29,15 @@
 namespace sf
 {
 
-static std::mutex DbgMutex;
+namespace
+{
+std::mutex DbgMutex;
+}
 
-// Raise signal SIGTRAP when debugger present otherwise the process crashes.
-void DebugBreak()
+bool isDebuggerActive()
 {
 #if IS_WIN
-	if (IsDebuggerPresent())
-	{
-	 ::DebugBreak();
-	}
+	return IsDebuggerPresent();
 #else
 	static int dbg_attached = -1;
 	if (-1 == dbg_attached)
@@ -51,11 +50,21 @@ void DebugBreak()
 			signal(SIGTRAP, SIG_DFL);
 		});
 	}
-	if (dbg_attached > 0)
-	{
-		raise(SIGTRAP);
-	}
+	return dbg_attached > 0;
 #endif
+}
+
+void debugBreak()
+{
+	if (isDebuggerActive())
+	{
+#if IS_WIN
+	 ::DebugBreak();
+#else
+		// Raise signal SIGTRAP when debugger present otherwise the process crashes.
+		raise(SIGTRAP);
+#endif
+	}
 }
 
 static unsigned int DefaultDebugOutputType = dotStdLog;
@@ -150,7 +159,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 	if (type & dotDebugBreak)
 	{
 		// Raise signal SIGTRAP when debugger present otherwise the process crashes in Linux.
-		DebugBreak();
+		debugBreak();
 	}
 }
 
@@ -165,7 +174,7 @@ unsigned int GetDefaultDebugOutput()
 	return DefaultDebugOutputType;
 }
 
-bool IsDebug()
+bool isDebug()
 {
 	static int flag = -1;
 	if (flag < 0)

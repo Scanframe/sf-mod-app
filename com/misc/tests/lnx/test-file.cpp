@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -7,8 +7,8 @@
 
 TEST_CASE("sf::lnx::File", "[linux][file]")
 {
-	using Catch::Equals;
-	using Catch::Matches;
+	using Catch::Matchers::Equals;
+	using Catch::Matchers::Matches;
 
 	SECTION("Create Temp", "Create, write, read, close, reopen and delete a temporary file.")
 	{

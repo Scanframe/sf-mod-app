@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-#include <pthread.h>
-
 #include "../global.h"
+#include "TimeSpec.h"
+#include <pthread.h>
+#include <string>
 
 namespace sf
 {
@@ -58,7 +58,7 @@ class _MISC_CLASS Mutex
 				/**
 				 * @brief Returns true when if it was acquired.
 				 */
-				bool acquire(bool try_lock = false);
+				bool acquire(bool try_lock = false, const TimeSpec& timeout = {});
 
 				/**
 				 * Releases the mutex.
@@ -121,7 +121,7 @@ class _MISC_CLASS Mutex
 		/**
 		 * @brief For locking without TLock instance.
 		 */
-		bool acquire(bool try_lock);
+		bool acquire(bool try_lock, const TimeSpec& timeout);
 
 		/**
 		* @brief Releases the mutex.

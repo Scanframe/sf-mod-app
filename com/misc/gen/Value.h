@@ -5,6 +5,7 @@
 #if IS_QT
 	#include <QString>
 #endif
+#include <limits>
 
 namespace sf
 {

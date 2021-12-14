@@ -1,8 +1,10 @@
 #pragma once
-
+#include "InformationPacket.h"
+#include "VariableCollector.h"
+#include "misc/gen/ThreadRelay.h"
 #include <gii/gen/VariableTypes.h>
 #include <gii/gen/ResultDataTypes.h>
-#include <QThread>
+#include <QIODevice>
 
 namespace sf
 {
@@ -13,24 +15,59 @@ namespace sf
 class ServerConnection :public QObject, protected InformationTypes
 {
 	public:
+
+		enum EState
+		{
+			sError = -1,
+			sNone = 0,
+			sHeaderRead,
+			sPayloadRead,
+			sPayloadProcess,
+			sBufferWrite,
+			sWaitForRead
+		};
+
 		/**
-		 * @brief Constructor for passing a socket descriptor
+		 * @brief Constructor for passing a socket descriptor.
 		 */
 		explicit ServerConnection(QIODevice* ioDevice, QObject* parent = nullptr);
 
-	protected:
+		~ServerConnection() override;
+
 		/**
-		 * @brief Processes data incoming and outgoing data.
+		 * @brief Non blocking method which processes data incoming and outgoing data from the IO device.
+		 *
+		 * @return True when it needs to be called again.
 		 */
-		void process();
+		bool process();
+
+		void setState(EState state);
+
+		/**
+		 * @brief Allows this instance to do main thread handling.
+		 */
+		void relayThread();
 
 	private:
+
+		ThreadRelay _relay;
+
+		VariableCollector* _varCollector;
+
+		int fromMain(int v1);
+
+		bool sendPingPong(int counter = -1);
+
 		// Holds the IO device reference.
 		QIODevice* _ioDevice;
-		// Holds the variable client instances which are served.
-		VariableTypes::PtrVector _listVariable;
-		// Holds the result-data client instances which are served.
-		ResultDataTypes::PtrVector _listResultData;
+		// Holds the current state of the connection.
+		EState _curState;
+		// Holds the previous state of the connection.
+		EState _prevState;
+		//
+		InformationPacket::Header _headerRead;
+		DynamicBuffer _bufferRead;
+		DynamicBuffer _bufferWrite;
 };
 
 }

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vector>
-#include "dbgutils.h"
+#include "../global.h"
 #include "DynamicLibraryInfo.h"
+#include "dbgutils.h"
 #include "TClosure.h"
 #include "TVector.h"
-#include "../global.h"
 #include "Exception.h"
+#include <vector>
 
 
 /**
@@ -14,6 +14,13 @@
  */
 #define SF_DL_NAME_FUNC_NAME "_dl_name_"
 #define SF_DL_NAME_FUNC _dl_name_
+
+// Select copy function which is allowed by MS Windows.
+#if IS_WIN
+	#define SF_DL_STRNCPY(dest,  src, sz) strncpy_s(dest, sz, src, sz)
+#else
+	#define SF_DL_STRNCPY(dest,  src, sz) strncpy(dest,  src, sz)
+#endif
 
 /**
  * Declaration of dynamically loadable library information and and function for set/get the library filename.
@@ -32,7 +39,7 @@ namespace \
   { \
     static char storage[256]; \
     if (nm) \
-      strncpy(storage, nm, sizeof(storage)); \
+      SF_DL_STRNCPY(storage, nm, sizeof(storage)); \
     return storage; \
   } \
 }

@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include <cstring>
 #include <misc/gen/Value.h>
@@ -21,7 +21,7 @@ struct
 
 TEST_CASE("sf::Value", "[generic][value]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("Constructors")
 	{
@@ -63,6 +63,7 @@ TEST_CASE("sf::Value", "[generic][value]")
 		CHECK(sf::Value::getType("FLOAT") == sf::Value::vitFloat);
 		CHECK(sf::Value::getType("CUSTOM") == sf::Value::vitCustom);
 		CHECK(sf::Value::getType("bogus") == sf::Value::vitInvalid);
+		CHECK(sf::Value("Brown-Bear").getString() == "Brown-Bear");
 		// Number types test function.
 		CHECK(sf::Value(4).isNumber());
 		CHECK(sf::Value(4.4).isNumber());

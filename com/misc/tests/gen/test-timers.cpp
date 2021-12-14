@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 
 #include <unistd.h>
 #include <misc/gen/TimeSpec.h>
@@ -55,7 +55,8 @@ TEST_CASE("sf::TimeSpec", "[generic][timers]")
 
 TEST_CASE("sf::Timers", "[generic][timers]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
+	using Catch::Approx;
 
 	SECTION("PerformanceTimer", "Individual class only")
 	{

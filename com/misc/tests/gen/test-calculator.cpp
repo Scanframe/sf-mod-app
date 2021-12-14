@@ -1,12 +1,10 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include <misc/gen/ScriptEngine.h>
 
-
 TEST_CASE("sf::ScriptEngine", "[calc]")
 {
-	using Catch::Equals;
-	using Catch::Matches;
+	using Catch::Approx;
 
 	SECTION("sf::calculator", "Calculator functions")
 	{
@@ -35,7 +33,7 @@ TEST_CASE("sf::ScriptEngine", "[calc]")
 		// Order of operand processing.
 		CHECK(sf::calculator("1.0 + 2.4 / 2", 0.0) == Approx(2.2).margin(std::numeric_limits<double>::denorm_min()));
 		CHECK(sf::calculator("1.0 + 2.4 * 2", 0.0) == Approx(5.8).margin(std::numeric_limits<double>::denorm_min()));
-		// String concatenation.
+		// String conversion
 		CHECK(sf::calculator("\"Brown-\" + \"Bear\"", sf::Value(sf::Value::vitString)) == sf::Value("Brown-Bear"));
 		CHECK(sf::calculator("\"Brown-\" + 123", sf::Value(sf::Value::vitString)) == sf::Value("Brown-123"));
 	}

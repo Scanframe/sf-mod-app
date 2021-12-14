@@ -1,3 +1,7 @@
+#include "Thread.h"
+#include "gen/gen_utils.h"
+#include "gen/dbgutils.h"
+#include "gnu_compat.h"
 #include <cerrno>
 #include <string>
 #include <iostream>
@@ -5,17 +9,12 @@
 #include <pthread.h>
 #include <csignal>
 #include <typeinfo>
-#include "gen/gen_utils.h"
-#include "gen/dbgutils.h"
-#include "gen/PerformanceTimer.h"
-#include "Thread.h"
 #if IS_WIN
-#  include <windows.h>
-#  include <processthreadsapi.h>
-#  include <csignal>
-#  include "../win/win_utils.h"
+	#include <windows.h>
+	#include <processthreadsapi.h>
+	#include "../win/win_utils.h"
 #else
-#include <sys/syscall.h>
+	#include <sys/syscall.h>
 #endif
 
 namespace sf
@@ -396,17 +395,17 @@ int Thread::create()
 		// Install a cleanup handler.
 		pthread_cleanup_push(func, this);
 #endif
-			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread Notify condition... " << getCurrentId())
-			// Notify start function calling thread its is running.
-			_condition.notifyAll(_mutex);
-			lock.release();
-			// Call the non-static and overloaded function.
-			exit_code = run();
-			// Locking for cleanup call.
-			lock.acquire();
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread Notify condition... " << getCurrentId())
+		// Notify start function calling thread its is running.
+		_condition.notifyAll(_mutex);
+		lock.release();
+		// Call the non-static and overloaded function.
+		exit_code = run();
+		// Locking for cleanup call.
+		lock.acquire();
 #if !IS_WIN && false
-			// Execute the cleanup function.
-		pthread_cleanup_pop(1);
+		// Execute the cleanup function.
+	pthread_cleanup_pop(1);
 #else
 		func(this);
 #endif
@@ -500,7 +499,7 @@ bool Thread::sleep(const TimeSpec& time, bool alertable) const
 		// Make the sleep call.
 		int result = ::nanosleep(&ts, &rem);
 		// Check for an error.
-		if (!result)
+		if (result != 0)
 		{
 			// Signal sleep completion.
 			return true;
@@ -532,8 +531,8 @@ bool Thread::yieldToOther()
 #if IS_WIN
 	return ::SwitchToThread();
 #else
-	auto err = ::pthread_yield();
-	if (err)
+	auto err = ::sched_yield();
+	if (err != 0)
 	{
 		SF_NORM_NOTIFY(DO_DEFAULT, "pthread_yield()" << ::strerror(errno))
 		return false;
@@ -544,7 +543,7 @@ bool Thread::yieldToOther()
 
 int Thread::getExitCode() const
 {
-	return (int)_exitCode.Code;
+	return (int) _exitCode.Code;
 }
 
 Thread::handle_type Thread::getCurrentHandle()
@@ -558,6 +557,16 @@ Thread::id_type Thread::getCurrentId()
 	return ::GetCurrentThreadId();
 #else
 	return (pid_t) ::syscall(SYS_gettid);
+#endif
+}
+
+Thread::id_type Thread::getMainId()
+{
+#if IS_WIN
+	return getMainThreadId();
+#else
+	// The process ID is the main thread id.
+	return (pid_t) ::syscall(SYS_getpid);
 #endif
 }
 

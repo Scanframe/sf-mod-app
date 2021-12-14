@@ -34,7 +34,7 @@ std::string getConfigLocation(const std::string& option, bool separator)
 	// Check directory existence.
 	if (!fileExists(rv))
 	{
-		SF_COND_NORM_NOTIFY(IsDebug(), DO_CLOG, __FUNCTION__  << " Directory '" << rv << "' does not exist!");
+		SF_COND_NORM_NOTIFY(isDebug(), DO_CLOG, __FUNCTION__  << " Directory '" << rv << "' does not exist!");
 	}
 	// Add separator when requested.
 	if (separator)

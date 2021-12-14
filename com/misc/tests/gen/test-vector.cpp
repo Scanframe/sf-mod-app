@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 
 #include <iostream>
 #include <misc/gen/TVector.h>

@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <misc/gen/gen_utils.h>
 
 namespace sf
@@ -62,7 +62,7 @@ strings split(const S& s, S::value_type sep, S::value_type delimiter = 0)
 
 TEST_CASE("sf::StringSplit", "[generic][strings]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("Splitter")
 	{

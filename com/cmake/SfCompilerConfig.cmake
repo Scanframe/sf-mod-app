@@ -3,15 +3,18 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	# Do not export all by default in Linux.
 	if (NOT WIN32)
-		add_definitions("-fvisibility=hidden")
+		# Catch2 cannot handle compiler switch below.
+		#add_definitions("-fvisibility=hidden")
 	endif ()
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		# Generate an error on undefined (imported) symbols on dyn libs
-		# because the error appears only at load-time.
+		# Generate an error on undefined (imported) symbols on dynamic libraries
+		# because the error appears only at load-time otherwise.
 		add_link_options(-Wl,--no-undefined -Wl,--no-allow-shlib-undefined)
-		# Suppressing the warning that out-of-line inline functions are redeclared.
 		if (WIN32)
-			add_link_options(-Wno-inconsistent-dllimport)
+			# When building for Windows using GNU report warnings on MSVC incompatibilities.
+			#add_definitions(-D__MINGW_MSVC_COMPAT_WARNINGS)
+			# Suppressing the warning that out-of-line inline functions are redeclared.
+			#add_link_options(-Wno-inconsistent-dllimport)
 		endif ()
 	endif ()
 	# When MSVC compiler is used set some options.

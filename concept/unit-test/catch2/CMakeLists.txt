@@ -6,6 +6,9 @@ project("ut-catch2"
 	DESCRIPTION "An example using Catch2 library from GitHub"
 	LANGUAGES CXX)
 
+# Make it so our own packages are found.
+#list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 # Only do these if this is the main project, and not if it is included through add_subdirectory
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	# Testing only available if this is the main app
@@ -20,8 +23,6 @@ list(APPEND CMAKE_PREFIX_PATH "../../../com/cmake")
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
-# Make Catch2::Catch2 library available.
-find_package(SfCatch2 CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
@@ -35,8 +36,12 @@ set(SOURCES
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Set the actual target.
-add_executable(${PROJECT_NAME} ${SOURCES})
+# Set the actual executable target.
+add_executable(${PROJECT_NAME})
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
+# Set the sources for this target.
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

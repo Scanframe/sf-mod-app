@@ -1,11 +1,11 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include "misc/qt/qt_utils.h"
 #include <misc/qt/FileMapper.h>
 
 TEST_CASE("sf::qt::FileMapper", "[generic][qt][file]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("Create")
 	{

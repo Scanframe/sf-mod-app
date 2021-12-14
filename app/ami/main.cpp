@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	Application::setApplicationVersion(QT_VERSION_STR);
 	Application app(argc, argv);
 #if IS_WIN
-	if (!IsDebug())
+	if (!isDebug())
 	{
 		// Removes the console in windows application.
 		FreeConsole();

@@ -1,16 +1,14 @@
 /*
-_type defining of virtual allocation template class for
-dynamic buffering class.
+_type defining of virtual allocation template class for dynamic buffering class.
  Implements template TDynamicBuffer and TDynamicArray
 */
 
 #pragma once
 
+#include "../global.h"
+#include "dbgutils.h"
 #include <malloc.h>
 #include <cassert>
-
-#include "dbgutils.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -155,7 +153,7 @@ class TDynamicBuffer
 		 * @brief Gets a typed pointer to the specified given offset the start of the buffer.
 		 */
 		template<typename T>
-		T* ptr(size_t offset = 0) const
+		const T* ptr(size_t offset = 0) const
 		{
 			return reinterpret_cast<T*>(static_cast<char*>(_reference->_data) + (offset + _reference->_offset));
 		}
@@ -528,7 +526,11 @@ void TDynamicBuffer<Alloc>::grow(size_t sz)
 			// block of memory.
 			resize(sz - _reference->_offset);
 			// Copy the old data to the new allocated memory.
+#if IS_WIN
+			memcpy_s(_reference->_data, ref._size, ref._data, ref._size);
+#else
 			memcpy(_reference->_data, ref._data, ref._size);
+#endif
 			// Delete the previous allocated memory.
 			if (ref._data)
 			{

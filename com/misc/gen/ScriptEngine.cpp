@@ -1,12 +1,13 @@
-#include <cstring>
-#include <cstdlib>
 #include <cctype>
+#include <charconv>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 
+#include "ScriptEngine.h"
+#include "Value.h"
 #include "dbgutils.h"
 #include "gen_utils.h"
-#include "Value.h"
-#include "ScriptEngine.h"
 
 namespace sf
 {
@@ -556,8 +557,8 @@ void ScriptEngine::getNumber(Value& result)
 {
 	char* dp = nullptr;
 	char* lp = nullptr;
-	double d = strtod(&_cmd[_pos], &dp);
-	Value::int_type l = strtol(&_cmd[_pos], &lp, 0);
+	double d = sf::stod(&_cmd[_pos], &dp);
+	Value::int_type l = std::strtol(&_cmd[_pos], &lp, 0);
 	// see which one converted the most characters
 	if (dp > lp)
 	{

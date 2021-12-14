@@ -81,3 +81,7 @@ Unit conversion related functions and classes.
 * [Variable Handler](sf-gii-Variable.html)
 * [Unit Conversion](sf-gii-UnitConversionServer.html)
 
+## Designs
+
+* [GII Service](sf-gii-Service-Design.html)
+

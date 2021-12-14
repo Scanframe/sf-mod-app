@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
@@ -11,7 +13,6 @@
 #include <fcntl.h>
 #include <ftw.h>
 #include <filesystem>
-#include <openssl/md5.h>
 #include "../gen/gen_utils.h"
 #include "../global.h"
 
@@ -56,7 +57,6 @@ bool file_write(const std::string& path, const std::string& s, bool append = fal
  */
 _MISC_FUNC std::filesystem::path file_fd_path(int fd);
 
-
 /**
  * Easier typename.
  */
@@ -85,46 +85,6 @@ _MISC_FUNC time_t time_str2time(const std::string& str, const char* format = nul
  * Same as mktime() only GMT is the result value not the localtime when gmtime is true.
  */
 _MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
-
-
-// Set byte alignment to 1 byte.
-#pragma pack(push, 1)
-/**
- * Type for storing an MD5 hash.
- */
-typedef union
-{
-	unsigned char data[MD5_DIGEST_LENGTH];
-	// For faster compare.
-	int64_t ints[2];
-} md5hash_t;
-// Restore the pack option.
-#pragma pack(pop)
-
-/**
- * Compare operator for storing an MD5 hash.
- */
-_MISC_FUNC bool operator==(const md5hash_t& h1, const md5hash_t& h2);
-/**
- * Returns the MD5 hash of the passed string.
- */
-_MISC_FUNC md5hash_t md5(const char* s);
-/**
- * Returns the MD5 hash of the passed string.
- */
-_MISC_FUNC md5hash_t md5(const char* s, size_t sz);
-/**
- * Returns the MD5 hash of the passed string.
- */
-_MISC_FUNC md5hash_t md5(const std::string& s);
-/**
- * Returns the md5 hexadecimal string of the passed string.
- */
-_MISC_FUNC std::string md5str(const std::string& s);
-/**
- * Returns the string md5 hexadecimal representation string of the hash.
- */
-_MISC_FUNC std::string md5hexstr(const md5hash_t& hash);
 
 /**
  * Makes all directories recursively in the path.
@@ -303,6 +263,14 @@ _MISC_FUNC void proc_setfsuid(uid_t uid);
  * In case of an error it throws en exception.
  */
 _MISC_FUNC void proc_setfsgid(gid_t gid);
+
+/**
+ * @brief Replacement for deprecated '::siginterrupt' function.
+ * Returns EINVAL when the sig argument is not a valid signal number otherwise zero.
+ * @param sig A signal like defined in the SA_????? defines.
+ * @param flag Boolean value for installing and uninstalling the signal.
+ */
+int _MISC_FUNC siginterrupt(int sig, int flag);
 
 }
 

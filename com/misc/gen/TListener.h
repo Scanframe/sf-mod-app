@@ -181,6 +181,10 @@ class TListener :private ListenerList::base_type
 			public:
 
 				/**
+				 * Default constructor.
+				 */
+				emitter_type() = default;
+				/**
 				 * @brief Destructor clearing all shared pointers.
 				 */
 				~emitter_type() // NOLINT(modernize-use-equals-default)

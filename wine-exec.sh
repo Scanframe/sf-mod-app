@@ -11,7 +11,7 @@ function WriteLog()
 # Get this script's directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # Get the Qt installed directory.
-QT_VER_DIR="$(bash "${DIR}/com/cmake/QtLibDir.sh" "${DIR}/../../project/PROG/Qt")"
+QT_VER_DIR="$(bash "${DIR}/com/cmake/QtLibDir.sh" "$(realpath "${HOME}/lib/QtWin")")"
 # Qt version on Linux.
 QT_VER="$(basename "${QT_VER_DIR}")"
 # Qt lib sub directory build by certain compiler version.
@@ -23,7 +23,7 @@ DIR_MINGW_DLL="/usr/x86_64-w64-mingw32/lib"
 # Location of MinGW DLLs 2.
 DIR_MINGW_DLL2="/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
 # Location of Qt DLLs 2.
-DIR_QT_DLL="$(realpath "${DIR}/../../project/PROG/Qt/${QT_VER}/${QT_LIB_SUB}/bin")"
+DIR_QT_DLL="$(realpath "${HOME}/lib/QtWin/${QT_VER}/${QT_LIB_SUB}/bin")"
 # Wine command.
 WINE_BIN="wine64"
 
@@ -63,5 +63,6 @@ WDIR_QT_DLL="$(winepath -w "${DIR_QT_DLL}")"
 # Export the path to find the needed DLLs in.
 export WINEPATH="${WDIR_EXE_DLL};${WDIR_QT_DLL};${WDIR_MINGW_DLL};${WDIR_MINGW_DLL2}"
 
-# Execute in in its own shell to contain the temp dir change.
-(cd "${DIR_BIN_WIN}" && wine "$@")
+# Execute it in its own shell to contain the temp dir change.
+# Redirect wine stderr to be ignored.
+(cd "${DIR_BIN_WIN}" && wine "$@" 2> /dev/null)

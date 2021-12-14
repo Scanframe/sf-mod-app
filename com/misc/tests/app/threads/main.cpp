@@ -6,6 +6,9 @@
 #include <csignal>
 #include <thread>
 #include <chrono>
+#if !IS_WIN
+#include <misc/lnx/lnx_utils.h>
+#endif
 
 void TestNumberString()
 {
@@ -18,10 +21,10 @@ void TestStdSignal()
 	static thread_local volatile std::sig_atomic_t quit = false;
 #if !IS_WIN
 	// enforce POSIX semantics
-	siginterrupt(quit_signal, true);
+	sf::siginterrupt(quit_signal, true);
 #endif
 	// register signal handler
-	std::signal(quit_signal, [](int)
+	(void)std::signal(quit_signal, [](int)
 	{
 		quit = true;
 	});

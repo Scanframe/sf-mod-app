@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 
 #include <misc/gen/Range.h>
 #include <misc/gen/RangeManager.h>

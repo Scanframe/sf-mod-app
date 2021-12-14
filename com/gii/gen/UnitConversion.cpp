@@ -63,7 +63,7 @@ std::string UnitConverter::getString(double value) const
 		// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 		char buf[std::numeric_limits<double>::max_digits10 + std::numeric_limits<double>::max_exponent10 + 5];
 		// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
-		std::string s(gcvt(value, std::numeric_limits<double>::digits10, buf));
+		std::string s = gcvtString(value, std::numeric_limits<double>::digits10);
 		// Only needed for Windows since it adds a trailing '.' even when not required.
 		return s.erase(s.find_last_not_of('.') + 1);
 	}

@@ -381,7 +381,7 @@ struct _RSA_CLASS RsaTypes
 	 * Acquisition US Parameters.
 	 * List of id's which must always be present at all times for each ultrasonic acquisition implementation.
 	 */
-	enum EDefaultParam
+	enum EDefaultParam :uint64_t
 	{
 		/** Used to indicate no parameter. */
 		apNone = 0x0000,
@@ -465,7 +465,7 @@ struct _RSA_CLASS RsaTypes
 	 * Acquisition Ultrasonic Results.
 	 * List of id's which must always be present at all times for each ultrasonic acquisition implementation.
 	 */
-	enum EDefaultResult
+	enum EDefaultResult :uint64_t
 	{
 		/** Used to indicate no result. */
 		arNone = 0x0000,

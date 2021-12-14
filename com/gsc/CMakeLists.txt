@@ -56,6 +56,8 @@ endif (NOT WIN32)
 
 # Add the library to create.
 add_library(${PROJECT_NAME} SHARED)
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 

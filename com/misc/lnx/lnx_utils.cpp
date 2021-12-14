@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <csignal>
 #include "../gen/Exception.h"
 #include "../gen/gen_utils.h"
 #include "../gen/dbgutils.h"
@@ -131,7 +132,7 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 	{
 		struct tm ti{};
 		time_t rawtime = 0;
-		::time(&rawtime);
+		(void)::time(&rawtime);
 		if (gmtime)
 		{
 			::gmtime_r(&rawtime, &ti);
@@ -150,46 +151,6 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 	//return mktime(&timeinfo);
 	return time_mktime(&timeinfo, gmtime);
 }
-
-#if defined(_USE_CRYPT) || true
-
-bool operator==(const md5hash_t& h1, const md5hash_t& h2)
-{
-	// Use the unions fast compare integers.
-	return h1.ints[0] == h2.ints[0] && h1.ints[1] == h2.ints[1];
-}
-
-md5hash_t md5(const char* s, size_t sz)
-{
-	md5hash_t hash;
-	MD5((const unsigned char*) s, sz, hash.data);
-	return hash;
-}
-
-md5hash_t md5(const char* s)
-{
-	return md5(s, strlen(s));
-}
-
-md5hash_t md5(const std::string& s)
-{
-	md5hash_t hash;
-	MD5((const unsigned char*) s.data(), s.length(), hash.data);
-	return hash;
-}
-
-std::string md5hexstr(const md5hash_t& hash)
-{
-	return hexString(&hash, sizeof(hash));
-}
-
-std::string md5str(const std::string& s)
-{
-	md5hash_t hash;
-	MD5((const unsigned char*) s.data(), s.length(), hash.data);
-	return md5hexstr(hash);
-}
-#endif
 
 void proc_setuid(uid_t uid)
 {
@@ -239,6 +200,24 @@ void proc_setfsgid(gid_t gid)
 	{
 		throw ExceptionSystemCall("setfsgid", errno, nullptr, __FUNCTION__);
 	}
+}
+
+int siginterrupt(int sig, int flag)
+{
+	int ret;
+	struct sigaction act = {};
+
+	sigaction(sig, nullptr, &act);
+	if (flag)
+	{
+		act.sa_flags &= ~SA_RESTART;
+	}
+	else
+	{
+		act.sa_flags |= SA_RESTART;
+	}
+	ret = sigaction(sig, &act, nullptr);
+	return ret;
 }
 
 passwd_t::passwd_t() :passwd()

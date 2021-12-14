@@ -7,21 +7,24 @@ namespace sf
 
 sf::SocketClient::SocketClient(QObject* parent)
 	:QThread(parent)
+	 , _socket(nullptr)
+	 , _connection(nullptr)
 {
-	//connect(_socket, &QIODevice::readyRead, this, &SocketClient::readMessage);
-	//connect(_socket, &QAbstractSocket::errorOccurred,	this, &SocketClient::handleError);
+	_socket = new QTcpSocket();
+	_socket->moveToThread(this);
+	_connection = new ClientConnection(_socket);
 	// Start the thread.
 	start();
 }
 
 SocketClient::~SocketClient()
 {
-	{
-		Lock lock(this);
-		_shouldQuit = true;
-	}
-	_waitCondition.notifyAll(_mutex);
+	requestInterruption();
+	_waitCondition.wakeAll();
+	quit();
 	wait();
+	delete _socket;
+	delete _connection;
 }
 
 void SocketClient::connectHost(const QString& hostName, int portNumber)
@@ -29,13 +32,13 @@ void SocketClient::connectHost(const QString& hostName, int portNumber)
 	Lock lock(this);
 	_hostName = hostName;
 	_portNumber = portNumber;
-	if (!isRunning())
+	if (isRunning())
 	{
-		start();
+		_waitCondition.wakeOne();
 	}
 	else
 	{
-		_waitCondition.notifyOne(_mutex);
+		start();
 	}
 }
 
@@ -46,44 +49,39 @@ void SocketClient::handleError(QAbstractSocket::SocketError socketError) const
 		case QAbstractSocket::RemoteHostClosedError:
 			qInfo() << "The remote host closed the connection.";
 			break;
+
 		case QAbstractSocket::HostNotFoundError:
 			qInfo() << "The host was not " << _hostName << " found. Please check the host name and port settings.";
 			break;
+
 		case QAbstractSocket::ConnectionRefusedError:
 			qInfo() << "The connection was refused by the peer.";
 			break;
+
 		default:
 			qWarning() << "The following error occurred:" << _socket->errorString();
 	}
 }
 
-void SocketClient::readMessage()
-{
-	if (_socket->bytesAvailable())
-	{
-		auto ba = _socket->readAll();
-		qDebug() << __FUNCTION__ << QString(ba);
-	}
-}
-
 void SocketClient::run()
 {
-	// Need to create TCP socket here on since it is not allowed in the main thread.
-	QScopedPointer<QAbstractSocket> socket(_socket = new QTcpSocket);
-	//
-	while (!_shouldQuit)
+	while (!isInterruptionRequested())
 	{
 		// Lock the mutex so the condition can act on it.
-		Mutex::Lock wait_lock(_mutex);
+		QMutexLocker wait_lock(&_mutex);
 		// Wait for a signal from the main thread.
-		_waitCondition.wait(_mutex);
+		_waitCondition.wait(&_mutex);
 		// When the thread supposed to quit break the loop.
-		if (_shouldQuit)
+		if (isInterruptionRequested())
 		{
 			break;
 		}
 		// Disconnect abruptly if a connection still exists.
-		_socket->abort();
+		if (_socket->isOpen())
+		{
+			_socket->abort();
+			_socket->close();
+		}
 		// Scope for Lock instance for access to data members.
 		{
 			Lock sync_lock(this);
@@ -94,20 +92,23 @@ void SocketClient::run()
 			handleError(_socket->error());
 			break;
 		}
-		do
+		//
+		while (!isInterruptionRequested() && _socket->state() != QAbstractSocket::UnconnectedState && _socket->isOpen())
 		{
-			if (!_socket->waitForReadyRead(_waitTimeout))
+			// Non-blocking method processing in coming and out going data.
+			if (!_connection->process())
 			{
-				handleError(_socket->error());
-			}
-			else
-			{
-				readMessage();
+				qInfo() << SF_RTTI_NAME(*this).c_str() << "Disconnecting...";
+				_socket->disconnectFromHost();
+				if (_socket->state() != QAbstractSocket::UnconnectedState)
+				{
+					_socket->waitForDisconnected();
+				}
+				break;
 			}
 		}
-		while (!_shouldQuit && _socket->state() != QAbstractSocket::UnconnectedState);
 	}
-	qInfo() << "Thread stopped...";
+	qInfo() << SF_RTTI_NAME(*this).c_str() << "Thread stopped...";
 }
 
 }

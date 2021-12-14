@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstring>
 #include "../global.h"
+#include <cstring>
+#include <string>
 
 /**
  * Separator between name and description.

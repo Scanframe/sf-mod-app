@@ -30,7 +30,10 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 find_package(SfRsa REQUIRED)
 
+# Add the library to create.
 add_library(${PROJECT_NAME} SHARED)
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE
 	global.h

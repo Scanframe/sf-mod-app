@@ -3,8 +3,6 @@
 
 # Get the bash script directory.
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# Set the directory the local QT root expects/
-LOCAL_QT_ROOT="${HOME}/lib/Qt"
 # Amount of CPU cores to use for compiling.
 CPU_CORES_TO_USE="$(($(nproc --all) -1))"
 
@@ -50,11 +48,17 @@ function ShowHelp()
 
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]] ; then
 	WriteLog "Windows NT detected..."
+	export SF_TARGET_SYSTEM="Windows"
 	FLAG_WINDOWS=true
+	# Set the directory the local QT root.
+	LOCAL_QT_ROOT="P:\\Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .bat)"
 else
 	WriteLog "Linux detected..."
+	export SF_TARGET_SYSTEM="Linux"
 	FLAG_WINDOWS=false
+	# Set the directory the local QT root.
+	LOCAL_QT_ROOT="${HOME}/lib/Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
 fi
@@ -69,6 +73,7 @@ FLAG_CROSS_WINDOWS=false
 FLAG_VISUAL_STUDIO=false
 # Initialize the config options.
 CONFIG_OPTIONS="-L"
+CONFIG_OPTIONS=""
 # Initialize the build options.
 BUIlD_OPTIONS=
 # Initialize the target.
@@ -152,25 +157,36 @@ if [[ -z "${argument[0]}" ]]; then
 	exit 1
 fi
 
+# Initialize variables.
+SOURCE_DIR="${argument[0]}"
 # Initialize the first part of the build directory depending on the build type (Debug, Release etc.).
 BUILD_SUBDIR="cmake-build-${CMAKE_DEFS['CMAKE_BUILD_TYPE'],,}"
 
-# Initialize variables.
-SOURCE_DIR="${argument[0]}"
-
-# Set the build-dir for the cross compile.
-if [[ ${FLAG_CROSS_WINDOWS} = true ]] ; then
-	CMAKE_DEFS['SF_CROSS_WINDOWS']='ON'
-	BUILD_SUBDIR="${BUILD_SUBDIR}-gw"
-else
+#
+# Assemble CMake build directory depending on OS and passed options.
+#
+# When Windows is the OS running Cygwin.
+if [[ ${FLAG_WINDOWS} = true ]] ; then
 	# Set the build-dir for the cross compile.
 	if [[ ${FLAG_VISUAL_STUDIO} = true ]] ; then
 		BUILD_SUBDIR="${BUILD_SUBDIR}-msvc"
+	else
+		BUILD_SUBDIR="${BUILD_SUBDIR}-mingw"
+	fi
+# When a Linux is the OS.
+else
+	# Set the build-dir for the cross compile.
+	if [[ ${FLAG_CROSS_WINDOWS} = true ]] ; then
+		# Set the CMake define.
+		CMAKE_DEFS['SF_CROSS_WINDOWS']='ON'
+		BUILD_SUBDIR="${BUILD_SUBDIR}-gw"
+	else
+		BUILD_SUBDIR="${BUILD_SUBDIR}-gnu"
 	fi
 fi
 
 # When second argument is not given all targets are build as the default.
-if [[ ! -z ${argument[1]} ]]; then
+if [[ -n "${argument[1]}" ]]; then
 	TARGET="${argument[1]}"
 fi
 
@@ -181,17 +197,14 @@ if ! ${FLAG_CONFIG} && ! ${FLAG_BUILD} ; then
 	FLAG_BUILD=true
 fi
 
+# Configure Build generator depending .
 if [[ ${FLAG_WINDOWS} = true ]] ; then
-	CMAKE_BIN="cmake.exe"
+	CMAKE_BIN="${LOCAL_QT_ROOT}\Tools\CMake_64\bin\cmake.exe"
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
 	if ${FLAG_VISUAL_STUDIO} ; then
-		BUILD_GENERATOR="Ninja"
-		# Unable to test if the cmake application is availablesince the 'VSINSTALLDIR' variable is available.
+		BUILD_GENERATOR="CodeBlocks - NMake Makefiles"
+		# CMake binary bundled with MSVC but the default QT version is also ok.
 		CMAKE_BIN="%VSINSTALLDIR%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
-		# Set some needed cmake command line options for make files.
-		CMAKE_DEFS['CMAKE_MAKE_PROGRAM:FILEPATH']="%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe"
-		#CMAKE_DEFS['CMAKE_C_COMPILER:FILEPATH']="%VCToolsInstallDir%bin\Hostx64\x64\cl.exe"
-		CMAKE_DEFS['CMAKE_CXX_COMPILER:FILEPATH']="%VCToolsInstallDir%bin\Hostx64\x64\cl.exe"
 	else
 		BUILD_GENERATOR="MinGW Makefiles"
 	fi
@@ -212,13 +225,14 @@ fi
 
 # Build execution script depending on the OS.
 if [[ ${FLAG_WINDOWS} = true ]] ; then
-	# Set time stamp at beginning of file.
-	echo ":: Timestamp: $(date '+%Y-%m-%dT%T.%N')" > "${EXEC_SCRIPT}"
 	# Start of echo capturing.
 	{
+		echo '@echo off'
+		# Set time stamp at beginning of file.
+		echo ":: Timestamp: $(date '+%Y-%m-%dT%T.%N')"
 		if ${FLAG_VISUAL_STUDIO} ; then	cat <<EOF
 if not defined VisualStudioVersion (
-	call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+	call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 -vcvars_ver=14.29
 	echo :: MSVC v%VisualStudioVersion% vars have been set now.
 ) else (
 	echo :: MSVC v%VisualStudioVersion% vars have been set before.
@@ -242,14 +256,18 @@ EOF
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "--build \"${BUILD_DIR}\" ^"
 			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} ^"
-			echo "-- -j ${CPU_CORES_TO_USE}"
+			if ! ${FLAG_VISUAL_STUDIO} ; then
+				echo "-- -j ${CPU_CORES_TO_USE}"
+			else
+				echo "-- "
+			fi
 		fi
 	} >> "${EXEC_SCRIPT}"
 else
-	# Set time stamp at beginning of file.
-	echo "# Timestamp: $(date '+%Y-%m-%dT%T.%N')" > "${EXEC_SCRIPT}"
 	# Start of echo capturing.
 	{
+		# Set time stamp at beginning of file.
+		echo "# Timestamp: $(date '+%Y-%m-%dT%T.%N')"
 		# Configure
 		if [[ ${FLAG_CONFIG} = true ]] ; then
 			echo "# CMake Configure"
@@ -275,9 +293,9 @@ fi
 # Execute the script or write it to the log out when debugging.
 if [[ ${FLAG_DEBUG} = true ]] ; then
 	WriteLog "Script content ${EXEC_SCRIPT}"
-	WriteLog '------------------------------'
+	WriteLog '====================================='
 	WriteLog "$(cat "${EXEC_SCRIPT}")"
-	WriteLog '------------------------------'
+	WriteLog '====================================='
 else
 	WriteLog "Executing Script: ${EXEC_SCRIPT}"
 	if [[ ${FLAG_WINDOWS} = true ]] ; then
@@ -286,3 +304,4 @@ else
 		exec "${EXEC_SCRIPT}"
 	fi
 fi
+

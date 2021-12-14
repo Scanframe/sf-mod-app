@@ -5,7 +5,14 @@ cmake_minimum_required(VERSION 3.14)
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
 
 # Check if this is a cross compile for windows.
-if (${SF_CROSS_WINDOWS})
+if(NOT DEFINED SF_CROSS_WINDOWS)
+	# Seems the variable 'CMAKE_SYSTEM_NAME' is no set yet at this time.
+	#if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+		set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainLinux.cmake" #[[CACHE PATH "" FORCE]])
+	#endif()
+else () #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	# Suppressing a lot of Vulkan directory warnings.
+	#set(Vulkan_INCLUDE_DIR "/usr/include")
 	# Find the Windows cross compiler
 	find_program(SF_CROSS_COMPILER "x86_64-w64-mingw32-c++-posix")
 	if (NOT EXISTS ${SF_CROSS_COMPILER})
@@ -13,11 +20,9 @@ if (${SF_CROSS_WINDOWS})
 		return()
 	endif ()
 	# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.
-	set(ENV{SF_QT_VERSION_CMAKE_DIR} "/mnt/server/userdata/project/PROG/Qt/6.2.2/mingw_64/lib/cmake")
+	set(ENV{SF_QT_VERSION_CMAKE_DIR} "$ENV{HOME}/lib/QtWin/6.4.0/mingw_64/lib/cmake")
 	# Set the toolchain for the cross compiler for Windows.
-	set(CMAKE_TOOLCHAIN_FILE com/cmake/SfToolChainCrossWindows.cmake)
-elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-	set(CMAKE_TOOLCHAIN_FILE com/cmake/SfToolChainLinux.cmake#[[ CACHE PATH "" FORCE]])
+	set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainCrossWindows.cmake")
 endif ()
 
 # Set the global project name.
@@ -28,7 +33,7 @@ project("qt-concepts"
 	)
 
 # Sentry for builds not working anyway.
-if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL $ENV{SF_TARGET_SYSTEM} AND NOT DEFINED SF_CROSS_WINDOWS)
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "$ENV{SF_TARGET_SYSTEM}" AND NOT DEFINED SF_CROSS_WINDOWS)
 	message(NOTICE "-- Target system is '$ENV{SF_TARGET_SYSTEM}' when on '${CMAKE_SYSTEM_NAME}' so bailing out here.")
 	return()
 endif ()
@@ -50,9 +55,7 @@ set(SF_BUILD_QT ON)
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
-	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=bfd")
-	# When building for Windows using GNU show MSVC incompatibilities.
-	add_definitions(-D__MINGW_MSVC_COMPAT_WARNINGS)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
 endif (WIN32)
 
 # Make sure builds do not wind up in the source directory.
@@ -66,5 +69,7 @@ _SetOutputDirs()
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
 add_subdirectory(app)
-add_subdirectory(manual)
 add_subdirectory(concept)
+if (NOT WIN32)
+	add_subdirectory(manual)
+endif()

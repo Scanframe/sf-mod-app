@@ -394,7 +394,11 @@ FileMappedStorage::Segment::write(FileMappedStorage::size_type ofs, FileMappedSt
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to write beyond end of memory!")
 	}
 	// All is well
+#if IS_WIN
+	memcpy_s(_dataPtr + ofs, sz, src, sz);
+#else
 	memcpy(_dataPtr + ofs, src, sz);
+#endif
 	// Return true to indicate success.
 	return true;
 }
@@ -419,7 +423,11 @@ bool FileMappedStorage::Segment::read(FileMappedStorage::size_type ofs, FileMapp
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to read beyond end of memory!")
 	}
 	// All is well
+#if IS_WIN
+	memcpy_s(dst, sz, _dataPtr + ofs, sz);
+#else
 	memcpy(dst, _dataPtr + ofs, sz);
+#endif
 	// Return true to indicate success.
 	return true;
 }

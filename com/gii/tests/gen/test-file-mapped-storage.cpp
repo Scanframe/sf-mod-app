@@ -1,5 +1,4 @@
-#include <catch2/catch.hpp>
-
+#include <test/catch.h>
 #include <string>
 #include <iostream>
 #include <utility>

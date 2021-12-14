@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
+
 #include <iostream>
 #include <misc/gen/gen_utils.h>
 #include <misc/gen/IFileMapper.h>
@@ -10,7 +11,7 @@
 
 TEST_CASE("sf::FileMapper", "[generic][file]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("sf::Create")
 	{

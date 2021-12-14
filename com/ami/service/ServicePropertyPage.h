@@ -1,20 +1,18 @@
 #pragma once
-#include "InformationServiceAppModule.h"
+#include "ServiceAppModule.h"
 #include <misc/qt/PropertyPage.h>
 
 namespace sf
 {
 
-namespace Ui {class InformationServicePropertyPage;}
+namespace Ui {class ServicePropertyPage;}
 
-class InformationServicePropertyPage :public PropertyPage
+class ServicePropertyPage :public PropertyPage
 {
-		Q_OBJECT
-
 	public:
-		explicit InformationServicePropertyPage(InformationServiceAppModule& ucm, QWidget* parent);
+		explicit ServicePropertyPage(ServiceAppModule& ucm, QWidget* parent);
 
-		~InformationServicePropertyPage() override;
+		~ServicePropertyPage() override;
 
 		[[nodiscard]] QString getPageName() const override;
 
@@ -31,9 +29,12 @@ class InformationServicePropertyPage :public PropertyPage
 		void afterPageApply(bool was_modified) override;
 
 	private:
-		Ui::InformationServicePropertyPage* ui;
+		Ui::ServicePropertyPage* ui;
 
-		InformationServiceAppModule& _ism;
+		ServiceAppModule& _ism;
+
+	// LLDB Crashes and GDB freezes when this MACRO is in top of the class.
+	Q_OBJECT
 };
 
 }

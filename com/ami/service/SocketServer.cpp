@@ -1,9 +1,9 @@
 #include "SocketServer.h"
-#include <misc/qt/QThreadClosure.h>
-#include <QDateTime>
+#include "ServerConnection.h"
+#include <misc/qt/QtThreadClosure.h>
 #include <QtNetwork/QTcpSocket>
-#include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
+#include <QTimer>
 
 namespace sf
 {
@@ -12,6 +12,10 @@ SocketServer::SocketServer(QObject* parent)
 	:QTcpServer(parent)
 {
 	initialize();
+	auto* timer = new QTimer(this);
+	timer->setInterval(1000);
+	connect(timer, &QTimer::timeout, this, &SocketServer::relayThreads);
+	timer->start();
 }
 
 void SocketServer::initialize()
@@ -24,11 +28,11 @@ void SocketServer::initialize()
 	}
 	QString ipAddress;
 	auto ipAddressesList = QNetworkInterface::allAddresses();
-	for (const auto& i: ipAddressesList)
+	for (const auto& entry: ipAddressesList)
 	{
-		if (i != QHostAddress::LocalHost && i.toIPv4Address())
+		if (entry != QHostAddress::LocalHost && entry.toIPv4Address() != 0)
 		{
-			ipAddress = i.toString();
+			ipAddress = entry.toString();
 			break;
 		}
 	}
@@ -38,31 +42,86 @@ void SocketServer::initialize()
 		ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
 	}
 	//
-	qDebug() << QString("Running on IP (%1) port (%2)").arg(ipAddress).arg(serverPort());
+	qInfo() << QString("Listening on IP (%1) port (%2)").arg(ipAddress).arg(serverPort());
 }
 
+void SocketServer::relayThreads()
+{
+	QMutexLocker lock(&_mutexList);
+	for (auto* connector: _connectors)
+	{
+		connector->_connection->relayThread();
+	}
+	// Remove disconnected.
+	for (auto* connector: _cleanup)
+	{
+		delete connector;
+	}
+	_cleanup.clear();
+}
 
 void SocketServer::incomingConnection(qintptr socketDescriptor)
 {
-	auto* tc = new QThreadClosure([this, socketDescriptor](QThread& thread)
+	// Lock for the connectors.
+	QMutexLocker lock(&_mutexList);
+	auto* connector = new ServerConnector(this);
+	_connectors.append(connector);
+	// When thread has finished cleanup.
+	connect(&connector->_threadClosure, &QThread::finished, [this, connector]()
 	{
-		auto tcpSocket = new QTcpSocket(&thread);
-		if (!tcpSocket->setSocketDescriptor(socketDescriptor))
+		QMutexLocker lock(&_mutexList);
+		_connectors.removeOne(connector);
+		_cleanup.append(connector);
+	});
+	// Assign thread function to handle the connection.
+	auto fn = [this, connector, socketDescriptor](QThread& thread, QObject* parent)
+	{
+		// Create socket from this thread.
+		auto* socket = new QTcpSocket(parent);
+		connect(socket, &QAbstractSocket::disconnected, [this, socket]()
 		{
-			qDebug() << "SocketError:" << tcpSocket->error() << tcpSocket->errorString();
+			(void)this;
+			qInfo() << SF_RTTI_NAME(this).c_str() << "Disconnected...";
+			socket->close();
+		});
+		// Initialize the socket using a descriptor.
+		if (!socket->setSocketDescriptor(socketDescriptor))
+		{
+			qDebug() << "SocketError:" << socket->error() << socket->errorString();
 			return;
 		}
-		QDateTime date = QDateTime::currentDateTime();
-		QString formattedTime = date.toString("dd.MM.yyyy hh:mm:ss.zzz");
-		QByteArray formattedTimeMsg = formattedTime.toLocal8Bit();
-		tcpSocket->write(formattedTimeMsg);
-		tcpSocket->disconnectFromHost();
-		tcpSocket->waitForDisconnected();
-	}, this);
-	// When thread has finished cleanup.
-	connect(tc, &QThread::finished, tc, &QThread::deleteLater);
+		// Report PMTU, send buffer and receive buffer sizes.
+		qDebug() << "PMTU, Send, Receive"
+			<< socket->socketOption(QAbstractSocket::PathMtuSocketOption)
+			<< socket->socketOption(QAbstractSocket::SendBufferSizeSocketOption)
+			<< socket->socketOption(QAbstractSocket::ReceiveBufferSizeSocketOption);
+		// Create the server connection.
+		connector->_connection = new ServerConnection(socket, parent);
+		// Set the socket to be part of the connection.
+		socket->setParent(connector->_connection);
+		// Do as long as the thread is not requested to terminate.
+		while (!thread.isInterruptionRequested())
+		{
+			// Non-blocking method processing in coming and out going data.
+			if (!socket->isOpen() || !connector->_connection->process())
+			{
+				// Break the loop as requested.
+				qInfo() << SF_RTTI_NAME(this).c_str() << "Loop stopped...";
+				break;
+			}
+		}
+		// Clean up.
+		socket->disconnectFromHost();
+		if (socket->state() != QAbstractSocket::UnconnectedState)
+		{
+			socket->waitForDisconnected();
+		}
+		qInfo() << SF_RTTI_NAME(this).c_str() << "Thread stopped...";
+	};
+	// Assign the thread function to the closure.
+	connector->_threadClosure.assign(fn);
 	// Start the thread.
-	tc->start();
+	connector->_threadClosure.start();
 }
 
 }

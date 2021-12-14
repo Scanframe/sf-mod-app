@@ -12,7 +12,7 @@
 int main(int argc, char* argv[])
 {
 #if IS_WIN
-	if (!sf::IsDebug())
+	if (!sf::isDebug())
 	{
 		// Removes the console in windows application.
 		FreeConsole();

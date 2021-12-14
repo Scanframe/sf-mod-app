@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 
 #include <gii/gen/UnitConversionServerEx.h>
 
@@ -73,11 +73,12 @@ rad,6=deg,57.2958,0,5
 
 }
 
-using Catch::Equals;
-using Catch::Matches;
-
 TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 {
+	using Catch::Matchers::Equals;
+	using Catch::Matchers::Matches;
+	using Catch::Approx;
+
 	sf::Variable::initialize();
 
 	std::istringstream is(IniContent);

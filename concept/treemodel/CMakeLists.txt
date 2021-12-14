@@ -32,8 +32,12 @@ set(SOURCES
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Set the actual target.
-add_executable(${PROJECT_NAME} ${SOURCES})
+# Set the actual executable target.
+add_executable(${PROJECT_NAME})
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
+# Set the sources for this target.
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

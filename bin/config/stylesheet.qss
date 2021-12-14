@@ -29,6 +29,25 @@ sf--VariableCheckBox QCheckBox[enabled=false]
 }
 
 /*
+QMdiSubWindow:focus
+{ 
+	background: red; 
+}
+
+QMdiSubWindow 
+{ 
+	border: 1px solid #ff0000; 
+	background: lightgrey;
+}
+
+QMdiSubWindow:title
+{
+	background: #ff0000;
+}
+*/
+
+
+/*
 QToolButton:hover
 {
 	background-color: darkorange;

@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include "misc/qt/qt_utils.h"
 #include <QMimeType>
@@ -6,7 +6,7 @@
 
 TEST_CASE("QMimeType", "[qt][mime]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("FromPath")
 	{

@@ -160,8 +160,8 @@ Value& Value::set(int type, const void* content, size_t size)
 			_size = sizeof(_data._int);
 			if (content)
 			{
-#if IS_MSVC
-				memcpy_s(&_data._int, sizeof(_data._int), content, _size);
+#if IS_WIN
+				memcpy_s(&_data._int, _size, content, _size);
 #else
 				memcpy(&_data._int, content, _size);
 #endif
@@ -176,8 +176,8 @@ Value& Value::set(int type, const void* content, size_t size)
 			_size = sizeof(flt_type);
 			if (content)
 			{
-#if IS_MSVC
-				memcpy_s(&_data._flt, sizeof(_data._flt), content, _size);
+#if IS_WIN
+				memcpy_s(&_data._flt, _size, content, _size);
 #else
 				memcpy(&_data._flt, content, _size);
 #endif
@@ -197,8 +197,8 @@ Value& Value::set(int type, const void* content, size_t size)
 					_size = maxString;
 				}
 				_data._ptr = (char*)malloc(_size + _sizeExtra);
-#if IS_MSVC
-				memcpy_s(_data._ptr, sizeof(_data._ptr), content, _size);
+#if IS_WIN
+				memcpy_s(_data._ptr, _size, content, _size);
 #else
 				memcpy(_data._ptr, content, _size);
 #endif
@@ -224,7 +224,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
-#if IS_MSVC
+#if IS_WIN
 				memcpy_s(_data._ptr, _size, content, _size);
 #else
 				memcpy(_data._ptr, content, _size);
@@ -245,7 +245,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
 			if (content)
 			{
-#if IS_MSVC
+#if IS_WIN
 				memcpy_s(_data._ptr, _size, content, _size);
 #else
 				memcpy(_data._ptr, content, _size);
@@ -335,15 +335,15 @@ Value& Value::set(const Value& v)
 		if (_type >= vitString)
 		{
 			_data._ptr = (char*)malloc(_size + _sizeExtra);
-#if IS_MSVC
-			memcpy_s(_data._ptr, _size + _sizeExtra, v._data._ptr, _size);
+#if IS_WIN
+			memcpy_s(_data._ptr, _size, v._data._ptr, _size);
 #else
 			memcpy(_data._ptr, v._data._ptr, _size);
 #endif
 		}
 		else
 		{
-#if IS_MSVC
+#if IS_WIN
 			memcpy_s(&_data, _size, &v._data, _size);
 #else
 			memcpy(&_data, &v._data, _size);
@@ -412,7 +412,7 @@ Value::flt_type Value::getFloat(int* cnv_err) const // NOLINT(misc-no-recursion)
 		case vitString:
 			if (strlen(_data._ptr))
 			{
-				rv = strtod(_data._ptr, &end_ptr);
+				rv = std::strtod(_data._ptr, &end_ptr);
 			}
 			if (end_ptr && *end_ptr != '\0' && cnv_err)
 			{
@@ -450,20 +450,15 @@ std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
 			{
 				// Clip the precision
 				precision = clip(precision, 0, std::numeric_limits<flt_type>::digits10);
-				return stringf("%.*lf", precision, _data._flt);
+				auto rv = stringf("%.*lf", precision, _data._flt);
+				return rv;
 			}
 			else
 			{
 				// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
-				std::array<char, std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5> buf{};
+				char buf[std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5];
 				// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
-#if IS_MSVC
-				_gcvt_s
-				gcvt(buf.data(), buf.size(), _data._flt, std::numeric_limits<flt_type>::digits10);
-#else
-				gcvt(_data._flt, std::numeric_limits<flt_type>::digits10, buf.data());
-#endif
-				std::string s(buf.data());
+				auto s = gcvtString(_data._flt, std::numeric_limits<flt_type>::digits10);
 				// Only needed for Windows since it adds a trailing '.' even when not required.
 				return s.erase(s.find_last_not_of('.') + 1);
 			}

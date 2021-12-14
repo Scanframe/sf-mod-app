@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 # Set the global project name.
 project("sf-com")
 # Add Sub Projects in the right order of dependency.
+add_subdirectory(test)
 add_subdirectory(misc)
 add_subdirectory(gsc)
 add_subdirectory(gii)

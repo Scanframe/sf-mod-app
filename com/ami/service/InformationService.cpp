@@ -14,7 +14,7 @@ struct InformationService::Private :QObject
 	EServiceType _type{None};
 	// Holds the id-offset for the information instances imported by the connected client.
 	Gii::IdType _idOffset{0};
-	// Set to true when service properties changed and reinitialization is needed.
+	// Set to true when service properties change and reinitialization is needed.
 	bool _reinitialize{false};
 	//
 	SocketServer* _server{nullptr};
@@ -24,6 +24,7 @@ struct InformationService::Private :QObject
 	TSustain<InformationService::Private> _sustain;
 	//
 	ElapseTimer _timer{};
+
 	// Constructor.
 	explicit Private(InformationService* service);
 
@@ -45,7 +46,7 @@ bool InformationService::Private::sustain(const timespec& t)
 		_reinitialize = false;
 		if (_type == Server || _type == Both)
 		{
-			if (!_server)
+			if (_server == nullptr)
 			{
 				_server = new SocketServer(this);
 			}
@@ -57,10 +58,10 @@ bool InformationService::Private::sustain(const timespec& t)
 		//
 		if (_type == Client || _type == Both)
 		{
-			if (!_client)
+			if (_client == nullptr)
 			{
 				_client = new SocketClient(this);
-				_timer.set(TimeSpec(1.0));
+				_timer.set(TimeSpec(3.0));
 			}
 		}
 		else

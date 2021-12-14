@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -6,6 +6,7 @@
 #include <misc/lnx/FileMapper.h>
 #include <misc/lnx/SegmentFaultHandler.h>
 #include <misc/gen/Exception.h>
+#include "misc/gen/Md5Hash.h"
 
 TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
 {
@@ -25,7 +26,7 @@ TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
 		auto fp = fm->getFile().getPath();
 		// Report the file created.
 		//std::clog << "File:" << fp << std::endl;
-		// Get the status of the file an compare the size.
+		// Get the status of the file and compare the size.
 		REQUIRE(fm->getFile().getStatus().st_size == sz);
 
 		// Get the readonly pointer.
@@ -63,7 +64,8 @@ TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
 		// Sizes must be the same.
 		REQUIRE(ss.str().length() == sz);
 		// Also the MD5 hash on both must be the same.
-		REQUIRE(sf::md5(std::string(ss.str())) == sf::md5(ptr, sz));
+
+		REQUIRE(sf::Md5Hash(std::string(ss.str())) == sf::Md5Hash(ptr, sz));
 
 		// Release the locked pointer.
 		fm->unlock();

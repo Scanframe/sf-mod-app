@@ -15,7 +15,12 @@ struct ScriptInterpreter::VariableInfo :IdInfo
 		:_value(type)
 	{
 		_data = &_value;
+#if IS_WIN
+		_name = _strdup(name);
+#else
 		_name = strdup(name);
+#endif
+
 		_id = ScriptEngine::idVariable;
 		_index = index;
 		_paramCount = 0;
@@ -42,7 +47,11 @@ struct ScriptInterpreter::LabelInfo :IdInfo
 	 */
 	LabelInfo(const char* name, int index, ip_type ip)
 	{
+#if IS_WIN
+		_name = _strdup(name);
+#else
 		_name = strdup(name);
+#endif
 		// Label address is also a global constant.
 		_id = ScriptEngine::idConstant;
 		_index = index;

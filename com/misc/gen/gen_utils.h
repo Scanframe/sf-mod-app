@@ -177,6 +177,27 @@ std::string string_format(const std::string& format, Args ... args)
 _MISC_FUNC std::string bitToString(unsigned long wrd, size_t count);
 
 /**
+ * The gcvt() function converts number to a minimal length std::string.
+ * It produces 'digits' significant digits in either printf(3) F format or E format.
+ */
+_MISC_FUNC std::string gcvtString(double value, int digits);
+
+/**
+ * @brief A locale independent version of std::strtold() function which uses locale "C".
+ */
+_MISC_FUNC long double stold(const char* ptr, char** end_ptr);
+
+/**
+ * @brief A locale independent version of std::strtod() function which uses locale "C".
+ */
+_MISC_FUNC double stod(const char* ptr, char** end_ptr);
+
+/**
+ * @brief A locale independent version of std::strtof() function which uses locale "C".
+ */
+_MISC_FUNC float stof(const char* ptr, char** end_ptr);
+
+/**
  * @brief Returns numeric the value of the passed hexadecimal character
  */
 _MISC_FUNC char hexCharValue(char ch);
@@ -312,7 +333,7 @@ _MISC_FUNC std::string unique(const std::string& s);
 template<typename T>
 T random(T start, T stop)
 {
-	static std::default_random_engine generator; // NOLINT(cert-msc51-cpp)
+	static std::default_random_engine generator{}; // NOLINT(cert-msc32-c,cert-msc51-cpp)
 	std::uniform_int_distribution<T> distribution(start, stop);
 	return distribution(generator);
 }
@@ -399,14 +420,9 @@ T ipow(T base, int exponent)
 template<typename T>
 T round(T value, T rnd)
 {
-	if (std::numeric_limits<T>::is_integer)
-	{
-		return ((value + (rnd / T(2))) / rnd) * rnd;
-	}
-	else
-	{
-		return std::floor(value / rnd + T(0.5)) * rnd;
-	}
+	return std::numeric_limits<T>::is_integer
+		? ((value + (rnd / T(2))) / rnd) * rnd
+		: std::floor(value / rnd + T(0.5)) * rnd;
 }
 
 /**
@@ -748,5 +764,7 @@ _MISC_FUNC bool fileFind(sf::strings& files, const std::string& wildcard);
  * @brief Returns the thread count from the current process.
  */
 _MISC_FUNC size_t getThreadCount();
+
+
 
 }

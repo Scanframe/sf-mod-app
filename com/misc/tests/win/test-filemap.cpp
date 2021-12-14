@@ -1,11 +1,11 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <iostream>
 #include "misc/gen/gen_utils.h"
 #include <misc/win/FileMapper.h>
 
 TEST_CASE("sf::win::FileMapper", "[windows][file]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("PageFile")
 	{

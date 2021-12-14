@@ -1,7 +1,7 @@
 #include <gii/gen/Variable.h>
 #include <gii/gen/UnitConversionServer.h>
 #include <misc/qt/FormDialog.h>
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <QFileDialog>
 #include <QCoreApplication>
 #include <QTimer>

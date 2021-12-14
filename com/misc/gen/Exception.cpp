@@ -1,13 +1,10 @@
+#include "Exception.h"
+#include "gnu_compat.h"
 #include <cstdarg>
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
 #include <cxxabi.h>
-#include <algorithm>
-#include "Exception.h"
-#if IS_WIN
-#  include "../win/win_utils.h"
-#endif
 
 namespace sf
 {
@@ -20,10 +17,10 @@ ExceptionBase::ExceptionBase()
 ExceptionBase::ExceptionBase(const ExceptionBase& ex)
 	:_msg(new char[BUF_SIZE])
 {
-#if IS_GNU && !IS_WIN
-	::strncpy(_msg, ex._msg, std::min<size_t>(BUF_SIZE, strlen(ex._msg)));
-#else
+#if IS_WIN
 	::strncpy_s(_msg, BUF_SIZE, ex._msg, strlen(ex._msg));
+#else
+	::strncpy(_msg, ex._msg, std::min<size_t>(BUF_SIZE, strlen(ex._msg)));
 #endif
 }
 
@@ -93,8 +90,8 @@ ExceptionSystemCall::ExceptionSystemCall(const char* syscall, int error, const c
 	{
 		nm = abi::__cxa_demangle(mangled_name, nullptr, nullptr, &status);
 	}
-	char buf[BUF_SIZE];
-	snprintf(_msg, BUF_SIZE, "%s::%s() %s (%i) %s", nm, func, syscall, error, strerror_r(error, buf, sizeof(buf)));
+	char buffer[BUFSIZ];
+	snprintf(_msg, BUF_SIZE, "%s::%s() %s (%i) %s", nm, func, syscall, error, strerror_r(error, buffer, sizeof(buffer)));
 	if (mangled_name)
 	{
 		free(nm);

@@ -163,7 +163,7 @@ void ApplicationSettings::setFilepath(const QString& filepath, bool watch)
 			_watcher->addPath(_fileInfo.absoluteFilePath());
 		}
 	}
-	if (IsDebug())
+	if (isDebug())
 	{
 		for (auto& file: _watcher->files())
 		{

@@ -1,11 +1,7 @@
 #include "win_utils.h"
+#include "../gen/gnu_compat.h"
 #include <tlhelp32.h>
 #include <cstring>
-
-int strerror_r(int errnum, char* buf, size_t buflen)
-{
-	return strerror_s(buf, buflen, errnum);
-}
 
 namespace sf
 {
@@ -51,6 +47,30 @@ size_t getThreadCount()
 	printf("\n\n\t Count %d threads.", dwThreadCount);
 */
 	return dwThreadCount;
+}
+
+DWORD getMainThreadId()
+{
+	HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+	if (handle == INVALID_HANDLE_VALUE)
+	{
+		throw std::runtime_error("GetMainThreadId failed");
+	}
+	THREADENTRY32 tEntry;
+	tEntry.dwSize = sizeof(THREADENTRY32);
+	DWORD result = 0;
+	DWORD currentPid = ::GetCurrentProcessId();
+	for (BOOL success = Thread32First(handle, &tEntry);
+		!result && success && GetLastError() != ERROR_NO_MORE_FILES;
+		success = Thread32Next(handle, &tEntry))
+	{
+		if (tEntry.th32OwnerProcessID == currentPid)
+		{
+			result = tEntry.th32ThreadID;
+		}
+	}
+	::CloseHandle(handle);
+	return result;
 }
 
 }

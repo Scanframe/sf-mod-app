@@ -282,7 +282,7 @@ RsaTypes::IdType AcquisitionEmulator::getResultId
 	(
 		((result & arChannel_Mask) | (result & arGate_Mask)) ? channel : NO_CHANNEL,
 		(result & arGate_Mask) ? gate : NO_GATE,
-		result & ~(arChannel_Mask | apGate_Mask)
+		result & ~(arChannel_Mask | arGate_Mask)
 	);
 	return id;
 }

@@ -1,7 +1,4 @@
-// This tells Catch to provide a main() - only do this in one cpp file
-//#define CATCH_CONFIG_MAIN // Cannot be used because of Windows missing WinMain complaint.
-#define CATCH_CONFIG_RUNNER
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <misc/gen/target.h>
 
 // Some user variable you want to be able to set
@@ -35,7 +32,7 @@ int main(int argc, char* argv[])
 		// There must be exactly one instance
 		Catch::Session session;
 		// Build a new parser on top of Catch's
-		using namespace Catch::clara;
+		using namespace Catch::Clara;
 		auto cli
 			// Get Catch's composite command line parser
 			= session.cli()

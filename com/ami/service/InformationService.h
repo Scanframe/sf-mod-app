@@ -7,7 +7,7 @@ namespace sf
 {
 
 /**
- * @brief Implements a connection between to application exporting and importing information.
+ * @brief Implements a connection between to application exporting and importing generic information.
  */
 class InformationService :public QObject
 {

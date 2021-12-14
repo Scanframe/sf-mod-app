@@ -1,5 +1,5 @@
 #include "Semaphore.h"
-#include "../gen/dbgutils.h"
+#include "gnu_compat.h"
 #if IS_WIN
 #include "../win/win_utils.h"
 #endif

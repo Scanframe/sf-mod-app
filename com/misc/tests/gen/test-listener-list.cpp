@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <test/catch.h>
 #include <misc/gen/gen_utils.h>
 #include <misc/gen/TListener.h>
 
@@ -43,7 +43,7 @@ struct MyListener :sf::ListenerList
 
 TEST_CASE("sf::ListenerList", "[generic]")
 {
-	using Catch::Equals;
+	using Catch::Matchers::Equals;
 
 	SECTION("Delete Listener")
 	{

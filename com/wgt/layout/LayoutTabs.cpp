@@ -92,7 +92,7 @@ struct LayoutTabs::Private :QObject, VariableWidgetBase::PrivateBase
 			bool same_inst
 		) override
 	{
-		SF_COND_RTTI_NOTIFY(IsDebug(), DO_DEFAULT, Variable::getEventName(event));
+		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, Variable::getEventName(event));
 		switch (event)
 		{
 			default:

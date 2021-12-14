@@ -13,10 +13,6 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 _SetOutputDirs()
 
-# Uses directory Set by _SetOutputDirs().
-find_package(SfMisc REQUIRED)
-find_package(SfAmi REQUIRED)
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -27,8 +23,10 @@ find_package(SfMisc REQUIRED)
 find_package(SfAmi REQUIRED)
 find_package(SingleInstance REQUIRED)
 
-# Set the actual target.
+# Set the actual executable target.
 add_executable(${PROJECT_NAME})
+# Set the default compiler options for our own code only.
+_SetTargetDefaultCompileOptions()
 
 # RC-files only seem to be compiled when building using MingW.
 target_sources(${PROJECT_NAME} PRIVATE

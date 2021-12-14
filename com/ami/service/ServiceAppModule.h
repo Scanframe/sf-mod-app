@@ -1,21 +1,20 @@
 #pragma once
 
 #include <ami/iface/AppModuleInterface.h>
-#include <gii/gen/InformationServer.h>
 #include "InformationService.h"
 
 namespace sf
 {
 
-class InformationServiceAppModule :public AppModuleInterface
+class ServiceAppModule :public AppModuleInterface
 {
 	Q_OBJECT
 
 	public:
 
-		explicit InformationServiceAppModule(const Parameters& params);
+		explicit ServiceAppModule(const Parameters& params);
 
-		~InformationServiceAppModule() override;
+		~ServiceAppModule() override;
 
 		void initialize(InitializeStage stage) override;
 
@@ -33,7 +32,7 @@ class InformationServiceAppModule :public AppModuleInterface
 
 		QSettings* _settings;
 
-		InformationService& _informationService;
+		InformationService* _informationService;
 };
 
 }
