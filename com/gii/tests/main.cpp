@@ -1,7 +1,7 @@
 #include <test/catch.h>
 #include <misc/gen/target.h>
 
-// Some user variable you want to be able to set
+// Some user variable you want to be able to set from the command line.
 int debug_level = 0;
 
 #if IS_QT

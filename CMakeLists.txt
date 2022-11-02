@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.18)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
@@ -11,12 +11,10 @@ if(NOT DEFINED SF_CROSS_WINDOWS)
 		set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainLinux.cmake" #[[CACHE PATH "" FORCE]])
 	#endif()
 else () #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	# Suppressing a lot of Vulkan directory warnings.
-	#set(Vulkan_INCLUDE_DIR "/usr/include")
 	# Find the Windows cross compiler
 	find_program(SF_CROSS_COMPILER "x86_64-w64-mingw32-c++-posix")
 	if (NOT EXISTS ${SF_CROSS_COMPILER})
-		message("Windows cross compiler not found.")
+		message(FATAL_ERROR "Windows cross compiler not found. Missing package 'mingw-w64' ?")
 		return()
 	endif ()
 	# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.

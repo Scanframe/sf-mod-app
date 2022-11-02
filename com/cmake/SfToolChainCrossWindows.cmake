@@ -1,17 +1,6 @@
 # Notify that this file was loaded.
 message(STATUS "Linux compiling for Windows.")
 
-# Check the existence of the of the directory.
-if (NOT EXISTS "$ENV{SF_QT_VERSION_CMAKE_DIR}")
-	# Fatally bailout. This is a show stopper.
-	message(FATAL_ERROR "Environment variable 'SF_QT_VERSION_CMAKE_DIR' assigned directory '$ENV{SF_QT_VERSION_CMAKE_DIR}' does not exist!")
-endif()
-
-# Append the directory to the list if not already.
-if("$ENV{SF_QT_VERSION_CMAKE_DIR}" IN_LIST CMAKE_PREFIX_PATH)
-	list(APPEND CMAKE_PREFIX_PATH "$ENV{SF_QT_VERSION_CMAKE_DIR}")
-endif()
-
 # Targeted operating system.
 set(CMAKE_SYSTEM_NAME Windows)
 

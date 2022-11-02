@@ -25,18 +25,11 @@ TEST_CASE("sf::General-Utils", "[generic][utils]")
 
 	SECTION("sf::LocaleNumStr", "Number string conversions.")
 	{
-		double value = 12345.67890123;
-		int precision = 4;
+		int precision = 8;
 		precision = sf::clip(precision, 0, std::numeric_limits<double>::digits10);
-		std::cout << "sf::stringf: " << sf::stringf("%.*lf", precision, value) << std::endl;
-
 		auto* strValue = "12345.67890123";
-		value = sf::stod(strValue, nullptr);
-		std::cout << "std::to_string: " << std::to_string(value) << std::endl;
-
-
-		//std::cout << (value) << std::endl;
-		CHECK(std::to_string(value) == strValue);
+		auto value = sf::stod(strValue, nullptr);
+		CHECK(sf::stringf("%.*lf", precision, value) == strValue);
 	}
 
 	SECTION("sf::calculateOffset", "Offset calculation.")

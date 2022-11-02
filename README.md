@@ -9,11 +9,15 @@ This makes building non Gui application modules without Qt possible.
 
 Before building some packages need to be installed:
 
+* cmake (Linux) _(Required)_
 * libopengl0 (Linux) _(Required)_
 * libgl1-mesa-dev (Linux) _(Stops cmake warnings)_
 * libxkbcommon-dev (Linux) _(Stops cmake warnings)_
 * libxkbfile-dev (Linux) _(Stops cmake warnings)
 * libvulkan-dev (Linux) _(Stops cmake warnings)_
+* libssl-dev (Linux) _(Required)_
+* gcc or gcc-12(Linux) _(Required)_
+* g++ or g++-12 (Linux) _(Required)_
 * doxygen (Linux, Cygwin) _(Required)_
 * graphviz (Linux, Cygwin) _(Required)_
 
