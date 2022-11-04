@@ -39,7 +39,7 @@ job-build-gnu:
 job-deploy-gnu:
   extends: [.tpl-comp-gnu,.tpl-artifacts-gnu,.tpl-deploy]
   stage: deploy
-  needs: [job-build-gnu,job-test-gnu]
+  needs: [job-build-gnu]
   dependencies: [job-build-gnu]
   environment: production
   script:
@@ -73,7 +73,7 @@ job-build-gw:
 job-deploy-gw:
   extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
   stage: deploy
-  needs: [job-build-gw,job-test-gw]
+  needs: [job-build-gw]
   dependencies: [job-build-gw]
   environment: production
   script:
