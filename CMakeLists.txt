@@ -41,9 +41,9 @@ endif ()
 if (WIN32)
 	# Disabled for Windows for now since MingW linker takes minutes to link Catch2 archive.
 	#set(SF_BUILD_TESTING OFF)
-	set(SF_BUILD_TESTING ON)
+	#set(SF_BUILD_TESTING ON)
 else ()
-	set(SF_BUILD_TESTING ON)
+	#set(SF_BUILD_TESTING ON)
 endif ()
 
 # Enables including Qt libraries when building (libraries).
@@ -67,7 +67,10 @@ _SetOutputDirs()
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
 add_subdirectory(app)
-add_subdirectory(concept)
 if (NOT WIN32)
 	add_subdirectory(manual)
 endif()
+# Concepts only when test flag is set.
+if (SF_BUILD_TESTING)
+	add_subdirectory(concept)
+endif ()

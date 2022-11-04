@@ -265,7 +265,9 @@ quint32 GlobalShortcut::Private::nativeKeycode(Qt::Key key)
 bool GlobalShortcut::Private::registerShortcut(quint32 nativeKey, quint32 nativeMods)
 {
 	QxtX11Data x11;
-	return x11.grabKey(nativeKey, nativeMods, x11.rootWindow());
+	if (x11.isValid())
+		return x11.grabKey(nativeKey, nativeMods, x11.rootWindow());
+	return false;
 }
 
 bool GlobalShortcut::Private::unregisterShortcut(quint32 nativeKey, quint32 nativeMods)

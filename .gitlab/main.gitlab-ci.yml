@@ -1,0 +1,82 @@
+include:
+  - local: ".gitlab/common-c++.gitlab-ci.yml"
+  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+
+default:
+  tags:
+    - cplusplus
+
+################################ Prequel Checks ###############################
+
+job-check:
+  extends: .tpl-env-dump
+  stage: check
+
+################################ Linux GNU Compiler ###########################
+
+# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
+# Also wiping the cmake-build-??? directory.
+job-make-gnu:
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu]
+  stage: make
+  needs: [job-check]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to CMake the needed makefiles.
+    - ${SF_DIR_MOUNT_GNU}/build.sh -m .
+
+job-build-gnu:
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
+  stage: build
+  needs: [job-make-gnu]
+  dependencies: [job-make-gnu]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to build the whole project.
+    - ${SF_DIR_MOUNT_GNU}/build.sh -b .
+
+job-deploy-gnu:
+  extends: [.tpl-comp-gnu,.tpl-artifacts-gnu,.tpl-deploy]
+  stage: deploy
+  needs: [job-build-gnu,job-test-gnu]
+  dependencies: [job-build-gnu]
+  environment: production
+  script:
+    - !reference [.tpl-log-script,script]
+    - echo "Packaged in a Debian deb-file or maybe a zip-file?"
+    - echo "May be rsync-ed to a production site?"
+
+################################ Linux GW Compiler ############################
+
+# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
+# Also wiping the cmake-build-??? directory.
+job-make-gw:
+  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw]
+  stage: make
+  needs: [job-check]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to CMake the makefiles.
+    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
+
+job-build-gw:
+  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  stage: build
+  needs: [job-make-gw]
+  dependencies: [job-make-gw]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to actually builds the whole project.
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb .
+
+job-deploy-gw:
+  extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
+  stage: deploy
+  needs: [job-build-gw,job-test-gw]
+  dependencies: [job-build-gw]
+  environment: production
+  script:
+    - !reference [.tpl-log-script,script]
+    - echo "Packaged in a installer or a zip-file?"
+    - echo "May be rsync-ed to a production site?"
