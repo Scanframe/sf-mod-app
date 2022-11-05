@@ -295,7 +295,7 @@ if [[ -n "${argument[1]}" ]]; then
 fi
 
 # Check if wiping can be performed.
-if [[ "${TARGET}" == @(help|install) && ${FLAG_WIPE_DIR} ]] ;  then
+if [[ "${TARGET}" == @(help|install) && ${FLAG_WIPE_DIR} == true ]] ;  then
 	FLAG_WIPE_DIR=false
 	WriteLog "Wiping clean with target '${TARGET}' not possible!"
 fi

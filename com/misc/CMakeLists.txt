@@ -1,7 +1,11 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 # Set the project name.
-project("sf-misc" LANGUAGES CXX)
+project("sf-misc"
+	VERSION 0.1.1
+	DESCRIPTION "Scanframe miscellaneous library"
+	LANGUAGES CXX
+)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../cmake")

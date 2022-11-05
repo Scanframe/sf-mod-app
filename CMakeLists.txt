@@ -4,24 +4,10 @@ cmake_minimum_required(VERSION 3.18)
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
 
-# Check if this is a cross compile for windows.
-if(NOT DEFINED SF_CROSS_WINDOWS)
-	# Seems the variable 'CMAKE_SYSTEM_NAME' is no set yet at this time.
-	#if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-		set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainLinux.cmake" #[[CACHE PATH "" FORCE]])
-	#endif()
-else () #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	# Find the Windows cross compiler
-	find_program(SF_CROSS_COMPILER "x86_64-w64-mingw32-c++-posix")
-	if (NOT EXISTS ${SF_CROSS_COMPILER})
-		message(FATAL_ERROR "Windows cross compiler not found. Missing package 'mingw-w64' ?")
-		return()
-	endif ()
-	# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.
-	set(ENV{SF_QT_VERSION_CMAKE_DIR} "$ENV{HOME}/lib/QtWin/6.4.0/mingw_64/lib/cmake")
-	# Set the toolchain for the cross compiler for Windows.
-	set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainCrossWindows.cmake")
-endif ()
+# Package needed for adding function Sf_SetToolChain().
+find_package(SfToolChain CONFIG REQUIRED)
+# Install tool chain for Linux or Windows.
+Sf_SetToolChain()
 
 # Set the global project name.
 project("qt-concepts"
