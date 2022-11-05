@@ -1,0 +1,138 @@
+[System Parameters]
+;0x20484,Ultrasonic|Gate 1|Slaved,!,ASP,Ultrasonic Gate 1 Slaves to previous gate or not.,INTEGER,,1,-1,-2,2,Artificial=-2,Independent=-1,IF Gate=0
+0x20484=-2
+;0x20461,Ultrasonic|IF Gate|Polarity,!,ASP,Ultrasonic IF Gate Negative or positive peak detection.,INTEGER,,1,1,-1,1,Negative=-1,Positive=1,Full=0
+0x20461=0
+;0x20447,Ultrasonic|IF Gate|Threshold,%,ASP,Ultrasonic IF Gate Peak threshold level.,FLOAT,,0.5,30,0,128
+0x20447=27.5
+;0x20443,Ultrasonic|IF Gate|Range,s,ASP,Ultrasonic IF Gate Time range.,FLOAT,,1e-07,4e-05,1e-06,0.0005
+0x20443=1e-06
+;0x204a1,Ultrasonic|Gate 1|Polarity,!,ASP,Ultrasonic Gate 1 Negative or positive peak detection.,INTEGER,,1,1,-1,1,Negative=-1,Positive=1,Full=0
+0x204a1=0
+;0x20487,Ultrasonic|Gate 1|Threshold,%,ASP,Ultrasonic Gate 1 Peak threshold level.,FLOAT,,0.5,30,0,128
+0x20487=27
+;0x20483,Ultrasonic|Gate 1|Range,s,ASP,Ultrasonic Gate 1 Time range.,FLOAT,,1e-07,4e-05,1e-06,0.0005
+0x20483=8.5e-06
+;0x20486,Ultrasonic|Gate 1|Method,!,ASP,Ultrasonic Gate 1 Method selector.,STRING,,,Peak,,,Peak=Peak,Copy=Copy
+0x20486=Peak
+;0x20485,Ultrasonic|Gate 1|Enable,!,ASP,Enables storing of Ultrasonic Gate 1 data.,INTEGER,,1,1,0,0,Off=0,On=1
+0x20485=1
+;0x20482,Ultrasonic|Gate 1|Delay,s,ASP,Ultrasonic Gate 1 Delay.,FLOAT,,1e-07,2e-05,-0.0003,0.0003
+0x20482=1.17e-05
+;0x20446,Ultrasonic|IF Gate|Method,!,ASP,Ultrasonic IF Gate Method selector.,STRING,,,Peak,,,Peak=Peak,Copy=Copy
+0x20446=Peak
+;0x20445,Ultrasonic|IF Gate|Enable,!,ASP,Enables storing of Ultrasonic IF Gate data.,INTEGER,,1,1,0,0,Off=0,On=1
+0x20445=1
+;0x20444,Ultrasonic|IF Gate|Slaved,!,ASP,Ultrasonic IF Gate Slaves to previous gate or not.,INTEGER,,1,-1,-2,2,Artificial=-2,Independent=-1
+0x20444=-2
+;0x20442,Ultrasonic|IF Gate|Delay,s,ASP,Ultrasonic IF Gate Delay.,FLOAT,,1e-07,2e-05,-0.0003,0.0003
+0x20442=0.00011
+;0x99214,Project|Eddy Current|Peak-to-Peak|Threshold,V,ASP,ET Peak-Peak C-scan display threshold.,FLOAT,,0.01,1,0,2
+0x99214=2
+;0x99201,Project|Ultrasonic|Threshold,%,ASP,UT C-scan display threshold.,FLOAT,,1,30,0,100
+0x99201=30
+;0x99102,Project|Display Mode,!,SP,Display in Time or Distance mode,INTEGER,,1,0,0,1,Time=0,Distance=1
+0x99102=0
+;0x100,Unit Conversion|Time of Flight,s,ASP,High speed velocity setting,FLOAT,,1e-06,1.2e-05,0,0.0001
+0x100=1.2e-05
+;0x10,Unit Conversion|Sound Velocity,m/s,ASP,Sound velocity setting,FLOAT,,1,3123,0,10000
+0x10=3096
+;0x5,Unit Conversion|Followers Enabled,,ASP,,INTEGER,,1,1,0,1,Off=0,On=1
+0x5=0
+;0x20431,Ultrasonic|Receiver|TCG|Range,s,ASP,Ultrasonic Range for the receiver time controlled gain gate.,FLOAT,,2e-08,1.6e-05,0,0.000655
+0x20431=0
+;0x20430,Ultrasonic|Receiver|TCG|Delay,s,ASP,Ultrasonic Delay for the receiver time controlled gain gate.,FLOAT,,2e-08,1.6e-05,0,0.000655
+0x20430=0
+;0x2042f,Ultrasonic|Receiver|TCG|Slaved,!,ASP,Ultrasonic ,INTEGER,,1,-1,-2,0,Artificial=-2,Initial Pulse=-1,IF Gate=0
+0x2042f=-1
+;0x20425,Ultrasonic|Receiver|TCG|Enable,!,ASP,Ultrasonic Receiver TCG Enable of this channel.,INTEGER,,1,0,0,1,Off=0,On=1
+0x20425=0
+;0x20422,Ultrasonic|IF Position,s,ASP,Ultrasonic Interface position.,FLOAT,,1e-07,0.000203,-0.0005,0.0005
+0x20422=0.0001
+;0x20421,Ultrasonic|POP Divider,n,ASP,Ultrasonic Position orientation sync pulse divider.,INTEGER,,1,10,1,4096
+0x20421=1
+;0x20429,Ultrasonic|A-scan|Rectify,,ASP,Ultrasonic A-scan rectification mode.,INTEGER,,0,0,0,3,RF=0,Half Wave +=1,Half Wave -=2,Full Wave=3
+0x20429=0
+;0x20420,Ultrasonic|Receiver|Gain,dB,ASP,Ultrasonic Receiver gain of this channel.,FLOAT,,0.1,35,-20,80
+0x20420=37.5
+;0x20407,Ultrasonic|A-scan|Range,s,ASP,Ultrasonic Range for the A-scan result of this channel.,FLOAT,,1e-07,4e-05,1e-06,0.0005
+0x20407=5e-05
+;0x20406,Ultrasonic|A-scan|Delay,s,ASP,Ultrasonic Delay for the A-scan result of this channel.,FLOAT,,1e-07,0,-0.0005,0.0005
+0x20406=0.000105
+;0x20403,Ultrasonic|Gates,!,ASP,Ultrasonic Amount of gates selection.,INTEGER,,1,0,0,3,None=0,IF Gate Only=1,1 Signal Gate=2,2 Signal Gates=3
+0x20403=2
+;0x20402,Ultrasonic|Sync Mode,!,ASP,Ultrasonic Sync signal source selection.,INTEGER,,1,0,0,1,Internal=0,External=1
+0x20402=0
+;0x20401,Ultrasonic|Rep.Rate,Hz,ASP,Ultrasonic Repetition rate when sync is set to internal.,FLOAT,,1,5,1,1000
+0x20401=5
+;0x2003e,Ultrasonic|Receiver|TCG|Point 16|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2003e=0
+;0x2002e,Ultrasonic|Receiver|TCG|Point 16|Time,s,ASP,Ultrasonic TCG time point number. 16,FLOAT,,1e-08,0,0,0.000326
+0x2002e=0
+;0x2003d,Ultrasonic|Receiver|TCG|Point 15|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2003d=0
+;0x2002d,Ultrasonic|Receiver|TCG|Point 15|Time,s,ASP,Ultrasonic TCG time point number. 15,FLOAT,,1e-08,0,0,0.000326
+0x2002d=0
+;0x2003c,Ultrasonic|Receiver|TCG|Point 14|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2003c=0
+;0x2002c,Ultrasonic|Receiver|TCG|Point 14|Time,s,ASP,Ultrasonic TCG time point number. 14,FLOAT,,1e-08,0,0,0.000326
+0x2002c=0
+;0x2003b,Ultrasonic|Receiver|TCG|Point 13|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2003b=0
+;0x2002b,Ultrasonic|Receiver|TCG|Point 13|Time,s,ASP,Ultrasonic TCG time point number. 13,FLOAT,,1e-08,0,0,0.000326
+0x2002b=0
+;0x2003a,Ultrasonic|Receiver|TCG|Point 12|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2003a=0
+;0x2002a,Ultrasonic|Receiver|TCG|Point 12|Time,s,ASP,Ultrasonic TCG time point number. 12,FLOAT,,1e-08,0,0,0.000326
+0x2002a=0
+;0x20039,Ultrasonic|Receiver|TCG|Point 11|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20039=0
+;0x20029,Ultrasonic|Receiver|TCG|Point 11|Time,s,ASP,Ultrasonic TCG time point number. 11,FLOAT,,1e-08,0,0,0.000326
+0x20029=0
+;0x20038,Ultrasonic|Receiver|TCG|Point 10|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20038=0
+;0x20028,Ultrasonic|Receiver|TCG|Point 10|Time,s,ASP,Ultrasonic TCG time point number. 10,FLOAT,,1e-08,0,0,0.000326
+0x20028=0
+;0x20037,Ultrasonic|Receiver|TCG|Point  9|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20037=0
+;0x20027,Ultrasonic|Receiver|TCG|Point  9|Time,s,ASP,Ultrasonic TCG time point number. 9,FLOAT,,1e-08,0,0,0.000326
+0x20027=0
+;0x20036,Ultrasonic|Receiver|TCG|Point  8|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20036=0
+;0x20026,Ultrasonic|Receiver|TCG|Point  8|Time,s,ASP,Ultrasonic TCG time point number. 8,FLOAT,,1e-08,0,0,0.000326
+0x20026=0
+;0x20035,Ultrasonic|Receiver|TCG|Point  7|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20035=0
+;0x20025,Ultrasonic|Receiver|TCG|Point  7|Time,s,ASP,Ultrasonic TCG time point number. 7,FLOAT,,1e-08,0,0,0.000326
+0x20025=0
+;0x20034,Ultrasonic|Receiver|TCG|Point  6|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20034=0
+;0x20024,Ultrasonic|Receiver|TCG|Point  6|Time,s,ASP,Ultrasonic TCG time point number. 6,FLOAT,,1e-08,0,0,0.000326
+0x20024=0
+;0x20033,Ultrasonic|Receiver|TCG|Point  5|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20033=0
+;0x20023,Ultrasonic|Receiver|TCG|Point  5|Time,s,ASP,Ultrasonic TCG time point number. 5,FLOAT,,1e-08,0,0,0.000326
+0x20023=0
+;0x20032,Ultrasonic|Receiver|TCG|Point  4|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20032=0
+;0x20022,Ultrasonic|Receiver|TCG|Point  4|Time,s,ASP,Ultrasonic TCG time point number. 4,FLOAT,,1e-08,0,0,0.000326
+0x20022=0
+;0x20031,Ultrasonic|Receiver|TCG|Point  3|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20031=0
+;0x20021,Ultrasonic|Receiver|TCG|Point  3|Time,s,ASP,Ultrasonic TCG time point number. 3,FLOAT,,1e-08,0,0,0.000326
+0x20021=0
+;0x20030,Ultrasonic|Receiver|TCG|Point  2|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x20030=0
+;0x20020,Ultrasonic|Receiver|TCG|Point  2|Time,s,ASP,Ultrasonic TCG time point number. 2,FLOAT,,1e-08,0,0,0.000326
+0x20020=0
+;0x2002f,Ultrasonic|Receiver|TCG|Point  1|Gain,dB,ASP,Ultrasonic Receiver TCG point gain.,FLOAT,,0.1,0,0,80
+0x2002f=0
+;0x2001f,Ultrasonic|Receiver|TCG|Point  1|Time,s,ASP,Ultrasonic TCG time point number. 1,FLOAT,,1e-08,0,0,0.000326
+0x2001f=0
+;0x20005,Ultrasonic|Amplitude Unit,V,ASP,Ultrasonic Amplitude units of the digitiser single step.,FLOAT,,0.001,0.01,0.001,0.05
+0x20005=0.01
+;0x2001b,Ultrasonic|One Shot|Delay,ms,ASP,Ultrasonic Delay to wait on a single shot.,INTEGER,,1,500,0,5000
+0x2001b=0
+;0x20003,Ultrasonic|Error,!,ASP,Ultrasonic Error value.,INTEGER,,1,0,-1,1,Irrecoverable=-1,Okay=0,Recoverable=1
+0x20003=0
+
