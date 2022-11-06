@@ -98,7 +98,6 @@ endfunction()
 ## Sets the extension of the created dynamic library.
 ##
 function(Sf_SetDynamicLibrarySuffix)
-	message("********************************************************")
 	foreach (_var IN LISTS ARGN)
 		if (WIN32)
 			set_target_properties(${_var} PROPERTIES OUTPUT_NAME "${_var}" SUFFIX ".dll")
@@ -159,11 +158,4 @@ function(Sf_WorkAroundSmbShare)
 	if (_ExitCode GREATER "0")
 		message(FATAL_ERROR "Failed execution of script: ${_Script}")
 	endif ()
-endfunction()
-
-# Works around for Catch2 which does not allow us to set the compiler switch (-fvisibility=hidden)
-#
-function(Sf_SetTargetDefaultCompileOptions)
-	#message(STATUS "Setting target '${PROJECT_NAME}' compiler option -fvisibility=hidden")
-	target_compile_options("${PROJECT_NAME}" PRIVATE "-fvisibility=hidden")
 endfunction()

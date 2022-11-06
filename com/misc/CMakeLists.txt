@@ -152,8 +152,6 @@ endif (SF_BUILD_QT)
 
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
-# Set the default compiler options for our own code only.
-Sf_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 

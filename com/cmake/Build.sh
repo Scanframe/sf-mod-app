@@ -88,6 +88,7 @@ function ShowHelp()
   -s : Build using Visual Studio
   -m : Create build directory and makefiles only.
   -b : Build target only.
+  -v : CMake verbose enabled during CMake make (level VERBOSE).
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -118,7 +119,7 @@ function InstallPackages()
 			exit 1
 		fi
 	elif [[ "${1}" == "Linux/Cross" ]] ; then
-		if ! sudo apt install mingw-w64 cmake doxygen graphviz ; then
+		if ! sudo apt install mingw-w64 cmake doxygen graphviz exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi
@@ -182,7 +183,7 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 
 argument=()
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "dhcCbtmwsp" opt; do
+	while getopts "dhcCbtmwspv" opt; do
 		case $opt in
 			h)
 				ShowHelp
@@ -190,6 +191,9 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 				;;
 			d)
 				FLAG_DEBUG=true
+				;;
+			v)
+				CMAKE_DEFS['CMAKE_MESSAGE_LOG_LEVEL']='VERBOSE'
 				;;
 			p)
 				if [[ ${FLAG_CROSS_WINDOWS} ]] ; then
@@ -400,11 +404,11 @@ else
 		# Configure
 		if ${FLAG_CONFIG} ; then
 			echo "# CMake Configure"
-			echo "\"${CMAKE_BIN}\" \\"
-			echo "	-B \"${BUILD_DIR}\" \\"
-			echo "	-G \"${BUILD_GENERATOR}\" ${CONFIG_OPTIONS} \\"
+			echo "'${CMAKE_BIN}' \\"
+			echo "	-B '${BUILD_DIR}' \\"
+			echo "	-G '${BUILD_GENERATOR}' ${CONFIG_OPTIONS} \\"
 			for key in "${!CMAKE_DEFS[@]}" ; do
-				echo "	-D ${key}=\"${CMAKE_DEFS[${key}]}\" \\"
+				echo "	-D ${key}='${CMAKE_DEFS[${key}]}' \\"
 			done
 			echo "	\"${SOURCE_DIR}\""
 		fi
@@ -422,7 +426,7 @@ fi
 # Execute the script or write it to the log out when debugging.
 if ${FLAG_DEBUG} ; then
 	WriteLog "=== Script content ${EXEC_SCRIPT} ==="
-	WriteLog "$(cat "${EXEC_SCRIPT}")"
+	echo -n "$(cat "${EXEC_SCRIPT}")"
 	WriteLog "$(printf '=%.0s' {1..45})"
 else
 	WriteLog "Executing generated script: '${EXEC_SCRIPT}'."

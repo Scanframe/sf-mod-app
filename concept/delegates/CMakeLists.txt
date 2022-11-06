@@ -36,9 +36,8 @@ set(SOURCES
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Set the actual executable target.
-add_executable(${PROJECT_NAME})
-# Set the default compiler options for our own code only.
-Sf_SetTargetDefaultCompileOptions()
+Sf_AddExecutable(${PROJECT_NAME})
+
 # Set the sources for this target.
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 

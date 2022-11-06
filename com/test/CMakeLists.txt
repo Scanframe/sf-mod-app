@@ -4,3 +4,5 @@ project(wine-exec)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(${PROJECT_NAME} exec-wine.cpp)
+
+Sf_SetBinarySuffix("${PROJECT_NAME}")

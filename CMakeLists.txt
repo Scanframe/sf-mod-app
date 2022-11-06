@@ -20,6 +20,8 @@ project("qt-concepts"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
 	)
 
+add_custom_target("exif" ALL)
+
 # Sentry for builds not working anyway.
 if (NOT CMAKE_SYSTEM_NAME STREQUAL "$ENV{SF_TARGET_SYSTEM}" AND NOT DEFINED SF_CROSS_WINDOWS)
 	message(NOTICE "-- Target system is '$ENV{SF_TARGET_SYSTEM}' when on '${CMAKE_SYSTEM_NAME}' so bailing out here.")
@@ -54,3 +56,6 @@ endif()
 if (SF_BUILD_TESTING)
 	add_subdirectory(concept)
 endif ()
+
+
+

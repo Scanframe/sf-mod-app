@@ -23,10 +23,8 @@ find_package(SfMisc REQUIRED)
 find_package(SfAmi REQUIRED)
 find_package(SingleInstance REQUIRED)
 
-# Set the actual executable target.
-add_executable(${PROJECT_NAME})
-# Set the default compiler options for our own code only.
-Sf_SetTargetDefaultCompileOptions()
+# Set the actual executable target and default compile options.
+Sf_AddExecutable("${PROJECT_NAME}")
 
 # RC-files only seem to be compiled when building using MingW.
 target_sources(${PROJECT_NAME} PRIVATE

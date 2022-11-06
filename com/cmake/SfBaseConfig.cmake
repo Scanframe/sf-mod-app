@@ -6,6 +6,13 @@ macro(Sf_CheckFileExists file)
 	endif ()
 endmacro()
 
+# Works around for Catch2 which does not allow us to set the compiler switch (-fvisibility=hidden)
+#
+function(Sf_SetTargetDefaultCompileOptions _Target)
+	#message(STATUS "Setting target '${_Target}' compiler option -fvisibility=hidden")
+	target_compile_options("${_Target}" PRIVATE "-fvisibility=hidden")
+endfunction()
+
 # Gets the version from the Git repository using 'PROJECT_SOURCE_DIR' variable.
 # When not found it returns "${_VarOut}-NOTFOUND"
 #
@@ -45,27 +52,59 @@ function(Sf_SetTargetVersion _Target)
 	Sf_GetGitTagVersion(_Version "${CMAKE_CURRENT_BINARY_DIR}")
 	# Check if the git version was found.
 	if (NOT "${_Version}" STREQUAL "_Version-NOTFOUND")
-		message("${CMAKE_CURRENT_FUNCTION}(${_Target}) using Git version (${_Version})")
-	# Check the target version is set.
+		message(VERBOSE "${CMAKE_CURRENT_FUNCTION}(${_Target}) using Git version (${_Version})")
+		# Check the target version is set.
 	elseif (NOT "${CMAKE_PROJECT_VERSION}" STREQUAL "")
 		set(_Version "${${_Target}_VERSION}")
-		message("${CMAKE_CURRENT_FUNCTION}(${_Target}) using Sub-Project(${_Target}) version (${_Version})")
-	# Check the project version is set.
+		message(VERBOSE "${CMAKE_CURRENT_FUNCTION}(${_Target}) using Sub-Project(${_Target}) version (${_Version})")
+		# Check the project version is set.
 	elseif (NOT "${CMAKE_PROJECT_VERSION}" STREQUAL "")
 		# Try using the main project version
 		set(_Version "${CMAKE_PROJECT_VERSION}")
-		message("${CMAKE_CURRENT_FUNCTION}(${_Target}) using Main-Project version (${_Version})")
+		message(VERBOSE "${CMAKE_CURRENT_FUNCTION}(${_Target}) using Main-Project version (${_Version})")
+	else ()
+		# Clear the version variable.
+		set(_Version "")
 	endif ()
-	# Set the target version properties.
-	set_target_properties(${PROJECT_NAME} PROPERTIES VERSION "${_Version}" SOVERSION "${_Version}")
+	# When the version string was resolved apply the properties.
+	if (NOT "${_Version}" STREQUAL "")
+		# Set the target version properties.
+		set_target_properties("${_Target}" PROPERTIES
+			VERSION "${_Version}"
+			SOVERSION "${_Version}"
+			)
+	endif ()
 endfunction()
 
+# Adds an executable application target and also sets the default compile options.
+#
+macro(Sf_AddExecutable _Target)
+	# Add the executable.
+	add_executable("${_Target}")
+	# Set the default compiler options for our own code only.
+	Sf_SetTargetDefaultCompileOptions("${_Target}")
+	# Add "exif-<target>" custom target when main 'exif' target exist.
+	if (TARGET "exif")
+		add_custom_target("exif-${_Target}" ALL
+			COMMAND echo "Target: $<TARGET_NAME:${_Target}>"
+			COMMAND exiftool "$<TARGET_FILE:${_Target}>" | egrep -i "^(Product|File) Version\\s*:\\s([\\.0-9]+)$"
+			WORKING_DIRECTORY "$<TARGET_FILE_DIR:${_Target}>"
+			DEPENDS "$<TARGET_FILE:${_Target}>"
+			COMMENT "Reading resource information from '$<TARGET_DIR:${_Target}>'."
+			VERBATIM
+			)
+		add_dependencies("exif" "exif-${_Target}")
+	endif ()
+endmacro()
+
 # Adds a dynamic library target and sets the version number on it as well.
-macro(Sf_AddSharedLibrary TargetName)
+macro(Sf_AddSharedLibrary _Target)
 	# Add the library to create.
-	add_library(${PROJECT_NAME} SHARED)
+	add_library("${_Target}" SHARED)
 	# Set the version of this target.
-	Sf_SetTargetVersion(${PROJECT_NAME})
+	Sf_SetTargetVersion("${_Target}")
+	# Set the default compiler options for our own code only.
+	Sf_SetTargetDefaultCompileOptions("${_Target}")
 endmacro()
 
 # FetchContent_MakeAvailable was not added until CMake 3.14; use our shim
