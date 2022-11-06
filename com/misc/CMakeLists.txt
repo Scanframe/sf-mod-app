@@ -1,11 +1,11 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
+
 # Set the project name.
 project("sf-misc"
-	VERSION 0.1.1
 	DESCRIPTION "Scanframe miscellaneous library"
 	LANGUAGES CXX
-)
+	)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../cmake")
@@ -15,7 +15,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -34,7 +34,7 @@ set(SOURCES
 	gen/IntervalTimer.cpp gen/IntervalTimer.h
 	gen/ElapseTimer.cpp gen/ElapseTimer.h
 	gen/PerformanceTimer.cpp gen/PerformanceTimer.h
-	gen/Value.h	gen/Value.cpp
+	gen/Value.h gen/Value.cpp
 	gen/ScriptObject.cpp gen/ScriptObject.h
 	gen/ScriptEngine.cpp gen/ScriptEngine.h
 	gen/ScriptInterpreter.cpp gen/ScriptInterpreter.h
@@ -70,28 +70,28 @@ set(SOURCES
 
 if (NOT WIN32)
 
-find_package(OpenSSL REQUIRED)
+	find_package(OpenSSL REQUIRED)
 
-set(SOURCES_LNX
-	lnx/lnx_utils.h lnx/lnx_utils.cpp
-	lnx/EventCounter.h lnx/EventCounter.cpp
-	lnx/File.h lnx/File.cpp
-	lnx/FileMapper.h lnx/FileMapper.cpp
-	lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
-	)
+	set(SOURCES_LNX
+		lnx/lnx_utils.h lnx/lnx_utils.cpp
+		lnx/EventCounter.h lnx/EventCounter.cpp
+		lnx/File.h lnx/File.cpp
+		lnx/FileMapper.h lnx/FileMapper.cpp
+		lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
+		)
 
-list(APPEND SOURCES ${SOURCES_LNX})
+	list(APPEND SOURCES ${SOURCES_LNX})
 
-#list(APPEND LIBRARIES OpenSSL::Crypto)
+	#list(APPEND LIBRARIES OpenSSL::Crypto)
 
 else (NOT WIN32)
 
-set(SOURCES_WIN
-	win/win_utils.cpp win/win_utils.h
-	win/WinTimer.cpp win/WinTimer.h
-	win/FileMapper.h win/FileMapper.cpp
-	)
-list(APPEND SOURCES ${SOURCES_WIN})
+	set(SOURCES_WIN
+		win/win_utils.cpp win/win_utils.h
+		win/WinTimer.cpp win/WinTimer.h
+		win/FileMapper.h win/FileMapper.cpp
+		)
+	list(APPEND SOURCES ${SOURCES_WIN})
 
 endif (NOT WIN32)
 
@@ -111,7 +111,7 @@ if (SF_BUILD_QT)
 		qt/Macros.h
 		qt/qt_utils.cpp qt/qt_utils.h
 		qt/CaptureListModel.cpp qt/CaptureListModel.h
-		qt/Resource.h	qt/Resource.cpp
+		qt/Resource.h qt/Resource.cpp
 		qt/FormBuilder.cpp qt/FormBuilder.h
 		qt/ObjectExtension.cpp qt/ObjectExtension.h
 		qt/FileMapper.cpp qt/FileMapper.h
@@ -150,12 +150,12 @@ if (SF_BUILD_QT)
 
 endif (SF_BUILD_QT)
 
-# Add the library to create.
-add_library(${PROJECT_NAME} SHARED)
+# Add shared library and also sets the dynamic library version.
+Sf_AddSharedLibrary("${PROJECT_NAME}")
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 
-target_sources(${PROJECT_NAME} PRIVATE  ${SOURCES})
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.
@@ -193,7 +193,7 @@ if (SF_BUILD_TESTING)
 	add_subdirectory(tests/app/threads)
 	add_subdirectory(tests/app/script)
 	add_subdirectory(tests/app/mutex)
-endif()
+endif ()
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

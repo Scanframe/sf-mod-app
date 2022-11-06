@@ -32,7 +32,7 @@ endif (SF_BUILD_QT)
 add_executable(${TEST_TARGET} main.cpp ${TEST_SOURCES})
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${TEST_TARGET}")
+Sf_SetBinarySuffix("${TEST_TARGET}")
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.

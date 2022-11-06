@@ -7,7 +7,7 @@ set(MY_TEST_TARGET "${PROJECT_NAME}-test")
 add_executable(${MY_TEST_TARGET} testqstring.cpp)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${MY_TEST_TARGET}")
+Sf_SetBinarySuffix("${MY_TEST_TARGET}")
 
 # I'm using C++17 in the test
 target_compile_features(${MY_TEST_TARGET} PRIVATE cxx_std_17)

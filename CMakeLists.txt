@@ -5,13 +5,17 @@ cmake_minimum_required(VERSION 3.18)
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
 
 # Package needed for adding function Sf_SetToolChain().
+find_package(SfBase CONFIG REQUIRED)
+# Package needed for Sf_GetGitTagVersion().
 find_package(SfToolChain CONFIG REQUIRED)
 # Install tool chain for Linux or Windows.
 Sf_SetToolChain()
+# Get the Git version number from the repository of this files directory.
+Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
 
 # Set the global project name.
 project("qt-concepts"
-	VERSION 0.1.0
+	VERSION "${SF_VERSION}"
 	DESCRIPTION "Scanframe Modular Application"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
 	)
@@ -20,16 +24,6 @@ project("qt-concepts"
 if (NOT CMAKE_SYSTEM_NAME STREQUAL "$ENV{SF_TARGET_SYSTEM}" AND NOT DEFINED SF_CROSS_WINDOWS)
 	message(NOTICE "-- Target system is '$ENV{SF_TARGET_SYSTEM}' when on '${CMAKE_SYSTEM_NAME}' so bailing out here.")
 	return()
-endif ()
-
-# Enable test builds from the root file by default for now.
-# So the test targets are listed and can be executed.
-if (WIN32)
-	# Disabled for Windows for now since MingW linker takes minutes to link Catch2 archive.
-	#set(SF_BUILD_TESTING OFF)
-	#set(SF_BUILD_TESTING ON)
-else ()
-	#set(SF_BUILD_TESTING ON)
 endif ()
 
 # Enables including Qt libraries when building (libraries).
@@ -48,7 +42,7 @@ find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)

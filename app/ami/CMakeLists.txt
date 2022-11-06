@@ -11,7 +11,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -26,7 +26,7 @@ find_package(SingleInstance REQUIRED)
 # Set the actual executable target.
 add_executable(${PROJECT_NAME})
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 
 # RC-files only seem to be compiled when building using MingW.
 target_sources(${PROJECT_NAME} PRIVATE
@@ -57,5 +57,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-ami SingleInstance)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetBinarySuffix("${PROJECT_NAME}")
 

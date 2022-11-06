@@ -11,9 +11,9 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
-# Uses directory Set by _SetOutputDirs().
+# Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
@@ -54,10 +54,10 @@ else (NOT WIN32)
 
 endif (NOT WIN32)
 
-# Add the library to create.
-add_library(${PROJECT_NAME} SHARED)
+# Add shared library and also sets the dynamic library version.
+Sf_AddSharedLibrary("${PROJECT_NAME}")
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 

@@ -1,7 +1,7 @@
 # Set the target name using the project name as a base name.
 set(TEST_APP_TARGET "${PROJECT_NAME}-test-app")
 
-# Uses directory Set by _SetOutputDirs().
+# Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)
 find_package(SfGii REQUIRED)
 find_package(SfPal REQUIRED)
@@ -24,7 +24,7 @@ add_executable(${TEST_APP_TARGET}
 	)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${TEST_APP_TARGET}")
+Sf_SetBinarySuffix("${TEST_APP_TARGET}")
 
 # Should be linked to the main library, as well as the Catch2 testing library.
 target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt::Widgets sf-misc sf-gii sf-pal sf-pal-simple sf-pal-amplitude)

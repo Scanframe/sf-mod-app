@@ -15,9 +15,9 @@ list(APPEND CMAKE_PREFIX_PATH "../../../../script-engines/angelscript_2.35.0/sdk
 #message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
-# Uses directory Set by _SetOutputDirs().
+# Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
@@ -51,7 +51,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set the actual executable target.
 add_executable(${PROJECT_NAME})
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 # Set the sources for this target.
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
@@ -70,5 +70,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets Qt::Qml sf-misc Angelscript::angelscript)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetBinarySuffix("${PROJECT_NAME}")
 

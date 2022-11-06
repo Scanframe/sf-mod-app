@@ -34,7 +34,7 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 		endif ()
 	endif ()
 	# Workaround for using a network drive on Windows.
-	_WorkAroundSmbShare()
+	Sf_WorkAroundSmbShare()
 	#
 	message(STATUS "CMake Version: ${CMAKE_VERSION}")
 	message(STATUS "CMake System : ${CMAKE_SYSTEM}")
@@ -46,7 +46,7 @@ endif ()
 #TODO: This QT stuff should probably be in its own cmake package file so it can be omitted in non Qt builds.
 # Set the Qt Library location variable.
 if (NOT DEFINED QT_DIRECTORY)
-	_GetQtVersionDirectory(QT_DIRECTORY)
+	Sf_GetQtVersionDirectory(QT_DIRECTORY)
 	message(STATUS "Qt Version Directory: ${QT_DIRECTORY}")
 	# When changing this CMAKE_PREFIX_PATH remove the 'cmake-build-xxxx' directory
 	# since it weirdly keeps the previous selected CMAKE_PREFIX_PATH

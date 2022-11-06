@@ -25,7 +25,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 set(SOURCES
 	main.cpp
@@ -39,7 +39,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set the actual executable target.
 add_executable(${PROJECT_NAME})
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 # Set the sources for this target.
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
@@ -55,7 +55,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_link_libraries(${PROJECT_NAME} PRIVATE sf-misc)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetBinarySuffix("${PROJECT_NAME}")
 
 # Testing only available if this is the main app
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)

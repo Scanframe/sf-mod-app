@@ -11,10 +11,10 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 COMPONENTS Core Gui Widgets Designer)
 
-# Add the library to create.
-add_library(${PROJECT_NAME} SHARED)
+# Add shared library and also sets the dynamic library version.
+Sf_AddSharedLibrary("${PROJECT_NAME}")
 # Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_SetTargetDefaultCompileOptions()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt::Core Qt::Designer Qt::Gui Qt::Widgets)
 

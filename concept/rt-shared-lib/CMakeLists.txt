@@ -11,7 +11,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Need to call this here since this is the top project.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(iface)

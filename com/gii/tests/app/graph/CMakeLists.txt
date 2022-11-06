@@ -15,7 +15,7 @@ add_executable(${TEST_APP_TARGET}
 	)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${TEST_APP_TARGET}")
+Sf_SetBinarySuffix("${TEST_APP_TARGET}")
 
 # Should be linked to the main library, as well as the Catch2 testing library.
 target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt::Designer pthread sf-misc sf-gii sf-wgt-ascan)
