@@ -46,6 +46,9 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs()
 
+# For testing only.
+#add_subdirectory(com/test)
+
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(com)
 add_subdirectory(app)
@@ -56,6 +59,3 @@ endif()
 if (SF_BUILD_TESTING)
 	add_subdirectory(concept)
 endif ()
-
-
-

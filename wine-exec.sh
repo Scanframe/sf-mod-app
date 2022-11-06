@@ -12,9 +12,9 @@ function WriteLog()
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 DIR_ROOT="${DIR}"
 # Only when it could find the script.
-if [[ -f "${DIR_ROOT}/com/cmake/QtLibDir.sh" ]] ; then
+if [[ -f "${DIR_ROOT}/com/cmake/bin/QtLibDir.sh" ]] ; then
 	# Get the Qt installed directory.
-	QT_VER_DIR="$(bash "${DIR_ROOT}/com/cmake/QtLibDir.sh" "$(realpath "${HOME}/lib/QtWin")")"
+	QT_VER_DIR="$(bash "${DIR_ROOT}/com/cmake/bin/QtLibDir.sh" "$(realpath "${HOME}/lib/QtWin")")"
 	# Qt version on Linux.
 	QT_VER="$(basename "${QT_VER_DIR}")"
 	# Qt lib sub directory build by certain compiler version.

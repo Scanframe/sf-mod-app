@@ -1,5 +1,18 @@
+# FetchContent_MakeAvailable was not added until CMake 3.14; use our shim
+#
+if (${CMAKE_VERSION} VERSION_LESS 3.14)
+	macro(FetchContent_MakeAvailable NAME)
+		FetchContent_GetProperties(${NAME})
+		if (NOT ${NAME}_POPULATED)
+			FetchContent_Populate(${NAME})
+			add_subdirectory(${${NAME}_SOURCE_DIR} ${${NAME}_BINARY_DIR})
+		endif ()
+	endmacro()
+endif ()
+
 # Checks if the required passed file exists.
 # When not a useful fatal message is produced.
+#
 macro(Sf_CheckFileExists file)
 	if (NOT EXISTS "${file}")
 		message(FATAL_ERROR "The file \"${file}\" does not exist. Check order of dependent add_subdirectory(...).")
@@ -83,18 +96,6 @@ macro(Sf_AddExecutable _Target)
 	add_executable("${_Target}")
 	# Set the default compiler options for our own code only.
 	Sf_SetTargetDefaultCompileOptions("${_Target}")
-	# Add "exif-<target>" custom target when main 'exif' target exist.
-	if (TARGET "exif")
-		add_custom_target("exif-${_Target}" ALL
-			COMMAND echo "Target: $<TARGET_NAME:${_Target}>"
-			COMMAND exiftool "$<TARGET_FILE:${_Target}>" | egrep -i "^(Product|File) Version\\s*:\\s([\\.0-9]+)$"
-			WORKING_DIRECTORY "$<TARGET_FILE_DIR:${_Target}>"
-			DEPENDS "$<TARGET_FILE:${_Target}>"
-			COMMENT "Reading resource information from '$<TARGET_DIR:${_Target}>'."
-			VERBATIM
-			)
-		add_dependencies("exif" "exif-${_Target}")
-	endif ()
 endmacro()
 
 # Adds a dynamic library target and sets the version number on it as well.
@@ -107,15 +108,25 @@ macro(Sf_AddSharedLibrary _Target)
 	Sf_SetTargetDefaultCompileOptions("${_Target}")
 endmacro()
 
-# FetchContent_MakeAvailable was not added until CMake 3.14; use our shim
+# Adds an exif custom target for reporting the resource stored versions.
 #
-if (${CMAKE_VERSION} VERSION_LESS 3.14)
-	macro(FetchContent_MakeAvailable NAME)
-		FetchContent_GetProperties(${NAME})
-		if (NOT ${NAME}_POPULATED)
-			FetchContent_Populate(${NAME})
-			add_subdirectory(${${NAME}_SOURCE_DIR} ${${NAME}_BINARY_DIR})
-		endif ()
-	endmacro()
-endif ()
+macro(Sf_AddExifTarget _Target)
+	# Add "exif-<target>" custom target when main 'exif' target exist.
+	if (TARGET "exif")
+		add_custom_target("exif-${_Target}" ALL
+			#COMMAND echo "Exif Target: $<TARGET_NAME:${_Target}>"
+			COMMAND exiftool "$<TARGET_FILE:${_Target}>" | egrep -i "^(File Name|Product Version|File Version)\\s*:"
+			WORKING_DIRECTORY "$<TARGET_FILE_DIR:${_Target}>"
+			DEPENDS "$<TARGET_FILE:${_Target}>"
+			COMMENT "Reading resource information from '$<TARGET_DIR:${_Target}>'."
+			VERBATIM
+			)
+		add_dependencies("exif" "exif-${_Target}")
+	endif ()
+endmacro()
+
+# Add version resource.
+#
+macro(Sf_SetVersion _Target)
+endmacro()
 

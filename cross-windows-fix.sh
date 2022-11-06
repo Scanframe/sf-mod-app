@@ -23,7 +23,7 @@ SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 # Root for the Windows Qt installed MinGW files.
 QT_WIN_DIR="${HOME}/lib/QtWin"
 # Get the Qt installed directory.
-QT_VER_DIR="$(bash "${SCRIPT_DIR}/com/cmake/QtLibDir.sh")"
+QT_VER_DIR="$(bash "${SCRIPT_DIR}/com/cmake/bin/QtLibDir.sh")"
 # Qt version on Linux.
 QT_VER="$(basename "${QT_VER_DIR}")"
 # Qt lib sub directory build by certain compiler version.
