@@ -9,12 +9,12 @@ function WriteLog()
 }
 
 # Get this script's directory.
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-DIR_ROOT="${DIR}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
 # Only when it could find the script.
-if [[ -f "${DIR_ROOT}/com/cmake/bin/QtLibDir.sh" ]] ; then
+if [[ -f "${SCRIPT_DIR}/../cmake/bin/QtLibDir.sh" ]] ; then
 	# Get the Qt installed directory.
-	QT_VER_DIR="$(bash "${DIR_ROOT}/com/cmake/bin/QtLibDir.sh" "$(realpath "${HOME}/lib/QtWin")")"
+	QT_VER_DIR="$(bash "${SCRIPT_DIR}/../cmake/bin/QtLibDir.sh" "$(realpath "${HOME}/lib/QtWin")")"
 	# Qt version on Linux.
 	QT_VER="$(basename "${QT_VER_DIR}")"
 	# Qt lib sub directory build by certain compiler version.
@@ -25,7 +25,7 @@ else
 	DIR_QT_DLL=""
 fi
 # Form the binary target directory for cross Windows builds.
-DIR_BIN_WIN="$(realpath "${DIR_ROOT}/binwin")"
+DIR_BIN_WIN="$(realpath "${SCRIPT_DIR}/win64")"
 # Location of MinGW DLLs.
 DIR_MINGW_DLL="/usr/x86_64-w64-mingw32/lib"
 # Location of MinGW posix DLLs 2.

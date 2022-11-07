@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.18)
 project("sf-gsc" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "../../cmake")
+list(APPEND CMAKE_PREFIX_PATH "../cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)

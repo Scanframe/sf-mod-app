@@ -4,7 +4,7 @@
 # Get the script directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # Binary directory.
-BIN_DIR="${DIR}/bin"
+BIN_DIR="${DIR}/bin/lnx64"
 # Command which is executed.
 CMD="chrpath"
 # Other command is patchelf
@@ -31,7 +31,7 @@ fi
 function GetLocalQtDir()
 {
 	local LocalQtDir
-	LocalQtDir="$(find "${LOCAL_QT_ROOT}" -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
+	LocalQtDir="$(find "${LOCAL_QT_ROOT}" -type d -regex ".*\/Qt\/[56]\\.[0-9]+\\.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
 	if [[  -z "${LocalQtDir}" ]] ; then
 		WriteLog "Could not find local installed Qt directory."
 		exit 1
@@ -51,6 +51,5 @@ for fn in "${BIN_DIR}"/*.bin "${BIN_DIR}"/*.so
 do
 	WriteLog "Modfying file: ${fn}"
 	# ${CMD} -l "${fn}"
-	${CMD} -r '$ORIGIN:$ORIGIN/libqt/lib' "${fn}"
+	${CMD} -r '${ORIGIN}' "${fn}"
 done
-

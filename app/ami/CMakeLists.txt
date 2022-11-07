@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.18)
 project("sf-ami-app" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../com/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
@@ -59,3 +59,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-ami SingleI
 # Sets the extension of the generated binary.
 Sf_SetBinarySuffix("${PROJECT_NAME}")
 
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")

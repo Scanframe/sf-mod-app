@@ -22,7 +22,7 @@ Process
 	# Iterate through the directories in the Qt root directory.
 	foreach($dir in @(Get-ChildItem -Path $QtRootDir -Directory "*"))
 	{
-		if ($dir.Basename -match "^[0-9]+.[0-9]+.[0-9]+$")
+		if ($dir.Basename -match "^[0-9]+\.[0-9]+\.[0-9]+$")
 		{
 			$Versions += $dir.Basename
 		}

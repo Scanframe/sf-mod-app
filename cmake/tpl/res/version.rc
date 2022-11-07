@@ -6,7 +6,7 @@ VS_VERSION_INFO VERSIONINFO
 FILEVERSION @RC_WindowsFileVersion@
 PRODUCTVERSION @RC_WindowsProductVersion@
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
-FILEFLAGS VS_FF_PRERELEASE
+FILEFLAGS VS_FF_DEBUG
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
 {
@@ -16,11 +16,11 @@ FILETYPE VFT_APP
 		{
 			VALUE "CompanyName", "@RC_CompanyName@\000"
 			VALUE "FileDescription", "@RC_FileDescription@\000"
-			VALUE "FileVersion", "\"@RC_FileVersion@\000"
+			VALUE "FileVersion", "@RC_FileVersion@\000"
 			VALUE "InternalName", "@RC_InternalName@\000"
 			VALUE "LegalCopyright", "None\000"
 			VALUE "LegalTrademarks", "None\000"
-			VALUE "OriginalFilename", "@RC_OriginalFilename\000"
+			VALUE "OriginalFilename", "@RC_OriginalFilename@\000"
 			VALUE "ProductName", "@RC_ProductName@\000"
 			VALUE "ProductVersion", "@RC_ProductVersion@\000"
 			VALUE "Comments", "@RC_Comments@\000"
@@ -29,6 +29,7 @@ FILETYPE VFT_APP
 	}
 	BLOCK "VarFileInfo"
 	{
-		VALUE "Translation", 1033, 1252
+		// (0x0409)	U.S. English (1200) Unicode
+		VALUE "Translation", 0x0409, 1200
 	}
 }

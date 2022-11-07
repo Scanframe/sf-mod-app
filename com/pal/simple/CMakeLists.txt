@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.18)
 project("sf-pal-simple" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../com/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)

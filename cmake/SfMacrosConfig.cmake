@@ -5,7 +5,6 @@
 find_package(SfBase CONFIG REQUIRED)
 
 macro(Sf_PopulateTargetProperties TargetName _Configuration _LibLocation _ImplibLocation)
-	message("####### ${CMAKE_CURRENT_FUNCTION}: ${_LibLocation} ${_ImplibLocation}")
 	# Seems a relative directory is not working using REALPATH.
 	get_filename_component(_imported_location "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${_LibLocation}" REALPATH)
 	# When this fails on a library which is part of the project the order of add_subdirectory(...) is incorrect.
@@ -40,11 +39,8 @@ endmacro()
 function(Sf_LocateOutputDir)
 	# InitializeBase return value variable.
 	set(_OutputDir "" PARENT_SCOPE)
-	if (WIN32)
-		set(_BinDir "binwin")
-	else ()
-		set(_BinDir "bin")
-	endif ()
+	# Look into this sub directory.
+	set(_BinDir "bin")
 	# Loop from 9 to 4 with step 1.
 	foreach (_Counter RANGE 0 4 1)
 		# Form the string to the parent directory.
@@ -53,7 +49,12 @@ function(Sf_LocateOutputDir)
 		get_filename_component(_Dir "${CMAKE_CURRENT_LIST_DIR}${_Sub}/${_BinDir}" REALPATH)
 		# When the file inside is found Set the output directories and break the loop.
 		if (EXISTS "${_Dir}/__output__")
-			set(_OutputDir "${_Dir}" PARENT_SCOPE)
+			# Make a distinction based on targeted system.
+			if (WIN32)
+				set(_OutputDir "${_Dir}/win64" PARENT_SCOPE)
+			else ()
+				set(_OutputDir "${_Dir}/lnx64" PARENT_SCOPE)
+			endif ()
 			# Stop here the directory has been found.
 			break()
 		endif ()
@@ -127,14 +128,14 @@ endfunction()
 #
 function(Sf_GetQtVersionDirectory _VarOut)
 	set(_QtDir "")
-	if (DEFINED SF_CROSS_WINDOWS)
+	if (NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "${CMAKE_SYSTEM_NAME}" AND "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 		get_filename_component(_QtDir "$ENV{HOME}/lib/QtWin" REALPATH)
 	elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 		set(_QtDir "$ENV{HOME}/lib/Qt")
 	elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 		set(_QtDir "P:/Qt")
 	endif ()
-	Sf_GetSubDirectories(_SubDirs "${_QtDir}" "^[0-9]+.[0-9]+.[0-9]+$")
+	Sf_GetSubDirectories(_SubDirs "${_QtDir}" "^[0-9]+\\.[0-9]+\\.[0-9]+$")
 	list(LENGTH _SubDirs _Len)
 	if (NOT ${_Len})
 		message(WARNING "Failed to get Qt library directory in '${_QtDir}'!")
@@ -147,15 +148,17 @@ endfunction()
 # Works around the cmake bug with sources and binary directory on a shared drive.
 #
 function(Sf_WorkAroundSmbShare)
-	# Check if the environment var exists telling us that cmake is running on Windows.
-	if (EXISTS "$ENV{ComSpec}")
-		set(_Command "PowerShell.exe")
-		string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/SmbShareWorkAround.ps1")
-		execute_process(COMMAND "${_Command}" "${_Script}" "${CMAKE_BINARY_DIR}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
-	endif ()
-	#message(STATUS ${_Result})
-	# Validate the exit code.
-	if (_ExitCode GREATER "0")
-		message(FATAL_ERROR "Failed execution of script: ${_Script}")
-	endif ()
+	#[[
+		# Check if the environment var exists telling us that cmake is running on Windows.
+		if (EXISTS "$ENV{ComSpec}")
+			set(_Command "PowerShell.exe")
+			string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/bin/SmbShareWorkAround.ps1")
+			execute_process(COMMAND "${_Command}" "${_Script}" "${CMAKE_BINARY_DIR}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
+		endif ()
+		#message(STATUS ${_Result})
+		# Validate the exit code.
+		if (_ExitCode GREATER "0")
+			message(FATAL_ERROR "Failed execution of script: ${_Script}")
+		endif ()
+	]]
 endfunction()

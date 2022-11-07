@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-###
-### This script is Qt version and directory locations specific.
-###
+##
+## This script is Qt version and directory locations specific.
+## Add links to applications and replaces cmake files referencing exe-files.
+## Replacing the cmake files using the Linux QT library.
+##
 
 #set -x
 
@@ -23,7 +25,7 @@ SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 # Root for the Windows Qt installed MinGW files.
 QT_WIN_DIR="${HOME}/lib/QtWin"
 # Get the Qt installed directory.
-QT_VER_DIR="$(bash "${SCRIPT_DIR}/com/cmake/bin/QtLibDir.sh")"
+QT_VER_DIR="$(bash "${SCRIPT_DIR}/QtLibDir.sh")"
 # Qt version on Linux.
 QT_VER="$(basename "${QT_VER_DIR}")"
 # Qt lib sub directory build by certain compiler version.
@@ -113,7 +115,6 @@ list(APPEND _IMPORT_CHECK_TARGETS Qt6::windeployqt )
 list(APPEND _IMPORT_CHECK_FILES_FOR_Qt6::windeployqt "\${_IMPORT_PREFIX}/bin/windeployqt" )
 
 EOF
-
 
 	fi
 done

@@ -97,6 +97,7 @@ std::string Application::ConfigLocationHandler(const std::string& option)
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	auto rv = fi.absolutePath() + QDir::separator() + "config";
+	//auto rv = QString::fromStdString(getWorkingDirectory()) + QDir::separator() + "config";
 	if (!option.empty())
 	{
 		rv += QDir::separator() + QString::fromStdString(option);

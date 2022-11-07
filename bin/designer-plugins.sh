@@ -16,8 +16,7 @@ function WriteLog() {
 # Find newest local Qt version directory.
 #
 function GetLocalQtDir() {
-	local LocalQtDir
-	LocalQtDir="$(find "${LOCAL_QT_ROOT}" -type d -regex ".*\/Qt\/[56].[0-9]+.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
+	local LocalQtDir="$(find "${LOCAL_QT_ROOT}" -type d -regex ".*\/Qt\/[56]\\.[0-9]+\\.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
 	if [[ -z "${LocalQtDir}" ]]; then
 		WriteLog "Could not find local installed Qt directory."
 		exit 1
@@ -52,7 +51,7 @@ for fn in "${MODULES[@]}"; do
 	if [[ -f "${TARGET}/${fn}" ]]; then
 		WriteLog "Skipping existing: ${fn}"
 	else
-		ln -s "${DIR}/bin/${fn}" "${TARGET}/${fn}"
+		ln -s "${DIR}/bin/lnx64/${fn}" "${TARGET}/${fn}"
 	fi
 
 done
