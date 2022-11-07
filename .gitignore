@@ -2,6 +2,7 @@
 **/.vscode
 **/.idea
 /bin/*.bin
+/bin/*.bin-*
 /bin/*.exe
 /bin/*.so
 /bin/*.so.*

@@ -127,7 +127,7 @@ endfunction()
 #
 function(Sf_GetQtVersionDirectory _VarOut)
 	set(_QtDir "")
-	if (DEFINED SF_CROSS_WINDOWS)
+	if (NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "${CMAKE_SYSTEM_NAME}" AND "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 		get_filename_component(_QtDir "$ENV{HOME}/lib/QtWin" REALPATH)
 	elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 		set(_QtDir "$ENV{HOME}/lib/Qt")

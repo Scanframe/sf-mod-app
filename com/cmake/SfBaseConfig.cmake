@@ -13,9 +13,9 @@ endif ()
 # Checks if the required passed file exists.
 # When not a useful fatal message is produced.
 #
-macro(Sf_CheckFileExists file)
-	if (NOT EXISTS "${file}")
-		message(FATAL_ERROR "The file \"${file}\" does not exist. Check order of dependent add_subdirectory(...).")
+macro(Sf_CheckFileExists _File)
+	if (NOT EXISTS "${_File}")
+		message(FATAL_ERROR "The file \"${_File}\" does not exist. Check order of dependent add_subdirectory(...).")
 	endif ()
 endmacro()
 
@@ -47,10 +47,11 @@ function(Sf_GetGitTagVersion _VarOut _SrcDir)
 	if (_ExitCode GREATER "0")
 		message(FATAL_ERROR "Git returned an error on getting the version tag!")
 	else ()
-		set(_RegEx "^v([0-9]*\\.[0-9]*\\.[0-9]*)")
+		#set(_RegEx "^v(([0-9]*\\.){3}[0-9]*)")
+		set(_RegEx "^v([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)")
 		string(REGEX MATCH "${_RegEx}" _Dummy_ "${_Version}")
 		if ("${CMAKE_MATCH_1}" STREQUAL "")
-			message(FATAL_ERROR "Git returned tag does not match regex '${_RegEx}' !")
+			message(FATAL_ERROR "Git returned tag '${_Version}' does not match regex '${_RegEx}' !")
 		else ()
 			set(${_VarOut} "${CMAKE_MATCH_1}" PARENT_SCOPE)
 		endif ()
@@ -81,11 +82,14 @@ function(Sf_SetTargetVersion _Target)
 	endif ()
 	# When the version string was resolved apply the properties.
 	if (NOT "${_Version}" STREQUAL "")
-		# Set the target version properties.
-		set_target_properties("${_Target}" PROPERTIES
-			VERSION "${_Version}"
-			SOVERSION "${_Version}"
-			)
+		# Only in Linux SOVERSION makes sense.
+		if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+			# Set the target version properties for Linux.
+			set_target_properties("${_Target}" PROPERTIES VERSION "${_Version}" SOVERSION "${_Version}")
+		else ()
+			# Set the target version properties for Windows.
+			set_target_properties("${_Target}" PROPERTIES SOVERSION "${_Version}")
+		endif ()
 	endif ()
 endfunction()
 
@@ -96,23 +100,25 @@ macro(Sf_AddExecutable _Target)
 	add_executable("${_Target}")
 	# Set the default compiler options for our own code only.
 	Sf_SetTargetDefaultCompileOptions("${_Target}")
+	# Set the version of this target.
+	Sf_SetTargetVersion("${_Target}")
 endmacro()
 
 # Adds a dynamic library target and sets the version number on it as well.
 macro(Sf_AddSharedLibrary _Target)
 	# Add the library to create.
 	add_library("${_Target}" SHARED)
-	# Set the version of this target.
-	Sf_SetTargetVersion("${_Target}")
 	# Set the default compiler options for our own code only.
 	Sf_SetTargetDefaultCompileOptions("${_Target}")
+	# Set the version of this target.
+	Sf_SetTargetVersion("${_Target}")
 endmacro()
 
 # Adds an exif custom target for reporting the resource stored versions.
 #
 macro(Sf_AddExifTarget _Target)
 	# Only possible when compiling in Linux.
-	if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" OR "${SF_CROSS_WINDOWS}" STREQUAL "ON")
+	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 		# Add "exif-<target>" custom target when main 'exif' target exist.
 		if (TARGET "exif")
 			add_custom_target("exif-${_Target}" ALL
@@ -127,8 +133,37 @@ macro(Sf_AddExifTarget _Target)
 	endif ()
 endmacro()
 
-# Add version resource.
+# Add version resource 'resource.rc' to be compiled by passed target.
 #
-macro(Sf_SetVersion _Target)
-endmacro()
+function(Sf_AddVersionResource _Target)
+	get_target_property(_Version "${_Target}" SOVERSION)
+	get_target_property(_OutputName "${_Target}" OUTPUT_NAME)
+	get_target_property(_OutputSuffix "${_Target}" SUFFIX)
+	string(REPLACE "." "," RC_WindowsFileVersion "${_Version}")
+	set(RC_WindowsProductVersion "${RC_WindowsFileVersion}")
+	set(RC_FileVersion "${_Version}")
+	set(RC_ProductVersion "${RC_FileVersion}")
+	set(RC_FileDescription "${CMAKE_PROJECT_DESCRIPTION}")
+	set(RC_ProductName "${CMAKE_PROJECT_DESCRIPTION}")
+	set(RC_OriginalFilename "${_OutputName}${_OutputSuffix}")
+	set(RC_InternalName "${_OutputName}${_OutputSuffix}")
+	string(TIMESTAMP RC_BuildDateTime "%Y-%m-%dT%H:%M:%SZ" UTC)
+	if (NOT DEFINED SF_COMPANY_NAME)
+		set(RC_CompanyName "Unknown")
+	else()
+		set(RC_CompanyName "${SF_COMPANY_NAME}")
+	endif()
 
+	set(_HomepageUrl "${HOMEPAGE_URL}")
+	set(RC_Comments "Build on '${CMAKE_HOST_SYSTEM_NAME} ${CMAKE_HOST_SYSTEM_PROCESSOR} ${CMAKE_HOST_SYSTEM_VERSION}' (${CMAKE_PROJECT_HOMEPAGE_URL})")
+	# Set input and output files for the generation of the actual config file.
+	set(_FileIn ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/template/version.rc)
+	# MAke sure the file exists.
+	Sf_CheckFileExists("${_FileIn}")
+	# Assemble the file out.
+	set(_FileOut "${CMAKE_CURRENT_BINARY_DIR}/version.rc")
+	# Generate the configure the file for doxygen.
+	configure_file("${_FileIn}" "${_FileOut}" @ONLY NEWLINE_STYLE LF)
+	#
+	target_sources("${_Target}" PRIVATE "${_FileOut}")
+endfunction()

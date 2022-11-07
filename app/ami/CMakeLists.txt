@@ -59,3 +59,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-ami SingleI
 # Sets the extension of the generated binary.
 Sf_SetBinarySuffix("${PROJECT_NAME}")
 
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")

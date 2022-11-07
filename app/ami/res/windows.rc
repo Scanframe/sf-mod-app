@@ -3,36 +3,3 @@
 #define IDI_MAIN 1
 
 IDI_MAIN ICON "main.ico"
-
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-
-VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1, 0, 1
-PRODUCTVERSION 2, 0, 0
-FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
-FILEFLAGS VS_FF_PRERELEASE
-FILEOS VOS__WINDOWS32
-FILETYPE VFT_APP
-{
-	BLOCK "StringFileInfo"
-	{
-		BLOCK "040904E4"
-		{
-			VALUE "CompanyName", "Scanframe\000"
-			VALUE "FileDescription", "Modular Application Executable\000"
-			VALUE "FileVersion", "1.0.0\000"
-			VALUE "InternalName", "sf-ami-app.exe\000"
-			VALUE "LegalCopyright", "None\000"
-			VALUE "LegalTrademarks", "\000"
-			VALUE "OriginalFilename", "sf-ami-app.exe\000"
-			VALUE "ProductName", "Modular Application\000"
-			VALUE "ProductVersion", "2.0.0\000"
-			VALUE "Comments", "https://www.scanframe.nl\000"
-			VALUE "BuildDateTime", "2020-05-31\000"
-		}
-	}
-	BLOCK "VarFileInfo"
-	{
-		VALUE "Translation", 1033, 1252
-	}
-}

@@ -55,10 +55,10 @@ if (Doxygen_FOUND)
 	# Set the example path to this parent directory.
 	file(RELATIVE_PATH EXAMPLE_PATH "${CMAKE_CURRENT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
 	# Set input and output files for the generation of the actual config file.
-	set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.conf)
-	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doxyfile.conf)
+	set(DOXYGEN_IN "${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.conf")
+	set(DOXYGEN_OUT "${CMAKE_CURRENT_BINARY_DIR}/doxyfile.conf")
 	# Generate the configure the file for doxygen.
-	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+	configure_file("${DOXYGEN_IN}" "${DOXYGEN_OUT}" @ONLY)
 	# Note the option ALL which allows to build the docs together with the application.
 	add_custom_target(manual ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
