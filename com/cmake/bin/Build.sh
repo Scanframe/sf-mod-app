@@ -114,7 +114,7 @@ function InstallPackages()
 	if [[ "${1}" == "Linux" ]] ; then
 		WriteLog "About to install required packages..."
 		if ! sudo apt install cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
-			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12; then
+			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12 exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi

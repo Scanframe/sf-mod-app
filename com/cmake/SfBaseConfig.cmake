@@ -111,17 +111,19 @@ endmacro()
 # Adds an exif custom target for reporting the resource stored versions.
 #
 macro(Sf_AddExifTarget _Target)
-	# Add "exif-<target>" custom target when main 'exif' target exist.
-	if (TARGET "exif")
-		add_custom_target("exif-${_Target}" ALL
-			#COMMAND echo "Exif Target: $<TARGET_NAME:${_Target}>"
-			COMMAND exiftool "$<TARGET_FILE:${_Target}>" | egrep -i "^(File Name|Product Version|File Version)\\s*:"
-			WORKING_DIRECTORY "$<TARGET_FILE_DIR:${_Target}>"
-			DEPENDS "$<TARGET_FILE:${_Target}>"
-			COMMENT "Reading resource information from '$<TARGET_DIR:${_Target}>'."
-			VERBATIM
-			)
-		add_dependencies("exif" "exif-${_Target}")
+	# Only possible when compiling in Linux.
+	if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" OR "${SF_CROSS_WINDOWS}" STREQUAL "ON")
+		# Add "exif-<target>" custom target when main 'exif' target exist.
+		if (TARGET "exif")
+			add_custom_target("exif-${_Target}" ALL
+				COMMAND exiftool "$<TARGET_FILE:${_Target}>" | egrep -i "^(File Name|Product Version|File Version|File Type|CPU Type)\\s*:" | sed "s/\\s*:/:/g"
+				WORKING_DIRECTORY "$<TARGET_FILE_DIR:${_Target}>"
+				DEPENDS "$<TARGET_FILE:${_Target}>"
+				COMMENT "Reading resource information from '$<TARGET_DIR:${_Target}>'."
+				VERBATIM
+				)
+			add_dependencies("exif" "exif-${_Target}")
+		endif ()
 	endif ()
 endmacro()
 

@@ -30,7 +30,7 @@ The `.idea/workspace.xml` file should contain a section like the following excer
           </envs>
         </ADDITIONAL_GENERATION_ENVIRONMENT>
       </configuration>
-      <configuration PROFILE_NAME="Debug GW" ENABLED="false" CONFIG_NAME="Debug" TOOLCHAIN_NAME="GDB MinGW" GENERATION_OPTIONS="-DSF_CROSS_WINDOWS=ON">
+      <configuration PROFILE_NAME="Debug GW" ENABLED="false" CONFIG_NAME="Debug" TOOLCHAIN_NAME="GDB MinGW" GENERATION_OPTIONS="-DSF_CROSS_WINDOWS:BOOL=ON">
         <ADDITIONAL_GENERATION_ENVIRONMENT>
           <envs>
             <env name="SF_TARGET_SYSTEM" value="Linux" />

@@ -20,6 +20,7 @@ project("qt-concepts"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
 	)
 
+# Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
 # Sentry for builds not working anyway.
