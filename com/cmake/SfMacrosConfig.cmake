@@ -147,13 +147,11 @@ endfunction()
 # Works around the cmake bug with sources and binary directory on a shared drive.
 #
 function(Sf_WorkAroundSmbShare)
-	#execute_process(COMMAND pwd)
-	#execute_process(COMMAND cmd)
 #[[
 	# Check if the environment var exists telling us that cmake is running on Windows.
 	if (EXISTS "$ENV{ComSpec}")
 		set(_Command "PowerShell.exe")
-		string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/SmbShareWorkAround.ps1")
+		string(REPLACE "/" "\\" _Script "${SfMacros_DIR}/bin/SmbShareWorkAround.ps1")
 		execute_process(COMMAND "${_Command}" "${_Script}" "${CMAKE_BINARY_DIR}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
 	endif ()
 	#message(STATUS ${_Result})

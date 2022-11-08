@@ -36,9 +36,10 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	# Workaround for using a network drive on Windows.
 	Sf_WorkAroundSmbShare()
 	#
+	message(STATUS "CMake Version: ${CMAKE_MAKE_PROGRAM}")
 	message(STATUS "CMake Version: ${CMAKE_VERSION}")
 	message(STATUS "CMake System : ${CMAKE_SYSTEM}")
-	message(STATUS "CMake System Name: ${CMAKE_SYSTEM_NAME}")
+	message(STATUS "CMake Host System: ${CMAKE_HOST_SYSTEM}")
 	message(STATUS "CMake System Info File: ${CMAKE_SYSTEM_INFO_FILE}")
 	message(STATUS "CMake System Processor: ${CMAKE_SYSTEM_PROCESSOR}")
 endif ()
