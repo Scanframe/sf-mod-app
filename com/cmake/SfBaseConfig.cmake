@@ -37,17 +37,28 @@ function(Sf_GetGitTagVersion _VarOut _SrcDir)
 	if (_Compiler STREQUAL "_GitExe-NOTFOUND")
 		message(FATAL_ERROR "Git program not found!")
 	endif ()
-	execute_process(COMMAND "${_GitExe}" describe --tags --dirty --match "v*"
-		# Use the current project directory to find.
-		WORKING_DIRECTORY "${_SrcDir}"
-		OUTPUT_VARIABLE _Version
-		RESULT_VARIABLE _ExitCode
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+		execute_process(COMMAND bash -c "\"${_GitExe}\" describe --tags --dirty --match \"v*\""
+			# Use the current project directory to find.
+			WORKING_DIRECTORY "${_SrcDir}"
+			OUTPUT_VARIABLE _Version
+			RESULT_VARIABLE _ExitCode
+			ERROR_VARIABLE _ErrorText
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	else ()
+		execute_process(COMMAND "${_GitExe}" describe --tags --dirty --match "v*"
+			# Use the current project directory to find.
+			WORKING_DIRECTORY "${_SrcDir}"
+			OUTPUT_VARIABLE _Version
+			RESULT_VARIABLE _ExitCode
+			ERROR_VARIABLE _ErrorText
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	endif()
 	# Check the exist code for an error.
 	if (_ExitCode GREATER "0")
-		message(FATAL_ERROR "Git returned an error on getting the version tag!")
+		message(FATAL_ERROR "${_GitExe} describe --tags --dirty --match v*
+Git '${_GitExe}' returned an error (${_ExitCode}) ${_ErrorText}!")
 	else ()
-		#set(_RegEx "^v(([0-9]*\\.){3}[0-9]*)")
 		set(_RegEx "^v([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)")
 		string(REGEX MATCH "${_RegEx}" _Dummy_ "${_Version}")
 		if ("${CMAKE_MATCH_1}" STREQUAL "")

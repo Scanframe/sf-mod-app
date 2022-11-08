@@ -5,6 +5,7 @@
 if [[ -z "${SCRIPT_DIR}" ]] ; then
 	# Get the bash script directory.
 	SCRIPT_DIR="$(realpath "$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)/../..")"
+	exit 1
 fi
 
 # Define and use some foreground colors values when not running CI-jobs.
@@ -177,6 +178,8 @@ declare -A CMAKE_DEFS
 CMAKE_DEFS['CMAKE_BUILD_TYPE']='Debug'
 # Default build dynamic libraries.
 CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
+#
+CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 
 # Parse all options and arguments.
 # ---------------------------------
@@ -330,16 +333,29 @@ fi
 
 # Configure Build generator depending .
 if ${FLAG_WINDOWS} ; then
-	CMAKE_BIN="${LOCAL_QT_ROOT}\Tools\CMake_64\bin\cmake.exe"
+	# Try finding the CLion cmake in Windows.
+	# shellcheck disable=SC2154
+	CMAKE_BIN="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/cmake/win/bin/cmake.exe)"
+	# Check if the file exists.
+	if [[ -f "${CMAKE_BIN}" ]] ; then
+		CMAKE_BIN="$(cygpath -w "${CMAKE_BIN}")"
+		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
+		PATH_PREFIX="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/mingw/bin)"
+		PATH_PREFIX="$(cygpath -w "${PATH_PREFIX}")"
+	else
+		CMAKE_BIN="${LOCAL_QT_ROOT}\Tools\CMake_64\bin\cmake.exe"
+	fi
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
 	if ${FLAG_VISUAL_STUDIO} ; then
 		BUILD_GENERATOR="CodeBlocks - NMake Makefiles"
 		# CMake binary bundled with MSVC but the default QT version is also ok.
 		CMAKE_BIN="%VSINSTALLDIR%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
 	else
-		BUILD_GENERATOR="MinGW Makefiles"
+		BUILD_GENERATOR="CodeBlocks - MinGW Makefiles"
 	fi
 	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
+	# Report used cmake and its version.
+	WriteLog "CMake '${CMAKE_BIN}' $("$(cygpath -u "${CMAKE_BIN}")" --version | head -n 1)."
 else
 	# Try to use the CLion installed version of the cmake command.
 	CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
@@ -347,14 +363,13 @@ else
 		# Try to use the Qt installed version of the cmake command.
 		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake/bin/cmake"
 		if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
-			CMAKE_BIN="cmake"
+			CMAKE_BIN="$(which cmake)"
 		fi
 	fi
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
 	WriteLog "CMake '$(realpath ${CMAKE_BIN})' $(${CMAKE_BIN} --version | head -n 1)."
 fi
-
 
 # Build execution script depending on the OS.
 if ${FLAG_WINDOWS} ; then
@@ -386,13 +401,17 @@ EOF
 		# Build/Compile
 		if ${FLAG_BUILD} ; then
 			echo ":: CMake Build Target"
+			# Add the prefix to the path when non empty.
+			if [[ -n "${PATH_PREFIX}" ]] ; then
+				echo "PATH=${PATH_PREFIX};%PATH%"
+			fi
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "--build \"${BUILD_DIR}\" ^"
 			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} ^"
 			if ! ${FLAG_VISUAL_STUDIO} ; then
 				echo "-- -j ${CPU_CORES_TO_USE}"
 			else
-				echo "-- "
+				echo "-- -j ${CPU_CORES_TO_USE}"
 			fi
 		fi
 	} >> "${EXEC_SCRIPT}"

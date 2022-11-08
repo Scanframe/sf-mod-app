@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 project(wine-exec
-	VERSION 1.2.3
+	VERSION 1.2.3.4
 	DESCRIPTION "Executable executing wine-exec.sh to launch Windows apps."
 	HOMEPAGE_URL "https://wwww.scanframe.nl"
 	)

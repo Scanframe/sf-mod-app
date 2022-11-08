@@ -28,9 +28,6 @@ function(Sf_SetToolChain)
 			message(FATAL_ERROR "Windows cross compiler not found. Missing package 'mingw-w64' ?")
 			return()
 		endif ()
-		# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.
-		set(ENV{SF_QT_VERSION_CMAKE_DIR} "$ENV{HOME}/lib/QtWin/6.4.0/mingw_64/lib/cmake")
-
 		file(APPEND "${_CmakeFile}"
 "set(CMAKE_SYSTEM_NAME Windows)
 # Use mingw 64-bit compilers.
