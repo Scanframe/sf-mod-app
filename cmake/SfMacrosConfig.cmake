@@ -49,11 +49,16 @@ function(Sf_LocateOutputDir)
 		get_filename_component(_Dir "${CMAKE_CURRENT_LIST_DIR}${_Sub}/${_BinDir}" REALPATH)
 		# When the file inside is found Set the output directories and break the loop.
 		if (EXISTS "${_Dir}/__output__")
+			if ("$ENV{CI_SERVER}" STREQUAL "yes")
+				set(_Sep "-")
+			else()
+				set(_Sep "/")
+			endif()
 			# Make a distinction based on targeted system.
 			if (WIN32)
-				set(_OutputDir "${_Dir}/win64" PARENT_SCOPE)
+					set(_OutputDir "${_Dir}${_Sep}win64" PARENT_SCOPE)
 			else ()
-				set(_OutputDir "${_Dir}/lnx64" PARENT_SCOPE)
+				set(_OutputDir "${_Dir}${_Sep}lnx64" PARENT_SCOPE)
 			endif ()
 			# Stop here the directory has been found.
 			break()

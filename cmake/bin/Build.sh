@@ -90,11 +90,12 @@ function ShowHelp()
   -C, --wipe     : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
   -t, --test     : Add tests to the build configuration.
   -w, --windows  : Cross compile Windows on Linux using MinGW.
-  -s, --studio  : Build using Visual Studio
+  -s, --studio   : Build using Visual Studio
   -m, --make     : Create build directory and makefiles only.
   -b, --build    : Build target only.
   -v, --verbose  : CMake verbose enabled during CMake make (level VERBOSE).
   --clion        : Use CLion CMake tool and compilers (Windows).
+  --gitlab-ci    : Simulate CI server (sets CI_SERVER env var.).
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -184,7 +185,9 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 #
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
-TEMP=$(getopt -o 'dhcCbtmwspv' --long 'clion,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio' -n "$(basename "${0}")" -- "$@")
+TEMP=$(getopt -o 'dhcCbtmwspv' --long \
+	'clion,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
+	-n "$(basename "${0}")" -- "$@")
 # shellcheck disable=SC2181
 if [[ $? -ne 0 ]] ; then
 	ShowHelp
@@ -196,6 +199,12 @@ while true; do
 
 		--clion)
 			FLAG_CLION=true
+			shift 1
+			continue
+			;;
+
+		--gitlab-ci)
+			export CI_SERVER="yes"
 			shift 1
 			continue
 			;;
