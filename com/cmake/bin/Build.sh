@@ -351,12 +351,12 @@ fi
 
 # When the Wipe flag is set.
 if ${FLAG_WIPE_DIR} ; then
+	WriteLog "- Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'"
 	RM_CMD="rm --verbose --recursive --one-file-system --interactive=never"
 	RM_SUBDIR="${SCRIPT_DIR}"
 	if [[ -n "${TARGET}" && "${TARGET}" && "${TARGET}" != "all" ]] ; then
 		RM_SUBDIR="${RM_SUBDIR}/${TARGET}"
 	fi
-	WriteLog "Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'."
 	# Check if only build flag is specified.
 	if ! ${FLAG_CONFIG} && ${FLAG_BUILD} ; then
 		WriteLog "Only building is impossible after wipe!"
@@ -429,7 +429,7 @@ else
 	fi
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
-	WriteLog "CMake '$(realpath "${CMAKE_BIN}")' $(${CMAKE_BIN} --version | head -n 1)."
+	WriteLog "- CMake '$(realpath "${CMAKE_BIN}")' $(${CMAKE_BIN} --version | head -n 1)"
 fi
 
 # Build execution script depending on the OS.
@@ -487,6 +487,7 @@ else
 		# Add the prefix to the path when non empty.
 		if [[ -n "${PATH_PREFIX}" ]] ; then
 			echo "# Set path prefix for tools to be found."
+			# shellcheck disable=SC2154
 			echo "path=${PATH_PREFIX};${path}"
 		fi
 		# Configure

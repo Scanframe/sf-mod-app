@@ -73,6 +73,8 @@ endfunction()
 # or by default use the tag in vN.N.N format
 #
 function(Sf_SetTargetVersion _Target)
+	# Get the type of the target.
+	get_target_property(_Type ${_Target} TYPE)
 	# Get version. from Git when possible.
 	Sf_GetGitTagVersion(_Version "${CMAKE_CURRENT_BINARY_DIR}")
 	# Check if the git version was found.
@@ -95,8 +97,13 @@ function(Sf_SetTargetVersion _Target)
 	if (NOT "${_Version}" STREQUAL "")
 		# Only in Linux SOVERSION makes sense.
 		if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-			# Set the target version properties for Linux.
-			set_target_properties("${_Target}" PROPERTIES VERSION "${_Version}" SOVERSION "${_Version}")
+			# Do not want symlink like SO-file.
+			if (_Type STREQUAL "EXECUTABLE")
+				set_target_properties("${_Target}" PROPERTIES SOVERSION "${_Version}")
+			else ()
+				# Set the target version properties for Linux.
+				set_target_properties("${_Target}" PROPERTIES VERSION "${_Version}" SOVERSION "${_Version}")
+			endif ()
 		else ()
 			# Set the target version properties for Windows.
 			set_target_properties("${_Target}" PROPERTIES SOVERSION "${_Version}")
