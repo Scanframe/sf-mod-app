@@ -23,12 +23,6 @@ project("qt-concepts"
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Sentry for builds not working anyway.
-if (NOT CMAKE_SYSTEM_NAME STREQUAL "$ENV{SF_TARGET_SYSTEM}" AND NOT DEFINED SF_CROSS_WINDOWS)
-	message(NOTICE "-- Target system is '$ENV{SF_TARGET_SYSTEM}' when on '${CMAKE_SYSTEM_NAME}' so bailing out here.")
-	return()
-endif ()
-
 # Enables including Qt libraries when building (libraries).
 set(SF_BUILD_QT ON)
 #set(SF_BUILD_QT OFF)

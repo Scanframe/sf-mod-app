@@ -222,7 +222,10 @@ while true; do
 			;;
 
 		-v|--verbose)
+			WriteLog "- CMake verbose level set"
 			CMAKE_DEFS['CMAKE_MESSAGE_LOG_LEVEL']='VERBOSE'
+			shift 1
+			continue
 			;;
 
 		-p|--packages)

@@ -56,7 +56,8 @@ function(Sf_GetGitTagVersion _VarOut _SrcDir)
 	endif ()
 	# Check the exist code for an error.
 	if (_ExitCode GREATER 0)
-		message(VERBOSE "${_GitExe} describe --tags --dirty --match v* ... Exited with (${_ExitCode}). Repo missing a version tag?!")
+		message(NOTICE "Repository '${_SrcDir}' missing a version tag like v0.0.0 ?!")
+		message(VERBOSE "${_GitExe} describe --tags --dirty --match v* ... Exited with (${_ExitCode}).")
 		message(VERBOSE "${_ErrorText}")
 		# Set an initial version to allow continuing.
 		set(_Version "v0.0.0")
@@ -77,7 +78,7 @@ function(Sf_SetTargetVersion _Target)
 	# Get the type of the target.
 	get_target_property(_Type ${_Target} TYPE)
 	# Get version. from Git when possible.
-	Sf_GetGitTagVersion(_Version "${CMAKE_CURRENT_BINARY_DIR}")
+	Sf_GetGitTagVersion(_Version "${CMAKE_CURRENT_SOURCE_DIR}")
 	# Check if the git version was found.
 	if (NOT "${_Version}" STREQUAL "_Version-NOTFOUND")
 		message(VERBOSE "${CMAKE_CURRENT_FUNCTION}(${_Target}) using Git version (${_Version})")
