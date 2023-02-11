@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
 
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)
@@ -50,7 +50,7 @@ else ()
 	add_subdirectory(com)
 	add_subdirectory(app)
 	if (NOT WIN32)
-		add_subdirectory(manual)
+		add_subdirectory(doc)
 	endif ()
 	# Concepts only when test flag is set.
 	if (SF_BUILD_TESTING)

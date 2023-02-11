@@ -17,8 +17,8 @@ namespace sf
  * In some cases the stored data must be kept together in blocks.<br>
  * A block is a fixed length array of a certain type (mostly integers).<br>
  * Blocks need to be atomic to for processing later.<br>
- * All functions are block size oriented and multi-threaded safe and allowing data be processed in other threads.
- * @image html "com/gii/doc/FileMappedStorage-1.svg"
+ * All functions are block size oriented and multithreading safe and allowing data be processed in other threads.
+ * @image html "doc/FileMappedStorage-1.svg"
  *
  * The embedded #sf::FileMappedStorage::Lock class provides a segment locking mechanism.
  *

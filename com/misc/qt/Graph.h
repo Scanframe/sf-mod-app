@@ -13,7 +13,7 @@ namespace sf
  * @brief Class for drawing a graph having optional rulers and grid.
  *
  * This class uses `sf::Draw` class for drawing a graph rulers and grid.
- * @image html "com/misc/doc/Graph.png"
+ * @image html "doc/Graph.png"
  *
  * Use this class as a private class for a custom widget which produces a graph.
  */

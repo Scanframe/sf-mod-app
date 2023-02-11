@@ -236,7 +236,7 @@ void ObjectPropertyModel::setDelegates(QAbstractItemView* view)
 {
 	auto cid = new CommonItemDelegate(view);
 	// Propagate the signal.
-	connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index)
+	QObject::connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index)
 	{
 		auto propIdx = _indices.at(index.row());
 		Q_EMIT addLineEditActions(lineEdit, propIdx._obj, propIdx._index, propIdx._dynamic);
@@ -246,8 +246,13 @@ void ObjectPropertyModel::setDelegates(QAbstractItemView* view)
 
 void ObjectPropertyModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+	// Seems this removal causes a problem.
+	// beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+	// endRemoveRows();
+	// A reset of the model seems also not needed here somehow.
+	beginResetModel();
+	endResetModel();
+
 	beginInsertRows(QModelIndex(), 0, -1);
 	insertRows(0, static_cast<int>(_indices.size()));
 	endInsertRows();

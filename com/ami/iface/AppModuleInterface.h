@@ -233,7 +233,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		static QString getFileTypeFilters(bool all_files);
 
 		/**
-		 * @brief Determined if the this module handles this mime type.
+		 * @brief Determined if this module handles this mime type.
 		 *
 		 * @return nullptr when cancelled
 		 */
@@ -249,7 +249,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		[[nodiscard]] static QAbstractItemModel* getListModel(bool file_only, QObject* parent);
 
 		/**
-		 * @brief Calls #createChild() and assigns the this creating instance for reference.
+		 * @brief Calls #createChild() and assigns this creating instance for reference.
 		 *
 		 * @param parent Parent and owner of the new child.
 		 * @return
@@ -273,7 +273,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		/**
 		 * @brief Called from main window when a document is activated or deactivated.
 		 *
-		 * @param iface MDI interface which can be dynamic casted to the actual document.
+		 * @param iface MDI interface which can be dynamically cast to the actual document.
 		 * @param yn
 		 */
 		virtual void documentActivated(MultiDocInterface* iface, bool yn) const;

@@ -74,8 +74,10 @@ int FollowersListModel::columnCount(const QModelIndex& parent) const
 
 void FollowersListModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+//	endRemoveRows();
+	beginResetModel();
+	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
 	update();
 	insertRows(0, static_cast<int>(_list.size()));
