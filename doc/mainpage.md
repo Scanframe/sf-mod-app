@@ -1,4 +1,4 @@
-# Modular Application Reference {#mainpage}
+# Modular Application Reference {#main}
 
 <small>
 Generated from code by [Doxygen](https://www.doxygen.nl/) (_[GitHub](https://github.com/doxygen/doxygen.git)_).
@@ -10,7 +10,13 @@ or [GitHub](https://github.com/Scanframe/sf-mod-app).
 
 ## Hierarchy
 
-![Module hierarchy](manual/hierarchy.svg)
+![Module hierarchy](hierarchy.svg)
+
+###  Module & Interfaces
+
+@startuml BranchesJobsRunners
+!include hierarchy.puml
+@enduml
 
 **Legend**
 * **qt** : Qt Plugin Interface as used in Designer

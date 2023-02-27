@@ -1,0 +1,131 @@
+@startuml hierarchy
+
+<style>
+	FontName Noto Sans
+	FontSize 13
+	root
+	{
+		Padding 0
+		Margin 0
+		HorizontalAlignment Left
+	}
+	frame {
+		' define a new style, using CSS class syntax
+			FontColor Black
+			LineColor Gray
+			' Transparency is also possible
+			'BackgroundColor #52A0DC55
+			BackgroundColor #F9F9F9-#E9E9E9
+			'[From top left to bottom right <&fullscreen-enter>]
+			RoundCorner 10
+		}
+	}
+	rectangle
+	{
+		.Apps
+		{
+			' Green gradient
+			BackgroundColor #77BC65-#069A2E
+			RoundCorner 10
+		}
+	}
+	interface
+	{
+		' Blue gradient
+		BackgroundColor #91BEEE-#5983B0
+	}
+	component
+	{
+		BackgroundColor #FFDE59-#B47804
+	}
+	arrow
+	{
+		LineColor DarkRed
+		LineThickness 1
+		FontColor DarkRed
+		'FontStyle Bold
+		.hidden
+		{
+			LineColor Green
+			FontColor Green
+		}
+	}
+}
+</style>
+
+' Not otherwise stylable.
+skinparam TitleFontStyle Bold
+skinparam TitleFontSize 20
+skinparam RankSep 90
+skinparam NodeSep 20
+'skinparam LineType PolyLine
+skinparam LineType Ortho
+
+top to bottom direction
+'left to right direction
+
+'title Module Hierarchy
+
+
+interface "AppModule" <<sf-ami>> as i_ami
+interface "Palette" <<sf-pal>> as i_pal
+interface "Qt" <<qt-core>> as i_qt
+interface "RSA" <<sf-rsa>> as i_rsa
+
+frame "Applications" as f_apps {
+	component "Modular\nApplication" <<sf-ami-app>> as ami_app
+}
+
+frame "AppModules" as f_mods {
+	component "Inspection Project" <<sf-ami-prj>> as ami_prj
+	component "Script Engine" <<sf-ami-script>> as ami_script
+	component "Unit Conversion" <<sf-ami-units>> as ami_units
+	component "Layout Editor" <<sf-ami-layout>> as ami_layout
+}
+
+frame "Palettes" as f_pals {
+	component "Simple Palette" <<sf-pal-simple>> as pal_simple
+	component "Amplitude Palette" <<sf-pal-amplitude>> as pal_amplitude
+}
+
+frame "Graph Widgets" as f_wgts {
+	component "A-scan Graph" <<sf-wgt-ascan>> as wgt_ascan
+	component "B-scan Graph" <<sf-wgt-bscan>> as wgt_bscan
+	component "C-scan Graph" <<sf-wgt-cscan>> as wgt_cscan
+}
+
+frame "RSA Drivers" as f_drvs {
+	component "RSA Emulator" <<sf-rsa-emu>> as rsa_emu
+}
+
+'note top of ami_app : "ddd"
+'together {}
+
+i_ami -[#lightgreen,hidden]down-> f_apps
+i_ami -[#lightgreen,hidden]up-> f_mods
+i_rsa -[#lightgreen,hidden]up-> f_mods
+i_rsa -[#lightgreen,hidden]down-> f_drvs
+i_pal -[#lightgreen,hidden]up-> f_wgts
+i_pal -[#lightgreen,hidden]down- f_pals
+i_qt -[#lightgreen,hidden]up-> f_apps
+i_qt -[#lightgreen,hidden]down-> f_wgts
+
+ami_units <-[norank,#green]- i_ami : <color:green>impl</color>
+ami_prj <-[norank,#green]- i_ami : <color:green>impl</color>
+ami_script <-[norank,#green]- i_ami : <color:green>impl</color>
+ami_layout <-[norank,#green]- i_ami : <color:green>impl</color>
+rsa_emu <-[norank,#green]- i_rsa : <color:green>impl</color>
+pal_simple <-[norank,#green]- i_pal : <color:green>impl</color>
+pal_amplitude <-[norank,#green]- i_pal : <color:green>impl</color>
+
+ami_layout <.[norank]. i_qt : uses
+ami_prj <.[norank]. i_rsa : uses
+wgt_cscan <.[norank]. i_pal : uses
+wgt_bscan <.[norank]. i_pal : uses
+wgt_cscan <.[norank]. i_qt : uses
+wgt_bscan <.[norank]. i_qt : uses
+wgt_ascan <.[norank]. i_qt : uses
+ami_app <.[norank]. i_ami : uses
+ami_app <.[norank]. i_qt : uses
+
+@enduml
