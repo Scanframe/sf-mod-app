@@ -2,8 +2,8 @@
 BasedOnStyle: LLVM
 AccessModifierOffset: 0
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: false
-AlignOperands: true
+AlignConsecutiveAssignments: None
+AlignOperands: DontAlign
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -24,7 +24,7 @@ BraceWrapping:
   AfterFunction: true
   AfterNamespace: true
   AfterUnion: true
-  BeforeCatch: false
+  BeforeCatch: true
   BeforeElse: true
   IndentBraces: false
   SplitEmptyFunction: false
@@ -33,7 +33,7 @@ BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
-ColumnLimit: 160
+ColumnLimit: 0
 CompactNamespaces: true
 ContinuationIndentWidth: 2
 IndentCaseLabels: true
@@ -54,7 +54,7 @@ SpaceBeforeCpp11BracedList: false
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeRangeBasedForLoopColon: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 0
 SpacesInAngles: false

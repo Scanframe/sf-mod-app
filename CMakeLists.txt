@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.18)
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
 
+# Enable the tests added with add_test.
+enable_testing()
+
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)
 # Package needed for adding function Sf_SetToolChain().

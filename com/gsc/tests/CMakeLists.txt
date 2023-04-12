@@ -4,10 +4,10 @@ set(TEST_TARGET "${PROJECT_NAME}-test")
 #[[
 # Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
+#find_package(SfGsc REQUIRED)
 ]]
 
 find_package(SfMisc REQUIRED)
-find_package(SfGsc REQUIRED)
 
 set(TEST_LIBRARIES Catch2::Catch2 sf-misc sf-gsc)
 
