@@ -30,10 +30,16 @@ add_custom_target("exif" ALL)
 set(SF_BUILD_QT ON)
 #set(SF_BUILD_QT OFF)
 
+
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
+	# Prevent error when configuring for cross compile for Windows in Linux.
+	if ("$ENV{SF_TARGET_SYSTEM}" STREQUAL "Linux")
+		# MAke some cmake files happy so they doe report "Not found".
+		set(Vulkan_INCLUDE_DIR "/tmp")
+	endif()
 endif ()
 
 # Make sure builds do not wind up in the source directory.
@@ -42,7 +48,7 @@ find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-Sf_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 if (FALSE)
 	# For testing only.

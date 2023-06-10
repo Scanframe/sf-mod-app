@@ -94,7 +94,7 @@ sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName() \
 return entries; }
 
 /**
- * @brief Registers a derived type from the interface interface type.
+ * @brief Registers a derived type from the interface type.
  *
  * Where:
  * 	DerivedType: The derived typename from InterfaceType

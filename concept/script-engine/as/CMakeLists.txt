@@ -15,7 +15,7 @@ list(APPEND CMAKE_PREFIX_PATH "../../../../script-engines/angelscript_2.35.0/sdk
 #message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-Sf_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 # Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)

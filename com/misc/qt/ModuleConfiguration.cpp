@@ -4,6 +4,7 @@
 #include "../gen/TClassRegistration.h"
 #include "ModuleConfiguration.h"
 #include "ModuleConfigurationDialog.h"
+#include "Globals.h"
 
 namespace sf
 {
@@ -49,10 +50,9 @@ void ModuleConfiguration::openDialog(QWidget* parent)
 	_dialog->raise();
 }
 
-
 QString ModuleConfiguration::getModuleDir()
 {
-	return QCoreApplication::applicationDirPath();
+	return getPluginDir();
 }
 
 ModuleConfiguration::ModuleListType ModuleConfiguration::getList() const
@@ -77,7 +77,8 @@ size_t ModuleConfiguration::load(bool startup)
 	// Load each dynamic library in the list when not loaded yet.
 	for (auto it = list.begin(); it != list.constEnd(); ++it)
 	{
-		QLibrary lib(QDir(getModuleDir()).filePath(it.key()));
+		auto name = QDir(getModuleDir()).filePath(it.key());
+		QLibrary lib(name);
 		// Only load when not loaded yet.
 		if (!lib.isLoaded())
 		{

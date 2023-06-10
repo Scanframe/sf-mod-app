@@ -14,7 +14,7 @@ find_package(SfGii CONFIG REQUIRED)
 find_package(SfPal CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-Sf_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 # Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)

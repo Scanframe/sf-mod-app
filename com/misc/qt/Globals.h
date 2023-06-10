@@ -60,6 +60,16 @@ _MISC_FUNC QUiLoader* setGlobalUiLoader(QUiLoader* uiLoader);
 _MISC_FUNC QUiLoader* getGlobalUiLoader();
 
 /**
+ * @brief Sets the global plugin directory used i.e. by ::sf::FormBuilderLoad() and ::sf::FormBuilderSave().
+ */
+_MISC_FUNC void setPluginDir(QString pluginDir);
+
+/**
+ * @brief Gets the global plugin directory.
+ */
+_MISC_FUNC QString getPluginDir();
+
+/**
  * @brief Loads the form from the passed UI file.
  *
  * This function prevents mandatory linking of the Qt::Designer library.

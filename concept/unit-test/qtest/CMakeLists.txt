@@ -22,7 +22,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-Sf_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
