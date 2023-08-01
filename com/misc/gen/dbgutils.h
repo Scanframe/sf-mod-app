@@ -245,9 +245,9 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 
 #elif (SF_DEBUG_LEVEL == 2)
 
-#define _NORM_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _CLASS_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _RTTI_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _NORM_NOTIFY(f, a) {sf::debug_ostream(f) << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
 #define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
 #define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}
 #define _COND_RTTI_NOTIFY(p, f, a) {if (p) {_RTTI_NOTIFY(f, a);}}

@@ -180,7 +180,7 @@ void Thread::waitForExit()
 		{
 			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Graceful termination period has passed on " << getCurrentId())
 			lock.acquire();
-			// Send user signal signal to thread to be handled.
+			// Send user signal to thread to be handled.
 			if (_handle)
 			{
 				error = ::pthread_join(_handle, &_exitCode.Ptr);
@@ -276,7 +276,7 @@ bool Thread::setPriority(int pri, int sp)
 {
 	auto pri_max = ::sched_get_priority_max(sp);
 	auto pri_min = ::sched_get_priority_min(sp);
-	// IMPL: Whats with this second param in ::sched_setscheduler()
+	// IMPL: What is with this second param in ::sched_setscheduler()
 	struct sched_param param{};
 	// Clip the priority to what is allowed by the OS.
 	param.sched_priority = clip(pri, pri_max, pri_min);

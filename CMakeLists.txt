@@ -30,7 +30,6 @@ add_custom_target("exif" ALL)
 set(SF_BUILD_QT ON)
 #set(SF_BUILD_QT OFF)
 
-
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
@@ -53,7 +52,6 @@ Sf_SetOutputDirs("bin")
 if (FALSE)
 	# For testing only.
 	add_subdirectory(com/test)
-	#add_subdirectory(manual)
 else ()
 	# Add Sub Projects in the right order of dependency.
 	add_subdirectory(com)

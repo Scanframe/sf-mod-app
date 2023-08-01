@@ -3,5 +3,7 @@ project(wine-exec)
 
 set(CMAKE_CXX_STANDARD 20)
 
-
-add_executable(wine-exec exec-wine.cpp)
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME}
+	exec-wine.cpp
+)
