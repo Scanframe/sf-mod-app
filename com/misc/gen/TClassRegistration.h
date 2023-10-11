@@ -122,7 +122,7 @@ namespace sf
 {
 
 /**
- * @brief Template class used to register derived classes from an (virtual) interface class.<br>
+ * @brief Template class used to register derived classes from an (virtual) interface class.
  *
  * Registering name and description.<br>
  * [Example](sf-TClassRegistration.html)

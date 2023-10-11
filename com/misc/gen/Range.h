@@ -280,7 +280,7 @@ class _MISC_CLASS Range :private RANGE
 			 */
 			cmpError = std::numeric_limits<int>::max(),
 			/**
-			 * Both ranges ae the same.
+			 * Both ranges are the same.
 			 * ```text
 			 *    |------------|
 			 *    |============|
@@ -498,23 +498,23 @@ class _MISC_CLASS Range :private RANGE
 };
 
 /**
- * Output stream operator for a range.
+ * @brief Output stream operator for a range.
  */
 _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range& r);
 
 /**
- * Input stream operator for a range.
+ * @brief Input stream operator for a range.
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Range& r);
 
 
 /**
- * Output stream operator for a range vector.
+ * @brief Output stream operator for a range vector.
  */
 _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range::Vector& rl);
 
 /**
- * Input stream operator for a range vector.
+ * @brief Input stream operator for a range vector.
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Range::Vector& rl);
 

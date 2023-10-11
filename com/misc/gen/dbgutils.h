@@ -72,7 +72,7 @@
 
 #if IS_QT
 
-// Coverts the passed type into a name.
+// Converts the passed type into a name.
 #define SF_Q_RTTI_NAME(self) QString::fromStdString(SF_RTTI_NAME(self))
 // Define that converts a 'this' pointer to the class type name.
 #define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
@@ -184,6 +184,17 @@ _MISC_FUNC void debugBreak();
  * @return Demangled name.
  */
 _MISC_FUNC std::string Demangle(const char* name);
+
+/**
+ * @brief Gets the demangled type name of the passed type T.
+ * @tparam T Type to get the type string from.
+ * @return Demangled type string.
+ */
+template <typename T>
+std::string rtti_name(const T&)
+{
+	return Demangle(typeid(T).name());
+}
 
 /**
  * Exception thrown from a notification.

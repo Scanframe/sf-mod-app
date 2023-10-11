@@ -29,14 +29,14 @@ __attribute__((constructor)) void installSignalHandlers()
 	char buffer[BUFSIZ];
 	struct sigaction sa{};
 	sa.sa_handler = nullptr;
+	sa.sa_flags = SA_SIGINFO;
+	::sigemptyset(&sa.sa_mask);
+	// Install a signal handler which throws an exception.
 	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void
 	{
 		SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << " Throwing termination exception.")
 		throw Thread::TerminateException();
 	};
-	sa.sa_flags = SA_SIGINFO;
-	::sigemptyset(&sa.sa_mask);
-// Install a signal handler which throws an exception.
 	if (::sigaction(Thread::getTerminationSignal(), &sa, nullptr) < 0)
 	{
 		if (thisThread)
@@ -45,7 +45,7 @@ __attribute__((constructor)) void installSignalHandlers()
 				<< " sigaction()" << ::strerror_r(errno, buffer, sizeof(buffer)))
 		}
 	}
-	// Install a signal handler to do nothing.
+	// Install a signal handler that only reports.
 	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void
 	{
 		if (thisThread)
@@ -54,7 +54,6 @@ __attribute__((constructor)) void installSignalHandlers()
 				<< "Signal received... " << Thread::getCurrentId());
 		}
 	};
-	// Install a signal handler that only reports.
 	if (::sigaction(SIGUSR2, &sa, nullptr) < 0)
 	{
 		SF_NORM_NOTIFY(DO_DEFAULT, "sigaction()" << ::strerror_r(errno, buffer, sizeof(buffer)))
@@ -270,6 +269,27 @@ void Thread::terminateAndWait()
 {
 	terminate();
 	waitForExit();
+}
+
+void Thread::setName(const char* name)
+{
+	// Only the first 15 characters are used.
+	int error = ::pthread_setname_np(_threadId, name);
+	if (error > 0)
+	{
+		throw ExceptionSystemCall("pthread_setname_np", error, typeid(*this).name(), __FUNCTION__);
+	}
+}
+
+std::string Thread::getName() const
+{
+	char name[32];
+	int error = ::pthread_getname_np(pthread_self(), name, sizeof(name));
+	if (error > 0)
+	{
+		throw ExceptionSystemCall("pthread_getname_np", error, typeid(*this).name(), __FUNCTION__);
+	}
+	return std::string(name);
 }
 
 bool Thread::setPriority(int pri, int sp)

@@ -63,7 +63,7 @@ class _MISC_CLASS Thread
 			public:
 
 				/**
-				 * Handle type of a thread.
+				 * Handle type of thread.
 				 */
 				typedef ::pthread_attr_t* handle_type;
 
@@ -103,7 +103,7 @@ class _MISC_CLASS Thread
 				 * @brief Sets the stack size for a new thread.
 				 *
 				 * The stack size retrieved using #getCurrentStackSize() is an aligned value and can
-				 * reports less then is passed in this function.
+				 * report less than is passed in this function.
 				 */
 				void setStackSize(size_t sz);
 
@@ -164,7 +164,7 @@ class _MISC_CLASS Thread
 		 * @brief Starts a thread which calls on its turn the overridden function Run().
 		 *
 		 * @param attr Attributes for stack size and scheduling and prioritisation.
-		 * @return Handle of the create thread.
+		 * @return Handle of the created thread.
 		 */
 		handle_type start(const Attributes& attr);
 
@@ -198,7 +198,7 @@ class _MISC_CLASS Thread
 		/**
 		 * @brief Returns the status a string.
 		 *
-		 * By default the current state is returned.
+		 * By default, the current state is returned.
 		 * @see #getStatus()
 		 */
 		[[nodiscard]] const char* getStatusText(EStatus status = (EStatus) -1) const;
@@ -246,20 +246,33 @@ class _MISC_CLASS Thread
 			tpBelowNormal = -1,
 			tpNormal = 0,
 			tpAboveNormal = 1,
-			tpHighiest = 2,
+			tpHighest = 2,
 			tpTimeCritical = 15
 		};
 
 		/**
-		* @brief Returns the current priority of this instance.
-		*/
-		[[nodiscard]] int getPriority() const;
+		 * @brief Sets the name of the thread available in the debugger.
+		 * The name is clipped to the first 15 characters only.
+		 * @note The thread must be created for this.
+		 */
+		void setName(const char* name) noexcept(false);
 
 		/**
-		* @brief Can pass a enumerate EPriority for simplicity.
+		 * @brief Gets the name of the thread available in the debugger.
+		 * @note The thread must be created for this.
+		 */
+		std::string getName() const noexcept(false);
+
+		/**
+		 * @brief Gets the current priority of this instance.
+		 */
+		[[nodiscard]] int getPriority() const noexcept(false);
+
+		/**
+		 * @brief Can pass an enumerate EPriority for simplicity.
 		 *
-		* @see #EPriority
-		*/
+		 * @see #EPriority
+		 */
 		bool setPriority(int pri, int sp = Attributes::spScheduleOther);
 
 		/**
@@ -280,7 +293,7 @@ class _MISC_CLASS Thread
 		 * @brief Alternative to returning from then run() method.
 		 *
 		 * Called from within the thread that wants to exit early.
-		 * It save guarded from other threads calling it.
+		 * It save-guarded from other threads calling it.
 		 * @see #run()
 		 */
 		void exit(int code);
@@ -331,7 +344,7 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Gets the current thread ID.
-		 * @return Current thread Id.
+		 * @return Current thread id.
 		 */
 		static id_type getCurrentId();
 
