@@ -1,0 +1,150 @@
+{
+	"version": 3,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 22,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"hidden": true,
+			"name": ".cfg",
+			"displayName": "Linux Configure Template",
+			"description": "Configure template for Linux.",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_COLOR_DIAGNOSTICS": "ON",
+				"SF_BUILD_QT": "OFF"
+			},
+			"environment": {
+				"PATH": "$env{HOME}/cmake/lib/bin:$penv{PATH}"
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"hidden": true,
+			"inherits": [".cfg"],
+			"name": ".cfg-qt",
+			"displayName": "Linux QT Configure Template",
+			"description": "Configure template for Linux using QT.",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_COLOR_DIAGNOSTICS": "ON",
+				"SF_BUILD_QT": "ON"
+			},
+			"environment": {
+				"PATH": "${sourceDir}/cmake/lib/bin:$penv{PATH}"
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"inherits": [".cfg-qt"],
+			"name": "qt-gnu-amd64-debug",
+			"displayName": "Qt-Linux-AMD64-Dbg",
+			"description": "Configuration to build qt-app using Linux GNU compiler.",
+			"cacheVariables": {
+				"SF_BUILD_TARGET": "not-implemented-yet",
+				"SF_BUILD_TESTING": "ON",
+				"SF_TARGET_SYSTEM": "Linux",
+				"SF_CROSS_WINDOWS": "OFF"
+			},
+			"binaryDir": "${sourceDir}/cmake-build/qt-gnu-amd64-debug"
+		},
+		{
+			"name": "qt-mingw-amd64-debug",
+			"displayName": "Qt-Windows-AMD64-Dbg",
+			"description": "Configuration to build qt-app using Windows MinGW compiler.",
+			"cacheVariables": {
+				"SF_BUILD_TARGET": "not-implemented-yet",
+				"SF_BUILD_TESTING": "OFF",
+				"SF_TARGET_SYSTEM": "Windows",
+				"SF_CROSS_WINDOWS": "OFF"
+			},
+			"inherits": [".cfg-qt"],
+			"binaryDir": "${sourceDir}/cmake-build/qt-mingw-amd64-debug",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		},
+		{
+			"name": "qt-gw-amd64-debug",
+			"displayName": "Qt-Windows-AMD64-Dbg",
+			"description": "Configuration to build qt-app using Linux GNU cross compiler.",
+			"cacheVariables": {
+				"SF_BUILD_TARGET": "not-implemented-yet",
+				"SF_BUILD_TESTING": "OFF",
+				"SF_TARGET_SYSTEM": "Windows",
+				"SF_CROSS_WINDOWS": "ON"
+			},
+			"inherits": [".cfg-qt"],
+			"binaryDir": "${sourceDir}/cmake-build/qt-gw-amd64-debug"
+		}
+	],
+	"buildPresets": [
+		{
+			"name": ".build",
+			"hidden": true,
+			"cleanFirst": false,
+			"verbose": false,
+			"jobs": 8,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"name": "qt-gnu-amd64-debug",
+			"displayName": "Qt-Linux-AMD64-Dbg",
+			"description": "QT Application build using AMD64",
+			"inherits": [".build"],
+			"configurePreset": "qt-gnu-amd64-debug"
+		},
+		{
+			"name": "qt-gw-amd64-debug",
+			"displayName": "Qt-Windows-AMD64-Dbg",
+			"description": "QT Application build using AMD64",
+			"inherits": [".build"],
+			"configurePreset": "qt-gw-amd64-debug"
+		},
+		{
+			"name": "qt-mingw-amd64-debug",
+			"displayName": "Qt-Windows-AMD64-Dbg",
+			"description": "QT Application build using AMD64",
+			"inherits": [".build"],
+			"configurePreset": "qt-mingw-amd64-debug",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		}
+	],
+	"testPresets": [
+		{
+			"name": "test-debug",
+			"displayName": "Tests",
+			"hidden": false,
+			"configurePreset": "qt-gnu-amd64-debug",
+			"output": {
+				"outputOnFailure": true
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		}
+	]
+}

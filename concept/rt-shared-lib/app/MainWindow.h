@@ -29,5 +29,5 @@ class MainWindow : public QMainWindow
 		// Holds the list of libraries.
 		QList<sf::DynamicLibraryInfo> _libraryInfoList;
 		// Pointer to an implementation of RuntimeIface.
-		RuntimeIface* _interfaceInstance;
+		RuntimeIface* _interfaceInstance{nullptr};
 };

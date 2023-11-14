@@ -12,5 +12,5 @@
 /bin/man
 /thirdp
 */*/*.user
-**/cmake-build-*
+**/cmake-build*
 **/CMakeLists.txt.user

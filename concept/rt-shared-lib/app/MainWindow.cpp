@@ -18,7 +18,6 @@
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
-	, _interfaceInstance(nullptr)
 {
 	ui->setupUi(this);
 	// Set an icon on the window.

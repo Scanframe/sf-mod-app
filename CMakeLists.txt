@@ -26,17 +26,19 @@ project("qt-concepts"
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Enables including Qt libraries when building (libraries).
-set(SF_BUILD_QT ON)
-#set(SF_BUILD_QT OFF)
+# Enables including Qt libraries when building (libraries) and needs to be defined.
+if (NOT DEFINED SF_BUILD_QT)
+	message(FATAL_ERROR "Variable 'SF_BUILD_QT' is not defined!")
+	#set(SF_BUILD_QT ON)
+endif ()
 
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
 	# Prevent error when configuring for cross compile for Windows in Linux.
-	if ("$ENV{SF_TARGET_SYSTEM}" STREQUAL "Linux")
-		# MAke some cmake files happy so they doe report "Not found".
+	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+		# Make some cmake files happy so they do report "Not found".
 		set(Vulkan_INCLUDE_DIR "/tmp")
 	endif()
 endif ()
@@ -49,18 +51,13 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs("bin")
 
-if (FALSE)
-	# For testing only.
-	add_subdirectory(com/test)
-else ()
-	# Add Sub Projects in the right order of dependency.
-	add_subdirectory(com)
-	add_subdirectory(app)
-	if (NOT WIN32)
-		add_subdirectory(doc)
-	endif ()
-	# Concepts only when test flag is set.
-	if (SF_BUILD_TESTING)
-		add_subdirectory(concept)
-	endif ()
+# Add Sub Projects in the right order of dependency.
+add_subdirectory(com)
+add_subdirectory(app)
+if (NOT WIN32)
+	add_subdirectory(doc)
+endif ()
+# Concepts only when test flag is set.
+if (SF_BUILD_CONCEPTS)
+	add_subdirectory(concept)
 endif ()
