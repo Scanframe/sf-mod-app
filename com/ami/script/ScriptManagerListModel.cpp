@@ -34,8 +34,10 @@ void ScriptManagerListModel::setDelegates(QAbstractItemView* view)
 
 void ScriptManagerListModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+//	endRemoveRows();
+	beginResetModel();
+	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
 	insertRows(0, static_cast<int>(_manager->_list.size()));
 	endInsertRows();

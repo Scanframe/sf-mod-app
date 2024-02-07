@@ -72,7 +72,7 @@
 
 #if IS_QT
 
-// Coverts the passed type into a name.
+// Converts the passed type into a name.
 #define SF_Q_RTTI_NAME(self) QString::fromStdString(SF_RTTI_NAME(self))
 // Define that converts a 'this' pointer to the class type name.
 #define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
@@ -186,6 +186,17 @@ _MISC_FUNC void debugBreak();
 _MISC_FUNC std::string Demangle(const char* name);
 
 /**
+ * @brief Gets the demangled type name of the passed type T.
+ * @tparam T Type to get the type string from.
+ * @return Demangled type string.
+ */
+template <typename T>
+std::string rtti_name(const T&)
+{
+	return Demangle(typeid(T).name());
+}
+
+/**
  * Exception thrown from a notification.
  */
 class notify_exception :public std::exception
@@ -245,9 +256,9 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 
 #elif (SF_DEBUG_LEVEL == 2)
 
-#define _NORM_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _CLASS_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _RTTI_NOTIFY(f, a) {sf:: dbg_os(f); dbg_os << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _NORM_NOTIFY(f, a) {sf::debug_ostream(f) << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
+#define _RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
 #define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
 #define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}
 #define _COND_RTTI_NOTIFY(p, f, a) {if (p) {_RTTI_NOTIFY(f, a);}}

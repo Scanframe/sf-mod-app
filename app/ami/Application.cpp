@@ -34,6 +34,8 @@ Application::Application(int& argc, char** argv, int flags)
 	setGlobalSettings(_settings);
 	// Create module configuration
 	_moduleConfiguration = new ModuleConfiguration(_settings, this);
+	// Set the plugin/module directory. For now not configurable.
+	setPluginDir(QCoreApplication::applicationDirPath() + QDir::separator() + "lib");
 	// Connect the message handler for opening files passed on the other application.
 	connect(_singleInstance, &SingleInstance::receivedMessage, this, &Application::handleInstanceMessage);
 	// When libraries are loaded create the module instances.
@@ -97,6 +99,7 @@ std::string Application::ConfigLocationHandler(const std::string& option)
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	auto rv = fi.absolutePath() + QDir::separator() + "config";
+	//auto rv = QString::fromStdString(getWorkingDirectory()) + QDir::separator() + "config";
 	if (!option.empty())
 	{
 		rv += QDir::separator() + QString::fromStdString(option);

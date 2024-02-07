@@ -98,7 +98,7 @@ void SocketClient::run()
 			// Non-blocking method processing in coming and out going data.
 			if (!_connection->process())
 			{
-				qInfo() << SF_RTTI_NAME(*this).c_str() << "Disconnecting...";
+				qInfo() << rtti_name(*this).c_str() << "Disconnecting...";
 				_socket->disconnectFromHost();
 				if (_socket->state() != QAbstractSocket::UnconnectedState)
 				{

@@ -4,14 +4,14 @@ cmake_minimum_required(VERSION 3.18)
 project("sf-ami-app" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../com/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -23,10 +23,10 @@ find_package(SfMisc REQUIRED)
 find_package(SfAmi REQUIRED)
 find_package(SingleInstance REQUIRED)
 
-# Set the actual executable target.
-add_executable(${PROJECT_NAME})
-# Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+# Set the actual executable target and default compile options.
+Sf_AddExecutable("${PROJECT_NAME}")
+# Add custom target to report resource stored versions.
+Sf_AddExifTarget("${PROJECT_NAME}")
 
 # RC-files only seem to be compiled when building using MingW.
 target_sources(${PROJECT_NAME} PRIVATE
@@ -57,5 +57,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-ami SingleInstance)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetTargetSuffix("${PROJECT_NAME}")
 
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")

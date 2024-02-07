@@ -144,7 +144,7 @@ void ScriptHighlighter::highlightCurrentLine()
 
 void ScriptHighlighter::highlightBlock(const QString& text)
 {
-	for (const HighlightingRule& rule : qAsConst(_rules))
+	for (const HighlightingRule& rule : std::as_const(_rules))
 	{
 		auto matchIterator = rule.pattern.globalMatch(text);
 		while (matchIterator.hasNext())

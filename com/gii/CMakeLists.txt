@@ -11,7 +11,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -105,10 +105,8 @@ endif (SF_BUILD_QT)
 # Generic sources.
 list(APPEND SOURCES)
 
-# Add the library to create.
-add_library(${PROJECT_NAME} SHARED)
-# Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+# Add shared library and also sets the dynamic library version.
+Sf_AddSharedLibrary("${PROJECT_NAME}")
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 

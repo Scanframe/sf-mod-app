@@ -1,5 +1,6 @@
 #include "FormBuilder.h"
 #include "../gen/Exception.h"
+#include "ModuleConfiguration.h"
 #include "Globals.h"
 #include <QWidget>
 #include <QCoreApplication>
@@ -14,6 +15,7 @@ namespace
 	QWidget* GlobalParent{nullptr};
 	QUiLoader* GlobalUiLoader{nullptr};
 	QFormBuilder* GlobalFormBuilder{nullptr};
+	QString PluginDir;
 
 	__attribute__((constructor)) void Cleanup()
 	{
@@ -58,30 +60,39 @@ QUiLoader* getGlobalUiLoader()
 	return GlobalUiLoader;
 }
 
-QWidget* FormBuilderLoad(QIODevice* io, QWidget* parent)
+QFormBuilder* getGlobalFormBuilder()
 {
+	// When it does not exist yet, create it.
 	if (!GlobalFormBuilder)
 	{
 		// Create out form builder to load a layout.
 		GlobalFormBuilder = new FormBuilder();
 		// Add the application directory as the plugin directory to find custom plugins.
-		GlobalFormBuilder->addPluginPath(QCoreApplication::applicationDirPath());
+		GlobalFormBuilder->addPluginPath(getPluginDir());
 	}
+	return GlobalFormBuilder;
+}
+
+QWidget* FormBuilderLoad(QIODevice* io, QWidget* parent)
+{
 	// Create widget from the loaded ui-file.
-	return GlobalFormBuilder->load(io, parent);
+	return getGlobalFormBuilder()->load(io, parent);
 }
 
 void FormBuilderSave(QIODevice* io, QWidget* widget)
 {
-	if (!GlobalFormBuilder)
-	{
-		// Create out form builder to load a layout.
-		GlobalFormBuilder = new FormBuilder();
-		// Add the application directory as the plugin directory to find custom plugins.
-		GlobalFormBuilder->addPluginPath(QCoreApplication::applicationDirPath());
-	}
 	// Save widget to the ui-file.
-	GlobalFormBuilder->save(io, widget);
+	getGlobalFormBuilder()->save(io, widget);
+}
+
+void setPluginDir(QString dir)
+{
+	PluginDir = dir;
+}
+
+QString getPluginDir()
+{
+	return PluginDir.length() ? PluginDir : QCoreApplication::applicationDirPath();
 }
 
 }
