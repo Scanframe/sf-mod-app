@@ -35,7 +35,7 @@ class ServerConnection :public QObject, protected InformationTypes
 		~ServerConnection() override;
 
 		/**
-		 * @brief Non blocking method which processes data incoming and outgoing data from the IO device.
+		 * @brief Non-blocking method which processes data incoming and outgoing data from the IO device.
 		 *
 		 * @return True when it needs to be called again.
 		 */

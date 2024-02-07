@@ -57,7 +57,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets)
 
 # Sets the extension of the generated binary.
-Sf_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetTargetSuffix("${PROJECT_NAME}")
 
 # Testing only available if this is the main app
 #if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)

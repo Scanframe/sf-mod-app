@@ -53,7 +53,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
 # Sets the extension of the generated binary.
-#Sf_SetBinarySuffix("${PROJECT_NAME}")
+#Sf_SetTargetSuffix("${PROJECT_NAME}")
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

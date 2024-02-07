@@ -59,4 +59,4 @@ sf-misc
 )
 
 # Sets the extension of the generated binary.
-Sf_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetTargetSuffix("${PROJECT_NAME}")

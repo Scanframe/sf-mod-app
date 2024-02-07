@@ -61,5 +61,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc)
 
 # Sets the extension of the generated binary.
-Sf_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetTargetSuffix("${PROJECT_NAME}")
 
