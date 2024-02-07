@@ -4,16 +4,16 @@ cmake_minimum_required(VERSION 3.18)
 project("custom-ui-plugin" LANGUAGES CXX)
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "../../com/cmake")
+list(APPEND CMAKE_PREFIX_PATH "../../cmake")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs("bin")
 
-# Uses directory Set by _SetOutputDirs().
+# Uses directory Set by Sf_SetOutputDirs().
 find_package(SfMisc REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
@@ -26,10 +26,8 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin REQUIRED)
 
-# Add the library to create.
-add_library(${PROJECT_NAME} SHARED)
-# Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+# Add shared library and also sets the dynamic library version.
+Sf_AddSharedLibrary("${PROJECT_NAME}")
 
 target_sources(${PROJECT_NAME} PRIVATE
 	SfAnalogClock.cpp SfAnalogClock.h
@@ -55,7 +53,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
 # Sets the extension of the generated binary.
-#_SetBinarySuffix("${PROJECT_NAME}")
+#Sf_SetTargetSuffix("${PROJECT_NAME}")
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

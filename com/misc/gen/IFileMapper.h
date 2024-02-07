@@ -23,7 +23,7 @@ class _MISC_CLASS IFileMapper
 		virtual ~IFileMapper() = default;
 
 		/**
-		 * @brief initialize and prepare the underlying system when needed.
+		 * @brief Initialize and prepare the underlying system when needed.
 		 *
 		 */
 		virtual void initialize() = 0;
@@ -43,7 +43,7 @@ class _MISC_CLASS IFileMapper
 		virtual bool mapView() = 0;
 
 		/**
-		 * @brief Unlocks a the pointer locked with #mapView().
+		 * @brief Unlocks the pointer locked with #mapView().
 		 *
 		 * @return True on success.
 		 */
@@ -57,9 +57,9 @@ class _MISC_CLASS IFileMapper
 		virtual void* getPtr() = 0;
 
 		/**
-		 * @brief Gets a instance of this interface using a native or non native (Qt) implementation.
+		 * @brief Gets an instance of this interface using a native or non-native (Qt) implementation.
 		 *
-		 * Qt non native is only available when compiled and linked with Qt.
+		 * Qt non-native is only available when compiled and linked with Qt.
 		 * @param native False for creating Qt implementation.
 		 * @return
 		 */

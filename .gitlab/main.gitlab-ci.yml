@@ -1,82 +1,100 @@
-include:
-  - local: ".gitlab/common-c++.gitlab-ci.yml"
-  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
-  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+variables:
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+  # Tags for selecting a runner.
+  SF_TARGET_ARCH: "amd64"
+  SF_TARGET_OS: "linux"
+  # Name of the branch that allows running deploying to production. (set from CI/CD settings)
+  #SF_RELEASE_BRANCH: "main"
 
+workflow:
+  # Only run pipeline on protected branches.
+  rules:
+    # No pipeline when commit message starts with an exclamation mark '!'.
+    - if: '$SF_SIGNAL == "skip"'
+      when: never
+    # Run pipeline initiated by a merge request event.
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Run pipeline initiated by the web application.
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    # Prevent double pipeline when having this workflow.
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: always
+    - when: never
+
+stages:
+  - check
+  - toolchain
+
+# Defaults for all jobs.
 default:
+  # Tags determine the selection of a runner.
   tags:
     - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
 
-################################ Prequel Checks ###############################
-
-job-check:
-  extends: .tpl-env-dump
+# Reports the environment variables for debugging.
+check-env:
   stage: check
-
-################################ Linux GNU Compiler ###########################
-
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Also wiping the cmake-build-??? directory.
-job-make-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu]
-  stage: make
-  needs: [job-check]
   script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to CMake the needed makefiles.
-    - ${SF_DIR_MOUNT_GNU}/build.sh -m .
+    - echo "Working Directory=$(pwd)"
+    - echo "Environment Dump" && printenv
 
-job-build-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
-  stage: build
-  needs: [job-make-gnu]
-  dependencies: [job-make-gnu]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to build the whole project.
-    - ${SF_DIR_MOUNT_GNU}/build.sh -b .
+# Does a cache and artifact check.
+cache-test:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Run when signal is test.
+    - if: '$SF_SIGNAL != "test"'
+      when: never
+    - when: always
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "toolchain"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/lnx64"
 
-job-deploy-gnu:
-  extends: [.tpl-comp-gnu,.tpl-artifacts-gnu,.tpl-deploy]
-  stage: deploy
-  needs: [job-build-gnu]
-  dependencies: [job-build-gnu]
-  environment: production
-  script:
-    - !reference [.tpl-log-script,script]
-    - echo "Packaged in a Debian deb-file or maybe a zip-file?"
-    - echo "May be rsync-ed to a production site?"
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cache-test.gitlab-ci.yml
 
-################################ Linux GW Compiler ############################
+linux-gnu:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    - when: always
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "gnu"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/lnx64"
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cmake-build.gitlab-ci.yml
 
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Also wiping the cmake-build-??? directory.
-job-make-gw:
-  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw]
-  stage: make
-  needs: [job-check]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to CMake the makefiles.
-    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
-
-job-build-gw:
-  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: build
-  needs: [job-make-gw]
-  dependencies: [job-make-gw]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to actually builds the whole project.
-    - ${SF_DIR_MOUNT_GW}/build.sh -wb .
-
-job-deploy-gw:
-  extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
-  stage: deploy
-  needs: [job-build-gw]
-  dependencies: [job-build-gw]
-  environment: production
-  script:
-    - !reference [.tpl-log-script,script]
-    - echo "Packaged in a installer or a zip-file?"
-    - echo "May be rsync-ed to a production site?"
+linux-gw:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    - when: always
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "gw"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/win64"
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cmake-build.gitlab-ci.yml

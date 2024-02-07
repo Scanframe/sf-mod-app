@@ -27,11 +27,11 @@ LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameter
 	settingsReadWrite(false);
 	// Create pre configured global UI loader instance.
 	auto uiLoader = new QUiLoader(this);
-	// Add the application directory as the plugin directory to find custom plugins.
-	uiLoader->addPluginPath(QCoreApplication::applicationDirPath());
+	// Set the uiLoader plugin directory.
+	uiLoader->addPluginPath(getPluginDir());
 	// Not sure if this is needed at any time.
 	uiLoader->setWorkingDirectory(QString::fromStdString(getConfigLocation()));
-	// Make the created instance the current one.
+	// Make the created instance the current one and delete the previous if it exists.
 	delete setGlobalUiLoader(uiLoader);
 }
 

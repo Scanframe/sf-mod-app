@@ -1,13 +1,11 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
 
-#include <QDate>
 #include <QStringList>
 #include <QTimer>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFormBuilder>
-#include <QStandardPaths>
 #include <QScrollArea>
 #include <QPushButton>
 #include <QResizeEvent>
@@ -15,11 +13,10 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QWidget>
-#include <QScreen>
-//#include <QDesktopWidget>
 
 #include <misc/qt/CaptureListModel.h>
 #include <misc/qt/FormBuilder.h>
+#include "misc/qt/Globals.h"
 #include "misc/qt/qt_utils.h"
 #include "misc/gen/dbgutils.h"
 #include "FormDialog.h"
@@ -131,11 +128,8 @@ void MainWindow::onCreateFormDialog()
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
 	{
-		QFormBuilder builder;
-		// Add the application directory as the plugin directory to find custom plugins.
-		builder.addPluginPath(QCoreApplication::applicationDirPath());
 		// Create widget from the loaded ui-file.
-		auto widget = builder.load(&file);
+		auto widget = sf::FormBuilderLoad(&file, nullptr);
 		// When loading is successful.
 		if (widget)
 		{
@@ -161,7 +155,7 @@ void MainWindow::onReadFromFile()
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Called: " << __FUNCTION__)
 	sf::FormBuilder builder;
 	// Add the application directory as the plugin directory to find custom plugins.
-	builder.addPluginPath(QCoreApplication::applicationDirPath());
+	builder.addPluginPath(QCoreApplication::applicationDirPath() + "lib");
 	// Show the plugin paths.
 	qDebug() << "builder.pluginPaths(): " << builder.pluginPaths();
 	//

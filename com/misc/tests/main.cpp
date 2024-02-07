@@ -9,6 +9,7 @@ int debug_level = 0;
 #include <QTimer>
 #include <QDir>
 #include <misc/qt/qt_utils.h>
+#include <misc/qt/Globals.h>
 #endif
 
 int main(int argc, char* argv[])
@@ -25,6 +26,8 @@ int main(int argc, char* argv[])
 	sf::ApplicationSettings settings;
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
+	// Set the plugin/module directory. For now not configurable.
+	sf::setPluginDir(QCoreApplication::applicationDirPath() + QDir::separator() + "lib");
 #endif
 	// Function calling catch command line processor.
 	auto func = [&]()->int
@@ -42,7 +45,7 @@ int main(int argc, char* argv[])
 			["--debug"]
 				// description string for the help output
 				("Custom option for a debug level.");
-		// Now pass the new composite back to Catch so it uses that
+		// Now pass the new composite back to Catch, so it uses that.
 		session.cli(cli);
 		// Let Catch (using Clara) parse the command line
 		int returnCode = session.applyCommandLine(argc, argv);

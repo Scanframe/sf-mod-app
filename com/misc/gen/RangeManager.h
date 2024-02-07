@@ -9,7 +9,7 @@ namespace sf
 
 /**
  * @brief This class manages range requests made by clients identified by ID's in the ranges.<br>
- * @image html "com/misc/doc/RangeManager-1.svg"
+ * @image html "doc/RangeManager-1.svg"
  *
  * A server sets the range which is managed.<br>
  * Multiple clients make requests for ranges passing a unique ID (Range::setId).<br>
@@ -77,7 +77,7 @@ class _MISC_CLASS RangeManager
 
 		/**
 		 * @brief Retrieves actual request list of ranges missing to fulfill requests.<br>
-		 * These are the resulting requested ranges when all requests are added up.
+		 * These are the resulting-requested ranges when all requests are added up.
 		 * @returns Real request
 		 */
 		[[nodiscard]] const Range::Vector& getActualRequests() const;
@@ -114,9 +114,9 @@ class _MISC_CLASS RangeManager
 
 		/**
 		 * @brief This function is called by a derived server class to as a reply to an event.
-		 * The function will return all ranges and owners in a owned range list
+		 * The function will return all ranges and owners in an owned range list
 		 * which request are satisfied/fulfilled with the passed ranges.
-		 * @param rl New ranges that have are accessible.
+		 * @param rl New ranges that are accessible.
 		 * @param rl_req Requested and fulfilled ranges becoming accessible now.
 		 * @return True when ranges have become accessible.
 		 */

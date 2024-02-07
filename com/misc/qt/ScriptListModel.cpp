@@ -42,8 +42,10 @@ void ScriptListModel::setInterpreter(ScriptInterpreter* interpreter, ScriptListM
 
 void ScriptListModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+//	endRemoveRows();
+	beginResetModel();
+	endResetModel();
 	int sz = 0;
 	switch (_mode)
 	{

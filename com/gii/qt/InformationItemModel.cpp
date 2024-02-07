@@ -350,8 +350,10 @@ Qt::ItemFlags InformationItemModel::flags(const QModelIndex& index) const
 /*
 void InformationItemModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+//	endRemoveRows();
+	beginResetModel();
+	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
 	// Clear the current map.
 	_entries.clear();

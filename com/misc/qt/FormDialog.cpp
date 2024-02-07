@@ -6,6 +6,7 @@
 #include <QFormBuilder>
 #include <QPushButton>
 #include "FormDialog.h"
+#include "Globals.h"
 #include "../gen/gen_utils.h"
 #include "../qt/qt_utils.h"
 
@@ -62,12 +63,10 @@ void FormDialog::Load(QFile file)
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
 	{
-		QFormBuilder builder;
-		// Add the application directory as the plugin directory to find custom plugins.
-		builder.addPluginPath(QCoreApplication::applicationDirPath());
-		// Create widget from the loaded ui-file.
+		// Delete a possible existing root widget.
 		delete_null(_widget);
-		_widget = builder.load(&file, this);
+		// Create widget from the loaded ui-file.
+		_widget = FormBuilderLoad(&file, this);
 		// When loading is successful.
 		if (_widget)
 		{
@@ -101,13 +100,10 @@ void FormDialog::Load2(QFile file)
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
 	{
-		QFormBuilder builder;
-		// Add the application directory as the plugin directory to find custom plugins.
-		builder.addPluginPath(QCoreApplication::applicationDirPath());
-		//
+		// Delete a possible existing root widget.
 		delete_null(_widget);
 		// Create widget from the loaded ui-file.
-		_widget = builder.load(&file, _scrollArea);
+		_widget = FormBuilderLoad(&file, this);
 		// When loading is successful.
 		if (_widget)
 		{

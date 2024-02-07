@@ -131,8 +131,10 @@ int ConversionListModel::columnCount(const QModelIndex& parent) const
 
 void ConversionListModel::refresh()
 {
-	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-	endRemoveRows();
+//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+//	endRemoveRows();
+	beginResetModel();
+	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
 	// Find current selected section.
 	auto section = _ucs->getProfile().findSection(UnitConversionServerEx::getUnitSystemName(_ucs->getUnitSystem()));

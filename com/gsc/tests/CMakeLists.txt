@@ -4,10 +4,10 @@ set(TEST_TARGET "${PROJECT_NAME}-test")
 #[[
 # Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
+#find_package(SfGsc REQUIRED)
 ]]
 
 find_package(SfMisc REQUIRED)
-find_package(SfGsc REQUIRED)
 
 set(TEST_LIBRARIES Catch2::Catch2 sf-misc sf-gsc)
 
@@ -20,7 +20,7 @@ list(APPEND TEST_LIBRARIES Qt::Widgets)
 add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${TEST_TARGET}")
+Sf_SetTargetSuffix("${TEST_TARGET}")
 
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.

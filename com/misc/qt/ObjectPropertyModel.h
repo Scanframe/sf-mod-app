@@ -65,7 +65,7 @@ class _MISC_CLASS ObjectPropertyModel :public QAbstractListModel
 
 	Q_SIGNALS:
 		/**
-		 * @brief Signals a change of the objects property.
+		 * @brief Signals a change of the object's property.
 		 * @param obj Object concerned.
 		 * @param propertyIndex Index of the property
 		 * @param dynamic Property is a dynamic one.
