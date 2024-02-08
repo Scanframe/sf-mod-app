@@ -53,20 +53,20 @@
 			"inherits": [
 				".cfg-qt"
 			],
-			"name": "qt-gnu-amd64-debug",
-			"displayName": "Qt-GNU-AMD64-Dbg",
-			"description": "Configuration to build qt-app using Linux GNU compiler",
+			"name": "gnu-debug",
+			"displayName": "GNU-Debug",
+			"description": "Configuration to build qt-app using Linux GNU compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "ON",
 				"SF_TARGET_SYSTEM": "Linux",
 				"SF_CROSS_WINDOWS": "OFF"
 			},
-			"binaryDir": "${sourceDir}/cmake-build/qt-gnu-amd64-debug"
+			"binaryDir": "${sourceDir}/cmake-build/qt-gnu-debug"
 		},
 		{
-			"name": "qt-gw-amd64-debug",
-			"displayName": "Qt-GW-AMD64-Dbg",
-			"description": "Configuration to build qt-app using Linux GNU cross compiler",
+			"name": "gw-debug",
+			"displayName": "GW-Debug",
+			"description": "Configuration to build qt-app using Linux GNU cross compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "OFF",
 				"SF_TARGET_SYSTEM": "Windows",
@@ -75,12 +75,12 @@
 			"inherits": [
 				".cfg-qt"
 			],
-			"binaryDir": "${sourceDir}/cmake-build/qt-gw-amd64-debug"
+			"binaryDir": "${sourceDir}/cmake-build/qt-gw-debug"
 		},
 		{
-			"name": "qt-mingw-amd64-debug",
-			"displayName": "Qt-MinGW-AMD64-Dbg",
-			"description": "Configuration to build qt-app using Windows MinGW compiler",
+			"name": "mingw-debug",
+			"displayName": "MinGW-Debug",
+			"description": "Configuration to build qt-app using Windows MinGW compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "OFF",
 				"SF_TARGET_SYSTEM": "Windows",
@@ -89,7 +89,7 @@
 			"inherits": [
 				".cfg-qt"
 			],
-			"binaryDir": "${sourceDir}/cmake-build/qt-mingw-amd64-debug",
+			"binaryDir": "${sourceDir}/cmake-build/qt-mingw-debug",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -111,13 +111,13 @@
 			}
 		},
 		{
-			"name": "qt-gnu-amd64-debug",
-			"displayName": "Qt-GNU-AMD64-Dbg",
-			"description": "QT Application build using AMD64",
+			"name": "gnu-debug",
+			"displayName": "GNU-Debug",
+			"description": "QT Application build using GNU toolchain.",
 			"inherits": [
 				".build"
 			],
-			"configurePreset": "qt-gnu-amd64-debug",
+			"configurePreset": "gnu-debug",
 			"targets": [
 				"sf-misc",
 				"sf-gii",
@@ -152,13 +152,13 @@
 			]
 		},
 		{
-			"name": "qt-gw-amd64-debug",
-			"displayName": "Qt-GW-AMD64-Dbg",
-			"description": "QT Application build using AMD64",
+			"name": "gw-debug",
+			"displayName": "GW-Debug",
+			"description": "QT Application build using GW toolchain.",
 			"inherits": [
 				".build"
 			],
-			"configurePreset": "qt-gw-amd64-debug",
+			"configurePreset": "gw-debug",
 			"targets": [
 				"sf-misc",
 				"sf-gii",
@@ -184,13 +184,13 @@
 				"sf-wgt-layout" ]
 				},
 		{
-			"name": "qt-mingw-amd64-debug",
-			"displayName": "Qt-MinGW-AMD64-Dbg",
-			"description": "QT Application build using AMD64.",
+			"name": "mingw-debug",
+			"displayName": "MinGW-Debug",
+			"description": "QT Application build using MinGW toolchain.",
 			"inherits": [
 				".build"
 			],
-			"configurePreset": "qt-mingw-amd64-debug",
+			"configurePreset": "mingw-debug",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -200,11 +200,11 @@
 	],
 	"testPresets": [
 		{
-			"name": "gnu-amd64-debug",
+			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Qt-GNU-AMD64-Dbg",
-			"description": "QT Test build using GNU AMD64",
-			"configurePreset": "qt-gnu-amd64-debug",
+			"displayName": "GNU-Debug",
+			"description": "QT Test build using GNU toolchain.",
+			"configurePreset": "gnu-debug",
 			"output": {
 				"outputOnFailure": true
 			},
@@ -219,11 +219,11 @@
 			}
 		},
 		{
-			"name": "gw-amd64-debug",
+			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Qt-GW-AMD64-Dbg",
-			"description": "QT Test build using GW AMD64",
-			"configurePreset": "qt-gw-amd64-debug",
+			"displayName": "GW-Debug",
+			"description": "QT Test build using GW toolchain.",
+			"configurePreset": "gw-debug",
 			"output": {
 				"outputOnFailure": true,
 				"shortProgress": true,
@@ -240,11 +240,11 @@
 			}
 		},
 		{
-			"name": "mingw-amd64-debug",
+			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Qt-MinGW-AMD64-Dbg",
-			"description": "QT Test build using MinGW AMD64.",
-			"configurePreset": "qt-mingw-amd64-debug",
+			"displayName": "MinGW-Debug",
+			"description": "QT Test build using MinGW toolchain.",
+			"configurePreset": "mingw-debug",
 			"output": {
 				"outputOnFailure": true
 			},
