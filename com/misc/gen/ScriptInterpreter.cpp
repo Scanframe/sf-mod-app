@@ -499,8 +499,10 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 					// Wait until the time elapses.
 					while (!_sleepTimer)
 					{
+#ifdef TARGET_QT
 						// TODO: Should call event process from QT.
 						qWarning() << "Not implemented yet!";
+#endif
 					}
 				}
 				result->set(0);

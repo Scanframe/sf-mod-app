@@ -3,7 +3,7 @@
 #include <iostream>
 #include <misc/gen/gen_utils.h>
 
-TEST_CASE("sf::Closure", "[generic]")
+TEST_CASE("sf::Closure", "[con][generic]")
 {
 	using Catch::Matchers::Equals;
 

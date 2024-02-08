@@ -2,7 +2,7 @@
 #include <iostream>
 #include <misc/gen/ScriptEngine.h>
 
-TEST_CASE("sf::ScriptEngine", "[calc]")
+TEST_CASE("sf::ScriptEngine", "[con][calc]")
 {
 	using Catch::Approx;
 

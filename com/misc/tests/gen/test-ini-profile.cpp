@@ -3,7 +3,7 @@
 #include <misc/gen/gen_utils.h>
 #include <misc/gen/IniProfile.h>
 
-TEST_CASE("sf::IniProfile", "[ini][file]")
+TEST_CASE("sf::IniProfile", "[con][generic][ini]")
 {
 	using Catch::Matchers::Equals;
 

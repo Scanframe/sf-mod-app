@@ -1,20 +1,20 @@
 #include "qt_utils.h"
 #if IS_WIN
-#include "../win/win_utils.h"
+	#include "../win/win_utils.h"
 #endif
 #include "../gen/dbgutils.h"
 #include <QApplication>
-#include <QFont>
-#include <QStyle>
-#include <QSettings>
-#include <QMetaEnum>
 #include <QDir>
 #include <QFileInfo>
-#include <QWidget>
 #include <QFileSystemWatcher>
-#include <QLayout>
+#include <QFont>
 #include <QFormLayout>
+#include <QLayout>
+#include <QMetaEnum>
+#include <QSettings>
+#include <QStyle>
 #include <QTimer>
+#include <QWidget>
 
 namespace sf
 {
@@ -113,17 +113,16 @@ QListView, QTreeView
 	color: %1;
 }
 )")
-		.arg(pal.color(QPalette::ColorRole::WindowText).name(QColor::HexArgb))
-		.arg(pal.color(QPalette::ColorRole::Button).name(QColor::HexArgb))
-		.arg(pal.color(QPalette::ColorRole::ButtonText).name(QColor::HexArgb))
-		.arg(pal.color(QPalette::ColorRole::Window).darker(130).name(QColor::HexArgb))
-	);
+										 .arg(pal.color(QPalette::ColorRole::WindowText).name(QColor::HexArgb))
+										 .arg(pal.color(QPalette::ColorRole::Button).name(QColor::HexArgb))
+										 .arg(pal.color(QPalette::ColorRole::ButtonText).name(QColor::HexArgb))
+										 .arg(pal.color(QPalette::ColorRole::Window).darker(130).name(QColor::HexArgb)));
 	fd.setPalette(pal);
 }
 
 ApplicationSettings::ApplicationSettings(QObject* parent)
-	:QObject(parent)
-	 , _watcher(new QFileSystemWatcher(this))
+		: QObject(parent)
+		, _watcher(new QFileSystemWatcher(this))
 {
 	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &ApplicationSettings::onFileChance);
 }
@@ -179,6 +178,11 @@ const QFileInfo& ApplicationSettings::fileInfo() const
 
 void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 {
+	// Bailout if this is not a GUI application.
+	if (!isGuiApplication())
+	{
+		return;
+	}
 	// Form the ini's directory to relate to.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// To use the same ini file in Linux and Windows a different prefix is used.
@@ -217,10 +221,10 @@ void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 		settings.setValue(key, font.family());
 	}
 	font.setFamily(settings.value(key, font.family()).toString());
-//	for (auto fnm: QFontDatabase::families(QFontDatabase::Latin))
-//	{
-//		qInfo() << fnm;
-//	}
+	//	for (auto fnm: QFontDatabase::families(QFontDatabase::Latin))
+	//	{
+	//		qInfo() << fnm;
+	//	}
 	// Same as above.
 	key = "Font-PointSize";
 	if (!readOnly && settings.isWritable() && !keys.contains(key))
@@ -244,7 +248,7 @@ void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 			if (qss.open(QFile::ReadOnly | QIODevice::Text))
 			{
 				QByteArray ba = qss.readAll();
-				qApp->setStyleSheet(ba); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+				qApp->setStyleSheet(ba);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 			}
 		}
 		if (watch)
@@ -329,15 +333,13 @@ void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool
 	settings.endGroup();
 }
 
-QMetaObject::Connection connectByName
-	(
-		const QWidget* widget,
-		const QString& sender_name,
-		const char* signal_name,
-		const QObject* receiver,
-		const char* method_name,
-		Qt::ConnectionType ct
-	)
+QMetaObject::Connection connectByName(
+	const QWidget* widget,
+	const QString& sender_name,
+	const char* signal_name,
+	const QObject* receiver,
+	const char* method_name,
+	Qt::ConnectionType ct)
 {
 	auto sender = widget->findChild<QObject*>(sender_name);
 	if (sender)
@@ -440,7 +442,7 @@ void dumpObjectProperties(QObject* obj)
 	do
 	{
 		qDebug() << "### Class" << mo->className();
-		std::vector<std::pair<QString, QVariant> > v;
+		std::vector<std::pair<QString, QVariant>> v;
 		v.reserve(mo->propertyCount() - mo->propertyOffset());
 		for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)
 		{
@@ -451,8 +453,7 @@ void dumpObjectProperties(QObject* obj)
 		{
 			qDebug() << i.first << "=>" << i.second;
 		}
-	}
-	while ((mo = mo->superClass()));
+	} while ((mo = mo->superClass()));
 }
 
 QModelIndex getSourceModelIndex(const QModelIndex& index)
@@ -462,11 +463,11 @@ QModelIndex getSourceModelIndex(const QModelIndex& index)
 	{
 		return apm->mapToSource(index);
 	}
-	// Whe not pass the index.
+	// When not pass the index.
 	return index;
 }
 
-void doExpandTreeView(QTreeView* tv, bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
+void doExpandTreeView(QTreeView* tv, bool expand, const QModelIndex& index)// NOLINT(misc-no-recursion)
 {
 	if (!index.isValid())
 	{
@@ -496,4 +497,9 @@ void expandTreeView(QTreeView* tv, bool expand, const QModelIndex& index)
 	}
 }
 
+bool isGuiApplication()
+{
+	return dynamic_cast<QGuiApplication*>(QCoreApplication::instance()) != nullptr;
 }
+
+}// namespace sf

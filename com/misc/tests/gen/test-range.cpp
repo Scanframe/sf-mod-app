@@ -4,7 +4,7 @@
 #include <sstream>
 #include <misc/gen/Range.h>
 
-TEST_CASE("sf::Range", "[generic][range]")
+TEST_CASE("sf::Range", "[con][generic][range]")
 {
 	using Catch::Matchers::Equals;
 

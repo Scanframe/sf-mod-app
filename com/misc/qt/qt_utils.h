@@ -134,7 +134,7 @@ _MISC_FUNC QRect moveRectWithinRect(const QRect& outer, const QRect& inner);
 
 
 /**
- * @brief Type to hold
+ * @brief Type to hold palette colors.
  */
 class _MISC_CLASS PaletteColors
 {
@@ -155,8 +155,6 @@ class _MISC_CLASS PaletteColors
 	private:
 		typedef QPair<QPalette::ColorRole, QColor> Pair;
 		QList<Pair> _colors;
-
-		//void styleMessageBox(QMessageBox& mb) const;
 };
 
 /**
@@ -409,5 +407,9 @@ _MISC_FUNC QModelIndex getSourceModelIndex(const QModelIndex& index);
  */
 _MISC_FUNC void expandTreeView(QTreeView* tv, bool expand = true, const QModelIndex& index = {});
 
-
+/**
+ * @brief Checks if the running QCoreApplication is a GUI application.
+ * @return True when a GUI application.
+ */
+_MISC_FUNC bool isGuiApplication();
 }

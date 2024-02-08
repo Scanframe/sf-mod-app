@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.18)
 project("sf-misc"
 	DESCRIPTION "Scanframe miscellaneous library"
 	LANGUAGES CXX
-	)
+)
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "../cmake")
@@ -66,7 +66,7 @@ set(SOURCES
 	gen/TPointer.h
 	gen/TBitSet.h
 	gen/Md5Hash.cpp gen/Md5Hash.h
-	)
+)
 
 if (NOT WIN32)
 
@@ -78,7 +78,7 @@ if (NOT WIN32)
 		lnx/File.h lnx/File.cpp
 		lnx/FileMapper.h lnx/FileMapper.cpp
 		lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
-		)
+	)
 
 	list(APPEND SOURCES ${SOURCES_LNX})
 
@@ -90,7 +90,7 @@ else (NOT WIN32)
 		win/win_utils.cpp win/win_utils.h
 		win/WinTimer.cpp win/WinTimer.h
 		win/FileMapper.h win/FileMapper.cpp
-		)
+	)
 	list(APPEND SOURCES ${SOURCES_WIN})
 
 endif (NOT WIN32)
@@ -143,7 +143,7 @@ if (SF_BUILD_QT)
 		qt/Macros.h
 		qt/res/resource.qrc
 		qt/res/icons.qrc
-		)
+	)
 
 	list(APPEND SOURCES ${SOURCES_QT})
 	list(APPEND LIBRARIES Qt::Widgets Qt::Designer)
@@ -152,6 +152,9 @@ endif (SF_BUILD_QT)
 
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
+
+# Adds the compiler and linker options for coverage.
+Sf_AddTargetForCoverage("${PROJECT_NAME}")
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
@@ -163,35 +166,39 @@ endif (SF_BUILD_QT)
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 
-# Tell the compiled code a dynamic library (DL) is being build.
-target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
-
-# Tell the compiled code a dynamic library (DL) is being build.
-target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
-
-# Tell the code the 'sf-misc' library is used as an archive. (So no imports or exports)
-#target_compile_definitions(${PROJECT_NAME} PRIVATE _MISC_ARC)
-
-# Tell the code the 'misc' library is used as dynamic library. (So imports needed)
-target_compile_definitions(${PROJECT_NAME} PRIVATE _MISC_PKG)
-
-# The 'DEBUG_LEVEL' controls the debug output macro's.
-target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
-
-# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
-#target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
+# Add target compile definitions.
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+	# Tell the compiled code a dynamic library (DL) is being build.
+	TARGET_DYNAMIC_LIB
+	# Tell the compiled code a dynamic library (DL) is being build.
+	QDESIGNER_EXPORT_WIDGETS
+	# Tell the code the 'sf-misc' library is used as an archive. (So no imports or exports)
+	#_MISC_ARC
+	# Tell the code the 'misc' library is used as dynamic library. (So imports needed)
+	_MISC_PKG
+	# The 'DEBUG_LEVEL' controls the debug output macro's.
+	_DEBUG_LEVEL=1
+	# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
+	#REPORT_TARGET
+)
 
 # Set the include directory for this library when it is imported by another sub project.
-set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/..")
+set_property(TARGET "${PROJECT_NAME}" PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/..")
 
 # Testing only available if this is the main app
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
-	add_subdirectory(tests/app/threads)
-	add_subdirectory(tests/app/script)
-	add_subdirectory(tests/app/mutex)
+	Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/gen" ".+")
+	foreach (_TestApp ${_TestApps})
+		add_subdirectory("tests/app/gen/${_TestApp}")
+	endforeach ()
+	if (SF_BUILD_QT)
+		Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/qt" ".+")
+		foreach (_TestApp ${_TestApps})
+			add_subdirectory("tests/app/qt/${_TestApp}")
+		endforeach ()
+	endif ()
 endif ()
 
 # Install designer plugin in plugins directory of current compiler.
-install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)
+install(TARGETS "${PROJECT_NAME}" DESTINATION ${QT_PLUGINS_DIR}/designer)

@@ -76,13 +76,13 @@ class _MISC_CLASS IntervalTimer
 		[[nodiscard]] inline bool isEnabled() const;
 
 		/**
-		 * @brief Gets the set interval time in msec.
+		 * @brief Gets the set interval time in TimeSpec format.
 		 *
 		 * @return Interval time.
 		 */
 		[[nodiscard]] inline const TimeSpec& getInterval() const;
 		/**
-		 * @brief Gets the set interval time in msec.
+		 * @brief Gets the set interval time in TimeSpec format.
 		 *
 		 * @return Interval time.
 		 */
@@ -96,7 +96,7 @@ class _MISC_CLASS IntervalTimer
 		[[nodiscard]] TimeSpec getTimeLeft() const;
 
 		/**
-		 * @brief Gets the time left in msec before function active becomes true.
+		 * @brief Gets the time left in TimeSpec format before function active becomes true.
 		 *
 		 * @param t #sf::getTime() value.
 		 * @return Time left.
@@ -104,14 +104,14 @@ class _MISC_CLASS IntervalTimer
 		[[nodiscard]] TimeSpec getTimeLeft(const timespec& t) const;
 
 		/**
-		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
+		 * @brief Same as time left, but it also gives the time passed the target time and before that as a negative value.
 		 *
 		 * @return Time over value.
 		 */
 		[[nodiscard]] TimeSpec getTimeOver() const;
 
 		/**
-		 * @brief Same as time left but it also gives the time passed the target time and before that as a negative value.
+		 * @brief Same as time left, but it also gives the time passed the target time and before that as a negative value.
 		 *
 		 * @param t Clock() value.
 		 * @return Time over value.

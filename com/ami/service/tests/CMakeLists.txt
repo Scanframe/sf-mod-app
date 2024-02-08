@@ -10,7 +10,7 @@ set(TEST_LIBRARIES Catch2::Catch2 sf-misc)
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 
 # Tests need to be added as executables first
-add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})
+add_executable("${TEST_TARGET}" main.cpp ${TEST_SOURCES})
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${TEST_TARGET}")
@@ -19,10 +19,13 @@ Sf_SetTargetSuffix("${TEST_TARGET}")
 #target_compile_definitions(${TEST_TARGET} PRIVATE TARGET_QT)
 
 # Should be linked to the main library, as well as the Catch2 testing library
-target_link_libraries(${TEST_TARGET} PRIVATE ${TEST_LIBRARIES})
+target_link_libraries("${TEST_TARGET}" PRIVATE ${TEST_LIBRARIES})
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME ${TEST_TARGET}-test${_TestBinSuffix} COMMAND ${TEST_TARGET})
+add_test(NAME "${TEST_TARGET}" COMMAND ${TEST_TARGET})
+
+# Make sure this test is executed before coverage test.
+Sf_AddAsCoverageTest("${TEST_TARGET}")
 

@@ -3,7 +3,6 @@
 #include "Variable.h"
 #include "gii/global.h"
 #include "gii/gen/UnitConversionServer.h"
-#include <misc/qt/PropertySheetDialog.h>
 
 namespace sf
 {

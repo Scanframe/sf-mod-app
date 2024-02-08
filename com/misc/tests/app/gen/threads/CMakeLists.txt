@@ -1,18 +1,9 @@
 # Set the target name using the project name as a base name.
-set(TEST_APP_TARGET "${PROJECT_NAME}-test-app")
+get_filename_component(SF_PROJECT_SUFFIX ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+set(TEST_APP_TARGET "${PROJECT_NAME}-test-app-${SF_PROJECT_SUFFIX}")
 
-# Uses directory Set by Sf_SetOutputDirs().
-find_package(SfMisc REQUIRED)
-find_package(SfGii REQUIRED)
-find_package(SfPal REQUIRED)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-# Find the needed packages.
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+# Make Catch2::Catch2 library available.
+find_package(SfCatch2 CONFIG REQUIRED)
 
 # Find the test sources.
 file(GLOB TEST_APP_SOURCES "test-*")
@@ -27,7 +18,7 @@ Sf_AddTargetForCoverage("${TEST_APP_TARGET}")
 Sf_SetTargetSuffix("${TEST_APP_TARGET}")
 
 # Should be linked to the main library, as well as the Catch2 testing library.
-target_link_libraries("${TEST_APP_TARGET}" PRIVATE Qt::Widgets sf-misc sf-gii sf-pal sf-pal-simple sf-pal-amplitude)
+target_link_libraries("${TEST_APP_TARGET}" PRIVATE pthread sf-misc)
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
@@ -36,4 +27,3 @@ add_test(NAME "${TEST_APP_TARGET}" COMMAND ${TEST_APP_TARGET})
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_APP_TARGET}")
-

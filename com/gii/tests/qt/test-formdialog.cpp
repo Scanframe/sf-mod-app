@@ -1,12 +1,13 @@
-#include <gii/gen/Variable.h>
+#include "misc/qt/qt_utils.h"
+#include <QCoreApplication>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QTemporaryDir>
+#include <QTimer>
 #include <gii/gen/UnitConversionServer.h>
+#include <gii/gen/Variable.h>
 #include <misc/qt/FormDialog.h>
 #include <test/catch.h>
-#include <QFileDialog>
-#include <QCoreApplication>
-#include <QTimer>
-#include <QTemporaryDir>
-#include <QStandardPaths>
 
 extern int debug_level;
 
@@ -37,6 +38,11 @@ TEST_CASE("sf::FormDialog", "[debug]")
 
 	SECTION("Create UI Form")
 	{
+		// When not GUI application has been started skip this test.
+		if (!sf::isGuiApplication())
+		{
+			SKIP("QApplication is not running.");
+		}
 		// Initialize the unit conversion interface.
 		std::istringstream is(IniContent);
 		sf::UnitConversionServer ucs;

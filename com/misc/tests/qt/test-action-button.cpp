@@ -1,21 +1,26 @@
 #include <test/catch.h>
 
 #include <QApplication>
-#include <QTimer>
-#include <QTemporaryDir>
-#include <QStandardPaths>
 #include <QPainter>
-#include <QIcon>
 #include <QPushButton>
-#include <misc/qt/FormDialog.h>
+#include <QStandardPaths>
+#include <QTemporaryDir>
+#include <QTimer>
 #include <misc/qt/DrawWidget.h>
+#include <misc/qt/FormDialog.h>
+#include "misc/qt/qt_utils.h"
 
 extern int debug_level;
 
-TEST_CASE("sf::ActionButton", "[qt][gui]")
+TEST_CASE("sf::ActionButton", "[gui][qt]")
 {
 	SECTION("Load from Resource")
 	{
+		// When not GUI application has been started skip this test.
+		if (!sf::isGuiApplication())
+		{
+			SKIP("QApplication is not running.");
+		}
 		// Set the file location to the resource.
 		QFileInfo fi(":/ui/action-button");
 		REQUIRE(fi.exists());

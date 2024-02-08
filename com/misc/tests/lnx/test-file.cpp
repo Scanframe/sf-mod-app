@@ -5,7 +5,7 @@
 #include <misc/gen/gen_utils.h>
 #include <misc/lnx/File.h>
 
-TEST_CASE("sf::lnx::File", "[linux][file]")
+TEST_CASE("sf::lnx::File", "[con][linux][file]")
 {
 	using Catch::Matchers::Equals;
 	using Catch::Matchers::Matches;

@@ -41,7 +41,7 @@ struct MyListener :sf::ListenerList
 	std::string offset;
 };
 
-TEST_CASE("sf::ListenerList", "[generic]")
+TEST_CASE("sf::ListenerList", "[con][generic]")
 {
 	using Catch::Matchers::Equals;
 

@@ -20,7 +20,7 @@ void Report(sf::RangeManager& rm, const sf::Range::Vector& results)
 
 }
 
-TEST_CASE("sf::RangeManager", "[generic][range]")
+TEST_CASE("sf::RangeManager", "[con][generic][range]")
 {
 	sf::RangeCompareExact = true;
 	//

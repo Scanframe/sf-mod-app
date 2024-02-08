@@ -8,7 +8,7 @@
 #include <misc/gen/Exception.h>
 #include "misc/gen/Md5Hash.h"
 
-TEST_CASE("sf::lnx::FileMapper", "[linux][file]")
+TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 {
 	SECTION("Create")
 	{

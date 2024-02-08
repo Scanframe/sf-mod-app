@@ -3,7 +3,7 @@
 #include "misc/gen/gen_utils.h"
 #include <misc/win/FileMapper.h>
 
-TEST_CASE("sf::win::FileMapper", "[windows][file]")
+TEST_CASE("sf::win::FileMapper", "[con][windows][file]")
 {
 	using Catch::Matchers::Equals;
 

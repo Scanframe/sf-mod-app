@@ -6,6 +6,7 @@
 #include "Condition.h"
 #include "Thread.h"
 #include <functional>
+#include <atomic>
 
 namespace sf
 {

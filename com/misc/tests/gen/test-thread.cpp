@@ -1,12 +1,8 @@
 #include <test/catch.h>
 #include <misc/gen/Thread.h>
 #include <misc/gen/ThreadRelay.h>
-#include <misc/gen/Semaphore.h>
-#include <misc/gen/ElapseTimer.h>
 #include <misc/gen/PerformanceTimer.h>
-#include <misc/gen/dbgutils.h>
 #include <iostream>
-#include <cstring>
 #include <memory>
 
 extern int debug_level;
@@ -61,7 +57,7 @@ int Worker::method3(int v1, int v2, int v3)
 
 }
 
-TEST_CASE("sf::Thread", "[generic][thread]")
+TEST_CASE("sf::Thread", "[con][generic][thread]")
 {
 	SECTION("Count", "Getting the amount of threads in a process.")
 	{

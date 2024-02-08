@@ -29,6 +29,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network REQUIRED)
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
+# Adds the compiler and linker options for coverage.
+Sf_AddTargetForCoverage("${PROJECT_NAME}")
+
 target_sources(${PROJECT_NAME} PRIVATE
 	res/resource.qrc
 	LibMain.cpp

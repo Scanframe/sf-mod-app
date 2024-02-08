@@ -18,4 +18,4 @@ target_link_libraries(${MY_TEST_TARGET} PRIVATE Qt::Test)
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME ${MY_TEST_TARGET}-test${_TestBinSuffix} COMMAND ${MY_TEST_TARGET})
+add_test(NAME ${MY_TEST_TARGET} COMMAND ${MY_TEST_TARGET})

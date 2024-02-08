@@ -108,6 +108,9 @@ list(APPEND SOURCES)
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
+# Adds the compiler and linker options for coverage.
+Sf_AddTargetForCoverage("${PROJECT_NAME}")
+
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Link the Qt widgets library.
@@ -140,12 +143,18 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}")
 
 # Testing only available if this is the main app
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
 if (SF_BUILD_TESTING)
 	add_subdirectory(tests)
-	add_subdirectory(tests/app/graph)
-	add_subdirectory(tests/app/dialog)
-	add_subdirectory(tests/app/select-id)
+	Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/gen" ".+")
+	foreach (_TestApp ${_TestApps})
+		add_subdirectory("tests/app/gen/${_TestApp}")
+	endforeach ()
+	if (SF_BUILD_QT)
+		Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/qt" ".+")
+		foreach (_TestApp ${_TestApps})
+			add_subdirectory("tests/app/qt/${_TestApp}")
+		endforeach ()
+	endif ()
 endif ()
 
 # Install designer plugin in plugins directory of current compiler.

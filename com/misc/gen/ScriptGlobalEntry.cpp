@@ -1,4 +1,5 @@
 #include "ScriptGlobalEntry.h"
+#include <map>
 
 namespace sf
 {
