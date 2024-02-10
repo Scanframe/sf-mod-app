@@ -19,7 +19,7 @@ struct
 
 }
 
-TEST_CASE("sf::Value", "[generic][value]")
+TEST_CASE("sf::Value", "[con][generic][value]")
 {
 	using Catch::Matchers::Equals;
 

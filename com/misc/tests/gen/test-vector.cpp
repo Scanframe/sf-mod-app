@@ -13,7 +13,7 @@ std::string toString(const sf::TVector<T>& v)
 }
 }
 
-SCENARIO("sf::TVector", "[generic][vector]")
+SCENARIO("sf::TVector", "[con][generic][vector]")
 {
 	GIVEN("A Counted Vector")
 	{

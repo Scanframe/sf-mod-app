@@ -3,7 +3,7 @@
 #include "misc/qt/qt_utils.h"
 #include <misc/qt/FileMapper.h>
 
-TEST_CASE("sf::qt::FileMapper", "[generic][qt][file]")
+TEST_CASE("sf::qt::FileMapper", "[con][generic][qt][file]")
 {
 	using Catch::Matchers::Equals;
 

@@ -1,5 +1,3 @@
-
-
 #include "IntervalTimer.h"
 #include "gen_utils.h"
 
@@ -14,20 +12,19 @@ void IntervalTimer::set(const timespec& t)
 	_target += _interval;
 }
 
-
 IntervalTimer::IntervalTimer(int usec)
+	:_interval(TimeSpec::nsec_type(usec) * 1000)
+	,_target(getTime())
 {
 	_enabled = true;
-	_interval = TimeSpec(TimeSpec::nsec_type(usec) * 1000);
-	_target = getTime();
 	_target += _interval;
 }
 
 IntervalTimer::IntervalTimer(double sec)
+	:_interval(sec)
+	,_target(getTime())
 {
 	_enabled = true;
-	_interval = TimeSpec(sec);
-	_target = getTime();
 	_target += _interval;
 }
 
@@ -45,7 +42,7 @@ bool IntervalTimer::active(const timespec& t) const
 	// Check if time is over.
 	if (timespecCompare(t, _target) >= 0)
 	{
-		// Set new interval target
+		// Set new interval target.
 		*const_cast<TimeSpec*>(&_target) = _interval + t;
 		return true;
 	}
@@ -89,4 +86,4 @@ TimeSpec IntervalTimer::getTimeOver(const timespec& t) const
 	return {};
 }
 
-}
+}// namespace sf

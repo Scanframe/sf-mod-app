@@ -8,7 +8,7 @@ namespace sf
 
 }
 
-TEST_CASE("sf::General-Utils", "[generic][utils]")
+TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 {
 	using Catch::Matchers::Equals;
 

@@ -15,7 +15,14 @@ int debug_level = 0;
 int main(int argc, char* argv[])
 {
 #if IS_QT
-	QApplication app(argc, argv);
+	// Display environment variable in only available at a Linux OS.
+	#if !IS_WIN
+	// Get the DISPLAY environment
+	std::string display(::getenv("DISPLAY"));
+	std::unique_ptr<QCoreApplication> app((display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
+	#else
+	std::unique_ptr<QCoreApplication> app(new QApplication app(argc, argv));
+	#endif
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.

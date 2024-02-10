@@ -9,7 +9,7 @@
 #include <misc/lnx/FileMapper.h>
 #endif
 
-TEST_CASE("sf::FileMapper", "[generic][file]")
+TEST_CASE("sf::FileMapper", "[con][generic][file]")
 {
 	using Catch::Matchers::Equals;
 

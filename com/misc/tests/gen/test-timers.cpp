@@ -7,7 +7,7 @@
 #include <misc/gen/IntervalTimer.h>
 #include <misc/gen/gen_utils.h>
 
-TEST_CASE("sf::TimeSpec", "[generic][timers]")
+TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
 {
 
 	SECTION("Construct(double)", "Constructing from 'double' type")
@@ -110,7 +110,7 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 			::usleep(150000);
 		}
 		// Since the timer is disabled it will never be activated/elapsed.
-		CHECK(pt.elapse().toDouble() >= 1.5);
+		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(0.001));
 		// Check if the timer is disabled.
 		CHECK(!et.isEnabled());
 	}
@@ -125,7 +125,6 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		CHECK(it.getInterval() == sf::TimeSpec(0, 200000000l));
 		//
 		CHECK((it.getInterval() + sf::getTime()).toDouble() == Approx(it.getTarget().toDouble()).margin(0.001));
-
 		// Check if the timer is enabled by default.
 		REQUIRE(it.isEnabled());
 		// Counter for the mount of timeouts.
@@ -137,11 +136,12 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		{
 			::usleep(sleep_time);
 			// Check it the timer timed out.
-			if (it)
+			if (it.active())
 			{
 				count++;
 			}
 		}
+		//std::cout << "TimeLeft: " << it.getTimeLeft() << std::endl;
 		CHECK(count == 5);
 		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.3));
 	}

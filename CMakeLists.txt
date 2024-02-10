@@ -49,6 +49,7 @@ find_package(SfCompiler CONFIG REQUIRED)
 Sf_SetOutputDirs("bin")
 
 if (SF_BUILD_TESTING)
+	set(Catch2_VERSION "v3.5.2")
 	# Prevents Catch2 from adding targets.
 	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.

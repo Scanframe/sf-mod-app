@@ -29,7 +29,7 @@ struct ConfigHandler
 }
 
 
-TEST_CASE("sf::ConfigLocation", "[calc]")
+TEST_CASE("sf::ConfigLocation", "[con][generic]")
 {
 
 	SECTION("NoHandler", "No handler installed")

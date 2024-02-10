@@ -60,7 +60,7 @@ strings split(const S& s, S::value_type sep, S::value_type delimiter = 0)
 
 }
 
-TEST_CASE("sf::StringSplit", "[generic][strings]")
+TEST_CASE("sf::StringSplit", "[con][generic][strings]")
 {
 	using Catch::Matchers::Equals;
 

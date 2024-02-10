@@ -5,7 +5,7 @@
 #include "misc/gen/dbgutils.h"
 #include "misc/gen/gen_utils.h"
 
-TEST_CASE("sf::md5hash", "[generic][md5]")
+TEST_CASE("sf::md5hash", "[con][generic][md5]")
 {
 	// Some data to hash and compare having a MD5 == 573be3b9b25fd16a380b88c3911b689c .
 	static const char* data = R"(

@@ -13,7 +13,7 @@ std::string toString(const sf::TDeque<T>& v)
 }
 }
 
-SCENARIO("sf::TDeque", "[generic][deque]")
+SCENARIO("sf::TDeque", "[con][generic][deque]")
 {
 	GIVEN("A Counted Deque")
 	{

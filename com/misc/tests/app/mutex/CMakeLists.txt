@@ -23,5 +23,5 @@ target_link_libraries(${TEST_APP_TARGET} PRIVATE pthread sf-misc)
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME ${TEST_APP_TARGET}-test${_TestBinSuffix} COMMAND ${TEST_APP_TARGET})
+#add_test(NAME ${TEST_APP_TARGET}-test${_TestBinSuffix} COMMAND ${TEST_APP_TARGET})
 

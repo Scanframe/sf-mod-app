@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 # Set the global project name.
-project("pal")
+project("sf-pal")
 
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
