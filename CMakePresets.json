@@ -58,7 +58,6 @@
 			"description": "Configuration to build qt-app using Linux GNU compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "ON",
-				"SF_TARGET_SYSTEM": "Linux",
 				"SF_CROSS_WINDOWS": "OFF"
 			},
 			"binaryDir": "${sourceDir}/cmake-build/qt-gnu-debug"
@@ -69,7 +68,6 @@
 			"description": "Configuration to build qt-app using Linux GNU cross compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "OFF",
-				"SF_TARGET_SYSTEM": "Windows",
 				"SF_CROSS_WINDOWS": "ON"
 			},
 			"inherits": [
@@ -83,7 +81,6 @@
 			"description": "Configuration to build qt-app using Windows MinGW compiler.",
 			"cacheVariables": {
 				"SF_BUILD_TESTING": "OFF",
-				"SF_TARGET_SYSTEM": "Windows",
 				"SF_CROSS_WINDOWS": "OFF"
 			},
 			"inherits": [

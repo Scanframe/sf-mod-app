@@ -9,6 +9,8 @@ function docker_run {
 	IMG_NAME="nexus.scanframe.com:8090/gnu-cpp:dev"
 	# Hostname for the docker container.
 	HOSTNAME="cpp-builder"
+#		--env DISPLAY \
+#		--volume "${HOME}/.Xauthority:/home/user/.Xauthority:ro" \
 	docker run \
 		--rm \
 		--interactive \
@@ -16,12 +18,14 @@ function docker_run {
 		--privileged \
 		--net=host \
 		--env LOCAL_USER="$(id -u):$(id -g)" \
-		--env DISPLAY \
-		--volume "${HOME}/.Xauthority:/home/user/.Xauthority:ro" \
 		--volume "${SCRIPT_DIR}:/mnt/project:rw" \
+		--volume "${SCRIPT_DIR}/cmake-build-docker:/mnt/project/cmake-build:rw" \
 		--workdir "/mnt/project/" \
 		"${IMG_NAME}" "${@}"
 }
+
+
 # Execute the build script from the Docker image.
-docker_run /mnt/project/build.sh "${@}"
+docker_run /bin/bash
+#docker_run /mnt/project/build.sh "${@}"
 
