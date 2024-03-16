@@ -80,16 +80,17 @@ default:
 check-env:
   stage: check
   script:
-    - echo "Working Directory=$(pwd)"
+    - 'echo "Working Directory=$(pwd)"'
     # Print all environments variables sorted to make it easier to find.
-    - echo "Environment Dump" && printenv | sort
+    - 'echo "Environment Dump" && printenv | sort'
     # Check the formatting of the code.
-    - ./check-format.sh
+    - '[[ -f check-format.sh ]] && ./check-format.sh'
 
 # Does a cache and artifact check.
 cache-test:
   stage: build
-  needs: [check-env]
+  needs:
+    - job: check-env
   rules:
     # Run when signal is test.
     - if: '$SF_SIGNAL != "test"'
@@ -110,7 +111,9 @@ cache-test:
 
 linux-gnu:
   stage: build
-  needs: [check-env, linux-gcov]
+  needs:
+    - job: check-env
+    - job: linux-gcov
   extends: .build-rules
   variables:
     # Set the toolchain to use.
@@ -126,7 +129,9 @@ linux-gnu:
 
 linux-gw:
   stage: build
-  needs: [check-env, linux-gcov]
+  needs:
+    - job: check-env
+    - job: linux-gcov
   extends: .build-rules
   variables:
     # Set the toolchain to use.

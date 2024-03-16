@@ -90,8 +90,6 @@ job-build:
 
 # Template for all deploy jobs.
 .deploy:
-  needs:
-    - job: job-build
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
     - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
@@ -99,6 +97,8 @@ job-build:
 # Use non specific environment depended variables for deployment of development builds.
 job-deploy-develop:
   stage: deploy
+  needs:
+    - job: job-build
   extends: .deploy
   rules:
     # For testing the 'deploy' step in any scenario.
@@ -115,6 +115,8 @@ job-deploy-develop:
 # Use variables set using environment 'staging'.
 job-deploy-staging:
   stage: deploy
+  needs:
+    - job: job-build
   extends: .deploy
   environment: staging
   rules:
@@ -133,6 +135,8 @@ job-deploy-staging:
 # Use variables set using environment 'stable'.
 job-deploy-stable:
   stage: deploy
+  needs:
+    - job: job-build
   extends: .deploy
   environment: stable
   rules:
