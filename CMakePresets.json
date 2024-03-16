@@ -386,8 +386,7 @@
 			"configurePreset": "gnu-debug",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
-				"DEB",
-				"RPM"
+				"DEB"
 			]
 		},
 		{
@@ -418,8 +417,7 @@
 			"configurePreset": "gnu-release",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
-				"DEB",
-				"RPM"
+				"DEB"
 			]
 		},
 		{
