@@ -58,10 +58,8 @@ default:
     # Run manual when triggered by web.
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: manual
-      # Make the job optional.
-      allow_failure: true
     - when: always
-
+    - allow_failure: false
 # Template for rules on both coverage related jobs.
 .coverage-rules:
   rules:
@@ -71,10 +69,9 @@ default:
     # Run always when triggered by a merge request event.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
-    # By default, run manual and optional.
+      allow_failure: false
+    # By default, run manual.
     - when: manual
-      # Make the job optional.
-    - allow_failure: true
 
 # Reports the environment variables for debugging.
 check-env:
@@ -84,7 +81,7 @@ check-env:
     # Print all environments variables sorted to make it easier to find.
     - 'echo "Environment Dump" && printenv | sort'
     # Check the formatting of the code.
-    - '[[ -f check-format.sh ]] && ./check-format.sh'
+    - 'if [[ -f check-format.sh ]]; then ./check-format.sh; fi'
 
 # Does a cache and artifact check.
 cache-test:
@@ -96,8 +93,6 @@ cache-test:
     - if: '$SF_SIGNAL != "test"'
       when: never
     - when: always
-      # Make this job optional.
-      allow_failure: true
   variables:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "toolchain"
@@ -183,4 +178,4 @@ report-coverage:
     # Retrieve the coverage file needed for GitLab created by the child pipeline.
     - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
     # Output the report.txt for the regex to pickup on.
-    - '[[ -f "${SF_GCOVR_DIR}/report.txt" ]] && cat "${SF_GCOVR_DIR}/report.txt"'
+    - 'if [[ -f "${SF_GCOVR_DIR}/report.txt" ]]; then cat "${SF_GCOVR_DIR}/report.txt"; fi'
