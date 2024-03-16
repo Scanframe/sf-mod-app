@@ -17,7 +17,9 @@ file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 list(APPEND TEST_LIBRARIES Qt::Widgets)
 
 # Tests need to be added as executables first
-add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})
+add_executable("${TEST_TARGET}")
+
+target_sources("${TEST_TARGET}" PRIVATE main.cpp "${TEST_SOURCES}")
 
 #[[
 # Adds the compiler and linker options for coverage.

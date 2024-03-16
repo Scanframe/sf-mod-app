@@ -39,6 +39,10 @@
 					"type": "BOOL",
 					"value": "OFF"
 				},
+				"SF_BUILD_GUI_TESTING": {
+					"type": "BOOL",
+					"value": "OFF"
+				},
 				"SF_CROSS_WINDOWS": {
 					"type": "BOOL",
 					"value": "OFF"
@@ -81,6 +85,7 @@
 		{
 			"name": ".cfg-win",
 			"inherits": [
+				".qt",
 				".cfg"
 			],
 			"hidden": true,
@@ -117,6 +122,7 @@
 			"displayName": "Coverage GNU Compiler",
 			"description": "Coverage config GNU compiler on Linux.",
 			"inherits": [
+				".qt",
 				".cfg-lnx"
 			],
 			"cacheVariables": {

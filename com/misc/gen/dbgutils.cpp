@@ -11,10 +11,7 @@
 #include <mutex>
 
 #if IS_QT
-#include <QApplication>
-#include <QException>
-#include <QIcon>
-#include <QMessageBox>
+#include "qt/qt_utils.h"
 #endif
 
 #if IS_WIN
@@ -22,9 +19,9 @@
 #include <processenv.h>
 #endif
 
+#include "TimeSpec.h"
 #include "dbgutils.h"
 #include "gen_utils.h"
-#include "TimeSpec.h"
 
 namespace sf
 {
@@ -145,7 +142,8 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 				// Release lock to prevent lockup multiple threads.
 				DbgMutex.unlock();
 #if IS_QT
-				if (QApplication::instance())
+				// When not GUI application has been started skip this test.
+				if (sf::isGuiApplication())
 				{
 					QMessageBox(QMessageBox::Warning, caption, text).exec();
 				}

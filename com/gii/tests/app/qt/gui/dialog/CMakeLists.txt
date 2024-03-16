@@ -9,10 +9,12 @@ find_package(SfCatch2 CONFIG REQUIRED)
 file(GLOB TEST_APP_SOURCES "test-*")
 
 # Tests need to be added as executables first
-add_executable("${TEST_APP_TARGET}" main.cpp "${TEST_APP_SOURCES}")
+add_executable("${TEST_APP_TARGET}")
+
+target_sources("${TEST_APP_TARGET}" PRIVATE main.cpp "${TEST_APP_SOURCES}")
 
 # Adds the compiler and linker options for coverage.
-Sf_AddTargetForCoverage("${TEST_TARGET}")
+Sf_AddTargetForCoverage("${TEST_APP_TARGET}")
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${TEST_APP_TARGET}")
@@ -28,3 +30,10 @@ add_test(NAME "${TEST_APP_TARGET}" COMMAND ${TEST_APP_TARGET})
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_APP_TARGET}")
 
+
+#[[
+# Add custom-ui-plugin root location.
+get_filename_component(_location "${CMAKE_CURRENT_LIST_DIR}/../../../../" REALPATH)
+message("${_location}")
+target_include_directories(${TEST_APP_TARGET} PRIVATE ${_location})
+]]

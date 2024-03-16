@@ -218,7 +218,7 @@ void InformationServer::setWriteFlagForClass(EClass c, bool write_enable)
 	}
 	// generate debugging information.
 	SF_RTTI_NOTIFY(DO_DEFAULT, _variableList[c].size() << " variables of class " << std::string("ABC")[c]
-		<< " were made " << (write_enable ? " write enabled" : " read-only"));
+		<< " were made " << (write_enable ? "write enabled" : "read-only"));
 }
 
 void InformationServer::setArchiveFlag(bool archive)

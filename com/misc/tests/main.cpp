@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	auto display = qgetenv("DISPLAY");
 	std::unique_ptr<QCoreApplication> app((display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
 	#else
-	std::unique_ptr<QCoreApplication> app(new QApplication app(argc, argv));
+	std::unique_ptr<QCoreApplication> app(new QApplication(argc, argv));
 	#endif
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());

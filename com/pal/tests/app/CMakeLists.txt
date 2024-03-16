@@ -18,7 +18,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 file(GLOB TEST_APP_SOURCES "test-*")
 
 # Tests need to be added as executables first
-add_executable("${TEST_APP_TARGET}" main.cpp "${TEST_APP_SOURCES}")
+add_executable("${TEST_APP_TARGET}")
+
+target_sources("${TEST_APP_TARGET}" PRIVATE main.cpp "${TEST_APP_SOURCES}")
 
 # Adds the compiler and linker options for coverage.
 Sf_AddTargetForCoverage("${TEST_APP_TARGET}")

@@ -9,7 +9,9 @@ find_package(SfCatch2 CONFIG REQUIRED)
 file(GLOB TEST_APP_SOURCES "test-*")
 
 # Tests need to be added as executables first
-add_executable("${TEST_APP_TARGET}" main.cpp "${TEST_APP_SOURCES}")
+add_executable("${TEST_APP_TARGET}")
+
+target_sources("${TEST_APP_TARGET}" PRIVATE main.cpp "${TEST_APP_SOURCES}")
 
 # Adds the compiler and linker options for coverage.
 Sf_AddTargetForCoverage("${TEST_TARGET}")
@@ -18,12 +20,12 @@ Sf_AddTargetForCoverage("${TEST_TARGET}")
 Sf_SetTargetSuffix("${TEST_APP_TARGET}")
 
 # Should be linked to the main library, as well as the Catch2 testing library.
-target_link_libraries(${TEST_APP_TARGET} PRIVATE Qt::Designer pthread sf-misc sf-gii sf-wgt-ascan)
+target_link_libraries("${TEST_APP_TARGET}" PRIVATE Qt::Designer pthread sf-misc sf-gii)
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME ${TEST_APP_TARGET} COMMAND ${TEST_APP_TARGET})
+add_test(NAME "${TEST_APP_TARGET}" COMMAND ${TEST_APP_TARGET})
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_APP_TARGET}")

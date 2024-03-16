@@ -1,9 +1,7 @@
 #include <stdlib.h>
-#include <string.h>
-#include <vector>
 #include <iostream>
 
-std::string findAndReplaceAll(std::string data, std::string toSearch, std::string replaceStr)
+std::string findAndReplaceAll(std::string data, std::string_view toSearch, std::string_view replaceStr)
 {
 	// Get the first occurrence
 	size_t pos = data.find(toSearch);
@@ -39,7 +37,7 @@ std::string dirnameOf(const std::string& filepath)
 
 int executeWine(int argc, char* argv[])
 {
-	std::string args = escapeShellArg(dirnameOf(argv[0]).append("/../wine-exec.sh"));
+	std::string args = escapeShellArg(dirnameOf(argv[0]).append("/../win-exec.sh"));
 	for (int j = 1; j < argc; j++)
 	{
 		args.append(" ").append(escapeShellArg(argv[j]));

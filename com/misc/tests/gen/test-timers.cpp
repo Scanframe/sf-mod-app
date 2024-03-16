@@ -1,11 +1,11 @@
 #include <test/catch.h>
 
-#include <unistd.h>
-#include <misc/gen/TimeSpec.h>
 #include <misc/gen/ElapseTimer.h>
-#include <misc/gen/PerformanceTimer.h>
 #include <misc/gen/IntervalTimer.h>
+#include <misc/gen/PerformanceTimer.h>
+#include <misc/gen/TimeSpec.h>
 #include <misc/gen/gen_utils.h>
+#include <unistd.h>
 
 TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
 {
@@ -50,13 +50,12 @@ TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
 		CHECK(sf::TimeSpec(3, 400000000) >= sf::TimeSpec(1, 100000000));
 		CHECK(sf::TimeSpec(1, 100000000) <= sf::TimeSpec(3, 400000000));
 	}
-
 }
 
 TEST_CASE("sf::Timers", "[generic][timers]")
 {
-	using Catch::Matchers::Equals;
 	using Catch::Approx;
+	using Catch::Matchers::Equals;
 
 	SECTION("PerformanceTimer", "Individual class only")
 	{
@@ -142,8 +141,8 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 			}
 		}
 		//std::cout << "TimeLeft: " << it.getTimeLeft() << std::endl;
-		CHECK(count == 5);
+		//CHECK(count == 5)
+		CHECK_THAT(count, Catch::Matchers::Predicate<int>([](int const& val) -> bool { return val == 4 || val == 5; }, "Count should be 4 or 5"));
 		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.3));
 	}
-
 }

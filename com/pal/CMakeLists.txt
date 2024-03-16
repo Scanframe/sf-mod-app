@@ -19,7 +19,6 @@ add_subdirectory(simple)
 add_subdirectory(amplitude)
 
 # Testing only available if this is the main app
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)	AND SF_BUILD_TESTING)
-if (SF_BUILD_TESTING)
+if (SF_BUILD_TESTING AND SF_BUILD_GUI_TESTING)
 	add_subdirectory(tests/app)
-endif(SF_BUILD_TESTING)
+endif()

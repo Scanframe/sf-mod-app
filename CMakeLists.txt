@@ -33,11 +33,10 @@ project("qt-concepts"
 # Add top target for displaying info on the compiled targets where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Enables including Qt libraries when building (libraries) and needs to be defined.
-if (NOT DEFINED SF_BUILD_QT)
-	message(FATAL_ERROR "Variable 'SF_BUILD_QT' is not defined!")
-	#set(SF_BUILD_QT ON)
-endif ()
+# Declare some cmake change flags.
+set(SF_BUILD_TESTING "OFF" CACHE BOOL "Enable test targets to be build.")
+set(SF_BUILD_QT "OFF" CACHE BOOL "Enable QT targets to be build.")
+set(SF_BUILD_GUI_TESTING "OFF" CACHE BOOL "Enable testing of tests using the GUI.")
 
 # Use faster linker for Windows maybe?
 if (WIN32)
@@ -55,7 +54,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 
 # Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
@@ -121,11 +120,11 @@ endif ()
 # This must be the last test added since it relies on previous the calls
 # to 'Sf_AddAsCoverageTest()'.
 list(APPEND _CoverageDirs
-	com/misc/gen
-	com/misc/qt
-	com/misc/lnx
-	com/gii/gen
-	com/gii/qt
+	"com/misc/gen"
+	"com/misc/qt"
+	"com/misc/lnx"
+	"com/gii/gen"
+	"com/gii/qt"
 )
 Sf_AddTestCoverageReport("coverage-report" "${_CoverageDirs}" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov")
 

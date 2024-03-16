@@ -20,14 +20,16 @@ endif (WIN32)
 
 # When Qt libraries are linked.
 if (SF_BUILD_QT)
+	# Add the console unittests.
 	file(GLOB TEST_SOURCES_QT "${CMAKE_CURRENT_SOURCE_DIR}/qt/test-*")
-	list(APPEND TEST_SOURCES ${TEST_SOURCES_QT}
-		)
+	list(APPEND TEST_SOURCES ${TEST_SOURCES_QT})
 	list(APPEND TEST_LIBRARIES Qt::Widgets Qt::Designer)
 endif (SF_BUILD_QT)
 
 # Tests need to be added as executables first
-add_executable("${TEST_TARGET}" main.cpp ${TEST_SOURCES})
+add_executable("${TEST_TARGET}")
+
+target_sources("${TEST_TARGET}" PRIVATE main.cpp "${TEST_SOURCES}")
 
 # Adds the compiler and linker options for coverage.
 Sf_AddTargetForCoverage("${TEST_TARGET}")

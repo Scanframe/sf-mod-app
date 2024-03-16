@@ -149,13 +149,14 @@ if (SF_BUILD_TESTING)
 	foreach (_TestApp ${_TestApps})
 		add_subdirectory("tests/app/gen/${_TestApp}")
 	endforeach ()
-	if (SF_BUILD_QT)
-		Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/qt" ".+")
+	if (SF_BUILD_QT AND SF_BUILD_GUI_TESTING)
+		Sf_GetSubDirectories(_TestApps "${CMAKE_CURRENT_LIST_DIR}/tests/app/qt/gui" ".+")
 		foreach (_TestApp ${_TestApps})
 			add_subdirectory("tests/app/qt/${_TestApp}")
 		endforeach ()
 	endif ()
 endif ()
+
 
 # Install designer plugin in plugins directory of current compiler.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)
