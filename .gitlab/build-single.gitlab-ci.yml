@@ -61,6 +61,9 @@ default:
 # Wiping build directory is not needed since the push policy.
 job-build:
   stage: build
+  rules:
+    - when: always
+    - allow_failure: false
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
     # Expiration period before artifacts expire.
@@ -97,9 +100,12 @@ job-build:
 # Use non specific environment depended variables for deployment of development builds.
 job-deploy-develop:
   stage: deploy
+  extends: .deploy
   needs:
     - job: job-build
-  extends: .deploy
+  # Jobs from which it needs artifacts.
+  dependencies:
+    - job-build
   rules:
     # For testing the 'deploy' step in any scenario.
     - if: '$SF_SIGNAL == "deploy"'
@@ -115,9 +121,12 @@ job-deploy-develop:
 # Use variables set using environment 'staging'.
 job-deploy-staging:
   stage: deploy
+  extends: .deploy
   needs:
     - job: job-build
-  extends: .deploy
+  # Jobs from which it needs artifacts.
+  dependencies:
+    - job-build
   environment: staging
   rules:
     # For testing the 'deploy' step in any scenario.
@@ -135,9 +144,12 @@ job-deploy-staging:
 # Use variables set using environment 'stable'.
 job-deploy-stable:
   stage: deploy
+  extends: .deploy
   needs:
     - job: job-build
-  extends: .deploy
+  # Jobs from which it needs artifacts.
+  dependencies:
+    - job-build
   environment: stable
   rules:
     # For testing the 'deploy' step in any scenario.
