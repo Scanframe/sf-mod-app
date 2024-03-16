@@ -1,7 +1,7 @@
-#include <test/catch.h>
 #include <iostream>
-#include <misc/gen/gen_utils.h>
 #include <misc/gen/IniProfile.h>
+#include <misc/gen/gen_utils.h>
+#include <test/catch.h>
 
 TEST_CASE("sf::IniProfile", "[con][generic][ini]")
 {
@@ -43,7 +43,7 @@ TEST_CASE("sf::IniProfile", "[con][generic][ini]")
 			REQUIRE(ini.setSection(0));
 			REQUIRE(ini.getString(key1) == value1);
 			REQUIRE(ini.getInt("Integer") == 123456789);
-/*
+			/*
 			// Write file.
 			REQUIRE(ini.sync());
 */
@@ -92,6 +92,4 @@ Integer=987654321
 
 		//ini.write(std::clog);
 	}
-
 }
-

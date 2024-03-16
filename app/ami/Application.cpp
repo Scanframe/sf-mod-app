@@ -1,19 +1,19 @@
 #include "Application.h"
-#include <misc/gen/ConfigLocation.h>
-#include <misc/gen/gen_utils.h>
-#include <misc/gen/Sustain.h>
-#include <misc/qt/Globals.h>
 #include <QCommandLineParser>
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
+#include <misc/gen/ConfigLocation.h>
+#include <misc/gen/Sustain.h>
+#include <misc/gen/gen_utils.h>
+#include <misc/qt/Globals.h>
 
 namespace sf
 {
 
 Application::Application(int& argc, char** argv, int flags)
-	:QApplication(argc, argv, flags)
-	 , _singleInstance(new SingleInstance(this))
-	 , _sustainInterval(500)
+	: QApplication(argc, argv, flags)
+	, _singleInstance(new SingleInstance(this))
+	, _sustainInterval(500)
 {
 	// Call some static methods.
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
@@ -39,8 +39,7 @@ Application::Application(int& argc, char** argv, int flags)
 	// Connect the message handler for opening files passed on the other application.
 	connect(_singleInstance, &SingleInstance::receivedMessage, this, &Application::handleInstanceMessage);
 	// When libraries are loaded create the module instances.
-	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&](bool startup)
-	{
+	connect(_moduleConfiguration, &ModuleConfiguration::libraryLoaded, [&](bool startup) {
 		// Create the interface implementations (that are missing).
 		AppModuleInterface::instantiate(_settings, this);
 		// When not starting up, the library is loaded from the dialog.
@@ -89,7 +88,7 @@ void Application::settingsReadWrite(bool save)
 	else
 	{
 		_sustainInterval = clip<int>(_settings->value(keySustain).toInt(), 20, 1000);
-		_allowSecondary  = _settings->value(keyMultipleInstances).toBool();
+		_allowSecondary = _settings->value(keyMultipleInstances).toBool();
 	}
 	_settings->endGroup();
 }
@@ -147,7 +146,7 @@ void Application::parseCommandline()
 
 void Application::processCommandLine()
 {
-// Open files from the command line after the window is shown otherwise the MDI dependent menu is not updated.
+	// Open files from the command line after the window is shown otherwise the MDI dependent menu is not updated.
 	if (_mainWindow)
 	{
 		for (const QString& fileName: _commandLineParser.positionalArguments())
@@ -167,4 +166,4 @@ ModuleConfiguration& Application::getModuleConfiguration()
 	return *_moduleConfiguration;
 }
 
-}
+}// namespace sf

@@ -1,8 +1,8 @@
 #include <test/catch.h>
 
 #include <iostream>
-#include <sstream>
 #include <misc/gen/Range.h>
+#include <sstream>
 
 TEST_CASE("sf::Range", "[con][generic][range]")
 {
@@ -25,7 +25,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK(r1.isWithinSelf(sf::Range(10, 20)));
 		CHECK(r1.isWithinOther(sf::Range(10, 20)));
 	}
-		//
+	//
 	SECTION("is* Methods w/ Other (15, 40)")
 	{
 		sf::Range r1(10, 20);
@@ -35,7 +35,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK_FALSE(r1.isExtension(r2));
 		CHECK(r1.isMergeable(r2));
 	}
-		//
+	//
 	SECTION("is* Methods w/ Other (20, 40)")
 	{
 		sf::Range r1(10, 20);
@@ -45,7 +45,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK(r1.isExtension(r2));
 		CHECK(r1.isMergeable(r2));
 	}
-		//
+	//
 	SECTION("is* Methods w/ Other (30, 40)")
 	{
 		sf::Range r1(10, 20);
@@ -55,7 +55,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK_FALSE(r1.isExtension(r2));
 		CHECK_FALSE(r1.isMergeable(r2));
 	}
-		//
+	//
 	SECTION("is* Methods w/ Other (40, 40)")
 	{
 		sf::Range r1(10, 20);
@@ -65,7 +65,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK_FALSE(r1.isExtension(r2));
 		CHECK(r1.isMergeable(r2));
 	}
-		//
+	//
 	SECTION("Un-/Equal Operators")
 	{
 		sf::Range r1(10, 20);
@@ -74,7 +74,7 @@ TEST_CASE("sf::Range", "[con][generic][range]")
 		CHECK(r1 != sf::Range(10, 21));
 		CHECK_FALSE(r1 == sf::Range(10, 21));
 	}
-		//
+	//
 	SECTION("Addition Operator")
 	{
 		CHECK(sf::Range(10, 20) + sf::Range(15, 40) == sf::Range(10, 40));
@@ -175,15 +175,12 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 		{
 			int i = 1;
 			sf::Range::Vector rl{
-				{
-					{10, 0, i++},
-					{30, 40, i++},
-					{90, 60, i++},
-					{20, 35, i++},
-					{0, 0, i++},
-					{50, 70, i++}
-				}
-			};
+				{{10, 0, i++},
+				 {30, 40, i++},
+				 {90, 60, i++},
+				 {20, 35, i++},
+				 {0, 0, i++},
+				 {50, 70, i++}}};
 			rl.rearrange();
 			CHECK(rl == (sf::Range::Vector{{{0, 10, 1}, {20, 40, 4}, {50, 90, 6}}}));
 		}
@@ -191,13 +188,10 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 		SECTION("Exclude Vector")
 		{
 			sf::Range::Vector rel{
-				{
-					{0, 20},
-					{30, 40},
-					{50, 60},
-					{70, 80}
-				}
-			};
+				{{0, 20},
+				 {30, 40},
+				 {50, 60},
+				 {70, 80}}};
 			//
 			sf::Range::Vector r0{{{20, 30, -1}, {40, 50, -1}}};
 			sf::Range::Vector ex{{{40, 50}}};
@@ -219,20 +213,17 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 		SECTION("Extract Vector")
 		{
 			sf::Range::Vector rl{
-				{
-					{0, 20, -1},
-					{30, 40, -2},
-					{30, 40, -7},
-					{50, 60, -3},
-					{70, 80, -4},
-					{70, 80, -6},
-					{85, 90, -5}
-				}
-			};
+				{{0, 20, -1},
+				 {30, 40, -2},
+				 {30, 40, -7},
+				 {50, 60, -3},
+				 {70, 80, -4},
+				 {70, 80, -6},
+				 {85, 90, -5}}};
 			sf::Range::Vector covered{{{15, 55}, {65, 95}}};
 			sf::Range::Vector extracted;
 			rl.extract(covered, extracted);
-			CHECK(extracted == sf::Range::Vector{{{30, 40, -2}, {30, 40, -7},{70, 80, -4}, {70, 80, -6}, {85, 90, -5}}});
+			CHECK(extracted == sf::Range::Vector{{{30, 40, -2}, {30, 40, -7}, {70, 80, -4}, {70, 80, -6}, {85, 90, -5}}});
 		}
 	}
 

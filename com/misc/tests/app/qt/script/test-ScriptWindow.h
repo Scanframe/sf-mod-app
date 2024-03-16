@@ -5,12 +5,15 @@
 #include <misc/gen/ScriptInterpreter.h>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {class ScriptWindow;}
+namespace Ui
+{
+class ScriptWindow;
+}
 QT_END_NAMESPACE
 
-class ScriptWindow :public QMainWindow
+class ScriptWindow : public QMainWindow
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		explicit ScriptWindow(QSettings* settings, QWidget* parent = nullptr);
@@ -31,7 +34,6 @@ class ScriptWindow :public QMainWindow
 		void stateSaveRestore(bool save);
 
 	private:
-
 		void updateStatus();
 
 		// Pointer to the main window.

@@ -25,7 +25,8 @@ target_link_libraries("${TEST_APP_TARGET}" PRIVATE Qt::Designer pthread sf-misc 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME "${TEST_APP_TARGET}" COMMAND ${TEST_APP_TARGET})
+add_test(NAME "${TEST_TARGET}"
+	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,win-exec.sh,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_TARGET}>")
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_APP_TARGET}")

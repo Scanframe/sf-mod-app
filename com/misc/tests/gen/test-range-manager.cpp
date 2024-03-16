@@ -18,7 +18,7 @@ void Report(sf::RangeManager& rm, const sf::Range::Vector& results)
 	//*/
 }
 
-}
+}// namespace
 
 TEST_CASE("sf::RangeManager", "[con][generic][range]")
 {
@@ -79,12 +79,10 @@ TEST_CASE("sf::RangeManager", "[con][generic][range]")
 	SECTION("Request Fulfilment", "Requesting a range which have been requested already")
 	{
 		// Fill the actual request already made.
-		requests = {{
-			{5, 35, -1},
-			{5, 35, -4},
-			{55, 75, -2},
-			{77, 85, -2}}
-		};
+		requests = {{{5, 35, -1},
+								 {5, 35, -4},
+								 {55, 75, -2},
+								 {77, 85, -2}}};
 		actual = {{{20, 30}, {60, 70}}};
 		rm.unitTest(&accessibles, &actual, &requests);
 		//
@@ -96,4 +94,3 @@ TEST_CASE("sf::RangeManager", "[con][generic][range]")
 
 	sf::RangeCompareExact = false;
 }
-

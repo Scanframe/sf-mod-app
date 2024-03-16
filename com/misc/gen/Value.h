@@ -699,22 +699,22 @@ class _MISC_CLASS Value
 		 */
 		union
 		{
-			/**
+				/**
 			 * Pointer to special, binary or string data.
 			 */
-			char* _ptr;
-			/**
+				char* _ptr;
+				/**
 			 * Floating point value.
 			 */
-			flt_type _flt;
-			/**
+				flt_type _flt;
+				/**
 			 * Integer value.
 			 */
-			int_type _int;
-			/**
+				int_type _int;
+				/**
 			 * Reference pointer to other instance.
 			 */
-			Value* _ref;
+				Value* _ref;
 		} _data{nullptr};
 
 		/**
@@ -753,258 +753,218 @@ class _MISC_CLASS Value
 		friend std::istream& operator>>(std::istream& is, Value& v);
 };
 
-inline
-Value& Value::set(bool v)
+inline Value& Value::set(bool v)
 {
 	return set(int_type(v));
 }
 
-inline
-Value& Value::set(int v)
+inline Value& Value::set(int v)
 {
 	return set(int_type(v));
 }
 
 #if IS_WIN
-inline
-Value& Value::set(long v)
+inline Value& Value::set(long v)
 {
 	return set(int_type(v));
 }
 #endif
 
-inline
-Value& Value::set(unsigned v)
+inline Value& Value::set(unsigned v)
 {
 	return set(int_type(v));
 }
 
-inline
-Value& Value::set(int_type v)
+inline Value& Value::set(int_type v)
 {
 	return set(vitInteger, &v);
 }
 
-inline
-Value& Value::set(flt_type v)
+inline Value& Value::set(flt_type v)
 {
 	return set(vitFloat, &v);
 }
 
-inline
-Value& Value::set(const char* v)
+inline Value& Value::set(const char* v)
 {
 	return set(vitString, (void*) v);
 }
 
-inline
-Value& Value::set(const std::string& v)
+inline Value& Value::set(const std::string& v)
 {
 	return set(vitString, (const void*) v.c_str());
 }
 
 #if IS_QT
 
-inline
-Value& Value::set(const QString& as)
+inline Value& Value::set(const QString& as)
 {
 	return set(as.toStdString());
 }
 
-inline
-QString Value::getQString(int precision) const
+inline QString Value::getQString(int precision) const
 {
 	return QString::fromStdString(getString(precision));
 }
 
 #endif
 
-inline
-Value& Value::set(const void* v, size_t size)
+inline Value& Value::set(const void* v, size_t size)
 {
 	return set(vitBinary, v, size);
 }
 
-inline
-Value& Value::assign(const bool v)
+inline Value& Value::assign(const bool v)
 {
 	int_type i = v;
 	return assign(&i, sizeof(int_type));
 }
 
-inline
-Value& Value::assign(const int v)
+inline Value& Value::assign(const int v)
 {
 	int_type i = v;
 	return assign(&i, sizeof(int_type));
 }
 
-inline
-Value& Value::assign(const unsigned v)
+inline Value& Value::assign(const unsigned v)
 {
 	int_type i = v;
 	return assign(&i, sizeof(int_type));
 }
 
 #if IS_WIN
-inline
-Value& Value::assign(const long v)
+inline Value& Value::assign(const long v)
 {
 	return assign(Value(v));
 }
 #endif
 
-inline
-Value& Value::assign(const flt_type v)
+inline Value& Value::assign(const flt_type v)
 {
 	return assign(Value(v));
 }
 
-inline
-Value& Value::assign(const char* v)
+inline Value& Value::assign(const char* v)
 {
 	return assign(Value(v));
 }
 
-inline
-Value& Value::assign(const std::string& v)
+inline Value& Value::assign(const std::string& v)
 {
 	return assign(Value(v));
 }
 
 #if IS_QT
 
-inline
-Value& Value::assign(const QString& s)
+inline Value& Value::assign(const QString& s)
 {
 	return assign(Value(s));
 }
 
 #endif
 
-inline
-Value& Value::assign(const void* v, size_t size)
+inline Value& Value::assign(const void* v, size_t size)
 {
 	return assign(Value(v, size));
 }
 
-inline
-Value::EType Value::getType() const // NOLINT(misc-no-recursion)
+inline Value::EType Value::getType() const// NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->getType() : _type;
 }
 
-inline
-bool Value::isValid() const // NOLINT(misc-no-recursion)
+inline bool Value::isValid() const// NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->isValid() : _type != vitInvalid;
 }
 
-inline
-bool Value::isNumber() const // NOLINT(misc-no-recursion)
+inline bool Value::isNumber() const// NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->isNumber() : _type == vitInteger || _type == vitFloat;
 }
 
-inline
-size_t Value::getSize() const // NOLINT(misc-no-recursion)
+inline size_t Value::getSize() const// NOLINT(misc-no-recursion)
 {
 	return (_type == vitReference) ? _data._ref->getSize() : _size;
 }
 
-inline
-Value::operator bool() const
+inline Value::operator bool() const
 {
 	return !isZero();
 }
 
-inline
-bool Value::operator!() const
+inline bool Value::operator!() const
 {
 	return !isZero();
 }
 
-inline
-Value::operator std::string() const
+inline Value::operator std::string() const
 {
 	return getString();
 }
 
-inline
-int Value::operator==(const Value& v) const
+inline int Value::operator==(const Value& v) const
 {
 	return !compare(v);
 }
 
-inline
-int Value::operator!=(const Value& v) const
+inline int Value::operator!=(const Value& v) const
 {
 	return compare(v) != 0;
 }
 
-inline
-int Value::operator>(const Value& v) const
+inline int Value::operator>(const Value& v) const
 {
 	return compare(v) > 0;
 }
 
-inline
-int Value::operator>=(const Value& v) const
+inline int Value::operator>=(const Value& v) const
 {
 	return compare(v) >= 0;
 }
 
-inline
-int Value::operator<(const Value& v) const
+inline int Value::operator<(const Value& v) const
 {
 	return compare(v) < 0;
 }
 
-inline
-int Value::operator<=(const Value& v) const
+inline int Value::operator<=(const Value& v) const
 {
 	return compare(v) <= 0;
 }
 
-inline
-Value& Value::operator*=(const Value& v)
+inline Value& Value::operator*=(const Value& v)
 {
 	return assign(mul(v));
 }
 
-inline
-Value& Value::operator/=(const Value& v)
+inline Value& Value::operator/=(const Value& v)
 {
 	return assign(div(v));
 }
 
-inline
-Value& Value::operator%=(const Value& v)
+inline Value& Value::operator%=(const Value& v)
 {
 	return assign(mod(v));
 }
 
-inline
-Value& Value::operator+=(const Value& v)
+inline Value& Value::operator+=(const Value& v)
 {
 	return assign(add(v));
 }
 
-inline
-Value& Value::operator-=(const Value& v)
+inline Value& Value::operator-=(const Value& v)
 {
 	return assign(sub(v));
 }
 
-inline
-Value& Value::operator=(const Value& v)
+inline Value& Value::operator=(const Value& v)
 {
 	assign(v);
 	return *this;
 }
 
-inline
-Value& Value::operator=(const std::string& v)
+inline Value& Value::operator=(const std::string& v)
 {
 	assign(v);
 	return *this;
@@ -1012,8 +972,7 @@ Value& Value::operator=(const std::string& v)
 
 #if IS_QT
 
-inline
-Value& Value::operator=(const QString& v)
+inline Value& Value::operator=(const QString& v)
 {
 	assign(v);
 	return *this;
@@ -1021,57 +980,48 @@ Value& Value::operator=(const QString& v)
 
 #endif
 
-inline
-Value& Value::operator=(Value* v)
+inline Value& Value::operator=(Value* v)
 {
 	set(v);
 	return *this;
 }
 
-inline
-Value& Value::set(Value* v)
+inline Value& Value::set(Value* v)
 {
 	return set(vitReference, (void*) v);
 }
 
-inline
-Value::flt_type Value::getFloat() const
+inline Value::flt_type Value::getFloat() const
 {
 	return getFloat(nullptr);
 }
 
-inline
-Value::int_type Value::getInteger() const
+inline Value::int_type Value::getInteger() const
 {
 	return getInteger(nullptr);
 }
 
-inline
-Value operator*(const Value& v1, const Value& v2)
+inline Value operator*(const Value& v1, const Value& v2)
 {
 	return v1.mul(v2);
 }
 
-inline
-Value operator/(const Value& v1, const Value& v2)
+inline Value operator/(const Value& v1, const Value& v2)
 {
 	return v1.div(v2);
 }
 
-inline
-Value operator%(const Value& v1, const Value& v2)
+inline Value operator%(const Value& v1, const Value& v2)
 {
 	return v1.mod(v2);
 }
 
-inline
-Value operator+(const Value& v1, const Value& v2)
+inline Value operator+(const Value& v1, const Value& v2)
 {
 	return v1.add(v2);
 }
 
-inline
-Value operator-(const Value& v1, const Value& v2)
+inline Value operator-(const Value& v1, const Value& v2)
 {
 	return v1.sub(v2);
 }
@@ -1086,4 +1036,4 @@ _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Value& v);
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Value& v);
 
-}
+}// namespace sf

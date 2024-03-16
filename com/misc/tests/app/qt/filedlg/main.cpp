@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QFileDialog>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 	app.setStyle("fusion");

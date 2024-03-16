@@ -6,6 +6,9 @@
 int debug_level = 0;
 
 #if IS_QT
+	#if IS_WIN
+		#include "misc/win/win_utils.h"
+	#endif
 	#include <QApplication>
 	#include <QDir>
 	#include <QTimer>
@@ -17,12 +20,12 @@ int main(int argc, char* argv[])
 {
 #if IS_QT
 	// Display environment variable in only available at a Linux OS.
-	#if !IS_WIN
 	// Get the DISPLAY environment
 	auto display = qgetenv("DISPLAY");
+	#if !IS_WIN
 	std::unique_ptr<QCoreApplication> app((display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
 	#else
-	std::unique_ptr<QCoreApplication> app(new QApplication(argc, argv));
+	std::unique_ptr<QCoreApplication> app((sf::isRunningWine() && display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
 	#endif
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());

@@ -1,7 +1,7 @@
-#include <test/catch.h>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 #include <misc/gen/Value.h>
+#include <test/catch.h>
 
 namespace
 {
@@ -10,14 +10,14 @@ namespace
  */
 struct
 {
-	std::string operator()(const sf::Value& v)
-	{
-		std::ostringstream os;
-		return dynamic_cast<std::ostringstream&>(os << v).str();
-	}
+		std::string operator()(const sf::Value& v)
+		{
+			std::ostringstream os;
+			return dynamic_cast<std::ostringstream&>(os << v).str();
+		}
 } Helper;
 
-}
+}// namespace
 
 TEST_CASE("sf::Value", "[con][generic][value]")
 {
@@ -43,14 +43,14 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 		CHECK_THAT(Helper(sf::Value(true)), Equals("(INTEGER,\"1\")"));
 		// Const character string type.
 		CHECK_THAT(Helper(sf::Value("Just a text used as binary data.")),
-			Equals("(STRING,\"Just a text used as binary data.\")"));
+							 Equals("(STRING,\"Just a text used as binary data.\")"));
 		// rom std::string to string type.
 		CHECK_THAT(Helper(sf::Value(std::string("Just a text used as binary data."))),
-			Equals("(STRING,\"Just a text used as binary data.\")"));
+							 Equals("(STRING,\"Just a text used as binary data.\")"));
 		// Raw data to binary type.
 		const char* raw = "Just a text used as binary data.";
 		CHECK_THAT(Helper(sf::Value(raw, strlen(raw))),
-			Equals("(BINARY,\"4a7573742061207465787420757365642061732062696e61727920646174612e\")"));
+							 Equals("(BINARY,\"4a7573742061207465787420757365642061732062696e61727920646174612e\")"));
 	}
 
 	SECTION("General")

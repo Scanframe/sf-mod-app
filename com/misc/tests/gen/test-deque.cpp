@@ -11,7 +11,7 @@ std::string toString(const sf::TDeque<T>& v)
 	std::ostringstream os;
 	return dynamic_cast<std::ostringstream&>(v.write(os, false)).str();
 }
-}
+}// namespace
 
 SCENARIO("sf::TDeque", "[con][generic][deque]")
 {
@@ -94,7 +94,6 @@ SCENARIO("sf::TDeque", "[con][generic][deque]")
 				}
 				REQUIRE(v.size() == 28);
 			}
-
 		}
 	}
 }

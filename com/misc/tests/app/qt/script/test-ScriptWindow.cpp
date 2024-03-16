@@ -1,15 +1,15 @@
 #include "test-ScriptWindow.h"
 #include "ui_test-ScriptWindow.h"
 
-#include <iostream>
-#include <QDebug>
 #include <QAbstractButton>
+#include <QDebug>
 #include <QPainter>
+#include <iostream>
 #include <misc/qt/CaptureListModel.h>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/ScriptListModel.h>
-#include <misc/qt/ScriptHighlighter.h>
 #include <misc/qt/Resource.h>
+#include <misc/qt/ScriptHighlighter.h>
+#include <misc/qt/ScriptListModel.h>
+#include <misc/qt/qt_utils.h>
 
 using namespace sf;
 
@@ -42,9 +42,9 @@ return;
 )";
 
 ScriptWindow::ScriptWindow(QSettings* settings, QWidget* parent)
-	:QMainWindow(parent)
-	 , ui(new Ui::ScriptWindow)
-	 , _settings(settings)
+	: QMainWindow(parent)
+	, ui(new Ui::ScriptWindow)
+	, _settings(settings)
 {
 	ui->setupUi(this);
 	ui->tvInstructions->header()->setStretchLastSection(true);
@@ -132,7 +132,7 @@ void ScriptWindow::stateSaveRestore(bool save)
 void ScriptWindow::updateStatus()
 {
 	statusBar()->showMessage(QString(_script.getStateName()) + ": " + _script.getErrorText() +
-		": " + QString::fromStdString(_script.getErrorReason()));
+													 ": " + QString::fromStdString(_script.getErrorReason()));
 	// Get the current instruction pointer.
 	auto instr = (int) _script.getInstructionPtr();
 	// Check if the pointer is valid.
@@ -225,14 +225,14 @@ void ScriptWindow::moveCursorToInstruction(int row)
 {
 	// Get copy of the current text cursor.
 	auto cur = ui->pteSource->textCursor();
-/*
+	/*
 	// Move to start of document.
 	cur.movePosition(QTextCursor::MoveOperation::Start);
 	// Move down the amount of lines.
 	cur.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, _script.getInstructions().at(row)._codePos._line);
 */
 	// Set the absolute position in the document.
-	cur.setPosition((int)_script.getInstructions().at(row)._codePos._offset);
+	cur.setPosition((int) _script.getInstructions().at(row)._codePos._offset);
 	// Apply the new cursor.
 	ui->pteSource->setTextCursor(cur);
 }

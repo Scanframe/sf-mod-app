@@ -158,5 +158,4 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 #endif
 		REQUIRE(sf::getExecutableName() == name);
 	}
-
 }

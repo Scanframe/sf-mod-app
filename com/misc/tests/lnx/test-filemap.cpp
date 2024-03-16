@@ -1,12 +1,12 @@
-#include <test/catch.h>
+#include "misc/gen/Md5Hash.h"
 #include <cstdio>
-#include <iostream>
 #include <fstream>
-#include <misc/lnx/lnx_utils.h>
+#include <iostream>
+#include <misc/gen/Exception.h>
 #include <misc/lnx/FileMapper.h>
 #include <misc/lnx/SegmentFaultHandler.h>
-#include <misc/gen/Exception.h>
-#include "misc/gen/Md5Hash.h"
+#include <misc/lnx/lnx_utils.h>
+#include <test/catch.h>
 
 TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 {
@@ -32,8 +32,7 @@ TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 		// Get the readonly pointer.
 		auto ptr = fm->lock<char>(true);
 		// Segment Fault must occur in this function.
-		auto f1 = [ptr]() -> void
-		{
+		auto f1 = [ptr]() -> void {
 			ptr[0] = 'A';
 		};
 		// Call the lambda function wrapped in a SegmentFaultHandler class.
@@ -47,8 +46,7 @@ TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 		// Get writable pointer.
 		ptr = fm->lock<char>(false);
 		//auto ptr = (char*) fm->getDataPtr();
-		auto f2 = [ptr, sz, str]() -> void
-		{
+		auto f2 = [ptr, sz, str]() -> void {
 			for (size_t i = 0; i < sz; ++i)
 			{
 				// Write entire space with data.
@@ -77,5 +75,4 @@ TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 		// Check if the temp file has been deleted.
 		REQUIRE(!sf::fileExists(fp));
 	}
-
 }

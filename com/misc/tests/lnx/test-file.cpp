@@ -1,9 +1,9 @@
-#include <test/catch.h>
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
 #include <misc/gen/gen_utils.h>
 #include <misc/lnx/File.h>
+#include <test/catch.h>
 
 TEST_CASE("sf::lnx::File", "[con][linux][file]")
 {
@@ -56,16 +56,16 @@ TEST_CASE("sf::lnx::File", "[con][linux][file]")
 		sf::lnx::File file(std::filesystem::temp_directory_path().append("temp-file-test.dat"));
 		// Open the file.
 		file.open();
-		// Binary structure to write and read.
-		#pragma pack(push, 1)
+// Binary structure to write and read.
+#pragma pack(push, 1)
 		struct MyType
 		{
-			int _int_value;
-			short _short_value;
-			long _long_value;
+				int _int_value;
+				short _short_value;
+				long _long_value;
 		};
-		// Restore the pack option.
-		#pragma pack(pop)
+// Restore the pack option.
+#pragma pack(pop)
 		// Initialize the binary structure.
 		MyType mts{0x1234567, 0x1234, 0x123456789};
 		// Write the binary structure.

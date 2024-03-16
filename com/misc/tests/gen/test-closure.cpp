@@ -1,7 +1,7 @@
-#include <test/catch.h>
-#include <misc/gen/TClosure.h>
 #include <iostream>
+#include <misc/gen/TClosure.h>
 #include <misc/gen/gen_utils.h>
+#include <test/catch.h>
 
 TEST_CASE("sf::Closure", "[con][generic]")
 {
@@ -15,8 +15,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 		// Value passed to lambda function.
 		int abc = 456;
 		// Construct closure with lambda function.
-		my_closure_type closure([abc](const char* fmt, int value) -> std::string
-		{
+		my_closure_type closure([abc](const char* fmt, int value) -> std::string {
 			return sf::string_format(fmt, value + abc);
 		});
 		// Closure assignment check.
@@ -38,8 +37,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 	SECTION("sf::Closure Copy")
 	{
 		// Construct closure with lambda function.
-		my_closure_type closure([](const char* fmt, int value) -> std::string
-		{
+		my_closure_type closure([](const char* fmt, int value) -> std::string {
 			return sf::string_format(fmt, value);
 		});
 		//
@@ -53,8 +51,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 	SECTION("sf::Closure Assignment Lambda")
 	{
 		// Construct closure with lambda function.
-		auto fn = [](const char* fmt, int value) -> std::string
-		{
+		auto fn = [](const char* fmt, int value) -> std::string {
 			return sf::string_format(fmt, value);
 		};
 		//
@@ -74,15 +71,15 @@ TEST_CASE("sf::Closure", "[con][generic]")
 	{
 		struct MyClass
 		{
-			std::string myFunc(const char* fmt, int value)
-			{
-				return sf::string_format(fmt, value);
-			}
+				std::string myFunc(const char* fmt, int value)
+				{
+					return sf::string_format(fmt, value);
+				}
 
-			static std::string myStaticFunc(const char* fmt, int value)
-			{
-				return sf::string_format(fmt, value);
-			}
+				static std::string myStaticFunc(const char* fmt, int value)
+				{
+					return sf::string_format(fmt, value);
+				}
 		} myClass;
 
 		sf::TClosure<std::string, const char*, int> c2;
@@ -92,17 +89,15 @@ TEST_CASE("sf::Closure", "[con][generic]")
 		REQUIRE_THAT(c2("format (%d)", 345), Equals("format (345)"));
 
 		// Test assigning a function using std::bind().
-		c2.assign(std::bind(&MyClass::myStaticFunc,std::placeholders::_1, std::placeholders::_2)); // NOLINT(modernize-avoid-bind)
+		c2.assign(std::bind(&MyClass::myStaticFunc, std::placeholders::_1, std::placeholders::_2));// NOLINT(modernize-avoid-bind)
 		REQUIRE_THAT(c2("format (%d)", 123), Equals("format (123)"));
 
 		// Test assigning a member using std::bind().
-		c2.assign(std::bind(&MyClass::myFunc, &myClass, std::placeholders::_1, std::placeholders::_2)); // NOLINT(modernize-avoid-bind)
+		c2.assign(std::bind(&MyClass::myFunc, &myClass, std::placeholders::_1, std::placeholders::_2));// NOLINT(modernize-avoid-bind)
 		REQUIRE_THAT(c2("format (%d)", 123), Equals("format (123)"));
 
 		// Test assign template function using std::bind under the hood.
 		c2.assign(&myClass, &MyClass::myFunc, std::placeholders::_1, std::placeholders::_2);
 		REQUIRE_THAT(c2("format (%d)", 125), Equals("format (125)"));
 	}
-
 }
-

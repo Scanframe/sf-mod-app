@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../global.h"
 #include "Exception.h"
 #include "Mutex.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -67,7 +67,7 @@ class _MISC_CLASS Sync
 		 * member functions. This means that the new object must start
 		 * in an unlocked state.
 		 */
-		Sync(const Sync&){}
+		Sync(const Sync&) {}
 
 		/**
 		 * @brief Does not copy the Mutex object, since the new object is not
@@ -83,14 +83,14 @@ class _MISC_CLASS Sync
 		/**
 		 * @brief Locks the Mutex object in the Sync object.
 		 */
-		class Lock :public Mutex::Lock
+		class Lock : public Mutex::Lock
 		{
 			public:
 				/**
 				 * @brief Locks the Mutex object in the Sync object.
 				 */
 				inline explicit Lock(const Sync* sync, bool try_sync = false)
-				:Mutex::Lock(sync->_mutex, try_sync)
+					: Mutex::Lock(sync->_mutex, try_sync)
 				{}
 		};
 
@@ -98,5 +98,4 @@ class _MISC_CLASS Sync
 		Mutex _mutex;
 };
 
-
-}
+}// namespace sf

@@ -11,7 +11,7 @@ std::string toString(const sf::TVector<T>& v)
 	std::ostringstream os;
 	return dynamic_cast<std::ostringstream&>(v.write(os, false)).str();
 }
-}
+}// namespace
 
 SCENARIO("sf::TVector", "[con][generic][vector]")
 {
@@ -82,7 +82,6 @@ SCENARIO("sf::TVector", "[con][generic][vector]")
 				}
 				REQUIRE(v.size() == 28);
 			}
-
 		}
 	}
 }

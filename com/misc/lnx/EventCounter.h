@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gen/Sync.h"
 #include "../global.h"
+#include "gen/Sync.h"
 
 namespace sf
 {
@@ -10,7 +10,7 @@ namespace sf
 * TEventSemaphore class is build around the system call eventfd().
 * This class has a file descriptor which could be used in an epoll object.
 */
-class EventCounter :private Sync
+class EventCounter : private Sync
 {
 	public:
 		/**
@@ -75,19 +75,17 @@ class EventCounter :private Sync
 };
 
 //
-inline
-EventCounter::handle_type EventCounter::getHandle() const
+inline EventCounter::handle_type EventCounter::getHandle() const
 {
 	return _descriptor;
 }
 
 //
-inline
-unsigned int EventCounter::get() const
+inline unsigned int EventCounter::get() const
 {
 	unsigned int value;
 	get(value);
 	return value;
 }
 
-}
+}// namespace sf

@@ -1,9 +1,9 @@
-#include <test/catch.h>
-#include <cstring>
-#include <QCryptographicHash>
 #include "misc/gen/Md5Hash.h"
 #include "misc/gen/dbgutils.h"
 #include "misc/gen/gen_utils.h"
+#include <QCryptographicHash>
+#include <cstring>
+#include <test/catch.h>
 
 TEST_CASE("sf::md5hash", "[con][generic][md5]")
 {
@@ -27,7 +27,7 @@ kbiyXTGzOkottMRT6oHBW4xYaZI452vIhSEDMal3CuPjyBYpeapHe9Mu/u0lekI/F+4/
 		sf::Md5Hash::hash_type hash{};
 
 		//MD5((const unsigned char*) data, strlen(data), hash.data);
-		auto qtHashed = QCryptographicHash::hash(QByteArrayView(data),QCryptographicHash::Md5);
+		auto qtHashed = QCryptographicHash::hash(QByteArrayView(data), QCryptographicHash::Md5);
 
 		memcpy(hash.data, qtHashed.constData(), sizeof(hash));
 

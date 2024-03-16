@@ -1,6 +1,6 @@
-#include <test/catch.h>
 #include <iostream>
 #include <misc/gen/ScriptEngine.h>
+#include <test/catch.h>
 
 TEST_CASE("sf::ScriptEngine", "[con][calc]")
 {
@@ -37,6 +37,4 @@ TEST_CASE("sf::ScriptEngine", "[con][calc]")
 		CHECK(sf::calculator("\"Brown-\" + \"Bear\"", sf::Value(sf::Value::vitString)) == sf::Value("Brown-Bear"));
 		CHECK(sf::calculator("\"Brown-\" + 123", sf::Value(sf::Value::vitString)) == sf::Value("Brown-123"));
 	}
-
 }
-

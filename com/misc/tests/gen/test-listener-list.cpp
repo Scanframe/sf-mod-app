@@ -1,44 +1,44 @@
-#include <test/catch.h>
-#include <misc/gen/gen_utils.h>
 #include <misc/gen/TListener.h>
+#include <misc/gen/gen_utils.h>
+#include <test/catch.h>
 
 struct MyEmitter
 {
-	typedef sf::TListener<std::string&> listener_type;
-	listener_type::emitter_type emitter;
+		typedef sf::TListener<std::string&> listener_type;
+		listener_type::emitter_type emitter;
 
-	// Call the listeners.
-	std::string callThem()
-	{
-		std::string s(1, '$');
-		emitter.callListeners(s);
-		return s;
-	}
+		// Call the listeners.
+		std::string callThem()
+		{
+			std::string s(1, '$');
+			emitter.callListeners(s);
+			return s;
+		}
 };
 
 // Inherit from sf:ListenerList
-struct MyListener :sf::ListenerList
+struct MyListener : sf::ListenerList
 {
-	explicit MyListener(std::string ofs)
-		:offset(std::move(ofs)) {}
+		explicit MyListener(std::string ofs)
+			: offset(std::move(ofs))
+		{}
 
-	auto unlinkIt()
-	{
-		return delete_null(link_ptr);
-	}
-
-	void linkIt(MyEmitter* emitter)
-	{
-		MyEmitter::listener_type::func_type lambda = [&](std::string& s)
+		auto unlinkIt()
 		{
-			s += offset;
-		};
-		// Hookup a lambda function.
-		link_ptr = emitter->emitter.linkListener(this, lambda);
-	}
+			return delete_null(link_ptr);
+		}
 
-	MyEmitter::listener_type* link_ptr{nullptr};
-	std::string offset;
+		void linkIt(MyEmitter* emitter)
+		{
+			MyEmitter::listener_type::func_type lambda = [&](std::string& s) {
+				s += offset;
+			};
+			// Hookup a lambda function.
+			link_ptr = emitter->emitter.linkListener(this, lambda);
+		}
+
+		MyEmitter::listener_type* link_ptr{nullptr};
+		std::string offset;
 };
 
 TEST_CASE("sf::ListenerList", "[con][generic]")
@@ -118,5 +118,4 @@ TEST_CASE("sf::ListenerList", "[con][generic]")
 		sf::delete_null(listener1);
 		sf::delete_null(listener2);
 	}
-
 }

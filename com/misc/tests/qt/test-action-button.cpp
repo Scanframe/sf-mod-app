@@ -1,5 +1,6 @@
 #include <test/catch.h>
 
+#include "misc/qt/qt_utils.h"
 #include <QApplication>
 #include <QPainter>
 #include <QPushButton>
@@ -8,7 +9,6 @@
 #include <QTimer>
 #include <misc/qt/DrawWidget.h>
 #include <misc/qt/FormDialog.h>
-#include "misc/qt/qt_utils.h"
 
 extern int debug_level;
 
@@ -28,12 +28,12 @@ TEST_CASE("sf::ActionButton", "[gui][qt]")
 		sf::FormDialog dlg;
 		dlg.Load(QFile(fi.absoluteFilePath()));
 		//
-		QTimer::singleShot(2000, [&]
-		{
+		QTimer::singleShot(2000, [&] {
 			QString fp = QDir::temp().filePath(QFileInfo(__FILE__).baseName() + ".png");
 			if (debug_level)
 			{
-				qDebug() << "Saving grabbed content to: " << "file://" + fp;
+				qDebug() << "Saving grabbed content to: "
+								 << "file://" + fp;
 			}
 			CHECK(dlg.grab().save(fp));
 			if (!debug_level)
@@ -43,5 +43,4 @@ TEST_CASE("sf::ActionButton", "[gui][qt]")
 		});
 		dlg.exec();
 	}
-
 }

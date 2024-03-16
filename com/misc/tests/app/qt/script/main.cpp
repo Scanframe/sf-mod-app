@@ -1,11 +1,11 @@
 #include <QApplication>
-#include <QTimer>
 #include <QDir>
+#include <QTimer>
 #include <misc/gen/gen_utils.h>
 #include <misc/qt/qt_utils.h>
 #include <test-ScriptWindow.h>
 #if IS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 int main(int argc, char* argv[])
@@ -32,4 +32,3 @@ int main(int argc, char* argv[])
 	//
 	return rv;
 }
-

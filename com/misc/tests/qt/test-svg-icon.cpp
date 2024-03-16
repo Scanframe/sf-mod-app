@@ -1,5 +1,6 @@
 #include <test/catch.h>
 
+#include "misc/qt/qt_utils.h"
 #include <QApplication>
 #include <QIcon>
 #include <QPainter>
@@ -10,7 +11,6 @@
 #include <misc/qt/DrawWidget.h>
 #include <misc/qt/FormDialog.h>
 #include <misc/qt/Resource.h>
-#include "misc/qt/qt_utils.h"
 
 extern int debug_level;
 
@@ -32,8 +32,7 @@ TEST_CASE("sf::SvgIcon", "[gui][qt]")
 		// Find the draw widgets.
 		auto widgets = dlg.findChildren<sf::DrawWidget*>();
 		// Sort them using their object names.
-		std::sort(widgets.begin(), widgets.end(), [](const sf::DrawWidget* a, const sf::DrawWidget* b) -> bool
-		{
+		std::sort(widgets.begin(), widgets.end(), [](const sf::DrawWidget* a, const sf::DrawWidget* b) -> bool {
 			return a->objectName() < b->objectName();
 		});
 		//
@@ -46,8 +45,7 @@ TEST_CASE("sf::SvgIcon", "[gui][qt]")
 		for (auto widget: widgets)
 		{
 			auto idx = widgets.indexOf(widget);
-			QObject::connect(widget, &sf::DrawWidget::paint, [modes, icon, idx, widget](QPaintEvent* event) -> void
-			{
+			QObject::connect(widget, &sf::DrawWidget::paint, [modes, icon, idx, widget](QPaintEvent* event) -> void {
 				QPainter painter(widget);
 				painter.fillRect(painter.window(), QApplication::palette().color(QPalette::ColorRole::Button));
 				icon.paint(&painter, painter.window(), Qt::AlignmentFlag::AlignCenter, modes[idx]);
@@ -60,12 +58,12 @@ TEST_CASE("sf::SvgIcon", "[gui][qt]")
 			btn->setIcon(ico);
 		}
 		//
-		QTimer::singleShot(2000, [&]
-		{
+		QTimer::singleShot(2000, [&] {
 			QString fp = QDir::temp().filePath(QFileInfo(__FILE__).baseName() + ".png");
 			if (debug_level)
 			{
-				qDebug() << "Saving grabbed content to: " << "file://" + fp;
+				qDebug() << "Saving grabbed content to: "
+								 << "file://" + fp;
 			}
 			CHECK(dlg.grab().save(fp));
 			if (!debug_level)
@@ -75,5 +73,4 @@ TEST_CASE("sf::SvgIcon", "[gui][qt]")
 		});
 		dlg.exec();
 	}
-
 }

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TVector.h"
-#include "IntervalTimer.h"
-#include "target.h"
 #include "../global.h"
+#include "IntervalTimer.h"
+#include "TVector.h"
+#include "target.h"
 
 namespace sf
 {
@@ -39,7 +39,7 @@ class _MISC_CLASS SustainBase
 		/**
 		 * @brief Do not use an iterator because the sustain function could affect the vector itself.
 		 */
-		enum ESustainPriority: int
+		enum ESustainPriority : int
 		{
 			/** Default priority **/
 			spDefault = 100,
@@ -76,7 +76,7 @@ class _MISC_CLASS SustainBase
 		/**
 		 * @brief Gets the priority value of this instance;
 		 */
-		[[nodiscard]] int getPriority() const {return _priority;}
+		[[nodiscard]] int getPriority() const { return _priority; }
 
 		/**
 		 * @brief Sets the interval at which the hooked function is called.
@@ -175,7 +175,7 @@ class _MISC_CLASS SustainBase
  * @tparam T Class containing the method.
  */
 template<class T>
-class TSustain :public SustainBase
+class TSustain : public SustainBase
 {
 	public:
 		/**
@@ -219,8 +219,7 @@ class TSustain :public SustainBase
 		 * @param time Current clock time value.
 		 * @return True when...
 		 */
-		inline
-		bool call(const timespec& t) override
+		inline bool call(const timespec& t) override
 		{
 			return (_self->*_pmf)(t);
 		}
@@ -228,22 +227,22 @@ class TSustain :public SustainBase
 
 template<class T>
 TSustain<T>::TSustain(T* self, Pmf pmf, int priority, PtrVector* vector)
-	:SustainBase(vector, priority)
-	 , _self(self)
-	 , _pmf(pmf)
+	: SustainBase(vector, priority)
+	, _self(self)
+	, _pmf(pmf)
 {
 }
 
 /**
  * @brief
  */
-class _MISC_CLASS StaticSustain :public SustainBase
+class _MISC_CLASS StaticSustain : public SustainBase
 {
 	public:
 		/**
 		 * @brief Required type for the callback function.
 		 */
-		typedef bool (* Pf)(const timespec&);
+		typedef bool (*Pf)(const timespec&);
 
 		/**
 		 * @brief One and only constructor
@@ -253,8 +252,9 @@ class _MISC_CLASS StaticSustain :public SustainBase
 		 * @param vector
 		 */
 		explicit StaticSustain(Pf pf, int priority = spDefault, PtrVector* vector = _defaultVector)
-			:SustainBase(vector, priority)
-			 , _pf(pf) {}
+			: SustainBase(vector, priority)
+			, _pf(pf)
+		{}
 
 		/**
 		 * @brief Prevent copying.
@@ -278,8 +278,7 @@ class _MISC_CLASS StaticSustain :public SustainBase
 		bool call(const timespec& time) override;
 };
 
-inline
-bool StaticSustain::call(const timespec& time)
+inline bool StaticSustain::call(const timespec& time)
 {
 	return _pf(time);
 }
@@ -302,4 +301,4 @@ _MISC_FUNC bool setSustainTimer(int msec);
  */
 _MISC_FUNC int getSustainTimer();
 
-}
+}// namespace sf

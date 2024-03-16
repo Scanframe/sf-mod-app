@@ -1,5 +1,5 @@
-#include <test/catch.h>
 #include <misc/gen/gen_utils.h>
+#include <test/catch.h>
 
 namespace sf
 {
@@ -58,7 +58,7 @@ strings split(const S& s, S::value_type sep, S::value_type delimiter = 0)
 	return rv;
 }
 
-}
+}// namespace sf
 
 TEST_CASE("sf::StringSplit", "[con][generic][strings]")
 {

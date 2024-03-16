@@ -1,9 +1,9 @@
-#include <test/catch.h>
-#include <misc/gen/Thread.h>
-#include <misc/gen/ThreadRelay.h>
-#include <misc/gen/PerformanceTimer.h>
 #include <iostream>
 #include <memory>
+#include <misc/gen/PerformanceTimer.h>
+#include <misc/gen/Thread.h>
+#include <misc/gen/ThreadRelay.h>
+#include <test/catch.h>
 
 extern int debug_level;
 
@@ -12,9 +12,10 @@ namespace sf
 
 struct Worker
 {
-	int method1(int v1);
-	int method2(int v1, int v2);
-	int method3(int v1, int v2, int v3);
+	public:
+		int method1(int v1);
+		int method2(int v1, int v2);
+		int method3(int v1, int v2, int v3);
 };
 
 std::unique_ptr<ThreadRelay> threadRelay;
@@ -23,8 +24,7 @@ int Worker::method1(int v1)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay1<Worker, decltype(&Worker::method1), int, int>
-		(*threadRelay, this, &Worker::method1, rv, v1))
+	if (ThreadRelay::Relay1<Worker, decltype(&Worker::method1), int, int>(*threadRelay, this, &Worker::method1, rv, v1))
 	{
 		return Thread::getCurrentId() + v1;
 	}
@@ -35,8 +35,7 @@ int Worker::method2(int v1, int v2)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay2<Worker, decltype(&Worker::method2), int, int, int>
-		(*threadRelay, this, &Worker::method2, rv, v1, v2))
+	if (ThreadRelay::Relay2<Worker, decltype(&Worker::method2), int, int, int>(*threadRelay, this, &Worker::method2, rv, v1, v2))
 	{
 		return Thread::getCurrentId() + v1 + v2;
 	}
@@ -47,15 +46,14 @@ int Worker::method3(int v1, int v2, int v3)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay3<Worker, decltype(&Worker::method3), int, int, int, int>
-		(*threadRelay, this, &Worker::method3, rv, v1, v2, v3))
+	if (ThreadRelay::Relay3<Worker, decltype(&Worker::method3), int, int, int, int>(*threadRelay, this, &Worker::method3, rv, v1, v2, v3))
 	{
 		return Thread::getCurrentId() + v1 + v2 + v3;
 	}
 	return rv;
 }
 
-}
+}// namespace sf
 
 TEST_CASE("sf::Thread", "[con][generic][thread]")
 {
@@ -71,7 +69,9 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		{
 			public:
 				explicit Scope(bool& flag, bool debug)
-					:_flag(flag), _debug(debug) {}
+					: _flag(flag)
+					, _debug(debug)
+				{}
 
 				~Scope()
 				{
@@ -85,8 +85,7 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		};
 
 		bool out_of_scope = false;
-		sf::ThreadClosure tc(sf::ThreadClosure::func_type([&out_of_scope](sf::Thread& thread) -> int
-		{
+		sf::ThreadClosure tc(sf::ThreadClosure::func_type([&out_of_scope](sf::Thread& thread) -> int {
 			Scope scope(out_of_scope, thread.isDebug());
 			do
 			{
@@ -99,8 +98,7 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 				{
 					SF_COND_NORM_NOTIFY(thread.isDebug(), DO_DEFAULT, "Test: Woken up by interruption: " << sf::Thread::getCurrentId())
 				}
-			}
-			while (!thread.shouldTerminate());
+			} while (!thread.shouldTerminate());
 			return 0xff;
 		}));
 
@@ -125,8 +123,7 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 	{
 		sf::Mutex mutex;
 		sf::Condition condition;
-		sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int
-		{
+		sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
 			// Start locking the mutex.
 			sf::Mutex::Lock lock(mutex);
 			// Wait for the condition signal on the locked mutex.
@@ -235,24 +232,21 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		Mutex mutex;
 		TVector<Thread::id_type> results;
 		//
-		ThreadClosure tc1([&results, &worker, &mutex](Thread& thread) -> int
-		{
+		ThreadClosure tc1([&results, &worker, &mutex](Thread& thread) -> int {
 			auto r = worker.method1(1);
 			Mutex::Lock lock(mutex);
 			results.insert(results.end(), r);
 			return 0x10;
 		});
 		//
-		ThreadClosure tc2([&results, &worker, &mutex](Thread& thread) -> int
-		{
+		ThreadClosure tc2([&results, &worker, &mutex](Thread& thread) -> int {
 			auto r = worker.method2(1, 2);
 			Mutex::Lock lock(mutex);
 			results.insert(results.end(), r);
 			return 0x10;
 		});
 		//
-		ThreadClosure tc3([&results, &worker, &mutex](Thread& thread) -> int
-		{
+		ThreadClosure tc3([&results, &worker, &mutex](Thread& thread) -> int {
 			auto r = worker.method3(1, 2, 3);
 			Mutex::Lock lock(mutex);
 			results.insert(results.end(), r);
@@ -289,4 +283,3 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		CHECK(results == TVector<Thread::id_type>{tid + 1, tid + 3, tid + 6});
 	}
 }
-

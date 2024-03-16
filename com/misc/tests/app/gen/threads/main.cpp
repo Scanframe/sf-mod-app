@@ -1,13 +1,13 @@
+#include <chrono>
+#include <csignal>
 #include <iostream>
-#include <misc/gen/gen_utils.h>
-#include <misc/gen/dbgutils.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Thread.h>
-#include <csignal>
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/gen_utils.h>
 #include <thread>
-#include <chrono>
 #if !IS_WIN
-#include <misc/lnx/lnx_utils.h>
+	#include <misc/lnx/lnx_utils.h>
 #endif
 
 void TestNumberString()
@@ -24,13 +24,11 @@ void TestStdSignal()
 	sf::siginterrupt(quit_signal, true);
 #endif
 	// register signal handler
-	(void)std::signal(quit_signal, [](int)
-	{
+	(void) std::signal(quit_signal, [](int) {
 		quit = true;
 	});
 
-	auto t = std::thread([]()
-	{
+	auto t = std::thread([]() {
 		char buf[10];
 		while (!quit)
 		{
@@ -83,26 +81,21 @@ void TestThreads(int how = 0)
 {
 	struct Scope
 	{
-		~Scope()
-		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Out of scope... " << sf::Thread::getCurrentId())
-		}
-
+			~Scope()
+			{
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Out of scope... " << sf::Thread::getCurrentId())
+			}
 	};
-	sf::ThreadClosure tc(sf::ThreadClosure::func_type([how](sf::Thread& thread) -> int
-	{
+	sf::ThreadClosure tc(sf::ThreadClosure::func_type([how](sf::Thread& thread) -> int {
 		Scope scope;
 		switch (how)
 		{
-			case 1:
-			{
+			case 1: {
 				auto ch = std::cin.get();
-				SF_NORM_NOTIFY(DO_DEFAULT, "Test: Woken up cin.get() > '" << std::hex << ch
-				<< "' Fail(" << std::boolalpha << std::cin.fail() << ") " << std::dec << sf::Thread::getCurrentId())
+				SF_NORM_NOTIFY(DO_DEFAULT, "Test: Woken up cin.get() > '" << std::hex << ch << "' Fail(" << std::boolalpha << std::cin.fail() << ") " << std::dec << sf::Thread::getCurrentId())
 				break;
 			}
-			default:
-			{
+			default: {
 				do
 				{
 					// Sleep for some time to get interrupted by a call to terminateAndWait().
@@ -114,8 +107,7 @@ void TestThreads(int how = 0)
 					{
 						SF_NORM_NOTIFY(DO_DEFAULT, "Test: Woken up by interruption: " << sf::Thread::getCurrentId())
 					}
-				}
-				while (!thread.shouldTerminate());
+				} while (!thread.shouldTerminate());
 				break;
 			}
 		}

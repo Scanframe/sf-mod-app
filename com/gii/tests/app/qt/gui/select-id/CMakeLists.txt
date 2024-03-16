@@ -14,7 +14,7 @@ add_executable("${TEST_APP_TARGET}")
 target_sources("${TEST_APP_TARGET}" PRIVATE main.cpp "${TEST_APP_SOURCES}")
 
 # Adds the compiler and linker options for coverage.
-Sf_AddTargetForCoverage("${TEST_TARGET}")
+Sf_AddTargetForCoverage("${TEST_APP_TARGET}")
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${TEST_APP_TARGET}")
@@ -25,7 +25,8 @@ target_link_libraries("${TEST_APP_TARGET}" PRIVATE Qt::Designer pthread sf-misc 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
 # Command can be a target
-add_test(NAME "${TEST_APP_TARGET}" COMMAND ${TEST_APP_TARGET})
+add_test(NAME "${TEST_APP_TARGET}"
+	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,win-exec.sh,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_APP_TARGET}>")
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_APP_TARGET}")

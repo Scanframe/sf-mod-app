@@ -1,10 +1,10 @@
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <csignal>
 #include <condition_variable>
-#include <misc/gen/Mutex.h>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <misc/gen/Condition.h>
+#include <misc/gen/Mutex.h>
 #include <misc/gen/Thread.h>
 
 /* compile with gcc -pthread lockwait.c */
@@ -20,18 +20,18 @@ void* thread_raw(void* v)
 	error = pthread_mutex_lock(&raw_mutex);
 	if (error)
 	{
-		perror(__FUNCTION__ );
+		perror(__FUNCTION__);
 	}
 	error = pthread_cond_wait(&cv, &raw_mutex);
 	if (error)
 	{
-		perror(__FUNCTION__ );
+		perror(__FUNCTION__);
 	}
 	printf("I've been unlocked.\n");
 	error = pthread_mutex_unlock(&raw_mutex);
 	if (error)
 	{
-		perror(__FUNCTION__ );
+		perror(__FUNCTION__);
 	}
 	return nullptr;
 }
@@ -48,8 +48,8 @@ void create_or_signal(bool create)
 	}
 }
 
-sf::Condition sf_condition; // NOLINT(cert-err58-cpp)
-sf::Mutex sf_mutex; // NOLINT(cert-err58-cpp)
+sf::Condition sf_condition;// NOLINT(cert-err58-cpp)
+sf::Mutex sf_mutex;// NOLINT(cert-err58-cpp)
 
 void* sf_thread(void* v)
 {
@@ -61,11 +61,11 @@ void* sf_thread(void* v)
 	return nullptr;
 }
 
-sf::ThreadClosure sf_thread_closure([](sf::Thread& thread) -> int // NOLINT(cert-err58-cpp)
-{
-	sf_thread(nullptr);
-	return 0xff;
-});
+sf::ThreadClosure sf_thread_closure([](sf::Thread& thread) -> int// NOLINT(cert-err58-cpp)
+																		{
+																			sf_thread(nullptr);
+																			return 0xff;
+																		});
 
 void sf_create_or_signal(bool create)
 {
@@ -105,13 +105,11 @@ int main_()
 	return 0;
 }
 
-
 int main()
 {
 	sf::Mutex mutex;
 	sf::Condition condition;
-	sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int
-	{
+	sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
 		sf::Mutex::Lock lock(mutex);
 		condition.wait(mutex);
 		SF_NORM_NOTIFY(DO_CLOG, "Thread unlocked");
@@ -146,5 +144,3 @@ int main()
 	}
 	return 0;
 }
-
-
