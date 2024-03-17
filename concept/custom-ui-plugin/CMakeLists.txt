@@ -56,4 +56,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #Sf_SetTargetSuffix("${PROJECT_NAME}")
 
 # Install designer plugin in plugins directory of current compiler.
-install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)
+#install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)

@@ -1,5 +1,5 @@
-# Set the target name using the project name as a base name.
-set(TEST_TARGET "${PROJECT_NAME}-test")
+# Set the target name using the project name as a base name and prefixed.
+set(TEST_TARGET "${SF_TEST_NAME_PREFIX}${PROJECT_NAME}")
 
 #message(STATUS "TEST_TARGET: ${TEST_TARGET}")
 
