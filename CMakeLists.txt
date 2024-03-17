@@ -20,9 +20,9 @@ list(GET _Versions 0 SF_GIT_TAG_VERSION)
 list(GET _Versions 1 SF_GIT_TAG_RC)
 list(GET _Versions 2 SF_GIT_TAG_COMMITS)
 
-
 # Get the Git version number from the repository of this files directory.
 Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
+
 # Set the global project name.
 project("qt-concepts"
 	VERSION "${SF_GIT_TAG_VERSION}"
@@ -33,7 +33,7 @@ project("qt-concepts"
 # Add top target for displaying info on the compiled targets where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Declare some cmake change flags.
+# Declare some cmake flags for decisions on building targets.
 set(SF_BUILD_TESTING "OFF" CACHE BOOL "Enable test targets to be build.")
 set(SF_BUILD_QT "OFF" CACHE BOOL "Enable QT targets to be build.")
 set(SF_BUILD_GUI_TESTING "OFF" CACHE BOOL "Enable testing of tests using the GUI.")
@@ -54,7 +54,7 @@ endif ()
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 
-# Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
+# Set the C++ standard to 20 for all projects which is required for the SfCompiler package.1
 set(CMAKE_CXX_STANDARD 17)
 find_package(SfCompiler CONFIG REQUIRED)
 
@@ -106,8 +106,8 @@ if (SF_BUILD_QT)
 	add_subdirectory(src/app)
 endif ()
 
-# Add Doxygen document project.
-if (NOT WIN32)
+# Add Doxygen document project when .
+if (NOT WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
 	add_subdirectory(doc)
 endif ()
 

@@ -3,7 +3,7 @@
 # Get the scripts directory.
 script_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Add the directories to check.
-arguments=("com/misc/tests")
+arguments=("src/com/misc/tests")
 #arguments+=("com/misc/gen" "com/misc/lnx" "com/misc/win")
 # Add quiet option when call from the Git pre-commit hook.
 if [[ "$(ps -o comm= $PPID)" == "pre-commit" ]]; then

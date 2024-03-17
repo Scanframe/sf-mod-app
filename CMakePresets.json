@@ -218,6 +218,13 @@
 			"inherits": [
 				".build",
 				".lnx-only"
+			],
+			"targets": [
+				"t_sf-misc",
+				"t_sf-misc-mutex",
+				"t_sf-misc-threads",
+				"t_sf-gii",
+				"t_sf-ami-service"
 			]
 		},
 		{
@@ -229,6 +236,13 @@
 			"inherits": [
 				".build",
 				".lnx-only"
+			],
+			"targets": [
+				"t_sf-misc",
+				"t_sf-misc-mutex",
+				"t_sf-misc-threads",
+				"t_sf-gii",
+				"t_sf-ami-service"
 			]
 		},
 		{
