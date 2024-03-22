@@ -67,6 +67,8 @@ if (SF_BUILD_TESTING)
 	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.
 	enable_testing()
+	# Include CDash dashboard testing module and it sets the BUILD_TESTING to 'ON'.
+	include(CTest)
 endif ()
 
 # Configure the rpath.
