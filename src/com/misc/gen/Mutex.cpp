@@ -1,25 +1,27 @@
 #include "Mutex.h"
-#include "gen/Exception.h"
+#include "Exception.h"
+#include "Thread.h"
 #include <cstring>
 
 namespace sf
 {
 
-Mutex::Mutex()
+Mutex::Mutex(const char* name)
+	: _name(name ? name : "unnamed")
 {
 	::pthread_mutexattr_t attr{};
 	int error = ::pthread_mutexattr_init(&attr);
 	if (error)
 		throw ExceptionSystemCall("pthread_mutexattr_init", error, typeid(*this).name(), __FUNCTION__);
 	error = ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-	if(error)
+	if (error)
 		throw ExceptionSystemCall("pthread_mutexattr_settype", error, typeid(*this).name(), __FUNCTION__);
 	error = ::pthread_mutex_init(const_cast<pthread_mutex_t*>(&_mutex), &attr);
 	if (error)
 		throw ExceptionSystemCall("pthread_mutex_init", error, typeid(*this).name(), __FUNCTION__);
 	error = ::pthread_mutexattr_destroy(&attr);
 	if (error)
-			throw ExceptionSystemCall("pthread_mutexattr_destroy", error, typeid(*this).name(), __FUNCTION__);
+		throw ExceptionSystemCall("pthread_mutexattr_destroy", error, typeid(*this).name(), __FUNCTION__);
 }
 
 Mutex::~Mutex()
@@ -27,15 +29,16 @@ Mutex::~Mutex()
 	int error = ::pthread_mutex_destroy(const_cast<pthread_mutex_t*>(&_mutex));
 	if (error)
 	{
-		// TODO: weird error.
 		//throw ExceptionSystemCall("pthread_mutex_destroy", error, typeid(*this).name(), __FUNCTION__);
 	}
+	// Clear the mutex structure to function as a sentry incase it is still referenced.
+	clearMutex();
 }
 
 Mutex::Lock::Lock(const Mutex& sec, bool try_lock)
-	:_mutexRef(const_cast<Mutex&>(sec))
+	: _mutexRef(const_cast<Mutex&>(sec))
 {
-	#if !IS_WIN
+#if !IS_WIN
 	// Check if the mutex has not been destroyed already.
 	// This could happen when a class is created statically.
 	if (_mutexRef._mutex.__data.__kind == -1)
@@ -43,7 +46,7 @@ Mutex::Lock::Lock(const Mutex& sec, bool try_lock)
 		_locked = false;
 		return;
 	}
-	#endif
+#endif
 	acquire(try_lock);
 }
 
@@ -140,6 +143,15 @@ bool Mutex::acquire(bool try_lock, const TimeSpec& timeout)
 
 void Mutex::release()
 {
+#if !IS_WIN
+	// In case the mutex was used in a condition wait situation the mutex is not owned.
+	// When terminated using an exception to kill a thread using constructor cleanup after termination
+	// exception a release of the locked mutex is not needed since it was not locked when waiting for a condition.
+	if (_mutex.__data.__owner == 0)
+	{
+		return;
+	}
+#endif
 	int error = ::pthread_mutex_unlock(&_mutex);
 	if (error)
 	{
@@ -147,4 +159,4 @@ void Mutex::release()
 	}
 }
 
-}
+}// namespace sf

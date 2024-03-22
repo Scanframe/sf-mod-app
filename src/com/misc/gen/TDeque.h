@@ -1,10 +1,10 @@
 #pragma once
 
-#include <deque>
 #include <climits>
+#include <deque>
 #include <iostream>
-#include <sstream>
 #include <iterator>
+#include <sstream>
 
 namespace sf
 {
@@ -18,7 +18,7 @@ namespace sf
  * @tparam T Type contained by the deque.
  */
 template<typename T>
-class TDeque :public std::deque<T>
+class TDeque : public std::deque<T>
 {
 	public:
 		/**
@@ -49,20 +49,23 @@ class TDeque :public std::deque<T>
 		 */
 		template<typename InputIterator>
 		TDeque(InputIterator first, InputIterator last)
-			:base_type(first, last) {}
+			: base_type(first, last)
+		{}
 
 		/**
 		 * @brief Initializing constructor using list like:<br>
 		 * `TDeque que{1,2,3,4,5,6,7}`
 		 */
 		TDeque(std::initializer_list<value_type> list)
-			:base_type(list) {}
+			: base_type(list)
+		{}
 
 		/**
 		 * @brief Copy constructor for base type.
 		 */
 		explicit TDeque(const base_type& sv)
-			:base_type(sv) {}
+			: base_type(sv)
+		{}
 
 		/**
 		 * @brief Initializing constructor.
@@ -70,7 +73,8 @@ class TDeque :public std::deque<T>
 		 * @param sz Size of the deque.
 		 */
 		explicit TDeque(size_type sz)
-			:base_type(sz) {}
+			: base_type(sz)
+		{}
 
 		/**
 		 * @brief Adds item at the end of the deque.
@@ -138,8 +142,7 @@ class TDeque :public std::deque<T>
 		 */
 		void flush(size_type stop, size_type start = 0)
 		{
-			base_type::erase(base_type::begin() + start,
-				base_type::end() + ((stop >= base_type::size()) ? (base_type::size() - 1) : stop));
+			base_type::erase(base_type::begin() + start, base_type::end() + ((stop >= base_type::size()) ? (base_type::size() - 1) : stop));
 		}
 
 		/**
@@ -347,4 +350,4 @@ typename TDeque<T>::size_type TDeque<T>::find(const T& t) const
 	return npos;
 }
 
-} // namespace
+}// namespace sf

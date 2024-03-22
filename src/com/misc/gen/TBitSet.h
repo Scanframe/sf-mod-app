@@ -1,7 +1,7 @@
 #pragma once
 
-#include <climits>
 #include "TSet.h"
+#include <climits>
 
 namespace sf
 {
@@ -53,16 +53,14 @@ class TBitSet
 };
 
 template<size_t Size>
-inline
-TBitSet<Size>::TBitSet()
+inline TBitSet<Size>::TBitSet()
 {
 	(void) Size;
 	clear();
 }
 
 template<size_t Size>
-inline
-bool TBitSet<Size>::has(int bit)
+inline bool TBitSet<Size>::has(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -72,8 +70,7 @@ bool TBitSet<Size>::has(int bit)
 }
 
 template<size_t Size>
-inline
-void TBitSet<Size>::set(int bit)
+inline void TBitSet<Size>::set(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -82,8 +79,7 @@ void TBitSet<Size>::set(int bit)
 }
 
 template<size_t Size>
-inline
-void TBitSet<Size>::reset(int bit)
+inline void TBitSet<Size>::reset(int bit)
 {
 	if (bit < Size && bit >= 0)
 	{
@@ -92,8 +88,7 @@ void TBitSet<Size>::reset(int bit)
 }
 
 template<size_t Size>
-inline
-void TBitSet<Size>::clear()
+inline void TBitSet<Size>::clear()
 {
 	(void) Size;
 	memset(&_mask, 0, sizeof(_mask));
@@ -113,4 +108,4 @@ bool TBitSet<Size>::isClear()
 	return true;
 }
 
-}
+}// namespace sf

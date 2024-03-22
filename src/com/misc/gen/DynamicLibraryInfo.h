@@ -26,51 +26,51 @@ namespace sf
  */
 struct _MISC_CLASS DynamicLibraryInfo
 {
-	/**
+		/**
 	 * @brief Default constructor.
 	 */
-	DynamicLibraryInfo() = default;
+		DynamicLibraryInfo() = default;
 
-	/**
+		/**
 	 * @brief Copy constructor.
 	 */
-	DynamicLibraryInfo(const DynamicLibraryInfo&);
+		DynamicLibraryInfo(const DynamicLibraryInfo&);
 
-	/**
+		/**
 	 * @brief Directory of the dynamic library.
 	 */
-	std::string directory{};
-	/**
+		std::string directory{};
+		/**
 	 * @brief Filename of the dynamic library.
 	 */
-	std::string filename{};
-	/**
+		std::string filename{};
+		/**
 	 * @brief Name of the dynamic library.
 	 */
-	std::string name{};
-	/**
+		std::string name{};
+		/**
 	 * @brief Description of the dynamic library.
 	 */
-	std::string description{};
+		std::string description{};
 
-	/**
+		/**
 	 * @brief PAth to the library. Combines directory and filename.
 	 */
-	[[nodiscard]] std::string path() const;
+		[[nodiscard]] std::string path() const;
 
-	/**
+		/**
 	 * @brief Reads the information from the file.
 	 *
 	 * @param dir Directory of the
 	 * @param filename Location of the dynamic library file relative to the directory.
 	 * @return  True on success.
 	 */
-	bool read(const std::string& dir, const std::string& filename);
+		bool read(const std::string& dir, const std::string& filename);
 
-	/**
+		/**
 	 * @brief Clears all the members.
 	 */
-	void clear();
+		void clear();
 };
 
-}
+}// namespace sf

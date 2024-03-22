@@ -1,16 +1,15 @@
 #pragma once
 
-#include "Value.h"
-#include "ScriptObject.h"
 #include "../global.h"
+#include "ScriptObject.h"
+#include "Value.h"
 
 namespace sf
 {
 
-class _MISC_CLASS ScriptGlobalObject :public ScriptObject
+class _MISC_CLASS ScriptGlobalObject : public ScriptObject
 {
 	public:
-
 		explicit ScriptGlobalObject(const Parameters&);
 
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
@@ -30,4 +29,4 @@ class _MISC_CLASS ScriptGlobalObject :public ScriptObject
 		static IdInfo _objectInfo[];
 };
 
-}
+}// namespace sf

@@ -180,18 +180,16 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 				 {90, 60, i++},
 				 {20, 35, i++},
 				 {0, 0, i++},
-				 {50, 70, i++}}};
+				 {50, 70, i++}
+				}
+			};
 			rl.rearrange();
 			CHECK(rl == (sf::Range::Vector{{{0, 10, 1}, {20, 40, 4}, {50, 90, 6}}}));
 		}
 
 		SECTION("Exclude Vector")
 		{
-			sf::Range::Vector rel{
-				{{0, 20},
-				 {30, 40},
-				 {50, 60},
-				 {70, 80}}};
+			sf::Range::Vector rel{{{0, 20}, {30, 40}, {50, 60}, {70, 80}}};
 			//
 			sf::Range::Vector r0{{{20, 30, -1}, {40, 50, -1}}};
 			sf::Range::Vector ex{{{40, 50}}};
@@ -219,7 +217,8 @@ TEST_CASE("sf::RangeVector", "[generic][range]")
 				 {50, 60, -3},
 				 {70, 80, -4},
 				 {70, 80, -6},
-				 {85, 90, -5}}};
+				 {85, 90, -5}}
+			};
 			sf::Range::Vector covered{{{15, 55}, {65, 95}}};
 			sf::Range::Vector extracted;
 			rl.extract(covered, extracted);

@@ -1,8 +1,8 @@
 #include "gen_utils.h"
-#include "gnu_compat.h"
-#include "dbgutils.h"
 #include "Exception.h"
 #include "TimeSpec.h"
+#include "dbgutils.h"
+#include "gnu_compat.h"
 #include <cstdarg>
 #include <ctime>
 #include <utility>
@@ -12,6 +12,7 @@
 	#include <unistd.h>
 	#include <libgen.h>
 	#include <cstdlib>
+	#include <regex>
 #elif IS_MSVC
 	#include <direct.h>
 #endif
@@ -21,10 +22,27 @@
 	#else
 		#include <Windows.h>
 	#endif
+#else
+	#include <execinfo.h>
 #endif
 
 namespace sf
 {
+
+std::string error_string(int error_num)
+{
+	char buffer[BUFSIZ];
+#if IS_WIN
+	if (::strerror_s(buffer, BUFSIZ, error_num))
+	{
+		::snprintf(buffer, BUFSIZ, "Unknown error %d", error_num);
+	}
+	return buffer;
+#else
+	auto rv = ::strerror_r(error_num, buffer, BUFSIZ);
+	return rv;
+#endif
+}
 
 std::string stringf(const char* fmt, ...)
 {
@@ -111,10 +129,9 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 	// create conversion table
 	static struct
 	{
-		char code;
-		char ch;
-	}
-		table[] =
+			char code;
+			char ch;
+	} table[] =
 		{
 			// single quote
 			{'\'', '\''},
@@ -188,9 +205,9 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 					}
 				}
 			}
-		} // for
+		}// for
 	}
-		// In reverse (unescape).
+	// In reverse (unescape).
 	else
 	{
 		// Convert std::string character by character.
@@ -237,7 +254,7 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 							}
 						}
 					}
-						// Not a hex value.
+					// Not a hex value.
 					else
 					{
 						// Increase index and check validity of the same index.
@@ -256,13 +273,13 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 					}
 				}
 			}
-				// Not a control character.
+			// Not a control character.
 			else
 			{
 				// Just add the character.
 				rv += str[i];
 			}
-		} // for
+		}// for
 	}
 	return rv;
 }
@@ -288,8 +305,7 @@ std::string filter(std::string s, const std::string& filter)
 		{
 			s.erase(p, 1);
 		}
-	}
-	while (p != std::string::npos);
+	} while (p != std::string::npos);
 	return s;
 }
 
@@ -305,8 +321,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 	//
 	while ((*str) && (*wild != '*'))
 	{
-		if ((case_s ? (*wild != *str) : (std::toupper(*wild) != std::toupper(*str)))
-			&& (*wild != '?'))
+		if ((case_s ? (*wild != *str) : (std::toupper(*wild) != std::toupper(*str))) && (*wild != '?'))
 		{
 			return 0;
 		}
@@ -326,8 +341,7 @@ int wildcmp(const char* wild, const char* str, bool case_s)
 			mp = wild;
 			cp = str + 1;
 		}
-		else if ((case_s ? (*wild == *str) : (std::toupper(*wild) == std::toupper(*str)))
-			|| (*wild == '?'))
+		else if ((case_s ? (*wild == *str) : (std::toupper(*wild) == std::toupper(*str))) || (*wild == '?'))
 		{
 			wild++;
 			str++;
@@ -410,10 +424,28 @@ std::string getExecutableName()
 std::string demangle(const char* name)
 {
 #if IS_GNU
-	int status;
-	char* nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
-	std::string rv(nm);
-	free(nm);
+	std::string rv;
+	// Check if not null.
+	if (name != nullptr)
+	{
+		int status;
+		char* nm = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+		if (status == 0)
+		{
+			rv.assign(nm);
+			free(nm);
+		}
+		else
+		{
+			rv += "?";
+			rv += name;
+			rv += "?";
+		}
+	}
+	else
+	{
+		rv = "<nullptr>";
+	}
 	return rv;
 #else
 	return name;
@@ -435,7 +467,7 @@ SF_CONSTRUCTOR_COMPAT_FUNC(initializeStartTime)
 #endif
 }
 
-}
+}// namespace
 
 timespec getTimeRunning()
 {
@@ -448,7 +480,7 @@ timespec getTime(bool realTime)
 #if IS_WIN
 	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC, &ct))
 #else
-		if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
+	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
 #endif
 	{
 		throw ExceptionSystemCall("clock_gettime", errno, nullptr, __FUNCTION__);
@@ -459,11 +491,11 @@ timespec getTime(bool realTime)
 int timespecCompare(const timespec& ts1, const timespec& ts2)
 {
 	if (ts1.tv_sec > ts2.tv_sec)
-	{  // NOLINT(bugprone-branch-clone)
+	{// NOLINT(bugprone-branch-clone)
 		return 1;
 	}
 	else if (ts1.tv_sec < ts2.tv_sec)
-	{  // NOLINT(bugprone-branch-clone)
+	{// NOLINT(bugprone-branch-clone)
 		return -1;
 	}
 	else if (ts1.tv_nsec > ts2.tv_nsec)
@@ -548,8 +580,7 @@ int precision(double value)
 int digits(double value)
 {
 	constexpr size_t sz = 64;
-	auto buf = (char*) malloc(sz);
-	scope_free sf(buf);
+	char buf[sz];
 	constexpr int len = std::numeric_limits<double>::digits10;
 	int dec, sign;
 	ecvt_r(value, len, &dec, &sign, buf, sz);
@@ -568,14 +599,14 @@ int magnitude(double value)
 {
 	if (value != 0.0)
 	{
-/*
+		/*
 		int dec, sign;
 		ecvt(value, std::numeric_limits<double>::digits10, &dec, &sign);
 		return dec;
 */
 		constexpr int digits = std::numeric_limits<double>::digits10;
 		constexpr size_t buf_sz = 64;
-		auto buf = (char*) alloca(buf_sz);
+		char buf[buf_sz];
 		int dec, sign;
 		ecvt_r(value, digits, &dec, &sign, buf, buf_sz);
 		return dec;
@@ -649,20 +680,18 @@ const char* strnstr(const char* s, const char* find, size_t n)
 				{
 					return nullptr;
 				}
-			}
-			while (sc != c);
+			} while (sc != c);
 			if (len > n)
 			{
 				return nullptr;
 			}
-		}
-		while (strncmp(s, find, len) != 0);
+		} while (strncmp(s, find, len) != 0);
 		s--;
 	}
 	return (char*) s;
 }
 
-bool getFiles(strings& files, std::string directory, std::string wildcard) // NOLINT(performance-unnecessary-value-param)
+bool getFiles(strings& files, std::string directory, std::string wildcard)// NOLINT(performance-unnecessary-value-param)
 {
 	DIR* dp;
 	dirent* dirp;
@@ -672,7 +701,7 @@ bool getFiles(strings& files, std::string directory, std::string wildcard) // NO
 #else
 	if (access(directory.c_str(), F_OK | X_OK))
 #endif
-		{
+	{
 		return false;
 	}
 	//
@@ -715,7 +744,8 @@ bool fileUnlink(const std::string& path)
 #endif
 	{
 		char buffer[BUFSIZ];
-		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n" << ::strerror_r(errno, buffer, sizeof(buffer)))
+		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n"
+																			<< ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}
 	return true;
@@ -726,7 +756,8 @@ bool fileRename(const std::string& old_path, const std::string& new_path)
 	if (std::rename(old_path.c_str(), new_path.c_str()) == -1)
 	{
 		char buffer[BUFSIZ];
-		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n" << ::strerror_r(errno, buffer, sizeof(buffer)))
+		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n"
+																				<< ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}
 	return true;
@@ -812,4 +843,52 @@ float stof(const char* ptr, char** end_ptr)
 	return rv;
 }
 
+std::string executeShellCommand(const std::string& cmd)
+{
+	std::string result;
+#if !IS_WIN
+	std::array<char, 1024> buffer;
+	std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
+	// Check if the pipe was opened successfully.
+	if (!pipe)
+	{
+		throw std::runtime_error("popen() failed!");
+	}
+	while (!feof(pipe.get()))
+	{
+		if (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+		{
+			result.append(buffer.data());
+		}
+	}
+#endif
+	return result;
 }
+
+void printBacktrace()
+{
+#if !IS_WIN
+	void* bt[128];
+	int bt_size;
+	char** bt_syms;
+	int i;
+	bt_size = backtrace(bt, sizeof(bt) / sizeof(bt[0]));
+	bt_syms = backtrace_symbols(bt, bt_size);
+	std::regex re("^(.*)\\((.*)(\\+0x[0-9a-f]*)\\)\\s\\[(0x[0-9a-f]*)\\]$");
+	std::regex re2("\\n$");
+	for (i = 1; i < bt_size; i++)
+	{
+		std::string sym = bt_syms[i];
+		std::smatch ms;
+		if (std::regex_search(sym, ms, re))
+		{
+			auto r = executeShellCommand("addr2line -e " + ms[1].str() + " -Cifpsa " + ms[3].str());
+			auto r2 = std::regex_replace(r, re2, "");
+			std::cerr << r2 << std::endl;
+		}
+	}
+	free(bt_syms);
+#endif
+}
+
+}// namespace sf

@@ -1,15 +1,15 @@
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <unistd.h>
-#include <iostream>
-#include <sstream>
+#include "../gen/Exception.h"
+#include "../gen/TDynamicBuffer.h"
 #include "../gen/dbgutils.h"
 #include "../lnx/lnx_utils.h"
-#include "../gen/TDynamicBuffer.h"
-#include "../gen/Exception.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
+#include <iostream>
+#include <sstream>
+#include <sys/mman.h>
+#include <unistd.h>
 
 #include "File.h"
 
@@ -22,19 +22,19 @@ std::ostream& operator<<(std::ostream& os, const File& file)
 }
 
 File::File()
-	:_mode(0)
-	 , _flags(0)
-	 , _descriptor(-1)
-	 , _errorNo(0)
+	: _mode(0)
+	, _flags(0)
+	, _descriptor(-1)
+	, _errorNo(0)
 {
 	::memset(&_stat, 0, sizeof(_stat));
 }
 
 File::File(const std::filesystem::path& path, int flags, mode_t mode)
-	:_mode(0)
-	 , _flags(0)
-	 , _descriptor(-1)
-	 , _errorNo(0)
+	: _mode(0)
+	, _flags(0)
+	, _descriptor(-1)
+	, _errorNo(0)
 {
 	::memset(&_stat, 0, sizeof(_stat));
 	initialize(path, flags, mode);
@@ -68,8 +68,7 @@ void File::open(bool reopen)
 	if (_descriptor == -1)
 	{
 		setErrorNo((int) errno);
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"File (%d, %d) '%s' failed!\n%s", _flags, _mode, _path.c_str(), strerror(_errorNo));
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "File (%d, %d) '%s' failed!\n%s", _flags, _mode, _path.c_str(), strerror(_errorNo));
 	}
 	// Retrieve stats on opening.
 	getStat(_stat);
@@ -102,8 +101,7 @@ void File::createTemporary(const std::string& name_tpl, int flags)
 	// When not found throw an exception.
 	if (pos == std::string::npos)
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"Template is missing token '%s' is not open!", token.c_str());
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Template is missing token '%s' is not open!", token.c_str());
 	}
 	// Replace the token for the needed characters.
 	tpl.replace(pos - 1, token.length(), "XXXXXX");
@@ -115,14 +113,12 @@ void File::createTemporary(const std::string& name_tpl, int flags)
 	if (_descriptor == -1)
 	{
 		setErrorNo((int) errno);
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"mkostemps('%s', ...) failed!\n%s", tpl.c_str(), strerror(_errorNo));
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "mkostemps('%s', ...) failed!\n%s", tpl.c_str(), strerror(_errorNo));
 	}
 	// Assign the path using the file descriptor.
 	_path = file_fd_path(_descriptor);
 	// Adjust the stats.
 	getStatus(true);
-
 }
 
 void File::open(const std::string& path, int flags, mode_t mode)
@@ -137,8 +133,7 @@ void File::allocate(size_t sz)
 {
 	if (posix_fallocate(_descriptor, 0, sz))
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"posix_fallocate() failed!\n%s", strerror(_errorNo));
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "posix_fallocate() failed!\n%s", strerror(_errorNo));
 	}
 }
 
@@ -155,12 +150,12 @@ bool File::close(bool exceptions)
 		setErrorNo((int) errno);
 		if (exceptions)
 		{
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Closing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Closing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 		else
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Closing file '" << _path << "' failed!\n" << strerror(_errorNo))
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Closing file '" << _path << "' failed!\n"
+																									<< strerror(_errorNo))
 		}
 		// Reset the descriptor anyway.
 		_descriptor = -1;
@@ -178,8 +173,7 @@ void File::write(const void* buf, size_t sz, size_t* written)
 	// Check if the file is open.
 	if (!isOpen())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"File '%s' is not open!", _path.c_str());
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "File '%s' is not open!", _path.c_str());
 	}
 	// Write the buffer to file.
 	ssize_t wr = ::write(_descriptor, buf, sz);
@@ -187,14 +181,12 @@ void File::write(const void* buf, size_t sz, size_t* written)
 	if (wr == -1)
 	{
 		setErrorNo((int) errno);
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"Writing to '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Writing to '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
 	}
-		// Check if all was written
+	// Check if all was written
 	else if ((size_t) wr != sz)
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"Writing all data (%llu/%llu) to file '%s' failed!", _path.c_str(), wr, sz);
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Writing all data (%llu/%llu) to file '%s' failed!", _path.c_str(), wr, sz);
 	}
 	// Assign the written return value when passed.
 	if (written)
@@ -240,8 +232,7 @@ ssize_t File::read(void* buf, size_t pos, size_t sz) const
 	ssize_t ret = ::pread(_descriptor, buf, sz, pos);
 	if (ret == -1)
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"Reading from file '%s' at position (%llu) length (%llu) failed!", _path.c_str(), pos, sz);
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Reading from file '%s' at position (%llu) length (%llu) failed!", _path.c_str(), pos, sz);
 	}
 	return ret;
 }
@@ -256,8 +247,7 @@ void File::rename(const std::string& path, bool assign)
 		// Read from the current position.
 		if (::rename(_path.c_str(), path.c_str()) == -1)
 		{
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Renaming file '%s' to '%s' failed!\n%s", _path.c_str(), path.c_str(), strerror(errno));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Renaming file '%s' to '%s' failed!\n%s", _path.c_str(), path.c_str(), strerror(errno));
 		}
 	}
 	// Update the Path member using the new file name.
@@ -299,7 +289,6 @@ void File::truncate(size_t length)
 		{
 			throw ExceptionSystemCall("truncate", errno, typeid(*this).name(), __FUNCTION__);
 		}
-
 	}
 	// Adjust the stats.
 	getStatus(true);
@@ -315,8 +304,7 @@ void File::remove()
 		// Remove the file an throw an exception on failure.
 		if (::unlink(_path.c_str()) == -1)
 		{
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Removing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Removing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 	}
 	// Clear the stat
@@ -330,8 +318,7 @@ void File::synchronise()
 	{
 		if (::fsync(_descriptor) == -1)
 		{
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Syncing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Syncing file '%s' failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 	}
 }
@@ -340,8 +327,7 @@ void File::getStat(stat_type& stat) const
 {
 	if (!isOpen() && _path.empty())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"File '%s' has not been opened yet!", _path.c_str(), strerror(_errorNo));
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "File '%s' has not been opened yet!", _path.c_str(), strerror(_errorNo));
 	}
 	// When open use the file descriptor function.
 	if (isOpen())
@@ -350,19 +336,17 @@ void File::getStat(stat_type& stat) const
 		if (::fstat(_descriptor, &stat) == -1)
 		{
 			const_cast<File*>(this)->_errorNo = errno;
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Statting file '%s' on descriptor failed!\n%s", _path.c_str(), strerror(_errorNo));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Statting file '%s' on descriptor failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 	}
-		// Do the stat function on the filename.
-		// Check if the file exists.
+	// Do the stat function on the filename.
+	// Check if the file exists.
 	else if (!::access(_path.c_str(), F_OK))
 	{
 		if (::stat(_path.c_str(), &stat) == -1)
 		{
 			const_cast<File*>(this)->_errorNo = errno;
-			throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-				"Statting file '%s' on path failed!\n%s", _path.c_str(), strerror(_errorNo));
+			throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Statting file '%s' on path failed!\n%s", _path.c_str(), strerror(_errorNo));
 		}
 	}
 	else
@@ -418,4 +402,4 @@ std::string File::getStatText() const
 	return os.str();
 }
 
-}
+}// namespace sf::lnx

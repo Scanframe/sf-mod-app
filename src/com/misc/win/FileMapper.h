@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
 #include "../gen/IFileMapper.h"
 #include "../global.h"
+#include <string>
 
 namespace sf::win
 {
@@ -12,7 +12,7 @@ namespace sf::win
  * memory allocation using the page file for controlled swapping. This is
  * especially useful for managing huge memory blocks.
  */
-class _MISC_CLASS FileMapper :public IFileMapper
+class _MISC_CLASS FileMapper : public IFileMapper
 {
 	public:
 		/**
@@ -56,7 +56,6 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		 */
 		[[nodiscard]] bool isFileOpen() const;
 
-
 		/**
 		 * Called by a data server to create a named file map.
 		 * When 'unique' is true there is no other map named as 'map_name' before calling this function.
@@ -66,7 +65,7 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		 * @param readonly
 		 * @return
 		 */
-		bool createMap(const char* map_name, size_t map_size, bool unique , bool readonly);
+		bool createMap(const char* map_name, size_t map_size, bool unique, bool readonly);
 
 		/**
 		 * Called by a data client to open an existing a named file map.
@@ -151,11 +150,10 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		FileMapper& operator=(const FileMapper&) = delete;
 
 	private:
-
 		/**
 		 * Holds the implementation dependent data.
 		 */
 		struct FileMapperPrivate* _data{nullptr};
 };
 
-}
+}// namespace sf::win

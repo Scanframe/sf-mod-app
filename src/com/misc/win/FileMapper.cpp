@@ -1,10 +1,9 @@
-#include <windows.h>
-#include <cstring>
+#include "FileMapper.h"
+#include "../gen/Exception.h"
 #include "../gen/dbgutils.h"
 #include "../gen/gen_utils.h"
-#include "../gen/Exception.h"
-#include "../gen/target.h"
-#include "FileMapper.h"
+#include <cstring>
+#include <windows.h>
 
 namespace sf::win
 {
@@ -14,22 +13,22 @@ namespace sf::win
  */
 struct FileMapperPrivate
 {
-	// Open map view as read only.
-	bool FlagReadOnlyView{false};
-	//
-	bool FlagClient{false};
-	// Stores the file handle created by 'CreateFile' or '0xFFFFFFFF' to indicate page file mapping.
-	HANDLE FileHandle{nullptr};
-	// Contains the file name when
-	std::string FileName;
-	// Contains the handle of the mapped file region.
-	HANDLE MapHandle{nullptr};
-	// Contains the
-	std::string MapName;
-	// Contains the size of the map passed when 'CreateMap' was called.
-	DWORD MapSize{0};
-	// Points to the data when MapView was called.
-	void* Data{nullptr};
+		// Open map view as read only.
+		bool FlagReadOnlyView{false};
+		//
+		bool FlagClient{false};
+		// Stores the file handle created by 'CreateFile' or '0xFFFFFFFF' to indicate page file mapping.
+		HANDLE FileHandle{nullptr};
+		// Contains the file name when
+		std::string FileName;
+		// Contains the handle of the mapped file region.
+		HANDLE MapHandle{nullptr};
+		// Contains the
+		std::string MapName;
+		// Contains the size of the map passed when 'CreateMap' was called.
+		DWORD MapSize{0};
+		// Points to the data when MapView was called.
+		void* Data{nullptr};
 };
 
 std::string GetLastErrorString(DWORD error = 0)
@@ -42,14 +41,13 @@ std::string GetLastErrorString(DWORD error = 0)
 	// Pointer to be filled in by the calling function
 	LPSTR buffer = nullptr;
 	// Function allocating the buffer which is freed by calling ::LocalFree().
-	DWORD msglen = ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_ALLOCATE_BUFFER,                // DWORD  dwFlags,  // source and processing options
-		0,                                             // LPCVOID  lpSource,  // address of  message source
-		error,                                          // DWORD  dwMessageId,  // requested message identifier
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT), // DWORD  dwLanguageId,  // language identifier for requested message
-		(LPSTR) & buffer,                              // LPTSTR  lpBuffer,  // address of message buffer
-		0,                                              // DWORD  Size,  // maximum size of message buffer
-		0                                              // va_list *  Arguments   // address of array of message inserts
+	DWORD msglen = ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,// DWORD  dwFlags,  // source and processing options
+																	0,// LPCVOID  lpSource,  // address of  message source
+																	error,// DWORD  dwMessageId,  // requested message identifier
+																	MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),// DWORD  dwLanguageId,  // language identifier for requested message
+																	(LPSTR) &buffer,// LPTSTR  lpBuffer,  // address of message buffer
+																	0,// DWORD  Size,  // maximum size of message buffer
+																	0// va_list *  Arguments   // address of array of message inserts
 	);
 	// Form a string containing also the error code.
 	char buf[65];
@@ -61,7 +59,7 @@ std::string GetLastErrorString(DWORD error = 0)
 	rv += ' ';
 	// Fill the returning string on success.
 	if (msglen)
-	{ // remove the newline character at the end of the buffer if it exists.
+	{// remove the newline character at the end of the buffer if it exists.
 		if (buffer[msglen - 1] == '\n')
 		{
 			buffer[msglen - 1] = '\0';
@@ -76,7 +74,7 @@ std::string GetLastErrorString(DWORD error = 0)
 }
 
 FileMapper::FileMapper()
-	:_data(new FileMapperPrivate())
+	: _data(new FileMapperPrivate())
 {}
 
 FileMapper::~FileMapper()
@@ -91,7 +89,7 @@ bool FileMapper::closeFile()
 	bool rv = closeMap();
 	// Check if a file was opened or not before closing it.
 	if (_data->FileHandle && _data->FileHandle != (HANDLE) 0xFFFFFFFFFFFFFFFF)
-	{ // Check for an error.
+	{// Check for an error.
 		if (!::CloseHandle(_data->FileHandle))
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "CloseHandle On File Failed!" << GetLastErrorString())
@@ -127,16 +125,15 @@ bool FileMapper::createMapFile(const char* filename)
 		// Assign the file name to the data member.
 		_data->FileName = filename;
 		// Create the file
-		_data->FileHandle = CreateFileA
-			(
-				_data->FileName.c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				CREATE_ALWAYS,
-				FILE_ATTRIBUTE_NORMAL,
-				NULL
-			);
+		_data->FileHandle = CreateFileA(
+			_data->FileName.c_str(),
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			NULL,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL
+		);
 		// Check for an error.
 		if (_data->FileHandle == INVALID_HANDLE_VALUE)
 		{
@@ -153,28 +150,27 @@ bool FileMapper::createMapFile(const char* filename)
 
 void FileMapper::createView(size_t sz)
 {
-	if (!createMap(stringf("FM%08X", rand()).c_str(), sz, true, false)) // NOLINT(cert-msc50-cpp)
+	if (!createMap(stringf("FM%08X", rand()).c_str(), sz, true, false))// NOLINT(cert-msc50-cpp)
 	{
 		throw Exception("CreateMap(...) failed!");
 	}
 }
 
-bool FileMapper::createMap(const char* map_name, size_t map_size, bool unique , bool readonly)
+bool FileMapper::createMap(const char* map_name, size_t map_size, bool unique, bool readonly)
 {
 	// Do not allow calling of this function when a map is already opened.
 	if (_data->MapHandle == nullptr)
 	{
 		_data->MapSize = map_size;
 		_data->MapName = map_name;
-		_data->MapHandle = ::CreateFileMappingA
-			(
-				_data->FileHandle,
-				NULL,
-				(readonly ? PAGE_READONLY : PAGE_READWRITE),
-				0,
-				_data->MapSize,
-				_data->MapName.c_str()
-			);
+		_data->MapHandle = ::CreateFileMappingA(
+			_data->FileHandle,
+			NULL,
+			(readonly ? PAGE_READONLY : PAGE_READWRITE),
+			0,
+			_data->MapSize,
+			_data->MapName.c_str()
+		);
 
 		// Check for a valid file handle
 		if (_data->MapHandle == nullptr)
@@ -182,7 +178,7 @@ bool FileMapper::createMap(const char* map_name, size_t map_size, bool unique , 
 			SF_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString())
 		}
 		else
-		{ // Check if map name already exists
+		{// Check if map name already exists
 			if (unique && ::GetLastError() == ERROR_ALREADY_EXISTS)
 			{
 				SF_RTTI_NOTIFY(DO_DEFAULT, "CreateFileMapping Failed! " << GetLastErrorString(ERROR_ALREADY_EXISTS))
@@ -264,14 +260,13 @@ bool FileMapper::mapView()
 			return false;
 		}
 		// Map the view into memory.
-		_data->Data = ::MapViewOfFile
-			(
-				_data->MapHandle,
-				(_data->FlagReadOnlyView ? FILE_MAP_READ : (FILE_MAP_WRITE | FILE_MAP_READ)),
-				0,
-				0,
-				_data->MapSize
-			);
+		_data->Data = ::MapViewOfFile(
+			_data->MapHandle,
+			(_data->FlagReadOnlyView ? FILE_MAP_READ : (FILE_MAP_WRITE | FILE_MAP_READ)),
+			0,
+			0,
+			_data->MapSize
+		);
 		// Check if an error occurred.
 		if (_data->Data == nullptr)
 		{
@@ -345,4 +340,4 @@ bool FileMapper::isFileOpen() const
 	return _data->FileHandle != nullptr;
 }
 
-}
+}// namespace sf::win

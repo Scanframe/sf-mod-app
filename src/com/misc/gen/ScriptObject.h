@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cstring>
-#include "gen_utils.h"
-#include "Value.h"
-#include "TClassRegistration.h"
 #include "../global.h"
+#include "TClassRegistration.h"
+#include "Value.h"
+#include "gen_utils.h"
+#include <cstring>
 
 namespace sf
 {
@@ -20,12 +20,12 @@ class _MISC_CLASS ScriptObject
 		 */
 		struct Parameters
 		{
-			explicit Parameters(Value::vector_type* arguments, ScriptObject* parent = nullptr)
-			:_parent(parent)
-			, _arguments(arguments)
-			{}
-			ScriptObject* _parent;
-			Value::vector_type* _arguments;
+				explicit Parameters(Value::vector_type* arguments, ScriptObject* parent = nullptr)
+					: _parent(parent)
+					, _arguments(arguments)
+				{}
+				ScriptObject* _parent;
+				Value::vector_type* _arguments;
 		};
 
 		/**
@@ -60,27 +60,27 @@ class _MISC_CLASS ScriptObject
 		 */
 		struct IdInfo
 		{
-			/**
+				/**
 			 * @brief Index for decoding. Could be regarded as function or variable address.
 			 */
-			int _index{0};
-			/**
+				int _index{0};
+				/**
 			 * @brief Function of the entry.
 			 */
-			EIdentifier _id{idUnknown};
-			/**
+				EIdentifier _id{idUnknown};
+				/**
 			 * @brief Name of the entry.
 			 */
-			const char* _name{nullptr};
-			/**
+				const char* _name{nullptr};
+				/**
 			 * @brief In case of a function the amount of parameters where std::numeric_limits<int>::max()
 			 * is infinite -2 is at least 2 and when 3 is exactly 3 parameters are required.
 			 */
-			int _paramCount{0};
-			/**
+				int _paramCount{0};
+				/**
 			 * @brief Pointer referring to info object. If nullptr it is a static entry.
 			 */
-			void* _data{nullptr};
+				void* _data{nullptr};
 		};
 
 		/**
@@ -183,8 +183,7 @@ class _MISC_CLASS ScriptObject
 		friend class ScriptInterpreter;
 
 		// Declarations of static functions and data members to be able to create implementations.
-	SF_DECL_IFACE(ScriptObject, ScriptObject::Parameters, Interface)
-
+		SF_DECL_IFACE(ScriptObject, ScriptObject::Parameters, Interface)
 };
 
-}
+}// namespace sf

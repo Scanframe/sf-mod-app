@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TimeSpec.h"
 #include "../global.h"
+#include "TimeSpec.h"
 
 namespace sf
 {
@@ -83,7 +83,7 @@ class _MISC_CLASS ElapseTimer
 
 		/**
 		 * @brief This operator is used to minimize clock() calls.
-		 * Return non zero if timer is active.
+		 * Return non-zero if timer is active.
 		 */
 		bool operator()(const timespec& t) const;
 
@@ -102,46 +102,39 @@ class _MISC_CLASS ElapseTimer
 		TimeSpec _elapsedTime{};
 };
 
-inline
-ElapseTimer::ElapseTimer(const timespec& t)
+inline ElapseTimer::ElapseTimer(const timespec& t)
 {
 	set(t);
 }
 
-inline
-void ElapseTimer::reset()
+inline void ElapseTimer::reset()
 {
 	set(_elapsedTime);
 }
 
-inline
-void ElapseTimer::disable()
+inline void ElapseTimer::disable()
 {
 	_enabled = false;
 }
 
-inline
-void ElapseTimer::enable()
+inline void ElapseTimer::enable()
 {
 	_enabled = true;
 }
 
-inline
-bool ElapseTimer::isEnabled() const
+inline bool ElapseTimer::isEnabled() const
 {
 	return _enabled;
 }
 
-inline
-TimeSpec ElapseTimer::getElapseTime() const
+inline TimeSpec ElapseTimer::getElapseTime() const
 {
 	return _elapsedTime;
 }
 
-inline
-ElapseTimer::operator bool() const
+inline ElapseTimer::operator bool() const
 {
 	return isActive();
 }
 
-}
+}// namespace sf

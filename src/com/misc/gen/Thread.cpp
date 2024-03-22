@@ -1,13 +1,13 @@
 #include "Thread.h"
-#include "gen/gen_utils.h"
 #include "gen/dbgutils.h"
+#include "gen/gen_utils.h"
 #include "gnu_compat.h"
 #include <cerrno>
-#include <string>
-#include <iostream>
-#include <cstring>
-#include <pthread.h>
 #include <csignal>
+#include <cstring>
+#include <iostream>
+#include <pthread.h>
+#include <string>
 #include <typeinfo>
 #if IS_WIN
 	#include <windows.h>
@@ -20,81 +20,109 @@
 namespace sf
 {
 
-thread_local volatile Thread* thisThread = nullptr;
+thread_local Thread* thisThread{nullptr};
 
 #if !IS_WIN
-
 __attribute__((constructor)) void installSignalHandlers()
 {
-	char buffer[BUFSIZ];
-	struct sigaction sa{};
+	struct sigaction sa
+	{
+	};
 	sa.sa_handler = nullptr;
 	sa.sa_flags = SA_SIGINFO;
 	::sigemptyset(&sa.sa_mask);
 	// Install a signal handler which throws an exception.
-	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void
-	{
-		SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << " Throwing termination exception.")
-		throw Thread::TerminateException();
+	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void {
+		SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << " Signal handler initiating termination.")
+		thisThread->TerminationSignal();
 	};
 	if (::sigaction(Thread::getTerminationSignal(), &sa, nullptr) < 0)
 	{
 		if (thisThread)
 		{
-			SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << SF_CLS_SEP
-				<< " sigaction()" << ::strerror_r(errno, buffer, sizeof(buffer)))
+			SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << SF_CLS_SEP << " sigaction(): " << error_string(errno).c_str())
 		}
 	}
 	// Install a signal handler that only reports.
-	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void
-	{
+	sa.sa_sigaction = [](int sig, siginfo_t* info, void* ucontext) -> void {
 		if (thisThread)
 		{
-			SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << SF_CLS_SEP
-				<< "Signal received... " << Thread::getCurrentId());
+			SF_COND_NORM_NOTIFY(thisThread->_debug, DO_DEFAULT, SF_RTTI_NAME(*thisThread) << SF_CLS_SEP << "Signal received on '" << thisThread->_name << "'");
 		}
 	};
 	if (::sigaction(SIGUSR2, &sa, nullptr) < 0)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "sigaction()" << ::strerror_r(errno, buffer, sizeof(buffer)))
+		SF_NORM_NOTIFY(DO_DEFAULT, "sigaction(): " << error_string(errno).c_str())
 	}
 }
-
 #endif
+
+void Thread::TerminationSignal()
+{
+	SF_COND_RTTI_NOTIFY(thisThread->_debug, DO_DEFAULT, "Calling " << __FUNCTION__ << "()");
+}
 
 int Thread::getTerminationSignal()
 {
 #if IS_WIN
 	return SIGTERM;
 #else
-	return SIGUSR1;
+	return SIGTERM;
 #endif
 }
 
-Thread::Thread()
-	:_threadId(0)
-	 , _handle(0)
-	 , _status(tsCreated)
-	 , _terminationRequested(false)
-// Default termination time is 10 seconds.
-	 , _terminationTime(10, 0)
+Thread::Thread(bool)
+	// Default termination time is 10 seconds.
+	: _terminationTime(10, 0)
+	, _name("Main")
+	, _status(tsRunning)
+	, _isMain(true)
+	, _handle(pthread_self())
 {
+	// Do not allow 2 instances for the main thread.
+	if (thisThread != nullptr)
+	{
+		throw ThreadException("Cannot create main instance only once!");
+	}
+	// Assign the current thread ID.
+	_threadId = getCurrentId();
+	// Assign thread local pointer.
+	thisThread = this;
+}
+
+Thread::Thread(const std::string& name)
+	// Default termination time is 10 seconds.
+	: _terminationTime(10, 0)
+	, _name(name)
+{
+	_condition = new Condition(stringf("Thread(%s)", _name.c_str()));
 	// Initialize the exit code union.
 	_exitCode.Code = -1;
 }
 
 Thread::~Thread()
 {
-	if (getStatus() == tsRunning)
+	// Only a non-main running thread can be terminated.
+	if (!_isMain && getStatus() == tsRunning)
 	{
-		//throw ThreadError(ThreadError::teDestroyBeforeExit, this);
-		//
 		// An exception will result in a core dump.
 		// So only a notification and thread termination.
 		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread ID ( " << _threadId << ") destroyed before termination.")
 		// Terminate the thread graceful using the TerminationTime period.
 		terminateAndWait();
 	}
+	// Clear thread local pointer.
+	thisThread = nullptr;
+}
+
+Thread& Thread::getCurrent()
+{
+	// Check if the current thread was created by this class.
+	if (!thisThread)
+	{
+		throw ThreadException("Current thread is not created by this class!");
+	}
+	return *thisThread;
 }
 
 Thread::handle_type Thread::start()
@@ -104,76 +132,95 @@ Thread::handle_type Thread::start()
 
 Thread::handle_type Thread::start(const Thread::Attributes& attr)
 {
-	Mutex::Lock lock(_mutex);
-	// When starting running thread do nothing.
-	if (_status == tsRunning)
+	// When not the wrapped main thread allow starting it.
+	if (_isMain)
 	{
-		return _handle;
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Attempted to start the main thread which is impossible.")
 	}
-	// Setting termination-flag to 'false' to enable restart of thread.
-	_terminationRequested = false;
-	// Reset the exit code.
-	_exitCode.Code = -1;
-	// Allow thread creation function modify members.
-	//lock.release();
-	// Create the actual thread.
-	auto error = ::pthread_create(&_handle, attr, +[](void* self) -> void*
+	else
 	{
+		Mutex::Lock lock(_mutex);
+		// When starting an already running thread do nothing.
+		if (_status == tsRunning)
+		{
+			return _handle;
+		}
+		// Setting termination-flag to 'false' to enable restart of thread.
+		_terminationRequested = false;
+		// Reset the exit code.
+		_exitCode.Code = -1;
+		// Allow thread creation function modify members.
+		//lock.release();
+		// Create the actual thread.
+		auto error = ::pthread_create(&_handle, attr, +[](void* self) -> void* {
 		intptr_t ec(static_cast<Thread*>(self)->create());
 		// Windows does not return the exit code through pthread_join().
 		// Besides, when the thread terminates by itself pthread_join() is never called.
 		static_cast<Thread*>(self)->_exitCode.Code = ec;
 		// Return the integer exit code as pointer.
-		return (void*) ec;
-	}, this);
-	// Reacquire the lock to access data members.
-	//lock.acquire();
-	// On error thread creating throw an exception.
-	if (error != 0)
-	{
-		// Failed to start thread.
-		_status = tsInvalid;
-		throw ThreadError(ThreadError::teCreationFailure, this);
+		return (void*) ec; }, this);
+		// Reacquire the lock to access data members.
+		//lock.acquire();
+		// On error thread creating throw an exception.
+		if (error != 0)
+		{
+			// Failed to start thread.
+			_status = tsInvalid;
+			throw ExceptionSystemCall("pthread_create", error, typeid(*this).name(), __FUNCTION__);
+		}
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Waiting on signal from condition '" << _name << "'")
+		// Wait for a trigger from the created thread for a short time.
+		if (_condition->wait(_mutex, _startupTime))
+		{
+			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Signal on condition '" << _name << "'")
+		}
+		else
+		{
+			throw ThreadException("Thread did not run within expected time of %s !", _startupTime.toString().c_str());
+		}
+		// Set the status to running.
+		_status = tsRunning;
 	}
-	SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Waiting for condition... " << getCurrentId())
-	// Wait for a trigger from the created thread.
-	if (_condition.wait(_mutex, TimeSpec(_terminationTime)))
-	{
-		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Notified... " << getCurrentId())
-	}
-	else
-	{
-		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "NOT notified, timed out! ..." << getCurrentId())
-	}
-	// Set the status to running.
-	_status = tsRunning;
 	// Return the valid thread handle.
 	return _handle;
 }
 
 void Thread::terminate()
 {
+	// Make this function MT safe.
+	Mutex::Lock lock(_mutex);
+	// Set the flag for termination.
 	_terminationRequested = true;
+	// When the thread is waiting on a condition signal.
+	if (_condition_waiting)
+	{
+		// Signal the waiting thread.
+		_condition_waiting->notifyAll();
+	}
 }
 
 void Thread::waitForExit()
 {
-#if IS_WIN
+	// Cannot wait for your own thread to exit.
+	if (isSelf())
+	{
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Tried to execute on itself!");
+		return;
+	}
 	Mutex::Lock lock(_mutex);
-	//
+#if IS_WIN
 	if (_status == tsRunning)
 	{
 		int error{0};
-		// Alert system calls by this signal. To unblock blocking functions.
-		//::pthread_kill(_handle, SIGINT);
+		auto w_handle = ::pthread_gethandle(_handle);
 		//WaitForSingleObject(::pthread_gethandle(_handle), INFINITE);
 		//CloseHandle(::pthread_gethandle(_handle));
 		SetEvent(::pthread_gethandle(_handle));
 		lock.release();
-		auto result = ::WaitForSingleObjectEx(::pthread_gethandle(_handle), _terminationTime.toMilliSecs(), true);
+		auto result = ::WaitForSingleObjectEx(w_handle, _terminationTime.toMilliSecs(), true);
 		if (result == WAIT_FAILED)
 		{
-			throw ExceptionSystemCall("WaitForSingleObjectEx", error, typeid(*this).name(), __FUNCTION__);
+			throw ExceptionSystemCall("WaitForSingleObjectEx", result, typeid(*this).name(), __FUNCTION__);
 		}
 		else if (result == WAIT_TIMEOUT)
 		{
@@ -185,8 +232,7 @@ void Thread::waitForExit()
 				error = ::pthread_join(_handle, &_exitCode.Ptr);
 				if (error)
 				{
-					char buffer[BUFSIZ];
-					SF_NORM_NOTIFY(DO_DEFAULT, "pthread_join()" << ::strerror_r(errno, buffer, sizeof(buffer)))
+					SF_NORM_NOTIFY(DO_DEFAULT, "pthread_join()" << error_string(errno).c_str())
 				}
 			}
 		}
@@ -194,11 +240,9 @@ void Thread::waitForExit()
 		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "ExitCode (" << _exitCode.Code << ")")
 	}
 #else
-	Mutex::Lock lock(_mutex);
-	//
 	if (_status == tsRunning)
 	{
-		// Alert system calls by this signal. To unblock blocking functions.
+		// Alert system calls by this signal. To unblock the blocking functions.
 		::pthread_kill(_handle, SIGUSR2);
 		// Release the lock.
 		lock.release();
@@ -211,18 +255,17 @@ void Thread::waitForExit()
 		// If the handle has been cleared the thread has stopped.
 		if (error == ESRCH || !_handle)
 		{
-			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread has exited (" << _exitCode.Code << ")");
+			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Instance '" << _name << "' has exited with (" << _exitCode.Code << ")");
 			return;
 		}
 		// Check if it timed out.
-		if (error != ETIMEDOUT)
+		if (error != ETIMEDOUT && error != 0)
 		{
 			throw ExceptionSystemCall("pthread_timedjoin_np", error, typeid(*this).name(), __FUNCTION__);
 		}
 		else
 		{
-			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Graceful termination period (" << _terminationTime.tv_sec
-				<< "s, " << _terminationTime.tv_nsec << "ns) has passed on " << _threadId << " !")
+			SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Graceful termination period of " << _terminationTime.toString() << " has passed on instance " << _name << " !")
 			if (_handle)
 			{
 				// 2 types of termination.
@@ -234,7 +277,7 @@ void Thread::waitForExit()
 					throw ExceptionSystemCall("pthread_kill", error, typeid(*this).name(), __FUNCTION__);
 				}
 
-/*
+				/*
 				// Cancel calls the cleanup handler.
 				error = ::pthread_cancel(_handle);
 				if (error)
@@ -243,7 +286,7 @@ void Thread::waitForExit()
 				}
 */
 			}
-/*
+			/*
 			// Joining the thread again.
 			if (!error)
 */
@@ -253,8 +296,7 @@ void Thread::waitForExit()
 					error = ::pthread_join(_handle, &_exitCode.Ptr);
 					if (error)
 					{
-						char buffer[BUFSIZ];
-						SF_NORM_NOTIFY(DO_DEFAULT, "pthread_join()" << ::strerror_r(errno, buffer, sizeof(buffer)))
+						SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "pthread_join()" << error_string(errno).c_str())
 					}
 				}
 			}
@@ -297,7 +339,9 @@ bool Thread::setPriority(int pri, int sp)
 	auto pri_max = ::sched_get_priority_max(sp);
 	auto pri_min = ::sched_get_priority_min(sp);
 	// IMPL: What is with this second param in ::sched_setscheduler()
-	struct sched_param param{};
+	struct sched_param param
+	{
+	};
 	// Clip the priority to what is allowed by the OS.
 	param.sched_priority = clip(pri, pri_max, pri_min);
 	int error = ::sched_setscheduler(_threadId, sp, &param);
@@ -311,7 +355,9 @@ bool Thread::setPriority(int pri, int sp)
 int Thread::getPriority() const
 {
 	int policy = 0;
-	struct sched_param param{};
+	struct sched_param param
+	{
+	};
 	int error = pthread_getschedparam(_threadId, &policy, &param);
 	//int error = ::sched_getparam(_threadId, &param);
 	if (error)
@@ -327,11 +373,20 @@ Thread::EStatus Thread::getStatus() const
 	return _status;
 }
 
+void Thread::setTerminationTime(const TimeSpec& ts)
+{
+	Mutex::Lock lock(_mutex);
+	_terminationTime = ts;
+}
+
 bool Thread::isSelf() const
 {
 	Mutex::Lock lock(_mutex);
 	return _threadId == getCurrentId();
-	//return pthread_equal(_handle, pthread_self()) == 0;
+	/*
+	// Alternative to check if this is the current thread.
+	return ::pthread_equal(_handle, pthread_self()) == 0;
+*/
 }
 
 Thread::id_type Thread::getId() const
@@ -358,17 +413,20 @@ bool Thread::shouldTerminate() const
 	return _terminationRequested;
 }
 
-void Thread::cleanup()
+void Thread::setConditionWaiting(sf::Condition* condition)
 {
-	SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Cleanup... " << getCurrentId())
+	Mutex::Lock lock(_mutex);
+	_condition_waiting = condition;
 }
 
-Thread::TerminateException::TerminateException()
-	:Exception("ID(%d)", getCurrentId()) {}
+void Thread::cleanup()
+{
+	SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Cleanup of '" << _name << "'")
+}
 
 int Thread::create()
 {
-	int exit_code = 0;
+	int exit_code = EXIT_SUCCESS;
 	Mutex::Lock lock(_mutex);
 	// Assign thread local.
 	thisThread = this;
@@ -393,17 +451,14 @@ int Thread::create()
 #endif
 	try
 	{
-		auto func = [](void* ptr) -> void
-		{
+		auto func = [](void* ptr) -> void {
 			auto& thread(*(static_cast<Thread*>(ptr)));
 			// Call the non-static and maybe derived function.
 			thread.cleanup();
-			SF_COND_NORM_NOTIFY(thread._debug, DO_DEFAULT,
-				SF_RTTI_NAME(thread) << SF_CLS_SEP << "Planning to reset data members... " << getCurrentId())
-			// Assignments of accessible members need a mutex.
-			//Mutex::Lock lock(thread._mutex);
-			SF_COND_NORM_NOTIFY(thread._debug, DO_DEFAULT, SF_RTTI_NAME(thread) << SF_CLS_SEP << "Resetting data members... " << getCurrentId())
-			// Allow reclaim of storage.
+			//			// Assignments of accessible members need a mutex.
+			//			Mutex::Lock lock(thread._mutex);
+			SF_COND_NORM_NOTIFY(thread._debug, DO_DEFAULT, SF_RTTI_NAME(thread) << SF_CLS_SEP << " Resetting '" << thread._name << "'")
+			// Allow reclaim of storage when thread ends and is not joined. (not used now)
 			//::pthread_detach(thread._handle);
 			// Set the status to Finished.
 			thread._status = tsFinished;
@@ -415,9 +470,9 @@ int Thread::create()
 		// Install a cleanup handler.
 		pthread_cleanup_push(func, this);
 #endif
-		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread Notify condition... " << getCurrentId())
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Notify(" << _condition->getName() << ") from '" << _name << "'")
 		// Notify start function calling thread its is running.
-		_condition.notifyAll(_mutex);
+		_condition->notifyAll();
 		lock.release();
 		// Call the non-static and overloaded function.
 		exit_code = run();
@@ -425,16 +480,28 @@ int Thread::create()
 		lock.acquire();
 #if !IS_WIN && false
 		// Execute the cleanup function.
-	pthread_cleanup_pop(1);
+		pthread_cleanup_pop(1);
 #else
 		func(this);
 #endif
 	}
-	catch (std::exception& e)
+	// Intercept termination exception.
+	catch (TerminateException& ex)
 	{
-		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Intercepted (" << SF_RTTI_NAME(e) << "): " << e.what())
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread is terminated: " << ex.what())
+		// Set the status to 'terminated' in order to not terminate again.
+		_status = tsTerminated;
+		// Clear the thread handle and thread ID.
+		_handle = 0;
+		_threadId = 0;
 	}
-	SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Thread exited (" << exit_code << ")... " << getCurrentId())
+	catch (std::exception& ex)
+	{
+		exit_code = EXIT_FAILURE;
+		SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Intercepted (" << SF_RTTI_NAME(ex) << "): " << ex.what())
+	}
+	//
+	SF_COND_RTTI_NOTIFY(_debug, DO_DEFAULT, "Instance '" << _name << "' exited with code " << exit_code);
 	return exit_code;
 }
 
@@ -453,40 +520,21 @@ const char* Thread::getStatusText(Thread::EStatus status) const
 {
 	static const char* names[] =
 		{
+			"Invalid",
 			"Created",
 			"Running",
-			"Suspended",
 			"Finished",
-			"Invalid"
+			"Terminated"
 		};
 	if (status < 0)
 	{
 		status = getStatus();
 	}
-	if (status >= 0 && (size_t) status < (sizeof(names) / sizeof(names[0])))
+	if ((size_t) status < (sizeof(names) / sizeof(names[0])))
 	{
 		return names[status];
 	}
 	return "Unknown?";
-
-}
-
-Thread::ThreadError::ThreadError(ThreadError::EErrorType type, const Thread* thread)
-	:Exception()
-	 , _type(type)
-{
-	(void) thread;
-	static const char* names[] =
-		{
-			"Suspend() before Run()",
-			"Resume() before Run()",
-			"Resume() during Run()",
-			"Suspend() after Exit()",
-			"Resume() after Exit()",
-			"Creation failure",
-			"Destroyed before Exit()"
-		};
-	FormatMsg("%s: %s", demangle(typeid(*thread).name()).c_str(), names[_type]);
 }
 
 bool Thread::sleep(const TimeSpec& time, bool alertable) const
@@ -516,32 +564,37 @@ bool Thread::sleep(const TimeSpec& time, bool alertable) const
 	//
 	for (;;)
 	{
+		// When the thread should terminate throw a terminate exception.
+		if (Thread::getCurrent().shouldTerminate())
+		{
+			throw Thread::TerminateException(sf::demangle(typeid(*this).name()).append("(").append(_name).append(")::").append(__FUNCTION__));
+		}
 		// Make the sleep call.
-		int result = ::nanosleep(&ts, &rem);
-		// Check for an error.
-		if (result != 0)
+		auto error = ::nanosleep(&ts, &rem);
+		// When no error signal sleep completion.
+		if (error == 0)
 		{
 			// Signal sleep completion.
 			return true;
 		}
+		// Copy the errno for debugging purposes since errno is declared as a define calling a function.
+		error = errno;
 		// Check if the pause has been interrupted by a non-blocked signal that was delivered to the process.
-		if (errno == EINTR)
+		if (error != EINTR)
 		{
-			// Was interrupted so check if can be alerted.
-			if (alertable)
-			{
-				// Signal sleep was not completed due to interruption.
-				return false;
-			}
+			throw ExceptionSystemCall("nanosleep", error, typeid(*this).name(), __FUNCTION__);
+		}
+		// Check if allowed to interrupt.
+		if (alertable)
+		{
+			// Signal sleep was not completed due to interruption.
+			return false;
 		}
 		else
 		{
-			Thread* t{};
-			(void) t;
-			throw ExceptionSystemCall("nanosleep", errno, typeid(*t).name(), __FUNCTION__);
+			// Signal that sleep did not finish so sleep the remaining time.
+			ts = rem;
 		}
-		// Signal that sleep did not finish so sleep the remaining time.
-		ts = rem;
 	}
 #endif
 }
@@ -568,7 +621,7 @@ int Thread::getExitCode() const
 
 Thread::handle_type Thread::getCurrentHandle()
 {
-	return pthread_self();
+	return ::pthread_self();
 }
 
 Thread::id_type Thread::getCurrentId()
@@ -576,7 +629,7 @@ Thread::id_type Thread::getCurrentId()
 #if IS_WIN
 	return ::GetCurrentThreadId();
 #else
-	return (pid_t) ::syscall(SYS_gettid);
+	return (pid_t)::syscall(SYS_gettid);
 #endif
 }
 
@@ -586,7 +639,7 @@ Thread::id_type Thread::getMainId()
 	return getMainThreadId();
 #else
 	// The process ID is the main thread id.
-	return (pid_t) ::syscall(SYS_getpid);
+	return (pid_t)::syscall(SYS_getpid);
 #endif
 }
 
@@ -627,7 +680,7 @@ size_t Thread::getCurrentStackSize()
 }
 
 Thread::Attributes::Attributes()
-	:_attributes(new pthread_attr_t)
+	: _attributes(new pthread_attr_t)
 {
 	//memset(_attributes, 0, sizeof(pthread_attr_t));
 	int error = ::pthread_attr_init(_attributes);
@@ -638,7 +691,7 @@ Thread::Attributes::Attributes()
 }
 
 Thread::Attributes::Attributes(Thread::handle_type th)
-	:_attributes(new pthread_attr_t())
+	: _attributes(new pthread_attr_t())
 {
 	int error = ::pthread_attr_init(_attributes);
 	if (error)
@@ -656,7 +709,7 @@ void Thread::Attributes::setup(Thread::handle_type th)
 		auto sz = getCurrentStackSize();
 		setStackSize(sz);
 	}
-/*
+	/*
 	// When 0 is passed the current thread is selected for initialization.
 	if (!th)
 	{
@@ -732,9 +785,4 @@ Thread::Attributes::ESchedulePolicy Thread::Attributes::getSchedulePolicy() cons
 	return (ESchedulePolicy) policy;
 }
 
-int ThreadClosure::run()
-{
-	return isAssigned() ? call(*this) : 0;
-}
-
-}
+}// namespace sf

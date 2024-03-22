@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
-#include <map>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <map>
+#include <string>
 
-#include "TVector.h"
 #include "../global.h"
+#include "TVector.h"
 #include "gen_utils.h"
 
 namespace sf
@@ -294,7 +294,7 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Tells if there write functions are used or not.
 		 */
-		[[nodiscard]] bool isDirty() const {return _dirty;}
+		[[nodiscard]] bool isDirty() const { return _dirty; }
 
 		/**
 		 * @brief Add sections from other std::istream.
@@ -355,7 +355,8 @@ class _MISC_CLASS IniProfile
 				 * @brief Default constructor.
 				 */
 				Section()
-					:_entries(0) {}
+					: _entries(0)
+				{}
 
 				/**
 				 * @brief Destructor.
@@ -472,28 +473,24 @@ class _MISC_CLASS IniProfile
 		std::string _prefix;
 };
 
-inline
-IniProfile::size_type IniProfile::getSectionCount() const
+inline IniProfile::size_type IniProfile::getSectionCount() const
 {
 	return _sections.count();
 }
 
-inline
-bool IniProfile::Entry::isValid() const
+inline bool IniProfile::Entry::isValid() const
 {
 	return !_key.empty();
 }
 
-inline
-bool IniProfile::removeSection(const std::string& section)
+inline bool IniProfile::removeSection(const std::string& section)
 {
 	return removeSection(findSection(section));
 }
 
-inline
-std::ostream& operator<<(std::ostream& os, const IniProfile& profile)
+inline std::ostream& operator<<(std::ostream& os, const IniProfile& profile)
 {
 	return profile.write(os);
 }
 
-}
+}// namespace sf

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../global.h"
 #include "../gen/gen_utils.h"
+#include "../global.h"
 #include <cstddef>
 #if IS_WIN
 	#if IS_GNU
@@ -24,4 +24,4 @@ _MISC_FUNC bool isRunningWine();
  */
 _MISC_FUNC DWORD getMainThreadId();
 
-}
+}// namespace sf

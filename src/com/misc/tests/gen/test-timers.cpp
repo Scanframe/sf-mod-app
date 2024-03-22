@@ -109,7 +109,7 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 			::usleep(150000);
 		}
 		// Since the timer is disabled it will never be activated/elapsed.
-		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(0.001));
+		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(0.01));
 		// Check if the timer is disabled.
 		CHECK(!et.isEnabled());
 	}

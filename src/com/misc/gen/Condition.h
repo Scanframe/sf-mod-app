@@ -3,6 +3,7 @@
 #include "../gen/Mutex.h"
 #include "../gen/TimeSpec.h"
 #include "../global.h"
+#include <atomic>
 
 namespace sf
 {
@@ -23,7 +24,7 @@ class _MISC_CLASS Condition
 		/**
 		 * @brief Constructor.
 		 */
-		Condition();
+		explicit Condition(const std::string& name = "");
 
 		/**
 		 * @brief Destructor.
@@ -31,53 +32,61 @@ class _MISC_CLASS Condition
 		~Condition();
 
 		/**
-		 * @brief Waits for a signal.
+		 * @brief Waits for a signal with a timeout when a non-zero timeout is passed.
+		 *
+		 * @param mutex
+		 * @param timeout Timeout applicable when not-zero.
+		 * @return True when signaled and False when not.
 		 */
-		bool wait(Mutex& mutex);
-
-		/**
-		 * @brief Waits for a signal with a timeout.
-		 */
-		bool wait(Mutex& mutex, const TimeSpec& timeout);
+		bool wait(Mutex& mutex, const TimeSpec& timeout = TimeSpec());
 
 		/**
 		 * @brief Signals a single thread.
-		 * @return Amount of waiting threads.
+		 * @return Returns true when a thread was signaled.
 		 */
-		int notifyOne(Mutex& mutex);
+		bool notifyOne();
 
 		/**
 		 * @brief Signals all threads.
 		 * @return Amount of waiting threads.
 		 */
-		int notifyAll(Mutex& mutex);
+		int notifyAll();
 
 		/**
 		* @brief Casting operator.
 		*/
-		operator handle_type() // NOLINT(google-explicit-constructor)
-		{
-			return &_cond;
-		}
+		operator handle_type();
 
 		/**
 		 * @brief Prevent copying.
 		 */
 		const Condition& operator=(const Condition&) = delete;
 
+		/**
+		 * @brief Returns the amount of threads waiting.
+		 */
+		int getWaiting() const;
+
+		const std::string& getName();
+
 	private:
 		/**
-		 * @brief Work to be done and is counted down when the wait function is released.
+		 * @brief Amount of threads waiting for work.
 		 */
-		int _work{0};
-		/**
-		 * @brief Amount of threads waiting.
-		 */
-		int _waiting{0};
+		std::atomic<int> _waiting{0};
 		/**
 		 * @brief Holds the actual handle of the OS.
 		 */
 		::pthread_cond_t _cond{};
+		/**
+		 * @brief Holds the name for this instance for debugging purposes.
+		 */
+		std::string _name;
 };
 
+inline Condition::operator handle_type()
+{
+	return &_cond;
 }
+
+}// namespace sf

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <fcntl.h>
-#include <ftw.h>
-#include <filesystem>
 #include "../gen/TDynamicBuffer.h"
 #include "../global.h"
+#include <fcntl.h>
+#include <filesystem>
+#include <ftw.h>
 
 namespace sf::lnx
 {
@@ -28,8 +28,7 @@ class _MISC_CLASS File
 		/**
 		 * Initialization constructor.
 		 */
-		explicit File(const std::filesystem::path& path, int flags = O_CREAT | O_RDWR | O_APPEND,
-			mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
+		explicit File(const std::filesystem::path& path, int flags = O_CREAT | O_RDWR | O_APPEND, mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
 
 		/**
 		 * Destructor.
@@ -40,15 +39,13 @@ class _MISC_CLASS File
 		 * Initializes this instance without opening the actual file
 		 * or closes an open file. Throws an exception on failure.
 		 */
-		void initialize(const std::filesystem::path& path, int flags = O_CREAT | O_RDWR | O_APPEND,
-			mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
+		void initialize(const std::filesystem::path& path, int flags = O_CREAT | O_RDWR | O_APPEND, mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
 
 		/**
 		 * Opens the file using the path, flags and mode.
 		 * Throws an exception on failure.
 		 */
-		void open(const std::string& path, int flags = O_CREAT | O_RDWR | O_APPEND,
-			mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
+		void open(const std::string& path, int flags = O_CREAT | O_RDWR | O_APPEND, mode_t mode = S_IREAD | S_IWRITE | S_IRGRP | S_IWGRP);
 
 		/**
 		 * Opens the file using a template path with flags.
@@ -243,44 +240,37 @@ class _MISC_CLASS File
 		stat_type _stat{};
 };
 
-inline
-int File::getDescriptor() const
+inline int File::getDescriptor() const
 {
 	return _descriptor;
 }
 
-inline
-std::string File::getPath() const
+inline std::string File::getPath() const
 {
 	return _path;
 }
 
-inline
-mode_t File::getMode() const
+inline mode_t File::getMode() const
 {
 	return _mode;
 }
 
-inline
-int File::getFlags() const
+inline int File::getFlags() const
 {
 	return _flags;
 }
 
-inline
-void File::close()
+inline void File::close()
 {
 	close(true);
 }
 
-inline
-const File::stat_type& File::getStatus() const
+inline const File::stat_type& File::getStatus() const
 {
 	return _stat;
 }
 
-inline
-const File::stat_type& File::getStatus(bool update)
+inline const File::stat_type& File::getStatus(bool update)
 {
 	if (update)
 	{
@@ -289,14 +279,12 @@ const File::stat_type& File::getStatus(bool update)
 	return _stat;
 }
 
-inline
-void File::write(const std::string& s)
+inline void File::write(const std::string& s)
 {
 	write(s.c_str(), s.length());
 }
 
-inline
-void File::write(const char* s)
+inline void File::write(const char* s)
 {
 	write(s, strlen(s));
 }
@@ -313,8 +301,7 @@ void File::read(T& t, size_t pos) const
 	read(&t, pos, sizeof(T));
 }
 
-inline
-bool File::isOpen() const
+inline bool File::isOpen() const
 {
 	return _descriptor != -1;
 }
@@ -324,4 +311,4 @@ bool File::isOpen() const
  */
 _MISC_FUNC std::ostream& operator<<(std::ostream& stream, const File& file);
 
-}
+}// namespace sf::lnx

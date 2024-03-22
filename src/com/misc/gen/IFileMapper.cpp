@@ -2,13 +2,13 @@
 #include "target.h"
 
 #if IS_WIN
-#  include <windows.h>
-#  include "win/FileMapper.h"
+	#include "win/FileMapper.h"
+	#include <windows.h>
 #else
-#  include "lnx/FileMapper.h"
+	#include "lnx/FileMapper.h"
 #endif
 #if IS_QT
-#  include "qt/FileMapper.h"
+	#include "qt/FileMapper.h"
 #endif
 
 namespace sf
@@ -32,4 +32,4 @@ IFileMapper* IFileMapper::instantiate(bool native)
 	}
 }
 
-}
+}// namespace sf

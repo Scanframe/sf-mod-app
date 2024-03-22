@@ -2,12 +2,12 @@
 #include "TDynamicBuffer.h"
 #include "gen_utils.h"
 #include "gnu_compat.h"
+#include <cfenv>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <cfenv>
-#include <sstream>
 #include <malloc.h>
+#include <sstream>
 
 namespace sf
 {
@@ -25,7 +25,7 @@ const char* Value::_typeNames[] =
 		"STRING",
 		"BINARY",
 		"CUSTOM"
-	};
+};
 
 Value& Value::operator=(Value&& v) noexcept
 {
@@ -196,7 +196,7 @@ Value& Value::set(int type, const void* content, size_t size)
 				{
 					_size = maxString;
 				}
-				_data._ptr = (char*)malloc(_size + _sizeExtra);
+				_data._ptr = (char*) malloc(_size + _sizeExtra);
 #if IS_WIN
 				memcpy_s(_data._ptr, _size, content, _size);
 #else
@@ -210,7 +210,7 @@ Value& Value::set(int type, const void* content, size_t size)
 				{
 					_size = maxString;
 				}
-				_data._ptr = (char*)malloc(_size + _sizeExtra);
+				_data._ptr = (char*) malloc(_size + _sizeExtra);
 				memset(_data._ptr, 0, _size);
 			}
 			break;
@@ -221,7 +221,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			{
 				_size = maxBinary;
 			}
-			_data._ptr = (char*)malloc(_size + _sizeExtra);
+			_data._ptr = (char*) malloc(_size + _sizeExtra);
 			if (content)
 			{
 #if IS_WIN
@@ -242,7 +242,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			{
 				_size = maxCustom;
 			}
-			_data._ptr = (char*)malloc(_size + _sizeExtra);
+			_data._ptr = (char*) malloc(_size + _sizeExtra);
 			if (content)
 			{
 #if IS_WIN
@@ -264,12 +264,12 @@ Value& Value::set(int type, const void* content, size_t size)
 		default:
 			_type = vitInvalid;
 			return *this;
-	} // switch
+	}// switch
 	_type = (EType) type;
 	return *this;
 }
 
-Value& Value::assign(const Value& v) // NOLINT(misc-no-recursion)
+Value& Value::assign(const Value& v)// NOLINT(misc-no-recursion)
 {
 	if (_type == vitReference)
 	{
@@ -291,7 +291,7 @@ Value& Value::assign(const Value& v) // NOLINT(misc-no-recursion)
 	return *this;
 }
 
-bool Value::isZero() const // NOLINT(misc-no-recursion)
+bool Value::isZero() const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -334,7 +334,7 @@ Value& Value::set(const Value& v)
 		// Check if memory needs to be copied and reserved.
 		if (_type >= vitString)
 		{
-			_data._ptr = (char*)malloc(_size + _sizeExtra);
+			_data._ptr = (char*) malloc(_size + _sizeExtra);
 #if IS_WIN
 			memcpy_s(_data._ptr, _size, v._data._ptr, _size);
 #else
@@ -353,7 +353,7 @@ Value& Value::set(const Value& v)
 	return *this;
 }
 
-Value::int_type Value::getInteger(int* cnv_err) const // NOLINT(misc-no-recursion)
+Value::int_type Value::getInteger(int* cnv_err) const// NOLINT(misc-no-recursion)
 {
 	char* end_ptr = nullptr;
 	int_type rv = 0;
@@ -363,8 +363,7 @@ Value::int_type Value::getInteger(int* cnv_err) const // NOLINT(misc-no-recursio
 			rv = _data._int;
 			break;
 
-		case vitFloat:
-		{
+		case vitFloat: {
 			auto saved_fe = fesetround(FE_TONEAREST);
 			rv = std::lround(_data._flt);
 			fesetround(saved_fe);
@@ -392,7 +391,7 @@ Value::int_type Value::getInteger(int* cnv_err) const // NOLINT(misc-no-recursio
 	return rv;
 }
 
-Value::flt_type Value::getFloat(int* cnv_err) const // NOLINT(misc-no-recursion)
+Value::flt_type Value::getFloat(int* cnv_err) const// NOLINT(misc-no-recursion)
 {
 	char* end_ptr = nullptr;
 	flt_type rv = 0.0;
@@ -430,7 +429,7 @@ Value::flt_type Value::getFloat(int* cnv_err) const // NOLINT(misc-no-recursion)
 	return rv;
 }
 
-std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
+std::string Value::getString(int precision) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -440,8 +439,7 @@ std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
 		case vitUndefined:
 			return "";
 
-		case vitInteger:
-		{
+		case vitInteger: {
 			return itostr(_data._int, 10);
 		}
 
@@ -472,12 +470,11 @@ std::string Value::getString(int precision) const // NOLINT(misc-no-recursion)
 		case vitBinary:
 		case vitCustom:
 			return hexString(_data._ptr, _size);
-
 	}
 	return _invalidStr;
 }
 
-const void* Value::getBinary() const // NOLINT(misc-no-recursion)
+const void* Value::getBinary() const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -500,7 +497,7 @@ const void* Value::getBinary() const // NOLINT(misc-no-recursion)
 	}
 }
 
-const char* Value::getData() const // NOLINT(misc-no-recursion)
+const char* Value::getData() const// NOLINT(misc-no-recursion)
 {
 	if (_type == vitReference)
 	{
@@ -540,7 +537,7 @@ void Value::makeInvalid()
 	_type = vitInvalid;
 }
 
-bool Value::setType(EType type) // NOLINT(misc-no-recursion)
+bool Value::setType(EType type)// NOLINT(misc-no-recursion)
 {
 	// Check if a different type is to be Set.
 	if (_type == type)
@@ -612,7 +609,7 @@ bool Value::setType(EType type) // NOLINT(misc-no-recursion)
 					free_null(_data._ptr);
 				}
 				// Create new buffer
-				_data._ptr = (char*)malloc(_size + _sizeExtra);
+				_data._ptr = (char*) malloc(_size + _sizeExtra);
 				// Convert hex std::string to binary data
 				if (stringHex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
 				{
@@ -630,7 +627,7 @@ bool Value::setType(EType type) // NOLINT(misc-no-recursion)
 	return !cnv_err;
 }
 
-Value Value::mul(const Value& v) const // NOLINT(misc-no-recursion)
+Value Value::mul(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -655,7 +652,7 @@ Value Value::mul(const Value& v) const // NOLINT(misc-no-recursion)
 	}// switch
 }
 
-Value Value::div(const Value& v) const // NOLINT(misc-no-recursion)
+Value Value::div(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -663,8 +660,7 @@ Value Value::div(const Value& v) const // NOLINT(misc-no-recursion)
 		case vitUndefined:
 			return *this;
 
-		case vitInteger:
-		{
+		case vitInteger: {
 			int_type divider = v.getInteger(nullptr);
 			// Check if the divider is zero.
 			if (!divider)
@@ -674,8 +670,7 @@ Value Value::div(const Value& v) const // NOLINT(misc-no-recursion)
 			return Value(_data._int / divider);
 		}
 
-		case vitFloat:
-		{
+		case vitFloat: {
 			flt_type divider = v.getFloat();
 			// Check if the divider is zero.
 			if (abs(divider) == 0.0)
@@ -698,7 +693,7 @@ Value Value::div(const Value& v) const // NOLINT(misc-no-recursion)
 	}
 }
 
-Value Value::add(const Value& v) const // NOLINT(misc-no-recursion)
+Value Value::add(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -727,7 +722,7 @@ Value Value::add(const Value& v) const // NOLINT(misc-no-recursion)
 	}
 }
 
-Value Value::sub(const Value& v) const // NOLINT(misc-no-recursion)
+Value Value::sub(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -752,7 +747,7 @@ Value Value::sub(const Value& v) const // NOLINT(misc-no-recursion)
 	}
 }
 
-Value Value::mod(const Value& v) const // NOLINT(misc-no-recursion)
+Value Value::mod(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
@@ -777,20 +772,18 @@ Value Value::mod(const Value& v) const // NOLINT(misc-no-recursion)
 	}// switch
 }
 
-int Value::compare(const Value& v) const // NOLINT(misc-no-recursion)
+int Value::compare(const Value& v) const// NOLINT(misc-no-recursion)
 {
 	switch (_type)
 	{
-		case vitInteger:
-		{
+		case vitInteger: {
 			int_type l = v.getInteger(nullptr);
 			int rv = _data._int != l;
 			rv *= (l > _data._int) ? -1 : 1;
 			return rv;
 		}
 
-		case vitFloat:
-		{
+		case vitFloat: {
 			const flt_type& b(_data._flt);
 			flt_type a = v.getFloat();
 			int rv = (a == b) ? 0 : 1;
@@ -810,8 +803,7 @@ int Value::compare(const Value& v) const // NOLINT(misc-no-recursion)
 			return rv;
 		}
 
-		case vitString:
-		{
+		case vitString: {
 			// Case sensitive compare
 			return std::basic_string_view(_data._ptr, _size - 1).compare(v.getString());
 		}
@@ -820,8 +812,7 @@ int Value::compare(const Value& v) const // NOLINT(misc-no-recursion)
 			return _data._ref->compare(v);
 
 		case vitBinary:
-		case vitCustom:
-		{// if the sizes aren't the same the compare criteria is the size
+		case vitCustom: {// if the sizes aren't the same the compare criteria is the size
 			if (v._size != _size)
 			{
 				return v._size >= _size;
@@ -849,22 +840,20 @@ int Value::compare(const Value& v) const // NOLINT(misc-no-recursion)
 	}// switch
 }
 
-Value& Value::round(const Value& v) // NOLINT(misc-no-recursion)
+Value& Value::round(const Value& v)// NOLINT(misc-no-recursion)
 {
 	if (!v.isZero())
 	{
 		switch (_type)
 		{
-			case vitInteger:
-			{
-//				_data._int = sf::round(_data._int, v.GetInteger(nullptr));
+			case vitInteger: {
+				//				_data._int = sf::round(_data._int, v.GetInteger(nullptr));
 				int_type iv = v.getInteger(nullptr);
 				_data._int = ((_data._int + (iv / 2L)) / iv) * iv;
 				break;
 			}
 
-			case vitFloat:
-			{
+			case vitFloat: {
 				_data._flt = sf::round(_data._flt, v.getFloat(nullptr));
 				break;
 			}
@@ -962,15 +951,16 @@ std::istream& operator>>(std::istream& is, Value& v)
 Value Value::calculateOffset(Value value, Value min, Value max, const Value& len, bool clip)
 {
 	Value z(0);
-// Sync the types.
+	// Sync the types.
 	z.setType(len.getType());
 	min.setType(value.getType());
 	max.setType(value.getType());
 	max -= min;
 	value -= min;
 	Value temp = (max && value) ? (value * Value(len) / max) : z;
-	return (clip) ? ((temp > len) ? len : (temp < z) ? z : temp) : temp;
+	return (clip) ? ((temp > len) ? len : (temp < z) ? z
+																									 : temp)
+								: temp;
 }
 
-
-}
+}// namespace sf

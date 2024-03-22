@@ -4,19 +4,18 @@
 namespace sf
 {
 
-SF_REG_CLASS
-(
+SF_REG_CLASS(
 	ScriptObject, ScriptObject::Parameters, Interface,
 	ScriptGlobalObject, "Global", "Global entry access object."
 )
 
 ScriptGlobalObject::ScriptGlobalObject(const Parameters& params)
-	:ScriptObject("Global")
+	: ScriptObject("Global")
 {
 }
 
 // Speed index.
-enum :int
+enum : int
 {
 	sidExist = 1,
 	sidEntry
@@ -63,8 +62,7 @@ bool ScriptGlobalObject::getSetValue(const ScriptObject::IdInfo* info, Value* va
 			value->set(!!ScriptGlobalEntry::getEntry((*params)[0].getString()));
 			break;
 
-		case sidEntry:
-		{
+		case sidEntry: {
 			if (auto gse = static_cast<ScriptGlobalEntry*>(_globalIdInfo._data))
 			{
 				gse->call(*params, *value);
@@ -76,4 +74,4 @@ bool ScriptGlobalObject::getSetValue(const ScriptObject::IdInfo* info, Value* va
 	return true;
 }
 
-}
+}// namespace sf

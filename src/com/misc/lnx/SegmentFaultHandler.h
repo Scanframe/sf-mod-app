@@ -1,9 +1,9 @@
 #pragma once
 
-#include <csignal>
 #include <csetjmp>
-#include <vector>
+#include <csignal>
 #include <functional>
+#include <vector>
 
 #include "../global.h"
 
@@ -36,8 +36,8 @@ class _MISC_CLASS SegmentFaultHandler
 	private:
 		struct Entry
 		{
-			jmp_buf _buf{};
-			int _counter{0};
+				jmp_buf _buf{};
+				int _counter{0};
 		};
 		/**
 		 * Holds the entry pointer for this instance.
@@ -58,4 +58,4 @@ class _MISC_CLASS SegmentFaultHandler
 		static void handler(int cause);
 };
 
-}
+}// namespace sf

@@ -233,7 +233,8 @@ bool TFifoClass<T>::push(const T* item, TFifoClass<T>::size_type count)
 	{
 		return true;
 	}
-	for (size_type i = 0; i < count; push(item[i++])) {}
+	for (size_type i = 0; i < count; push(item[i++])) {
+	}
 	return false;
 }
 
@@ -313,25 +314,26 @@ const T& TFifoClass<T>::operator[](TFifoClass<T>::size_type pos) const
 }
 
 template<class T>
-inline
-const T* TFifoClass<T>::getBuffer(TFifoClass<T>::size_type pos) const
+inline const T* TFifoClass<T>::getBuffer(TFifoClass<T>::size_type pos) const
 {
 	return &_buffer[pos];
 }
 
 template<class T>
 inline
-typename TFifoClass<T>::size_type TFifoClass<T>::getTail() const
+	typename TFifoClass<T>::size_type
+	TFifoClass<T>::getTail() const
 {
 	return _tail;
 }
 
 template<class T>
 inline
-typename TFifoClass<T>::size_type TFifoClass<T>::getHead() const
+	typename TFifoClass<T>::size_type
+	TFifoClass<T>::getHead() const
 {
 	return _head;
 }
 
 /** @endcond Doxygen_ignore */
-}
+}// namespace sf

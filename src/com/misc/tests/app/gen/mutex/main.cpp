@@ -1,13 +1,10 @@
+#include "misc/gen/ElapseTimer.h"
 #include <condition_variable>
-#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <misc/gen/Condition.h>
-#include <misc/gen/Mutex.h>
-#include <misc/gen/Thread.h>
-
-/* compile with gcc -pthread lockwait.c */
+#include <misc/gen/ThreadClosure.h>
 
 pthread_t* thread_data{nullptr};
 pthread_cond_t cv;
@@ -61,11 +58,13 @@ void* sf_thread(void* v)
 	return nullptr;
 }
 
-sf::ThreadClosure sf_thread_closure([](sf::Thread& thread) -> int// NOLINT(cert-err58-cpp)
-																		{
-																			sf_thread(nullptr);
-																			return 0xff;
-																		});
+sf::ThreadClosure sf_thread_closure(
+	[](sf::Thread& thread) -> int// NOLINT(cert-err58-cpp)
+	{
+		sf_thread(nullptr);
+		return 0xff;
+	}
+);
 
 void sf_create_or_signal(bool create)
 {
@@ -76,7 +75,7 @@ void sf_create_or_signal(bool create)
 	}
 	else
 	{
-		sf_condition.notifyOne(sf_mutex);
+		sf_condition.notifyOne();
 	}
 }
 
@@ -105,36 +104,93 @@ int main_()
 	return 0;
 }
 
+void has_timed_out(bool flag)
+{
+	if (flag)
+	{
+		SF_NORM_NOTIFY(DO_COUT, "Test timed out.");
+		exit(EXIT_FAILURE);
+	}
+}
+
+// For testing destructor cleanup during exception handling.
+class TestAutoCleanup
+{
+	public:
+		explicit TestAutoCleanup(int& flag)
+			: _flag(flag)
+		{
+			// Signal not destructor called.
+			_flag = -1;
+		}
+		~TestAutoCleanup()
+		{
+			if (std::uncaught_exceptions())
+			{
+				SF_RTTI_NOTIFY(DO_COUT, "Exception cleanup in progress.");
+				// Signal destructor called in exception cleanup.
+				_flag = 1;
+			}
+			else
+			{
+				SF_RTTI_NOTIFY(DO_COUT, "Normal cleanup.");
+				// Signal destructor called in normal cleanup.
+				_flag = 0;
+			}
+		}
+
+	private:
+		int& _flag;
+};
+
 int main()
 {
-	sf::Mutex mutex;
-	sf::Condition condition;
+	sf::ThreadMain main_thread;
+	main_thread.setDebug(true);
+	std::atomic<bool> flag{false};
+	// Set an elapse timer to limit the maximum time it is allowed to take (0.3s).
+	sf::ElapseTimer timer(sf::TimeSpec(1));
+	sf::Condition condition("closure");
+	int cleanup;
+
+	//sf::Mutex mutex("outer");
 	sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
-		sf::Mutex::Lock lock(mutex);
-		condition.wait(mutex);
-		SF_NORM_NOTIFY(DO_CLOG, "Thread unlocked");
-		return 0xff;
-	}));
-	//
-	//tc.setDebug(true);
+												 TestAutoCleanup cleanup_test(cleanup);
+												 sf::Mutex mutex("inner");
+												 // Need a locked mutex for the condition.
+												 sf::Mutex::Lock lock(mutex);
+												 SF_NORM_NOTIFY(DO_COUT, "Thread is waiting on condition signal");
+												 // Wait for a signal.
+												 condition.wait(mutex);
+												 // Set the flag to signal waiting is over.
+												 flag = true;
+												 SF_NORM_NOTIFY(DO_COUT, "Thread was signaled");
+												 // Simulate the work...
+												 thread.sleep(sf::TimeSpec(0.1));
+												 SF_NORM_NOTIFY(DO_COUT, "Thread done and exiting");
+												 return 0xff;
+											 }),
+											 "closure");
+	// Enable debug printing.
+	tc.setDebug(true);
 	// Start the thread.
 	tc.start();
-	//
-	if (tc.getStatus() != sf::Thread::tsRunning)
-	{
-		// Give thread some time.
-		::usleep(20000);
-		SF_NORM_NOTIFY(DO_CLOG, "Main thread waiting for Running state.");
-	}
 	// Signal the locked thread.
-	condition.notifyOne(mutex);
-	//
-	if (tc.getStatus() != sf::Thread::tsFinished)
+	while (!flag)
 	{
-		// Give thread some time.
-		::usleep(20000);
-		SF_NORM_NOTIFY(DO_CLOG, "Main thread waiting for Finished state.");
+		SF_NORM_NOTIFY(DO_CLOG, "Signal not received yet.");
+		condition.notifyOne();
+		main_thread.sleep(sf::TimeSpec(0.001));
+		has_timed_out(timer.isActive());
 	}
+	//
+	do
+	{
+		SF_NORM_NOTIFY(DO_COUT, "Waiting for thread Finished state: " << condition.getWaiting());
+		// Give thread some time.
+		main_thread.sleep(sf::TimeSpec(0.02));
+		has_timed_out(timer.isActive());
+	} while (tc.getStatus() != sf::Thread::tsFinished);
 	//
 	tc.terminateAndWait();
 	// Check the exit.

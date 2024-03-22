@@ -1,25 +1,20 @@
 #include "Semaphore.h"
-#include "gnu_compat.h"
+#include "Exception.h"
 #if IS_WIN
-#include "../win/win_utils.h"
+	#include "../win/win_utils.h"
 #endif
 
 namespace sf
 {
 
-void Semaphore::reportError(const char* funcName) const
-{
-	char buffer[BUFSIZ];
-	SF_NORM_NOTIFY(DO_CLOG, SF_RTTI_NAME(*this) << SF_CLS_SEP << ::strerror_r(errno, buffer, sizeof(buffer)))
-}
-
 Semaphore::Semaphore(int initialCount)
-	:_handle()
+	: _handle()
 {
-	auto result = sem_init(&_handle, false, initialCount);
+	// Windows/Wine does not allow 'pshared' equals 'true'.
+	auto result = ::sem_init(&_handle, false, initialCount);
 	if (result)
 	{
-		reportError("sem_init");
+		throw ExceptionSystemCall("sem_init", errno, typeid(*this).name(), __FUNCTION__);
 	}
 }
 
@@ -36,12 +31,12 @@ bool Semaphore::Lock::acquire(const Semaphore& semaphore, const TimeSpec& timeou
 		// Get the real time.
 		TimeSpec ts(getTime(true));
 		// Do a timed wait.
-		auto result = sem_timedwait(const_cast<handle_type*>(&semaphore._handle), &ts.add(timeout));
+		auto result = ::sem_timedwait(const_cast<handle_type*>(&semaphore._handle), &ts.add(timeout));
 		if (result)
 		{
 			if (errno != ETIMEDOUT)
 			{
-				semaphore.reportError("sem_timedwait");
+				throw ExceptionSystemCall("sem_timedwait", errno, typeid(*this).name(), __FUNCTION__);
 			}
 			return false;
 		}
@@ -60,24 +55,23 @@ bool Semaphore::Lock::acquire(const Semaphore& semaphore, bool tryWait)
 {
 	if (tryWait)
 	{
-		auto result = sem_trywait(const_cast<handle_type*>(&semaphore._handle));
+		auto result = ::sem_trywait(const_cast<handle_type*>(&semaphore._handle));
 		if (result)
 		{
 			// When not able to lock (EAGAIN)
 			if (errno != EINTR || errno != EAGAIN)
 			{
-				semaphore.reportError("sem_trywait");
+				throw ExceptionSystemCall("sem_trywait", errno, typeid(*this).name(), __FUNCTION__);
 			}
 			return false;
 		}
 	}
 	else
 	{
-		auto result = sem_wait(const_cast<handle_type*>(&semaphore._handle));
+		auto result = ::sem_wait(const_cast<handle_type*>(&semaphore._handle));
 		if (result && errno != EINTR)
 		{
-			semaphore.reportError("sem_wait");
-			return false;
+			throw ExceptionSystemCall("sem_wait", errno, typeid(*this).name(), __FUNCTION__);
 		}
 	}
 	// Set pointer also used as flag.
@@ -88,10 +82,16 @@ bool Semaphore::Lock::acquire(const Semaphore& semaphore, bool tryWait)
 
 bool Semaphore::post()
 {
-	auto result = sem_post(&_handle);
+	auto result = ::sem_post(&_handle);
+	// Check for an error.
 	if (result)
 	{
-		reportError("sem_post");
+		// When invalid throw
+		if (errno == EINVAL)
+		{
+			throw ExceptionSystemCall("sem_wait", errno, typeid(*this).name(), __FUNCTION__);
+		}
+		// EOVERFLOW
 		return false;
 	}
 	return true;
@@ -99,12 +99,11 @@ bool Semaphore::post()
 
 int Semaphore::value() const
 {
-	int value{-1};
-	auto result = sem_getvalue(const_cast<handle_type*>(&_handle), &value);
+	int value{0};
+	auto result = ::sem_getvalue(const_cast<handle_type*>(&_handle), &value);
 	if (result)
 	{
-		reportError("sem_getvalue");
-		return -1;
+		throw ExceptionSystemCall("sem_wait", errno, typeid(*this).name(), __FUNCTION__);
 	}
 	return value;
 }
@@ -127,4 +126,4 @@ void Semaphore::release()
 	// Deliberately left empty, so another implementation other than sem_xxx based.
 }
 
-}
+}// namespace sf

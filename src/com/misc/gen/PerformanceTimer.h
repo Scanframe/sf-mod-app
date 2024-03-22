@@ -65,4 +65,4 @@ class _MISC_CLASS PerformanceTimer
 		TimeSpec _start;
 };
 
-}
+}// namespace sf

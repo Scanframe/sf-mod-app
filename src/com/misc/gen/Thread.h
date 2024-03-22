@@ -1,21 +1,21 @@
 #pragma once
 
-#include <unistd.h>
-#include <string>
-#include <utility>
-#include <pthread.h>
-#include "../gen/target.h"
-#include "../gen/Condition.h"
-#if IS_WIN
-#include <windows.h>
-#else
-#include <sys/eventfd.h>
-#endif
-#include "TimeSpec.h"
+#include "../global.h"
+#include "Condition.h"
 #include "Exception.h"
 #include "Mutex.h"
 #include "TClosure.h"
-#include "../global.h"
+#include "TimeSpec.h"
+#include "target.h"
+#include <pthread.h>
+#include <string>
+#include <unistd.h>
+#include <utility>
+#if IS_WIN
+	#include <windows.h>
+#else
+	#include <sys/eventfd.h>
+#endif
 
 namespace sf
 {
@@ -47,12 +47,28 @@ class _MISC_CLASS Thread
 		* @brief Thread states enumeration.
 		* @see #getStatus(), #getStatusText()
 		*/
-		enum EStatus
+		enum EStatus : int
 		{
+			/**
+			 * @brief The thread is not setup yet.
+			 */
+			tsInvalid = 0,
+			/**
+			 * @brief The thread is created but not started.
+			 */
 			tsCreated,
+			/**
+			 * @brief Thread is running.
+			 */
 			tsRunning,
+			/**
+			 * @brief The thread has run and finished.
+			 */
 			tsFinished,
-			tsInvalid
+			/**
+			 * @brief The thread was externally terminated.
+			 */
+			tsTerminated
 		};
 
 		/**
@@ -61,7 +77,6 @@ class _MISC_CLASS Thread
 		class Attributes
 		{
 			public:
-
 				/**
 				 * Handle type of thread.
 				 */
@@ -71,6 +86,16 @@ class _MISC_CLASS Thread
 				* @brief Default Constructor.
 				*/
 				Attributes();
+
+				/**
+				 * @brief Prevent copying.
+				 */
+				Attributes(const Attributes&) = delete;
+
+				/**
+				 * @brief Prevent assignment.
+				 */
+				Attributes& operator=(const Attributes&) = delete;
 
 				/**
 				 * @brief Initialize using the passed thread handle.
@@ -110,7 +135,7 @@ class _MISC_CLASS Thread
 				/**
 				 * @brief Thread schedule policies.
 				 */
-				enum ESchedulePolicy :int
+				enum ESchedulePolicy : int
 				{
 					/** Scheduling behavior is determined by the operating system.*/
 					spScheduleOther = SCHED_OTHER,
@@ -142,10 +167,7 @@ class _MISC_CLASS Thread
 				/**
 				 * @brief Handle casting operator.
 				 */
-				operator handle_type() const // NOLINT(google-explicit-constructor)
-				{
-					return _attributes;
-				}
+				inline operator handle_type() const;
 
 			private:
 				/**
@@ -162,7 +184,6 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Starts a thread which calls on its turn the overridden function Run().
-		 *
 		 * @param attr Attributes for stack size and scheduling and prioritisation.
 		 * @return Handle of the created thread.
 		 */
@@ -231,15 +252,12 @@ class _MISC_CLASS Thread
 		/**
 		 * @brief Casting operator for THandle type.
 		 */
-		operator handle_type() const // NOLINT(google-explicit-constructor)
-		{
-			return _handle;
-		}
+		inline operator handle_type() const;
 
 		/**
 		* @brief Enumeration of thread priorities.
 		*/
-		enum EPriority :int
+		enum EPriority : int
 		{
 			tpIdle = -15,
 			tpLowest = -2,
@@ -255,18 +273,18 @@ class _MISC_CLASS Thread
 		 * The name is clipped to the first 15 characters only.
 		 * @note The thread must be created for this.
 		 */
-		void setName(const char* name) noexcept(false);
+		void setName(const char* name);
 
 		/**
 		 * @brief Gets the name of the thread available in the debugger.
 		 * @note The thread must be created for this.
 		 */
-		std::string getName() const noexcept(false);
+		std::string getName() const;
 
 		/**
 		 * @brief Gets the current priority of this instance.
 		 */
-		[[nodiscard]] int getPriority() const noexcept(false);
+		[[nodiscard]] int getPriority() const;
 
 		/**
 		 * @brief Can pass an enumerate EPriority for simplicity.
@@ -277,14 +295,12 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Sets the time needed for the thread to terminate.
-		 *
 		 * Default is one 100 ms.
 		 */
 		void setTerminationTime(const TimeSpec& ts);
 
 		/**
 		 * @brief Call by the thread itself to determine if it should terminate.
-		 *
 		 * Another thread then this one it too but has no effect.
 		 */
 		[[nodiscard]] bool shouldTerminate() const;
@@ -306,28 +322,55 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Yield control of the current thread.
-		 *
 		 * The name 'Yield()' is defined as a macro in MingW.
 		 * @return True when successful.
 		 */
 		static bool yieldToOther();
 
 		/**
-		 * @brief Special thread exception thrown by signal handler.
-		 *
-		 * @see #Exception
+		 * Thread exception.
+		 * @see #::sf::ExceptionBase
 		 */
-		struct TerminateException :public Exception
+		class ThreadException : public ExceptionBase<ThreadException>
 		{
-			TerminateException();
+			public:
+				/**
+			 * @brief Constructor initializing message.
+			 */
+				explicit ThreadException(const char* message) noexcept
+					: ExceptionBase()
+				{
+					formatMessage(message);
+				}
+
+				/**
+			 * @brief Formatting constructor.
+			 */
+				template<typename... Args>
+				explicit ThreadException(const char* format, Args&&... args) noexcept
+					: ExceptionBase()
+				{
+					formatMessage(format, args...);
+				}
+		};
+
+		/**
+		 * @brief Special thread exception thrown by system blocking functions to terminate the thread.
+		 * @see #ThreadException
+		 */
+		class TerminateException : public ThreadException
+		{
+			public:
+				explicit TerminateException(const std::string& from)
+					: ThreadException("Terminating from %s", from.c_str())
+				{}
 		};
 
 		/**
 		 * @brief Makes the current thread sleep for the given amount time until a signal interrupts when alertable is true.
-		 *
 		 * @return True when completed and false when interrupted.
 		 */
-		bool sleep(const TimeSpec& ts, bool alertable = true) const; // NOLINT(modernize-use-nodiscard)
+		bool sleep(const TimeSpec& ts, bool alertable = true) const;
 
 		/**
 		 * @brief Return the current thread handle.
@@ -349,49 +392,17 @@ class _MISC_CLASS Thread
 		static id_type getCurrentId();
 
 		/**
+		 * @brief Gets the sf::Thread instance reference of the current thread.
+		 * @return
+		 */
+		static Thread& getCurrent();
+
+		/**
 		 * @brief Returns the current thread initial stack size.
 		 * @return The stack size.
 		 * @throw ExceptionSystemCall
 		 */
 		static size_t getCurrentStackSize();
-
-		/**
-		 * Special thread exception.
-		 * @see #::sf::Exception
-		 */
-		class ThreadError :public Exception
-		{
-			public:
-				/**
-				* @brief Enumeration of error types.
-				*/
-				enum EErrorType
-				{
-					teSuspendBeforeRun,
-					teResumeBeforeRun,
-					teResumeDuringRun,
-					teSuspendAfterExit,
-					teResumeAfterExit,
-					teCreationFailure,
-					teDestroyBeforeExit,
-				};
-
-				/**
-				* @brief Constructor
-				*/
-				ThreadError(EErrorType type, const Thread* thread);
-
-				/**
-				* @brief Returns the error enumeration value.
-				*/
-				[[nodiscard]] inline EErrorType getErrorType() const;
-
-			private:
-				/**
-				 * @brief Holds the error type.
-				 */
-				EErrorType _type;
-		};
 
 		/**
 		 * @brief Copying constructor disabled and not implemented.
@@ -412,7 +423,13 @@ class _MISC_CLASS Thread
 		/**
 		 * @brief Protected constructor which demands to derive a class.
 		 */
-		Thread();
+		Thread(const std::string& name);
+
+		/**
+		 * @brief Wraps this class around the main thread of the application.
+		 * @param id
+		 */
+		Thread(bool);
 
 		/**
 		 * @brief Virtual Destructor.
@@ -433,16 +450,30 @@ class _MISC_CLASS Thread
 		 */
 		virtual int run() = 0;
 
+		/**
+		 * @brief Called to unblock system functions.
+		 */
+		void TerminationSignal();
+
 	private:
 		/**
-		 * @brief Called to create the thread
+		 * @brief Called to create the thread.
 		 */
 		int create();
 
 		/**
+		 * @brief Sets the active blocking the condition of this thread.
+		 */
+		void setConditionWaiting(Condition* condition);
+
+		/**
+		* @brief Name of this thread for debugging purposes.
+		*/
+		std::string _name;
+		/**
 		* @brief Critical section for the data members.
 		*/
-		Mutex _mutex{};
+		Mutex _mutex{"thread"};
 		/**
 		* @brief Holds the Thread ID of the thread but its value is in Linux the same as the Handle.
 		*/
@@ -464,97 +495,90 @@ class _MISC_CLASS Thread
 		 */
 		TimeSpec _terminationTime{};
 		/**
-		 * Condition used in startup.
+		 * @brief Time needed to start thread and wait for it.
+		 */
+		TimeSpec _startupTime{0.3};
+		/**
+		 * @brief Condition used in starting up.
+		 *
 		 * When start() has left the thread can be terminated without errors.
 		 */
-		Condition _condition;
+		Condition* _condition{nullptr};
+		/**
+		 * @brief Holds the current condition waiting otherwise it is null.
+		 *
+		 * When terminating a thread this list allows unblocking not interruptable system calls
+		 * `::pthread_cond_timedwait()` and `::pthread_cond_timedwait()`.
+		 */
+		Condition* _condition_waiting{nullptr};
+		/**
+		 * @brief Holds the flag on if this instance is of the main thread.
+		 */
+		bool _isMain{false};
 		/**
 		 * @brief Holds the exit code of the terminated thread.
 		 */
-		union {void* Ptr; intptr_t Code;} _exitCode{nullptr};
+		union
+		{
+				void* Ptr;
+				intptr_t Code;
+		} _exitCode{nullptr};
+
 		/**
 		 * @brief Debug flag.
 		 */
 		bool _debug{false};
 
+		/**
+		 * Allow access to privates to this class from functions or classes.
+		 */
 		friend void installSignalHandlers();
+		friend class Condition;
 };
 
-inline
-void Thread::setTerminationTime(const TimeSpec& ts)
+inline Thread::operator handle_type() const
 {
-	_terminationTime = ts;
+	return _handle;
 }
 
-inline
-void Thread::setDebug(bool yn)
+inline Thread::Attributes::operator handle_type() const
+{
+	return _attributes;
+}
+
+inline void Thread::setDebug(bool yn)
 {
 	_debug = yn;
 }
 
-inline
-bool Thread::isDebug() const
+inline bool Thread::isDebug() const
 {
 	return _debug;
 }
 
-inline
-Thread::ThreadError::EErrorType Thread::ThreadError::getErrorType() const
-{
-	return _type;
-}
-
 /**
- * @brief Class which combines a thread class and closure template.
- *
- * Allows linking of a lambda function to be called as a thread run function.
- * Usage is like:
- * ```c++
- * ThreadClosure tc(ThreadClosure::func_type([](Thread& thread)->int
- * {
- * 	while (!thread.shouldTerminate());
- * 	{
- * 		if (Thread::sleep(TimeSpec(0.3), true))
- * 		{
- * 			std::clog << "Woken up normal" << std::endl;
- * 		}
- * 		else
- * 		{
- * 			std::clog << "Woken up by interruption" << std::endl;
- * 		}
- * 	}
- * 	return 0;
- * }));
- * tc.start();
- * sf::Thread::sleep(sf::TimeSpec(0.5));
- * tc.terminateAndWait();
- * ```
+ * @brief Wrapper class for the main thread.
  */
-class _MISC_CLASS ThreadClosure :public Thread, public TClosure<int, Thread&>
+class _MISC_CLASS ThreadMain : public Thread
 {
 	public:
 		/**
-		 * @brief Default constructor.
+		 * @brief Calls on protected boolean constructor.
 		 */
-		ThreadClosure()
-			:Thread(), TClosure<int, Thread&>()
-		{
-		}
-
+		ThreadMain();
 		/**
-		 * @brief Thread run function assigment constructor.
-		 * @param func Function ruin by the thread.
-		 */
-		explicit ThreadClosure(const func_type& func)
-			:Thread(), TClosure<int, Thread&>(func)
-		{
-		}
-
-	protected:
-		/**
-		 * Overrides run function and calls the closure assigned one.
+		 * Overrides run function but does nothing since it is the main thread.
 		 */
 		int run() override;
 };
 
+inline ThreadMain::ThreadMain()
+	: Thread(true)
+{}
+
+inline int ThreadMain::run()
+{
+	return 0;
 }
+
+}// namespace sf

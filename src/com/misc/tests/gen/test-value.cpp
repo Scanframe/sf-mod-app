@@ -41,16 +41,13 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 		CHECK_THAT(Helper(sf::Value(sf::Value::int_type(1234567890))), Equals("(INTEGER,\"1234567890\")"));
 		// Boolean
 		CHECK_THAT(Helper(sf::Value(true)), Equals("(INTEGER,\"1\")"));
-		// Const character string type.
-		CHECK_THAT(Helper(sf::Value("Just a text used as binary data.")),
-							 Equals("(STRING,\"Just a text used as binary data.\")"));
+		// Const's character string type.
+		CHECK_THAT(Helper(sf::Value("Just a text used as binary data.")), Equals("(STRING,\"Just a text used as binary data.\")"));
 		// rom std::string to string type.
-		CHECK_THAT(Helper(sf::Value(std::string("Just a text used as binary data."))),
-							 Equals("(STRING,\"Just a text used as binary data.\")"));
+		CHECK_THAT(Helper(sf::Value(std::string("Just a text used as binary data."))), Equals("(STRING,\"Just a text used as binary data.\")"));
 		// Raw data to binary type.
 		const char* raw = "Just a text used as binary data.";
-		CHECK_THAT(Helper(sf::Value(raw, strlen(raw))),
-							 Equals("(BINARY,\"4a7573742061207465787420757365642061732062696e61727920646174612e\")"));
+		CHECK_THAT(Helper(sf::Value(raw, strlen(raw))), Equals("(BINARY,\"4a7573742061207465787420757365642061732062696e61727920646174612e\")"));
 	}
 
 	SECTION("General")
@@ -58,7 +55,7 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 		// Is zero test function.
 		CHECK(sf::Value(0).isZero());
 		CHECK_FALSE(sf::Value("0").isZero());
-		// Validity function testing type on vitInvalid type by getting non exisiting type string.
+		// Validity function testing type on vitInvalid type by getting non-existing type string.
 		CHECK_FALSE(sf::Value(sf::Value::getType("INTeger"), "abc", 4).isValid());
 		CHECK(sf::Value::getType("FLOAT") == sf::Value::vitFloat);
 		CHECK(sf::Value::getType("CUSTOM") == sf::Value::vitCustom);
@@ -88,7 +85,7 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 		CHECK(!!sf::Value(""));
 		// Bool operator on smallest value float value.
 		CHECK(!!sf::Value(std::numeric_limits<sf::Value::flt_type>::denorm_min()));
-		// Check if the bool operator on a undefined type.
+		// Check if the bool operator on an undefined type.
 		CHECK(!!sf::Value());
 	}
 

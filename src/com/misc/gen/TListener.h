@@ -1,7 +1,7 @@
 #pragma once
 
-#include <functional>
 #include "gen_utils.h"
+#include <functional>
 
 namespace sf
 {
@@ -17,14 +17,14 @@ class ListenerList
 		 */
 		struct base_type
 		{
-			virtual ~base_type() = default;
+				virtual ~base_type() = default;
 
-			/**
+				/**
 			 * @brief Will be over loaded in template to check the emitter has gone away.
 			 *
 			 * @return True when shared pointer is still shared.
 			 */
-			virtual bool validListener() = 0;
+				virtual bool validListener() = 0;
 		};
 
 		/**
@@ -63,7 +63,7 @@ class ListenerList
 			{
 				if (list.at(i) == entry)
 				{
-					list.erase(list.begin() + i, list.begin() + i + 1); // NOLINT(cppcoreguidelines-narrowing-conversions)
+					list.erase(list.begin() + i, list.begin() + i + 1);// NOLINT(cppcoreguidelines-narrowing-conversions)
 					rv++;
 				}
 			}
@@ -121,8 +121,8 @@ class ListenerList
 		/**
 		 * @brief Allows access to appendListener() method from the TListener template.
 		 */
-		template<typename... Args> friend
-		class TListener;
+		template<typename... Args>
+		friend class TListener;
 };
 
 /**
@@ -131,7 +131,7 @@ class ListenerList
  * @tparam Args
  */
 template<typename... Args>
-class TListener :private ListenerList::base_type
+class TListener : private ListenerList::base_type
 {
 	public:
 		/**
@@ -152,7 +152,7 @@ class TListener :private ListenerList::base_type
 		 * @param lambda The actual function to call.
 		 */
 		explicit TListener(ListenerList* list, const func_type& lambda)
-			:owner(list)
+			: owner(list)
 		{
 			owner->appendListener(this);
 			ptr.reset(new func_type(lambda));
@@ -179,7 +179,6 @@ class TListener :private ListenerList::base_type
 		class emitter_type
 		{
 			public:
-
 				/**
 				 * Default constructor.
 				 */
@@ -187,7 +186,7 @@ class TListener :private ListenerList::base_type
 				/**
 				 * @brief Destructor clearing all shared pointers.
 				 */
-				~emitter_type() // NOLINT(modernize-use-equals-default)
+				~emitter_type()// NOLINT(modernize-use-equals-default)
 				{
 					// Iterate through the list of weak pointers.
 					for (auto& i: list)
@@ -301,4 +300,4 @@ class TListener :private ListenerList::base_type
 		std::shared_ptr<func_type> ptr{};
 };
 
-}
+}// namespace sf

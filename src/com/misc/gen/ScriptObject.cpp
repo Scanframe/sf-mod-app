@@ -6,8 +6,8 @@ namespace sf
 SF_IMPL_IFACE(ScriptObject, ScriptObject::Parameters, Interface)
 
 ScriptObject::ScriptObject(const char* type_name, ScriptObject* parent)
-	:_typeName(type_name)
-	,_parent(parent)
+	: _typeName(type_name)
+	, _parent(parent)
 {}
 
 const ScriptObject::IdInfo* ScriptObject::getInfoUnknown()
@@ -21,7 +21,10 @@ ScriptObject* ScriptObject::castToObject(const Value& value)
 	// When the variable is of the special type an object is referenced.
 	if (value.getType() == Value::vitCustom && value.getSize() == sizeof(void*))
 	{
-		struct TData {ScriptObject* Object;} * data;
+		struct TData
+		{
+				ScriptObject* Object;
+		}* data;
 		// Cast binary data to the pointer type.
 		data = (TData*) value.getData();
 		// Check for a null pointer.
@@ -62,4 +65,4 @@ std::string ScriptObject::getStatusText()
 	return getTypeName();
 }
 
-}
+}// namespace sf

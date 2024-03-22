@@ -1,16 +1,18 @@
 #pragma once
 
-#include <QtUiPlugin/QDesignerExportWidget>
-#include <QPushButton>
-#include <QAction>
 #include "ObjectExtension.h"
+#include <QAction>
+#include <QPushButton>
+#include <QtUiPlugin/QDesignerExportWidget>
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT ActionButton
+	: public QPushButton
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(QString action READ getActionByName WRITE setActionByName)
 
 	public:
@@ -54,4 +56,4 @@ class QDESIGNER_WIDGET_EXPORT ActionButton :public QPushButton, public ObjectExt
 		QString _actionName;
 };
 
-}
+}// namespace sf

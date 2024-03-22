@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Value.h"
-#include "ScriptObject.h"
 #include "../global.h"
+#include "ScriptObject.h"
+#include "Value.h"
 
 namespace sf
 {
@@ -13,7 +13,6 @@ namespace sf
 class _MISC_CLASS ScriptGlobalEntry
 {
 	public:
-
 		/**
 		 * @brief Unsigned size value indicating not found or no index.
 		 */
@@ -123,15 +122,15 @@ class _MISC_CLASS ScriptGlobalEntry
  * @tparam T Class containing the method of type FunctionType.
  */
 template<class T>
-class TScriptGlobalEntry :public ScriptGlobalEntry
+class TScriptGlobalEntry : public ScriptGlobalEntry
 {
 	public:
 		typedef Value (T::*FunctionType)(const Value::vector_type&);
 
 		TScriptGlobalEntry(T* self, FunctionType func, const std::string& name, int argumentCount, const std::string& description)
-			:ScriptGlobalEntry(name, description, argumentCount)
-			 , _self(self)
-			 , _func(func)
+			: ScriptGlobalEntry(name, description, argumentCount)
+			, _self(self)
+			, _func(func)
 		{
 		}
 
@@ -152,14 +151,14 @@ class TScriptGlobalEntry :public ScriptGlobalEntry
 /**
  * @brief #sf::ScriptGlobalEntry derived class to link static functions or methods.
  */
-class ScriptGlobalStaticEntry :public ScriptGlobalEntry
+class ScriptGlobalStaticEntry : public ScriptGlobalEntry
 {
 	public:
-		typedef Value (* FunctionType)(const Value::vector_type& arguments);
+		typedef Value (*FunctionType)(const Value::vector_type& arguments);
 
 		ScriptGlobalStaticEntry(FunctionType func, const std::string& name, const std::string& description, int argumentCount)
-			:ScriptGlobalEntry(name, description, argumentCount)
-			 , _func(func)
+			: ScriptGlobalEntry(name, description, argumentCount)
+			, _func(func)
 		{
 		}
 
@@ -176,4 +175,4 @@ class ScriptGlobalStaticEntry :public ScriptGlobalEntry
 		FunctionType _func;
 };
 
-}
+}// namespace sf

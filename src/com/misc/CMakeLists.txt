@@ -49,6 +49,7 @@ set(SOURCES
 	gen/RangeManager.cpp gen/RangeManager.h
 	gen/Mutex.cpp gen/Mutex.h
 	gen/Thread.cpp gen/Thread.h
+	gen/ThreadClosure.h
 	gen/Semaphore.cpp gen/Semaphore.h
 	gen/ThreadRelay.cpp gen/ThreadRelay.h
 	gen/Condition.cpp gen/Condition.h

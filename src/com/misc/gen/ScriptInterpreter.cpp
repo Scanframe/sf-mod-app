@@ -1,16 +1,16 @@
 #include "ScriptInterpreter.h"
-#include "ScriptInterpreter_p.h"
 #include "Exception.h"
-#include "Sustain.h"
 #include "IniProfile.h"
+#include "ScriptInterpreter_p.h"
+#include "Sustain.h"
 #if IS_QT
 	#include <QApplication>
 	#include <QWidget>
-#include <utility>
-#include <cstdlib>
+	#include <cstdlib>
+	#include <utility>
 #endif
 #if IS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 #define MAX_IDENT_LENGTH 64
@@ -20,40 +20,40 @@ namespace sf
 
 // Speed index defines
 #define SID_COMPILER_START -10000
-#define SID_VARS          SID_COMPILER_START
-#define SID_LABELS       (SID_COMPILER_START - 1)
-#define SID_EXIT         (SID_COMPILER_START -  2)
-#define SID_PRINT        (SID_COMPILER_START -  3)
-#define SID_WRITELOG     (SID_COMPILER_START -  4)
-#define SID_BEEP         (SID_COMPILER_START -  5)
-#define SID_CLOCK        (SID_COMPILER_START -  6)
-#define SID_CLS          (SID_COMPILER_START -  7)
-#define SID_SETTIMEOUT   (SID_COMPILER_START -  8)
-#define SID_READPROFILE  (SID_COMPILER_START -  9)
+#define SID_VARS SID_COMPILER_START
+#define SID_LABELS (SID_COMPILER_START - 1)
+#define SID_EXIT (SID_COMPILER_START - 2)
+#define SID_PRINT (SID_COMPILER_START - 3)
+#define SID_WRITELOG (SID_COMPILER_START - 4)
+#define SID_BEEP (SID_COMPILER_START - 5)
+#define SID_CLOCK (SID_COMPILER_START - 6)
+#define SID_CLS (SID_COMPILER_START - 7)
+#define SID_SETTIMEOUT (SID_COMPILER_START - 8)
+#define SID_READPROFILE (SID_COMPILER_START - 9)
 #define SID_WRITEPROFILE (SID_COMPILER_START - 10)
-#define SID_SHUTDOWNSYS  (SID_COMPILER_START - 11)
-#define SID_EXITPROCESS  (SID_COMPILER_START - 12)
-#define SID_SHELLEXEC    (SID_COMPILER_START - 13)
-#define SID_GETENVIRON   (SID_COMPILER_START - 14)
+#define SID_SHUTDOWNSYS (SID_COMPILER_START - 11)
+#define SID_EXITPROCESS (SID_COMPILER_START - 12)
+#define SID_SHELLEXEC (SID_COMPILER_START - 13)
+#define SID_GETENVIRON (SID_COMPILER_START - 14)
 #define SID_GETCONFIGDIR (SID_COMPILER_START - 15)
-#define SID_SPEAK        (SID_COMPILER_START - 16)
-#define SID_SLEEP        (SID_COMPILER_START - 17)
-#define SID_RELINQUISH   (SID_COMPILER_START - 18)
-#define SID_FOCUSWINDOW  (SID_COMPILER_START - 19)
-#define SID_TRACE        (SID_COMPILER_START - 20)
-#define SID_GETUSERNAME  (SID_COMPILER_START - 21)
-#define SID_CREATE       (SID_COMPILER_START - 22)
-#define SID_TIME         (SID_COMPILER_START - 23)
-#define SID_DATE         (SID_COMPILER_START - 24)
+#define SID_SPEAK (SID_COMPILER_START - 16)
+#define SID_SLEEP (SID_COMPILER_START - 17)
+#define SID_RELINQUISH (SID_COMPILER_START - 18)
+#define SID_FOCUSWINDOW (SID_COMPILER_START - 19)
+#define SID_TRACE (SID_COMPILER_START - 20)
+#define SID_GETUSERNAME (SID_COMPILER_START - 21)
+#define SID_CREATE (SID_COMPILER_START - 22)
+#define SID_TIME (SID_COMPILER_START - 23)
+#define SID_DATE (SID_COMPILER_START - 24)
 
 // Timeout value for script when not in stepping mode. 10 seconds for debugging purposes.
 //#define SCRIPT_TIMEOUT 10000000
 #define SCRIPT_TIMEOUT 1000000000
 
 ScriptInterpreter::ScriptInterpreter()
-	:ScriptEngine()
-	 , _scriptName("<unknown>")
-	 ,_emitterChange()
+	: ScriptEngine()
+	, _scriptName("<unknown>")
+	, _emitterChange()
 {
 	_command = "";
 	_currentInstructionPtr = -1;
@@ -122,12 +122,12 @@ ScriptInterpreter::IdInfo ScriptInterpreter::_info[] =
 		{0, idKeyword, "gosub", kwSubroutine, nullptr},
 		{0, idKeyword, "return", kwReturn, nullptr},
 		{0, idKeyword, "extern", kwExtern, nullptr},
-	};
+};
 
 strings ScriptInterpreter::getInfoNames() const
 {
 	strings rv = ScriptEngine::getInfoNames();
-	for (auto& i : _info)
+	for (auto& i: _info)
 	{
 		rv.add(i._name);
 	}
@@ -184,7 +184,7 @@ const char* ScriptInterpreter::_stateNames[] =
 		"Running",
 		"Ready",
 		nullptr
-	};
+};
 
 const char* ScriptInterpreter::_instructionNames[] =
 	{
@@ -195,13 +195,13 @@ const char* ScriptInterpreter::_instructionNames[] =
 		"CALL",
 		"RETF",
 		nullptr
-	};
+};
 
-ScriptInterpreter::Instruction::Instruction(Instruction::EInstr instr, ip_type ip, const CodePos& pos, std::string  script)
-	:_script(std::move(script))
-	 , _instr(instr)
-	 , _absIp(ip)
-	 , _codePos(pos)
+ScriptInterpreter::Instruction::Instruction(Instruction::EInstr instr, ip_type ip, const CodePos& pos, std::string script)
+	: _script(std::move(script))
+	, _instr(instr)
+	, _absIp(ip)
+	, _codePos(pos)
 {
 }
 
@@ -221,10 +221,10 @@ ScriptObject::ip_type ScriptInterpreter::Instruction::getJumpIp() const
 
 ScriptInterpreter::ip_type ScriptInterpreter::addInstruction(Instruction::EInstr instr, ip_type ip, pos_type pos, const std::string& script)
 {
-	(void)pos;
+	(void) pos;
 	CodePos cp(_codeLine, _codePos);
 	_instructions.add(Instruction(instr, (ip < 0) ? (ip_type) _instructions.size() + 1 : ip, cp, script));
-	_currentInstructionPtr = (ip_type)(_instructions.size() - 1);
+	_currentInstructionPtr = (ip_type) (_instructions.size() - 1);
 	return _currentInstructionPtr;
 }
 
@@ -287,7 +287,7 @@ void ScriptInterpreter::linkInstruction()
 				_instructions[i]._absIp = ip;
 			}
 		}
-			// Go to instruction found
+		// Go to instruction found
 		else if (_instructions[i]._instr == Instruction::eiGoto)
 		{
 			auto ip = getLabelIp(_instructions[i]._script);
@@ -310,11 +310,7 @@ void ScriptInterpreter::linkInstruction()
 void ScriptInterpreter::setJumpInstruction(ip_type ip, ip_type jmp_ip)
 {
 	Instruction::EInstr instr = _instructions[ip]._instr;
-	if
-		((instr == Instruction::eiTestJump || instr == Instruction::eiJump ||
-		instr == Instruction::eiGoto || instr == Instruction::eiBreak ||
-		instr == Instruction::eiContinue) &&
-		ip != jmp_ip)
+	if ((instr == Instruction::eiTestJump || instr == Instruction::eiJump || instr == Instruction::eiGoto || instr == Instruction::eiBreak || instr == Instruction::eiContinue) && ip != jmp_ip)
 	{
 		// jmp_ip negative jump to next ipp => ip+1
 		_instructions[ip]._absIp = (jmp_ip < 0) ? (ip + 1) : jmp_ip;
@@ -337,7 +333,7 @@ const char* ScriptInterpreter::_exitCodeNames[] =
 		"Script",
 		"Application",
 		nullptr
-	};
+};
 
 void ScriptInterpreter::exitFunction(EExitCode exitcode, const Value& value)
 {
@@ -422,8 +418,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				_currentInstructionPtr = -1;
 				break;
 
-			case SID_PRINT:
-			{
+			case SID_PRINT: {
 				std::string s;
 				unsigned count = params->size();
 				for (unsigned i = 0; i < count; i++)
@@ -447,8 +442,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_WRITELOG:
-			{
+			case SID_WRITELOG: {
 				std::string s;
 				for (uint i = 0; i < params->size(); i++)
 				{
@@ -490,8 +484,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				result->set(0);
 				break;
 
-			case SID_SLEEP:
-			{
+			case SID_SLEEP: {
 				_sleepTimer.set(TimeSpec((*params)[0].getFloat()));
 				// When the script is in step mode the caller should handle the sleep time.
 				if (!_flagStepMode)
@@ -519,65 +512,57 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				result->set(0);
 				break;
 
-			case SID_CLS:
-			{
+			case SID_CLS: {
 				// TODO: Clear the console here.
 				result->set(0);
 				break;
 			}
 
-			case SID_SETTIMEOUT:
-			{
+			case SID_SETTIMEOUT: {
 				_loopTimer.set((*params)[0].getInteger());
 				result->set(0);
 				break;
 			}
 
 			case SID_WRITEPROFILE:
-			case SID_READPROFILE:
-			{
+			case SID_READPROFILE: {
 				auto path = getProfilePath();
 				if (!path.empty())
 				{
 					// Create a profile for both functions.
-					IniProfile prof
-						(
-							(*params)[0].getString(), // Section name.
-							getProfilePath()  // Application redirected profile.
-						);
+					IniProfile prof(
+						(*params)[0].getString(),// Section name.
+						getProfilePath()// Application redirected profile.
+					);
 					// Read from the profile.
 					if (info->_index == SID_READPROFILE)
 					{
 						std::string val;
-						prof.getString
-							(
-								(*params)[1].getString(), // Key name
-								val,                             // Return value
-								(*params)[2].getString()  // Default string
-							);
+						prof.getString(
+							(*params)[1].getString(),// Key name
+							val,// Return value
+							(*params)[2].getString()// Default string
+						);
 						result->set(val);
 					}
-					else // Write to the profile.
+					else// Write to the profile.
 					{
-						prof.setString
-							(
-								(*params)[1].getString(), // Key name
-								(*params)[2].getString()  // String value
-							);
+						prof.setString(
+							(*params)[1].getString(),// Key name
+							(*params)[2].getString()// String value
+						);
 					}
 				}
 				break;
 			}
 
-			case SID_SHUTDOWNSYS:
-			{
+			case SID_SHUTDOWNSYS: {
 				bool retval = false;
 
 #if IS_WIN && false
-				retval = ExitWindowsEx
-				(
-					EWX_SHUTDOWN | 0x00000010 /*EWX_FORCEIFHUNG*/,  // shutdown operation
-					0 // SHTDN_REASON_FLAG_USER_DEFINED // shutdown reason (WinXP only)
+				retval = ExitWindowsEx(
+					EWX_SHUTDOWN | 0x00000010 /*EWX_FORCEIFHUNG*/,// shutdown operation
+					0// SHTDN_REASON_FLAG_USER_DEFINED // shutdown reason (WinXP only)
 				);
 				RTTI_NOTIFY(DO_DEFAULT, "Shutting down Windows...");
 				/*
@@ -605,25 +590,23 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				result->set(true);
 				break;
 
-			case SID_SHELLEXEC:
-			{
+			case SID_SHELLEXEC: {
 #if IS_WIN && false
 				std::string operation = (*params)[0].GetString();
 				std::string filename = (*params)[1].GetString();
 				std::string parameters = (*params)[2].GetString();
 				std::string directory = (*params)[3].GetString();
-				HINSTANCE hinst = ShellExecute
-				(
-				 ::GetDesktopWindow(),                            // handle to parent window
-				 operation.length() ? operation.c_str() : NULL,    // pointer to string that specifies operation to perform
-				 filename.length() ? filename.c_str() : NULL,      // pointer to filename or folder name string
-				 parameters.length() ? parameters.c_str() : NULL,  // pointer to string that specifies executable-file parameters
-				 directory.length() ? directory.c_str() : NULL,    // pointer to string that specifies default directory
-				 SW_SHOWNORMAL                                    // whether file is shown when opened
+				HINSTANCE hinst = ShellExecute(
+					::GetDesktopWindow(),// handle to parent window
+					operation.length() ? operation.c_str() : NULL,// pointer to string that specifies operation to perform
+					filename.length() ? filename.c_str() : NULL,// pointer to filename or folder name string
+					parameters.length() ? parameters.c_str() : NULL,// pointer to string that specifies executable-file parameters
+					directory.length() ? directory.c_str() : NULL,// pointer to string that specifies default directory
+					SW_SHOWNORMAL// whether file is shown when opened
 				);
 				// If the function fails, the return value is an error value that is
 				// less than or equal to 32.
-				result->Set((int)hinst <= 32);
+				result->Set((int) hinst <= 32);
 #else
 				result->set(false);
 #endif
@@ -632,8 +615,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_FOCUSWINDOW:
-			{
+			case SID_FOCUSWINDOW: {
 #if IS_QT
 				// TODO: Needs system to get main window if activeWindow() does not do the trick.
 				QWidget* window = QApplication::activeWindow();
@@ -655,15 +637,13 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_TRACE:
-			{
+			case SID_TRACE: {
 				_trace = (*params)[0].getInteger();
 				result->set(_trace);
 				break;
 			}
 
-			case SID_GETENVIRON:
-			{
+			case SID_GETENVIRON: {
 #if IS_WIN
 				std::string s(4096, 0);
 				size_t sz{0};
@@ -675,8 +655,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_GETUSERNAME:
-			{
+			case SID_GETUSERNAME: {
 #if IS_QT
 				auto name = qgetenv("USER");
 				if (name.isEmpty())
@@ -688,8 +667,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_CREATE:
-			{
+			case SID_CREATE: {
 				auto type_name = (*params)[0].getString();
 				// Remove the type name from the passed arguments.
 				params->detachAt(0);
@@ -705,8 +683,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_TIME:
-			{
+			case SID_TIME: {
 				char buf[80];
 				time_t now = time(nullptr);
 				struct tm local = *localtime(&now);
@@ -715,8 +692,7 @@ bool ScriptInterpreter::getSetValue(const IdInfo* info, Value* result, Value::ve
 				break;
 			}
 
-			case SID_DATE:
-			{
+			case SID_DATE: {
 				char buf[80];
 				time_t now = time(nullptr);
 				struct tm local = *localtime(&now);
@@ -977,7 +953,7 @@ void ScriptInterpreter::getExternalSource(std::string& source)
 		char delim;
 		// As long as new delimiters are entered source will be read.
 		do
-		{ // Get first non white character.
+		{// Get first non white character.
 			delim = _command[_codePos];
 			if (isalnum(delim))
 			{
@@ -1003,8 +979,7 @@ void ScriptInterpreter::getExternalSource(std::string& source)
 			}
 			// Eat the white in between delimiters.
 			skipWhite();
-		}
-		while (_command[_codePos] && _command[_codePos] != ';');
+		} while (_command[_codePos] && _command[_codePos] != ';');
 	}
 	// If the end of the script source has been entered report an error.
 	if (!_command[_codePos])
@@ -1024,7 +999,7 @@ void ScriptInterpreter::getExternalSource(std::string& source)
 	_codePos++;
 }
 
-bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
+bool ScriptInterpreter::doCompile()// NOLINT(misc-no-recursion)
 {
 	skipWhite();
 
@@ -1096,16 +1071,14 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 			case idUnknown:
 				return setError(aeUnknownIdentifier, name);
 
-			case idKeyword:
-			{
+			case idKeyword: {
 				skipWhite();
 				// When an error occurs return immediately.
 				compileKeyword(info, pos);
 				return true;
 			}
 
-			case idFunction:
-			{
+			case idFunction: {
 				setPosition(pos);
 				std::string script;
 				//GetVarScript(script);
@@ -1128,8 +1101,7 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 				break;
 			}
 
-			case idTypedef:
-			{
+			case idTypedef: {
 				// The params count contains the type enumerate from TValue.
 				auto type = (Value::EType) info->_paramCount;
 				skipWhite();
@@ -1155,7 +1127,7 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 				{
 					break;
 				}
-			} // run into next case statement
+			}// run into next case statement
 
 			case idVariable:
 			case idConstant:
@@ -1170,7 +1142,7 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 						return false;
 					}
 					else
-					{ // Check for the wanted delimiter.
+					{// Check for the wanted delimiter.
 						if (_command[_codePos] != ';')
 						{
 							return setError(aeExpectedDelimiter, ";");
@@ -1187,7 +1159,7 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 				// Set error position before keyword
 				setPosition(pos);
 				return setError(aeUnexpectedIdentifier, name);
-		} // end switch GetIdentifierInfo()
+		}// end switch GetIdentifierInfo()
 		//
 		skipWhite();
 		//
@@ -1197,7 +1169,7 @@ bool ScriptInterpreter::doCompile() // NOLINT(misc-no-recursion)
 	return setError(aeUnexpectedCharacter, std::string(1, _command[_codePos]));
 }
 
-bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLINT(misc-no-recursion)
+bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos)// NOLINT(misc-no-recursion)
 {
 	// ParamCount is in case of the keyword identifier the type of keyword.
 	auto kw = (EKeyWord) Info->_paramCount;
@@ -1211,8 +1183,7 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			addInstruction(Instruction::eiContinue, -1, pos, "CONTINUE");
 			break;
 
-		case kwSubroutine:
-		{
+		case kwSubroutine: {
 			// No break just run into next instruction.
 			std::string name;
 			getName(name);
@@ -1227,11 +1198,9 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			{
 				return setError(aeExpectedDelimiter, ";");
 			}
-		}
-			break;
+		} break;
 
-		case kwGoto:
-		{
+		case kwGoto: {
 			std::string name;
 			getName(name);
 			addInstruction(Instruction::eiGoto, -1, pos, name);
@@ -1245,11 +1214,9 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			{
 				return setError(aeExpectedDelimiter, ";");
 			}
-		}
-			break;
+		} break;
 
-		case kwReturn:
-		{
+		case kwReturn: {
 			addInstruction(Instruction::eiRetFunction, -1, _codeLine);
 			skipWhite();
 			// Check for the delimiter.
@@ -1261,11 +1228,9 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			{
 				return setError(aeExpectedDelimiter, ";");
 			}
-		}
-			break;
+		} break;
 
-		case kwIf:
-		{
+		case kwIf: {
 			std::string script;
 			if (_command[_codePos] != '(')
 			{
@@ -1306,11 +1271,9 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			{
 				return false;
 			}
-		}
-			break;
+		} break;
 
-		case kwWhile:
-		{
+		case kwWhile: {
 			std::string script;
 			if (_command[_codePos] != '(')
 			{
@@ -1346,11 +1309,9 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 			setBreakInstruction(ipt, _currentInstructionPtr + 1);
 			// set break jumps if any
 			setContinueInstruction(ipt, ipt);
-		}
-			break;
+		} break;
 
-		case kwExternal:
-		{
+		case kwExternal: {
 			skipWhite();
 			std::string source;
 			getExternalSource(source);
@@ -1361,8 +1322,7 @@ bool ScriptInterpreter::compileKeyword(const IdInfo* Info, pos_type pos) // NOLI
 					return setError(aeExternalKeyword, source);
 				}
 			}
-		}
-			break;
+		} break;
 
 		default:
 			return setError(aeUnexpectedKeyword, getKeyWordText(kw));
@@ -1479,8 +1439,7 @@ bool ScriptInterpreter::compile(const char* cmd)
 					{
 						int instr = _instructions[ip]._instr;
 						instr = (instr > 0) ? instr % Instruction::eiLastEntry : 0;
-						*_outputStream << stringf("%3i: %s %2i: %s\n", ip, _instructionNames[instr],
-							_instructions[ip]._absIp, _instructions[ip]._script.c_str());
+						*_outputStream << stringf("%3i: %s %2i: %s\n", ip, _instructionNames[instr], _instructions[ip]._absIp, _instructions[ip]._script.c_str());
 					}
 				}
 			}
@@ -1604,8 +1563,7 @@ void ScriptInterpreter::doExecute()
 			break;
 
 		case Instruction::eiCalculate:
-		case Instruction::eiTestJump:
-		{
+		case Instruction::eiTestJump: {
 			// Store temporarily the IP stack size.
 			auto count = _stack.size();
 			// Calculate the script and return the value in the Accu member.
@@ -1646,8 +1604,7 @@ void ScriptInterpreter::doExecute()
 			_currentInstructionPtr = instr->_absIp;
 			break;
 
-		case Instruction::eiCall:
-		{
+		case Instruction::eiCall: {
 			// Push the next instruction pointer on the stack
 			_stack.push_back(StackEntry(_currentInstructionPtr + 1));
 			// SF_RTTI_NOTIFY(DO_DEFAULT, << "Pushing IP: " << (InstrPtr+1));
@@ -1656,8 +1613,7 @@ void ScriptInterpreter::doExecute()
 			break;
 		}
 
-		case Instruction::eiRetFunction:
-		{
+		case Instruction::eiRetFunction: {
 			auto count = _stack.size();
 			if (count)
 			{
@@ -1757,7 +1713,7 @@ ScriptInterpreter::EState ScriptInterpreter::Execute(EExecMode exec_mode)
 			{
 				// Check if a sleep was issued.
 				if (_sleepTimer.isEnabled())
-				{ // Check if the time has timed out already.
+				{// Check if the time has timed out already.
 					if (_sleepTimer)
 					{
 						// Disable the timer so it can be enabled next time.
@@ -1908,8 +1864,8 @@ std::string ScriptInterpreter::getDebugText() const
 {
 	std::string retval =
 		"Script: " + getScriptName() + "\n" +
-			"State: " + getStateName(_currentState) + "\n" +
-			"Error: '" + getErrorReason() + "' " + getErrorText(getError());
+		"State: " + getStateName(_currentState) + "\n" +
+		"Error: '" + getErrorReason() + "' " + getErrorText(getError());
 	//
 	if (_currentState == esEmpty)
 	{
@@ -1917,9 +1873,7 @@ std::string ScriptInterpreter::getDebugText() const
 	}
 	else if (_errorInstructionPtr < _instructions.size() && _errorInstructionPtr >= 0)
 	{
-		retval += stringf("\nLocation: Instr %i %s at Line %i at Pos %i",
-			_currentInstructionPtr, _instructions[_errorInstructionPtr]._script.c_str(), getErrorPos()._line,
-			getErrorPos()._offset);
+		retval += stringf("\nLocation: Instr %i %s at Line %i at Pos %i", _currentInstructionPtr, _instructions[_errorInstructionPtr]._script.c_str(), getErrorPos()._line, getErrorPos()._offset);
 	}
 	//
 	return retval;
@@ -1929,10 +1883,7 @@ std::string ScriptInterpreter::getInstructionText(ip_type ip) const
 {
 	if (ip >= 0 && ip < _instructions.size())
 	{
-		return stringf("%3i: %10s %2i \"%s\"", ip,
-			_instructionNames[_instructions[ip]._instr % Instruction::eiLastEntry],
-			_instructions[ip]._absIp,
-			_instructions[ip]._script.c_str());
+		return stringf("%3i: %10s %2i \"%s\"", ip, _instructionNames[_instructions[ip]._instr % Instruction::eiLastEntry], _instructions[ip]._absIp, _instructions[ip]._script.c_str());
 	}
 	return {70, ' '};
 }
@@ -1991,4 +1942,4 @@ strings ScriptInterpreter::getIdentifiers(EIdentifier id) const
 	return rv;
 }
 
-}
+}// namespace sf

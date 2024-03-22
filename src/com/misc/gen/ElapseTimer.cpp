@@ -1,12 +1,12 @@
 #include "ElapseTimer.h"
-#include <sys/time.h> // NOLINT(modernize-deprecated-headers)
+#include <sys/time.h>// NOLINT(modernize-deprecated-headers)
 
 namespace sf
 {
 
 ElapseTimer::ElapseTimer()
+	: _target(getTime())
 {
-	_target = getTime();
 }
 
 ElapseTimer::ElapseTimer(unsigned long usec)
@@ -27,10 +27,10 @@ bool ElapseTimer::isActive() const
 void ElapseTimer::set(unsigned long usec)
 {
 #if IS_WIN
-	set({time_t(usec / 1000000l),long(usec % 1000000l)});
+	set({time_t(usec / 1000000l), long(usec % 1000000l)});
 #else
-	set({time_t(usec / 1000000l),time_t(usec % 1000000l)});
-#endif	
+	set({time_t(usec / 1000000l), time_t(usec % 1000000l)});
+#endif
 }
 
 void ElapseTimer::set(const timespec& t)
@@ -77,4 +77,4 @@ TimeSpec ElapseTimer::getTimeLeft(const timespec& t) const
 	return ct;
 }
 
-}
+}// namespace sf

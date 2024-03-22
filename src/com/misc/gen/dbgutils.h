@@ -47,9 +47,9 @@
 
 #include "../global.h"
 // Include for std::cout, std::cerr ,std::clog and std::ostream.
-#include <iostream>
-#include <iomanip>
 #include <cstring>
+#include <iomanip>
+#include <iostream>
 #include <utility>
 
 #if IS_QT
@@ -60,11 +60,13 @@
 
 // This define should be defined externally in the project or make file.
 #ifndef SF_DEBUG_LEVEL
-#  define SF_DEBUG_LEVEL 1
+	#define SF_DEBUG_LEVEL 1
 #endif
 
 // Coverts the passed type into a name.
 #define SF_RTTI_NAME(self) sf::Demangle(typeid(self).name())
+// Full current class member function name.
+#define SF_RTTI_FUNCTION sf::Demangle(typeid(self).name()).append("::").append(__FUNCTION__)
 // Define that converts a 'this' pointer to the class type name.
 #define SF_RTTI_TYPENAME SF_RTTI_NAME(*this)
 // Only the filename part of __FILE__.
@@ -72,13 +74,12 @@
 
 #if IS_QT
 
-// Converts the passed type into a name.
-#define SF_Q_RTTI_NAME(self) QString::fromStdString(SF_RTTI_NAME(self))
-// Define that converts a 'this' pointer to the class type name.
-#define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
+	// Converts the passed type into a name.
+	#define SF_Q_RTTI_NAME(self) QString::fromStdString(SF_RTTI_NAME(self))
+	// Define that converts a 'this' pointer to the class type name.
+	#define SF_Q_RTTI_TYPENAME SF_Q_RTTI_NAME(*this)
 
-inline
-QDebug& operator<<(QDebug& qd, const std::string& ss)
+inline QDebug& operator<<(QDebug& qd, const std::string& ss)
 {
 	return qd << QString::fromStdString(ss);
 }
@@ -113,7 +114,7 @@ class _MISC_CLASS MessageHandler
 		static void _handler(QtMsgType type, const QMessageLogContext& ctx, const QString& msg);
 };
 
-}
+}// namespace sf
 
 #endif
 
@@ -122,7 +123,7 @@ namespace sf
 /**
  * Debug output type flags which can be combined to create a set of flags.
  */
-enum EDebugOutputType :int
+enum EDebugOutputType : int
 {
 	/** Throw an exception.*/
 	dotThrow = 1U << 0U,
@@ -190,7 +191,7 @@ _MISC_FUNC std::string Demangle(const char* name);
  * @tparam T Type to get the type string from.
  * @return Demangled type string.
  */
-template <typename T>
+template<typename T>
 std::string rtti_name(const T&)
 {
 	return Demangle(typeid(T).name());
@@ -199,10 +200,12 @@ std::string rtti_name(const T&)
 /**
  * Exception thrown from a notification.
  */
-class notify_exception :public std::exception
+class notify_exception : public std::exception
 {
 	public:
-		explicit notify_exception(std::string s) :msg(std::move(s)) {}
+		explicit notify_exception(std::string s)
+			: msg(std::move(s))
+		{}
 
 		[[nodiscard]] const char* what() const noexcept override
 		{
@@ -216,11 +219,13 @@ class notify_exception :public std::exception
 /**
  * @brief Debug output stream.
  */
-class _MISC_CLASS debug_ostream :public std::ostringstream
+class _MISC_CLASS debug_ostream : public std::ostringstream
 {
 	public:
 		explicit debug_ostream(int type)
-			:std::ostringstream(), _type(type) {}
+			: std::ostringstream()
+			, _type(type)
+		{}
 
 		~debug_ostream() override;
 
@@ -228,54 +233,115 @@ class _MISC_CLASS debug_ostream :public std::ostringstream
 		int _type;
 };
 
-} // namespace sf
+}// namespace sf
 
 // Defined types of debug output of which combinations are allowed.
 #define DO_DEFAULT sf::dotDefault
-#define DO_COUT    sf::dotStdOut
-#define DO_CLOG    sf::dotStdLog
-#define DO_CERR    sf::dotStdErr
-#define DO_MSGBOX  sf::dotMessageBox
-#define DO_DBGSTR  sf::dotDebugString
-#define DO_DBGBRK  sf::dotDebugBreak
+#define DO_COUT sf::dotStdOut
+#define DO_CLOG sf::dotStdLog
+#define DO_CERR sf::dotStdErr
+#define DO_MSGBOX sf::dotMessageBox
+#define DO_DBGSTR sf::dotDebugString
+#define DO_DBGBRK sf::dotDebugBreak
 
 // Class name and file name separator character
 #define SF_CLS_SEP ';'
 
 #if (SF_DEBUG_LEVEL == 1)
 
-#define SF_NORM_NOTIFY(f, a) {sf::debug_ostream(f) << a;} // NOLINT(bugprone-macro-parentheses)
-#define SF_CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;} // NOLINT(bugprone-macro-parentheses)
-#define SF_RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a;} // NOLINT(bugprone-macro-parentheses)
-#define SF_COND_NORM_NOTIFY(p, f, a) {if (p) {SF_NORM_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
-#define SF_COND_CLASS_NOTIFY(p, f, a) {if (p) {SF_CLASS_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
-#define SF_COND_RTTI_NOTIFY(p, f, a) {if (p) {SF_RTTI_NOTIFY(f, a);}} // NOLINT(bugprone-macro-parentheses)
-#if IS_QT
-#define SF_Q_NOTIFY(a) {qDebug() << a;} // NOLINT(bugprone-macro-parentheses)
-#endif
+	#define SF_NORM_NOTIFY(f, a)   \
+		{                            \
+			sf::debug_ostream(f) << a; \
+		}
+	#define SF_CLASS_NOTIFY(f, a)                                                           \
+		{                                                                                     \
+			sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a; \
+		}
+	#define SF_RTTI_NOTIFY(f, a)                                                                    \
+		{                                                                                             \
+			sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a; \
+		}
+	#define SF_COND_NORM_NOTIFY(p, f, a) \
+		{                                  \
+			if (p) {                         \
+				SF_NORM_NOTIFY(f, a);          \
+			}                                \
+		}
+	#define SF_COND_CLASS_NOTIFY(p, f, a) \
+		{                                   \
+			if (p) {                          \
+				SF_CLASS_NOTIFY(f, a);          \
+			}                                 \
+		}
+	#define SF_COND_RTTI_NOTIFY(p, f, a) \
+		{                                  \
+			if (p) {                         \
+				SF_RTTI_NOTIFY(f, a);          \
+			}                                \
+		}
+	#if IS_QT
+		#define SF_Q_NOTIFY(a) \
+			{                    \
+				qDebug() << a;     \
+			}
+	#endif
 
 #elif (SF_DEBUG_LEVEL == 2)
 
-#define _NORM_NOTIFY(f, a) {sf::debug_ostream(f) << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _CLASS_NOTIFY(f, a) {sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _RTTI_NOTIFY(f, a) {sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a;}
-#define _COND_NORM_NOTIFY(p, f, a) {if (p) {_NORM_NOTIFY(f, a);}}
-#define _COND_CLASS_NOTIFY(p, f, a) {if (p) {_CLASS_NOTIFY(f, a);}}
-#define _COND_RTTI_NOTIFY(p, f, a) {if (p) {_RTTI_NOTIFY(f, a);}}
-#if IS_QT
-#define SF_Q_NOTIFY(a) {qDebug() << a;} // NOLINT(bugprone-macro-parentheses)
-#endif
+	#define _NORM_NOTIFY(f, a)                                                                              \
+		{                                                                                                     \
+			sf::debug_ostream(f) << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+		}
+	#define _CLASS_NOTIFY(f, a)                                                                                                             \
+		{                                                                                                                                     \
+			sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+		}
+	#define _RTTI_NOTIFY(f, a)                                                                                                                    \
+		{                                                                                                                                           \
+			sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+		}
+	#define _COND_NORM_NOTIFY(p, f, a) \
+		{                                \
+			if (p) {                       \
+				_NORM_NOTIFY(f, a);          \
+			}                              \
+		}
+	#define _COND_CLASS_NOTIFY(p, f, a) \
+		{                                 \
+			if (p) {                        \
+				_CLASS_NOTIFY(f, a);          \
+			}                               \
+		}
+	#define _COND_RTTI_NOTIFY(p, f, a) \
+		{                                \
+			if (p) {                       \
+				_RTTI_NOTIFY(f, a);          \
+			}                              \
+		}
+	#if IS_QT
+		#define SF_Q_NOTIFY(a) \
+			{                    \
+				qDebug() << a;     \
+			}// NOLINT(bugprone-macro-parentheses)
+	#endif
 
-#else // _DEBUG_LEVEL == 0
+#else// _DEBUG_LEVEL == 0
 
-#define _NORM_NOTIFY(f, a) {}
-#define _CLASS_NOTIFY(f, a) {}
-#define _RTTI_NOTIFY(f, a) {}
-#define _COND_NOTIFY(p, f, a) {}
-#define _COND_CLASS_NOTIFY(p, f, a) {}
-#define _COND_RTTI_NOTIFY(p, f, a) {}
-#if IS_QT
-#define SF_Q_NOTIFY(a) {}
-#endif
+	#define _NORM_NOTIFY(f, a) \
+		{}
+	#define _CLASS_NOTIFY(f, a) \
+		{}
+	#define _RTTI_NOTIFY(f, a) \
+		{}
+	#define _COND_NOTIFY(p, f, a) \
+		{}
+	#define _COND_CLASS_NOTIFY(p, f, a) \
+		{}
+	#define _COND_RTTI_NOTIFY(p, f, a) \
+		{}
+	#if IS_QT
+		#define SF_Q_NOTIFY(a) \
+			{}
+	#endif
 
-#endif //DEBUG_LEVEL
+#endif//DEBUG_LEVEL

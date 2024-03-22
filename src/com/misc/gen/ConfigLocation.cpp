@@ -1,6 +1,6 @@
-#include "gen_utils.h"
-#include "dbgutils.h"
 #include "ConfigLocation.h"
+#include "dbgutils.h"
+#include "gen_utils.h"
 
 namespace sf
 {
@@ -34,7 +34,7 @@ std::string getConfigLocation(const std::string& option, bool separator)
 	// Check directory existence.
 	if (!fileExists(rv))
 	{
-		SF_COND_NORM_NOTIFY(isDebug(), DO_CLOG, __FUNCTION__  << " Directory '" << rv << "' does not exist!");
+		SF_COND_NORM_NOTIFY(isDebug(), DO_CLOG, __FUNCTION__ << " Directory '" << rv << "' does not exist!");
 	}
 	// Add separator when requested.
 	if (separator)
@@ -44,5 +44,4 @@ std::string getConfigLocation(const std::string& option, bool separator)
 	return rv;
 }
 
-
-}
+}// namespace sf

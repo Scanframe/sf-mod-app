@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TVector.h"
+
 namespace sf
 {
 
@@ -7,10 +9,9 @@ namespace sf
  * @brief Counted vector of strings.
  */
 template<typename T, typename CharType>
-class TStrings :public TVector<T>
+class TStrings : public TVector<T>
 {
 	public:
-
 		/**
 		 * @brief Base type of this template .
 		 */
@@ -26,7 +27,7 @@ class TStrings :public TVector<T>
 		/**
 		 * @brief Iteration type of the template.
 		 */
-		typedef TIterator <value_type> iter_type;
+		typedef TIterator<value_type> iter_type;
 		/**
 		 * @brief Iteration const type of the template.
 		 */
@@ -47,19 +48,22 @@ class TStrings :public TVector<T>
 		 */
 		template<typename InputIterator>
 		TStrings(InputIterator first, InputIterator last)
-			:base_type(first, last) {}
+			: base_type(first, last)
+		{}
 
 		/**
 		 * @brief Initializer list constructor.
 		 */
 		explicit TStrings(std::initializer_list<value_type> list)
-			:base_type(list) {}
+			: base_type(list)
+		{}
 
 		/**
 		 * @brief Initializer list constructor.
 		 */
 		explicit TStrings(const base_type& list)
-			:base_type(list) {}
+			: base_type(list)
+		{}
 
 		/**
 		 * @brief Initializing constructor.
@@ -67,7 +71,8 @@ class TStrings :public TVector<T>
 		 * @param sz Size of the vector.
 		 */
 		explicit TStrings(size_type sz)
-			:base_type(sz) {}
+			: base_type(sz)
+		{}
 
 		/**
 		 * @brief Joins all entries using the passed glue.
@@ -113,8 +118,7 @@ class TStrings :public TVector<T>
 						break;
 					}
 					found = str.find_first_of(separator, ofs);
-				}
-				while (found != T::npos);
+				} while (found != T::npos);
 			}
 			if (str.length() > ofs)
 			{
@@ -183,4 +187,4 @@ class TStrings :public TVector<T>
 		}
 };
 
-}
+}// namespace sf

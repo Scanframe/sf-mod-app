@@ -12,12 +12,12 @@ typedef std::map<std::string, ScriptGlobalEntry*> MapType;
 // Pointer to the default vector which is automatically created when
 MapType* mapGlobalScriptEntry;
 
-}
+}// namespace
 
-ScriptGlobalEntry::ScriptGlobalEntry(const std::string& name, const std::string& description, int argumentCount) // NOLINT(modernize-pass-by-value)
-	:_name(name)
-	 , _argumentCount(argumentCount)
-	 , _description(description)
+ScriptGlobalEntry::ScriptGlobalEntry(const std::string& name, const std::string& description, int argumentCount)// NOLINT(modernize-pass-by-value)
+	: _name(name)
+	, _argumentCount(argumentCount)
+	, _description(description)
 {
 	if (!mapGlobalScriptEntry)
 	{
@@ -64,4 +64,4 @@ bool ScriptGlobalEntry::call(const std::string& name, const Value::vector_type& 
 	return false;
 }
 
-}
+}// namespace sf

@@ -26,51 +26,60 @@ template<class T>
 class TEnvelope
 {
 	public:
-		explicit TEnvelope(T* object) :_letter(new TLetter(object)) {}
+		explicit TEnvelope(T* object)
+			: _letter(new TLetter(object))
+		{}
 
-		TEnvelope(const TEnvelope& src) :_letter(src._letter) {_letter->AddRef();}
+		TEnvelope(const TEnvelope& src)
+			: _letter(src._letter)
+		{
+			_letter->AddRef();
+		}
 
-		~TEnvelope() {_letter->Release();}
+		~TEnvelope() { _letter->Release(); }
 
 		TEnvelope& operator=(const TEnvelope& src);
 
 		TEnvelope& operator=(T* object);
 
-		T* operator->() {return _letter->Object;}
+		T* operator->() { return _letter->Object; }
 
-		T& operator*() {return *_letter->Object;}
+		T& operator*() { return *_letter->Object; }
 
-		T* operator()() {return _letter->Object;}
+		T* operator()() { return _letter->Object; }
 
-		explicit operator T*() {return _letter->Object;}
+		explicit operator T*() { return _letter->Object; }
 
-		[[nodiscard]] int RefCount() const {return _letter ? _letter->_refCount : 0;}
+		[[nodiscard]] int RefCount() const { return _letter ? _letter->_refCount : 0; }
 
 	private:
 		struct TLetter
 		{
-			explicit TLetter(T* object) :Object(object), _refCount(1) {}
+				explicit TLetter(T* object)
+					: Object(object)
+					, _refCount(1)
+				{}
 
-			~TLetter()
-			{
-				delete Object;
-			}
-
-			void AddRef()
-			{
-				_refCount++;
-			}
-
-			void Release()
-			{
-				if (--_refCount == 0)
+				~TLetter()
 				{
-					delete this;
+					delete Object;
 				}
-			}
 
-			T* Object;
-			int _refCount;
+				void AddRef()
+				{
+					_refCount++;
+				}
+
+				void Release()
+				{
+					if (--_refCount == 0)
+					{
+						delete this;
+					}
+				}
+
+				T* Object;
+				int _refCount;
 		};
 
 		TLetter* _letter;
@@ -93,7 +102,7 @@ template<class T>
 TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 {
 	_letter->Release();
-	_letter = new TLetter(object);  // Assumes non-null! Use with new
+	_letter = new TLetter(object);// Assumes non-null! Use with new
 	return *this;
 }
 
@@ -104,36 +113,47 @@ template<class T>
 class TAEnvelope
 {
 	public:
-		explicit TAEnvelope(T array[]) :_letter(new TLetter(array)) {}
+		explicit TAEnvelope(T array[])
+			: _letter(new TLetter(array))
+		{}
 
-		TAEnvelope(const TAEnvelope& src) :_letter(src._letter) {_letter->AddRef();}
+		TAEnvelope(const TAEnvelope& src)
+			: _letter(src._letter)
+		{
+			_letter->AddRef();
+		}
 
-		~TAEnvelope() {_letter->Release();}
+		~TAEnvelope() { _letter->Release(); }
 
 		TAEnvelope& operator=(const TAEnvelope& src);
 
 		TAEnvelope& operator=(T array[]);
 
-		T& operator[](int i) {return _letter->_array[i];}
+		T& operator[](int i) { return _letter->_array[i]; }
 
-		T* operator*() {return _letter->_array;}
+		T* operator*() { return _letter->_array; }
 
 	private:
 		struct TLetter
 		{
-			explicit TLetter(T array[]) :_array(array), _refCount(1) {}
+				explicit TLetter(T array[])
+					: _array(array)
+					, _refCount(1)
+				{}
 
-			~TLetter() {delete[] _array;}
+				~TLetter() { delete[] _array; }
 
-			void AddRef() {_refCount++;}
+				void AddRef() { _refCount++; }
 
-			void Release()
-			{
-				if (--_refCount == 0) {delete this;}
-			}
+				void Release()
+				{
+					if (--_refCount == 0) {
+						delete this;
+					}
+				}
 
-			T* _array;
-			int _refCount;
+				T* _array;
+				int _refCount;
 		};
 
 		TLetter* _letter;
@@ -155,8 +175,8 @@ template<class T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(T array[])
 {
 	_letter->Release();
-	_letter = new TLetter(array);  // Assumes non-null! Use with new
+	_letter = new TLetter(array);// Assumes non-null! Use with new
 	return *this;
 }
 
-}
+}// namespace sf

@@ -13,11 +13,11 @@ template<typename T>
 class TPointerBase
 {
 	public:
-		T& operator*() {return *P;}
+		T& operator*() { return *P; }
 
-		explicit operator T*() {return P;}
+		explicit operator T*() { return P; }
 
-		int operator!() const {return P == 0;}
+		int operator!() const { return P == 0; }
 
 		T* Relinquish()
 		{
@@ -27,15 +27,19 @@ class TPointerBase
 		}
 
 	protected:
-		explicit TPointerBase(T* pointer) :P(pointer) {}
+		explicit TPointerBase(T* pointer)
+			: P(pointer)
+		{}
 
-		TPointerBase() :P(0) {}
+		TPointerBase()
+			: P(0)
+		{}
 
 		T* P;
 
 	private:
 		// Prohibit use of new
-		void* operator new(size_t) noexcept {return nullptr;}
+		void* operator new(size_t) noexcept { return nullptr; }
 
 		// Delete only sets pointer to null.
 		void operator delete(void* p)
@@ -48,17 +52,21 @@ class TPointerBase
 * @brief Pointer to a single object. Provides member access operator ->
 */
 template<typename T>
-class TPointer :public TPointerBase<T>
+class TPointer : public TPointerBase<T>
 {
 	private:
 		typedef TPointerBase<T> TBase;
 
 	public:
-		TPointer() :TBase() {}
+		TPointer()
+			: TBase()
+		{}
 
-		explicit TPointer(T* pointer) :TBase(pointer) {}
+		explicit TPointer(T* pointer)
+			: TBase(pointer)
+		{}
 
-		~TPointer() {delete TBase::P;}
+		~TPointer() { delete TBase::P; }
 
 		TPointer<T>& operator=(T* src)
 		{
@@ -78,15 +86,19 @@ class TPointer :public TPointerBase<T>
 * @brief Pointer to an array of type T. Provides an array subscript operator and uses array delete[]
 */
 template<typename T>
-class TAPointer :public TPointerBase<T>
+class TAPointer : public TPointerBase<T>
 {
 	private:
 		typedef TPointerBase<T> TBase;
 
 	public:
-		TAPointer() :TBase() {}
+		TAPointer()
+			: TBase()
+		{}
 
-		explicit TAPointer(T array[]) :TBase(array) {}
+		explicit TAPointer(T array[])
+			: TBase(array)
+		{}
 
 		~TAPointer()
 		{
@@ -107,4 +119,4 @@ class TAPointer :public TPointerBase<T>
 		}
 };
 
-}
+}// namespace sf

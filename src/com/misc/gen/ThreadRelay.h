@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../global.h"
-#include "Sync.h"
-#include "Semaphore.h"
 #include "Condition.h"
+#include "Semaphore.h"
+#include "Sync.h"
 #include "Thread.h"
-#include <functional>
 #include <atomic>
+#include <functional>
 
 namespace sf
 {
@@ -36,10 +36,9 @@ namespace sf
  * }
  * ```
  */
-class _MISC_CLASS ThreadRelay :public Sync
+class _MISC_CLASS ThreadRelay : public Sync
 {
 	public:
-
 		/**
 		 * @brief Default constructor which also sets the thread execution ownership.
 		 */
@@ -104,11 +103,15 @@ class _MISC_CLASS ThreadRelay :public Sync
 		 * @brief Template for a method having 0 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret>
-		class Relay0 :public RelayBase
+		class Relay0 : public RelayBase
 		{
 			public:
 				Relay0(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret)
-					:RelayBase(tr), _cls(cls), _mtd(mtd), _ret(ret) {}
+					: RelayBase(tr)
+					, _cls(cls)
+					, _mtd(mtd)
+					, _ret(ret)
+				{}
 
 			private:
 				void call() override
@@ -125,11 +128,16 @@ class _MISC_CLASS ThreadRelay :public Sync
 		 * @brief Template for a method having 1 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1>
-		class Relay1 :public RelayBase
+		class Relay1 : public RelayBase
 		{
 			public:
 				Relay1(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret, Arg1& arg1)
-					:RelayBase(tr), _cls(cls), _mtd(mtd), _ret(ret), _arg1(arg1) {}
+					: RelayBase(tr)
+					, _cls(cls)
+					, _mtd(mtd)
+					, _ret(ret)
+					, _arg1(arg1)
+				{}
 
 			private:
 				void call() override
@@ -147,11 +155,17 @@ class _MISC_CLASS ThreadRelay :public Sync
 		 * @brief Template for a method having 2 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1, typename Arg2>
-		class Relay2 :public RelayBase
+		class Relay2 : public RelayBase
 		{
 			public:
 				Relay2(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret, Arg1& arg1, Arg2& arg2)
-					:RelayBase(tr), _cls(cls), _mtd(mtd), _ret(ret), _arg1(arg1), _arg2(arg2) {}
+					: RelayBase(tr)
+					, _cls(cls)
+					, _mtd(mtd)
+					, _ret(ret)
+					, _arg1(arg1)
+					, _arg2(arg2)
+				{}
 
 			private:
 				void call() override
@@ -170,11 +184,18 @@ class _MISC_CLASS ThreadRelay :public Sync
 		 * @brief Template for a method having 3 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1, typename Arg2, typename Arg3>
-		class Relay3 :public RelayBase
+		class Relay3 : public RelayBase
 		{
 			public:
 				Relay3(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret, Arg1& arg1, Arg2& arg2, Arg3& arg3)
-					:RelayBase(tr), _cls(cls), _mtd(mtd), _ret(ret), _arg1(arg1), _arg2(arg2), _arg3(arg3) {}
+					: RelayBase(tr)
+					, _cls(cls)
+					, _mtd(mtd)
+					, _ret(ret)
+					, _arg1(arg1)
+					, _arg2(arg2)
+					, _arg3(arg3)
+				{}
 
 			private:
 				void call() override
@@ -194,11 +215,19 @@ class _MISC_CLASS ThreadRelay :public Sync
 		 * @brief Template for a method having 4 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-		class Relay4 :public RelayBase
+		class Relay4 : public RelayBase
 		{
 			public:
 				Relay4(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret, Arg1& arg1, Arg2& arg2, Arg3& arg3, Arg4& arg4)
-					:RelayBase(tr), _cls(cls), _mtd(mtd), _ret(ret), _arg1(arg1), _arg2(arg2), _arg3(arg3), _arg4(arg4) {}
+					: RelayBase(tr)
+					, _cls(cls)
+					, _mtd(mtd)
+					, _ret(ret)
+					, _arg1(arg1)
+					, _arg2(arg2)
+					, _arg3(arg3)
+					, _arg4(arg4)
+				{}
 
 			private:
 				void call() override
@@ -222,10 +251,9 @@ class _MISC_CLASS ThreadRelay :public Sync
 		std::vector<RelayBase*> _list{};
 };
 
-inline
-ThreadRelay::RelayBase::RelayBase(ThreadRelay& tr)
-	:_tr(tr)
+inline ThreadRelay::RelayBase::RelayBase(ThreadRelay& tr)
+	: _tr(tr)
 {
 }
 
-}
+}// namespace sf

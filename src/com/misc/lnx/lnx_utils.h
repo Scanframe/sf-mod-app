@@ -1,20 +1,20 @@
 #pragma once
 
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
-#include <cmath>
+#include "../gen/gen_utils.h"
+#include "../global.h"
 #include <cerrno>
-#include <string>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
+#include <filesystem>
+#include <ftw.h>
+#include <grp.h>
 #include <iostream>
 #include <memory>
 #include <pwd.h>
-#include <grp.h>
-#include <fcntl.h>
-#include <ftw.h>
-#include <filesystem>
-#include "../gen/gen_utils.h"
-#include "../global.h"
+#include <string>
 
 namespace sf
 {
@@ -38,14 +38,12 @@ _MISC_FUNC bool getFiles(strings& files, std::string directory, std::string wild
  */
 _MISC_FUNC bool file_write(const char* path, const void* buf, size_t sz, bool append = false);
 
-inline
-bool file_write(const std::string& path, const void* buf, size_t sz, bool append = false)
+inline bool file_write(const std::string& path, const void* buf, size_t sz, bool append = false)
 {
 	return file_write(path.c_str(), buf, sz, append);
 }
 
-inline
-bool file_write(const std::string& path, const std::string& s, bool append = false)
+inline bool file_write(const std::string& path, const std::string& s, bool append = false)
 {
 	return file_write(path.c_str(), s.c_str(), s.length(), append);
 }
@@ -91,8 +89,7 @@ _MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
  */
 _MISC_FUNC bool file_mkdir(const char* path, __mode_t mode = 0755);
 
-inline
-bool file_mkdir(const std::string& path, __mode_t mode = 0755)
+inline bool file_mkdir(const std::string& path, __mode_t mode = 0755)
 {
 	return file_mkdir(path.c_str(), mode);
 }
@@ -106,7 +103,7 @@ typedef struct passwd passwd_type;
  * Extends struct passwd and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct passwd_t :passwd_type
+struct passwd_t : passwd_type
 {
 	public:
 		/**
@@ -120,7 +117,7 @@ struct passwd_t :passwd_type
 		~passwd_t();
 
 		//
-		explicit operator bool() const {return valid;}
+		explicit operator bool() const { return valid; }
 
 	private:
 		/**
@@ -181,7 +178,7 @@ typedef struct group group_type;
  * Extends struct group and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct group_t :group_type
+struct group_t : group_type
 {
 	public:
 		/**
@@ -272,6 +269,4 @@ _MISC_FUNC void proc_setfsgid(gid_t gid);
  */
 int _MISC_FUNC siginterrupt(int sig, int flag);
 
-}
-
-
+}// namespace sf

@@ -98,7 +98,7 @@ std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 					*latest = "";
 					_lineFifo.push(latest);
 				}
-				else // Add a new line to the fifo
+				else// Add a new line to the fifo
 				{
 					latest = new std::string();
 					_lineFifo.push(latest);
@@ -146,4 +146,4 @@ const LineBuffer::event_t& LineBuffer::newLineHandler()
 	return _onOnNewLine;
 }
 
-} // namespace sf
+}// namespace sf

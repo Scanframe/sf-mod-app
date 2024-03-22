@@ -1,16 +1,16 @@
-#include <sys/select.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/fsuid.h>
-#include <sys/syscall.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <csignal>
-#include "../gen/Exception.h"
-#include "../gen/gen_utils.h"
-#include "../gen/dbgutils.h"
 #include "lnx_utils.h"
+#include "../gen/Exception.h"
+#include "../gen/dbgutils.h"
+#include "../gen/gen_utils.h"
+#include <csignal>
+#include <fcntl.h>
+#include <sys/fsuid.h>
+#include <sys/mman.h>
+#include <sys/select.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace sf
 {
@@ -35,7 +35,8 @@ size_t getThreadCount()
 		if (s != nullptr)
 		{
 			// Read 18th integer field after the command name
-			for (int field = 0; *s != ' ' || ++field < 18; s++) {}
+			for (int field = 0; *s != ' ' || ++field < 18; s++) {
+			}
 			count = atoi(s + 1);
 		}
 	}
@@ -45,7 +46,9 @@ size_t getThreadCount()
 
 bool kb_hit()
 {
-	struct timeval tv{};
+	struct timeval tv
+	{
+	};
 	fd_set read_fd;
 	/* do not wait at all, not even a microsecond */
 	tv.tv_sec = 0;
@@ -59,17 +62,16 @@ bool kb_hit()
 	/* the first parameter is the number of the
 	* largest file descriptor to check + 1.
 	*/
-	if (select
-		(
-			1,
-			&read_fd,
-			nullptr,    /* NO writes */
-			nullptr,    /* NO exceptions */
-			&tv
-		) == -1)
+	if (select(
+				1,
+				&read_fd,
+				nullptr, /* NO writes */
+				nullptr, /* NO exceptions */
+				&tv
+			) == -1)
 	{
 		return false;
-	}      /* An error occurred	*/
+	} /* An error occurred	*/
 	/* read_fd now holds a bitmap of files that are
 	* readable. We test the entry for the standard
 	* input (file 0).
@@ -121,7 +123,9 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 		format = "%Y%m%dT%H%M";
 	}
 	//
-	struct tm timeinfo{};
+	struct tm timeinfo
+	{
+	};
 	memset(&timeinfo, 0, sizeof(timeinfo));
 	// Returns NULL in case of an error.
 	if (::strptime(str.c_str(), format, &timeinfo) == nullptr)
@@ -130,9 +134,11 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 	}
 	// set the fields from the time zone which are not Set using strptime().
 	{
-		struct tm ti{};
+		struct tm ti
+		{
+		};
 		time_t rawtime = 0;
-		(void)::time(&rawtime);
+		(void) ::time(&rawtime);
 		if (gmtime)
 		{
 			::gmtime_r(&rawtime, &ti);
@@ -220,7 +226,8 @@ int siginterrupt(int sig, int flag)
 	return ret;
 }
 
-passwd_t::passwd_t() :passwd()
+passwd_t::passwd_t()
+	: passwd()
 {
 	reset();
 	// Read the buffer size needed.
@@ -249,10 +256,10 @@ void passwd_t::reset()
 {
 	valid = false;
 	// Reset the passwd_typ part of this instance.
-	memset(this, 0, sizeof(passwd_type)); // NOLINT(bugprone-undefined-memory-manipulation)
+	memset(this, 0, sizeof(passwd_type));// NOLINT(bugprone-undefined-memory-manipulation)
 }
 
-bool proc_getpwnam(std::string name, passwd_t& pwd) // NOLINT(performance-unnecessary-value-param)
+bool proc_getpwnam(std::string name, passwd_t& pwd)// NOLINT(performance-unnecessary-value-param)
 {
 	passwd_type* _pwd;
 	//
@@ -290,7 +297,7 @@ bool proc_getpwuid(uid_t uid, passwd_t& pwd)
 }
 
 group_t::group_t()
-	:group()
+	: group()
 {
 	reset();
 	// Read the buffer size needed.
@@ -372,11 +379,12 @@ bool file_stat(const std::string& path, stat_t& st)
 bool file_write(const char* path, const void* buf, size_t sz, bool append)
 {
 	// Set mode to 644
-	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // NOLINT(hicpp-signed-bitwise)
-	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode); // NOLINT(hicpp-signed-bitwise)
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;// NOLINT(hicpp-signed-bitwise)
+	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode);// NOLINT(hicpp-signed-bitwise)
 	if (fd == -1)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n" << strerror(errno))
+		SF_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n"
+																	 << strerror(errno))
 		return false;
 	}
 	//
@@ -399,7 +407,9 @@ std::filesystem::path file_fd_path(int fd)
 
 std::string time_format(time_t time, const char* format, bool gmtime)
 {
-	struct tm ti{};
+	struct tm ti
+	{
+	};
 	// When -1 is passed get the time our selfs.
 	if (time == -1)
 	{
@@ -418,7 +428,9 @@ std::string time_format(time_t time, const char* format, bool gmtime)
 
 std::string time_format(const struct tm* timeinfo, const char* format)
 {
-	struct tm ti{};
+	struct tm ti
+	{
+	};
 	// When not format has been passed format the XML date.
 	if (!format)
 	{
@@ -461,7 +473,8 @@ bool file_mkdir(const char* path, __mode_t mode)
 				// Create the sub directory.
 				if (::mkdir(tmp.c_str(), mode))
 				{
-					SF_NORM_NOTIFY(DO_DEFAULT, "Creating direcory '" << tmp << "' failed!\n" << strerror(errno))
+					SF_NORM_NOTIFY(DO_DEFAULT, "Creating direcory '" << tmp << "' failed!\n"
+																													 << strerror(errno))
 					// return false in case of an error.
 					return false;
 				}
@@ -480,12 +493,9 @@ bool file_mkdir(const char* path, __mode_t mode)
 			// Break loop by assigning zero.
 			ofs = 0;
 		}
-	}
-	while (ofs);
+	} while (ofs);
 	// In the end check if the directory exists as a whole.
 	return fileExists(dir.c_str());
 }
 
-}
-
-
+}// namespace sf

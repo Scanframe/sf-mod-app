@@ -1,12 +1,13 @@
-#include "dbgutils.h"
-#include "Exception.h"
 #include "Condition.h"
+#include "Exception.h"
+#include "dbgutils.h"
 #include "gen/Thread.h"
 
 namespace sf
 {
 
-Condition::Condition()
+Condition::Condition(const std::string& name)
+	: _name(name)
 {
 	::pthread_condattr_t attr;
 	//
@@ -34,116 +35,100 @@ Condition::~Condition()
 	int error = ::pthread_cond_destroy(&_cond);
 	if (error)
 	{
-		//throw ExceptionSystemCall("pthread_cond_destroy", error, typeid(*this).name(), __FUNCTION__);
+		SF_RTTI_NOTIFY(DO_DEFAULT, "::pthread_cond_destroy() failed!");
 	}
-}
-
-bool Condition::wait(Mutex& mutex)
-{
-	bool rv = true;
-	//
-	_waiting++;
-	//
-	int error = ::pthread_cond_wait(&_cond, mutex);
-	// In case of an error throw an exception.
-	if (error)
-	{
-		throw ExceptionSystemCall("pthread_cond_wait", error, typeid(*this).name(), __FUNCTION__);
-	}
-	/*
-	// Try intercepting thread termination exception.
-	try
-	{
-		//
-		int error = ::pthread_cond_wait(&Cond, Mutex);
-		// In case of an error throw an exception.
-		if (error)
-		{
-			throw ExceptionSystemCall("pthread_cond_wait", error, typeid(*this).name(), __FUNCTION__);
-		}
-	}
-	catch (TThread::TerminateException& tt)
-	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, tt.what());
-		retval = false;
-	}
-	*/
-	//
-	_waiting--;
-	// Decrement when really working.
-	_work--;
-	//
-	return rv;
 }
 
 bool Condition::wait(Mutex& mutex, const TimeSpec& timeout)
 {
-	//
-	// lock(mutex);
-	//
-	bool rv = true;
-	//
+	// Add this condition for the current thread to allow unblocking by signaling when terminating.
+	Thread::getCurrent().setConditionWaiting(this);
+	// Increment the thread waiting counter.
 	_waiting++;
-	// Try intercepting thread termination exception.
-	try
+	int error = 0;
+	// Initialize the return value telling the caller the thread did not time out.
+	bool rv = true;
+	// Set the condition this thread is waiting on.
+	Thread::getCurrent().setConditionWaiting(this);
+	if (timeout)
 	{
-		TimeSpec ts;
-		ts.setTimeOfDay().add(timeout);
-		//
-		int error = ::pthread_cond_timedwait(&_cond, mutex, &ts);
-		if (error == ETIMEDOUT)
-		{
-			rv = false;
-		}
-			// In case of a real error throw an exception.
-		else if (error)
-		{
-			throw ExceptionSystemCall("pthread_cond_timedwait", error, typeid(*this).name(), __FUNCTION__);
-		}
+		// Check if the condition wait result.
+		error = ::pthread_cond_timedwait(&_cond, mutex, &TimeSpec().setTimeOfDay().add(timeout));
 	}
-	catch (Thread::TerminateException& tt)
+	else
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, tt.what());
+		// Wait for a signal and do not return sooner.
+		error = ::pthread_cond_wait(&_cond, mutex);
+	}
+	// Reset the condition this thread is waiting on.
+	Thread::getCurrent().setConditionWaiting(nullptr);
+	// In case of a real error throw a system call exception.
+	if (error && (error != ETIMEDOUT))
+	{
+		// Remove this condition from the current thread.
+		Thread::getCurrent().setConditionWaiting(nullptr);
+		throw ExceptionSystemCall("pthread_cond_timedwait", error, typeid(*this).name(), __FUNCTION__);
+	}
+	// Decrement the thread waiting counter after.
+	_waiting--;
+	// When the thread should terminate throw a terminate exception.
+	if (Thread::getCurrent().shouldTerminate())
+	{
+		throw Thread::TerminateException(sf::demangle(typeid(*this).name()).append("(").append(_name).append(")::").append(__FUNCTION__));
+	}
+	// When just timed out
+	if (error == ETIMEDOUT)
+	{
 		rv = false;
 	}
-	//
-	_waiting--;
-	// Decrement when really working.
-	_work--;
-	//
+	// Remove this condition from the current thread.
+	Thread::getCurrent().setConditionWaiting(nullptr);
+	// Signal the caller if the thread did time out (false).
 	return rv;
 }
 
-int Condition::notifyOne(Mutex& mutex)
+bool Condition::notifyOne()
 {
-	// Set the work member.
-	_work++;
-	//
-	int rv = _waiting;
-	//
+	// Check if a thread can be signaled.
+	bool retval = (_waiting > 0);
+	// Signal a single thread.
 	int error = ::pthread_cond_signal(&_cond);
 	// In case of an error throw an exception.
 	if (error)
 	{
 		throw ExceptionSystemCall("pthread_cond_signal", error, typeid(*this).name(), __FUNCTION__);
 	}
-	//
-	return rv;
-}
-
-int Condition::notifyAll(Mutex& mutex)
-{
-	// Set the work the same as the amount of threads waiting.
-	int retval = _work = _waiting;
-	//
-	int error = ::pthread_cond_broadcast(&_cond);
-	// In case of an error throw an exception.
-	if (error)
-	{
-		throw ExceptionSystemCall("pthread_cond_broadcast", error, typeid(*this).name(), __FUNCTION__);
-	}
-	//
+	// Signal if a thread was signalled.
 	return retval;
 }
 
+int Condition::notifyAll()
+{
+	// Check if a thread can be signaled.
+	if (_waiting > 0)
+	{
+		// Signal all threads.
+		int error = ::pthread_cond_broadcast(&_cond);
+		// In case of an error throw an exception.
+		if (error)
+		{
+			throw ExceptionSystemCall("pthread_cond_broadcast", error, typeid(*this).name(), __FUNCTION__);
+		}
+		// Signal success to the caller that at least a thread was signaled.
+		return true;
+	}
+	// Signal no thread was able to get signaled.
+	return false;
 }
+
+int Condition::getWaiting() const
+{
+	return _waiting;
+}
+
+const std::string& Condition::getName()
+{
+	return _name;
+}
+
+}// namespace sf

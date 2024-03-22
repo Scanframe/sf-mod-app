@@ -5,19 +5,18 @@ make C++ programming easier.
 
 #pragma once
 
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
+#include "../global.h"
+#include "TDynamicBuffer.h"
+#include "TStrings.h"
+#include "TVector.h"
 #include <cmath>
-#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <random>
+#include <string>
 #include <sys/types.h>
-#include "TVector.h"
-#include "TStrings.h"
-#include "TDynamicBuffer.h"
-// Import of shared library export defines.
-#include "../global.h"
 
 namespace sf
 {
@@ -26,8 +25,7 @@ namespace sf
  * @brief Calculates the offset for a given range and set point.
  */
 template<class T, class S>
-inline
-S calculateOffset(T value, T min, T max, S len, bool clip)
+inline S calculateOffset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;
@@ -38,11 +36,13 @@ S calculateOffset(T value, T min, T max, S len, bool clip)
 		// When the len is a negative value.
 		if (len < 0)
 		{
-			return ((temp < len) ? len : (temp > S(0)) ? S(0) : temp);
+			return ((temp < len) ? len : (temp > S(0)) ? S(0)
+																								 : temp);
 		}
 		else
 		{
-			return ((temp > len) ? len : (temp < S(0)) ? S(0) : temp);
+			return ((temp > len) ? len : (temp < S(0)) ? S(0)
+																								 : temp);
 		}
 	}
 	return temp;
@@ -90,8 +90,7 @@ inline void delete_anull(T& p)
  * @brief Template function freeing a pointer previous allocated by 'malloc' when the pointer is non-null and also nulls the passed pointer.
  */
 template<class T>
-inline
-void free_null(T& p)
+inline void free_null(T& p)
 {
 	if (p)
 	{
@@ -108,8 +107,7 @@ void free_null(T& p)
  * @param t2 Parameter 2 of type
  */
 template<class T>
-inline
-void swap_it(T& t1, T& t2)
+inline void swap_it(T& t1, T& t2)
 {
 	T t(t1);
 	t1 = t2;
@@ -124,11 +122,11 @@ template<class T>
 class scope_delete
 {
 	public:
-		explicit scope_delete(T* p) {P = p;}
+		explicit scope_delete(T* p) { P = p; }
 
-		~scope_delete() {delete_null(P);}
+		~scope_delete() { delete_null(P); }
 
-		void disable_delete() {P = nullptr;}
+		void disable_delete() { P = nullptr; }
 
 	private:
 		T* P;
@@ -142,15 +140,20 @@ template<class T>
 class scope_free
 {
 	public:
-		explicit scope_free(T* p) {P = p;}
+		explicit scope_free(T* p) { P = p; }
 
-		~scope_free() {free_null(P);}
+		~scope_free() { free_null(P); }
 
-		void disable_free() {P = nullptr;}
+		void disable_free() { P = nullptr; }
 
 	private:
 		T* P;
 };
+
+/**
+ * @brief Thread safe version ::strerror_r() or ::strerror_s() when cross compiling for Windows.
+ */
+_MISC_FUNC std::string error_string(int error_num);
 
 /**
  * @brief Creates a formatted string and returns it in a string class instance.
@@ -160,13 +163,13 @@ _MISC_FUNC std::string stringf(const char* fmt, ...);
 /**
  * @brief Better implementation of 'stringf' ?
  */
-template<typename ... Args>
-std::string string_format(const std::string& format, Args ... args)
+template<typename... Args>
+std::string string_format(const std::string& format, Args&&... args)
 {
 	// Extra space for '\0'
-	size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+	size_t size = snprintf(nullptr, 0, format.c_str(), args...) + 1;
 	std::unique_ptr<char[]> buf(new char[size]);
-	snprintf(buf.get(), size, format.c_str(), args ...);
+	snprintf(buf.get(), size, format.c_str(), args...);
 	// We don't want the '\0' inside
 	return {buf.get(), buf.get() + size - 1};
 }
@@ -333,7 +336,7 @@ _MISC_FUNC std::string unique(const std::string& s);
 template<typename T>
 T random(T start, T stop)
 {
-	static std::default_random_engine generator{}; // NOLINT(cert-msc32-c,cert-msc51-cpp)
+	static std::default_random_engine generator{};// NOLINT(cert-msc32-c,cert-msc51-cpp)
 	std::uniform_int_distribution<T> distribution(start, stop);
 	return distribution(generator);
 }
@@ -567,7 +570,7 @@ std::string numberString(T value, int digits, bool sign_on = true)
 	// Initialize some
 	int dec{0}, sign{0};
 #if IS_WIN
-	rv.resize( _CVTBUFSIZE + 1);
+	rv.resize(_CVTBUFSIZE + 1);
 	_ecvt_s(rv.data(), rv.size(), value, std::numeric_limits<double>::digits10, &dec, &sign);
 	rv.resize(strlen(rv.c_str()));
 #else
@@ -615,7 +618,7 @@ std::string numberString(T value, int digits, bool sign_on = true)
 		// Calculate the exponent floored to a multiple of 3 when not a multiple of 3.
 		exp = (dec - 3) / 3 * 3;
 	}
-		// When decimals and magnitude are the same.
+	// When decimals and magnitude are the same.
 	else if (dec == magnitude(value))
 	{
 		exp = 0;
@@ -721,8 +724,7 @@ _MISC_FUNC int wildcmp(const char* wild, const char* str, bool case_s);
 /**
  * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
  */
-inline
-int wildcmp(const std::string& wild, const std::string& str, bool case_s)
+inline int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 {
 	return wildcmp(wild.c_str(), str.c_str(), case_s);
 }
@@ -732,26 +734,25 @@ int wildcmp(const std::string& wild, const std::string& str, bool case_s)
  */
 _MISC_FUNC bool fileExists(const char* path);
 
-inline
-bool fileExists(const std::string& path)
+inline bool fileExists(const std::string& path)
 {
 	return fileExists(path.c_str());
 }
 
 /**
- * Same as basename() but using an std::string.
+ * Same as basename() but using a std::string.
  */
 _MISC_FUNC std::string fileBaseName(const std::string& path);
 /**
- * Same as dirname() but using an std::string.
+ * Same as dirname() but using a std::string.
  */
 _MISC_FUNC std::string fileDirName(const std::string& path);
 /**
- * Same as unlink() but using an std::string.
+ * Same as unlink() but using a std::string.
  */
 _MISC_FUNC bool fileUnlink(const std::string& path);
 /**
- * Same as rename() but using an std::string.
+ * Same as rename() but using a std::string.
  */
 _MISC_FUNC bool fileRename(const std::string& old_path, const std::string& new_path);
 
@@ -765,6 +766,9 @@ _MISC_FUNC bool fileFind(sf::strings& files, const std::string& wildcard);
  */
 _MISC_FUNC size_t getThreadCount();
 
+/**
+ * @brief Prints the backtrace to std::cerr.
+ */
+_MISC_FUNC void printBacktrace();
 
-
-}
+}// namespace sf

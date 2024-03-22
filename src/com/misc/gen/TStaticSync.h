@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../global.h"
 #include "Exception.h"
 #include "Sync.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -82,14 +82,15 @@ class TStaticSync
 		/**
 		 *
 		 */
-		class Lock :public Mutex::Lock
+		class Lock : public Mutex::Lock
 		{
 			public:
 				/**
 				 * @brief Default constructor.
 				 */
 				Lock()
-					:Mutex::Lock(*TStaticSync<T>::_mutex, false) {}
+					: Mutex::Lock(*TStaticSync<T>::_mutex, false)
+				{}
 
 				/**
 				 * @brief Try constructor.
@@ -97,7 +98,8 @@ class TStaticSync
 				 * @param try_lock When true the constructor returns even when not locked.
 				 */
 				explicit Lock(bool try_lock)
-					:Mutex::Lock(*TStaticSync<T>::_mutex, try_lock) {}
+					: Mutex::Lock(*TStaticSync<T>::_mutex, try_lock)
+				{}
 		};
 
 	private:
@@ -112,8 +114,7 @@ class TStaticSync
 };
 
 template<class T>
-inline
-TStaticSync<T>::TStaticSync()
+inline TStaticSync<T>::TStaticSync()
 {
 	/**
 	 * If this is the first TStaticSync<T> object to be constructed, create the semaphore.
@@ -128,15 +129,13 @@ TStaticSync<T>::TStaticSync()
 }
 
 template<class T>
-inline
-TStaticSync<T>::TStaticSync(const TStaticSync<T>&)
+inline TStaticSync<T>::TStaticSync(const TStaticSync<T>&)
 {
 	_count++;
 }
 
 template<class T>
-inline
-TStaticSync<T>::~TStaticSync()
+inline TStaticSync<T>::~TStaticSync()
 {
 	// If this is the only remaining TStaticSync<T> object, destroy the semaphore.
 	if (--_count == 0)
@@ -145,4 +144,4 @@ TStaticSync<T>::~TStaticSync()
 	}
 }
 
-}
+}// namespace sf

@@ -1,6 +1,6 @@
-#include <sys/time.h> // NOLINT(modernize-deprecated-headers)
 #include "TimeSpec.h"
 #include "gen/gen_utils.h"
+#include <sys/time.h>// NOLINT(modernize-deprecated-headers)
 
 namespace sf
 {
@@ -18,7 +18,7 @@ TimeSpec& TimeSpec::setTimeOfDay()
 TimeSpec& TimeSpec::assign(double sec)
 {
 	tv_sec = floor(sec);
-	tv_nsec = floor((sec - (double)tv_sec) * 1e9);
+	tv_nsec = floor((sec - (double) tv_sec) * 1e9);
 	return *this;
 }
 
@@ -32,7 +32,7 @@ TimeSpec& TimeSpec::assign(const timespec& ts)
 TimeSpec& TimeSpec::randomize(double factor)
 {
 	// Randomize a float between 0.0 and 1.0
-	double value = (double) rand() / (double) RAND_MAX; // NOLINT(cert-msc50-cpp)
+	double value = (double) rand() / (double) RAND_MAX;
 	// Modify so the number is between -0.5 and +0.5
 	value -= 0.5;
 	// Modify so the number is between -1.0 and +1.0
@@ -99,4 +99,4 @@ TimeSpec& TimeSpec::sub(const timespec& ts)
 	return add(-ts.tv_sec, -ts.tv_nsec);
 }
 
-}
+}// namespace sf

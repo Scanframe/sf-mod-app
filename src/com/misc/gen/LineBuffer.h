@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-#include "TFifoClass.h"
-#include "TClosure.h"
 #include "../global.h"
+#include "TClosure.h"
+#include "TFifoClass.h"
 
 namespace sf
 {
@@ -34,7 +34,7 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 		/**
 		 * @brief Returns the total lines passed through the fifo buffer.
 		 */
-		[[nodiscard]] int totalLineCount() const {return _totalLineCount;}
+		[[nodiscard]] int totalLineCount() const { return _totalLineCount; }
 		/**
 		 * Clears the current line buffer.
 		 */
@@ -61,7 +61,7 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 		/**
 		 * @brief Virtual overloaded function of the 'std::streambuf' class.
 		 */
-		int overflow(int c/*=EOF*/) override;
+		int overflow(int c /*=EOF*/) override;
 		/**
 		 * @brief Virtual overloaded function of the 'std::streambuf' class.
 		 */
@@ -80,5 +80,4 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 		event_t _onOnNewLine;
 };
 
-} // namespace
-
+}// namespace sf

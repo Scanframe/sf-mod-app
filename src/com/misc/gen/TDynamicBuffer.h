@@ -7,8 +7,8 @@ _type defining of virtual allocation template class for dynamic buffering class.
 
 #include "../global.h"
 #include "dbgutils.h"
-#include <malloc.h>
 #include <cassert>
+#include <malloc.h>
 
 namespace sf
 {
@@ -18,39 +18,39 @@ namespace sf
  */
 struct Allocator
 {
-	/**
+		/**
 	 * @brief Dummy type for allocators which need handles.
 	 */
-	typedef int handle_t;
+		typedef int handle_t;
 
-	/**
+		/**
 	 * @brief Allocates the memory for a dynamic buffer.
 	 */
-	static void* allocmem(handle_t&, size_t sz)
-	{
-		auto rv = ::malloc(sz);
-		assert(rv);
-		return rv;
-	}
+		static void* allocmem(handle_t&, size_t sz)
+		{
+			auto rv = ::malloc(sz);
+			assert(rv);
+			return rv;
+		}
 
-	/**
+		/**
 	 * @brief Reallocates the memory for a dynamic buffer.
 	 */
-	static void* reallocmem(handle_t&, void* p, size_t sz)
-	{
-		auto rv = ::realloc(p, sz);
-		assert(rv);
-		return rv;
-	}
+		static void* reallocmem(handle_t&, void* p, size_t sz)
+		{
+			auto rv = ::realloc(p, sz);
+			assert(rv);
+			return rv;
+		}
 
-	/**
+		/**
 	 * @brief Frees the memory for a dynamic buffer.
 	 */
-	static void freemem(handle_t, void*& p)
-	{
-		::free(p);
-		p = nullptr;
-	}
+		static void freemem(handle_t, void*& p)
+		{
+			::free(p);
+			p = nullptr;
+		}
 };
 
 /**
@@ -58,7 +58,7 @@ struct Allocator
  *
  * @tparam Alloc Allocator type.
  */
-template<typename Alloc=Allocator>
+template<typename Alloc = Allocator>
 class TDynamicBuffer
 {
 	public:
@@ -225,65 +225,58 @@ class TDynamicBuffer
 		 */
 		struct Reference
 		{
-			typename Alloc::handle_t Handle;
-			// Determines if a destructor frees the memory.
-			unsigned _usage;
-			// Reported size of the buffer.
-			size_t _size;
-			// Actual allocated size of memory.
-			size_t _allocated;
-			// Byte offset to the data.
-			size_t _offset;
-			// Pointer to the allocated chunk of memory.
-			void* _data;
-		} * _reference;
+				typename Alloc::handle_t Handle;
+				// Determines if a destructor frees the memory.
+				unsigned _usage;
+				// Reported size of the buffer.
+				size_t _size;
+				// Actual allocated size of memory.
+				size_t _allocated;
+				// Byte offset to the data.
+				size_t _offset;
+				// Pointer to the allocated chunk of memory.
+				void* _data;
+		}* _reference;
 };
 
 template<class Alloc>
-inline
-size_t TDynamicBuffer<Alloc>::size()
+inline size_t TDynamicBuffer<Alloc>::size()
 {
 	return _reference->_size - _reference->_offset;
 }
 
 template<class Alloc>
-inline
-size_t TDynamicBuffer<Alloc>::size() const
+inline size_t TDynamicBuffer<Alloc>::size() const
 {
 	return _reference->_size - _reference->_offset;
 }
 
 template<class Alloc>
-inline
-void* TDynamicBuffer<Alloc>::data()
+inline void* TDynamicBuffer<Alloc>::data()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template<class Alloc>
-inline
-const void* TDynamicBuffer<Alloc>::data() const
+inline const void* TDynamicBuffer<Alloc>::data() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template<class Alloc>
-inline
-char* TDynamicBuffer<Alloc>::c_str()
+inline char* TDynamicBuffer<Alloc>::c_str()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template<class Alloc>
-inline
-const char* TDynamicBuffer<Alloc>::c_str() const
+inline const char* TDynamicBuffer<Alloc>::c_str() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
 template<class Alloc>
-inline
-void* TDynamicBuffer<Alloc>::data(size_t offset)
+inline void* TDynamicBuffer<Alloc>::data(size_t offset)
 {
 	// Compensate for the offset.
 	offset += _reference->_offset;
@@ -291,8 +284,7 @@ void* TDynamicBuffer<Alloc>::data(size_t offset)
 }
 
 template<class Alloc>
-inline
-const void* TDynamicBuffer<Alloc>::data(size_t offset) const
+inline const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 {
 	// Compensate for the offset.
 	offset += _reference->_offset;
@@ -300,8 +292,7 @@ const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 }
 
 template<class Alloc>
-inline
-char TDynamicBuffer<Alloc>::operator[](size_t i) const
+inline char TDynamicBuffer<Alloc>::operator[](size_t i) const
 {
 	// Compensate for the offset.
 	i += _reference->_offset;
@@ -314,8 +305,7 @@ char TDynamicBuffer<Alloc>::operator[](size_t i) const
 }
 
 template<class Alloc>
-inline
-char& TDynamicBuffer<Alloc>::operator[](size_t i)
+inline char& TDynamicBuffer<Alloc>::operator[](size_t i)
 {
 	if (i > _reference->_size)
 	{
@@ -355,29 +345,25 @@ TDynamicBuffer<Alloc>& TDynamicBuffer<Alloc>::operator=(const TDynamicBuffer<All
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::operator void*()
+inline TDynamicBuffer<Alloc>::operator void*()
 {
 	return _reference->_data;
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::operator const void*() const
+inline TDynamicBuffer<Alloc>::operator const void*() const
 {
 	return _reference->_data;
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::operator char*()
+inline TDynamicBuffer<Alloc>::operator char*()
 {
 	return _reference->_data;
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::operator const char*() const
+inline TDynamicBuffer<Alloc>::operator const char*() const
 {
 	return _reference->_data;
 }
@@ -394,8 +380,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer()
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::TDynamicBuffer(const TDynamicBuffer& db)
+inline TDynamicBuffer<Alloc>::TDynamicBuffer(const TDynamicBuffer& db)
 {
 	_reference = db._reference;
 	_reference->_usage++;
@@ -414,8 +399,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer(size_t sz)
 }
 
 template<class Alloc>
-inline
-TDynamicBuffer<Alloc>::~TDynamicBuffer()
+inline TDynamicBuffer<Alloc>::~TDynamicBuffer()
 {
 	_reference->_usage--;
 	// If the usage is zero the reference and data buffer in it must be deleted.
@@ -451,7 +435,7 @@ void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 		// Only allocate memory when the requested size is larger or
 		// if the buffer size is allowed to shrink and the new size is smaller.
 		if ((sz > _reference->_allocated) || (sz < _reference->_allocated && shrink))
-		{ // Determine what is to be called.
+		{// Determine what is to be called.
 			if (_reference->_data)
 			{
 				_reference->_data = Alloc::reallocmem(_reference->Handle, _reference->_data, sz);
@@ -467,16 +451,14 @@ void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 }
 
 template<class Alloc>
-inline
-void TDynamicBuffer<Alloc>::offset(size_t ofs)
+inline void TDynamicBuffer<Alloc>::offset(size_t ofs)
 {
 	// Assign the new offset.
 	_reference->_offset = ofs;
 }
 
 template<class Alloc>
-inline
-size_t TDynamicBuffer<Alloc>::offset() const
+inline size_t TDynamicBuffer<Alloc>::offset() const
 {
 	return _reference->_offset;
 }
@@ -541,22 +523,19 @@ void TDynamicBuffer<Alloc>::grow(size_t sz)
 }
 
 template<class Alloc>
-inline
-void TDynamicBuffer<Alloc>::set(int c, bool reserved)
+inline void TDynamicBuffer<Alloc>::set(int c, bool reserved)
 {
 	memset(_reference->_data, c, reserved ? _reference->_allocated : _reference->_size);
 }
 
 template<class Alloc>
-inline
-void TDynamicBuffer<Alloc>::zero(bool reserved)
+inline void TDynamicBuffer<Alloc>::zero(bool reserved)
 {
 	set(0, reserved);
 }
 
 template<class Alloc>
-inline
-size_t TDynamicBuffer<Alloc>::reserved() const
+inline size_t TDynamicBuffer<Alloc>::reserved() const
 {
 	return _reference->_allocated - _reference->_offset;
 }
@@ -566,4 +545,4 @@ size_t TDynamicBuffer<Alloc>::reserved() const
  */
 typedef TDynamicBuffer<Allocator> DynamicBuffer;
 
-}
+}// namespace sf

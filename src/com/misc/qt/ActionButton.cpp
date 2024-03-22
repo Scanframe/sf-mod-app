@@ -5,9 +5,9 @@ namespace sf
 {
 
 ActionButton::ActionButton(QWidget* parent)
-	:QPushButton(parent)
-	 , ObjectExtension(this)
-	 , _action(nullptr)
+	: QPushButton(parent)
+	, ObjectExtension(this)
+	, _action(nullptr)
 {
 }
 
@@ -30,16 +30,13 @@ void ActionButton::connectAction(QAction* action)
 	// remove all connections
 	if (_action && _action != action)
 	{
-		disconnect(_action, &QAction::changed,
-			this, &ActionButton::updateButtonStatusFromAction);
-		disconnect(this, &ActionButton::clicked,
-			_action, &QAction::trigger);
+		disconnect(_action, &QAction::changed, this, &ActionButton::updateButtonStatusFromAction);
+		disconnect(this, &ActionButton::clicked, _action, &QAction::trigger);
 	}
 	// configure the button
 	updateButtonStatusFromAction();
 	// Connect the action and the button so that when the action is changed the button is changed too!
-	connect(action, &QAction::changed,
-		this, &ActionButton::updateButtonStatusFromAction);
+	connect(action, &QAction::changed, this, &ActionButton::updateButtonStatusFromAction);
 	// Connect the button to the slot that forwards the signal to the action
 	connect(this, &ActionButton::clicked, _action, &QAction::trigger);
 }
@@ -96,4 +93,4 @@ void ActionButton::setActionByName(const QString& name)
 	updateButtonStatusFromAction();
 }
 
-}
+}// namespace sf

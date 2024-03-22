@@ -1,7 +1,7 @@
 #pragma once
 
-#include <functional>
 #include <cassert>
+#include <functional>
 
 namespace sf
 {
@@ -38,7 +38,8 @@ class TClosure
 		 * @brief Function assignment constructor.
 		 */
 		explicit TClosure(const func_type& fn)
-			:_func(fn) {}
+			: _func(fn)
+		{}
 
 		/**
 		 * @brief Function assignment method for static function.
@@ -73,7 +74,7 @@ class TClosure
 		template<typename ClassType, typename MethodType, typename... BoundArgs>
 		TClosure& assign(ClassType* cls, MethodType mtd, BoundArgs... args)
 		{
-			TClosure<Result, Args...>::assign(std::bind(mtd, cls, args...)); // NOLINT(modernize-avoid-bind)
+			TClosure<Result, Args...>::assign(std::bind(mtd, cls, args...));// NOLINT(modernize-avoid-bind)
 			return *this;
 		}
 
@@ -159,4 +160,4 @@ Result TClosure<Result, Args...>::call(Args... args) const
 	return _func(args...);
 }
 
-}
+}// namespace sf

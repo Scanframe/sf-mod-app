@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-#include "TClosure.h"
 #include "../global.h"
+#include "TClosure.h"
+#include <string>
 
 namespace sf
 {
@@ -30,4 +30,4 @@ _MISC_FUNC void setConfigLocationHandler(const ConfigLocationClosure& handler = 
  */
 _MISC_FUNC std::string getConfigLocation(const std::string& option = {}, bool separator = false);
 
-}
+}// namespace sf

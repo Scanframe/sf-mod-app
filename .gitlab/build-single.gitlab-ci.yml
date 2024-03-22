@@ -20,6 +20,9 @@ variables:
 workflow:
   rules:
     - when: always
+  # Cancel when there is a new commit.
+  auto_cancel:
+    on_new_commit: interruptible
 
 # Order of stages for jobs to perform in.
 stages:
@@ -56,13 +59,15 @@ default:
     - cplusplus
     - "${SF_TARGET_OS}"
     - "${SF_TARGET_ARCH}"
+  # Allow to be interrupted.
+  interruptible: true
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Wiping build directory is not needed since the push policy.
 job-build:
   stage: build
   rules:
-    - when: always
+    - when: on_success
     - allow_failure: false
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
@@ -105,7 +110,7 @@ job-deploy-develop:
     - job: job-build
   # Jobs from which it needs artifacts.
   dependencies:
-    - job-build
+    -  job-build
   rules:
     # For testing the 'deploy' step in any scenario.
     - if: '$SF_SIGNAL == "deploy"'
@@ -116,7 +121,8 @@ job-deploy-develop:
     - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
       when: never
     # Develop is allowed to automatically deploy.
-    - when: always
+    - when: on_success
+    - allow_failure: false
 
 # Use variables set using environment 'staging'.
 job-deploy-staging:

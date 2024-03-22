@@ -1,20 +1,20 @@
-#include <unistd.h>
-#include <sys/mman.h>
-#include "../gen/Exception.h"
 #include "FileMapper.h"
+#include "../gen/Exception.h"
 #include "../gen/gen_utils.h"
+#include <sys/mman.h>
+#include <unistd.h>
 
 namespace sf::lnx
 {
 
 FileMapper::FileMapper(const std::string& filepath, size_t ofs, size_t sz)
-	:IFileMapper()
+	: IFileMapper()
 {
 	initialize(filepath, ofs, sz);
 }
 
 FileMapper::FileMapper()
-	:IFileMapper()
+	: IFileMapper()
 {
 }
 
@@ -110,8 +110,7 @@ void* FileMapper::doLock(bool readonly)
 			flags |= PROT_WRITE;
 		}
 		// Get the pointer to the memory map with the corrected size because of the alignment.
-		_ptr = (char*) (::mmap(nullptr, _size + (_offset - _realOffset), flags, MAP_SHARED, _file.getDescriptor(),
-			_realOffset));
+		_ptr = (char*) (::mmap(nullptr, _size + (_offset - _realOffset), flags, MAP_SHARED, _file.getDescriptor(), _realOffset));
 		// Check for failure.
 		if (_ptr == MAP_FAILED)
 		{
@@ -136,7 +135,7 @@ void FileMapper::unlock(bool synchronise)
 		// Reset the pointer.
 		_ptr = nullptr;
 	}
-		// When not unmapped sync the data.
+	// When not unmapped sync the data.
 	else if (synchronise)
 	{
 		// Sync asynchronously when required.
@@ -168,4 +167,4 @@ void* FileMapper::getPtr()
 	return _ptr + (_offset - _realOffset);
 }
 
-}
+}// namespace sf::lnx

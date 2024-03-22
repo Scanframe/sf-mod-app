@@ -1,7 +1,7 @@
 #pragma once
 
-#include <windows.h>
 #include "global.h"
+#include <windows.h>
 
 // Just to satisfy the IDE.
 #ifndef CALLBACK
@@ -47,13 +47,12 @@ class _MISC_CLASS WinTimer
 		/**
 		 * Timer callback function.
 		 */
-		static void CALLBACK callback
-			(
-				HWND hwnd,     // Handle of window for timer messages
-				UINT msg,      // WM_TIMER message.
-				UINT timer_id,  // timer identifier.
-				DWORD ticks    // Current system time in clock ticks.
-			);
+		static void CALLBACK callback(
+			HWND hwnd,// Handle of window for timer messages
+			UINT msg,// WM_TIMER message.
+			UINT timer_id,// timer identifier.
+			DWORD ticks// Current system time in clock ticks.
+		);
 
 		// Overrideable timer routine.
 		virtual void TimerRoutine(DWORD ticks) = 0;
@@ -73,10 +72,9 @@ class _MISC_CLASS WinTimer
 		static WinTimer* _winTimer;
 };
 
-inline
-unsigned WinTimer::getInterval() const
+inline unsigned WinTimer::getInterval() const
 {
 	return _interval;
 }
 
-}
+}// namespace sf

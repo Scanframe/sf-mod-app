@@ -1,7 +1,6 @@
 #include "win_utils.h"
-#include "../gen/gnu_compat.h"
-#include <tlhelp32.h>
 #include <cstring>
+#include <tlhelp32.h>
 
 namespace sf
 {
@@ -29,21 +28,20 @@ size_t getThreadCount()
 	te32.dwSize = sizeof(THREADENTRY32);
 	if (!Thread32First(hThreadSnap, &te32))
 	{
-		CloseHandle(hThreadSnap);     // Must clean up the snapshot object!
+		CloseHandle(hThreadSnap);// Must clean up the snapshot object!
 		return (0);
 	}
 	do
 	{
 		dwThreadCount++;
-/*
+		/*
 		printf("THREAD ID = 0x%08X (base priority  = %d | delta priority = %d)", te32.th32ThreadID, te32.tpBasePri, te32.tpDeltaPri);
 		printf("\n");
 */
-	}
-	while (Thread32Next(hThreadSnap, &te32));
+	} while (Thread32Next(hThreadSnap, &te32));
 
 	CloseHandle(hThreadSnap);
-/*
+	/*
 	printf("\n\n\t Count %d threads.", dwThreadCount);
 */
 	return dwThreadCount;
@@ -61,8 +59,8 @@ DWORD getMainThreadId()
 	DWORD result = 0;
 	DWORD currentPid = ::GetCurrentProcessId();
 	for (BOOL success = Thread32First(handle, &tEntry);
-		!result && success && GetLastError() != ERROR_NO_MORE_FILES;
-		success = Thread32Next(handle, &tEntry))
+			 !result && success && GetLastError() != ERROR_NO_MORE_FILES;
+			 success = Thread32Next(handle, &tEntry))
 	{
 		if (tEntry.th32OwnerProcessID == currentPid)
 		{
@@ -73,4 +71,4 @@ DWORD getMainThreadId()
 	return result;
 }
 
-}
+}// namespace sf

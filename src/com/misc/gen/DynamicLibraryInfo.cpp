@@ -1,9 +1,9 @@
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 
-#include "gen_utils.h"
-#include "TDynamicBuffer.h"
 #include "DynamicLibraryInfo.h"
+#include "TDynamicBuffer.h"
+#include "gen_utils.h"
 
 namespace sf
 {
@@ -32,7 +32,7 @@ std::string DynamicLibraryInfo::path() const
 bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 {
 	std::string::value_type dir_sep;
-	#if IS_WIN
+#if IS_WIN
 	dir_sep = '\\';
 #else
 	dir_sep = '/';
@@ -99,7 +99,7 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 					// Calculate the last index of the begin marker which starts at after the matching 64bit position.
 					beg_idx = i + ofs_idx + sizeof(uint64_t);
 				}
-					// End marker has also be found.
+				// End marker has also be found.
 				else
 				{
 					// Set the flag to stop the loop.
@@ -119,8 +119,7 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 			// Move file read pointer some bytes back for the markers to compare fully next round.
 			is.seekg(1 - sizeof(uint64_t), std::ifstream::cur);
 		}
-	}
-	while (!is.eof() && flag <= 1);
+	} while (!is.eof() && flag <= 1);
 	// We found a match.
 	if (flag > 1)
 	{
@@ -160,4 +159,4 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 	return false;
 }
 
-}
+}// namespace sf

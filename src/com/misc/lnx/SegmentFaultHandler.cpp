@@ -38,7 +38,7 @@ void SegmentFaultHandler::handler(int cause)
 {
 	Entry& entry(_buffers[_buffers.size() - 1]);
 	entry._counter++;
-	longjmp(entry._buf, 0); // NOLINT(cert-err52-cpp)
+	longjmp(entry._buf, 0);// NOLINT(cert-err52-cpp)
 }
 
 SegmentFaultHandler::operator bool() const
@@ -50,4 +50,4 @@ __sighandler_t SegmentFaultHandler::_savedHandler = nullptr;
 
 std::vector<SegmentFaultHandler::Entry> SegmentFaultHandler::_buffers;
 
-}
+}// namespace sf

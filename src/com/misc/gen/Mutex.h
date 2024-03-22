@@ -24,7 +24,7 @@ class _MISC_CLASS Mutex
 		/**
 		 * @brief Default constructor.
 		 */
-		Mutex();
+		Mutex(const char* name = nullptr);
 
 		/**
 		 * @brief Destructor.
@@ -34,10 +34,7 @@ class _MISC_CLASS Mutex
 		/**
 		 * Casting operator.
 		 */
-		operator handle_type() // NOLINT(google-explicit-constructor)
-		{
-			return &_mutex;
-		}
+		inline operator handle_type();
 
 		/**
 		 * @brief Locking class for easy locking and unlocking by destructor.
@@ -67,7 +64,8 @@ class _MISC_CLASS Mutex
 				bool release();
 
 				/**
-				 * @brief Returns true if the class was locked. Always true when try_lock is false.
+				 * @brief Returns true if the class was locked.
+				 * Always true when try_lock is false.
 				 */
 				explicit operator bool() const
 				{
@@ -124,9 +122,27 @@ class _MISC_CLASS Mutex
 		bool acquire(bool try_lock, const TimeSpec& timeout);
 
 		/**
-		* @brief Releases the mutex.
-		*/
+		 * @brief Releases the mutex.
+		 */
 		void release();
+
+		/**
+* @brief Holds the name for this instance for debugging purposes.
+		 */
+		std::string _name;
+
+		/**
+		 * @brief Holds the last thread which acquired it.
+		 */
+		pid_t _threadId{-1};
 };
 
+/**
+ * Casting operator.
+ */
+inline Mutex::operator handle_type()
+{
+	return &_mutex;
 }
+
+}// namespace sf

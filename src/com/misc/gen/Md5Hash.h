@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../global.h"
-#include <iostream>
-#include <cstring>
 #include <cstdio>
+#include <cstring>
+#include <iostream>
 
 namespace sf
 {
@@ -14,18 +14,17 @@ namespace sf
 class _MISC_CLASS Md5Hash
 {
 	public:
-
 // Set byte alignment to 1 byte.
 #pragma pack(push, 1)
-	/**
+		/**
 	 * Type for storing an MD5 hash.
 	 */
-			typedef union
-			{
+		typedef union
+		{
 				uint8_t data[16];
 				// For faster compare.
 				int64_t ints[2];
-			} hash_type;
+		} hash_type;
 // Restore the pack option.
 #pragma pack(pop)
 
@@ -109,13 +108,11 @@ inline bool operator==(const Md5Hash& h1, const Md5Hash& h2)
  * @brief Stream operator for showing hexadecimal hash value.
  */
 
-inline
-std::ostream& operator<<(std::ostream& os, const Md5Hash& hash)
+inline std::ostream& operator<<(std::ostream& os, const Md5Hash& hash)
 {
 	return os << hash.hexDigest();
 }
 
-_MISC_FUNC std::istream& operator>>(std::istream& is, Md5Hash &h);
+_MISC_FUNC std::istream& operator>>(std::istream& is, Md5Hash& h);
 
-}
-
+}// namespace sf

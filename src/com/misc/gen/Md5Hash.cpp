@@ -30,65 +30,55 @@ enum
 };
 
 // F, G， H，I are the basic MD5 functions
-inline
-uint32_t F(uint32_t x, uint32_t y, uint32_t z)
+inline uint32_t F(uint32_t x, uint32_t y, uint32_t z)
 {
 	return x & y | ~x & z;
 }
 
-inline
-uint32_t G(uint32_t x, uint32_t y, uint32_t z)
+inline uint32_t G(uint32_t x, uint32_t y, uint32_t z)
 {
 	return x & z | y & ~z;
 }
 
-inline
-uint32_t H(uint32_t x, uint32_t y, uint32_t z)
+inline uint32_t H(uint32_t x, uint32_t y, uint32_t z)
 {
 	return x ^ y ^ z;
 }
 
-inline
-uint32_t I(uint32_t x, uint32_t y, uint32_t z)
+inline uint32_t I(uint32_t x, uint32_t y, uint32_t z)
 {
 	return y ^ (x | ~z);
 }
 
 // Rotates x left n bits
-inline
-uint32_t rotateLeft(uint32_t x, size_t n)
+inline uint32_t rotateLeft(uint32_t x, size_t n)
 {
 	return (x << n) | (x >> (32 - n));
 }
 
 // FF, GG, HH, II transformations for rounds 1, 2, 3, 4.
-inline
-void FF(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
+inline void FF(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
 {
 	a = rotateLeft(a + F(b, c, d) + x + ac, s) + b;
 }
 
-inline
-void GG(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
+inline void GG(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
 {
 	a = rotateLeft(a + G(b, c, d) + x + ac, s) + b;
 }
 
-inline
-void HH(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
+inline void HH(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
 {
 	a = rotateLeft(a + H(b, c, d) + x + ac, s) + b;
 }
 
-inline
-void II(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
+inline void II(uint32_t& a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, size_t s, uint32_t ac)
 {
 	a = rotateLeft(a + I(b, c, d) + x + ac, s) + b;
 }
 
 // Decodes uint8_t into uint32_t. Assumes length is 64.
-inline
-void md5_decode(uint32_t* output, const uint8_t* input)
+inline void md5_decode(uint32_t* output, const uint8_t* input)
 {
 	for (uint32_t i = 0, j = 0; j < 64; i++, j += 4)
 	{
@@ -97,8 +87,7 @@ void md5_decode(uint32_t* output, const uint8_t* input)
 }
 
 // Encodes uint32_t into uint8_t. Assumes length is a multiple of 4
-inline
-void md5_encode(uint8_t* output, const uint32_t* input, size_t length)
+inline void md5_encode(uint8_t* output, const uint32_t* input, size_t length)
 {
 	for (uint32_t i = 0, j = 0; j < length; i++, j += 4)
 	{
@@ -109,7 +98,7 @@ void md5_encode(uint8_t* output, const uint32_t* input, size_t length)
 	}
 }
 
-}
+}// namespace
 
 Md5Hash::Md5Hash()
 {
@@ -355,4 +344,4 @@ std::istream& operator>>(std::istream& is, Md5Hash::hash_type& h)
 	return is;
 }
 
-}
+}// namespace sf

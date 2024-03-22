@@ -2,12 +2,11 @@
 
 #include "../global.h"
 #include "DynamicLibraryInfo.h"
-#include "dbgutils.h"
+#include "Exception.h"
 #include "TClosure.h"
 #include "TVector.h"
-#include "Exception.h"
+#include "dbgutils.h"
 #include <vector>
-
 
 /**
  * @brief Name of the function to resolve from a library to be able to set the library filename when dynamically loaded.
@@ -17,32 +16,32 @@
 
 // Select copy function which is allowed by MS Windows.
 #if IS_WIN
-	#define SF_DL_STRNCPY(dest,  src, sz) strncpy_s(dest, sz, src, sz)
+	#define SF_DL_STRNCPY(dest, src, sz) strncpy_s(dest, sz, src, sz)
 #else
-	#define SF_DL_STRNCPY(dest,  src, sz) strncpy(dest,  src, sz)
+	#define SF_DL_STRNCPY(dest, src, sz) strncpy(dest, src, sz)
 #endif
 
 /**
  * Declaration of dynamically loadable library information and and function for set/get the library filename.
  */
-#define SF_DL_INFORMATION(name, description) \
-namespace \
-{ \
-  const char* _dl_ = \
-    SF_DL_MARKER_BEGIN \
-    name \
-    SF_DL_NAME_SEPARATOR \
-    description \
-    SF_DL_MARKER_END; \
-  \
-  extern "C" TARGET_EXPORT const char* SF_DL_NAME_FUNC(const char* nm) \
-  { \
-    static char storage[256]; \
-    if (nm) \
-      SF_DL_STRNCPY(storage, nm, sizeof(storage)); \
-    return storage; \
-  } \
-}
+#define SF_DL_INFORMATION(name, description)                           \
+	namespace                                                            \
+	{                                                                    \
+	const char* _dl_ =                                                   \
+		SF_DL_MARKER_BEGIN                                                 \
+			name                                                             \
+				SF_DL_NAME_SEPARATOR                                           \
+					description                                                  \
+						SF_DL_MARKER_END;                                          \
+                                                                       \
+	extern "C" TARGET_EXPORT const char* SF_DL_NAME_FUNC(const char* nm) \
+	{                                                                    \
+		static char storage[256];                                          \
+		if (nm)                                                            \
+			SF_DL_STRNCPY(storage, nm, sizeof(storage));                     \
+		return storage;                                                    \
+	}                                                                    \
+	}
 
 /**
  * @brief Declaration of function to set and get the dynamic library name when loading.
@@ -53,7 +52,7 @@ extern "C" const char* SF_DL_NAME_FUNC(const char* name);
  * @brief Type for casting a resolved function pointer to.
  */
 #define SF_DL_NAME_FUNC_TYPE \
-	const char* (*)(const char*)
+	const char* (*) (const char*)
 
 namespace sf
 {
@@ -61,13 +60,12 @@ namespace sf
 /**
  * @brief function to get the library filename this function is called from.
  */
-inline
-std::string getLibraryName()
+inline std::string getLibraryName()
 {
 	return SF_DL_NAME_FUNC(nullptr);
 }
 
-}
+}// namespace sf
 
 /**
  * @brief Declares a public static function in the class where it is used.
@@ -78,20 +76,23 @@ std::string getLibraryName()
  * 	FuncName: Name of the public function in the interface class for
  * 		registering derived classes or to create them.
  */
-#define SF_DECL_IFACE(InterfaceType, ParamType, FuncName) \
-  private: \
-    std::string _Register_Name_; \
-  public: \
-    static sf::TClassRegistration<InterfaceType, ParamType> FuncName(); \
-  friend class sf::TClassRegistration<InterfaceType, ParamType>;
+#define SF_DECL_IFACE(InterfaceType, ParamType, FuncName)             \
+private:                                                              \
+	std::string _Register_Name_;                                        \
+                                                                      \
+public:                                                               \
+	static sf::TClassRegistration<InterfaceType, ParamType> FuncName(); \
+	friend class sf::TClassRegistration<InterfaceType, ParamType>;
 
 /**
  * @brief Implements the public static function in the class where it is used.
  */
-#define SF_IMPL_IFACE(InterfaceType, ParamType, FuncName) \
-sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName() \
-{ static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
-return entries; }
+#define SF_IMPL_IFACE(InterfaceType, ParamType, FuncName)                       \
+	sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName()    \
+	{                                                                             \
+		static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
+		return entries;                                                             \
+	}
 
 /**
  * @brief Registers a derived type from the interface type.
@@ -101,22 +102,22 @@ return entries; }
  * 	RegName: Quoted character string containing the  name.
  * 	Description: Quoted character string holding the name.
  */
-#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Description) \
-namespace { \
-__attribute__((constructor)) void _##DerivedType##_() { \
-size_t dist = InterfaceType::FuncName().registerClass \
-  ( \
-    RegName, \
-    Description, \
-    sf::TClassRegistration<InterfaceType, ParamType>::callback_t \
-      ([](const ParamType& params)->InterfaceType* \
-      { \
-        auto inst = new DerivedType(params); \
-        sf::TClassRegistration<InterfaceType, ParamType>::setRegisterName(inst, RegName); \
-        return inst;\
-       }) \
-  ); } \
-}
+#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Description)                        \
+	namespace                                                                                                        \
+	{                                                                                                                \
+	__attribute__((constructor)) void _##DerivedType##_()                                                            \
+	{                                                                                                                \
+		size_t dist = InterfaceType::FuncName().registerClass(                                                         \
+			RegName,                                                                                                     \
+			Description,                                                                                                 \
+			sf::TClassRegistration<InterfaceType, ParamType>::callback_t([](const ParamType& params) -> InterfaceType* { \
+				auto inst = new DerivedType(params);                                                                       \
+				sf::TClassRegistration<InterfaceType, ParamType>::setRegisterName(inst, RegName);                          \
+				return inst;                                                                                               \
+			})                                                                                                           \
+		);                                                                                                             \
+	}                                                                                                                \
+	}
 
 namespace sf
 {
@@ -145,7 +146,7 @@ class TClassRegistration
 		/**
 		 * @brief Constructor for the base class.
 		 */
-		inline TClassRegistration<T, P>(entries_t& entries); // NOLINT(google-explicit-constructor)
+		inline TClassRegistration<T, P>(entries_t& entries);// NOLINT(google-explicit-constructor)
 		/**
 		 * @brief Copy constructor
 		 */
@@ -244,32 +245,36 @@ class TClassRegistration
 		 */
 		struct entry_t
 		{
-			/**
+				/**
 			 * @brief Constructor.
 			 */
-			inline
-			entry_t(const char* name, const char* description, const callback_t& callback)
-				:_name(name), _description(description), _callback(callback) {}
+				inline entry_t(const char* name, const char* description, const callback_t& callback)
+					: _name(name)
+					, _description(description)
+					, _callback(callback)
+				{}
 
-			/**
+				/**
 			 * @brief Copy constructor.
 			 */
-			inline
-			entry_t(const entry_t& e)
-				:_name(e._name), _description(e._description), _callback(e._callback) {}
+				inline entry_t(const entry_t& e)
+					: _name(e._name)
+					, _description(e._description)
+					, _callback(e._callback)
+				{}
 
-			/**
+				/**
 			 * @brief Holds registered name.
 			 */
-			const char* _name;
-			/**
+				const char* _name;
+				/**
 			 * @brief Holds registered description.
 			 */
-			const char* _description;
-			/**
+				const char* _description;
+				/**
 			 * @brief Holds the passed callback function.
 			 */
-			callback_t _callback;
+				callback_t _callback;
 		};
 
 	private:
@@ -294,11 +299,13 @@ class TClassRegistration
 
 template<typename T, typename P>
 TClassRegistration<T, P>::TClassRegistration(entries_t& entries)
-	: _entries(&entries) {}
+	: _entries(&entries)
+{}
 
 template<typename T, typename P>
 TClassRegistration<T, P>::TClassRegistration(const TClassRegistration<T, P>& inst)
-	: _entries(inst._entries) {}
+	: _entries(inst._entries)
+{}
 
 template<typename T, typename P>
 size_t TClassRegistration<T, P>::size() const
@@ -307,14 +314,13 @@ size_t TClassRegistration<T, P>::size() const
 }
 
 template<typename T, typename P>
-size_t TClassRegistration<T, P>::registerClass(const char* name, const char* description,
-	const typename TClassRegistration<T, P>::callback_t& callback)
+size_t TClassRegistration<T, P>::registerClass(const char* name, const char* description, const typename TClassRegistration<T, P>::callback_t& callback)
 {
 	// Sanity check on existing entry.
 	if (find(name))
 	{
 		std::clog << __FUNCTION__ << ": Entry with name '" << name << "' is already registered!" << std::endl;
-		typename entries_t::const_iterator begin =_entries->begin();
+		typename entries_t::const_iterator begin = _entries->begin();
 		return std::distance(begin, lookup(name));
 		//throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
 	}
@@ -412,4 +418,4 @@ const char* TClassRegistration<T, P>::getDescription(size_t index) const
 	return _entries->at(index)._description;
 }
 
-} // namespace
+}// namespace sf

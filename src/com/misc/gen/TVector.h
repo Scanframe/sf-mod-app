@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
 #include <climits>
-#include <limits>
 #include <iostream>
-#include <sstream>
 #include <iterator>
+#include <limits>
+#include <sstream>
+#include <vector>
 
 namespace sf
 {
@@ -22,7 +22,7 @@ class TIterator;
  * @tparam T Type contained by the vector.
  */
 template<typename T>
-class TVector :public std::vector<T>
+class TVector : public std::vector<T>
 {
 	public:
 		/**
@@ -59,7 +59,9 @@ class TVector :public std::vector<T>
 		/**
 		 * @brief Copy constructor.
 		 */
-		TVector(const TVector& v) :base_type(v) {};
+		TVector(const TVector& v)
+			: base_type(v)
+		{}
 
 		/**
 		 * @brief Move constructor.
@@ -89,20 +91,23 @@ class TVector :public std::vector<T>
 		 */
 		template<typename InputIterator>
 		TVector(InputIterator first, InputIterator last)
-			:base_type(first, last) {}
+			: base_type(first, last)
+		{}
 
 		/**
 		 * @brief Initializing constructor using list like:<br>
 		 * `TVector vect{1,2,3,4,5,6,7}`
 		 */
 		TVector(std::initializer_list<value_type> list)
-			:base_type(list) {}
+			: base_type(list)
+		{}
 
 		/**
 		 * @brief Copy constructor for base type.
 		 */
 		explicit TVector(const base_type& sv)
-			:base_type(sv) {}
+			: base_type(sv)
+		{}
 
 		/**
 		 * @brief Initializing constructor.
@@ -110,7 +115,8 @@ class TVector :public std::vector<T>
 		 * @param sz Size of the vector.
 		 */
 		explicit TVector(size_type sz)
-			:base_type(sz) {}
+			: base_type(sz)
+		{}
 
 		/**
 		 * @brief Adds item at the end of the vector.
@@ -210,8 +216,7 @@ class TVector :public std::vector<T>
 		 */
 		void flush(size_type stop, size_type start = 0)
 		{
-			base_type::erase(base_type::begin() + start,
-				base_type::end() + ((stop >= base_type::size()) ? (base_type::size() - 1) : stop));
+			base_type::erase(base_type::begin() + start, base_type::end() + ((stop >= base_type::size()) ? (base_type::size() - 1) : stop));
 		}
 
 		/**
@@ -236,36 +241,31 @@ class TVector :public std::vector<T>
 		 *
 		 * @return Entry count.
 		 */
-		inline
-		T& first()
+		inline T& first()
 		{
 			assert(!base_type::empty());
 			return *base_type::begin();
 		}
 
-		inline
-		const T& first() const noexcept
+		inline const T& first() const noexcept
 		{
 			assert(!base_type::empty());
 			return *base_type::begin();
 		}
 
-		inline
-		T& last()
+		inline T& last()
 		{
 			assert(!base_type::empty());
 			return *(base_type::end() - 1);
 		}
 
-		inline
-		const T& last() const noexcept
+		inline const T& last() const noexcept
 		{
 			assert(!base_type::empty());
 			return *(base_type::end() - 1);
 		}
 
-		inline
-		bool startsWith(T t) const
+		inline bool startsWith(T t) const
 		{
 			return !base_type::empty() && first() == t;
 		}
@@ -282,8 +282,7 @@ class TVector :public std::vector<T>
 		 * @param i  Index position
 		 * @return Instance at position.
 		 */
-		inline
-		T& get(size_type i)
+		inline T& get(size_type i)
 		{
 			return base_type::at(i);
 		}
@@ -352,7 +351,6 @@ class TVector :public std::vector<T>
 		 * @return The passed output stream.
 		 */
 		std::ostream& write(std::ostream& os, bool inc_hex) const;
-
 };
 
 template<typename T>
@@ -416,7 +414,7 @@ class TIterator
 			restart(start, stop);
 		}
 
-		operator int() const // NOLINT(google-explicit-constructor)
+		operator int() const
 		{
 			return _cur < _upper;
 		}
@@ -431,7 +429,7 @@ class TIterator
 			return (*_vector)[_cur];
 		}
 
-		const T& operator++(int) // NOLINT(cert-dcl21-cpp)
+		const T& operator++(int)
 		{
 			const T& temp = current();
 			_cur++;
@@ -576,4 +574,4 @@ typename TVector<T>::size_type TVector<T>::find(const T& t) const
 	return npos;
 }
 
-}
+}// namespace sf

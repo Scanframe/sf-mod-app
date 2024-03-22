@@ -13,16 +13,16 @@ void IntervalTimer::set(const timespec& t)
 }
 
 IntervalTimer::IntervalTimer(int usec)
-	:_interval(TimeSpec::nsec_type(usec) * 1000)
-	,_target(getTime())
+	: _interval(TimeSpec::nsec_type(usec) * 1000)
+	, _target(getTime())
 {
 	_enabled = true;
 	_target += _interval;
 }
 
 IntervalTimer::IntervalTimer(double sec)
-	:_interval(sec)
-	,_target(getTime())
+	: _interval(sec)
+	, _target(getTime())
 {
 	_enabled = true;
 	_target += _interval;

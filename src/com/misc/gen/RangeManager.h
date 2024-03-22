@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Range.h"
 #include "../gen/gen_utils.h"
 #include "../global.h"
+#include "Range.h"
 
 namespace sf
 {
@@ -93,7 +93,7 @@ class _MISC_CLASS RangeManager
 		/**
 		 * @brief Enumerate for return values used by #request method.
 		 */
-		enum EResult :int
+		enum EResult : int
 		{
 			/** Range was outside the managed range.*/
 			rmOutOfRange = -1,
@@ -147,8 +147,7 @@ class _MISC_CLASS RangeManager
 		/**
 		 * @brief Test function for set privates during a unit test.
 		 */
-		void unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr,
-			Range::Vector* requests = nullptr);
+		void unitTest(Range::Vector* accessibles, Range::Vector* actual_requests = nullptr, Range::Vector* requests = nullptr);
 
 		/**
 		 * @brief Sets the debug flag for this instance.
@@ -184,47 +183,40 @@ class _MISC_CLASS RangeManager
 		bool _debug{false};
 };
 
-inline
-void RangeManager::setDebug(bool debug)
+inline void RangeManager::setDebug(bool debug)
 {
 	_debug = debug;
 }
 
-inline
-bool RangeManager::setAutoManaged(bool flag)
+inline bool RangeManager::setAutoManaged(bool flag)
 {
 	swap_it(flag, _autoManaged);
 	return flag;
 }
 
-inline
-const Range& RangeManager::getManaged() const
+inline const Range& RangeManager::getManaged() const
 {
 	return _managedRange;
 }
 
-inline
-void RangeManager::setManaged(const Range& r)
+inline void RangeManager::setManaged(const Range& r)
 {
 	_managedRange = r;
 }
 
-inline
-const Range::Vector& RangeManager::getAccessibles() const
+inline const Range::Vector& RangeManager::getAccessibles() const
 {
 	return _accessibles;
 }
 
-inline
-const Range::Vector& RangeManager::getActualRequests() const
+inline const Range::Vector& RangeManager::getActualRequests() const
 {
 	return _actualRequests;
 }
 
-inline
-const Range::Vector& RangeManager::getRequests() const
+inline const Range::Vector& RangeManager::getRequests() const
 {
 	return _requests;
 }
 
-}
+}// namespace sf

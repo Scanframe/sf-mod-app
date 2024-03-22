@@ -1,11 +1,11 @@
-#include "target.h"
-#include "gen_utils.h"
 #include "Sustain.h"
+#include "gen_utils.h"
+#include "target.h"
 #if IS_QT
-#include <QTimer>
+	#include <QTimer>
 #elif IS_WIN
-#include "dbgutils.h"
-#include "../win/WinTimer.h"
+	#include "../win/WinTimer.h"
+	#include "dbgutils.h"
 #endif
 
 #define MAX_TIMER_REENTRIES 10
@@ -16,13 +16,13 @@ namespace sf
 SustainBase::PtrVector* SustainBase::_defaultVector = nullptr;
 
 SustainBase::SustainBase(PtrVector* vector, int priority)
-	:_list(vector)
-	 , _priority(priority)
-{ // Check if the vector is a valid pointer.
+	: _list(vector)
+	, _priority(priority)
+{// Check if the vector is a valid pointer.
 	if (!_list)
-	{ // Check also if the default vector has been created.
+	{// Check also if the default vector has been created.
 		if (!_defaultVector)
-		{ // It has not so we create it.
+		{// It has not so we create it.
 			_defaultVector = new PtrVector();
 		}
 		// Assign the vector data member with the static default vector pointer value.
@@ -49,7 +49,7 @@ SustainBase::SustainBase(PtrVector* vector, int priority)
 }
 
 SustainBase::~SustainBase()
-{ // Check if the vector still exists to detach from.
+{// Check if the vector still exists to detach from.
 	if (_list)
 	{
 		_list->detach(this);
@@ -86,7 +86,7 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 		vector = _defaultVector;
 	}
 	if (vector)
-	{ // Get the clock for all sustain functions.
+	{// Get the clock for all sustain functions.
 		auto time = getTime(false);
 		// Do not use iterator because sustain could affect the vector itself.
 		unsigned i = 0;
@@ -106,7 +106,7 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 			// Check if entry was disabled. This may look strange but the timers
 			// enable disable is also used for non timer entries.
 			if (entry->_timer.isEnabled())
-			{ // IF the hooked function returns false disable this entry.
+			{// IF the hooked function returns false disable this entry.
 				if (!entry->call(time))
 				{
 					entry->disable();
@@ -123,8 +123,7 @@ class SustainQtTimer
 	public:
 		SustainQtTimer()
 		{
-			QObject::connect(&_timer, &QTimer::timeout, [&]()
-			{
+			QObject::connect(&_timer, &QTimer::timeout, [&]() {
 				static int sentry = 0;
 				// Place sentry for this part of the code
 				if (sentry < MAX_TIMER_REENTRIES)
@@ -148,16 +147,16 @@ class SustainQtTimer
 		QTimer _timer;
 };
 
-
 #elif IS_WIN
 
-class SustainWinTimer :public WinTimer
+class SustainWinTimer : public WinTimer
 {
 	public:
 		/**
 		 * Constructor.
 		 */
-		SustainWinTimer() :WinTimer()
+		SustainWinTimer()
+			: WinTimer()
 		{}
 		/**
 		 * Overloaded from base class.
@@ -181,11 +180,9 @@ class SustainWinTimer :public WinTimer
 				SF_NORM_NOTIFY(DO_DEFAULT, "SustainTimerProc(): Skipped: Maximum re-entries reached!");
 			}
 		}
-
 };
 
 #endif
-
 
 #if IS_QT
 SustainQtTimer* globalSustainQtTimer{nullptr};
@@ -239,4 +236,4 @@ int getSustainTimer()
 #endif
 }
 
-}
+}// namespace sf

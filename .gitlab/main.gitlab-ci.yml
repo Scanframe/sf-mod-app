@@ -32,6 +32,9 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: always
     - when: never
+  # Cancel when there is a new commit.
+  auto_cancel:
+    on_new_commit: interruptible
 
 stages:
   - check
@@ -55,23 +58,12 @@ default:
     # For testing the 'deploy' jobs.
     - if: '$SF_SIGNAL == "deploy"'
       when: manual
+      allow_failure: true
     # Run manual when triggered by web.
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: manual
-    - when: always
+    - when: on_success
     - allow_failure: false
-# Template for rules on both coverage related jobs.
-.coverage-rules:
-  rules:
-    # Skip if signal is "test"
-    - if: '$SF_SIGNAL == "test"'
-      when: never
-    # Run always when triggered by a merge request event.
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-      allow_failure: false
-    # By default, run manual.
-    - when: manual
 
 # Reports the environment variables for debugging.
 check-env:
@@ -92,7 +84,8 @@ cache-test:
     # Run when signal is test.
     - if: '$SF_SIGNAL != "test"'
       when: never
-    - when: always
+    - when: on_success
+    - allow_failure: false
   variables:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "toolchain"
@@ -145,12 +138,22 @@ linux-gw:
 linux-gcov:
   stage: build
   needs: [check-env]
-  extends: .coverage-rules
   variables:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "gnu"
     SF_BUILD_TYPE: "coverage"
     SF_DIR_BIN: "bin/lnx64"
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    # Run always when triggered by a merge request event.
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+      allow_failure: false
+    # By default, run manual.
+    - when: manual
+    - allow_failure: true
   trigger:
     strategy: depend
     forward:
@@ -158,10 +161,10 @@ linux-gcov:
     include:
       - local: '.gitlab/coverage.gitlab-ci.yml'
 
+# Report the coverage generated in the pipeline using infor stored on Nexus.
 report-coverage:
   stage: report
   needs: [linux-gcov]
-  extends: .coverage-rules
   coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"

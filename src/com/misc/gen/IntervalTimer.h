@@ -1,19 +1,18 @@
 #pragma once
 
-#include "TimeSpec.h"
 #include "../global.h"
+#include "TimeSpec.h"
 
 namespace sf
 {
 /**
  * @brief Timer class that has fixed time intervals at which it becomes true.
  *
- * If one ore several intervals are missed, this timer will not catch up.
+ * If one or several intervals are missed, this timer will not catch up.
  */
 class _MISC_CLASS IntervalTimer
 {
 	public:
-
 		/**
 		 * @brief Default constructor.
 		 *
@@ -51,7 +50,7 @@ class _MISC_CLASS IntervalTimer
 		[[nodiscard]] bool active() const;
 
 		/**
-		 * @brief Allows passing timespec value ourself to reduce overhead in case of multiple timers.
+		 * @brief Allows passing timespec value our self to reduce overhead in case of multiple timers.
 		 *
 		 * @param t #sf::getTime() value.
 		 * @return True when active.
@@ -125,13 +124,13 @@ class _MISC_CLASS IntervalTimer
 		 */
 		explicit inline operator bool() const;
 
-		 /**
+		/**
 		  * This operator is used to minimize clock() calls by passing the value itself.
 		  *
 		 * @param t Clock() value.
 		  * @return True if timer is active.
 		  */
-		 inline bool operator()(const timespec& t) const;
+		inline bool operator()(const timespec& t) const;
 
 	private:
 		/**
@@ -148,52 +147,44 @@ class _MISC_CLASS IntervalTimer
 		bool _enabled{false};
 };
 
-inline
-IntervalTimer::IntervalTimer(const timespec& t)
+inline IntervalTimer::IntervalTimer(const timespec& t)
 {
 	set(t);
 }
 
-inline
-void IntervalTimer::enable()
+inline void IntervalTimer::enable()
 {
 	_enabled = true;
 }
 
-inline
-void IntervalTimer::disable()
+inline void IntervalTimer::disable()
 {
 	_enabled = false;
 }
 
-inline
-bool IntervalTimer::isEnabled() const
+inline bool IntervalTimer::isEnabled() const
 {
 	return _enabled;
 }
 
-inline
-const TimeSpec& IntervalTimer::getInterval() const
+inline const TimeSpec& IntervalTimer::getInterval() const
 {
 	return _interval;
 }
 
-inline
-const TimeSpec& IntervalTimer::getTarget() const
+inline const TimeSpec& IntervalTimer::getTarget() const
 {
 	return _target;
 }
 
-inline
-IntervalTimer::operator bool() const
+inline IntervalTimer::operator bool() const
 {
 	return active();
 }
 
-inline
-bool IntervalTimer::operator()(const timespec& t) const
+inline bool IntervalTimer::operator()(const timespec& t) const
 {
 	return active(t);
 }
 
-}
+}// namespace sf

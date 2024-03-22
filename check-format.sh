@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
 # Get the scripts directory.
-script_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Add the directories to check.
-arguments=("src/com/misc/tests")
+arguments=(
+	"src/com/misc/gen"
+	"src/com/misc/lnx"
+	"src/com/misc/win"
+	"src/com/misc/tests"
+	"${@}"
+)
 #arguments+=("com/misc/gen" "com/misc/lnx" "com/misc/win")
 # Add quiet option when call from the Git pre-commit hook.
 if [[ "$(ps -o comm= $PPID)" == "pre-commit" ]]; then

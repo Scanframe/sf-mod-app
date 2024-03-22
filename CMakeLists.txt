@@ -55,7 +55,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 
 # Set the C++ standard to 20 for all projects which is required for the SfCompiler package.1
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
@@ -67,8 +67,6 @@ if (SF_BUILD_TESTING)
 	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.
 	enable_testing()
-	# Include CDash dashboard testing module.
-	#include(CTest)
 endif ()
 
 # Configure the rpath.
@@ -85,15 +83,6 @@ endif ()
 # Satisfy cmake to prevent warning.
 if (CMAKE_VERBOSE_MAKEFILE)
 	message(STATUS "Verbosity enabled.")
-endif ()
-
-if (SF_BUILD_TESTING)
-	# Prevents Catch2 from adding targets.
-	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
-	# Enable the tests added with add_test.
-	enable_testing()
-	# Include CDash dashboard testing module.
-	include(CTest)
 endif ()
 
 # Clear the tests from previous by passing an empty string.

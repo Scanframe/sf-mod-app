@@ -82,4 +82,4 @@ void CALLBACK WinTimer::callback(HWND, UINT, UINT, DWORD ticks)
 	}
 }
 
-}
+}// namespace sf

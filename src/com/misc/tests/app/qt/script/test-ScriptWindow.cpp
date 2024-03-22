@@ -131,8 +131,7 @@ void ScriptWindow::stateSaveRestore(bool save)
 
 void ScriptWindow::updateStatus()
 {
-	statusBar()->showMessage(QString(_script.getStateName()) + ": " + _script.getErrorText() +
-													 ": " + QString::fromStdString(_script.getErrorReason()));
+	statusBar()->showMessage(QString(_script.getStateName()) + ": " + _script.getErrorText() + ": " + QString::fromStdString(_script.getErrorReason()));
 	// Get the current instruction pointer.
 	auto instr = (int) _script.getInstructionPtr();
 	// Check if the pointer is valid.

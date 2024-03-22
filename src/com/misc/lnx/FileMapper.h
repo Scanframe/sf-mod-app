@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cstddef>
-#include "File.h"
 #include "../gen/IFileMapper.h"
 #include "../global.h"
+#include "File.h"
+#include <cstddef>
 
 namespace sf::lnx
 {
@@ -11,7 +11,7 @@ namespace sf::lnx
 /**
  * Wrapper for the linux mmap.
  */
-class _MISC_CLASS FileMapper :public IFileMapper
+class _MISC_CLASS FileMapper : public IFileMapper
 {
 	public:
 		/**
@@ -144,6 +144,4 @@ class _MISC_CLASS FileMapper :public IFileMapper
 		size_t _realOffset{0};
 };
 
-}
-
-
+}// namespace sf::lnx

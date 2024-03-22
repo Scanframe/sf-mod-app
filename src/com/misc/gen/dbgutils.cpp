@@ -1,22 +1,22 @@
 #include "target.h"
 
 #if IS_GNU
-#include <cxxabi.h>
+	#include <cxxabi.h>
 #endif
 
 #include <csignal>
-#include <string>
-#include <fstream>
 #include <cstring>
+#include <fstream>
 #include <mutex>
+#include <string>
 
 #if IS_QT
-#include "qt/qt_utils.h"
+	#include "qt/qt_utils.h"
 #endif
 
 #if IS_WIN
-#include <debugapi.h>
-#include <processenv.h>
+	#include <debugapi.h>
+	#include <processenv.h>
 #endif
 
 #include "TimeSpec.h"
@@ -41,8 +41,7 @@ bool isDebuggerActive()
 	{
 		dbg_attached = 1;
 		// Call lambda function to handle.
-		signal(SIGTRAP, [](int)
-		{
+		signal(SIGTRAP, [](int) {
 			dbg_attached = 0;
 			signal(SIGTRAP, SIG_DFL);
 		});
@@ -56,7 +55,7 @@ void debugBreak()
 	if (isDebuggerActive())
 	{
 #if IS_WIN
-	 ::DebugBreak();
+		::DebugBreak();
 #else
 		// Raise signal SIGTRAP when debugger present otherwise the process crashes.
 		raise(SIGTRAP);
@@ -138,7 +137,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 			if (!sentry)
 			{
 				sentry = true;
-				(void)sentry;
+				(void) sentry;
 				// Release lock to prevent lockup multiple threads.
 				DbgMutex.unlock();
 #if IS_QT
@@ -149,7 +148,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 				}
 #endif
 				sentry = false;
-				(void)sentry;
+				(void) sentry;
 			}
 		}
 	}
@@ -258,7 +257,7 @@ void MessageHandler::_handler(QtMsgType type, const QMessageLogContext& ctx, con
 			_initial(type, ctx, msg);
 			break;
 
-		case QtDebugMsg: // NOLINT(bugprone-branch-clone)
+		case QtDebugMsg:
 			std::clog << text.constData() << std::endl;
 			//fprintf(stderr, "Debug: %s \n(%s:%u, %s)\n", text.constData(), ctx.file, ctx.line, ctx.function);
 			break;
@@ -288,4 +287,4 @@ void MessageHandler::_handler(QtMsgType type, const QMessageLogContext& ctx, con
 
 #endif
 
-} // namespace sf
+}// namespace sf

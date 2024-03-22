@@ -1,5 +1,5 @@
-#include "gen_utils.h"
 #include "PerformanceTimer.h"
+#include "gen_utils.h"
 
 namespace sf
 {
@@ -36,4 +36,4 @@ unsigned long PerformanceTimer::elapseMSec()
 	return et.tv_sec * 1000l + et.tv_nsec / 1000000l;
 }
 
-}
+}// namespace sf

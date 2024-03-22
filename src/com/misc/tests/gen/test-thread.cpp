@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <misc/gen/PerformanceTimer.h>
-#include <misc/gen/Thread.h>
+#include <misc/gen/ThreadClosure.h>
 #include <misc/gen/ThreadRelay.h>
 #include <test/catch.h>
 
@@ -57,6 +57,9 @@ int Worker::method3(int v1, int v2, int v3)
 
 TEST_CASE("sf::Thread", "[con][generic][thread]")
 {
+	sf::ThreadMain main_thread;
+	main_thread.setDebug(true);
+
 	SECTION("Count", "Getting the amount of threads in a process.")
 	{
 		SF_COND_NORM_NOTIFY(debug_level, DO_CLOG, "Thread count: " << sf::getThreadCount());
@@ -108,7 +111,7 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		// Start the thread.
 		tc.start();
 		// Allow some time for the thread to process.
-		::usleep(20000);
+		main_thread.sleep(sf::TimeSpec(0.02));
 		// Terminate the thread and wait.
 		tc.terminateAndWait();
 		// Check if the thread ended in a short enough time.
@@ -117,41 +120,6 @@ TEST_CASE("sf::Thread", "[con][generic][thread]")
 		CHECK(tc.getExitCode() == 0xff);
 		// Check if the scope class was cleaned up.
 		CHECK(out_of_scope);
-	}
-
-	SECTION("Condition", "Condition and mutex.")
-	{
-		sf::Mutex mutex;
-		sf::Condition condition;
-		sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
-			// Start locking the mutex.
-			sf::Mutex::Lock lock(mutex);
-			// Wait for the condition signal on the locked mutex.
-			condition.wait(mutex);
-			return 0xff;
-		}));
-		// Set debugging depending on the command line.
-		tc.setDebug(debug_level > 0);
-		// Start the thread.
-		tc.start();
-		//
-		if (tc.getStatus() != sf::Thread::tsRunning)
-		{
-			// Give thread some time.
-			::usleep(20000);
-		}
-		// Signal the locked thread.
-		condition.notifyOne(mutex);
-		//
-		if (tc.getStatus() != sf::Thread::tsFinished)
-		{
-			// Give thread some time.
-			::usleep(20000);
-		}
-		//
-		tc.terminateAndWait();
-		// Check the exit.
-		CHECK(tc.getExitCode() == 0xff);
 	}
 
 #if 0

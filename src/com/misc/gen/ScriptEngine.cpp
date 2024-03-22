@@ -98,47 +98,47 @@ const char* ScriptEngine::getErrorText(EArithError error_value) const
 }
 
 // Speed index defines.
-#define SID_SCRIPT_START   (-20000)
+#define SID_SCRIPT_START (-20000)
 
-#define SID_INT       (SID_SCRIPT_START -  1)
-#define SID_FLOAT     (SID_SCRIPT_START -  2)
-#define SID_STRING    (SID_SCRIPT_START -  3)
-#define SID_UNDEF     (SID_SCRIPT_START -  4)
-#define SID_OBJECT    (SID_SCRIPT_START -  5)
+#define SID_INT (SID_SCRIPT_START - 1)
+#define SID_FLOAT (SID_SCRIPT_START - 2)
+#define SID_STRING (SID_SCRIPT_START - 3)
+#define SID_UNDEF (SID_SCRIPT_START - 4)
+#define SID_OBJECT (SID_SCRIPT_START - 5)
 // String functions.
-#define SID_SUBSTR    (SID_SCRIPT_START - 13)
-#define SID_STRLEN    (SID_SCRIPT_START - 14)
-#define SID_FINDSTR   (SID_SCRIPT_START - 15)
-#define SID_STRIP     (SID_SCRIPT_START - 16)
-#define SID_TO_UPPER  (SID_SCRIPT_START - 17)
-#define SID_TO_LOWER  (SID_SCRIPT_START - 18)
+#define SID_SUBSTR (SID_SCRIPT_START - 13)
+#define SID_STRLEN (SID_SCRIPT_START - 14)
+#define SID_FINDSTR (SID_SCRIPT_START - 15)
+#define SID_STRIP (SID_SCRIPT_START - 16)
+#define SID_TO_UPPER (SID_SCRIPT_START - 17)
+#define SID_TO_LOWER (SID_SCRIPT_START - 18)
 //
-#define SID_PI        (SID_SCRIPT_START - 20)
-#define SID_SIN       (SID_SCRIPT_START - 21)
-#define SID_COS       (SID_SCRIPT_START - 22)
-#define SID_TAN       (SID_SCRIPT_START - 23)
-#define SID_ACOS      (SID_SCRIPT_START - 24)
-#define SID_ASIN      (SID_SCRIPT_START - 25)
-#define SID_ATAN      (SID_SCRIPT_START - 26)
-#define SID_ATAN2     (SID_SCRIPT_START - 27)
+#define SID_PI (SID_SCRIPT_START - 20)
+#define SID_SIN (SID_SCRIPT_START - 21)
+#define SID_COS (SID_SCRIPT_START - 22)
+#define SID_TAN (SID_SCRIPT_START - 23)
+#define SID_ACOS (SID_SCRIPT_START - 24)
+#define SID_ASIN (SID_SCRIPT_START - 25)
+#define SID_ATAN (SID_SCRIPT_START - 26)
+#define SID_ATAN2 (SID_SCRIPT_START - 27)
 //
-#define SID_CMP       (SID_SCRIPT_START - 31)
+#define SID_CMP (SID_SCRIPT_START - 31)
 //
-#define SID_CEIL      (SID_SCRIPT_START - 41)
-#define SID_FLOOR     (SID_SCRIPT_START - 42)
-#define SID_ABS       (SID_SCRIPT_START - 43)
-#define SID_ROUND     (SID_SCRIPT_START - 44)
-#define SID_MOD       (SID_SCRIPT_START - 45)
-#define SID_STR       (SID_SCRIPT_START - 46)
-#define SID_TO_INT    (SID_SCRIPT_START - 47)
-#define SID_TO_FLOAT  (SID_SCRIPT_START - 48)
+#define SID_CEIL (SID_SCRIPT_START - 41)
+#define SID_FLOOR (SID_SCRIPT_START - 42)
+#define SID_ABS (SID_SCRIPT_START - 43)
+#define SID_ROUND (SID_SCRIPT_START - 44)
+#define SID_MOD (SID_SCRIPT_START - 45)
+#define SID_STR (SID_SCRIPT_START - 46)
+#define SID_TO_INT (SID_SCRIPT_START - 47)
+#define SID_TO_FLOAT (SID_SCRIPT_START - 48)
 //
-#define SID_LOG       (SID_SCRIPT_START - 50)
-#define SID_EXP       (SID_SCRIPT_START - 51)
-#define SID_LOG10     (SID_SCRIPT_START - 52)
-#define SID_LOGX      (SID_SCRIPT_START - 53)
-#define SID_POW       (SID_SCRIPT_START - 54)
-#define SID_SQRT      (SID_SCRIPT_START - 55)
+#define SID_LOG (SID_SCRIPT_START - 50)
+#define SID_EXP (SID_SCRIPT_START - 51)
+#define SID_LOG10 (SID_SCRIPT_START - 52)
+#define SID_LOGX (SID_SCRIPT_START - 53)
+#define SID_POW (SID_SCRIPT_START - 54)
+#define SID_SQRT (SID_SCRIPT_START - 55)
 
 ScriptEngine::IdInfo ScriptEngine::_idInfo[] =
 	{
@@ -181,17 +181,17 @@ ScriptEngine::IdInfo ScriptEngine::_idInfo[] =
 		{SID_TO_UPPER, idFunction, "to_upper", 1, nullptr},
 		{SID_TO_LOWER, idFunction, "to_lower", 1, nullptr},
 		//
-	};
+};
 
 ScriptEngine::ScriptEngine()
-	:ScriptObject("ScriptEngine")
+	: ScriptObject("ScriptEngine")
 {
 }
 
 const ScriptEngine::IdInfo* ScriptEngine::getInfo(const std::string& name) const
 {
 	// Find the name of the identifier.
-	for (auto& i : _idInfo)
+	for (auto& i: _idInfo)
 	{
 		if (i._name == name)
 		{
@@ -218,20 +218,19 @@ strings ScriptEngine::getIdentifiers(ScriptObject::EIdentifier id) const
 strings ScriptEngine::getInfoNames() const
 {
 	strings rv;
-	for (auto& i : _idInfo)
+	for (auto& i: _idInfo)
 	{
 		rv.add(i._name);
 	}
 	return rv;
 }
 
-bool ScriptEngine::getSetValue
-	(
-		const IdInfo* info,
-		Value* result,
-		Value::vector_type* param,
-		bool flag_set
-	)
+bool ScriptEngine::getSetValue(
+	const IdInfo* info,
+	Value* result,
+	Value::vector_type* param,
+	bool flag_set
+)
 {
 	if (!info)
 	{
@@ -250,8 +249,7 @@ bool ScriptEngine::getSetValue
 			default:
 				break;
 
-			case idConstant:
-			{
+			case idConstant: {
 				// Check if a constant is assigned or not.
 				if (flag_set)
 				{
@@ -269,11 +267,9 @@ bool ScriptEngine::getSetValue
 							setError(aeUnknownConstant, info->_name);
 					}
 				}
-			}
-				break;
+			} break;
 
-			case idFunction:
-			{
+			case idFunction: {
 				switch (info->_index)
 				{
 					case SID_ABS:
@@ -348,14 +344,13 @@ bool ScriptEngine::getSetValue
 						result->set(((*param)[1] <= (*param)[0] && (*param)[2] >= (*param)[0]) ? 1 : 0);
 						break;
 
-					case SID_SUBSTR:
-					{
+					case SID_SUBSTR: {
 						std::string s = (*param)[0].getString();
 						std::string::size_type pos = (*param)[1].getInteger();
 						std::string::size_type len = (*param)[2].getInteger();
 						std::string::size_type sz = s.length();
 						if (pos >= 0)
-						{ // Clip the position
+						{// Clip the position
 							if (pos > sz)
 							{
 								pos = sz;
@@ -381,15 +376,13 @@ bool ScriptEngine::getSetValue
 						result->set((int) (*param)[0].getString().length());
 						break;
 
-					case SID_FINDSTR:
-					{
+					case SID_FINDSTR: {
 						auto pos = (*param)[0].getString().find((*param)[1].getString());
 						result->set(Value::int_type((pos == std::string::npos) ? -1 : pos));
 						break;
 					}
 
-					case SID_STRIP:
-					{
+					case SID_STRIP: {
 						if ((*param)[0].getType() == Value::vitString)
 						{
 							// String to strip.
@@ -427,20 +420,18 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_TO_UPPER:
-					{
+					case SID_TO_UPPER: {
 						std::string s = (*param)[0].getString();
-						for (char& c : s)
+						for (char& c: s)
 						{
 							c = (char) std::toupper(int(c));
 						}
 						break;
 					}
 
-					case SID_TO_LOWER:
-					{
+					case SID_TO_LOWER: {
 						std::string s = (*param)[0].getString();
-						for (char& c : s)
+						for (char& c: s)
 						{
 							c = (char) std::tolower(int(c));
 						}
@@ -448,8 +439,7 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_CEIL:
-					{
+					case SID_CEIL: {
 						if ((*param)[0].getType() == Value::vitFloat)
 						{
 							result->set(ceil((*param)[0].getFloat()));
@@ -461,8 +451,7 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_FLOOR:
-					{
+					case SID_FLOOR: {
 						if ((*param)[0].getType() == Value::vitFloat)
 						{
 							result->set(floor((*param)[0].getFloat()));
@@ -474,32 +463,28 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_LOG:
-					{
+					case SID_LOG: {
 						double value = (*param)[0].getFloat();
 						value = log(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_EXP:
-					{
+					case SID_EXP: {
 						double value = (*param)[0].getFloat();
 						value = exp(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_LOG10:
-					{
+					case SID_LOG10: {
 						double value = (*param)[0].getFloat();
 						value = log10(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_LOGX:
-					{
+					case SID_LOGX: {
 						double n = (*param)[0].getFloat();
 						double value = (*param)[1].getFloat();
 						value = log(value) / log(n);
@@ -507,8 +492,7 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_POW:
-					{
+					case SID_POW: {
 						double value = (*param)[0].getFloat();
 						double exp = (*param)[1].getFloat();
 						value = pow(value, exp);
@@ -516,8 +500,7 @@ bool ScriptEngine::getSetValue
 						break;
 					}
 
-					case SID_SQRT:
-					{
+					case SID_SQRT: {
 						double value = (*param)[0].getFloat();
 						value = sqrt(value);
 						result->set(value);
@@ -534,8 +517,7 @@ bool ScriptEngine::getSetValue
 				setError(aeUnknownVariable, info->_name);
 				break;
 
-			case idTypedef:
-			{
+			case idTypedef: {
 				switch (info->_index)
 				{
 					case SID_INT:
@@ -546,7 +528,6 @@ bool ScriptEngine::getSetValue
 						setError(aeUnknownIdentifier, info->_name);
 				}
 			}
-
 		}
 		return true;
 	}
@@ -607,7 +588,7 @@ void ScriptEngine::eatWhite()
 	}
 }
 
-bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-recursion)
+bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-recursion)
 {
 	// Get operator character
 	char oper1 = _cmd[_pos];
@@ -627,7 +608,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 	Value tmpres;
 	//
 	if (oper1 == '=' && oper2 == '\0')
-	{ // Check if + - operators follow and call Partial as long as these
+	{// Check if + - operators follow and call Partial as long as these
 		// are there.
 		do
 		{
@@ -635,8 +616,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			{
 				return false;
 			}
-		}
-		while (strchr("+-", _cmd[_pos]) && _cmd[_pos]);
+		} while (strchr("+-", _cmd[_pos]) && _cmd[_pos]);
 	}
 	else
 	{
@@ -650,8 +630,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 	// Convert types if needed
 	if (strchr("<>=", oper2))
 	{
-		if (result.getType() == Value::vitFloat ||
-			tmpres.getType() == Value::vitFloat)
+		if (result.getType() == Value::vitFloat || tmpres.getType() == Value::vitFloat)
 		{
 			result.setType(Value::vitFloat);
 			tmpres.setType(Value::vitFloat);
@@ -660,8 +639,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 	// Do the actual operation
 	switch (oper1)
 	{
-		case '>':
-		{ // Check for operator '>='
+		case '>': {// Check for operator '>='
 			if (oper2 == '=')
 			{
 				result.set(result >= tmpres);
@@ -673,10 +651,9 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '<':
-		{
+		case '<': {
 			switch (oper2)
-			{ // check for operator '<='
+			{// check for operator '<='
 				case '=':
 					result.set(result <= tmpres);
 					break;
@@ -693,8 +670,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '!':
-		{ // check for operator '!='
+		case '!': {// check for operator '!='
 			if (oper2 == '=')
 			{
 				result.set(result != tmpres);
@@ -706,8 +682,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '=':
-		{ // Check for a compare operator.
+		case '=': {// Check for a compare operator.
 			if (oper2 == '=')
 			{
 				result.set(result == tmpres);
@@ -716,7 +691,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			{
 				// If no left value is available and second operator not available.
 				if (oper2 == '\0')
-				{ // Was a left value available for assigning.
+				{// Was a left value available for assigning.
 					if (left)
 					{
 						// Assign also the value to the left variable.
@@ -738,8 +713,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '&':
-		{
+		case '&': {
 			if (oper2 == '&')
 			{
 				result.set((int) (!result.isZero() && !tmpres.isZero()));
@@ -751,8 +725,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '|':
-		{
+		case '|': {
 			if (oper2 == '|')
 			{
 				result.set((int) (!result.isZero() || !tmpres.isZero()));
@@ -765,8 +738,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 		}
 
 			// exclusive 'OR' operator
-		case '^':
-		{
+		case '^': {
 			if (oper2 == '^')
 			{
 				result.set((int) (!result.isZero() ^ !tmpres.isZero()));
@@ -779,14 +751,12 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 		}
 
 			// multiplication operator
-		case '*':
-		{
+		case '*': {
 			result *= tmpres;
 			break;
 		}
 
-		case '/':
-		{
+		case '/': {
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
@@ -799,8 +769,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 			break;
 		}
 
-		case '%':
-		{
+		case '%': {
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
@@ -822,7 +791,7 @@ bool ScriptEngine::operator_(Value& result, DataCode& left) // NOLINT(misc-no-re
 	return true;
 }
 
-bool ScriptEngine::partial(Value& result) // NOLINT(misc-no-recursion)
+bool ScriptEngine::partial(Value& result)// NOLINT(misc-no-recursion)
 {
 	Value locres;
 	DataCode left(this);
@@ -830,7 +799,8 @@ bool ScriptEngine::partial(Value& result) // NOLINT(misc-no-recursion)
 	{
 		return false;
 	}
-	while (operator_(locres, left) && !_errorValue) {}
+	while (operator_(locres, left) && !_errorValue) {
+	}
 	if (_errorValue)
 	{
 		return false;
@@ -839,7 +809,7 @@ bool ScriptEngine::partial(Value& result) // NOLINT(misc-no-recursion)
 	return true;
 }
 
-bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recursion)
+bool ScriptEngine::arith(Value& result, DataCode& left)// NOLINT(misc-no-recursion)
 {
 	eatWhite();
 	if (_cmd[_pos] == '(')
@@ -927,8 +897,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 			//
 			switch (data_code._info->_id)
 			{
-				case idUnknown:
-				{
+				case idUnknown: {
 					setError(aeUnknownSymbol, name);
 					break;
 				}
@@ -942,7 +911,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 						// Set the left value.
 						left = data_code;
 					}
-						// Check for dereferenced object.
+					// Check for dereferenced object.
 					else if (_cmd[_pos] == '.')
 					{
 						// Skip the dot character.
@@ -980,8 +949,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 					}
 					break;
 
-				case idFunction:
-				{
+				case idFunction: {
 					// Check if the next character is a '(' one
 					if (_cmd[_pos] == '(')
 					{
@@ -1001,8 +969,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 									return false;
 								}
 								params.add(loc_res);
-							}
-							while (_cmd[_pos] != ')');
+							} while (_cmd[_pos] != ')');
 						}
 						else
 						{
@@ -1035,7 +1002,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 						{
 							data_code._object->getSetValue(data_code._info, &result, &params, false);
 						}
-						catch (...) //(Exception& e)
+						catch (...)//(Exception& e)
 						{
 							b_err = true;
 						}
@@ -1088,11 +1055,10 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 
 				default:
 					return setError(aeUnexpectedIdentifier, name);
-			} // switch
+			}// switch
 			//
 			eatWhite();
-		}
-		while (start_over);
+		} while (start_over);
 		//
 		return true;
 	}
@@ -1109,7 +1075,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 			auto pos = _pos++;
 			// As long as the end of the script is not reached.
 			do
-			{ // Check for escaped expression sequence.
+			{// Check for escaped expression sequence.
 				if (_cmd[pos++] == '\\')
 				{
 					// Set the flag that a escaped expression has passed.
@@ -1117,8 +1083,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 					// Always skip the next character.
 					pos++;
 				}
-			}
-			while (_cmd[pos] && _cmd[pos] != '\"');
+			} while (_cmd[pos] && _cmd[pos] != '\"');
 			// Add the string to the resulting string.
 			s.append(_cmd, _pos, pos - _pos);
 			// Update the position index.
@@ -1146,7 +1111,7 @@ bool ScriptEngine::arith(Value& result, DataCode& left) // NOLINT(misc-no-recurs
 	return setError(aeUnexpectedCharacter);
 }
 
-bool ScriptEngine::getParameter(Value& value) // NOLINT(misc-no-recursion)
+bool ScriptEngine::getParameter(Value& value)// NOLINT(misc-no-recursion)
 {
 	value.setType(value.vitUndefined);
 	do
@@ -1163,8 +1128,7 @@ bool ScriptEngine::getParameter(Value& value) // NOLINT(misc-no-recursion)
 		{
 			break;
 		}
-	}
-	while (!_errorValue && _cmd[_pos]);
+	} while (!_errorValue && _cmd[_pos]);
 	//
 	return false;
 }
@@ -1188,11 +1152,10 @@ bool ScriptEngine::calculate(const std::string& script, Value& result)
 		}
 		// Check for unwanted ending characters.
 		if (!strchr("+-/*&|^=<>!%", _cmd[_pos]))
-		{ // report an error
+		{// report an error
 			setError(aeExpectedDelimiter);
 			return false;
 		}
-
 	}
 	// If there is an error return false without restoring the previous situation.
 	if (_errorValue)
@@ -1212,8 +1175,7 @@ bool ScriptEngine::setError(EArithError error_value, const std::string& reason)
 	{
 		_errorValue = error_value;
 		_errorReason = reason;
-		SF_COND_RTTI_NOTIFY(!rv, DO_DEFAULT,
-			"Error in script: '" << _errorReason << "' " << getErrorText(_errorValue));
+		SF_COND_RTTI_NOTIFY(!rv, DO_DEFAULT, "Error in script: '" << _errorReason << "' " << getErrorText(_errorValue));
 	}
 	return rv;
 }
@@ -1223,7 +1185,7 @@ std::string ScriptEngine::getErrorReason() const
 	return _errorReason;
 }
 
-class ScriptCalcFunction :public ScriptEngine
+class ScriptCalcFunction : public ScriptEngine
 {
 	public:
 		ScriptCalcFunction()
@@ -1231,7 +1193,7 @@ class ScriptCalcFunction :public ScriptEngine
 			memset(_value, 0, sizeof(_value));
 		}
 
-		void SetValue(int index, double value) {_value[index] = value;}
+		void SetValue(int index, double value) { _value[index] = value; }
 
 	protected:
 		// Gets identifier information.
@@ -1241,13 +1203,15 @@ class ScriptCalcFunction :public ScriptEngine
 		bool getSetValue(const IdInfo*, Value*, Value::vector_type*, bool) override;
 
 	private:
-		enum {MAX_VALUES = 3};
+		enum
+		{
+			MAX_VALUES = 3
+		};
 		// Holds the level passed in the GetLevelIntensity().
 		double _value[MAX_VALUES]{};
 };
 
-bool ScriptCalcFunction::getSetValue(const IdInfo* info, Value* result,
-	Value::vector_type* param, bool flag_set)
+bool ScriptCalcFunction::getSetValue(const IdInfo* info, Value* result, Value::vector_type* param, bool flag_set)
 {
 	if (info->_index > 0 && info->_index < MAX_VALUES)
 	{
@@ -1282,7 +1246,7 @@ const ScriptCalcFunction::IdInfo* ScriptCalcFunction::getInfo(const std::string&
 			{2, idConstant, "y", 0, nullptr},
 			{3, idConstant, "z", 0, nullptr}
 		};
-	for (auto& i : Info)
+	for (auto& i: Info)
 	{
 		if (i._name == name)
 		{
@@ -1306,4 +1270,4 @@ Value::flt_type calculator(const std::string& script, Value::flt_type def, Value
 	return def;
 }
 
-}
+}// namespace sf

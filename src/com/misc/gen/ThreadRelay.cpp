@@ -4,7 +4,7 @@ namespace sf
 {
 
 ThreadRelay::ThreadRelay()
-	:_threadId(Thread::getCurrentId())
+	: _threadId(Thread::getCurrentId())
 {
 }
 
@@ -70,4 +70,4 @@ ThreadRelay::RelayBase::operator bool()
 	return true;
 }
 
-}
+}// namespace sf

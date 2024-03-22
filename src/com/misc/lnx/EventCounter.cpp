@@ -6,7 +6,7 @@ namespace sf
 {
 
 EventCounter::EventCounter()
-	:_descriptor(-1)
+	: _descriptor(-1)
 {
 }
 
@@ -21,7 +21,8 @@ void EventCounter::create(unsigned int initval, bool countdown, bool blocking)
 	// Destroy any existing descriptor.
 	destroy();
 	// Assemble the flags.
-	int flags = 0;/* EFD_CLOEXEC */;
+	int flags = 0; /* EFD_CLOEXEC */
+	;
 	flags |= countdown ? EFD_SEMAPHORE : 0;
 	flags |= blocking ? 0 : EFD_NONBLOCK;
 	// Create the descriptor
@@ -90,4 +91,4 @@ bool EventCounter::get(unsigned int& value) const
 	return true;
 }
 
-}
+}// namespace sf

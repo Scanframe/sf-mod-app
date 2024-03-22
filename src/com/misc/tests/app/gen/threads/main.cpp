@@ -1,3 +1,4 @@
+#include "misc/gen/ThreadClosure.h"
 #include <chrono>
 #include <csignal>
 #include <iostream>
@@ -49,7 +50,7 @@ void TestStdSignal()
 	sleep(1);
 
 	// send signal to thread
-	pthread_kill(t.native_handle(), quit_signal);
+	::pthread_kill(t.native_handle(), quit_signal);
 
 	t.join();
 }
@@ -79,6 +80,8 @@ void TestStdThreads()
 
 void TestThreads(int how = 0)
 {
+	sf::ThreadMain main_thread;
+	main_thread.setDebug(true);
 	struct Scope
 	{
 			~Scope()

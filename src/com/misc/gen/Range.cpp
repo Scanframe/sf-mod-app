@@ -1,7 +1,7 @@
-#include <string>
-#include <algorithm>
-#include "gen_utils.h"
 #include "Range.h"
+#include "gen_utils.h"
+#include <algorithm>
+#include <string>
 
 namespace sf
 {
@@ -19,8 +19,7 @@ Range& Range::assign(size_type start, size_type stop, id_type id)
 
 Range& Range::set(const RANGE& r)
 {
-	*(RANGE*)
-		this = r;
+	*(RANGE*) this = r;
 	normalize();
 	return *this;
 }
@@ -285,7 +284,7 @@ Range::Vector Range::Vector::extract(const Range::Vector& rl, Range::Vector& rl_
 			// Move to next range for comparing.
 			i++;
 		}
-			// When the range does not cover and the next one will not either.
+		// When the range does not cover and the next one will not either.
 		else if (cmp == cmpOverlapsSelf || cmp == cmpExtendsSelf || cmp == cmpAfterSelf || cmp == cmpOtherEmpty)
 		{
 			// Move to next range for comparing.
@@ -441,4 +440,4 @@ std::istream& operator>>(std::istream& is, Range::Vector& rl)
 	return is >> c;
 }
 
-}
+}// namespace sf

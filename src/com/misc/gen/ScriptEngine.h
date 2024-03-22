@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ScriptObject.h"
 #include "../global.h"
+#include "ScriptObject.h"
 
 namespace sf
 {
@@ -9,7 +9,7 @@ namespace sf
 /**
  * @brief Simple script engine able.
  */
-class _MISC_CLASS ScriptEngine :public ScriptObject
+class _MISC_CLASS ScriptEngine : public ScriptObject
 {
 	public:
 		/**
@@ -180,25 +180,25 @@ class _MISC_CLASS ScriptEngine :public ScriptObject
 		 */
 		struct DataCode
 		{
-			explicit DataCode(ScriptObject* object)
-			{
-				Clear(object);
-			}
+				explicit DataCode(ScriptObject* object)
+				{
+					Clear(object);
+				}
 
-			void Clear(ScriptObject* object)
-			{
-				_info = nullptr;
-				_object = object;
-			}
+				void Clear(ScriptObject* object)
+				{
+					_info = nullptr;
+					_object = object;
+				}
 
-			explicit operator bool() const
-			{
-				return _info && _object;
-			}
+				explicit operator bool() const
+				{
+					return _info && _object;
+				}
 
-			const IdInfo* _info{nullptr};
+				const IdInfo* _info{nullptr};
 
-			ScriptObject* _object{nullptr};
+				ScriptObject* _object{nullptr};
 		};
 
 		/**
@@ -285,7 +285,6 @@ _MISC_FUNC Value::flt_type calculator(const std::string& script, Value::flt_type
  * @param z constant value.
  * @return Result or default value depending on success or not.
  */
-_MISC_FUNC Value::flt_type calculator(const std::string& script, Value::flt_type def,
-	Value::flt_type x, Value::flt_type y = 0.0, Value::flt_type z = 0.0);
+_MISC_FUNC Value::flt_type calculator(const std::string& script, Value::flt_type def, Value::flt_type x, Value::flt_type y = 0.0, Value::flt_type z = 0.0);
 
-}
+}// namespace sf

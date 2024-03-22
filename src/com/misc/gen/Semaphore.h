@@ -31,7 +31,7 @@ class _MISC_CLASS Semaphore
 
 		/**
 		 * @brief Gets the semaphore integer value.
-		 * @return Last value but it can be changed in the meantime.
+		 * @return Last value, it can be changed in the meantime.
 		 */
 		[[nodiscard]] int value() const;
 
@@ -113,48 +113,37 @@ class _MISC_CLASS Semaphore
 		void release();
 
 		/**
-		 * @brief Reports an error from call to a sem_xxx function.
-		 */
-		void reportError(const char* funcName) const;
-
-		/**
 		 * @brief Holds the semaphore handle/structure.
 		 */
 		handle_type _handle;
-
 };
 
-inline
-Semaphore::Lock::Lock()
-	:_semaphore(nullptr)
+inline Semaphore::Lock::Lock()
+	: _semaphore(nullptr)
 {
 }
 
-inline
-Semaphore::Lock::Lock(const Semaphore& semaphore, const TimeSpec& timeout)
-	:_semaphore(nullptr)
+inline Semaphore::Lock::Lock(const Semaphore& semaphore, const TimeSpec& timeout)
+	: _semaphore(nullptr)
 {
 	acquire(semaphore, timeout);
 }
 
-inline
-Semaphore::Lock::Lock(const Semaphore& semaphore, bool tryWait)
-	:_semaphore(nullptr)
+inline Semaphore::Lock::Lock(const Semaphore& semaphore, bool tryWait)
+	: _semaphore(nullptr)
 {
 	acquire(semaphore, tryWait);
 }
 
-inline
-Semaphore::Lock::~Lock()
+inline Semaphore::Lock::~Lock()
 {
 	release();
 }
 
-inline
-bool Semaphore::Lock::isAcquired() const
+inline bool Semaphore::Lock::isAcquired() const
 {
 	// Object was signaled.
 	return _semaphore != nullptr;
 }
 
-}
+}// namespace sf

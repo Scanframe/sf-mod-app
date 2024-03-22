@@ -1,6 +1,6 @@
-#include "dbgutils.h"
-#include "Range.h"
 #include "RangeManager.h"
+#include "Range.h"
+#include "dbgutils.h"
 
 namespace sf
 {
@@ -31,11 +31,7 @@ bool RangeManager::isAccessible(const Range& r) const
 bool RangeManager::isFlushable()
 {
 	// Check if flush has any effect
-	return
-		!_managedRange.isEmpty()
-			|| _accessibles.count()
-			|| _requests.count()
-			|| _actualRequests.count();
+	return !_managedRange.isEmpty() || _accessibles.count() || _requests.count() || _actualRequests.count();
 }
 
 bool RangeManager::flush()
@@ -74,7 +70,7 @@ RangeManager::EResult RangeManager::request(const Range& r, Range::Vector& rrl)
 		return rmOutOfRange;
 	}
 	// Check if the requested range is part of the accessible ranges secondly.
-	for (auto& i:_accessibles)
+	for (auto& i: _accessibles)
 	{
 		if (i.isWithinSelf(r))
 		{
@@ -158,4 +154,4 @@ void RangeManager::unitTest(Range::Vector* accessibles, Range::Vector* actual_re
 	}
 }
 
-}
+}// namespace sf

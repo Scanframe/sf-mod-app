@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstddef>
 #include "../global.h"
+#include <cstddef>
 
 namespace sf
 {
@@ -66,4 +66,4 @@ class _MISC_CLASS IFileMapper
 		static IFileMapper* instantiate(bool native);
 };
 
-}
+}// namespace sf

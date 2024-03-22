@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../global.h"
+#include "TVector.h"
 #include <iostream>
 #include <limits>
-#include "TVector.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -22,26 +22,26 @@ _MISC_DATA extern bool RangeCompareExact;
  */
 struct RANGE
 {
-	/**
+		/**
 	 * @brief Integer type used for start and stop.
 	 */
-	typedef uint64_t size_type;
-	/**
+		typedef uint64_t size_type;
+		/**
 	 * @brief Integer type used for the ID.
 	 */
-	typedef int64_t id_type;
-	/**
+		typedef int64_t id_type;
+		/**
 	 * @brief Start position of the range or interval.
 	 */
-	size_type _start;
-	/**
+		size_type _start;
+		/**
 	 * @brief Stop position of the range or interval.
 	 */
-	size_type _stop;
-	/**
+		size_type _stop;
+		/**
 	 * @brief Identifier of this range.
 	 */
-	id_type _id;
+		id_type _id;
 };
 // Restore the pack option.
 #pragma pack(pop)
@@ -49,7 +49,7 @@ struct RANGE
 /**
  * @brief Class to manage 64-bit integer ranges.
  */
-class _MISC_CLASS Range :private RANGE
+class _MISC_CLASS Range : private RANGE
 {
 	public:
 		/**
@@ -64,7 +64,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Type to contain and manipulate range lists.
 		 */
-		class _MISC_CLASS Vector :public TVector<Range>
+		class _MISC_CLASS Vector : public TVector<Range>
 		{
 			public:
 				/**
@@ -127,7 +127,7 @@ class _MISC_CLASS Range :private RANGE
 		/**
 		 * @brief Move assignment operator is default.
 		 */
-		inline Range& operator= (Range&&) = default;
+		inline Range& operator=(Range&&) = default;
 
 		/**
 		 * @brief Copy constructor.
@@ -274,7 +274,7 @@ class _MISC_CLASS Range :private RANGE
 		 *  '-' token of 'this' range.<br>
 		 *  '=' token of the 'other' range.<br>
 		 */
-		enum ECompare :int
+		enum ECompare : int
 		{
 			/**
 			 * Failed to compare.
@@ -508,7 +508,6 @@ _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range& r);
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Range& r);
 
-
 /**
  * @brief Output stream operator for a range vector.
  */
@@ -519,167 +518,142 @@ _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Range::Vector& rl);
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Range::Vector& rl);
 
-inline
-Range::Range()
-	:RANGE()
+inline Range::Range()
+	: RANGE()
 {
 	clear();
 }
 
-inline
-Range::Range(const Range& r)
-	:RANGE(r)
+inline Range::Range(const Range& r)
+	: RANGE(r)
 {
 	assign(r);
 }
 
-inline
-Range::Range(const RANGE& r)
-	:RANGE()
+inline Range::Range(const RANGE& r)
+	: RANGE()
 {
 	set(r);
 }
 
-inline
-Range::Range(size_type start, size_type stop, id_type id)
-	:RANGE()
+inline Range::Range(size_type start, size_type stop, id_type id)
+	: RANGE()
 {
 	assign(start, stop, id);
 }
 
-inline
-Range::size_type Range::getStart() const
+inline Range::size_type Range::getStart() const
 {
 	return _start;
 }
 
-inline
-Range::size_type Range::getStop() const
+inline Range::size_type Range::getStop() const
 {
 	return _stop;
 }
 
-inline
-Range::id_type Range::getId() const
+inline Range::id_type Range::getId() const
 {
 	return _id;
 }
 
-inline
-Range& Range::setId(id_type id)
+inline Range& Range::setId(id_type id)
 {
 	_id = id;
 	return *this;
 }
 
-inline
-void Range::clear()
+inline void Range::clear()
 {
 	_start = 0;
 	_stop = 0;
 	_id = 0;
 }
 
-inline
-Range& Range::assign(const Range& r)
+inline Range& Range::assign(const Range& r)
 {
 	*(RANGE*) this = *(RANGE*) &r;
 	return *this;
 }
 
-inline
-Range::size_type Range::getSize() const
+inline Range::size_type Range::getSize() const
 {
 	return _stop - _start;
 }
 
-inline
-Range::size_type Range::split(size_type seg_sz, Vector& rl_dst) const
+inline Range::size_type Range::split(size_type seg_sz, Vector& rl_dst) const
 {
 	return split(seg_sz, *this, rl_dst);
 }
 
-inline
-bool Range::isEmpty() const
+inline bool Range::isEmpty() const
 {
 	return (_stop == _start);
 }
 
-inline
-Range& Range::operator=(const Range& r)
+inline Range& Range::operator=(const Range& r)
 {
 	assign(r);
 	return *this;
 }
 
-inline
-Range& Range::operator=(const RANGE& r)
+inline Range& Range::operator=(const RANGE& r)
 {
 	set(r);
 	return *this;
 }
 
-inline
-Range::operator bool() const
+inline Range::operator bool() const
 {
 	return isEmpty();
 }
 
-inline
-bool Range::operator==(const Range& r) const
+inline bool Range::operator==(const Range& r) const
 {
 	return compare(r) == cmpSame && (!RangeCompareExact || _id == r._id);
 }
 
-inline
-bool Range::operator!=(const Range& r) const
+inline bool Range::operator!=(const Range& r) const
 {
 	return !(compare(r) == cmpSame && (!RangeCompareExact || _id == r._id));
 }
 
-inline
-bool Range::operator<(const Range& r) const
+inline bool Range::operator<(const Range& r) const
 {
 	return !isEmpty() && (r.isEmpty() || ((_start == r._start) ? _stop < r._stop : _start < r._start));
 }
 
-inline
-Range& Range::operator+=(const Range& r)
+inline Range& Range::operator+=(const Range& r)
 {
 	return assign(*this + r);
 }
 
-inline
-Range& Range::operator&=(const Range& r)
+inline Range& Range::operator&=(const Range& r)
 {
 	return assign(*this & r);
 }
 
-inline
-Range& Range::offsetBy(size_type ofs)
+inline Range& Range::offsetBy(size_type ofs)
 {
 	_start += ofs;
 	_stop += ofs;
 	return *this;
 }
 
-inline
-Range Range::offset(size_type ofs) const
+inline Range Range::offset(size_type ofs) const
 {
 	return Range(*this).offsetBy(ofs);
 }
 
-inline
-bool Range::isInRange(size_type idx) const
+inline bool Range::isInRange(size_type idx) const
 {
 	return idx >= _start && idx < _stop;
 }
 
-inline
-const Range& Range::copyTo(RANGE& dst) const
+inline const Range& Range::copyTo(RANGE& dst) const
 {
 	dst = *this;
 	return *this;
 }
 
-} // namespace
+}// namespace sf

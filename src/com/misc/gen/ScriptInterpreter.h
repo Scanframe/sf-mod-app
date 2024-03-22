@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ElapseTimer.h"
-#include "TListener.h"
-#include "ScriptEngine.h"
 #include "../global.h"
+#include "ElapseTimer.h"
+#include "ScriptEngine.h"
+#include "TListener.h"
 
 namespace sf
 {
@@ -11,7 +11,7 @@ namespace sf
 /**
  * @brief Script interpreter for running a loaded script.
  */
-class _MISC_CLASS ScriptInterpreter :public ScriptEngine
+class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 {
 	public:
 		/**
@@ -98,13 +98,15 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 */
 		struct CodePos
 		{
-			CodePos() = default;
+				CodePos() = default;
 
-			CodePos(pos_type line, pos_type offset)
-				:_line(line), _offset(offset) {}
+				CodePos(pos_type line, pos_type offset)
+					: _line(line)
+					, _offset(offset)
+				{}
 
-			pos_type _line{0};
-			pos_type _offset{0};
+				pos_type _line{0};
+				pos_type _offset{0};
 		};
 
 		/**
@@ -198,61 +200,61 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 */
 		struct _MISC_CLASS Instruction
 		{
-			/**
+				/**
 			 * @brief Interpreter available instructions.
 			 */
-			enum EInstr
-			{
-				eiGoto = -3,
-				eiContinue = -2,
-				eiBreak = -1,
-				eiNone = 0,
-				eiCalculate,
-				eiTestJump,
-				eiJump,
-				eiCall,
-				eiRetFunction,
-				eiLastEntry
-			};
+				enum EInstr
+				{
+					eiGoto = -3,
+					eiContinue = -2,
+					eiBreak = -1,
+					eiNone = 0,
+					eiCalculate,
+					eiTestJump,
+					eiJump,
+					eiCall,
+					eiRetFunction,
+					eiLastEntry
+				};
 
-			/**
+				/**
 			 * @brief Default constructor.
 			 */
-			Instruction() = default;
+				Instruction() = default;
 
-			/**
+				/**
 			 * @brief Initializing constructor.
 			 */
-			Instruction(EInstr instr, ip_type ip, const CodePos& pos, std::string script = std::string());
+				Instruction(EInstr instr, ip_type ip, const CodePos& pos, std::string script = std::string());
 
-			/**
+				/**
 			 * @brief Operation instruction.
 			 */
-			EInstr _instr{eiNone};
-			/**
+				EInstr _instr{eiNone};
+				/**
 			 * @brief Position in the source.
 			 */
-			CodePos _codePos{0, 0};
-			/**
+				CodePos _codePos{0, 0};
+				/**
 			 * @brief Partial script to calculate and to be used for a decision to jump or not.
 			 */
-			std::string _script{};
-			/**
+				std::string _script{};
+				/**
 			 * @brief Absolute instruction pointer address for jump instruction.
 			 */
-			ip_type _absIp{-1};
+				ip_type _absIp{-1};
 
-			/**
+				/**
 			 * @brief Gets the mnemonic of the current instruction.
 			 */
-			[[nodiscard]] const char* getMnemonic() const;
+				[[nodiscard]] const char* getMnemonic() const;
 
-			/**
+				/**
 			 * @brief Gets the jump ip from this instruction when applicable.
 			 *
 			 * @returns -1 when not applicable.
 			 */
-			[[nodiscard]] ip_type getJumpIp() const;
+				[[nodiscard]] ip_type getJumpIp() const;
 		};
 
 		/**
@@ -267,12 +269,12 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		/**
 		 * @brief Gets the instruction text at pointer IP.
 		 */
-		[[nodiscard]] const TVector<Instruction>& getInstructions() const {return _instructions;}
+		[[nodiscard]] const TVector<Instruction>& getInstructions() const { return _instructions; }
 
 		/**
 		 * @brief Gets the current variables declared in the script.
 		 */
-		[[nodiscard]] const TVector<VariableInfo*>& getVariables() const {return _variables;}
+		[[nodiscard]] const TVector<VariableInfo*>& getVariables() const { return _variables; }
 
 		/**
 		 * @brief Gets a list of available identifiers.
@@ -375,7 +377,6 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		std::ostream* _outputStream{nullptr};
 
 	private:
-
 		/**
 		 * @brief Gets the external source. First non white character is also delimiting character.
 		 */
@@ -529,15 +530,15 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		 */
 		struct _MISC_CLASS StackEntry
 		{
-			explicit StackEntry(ip_type ip)
-			{
-				_ip = ip;
-			}
+				explicit StackEntry(ip_type ip)
+				{
+					_ip = ip;
+				}
 
-			/**
+				/**
 			 * Instruction pointer to return to.
 			 */
-			ip_type _ip{0};
+				ip_type _ip{0};
 		};
 
 		/**
@@ -587,4 +588,4 @@ class _MISC_CLASS ScriptInterpreter :public ScriptEngine
 		ChangeListener::emitter_type _emitterChange;
 };
 
-}
+}// namespace sf

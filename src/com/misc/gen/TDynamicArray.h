@@ -2,7 +2,8 @@
 
 #include "TDynamicBuffer.h"
 
-namespace sf{
+namespace sf
+{
 
 /**
  * @brief A dynamic buffer as typed array.
@@ -11,7 +12,7 @@ namespace sf{
  *
  * @see ::sf::TDynamicBuffer
  */
-template <class T, class Alloc = Allocator>
+template<class T, class Alloc = Allocator>
 class TDynamicArray
 {
 	public:
@@ -24,13 +25,15 @@ class TDynamicArray
 		 * @brief Dynamic array constructor.
 		 */
 		explicit TDynamicArray(const TDynamicBuffer<Alloc>& buf)
-			:_buffer(buf) {}
+			: _buffer(buf)
+		{}
 
 		/**
 		 * @brief Initialization constructor.
 		 */
 		explicit TDynamicArray(size_t sz)
-			:_buffer(sizeof(T) * sz) {}
+			: _buffer(sizeof(T) * sz)
+		{}
 
 		/**
 		 * @brief Returns the size of the array.
@@ -83,7 +86,7 @@ class TDynamicArray
 		/**
 		 * @brief Returns a typed pointer to the start of the array.
  		 */
-		operator const void*() const // NOLINT(google-explicit-constructor)
+		operator const void*() const// NOLINT(google-explicit-constructor)
 		{
 			return static_cast<void*>(_buffer.data());
 		}
@@ -91,7 +94,7 @@ class TDynamicArray
 		/**
 		 * @brief Returns a typed pointer to the start of the array.
  		 */
-		operator void*() // NOLINT(google-explicit-constructor)
+		operator void*()// NOLINT(google-explicit-constructor)
 		{
 			return static_cast<void*>(_buffer.data());
 		}
@@ -145,4 +148,4 @@ class TDynamicArray
 		TDynamicBuffer<Alloc> _buffer;
 };
 
-}
+}// namespace sf

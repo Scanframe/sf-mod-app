@@ -152,9 +152,9 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 	SECTION("sf::getExecutableName", "Executable functions")
 	{
 #if IS_WIN
-		std::string name = "sf-misc-test.exe";
+		std::string name = "t_sf-misc.exe";
 #else
-		std::string name = "sf-misc-test.bin";
+		std::string name = "t_sf-misc.bin";
 #endif
 		REQUIRE(sf::getExecutableName() == name);
 	}

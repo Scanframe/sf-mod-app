@@ -1,8 +1,8 @@
-#include <string>
 #include <cstring>
+#include <string>
 
-#include "gen_utils.h"
 #include "IniProfile.h"
+#include "gen_utils.h"
 
 namespace sf
 {
@@ -38,7 +38,7 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 	const std::string::size_type increment = 256;
 	char buffer[increment + 10];
 	// InitializeBase the read counter.
-//	std::string::size_type rc = 0;
+	//	std::string::size_type rc = 0;
 	s.clear();
 	// skip first character if this is a delimiter
 	if (is.peek() == delim)
@@ -48,19 +48,19 @@ std::istream& read_to_delim(std::string& s, std::istream& is, int delim)
 	// Keep reading chunks until the delimiter is found.
 	while (is.good() && is.peek() != delim)
 	{
-//		s.resize(increment + rc + 10);
-//		is.get((char*)(s.c_str() + rc), increment, delim);
-//		rc += is.gcount();
+		//		s.resize(increment + rc + 10);
+		//		is.get((char*)(s.c_str() + rc), increment, delim);
+		//		rc += is.gcount();
 		is.get(buffer, increment, delim);
 		s.append(buffer, is.gcount());
 	}
 	// Give the string the correct size.
-//	s.resize(rc);
+	//	s.resize(rc);
 	// Return the passed stream.
 	return is;
 }
 
-}
+}// namespace
 
 void IniProfile::initialize()
 {
@@ -73,7 +73,7 @@ IniProfile::IniProfile()
 }
 
 IniProfile::IniProfile(const std::string& path)
-	:_path(path)
+	: _path(path)
 {
 	load(path);
 }
@@ -118,7 +118,7 @@ bool IniProfile::load(const std::string& path)
 	// create 'std::istream' using Path member variable
 	if (sf::fileExists(path))
 	{
-		std::ifstream is(path.c_str(), std::ios::in/*, filebuf::openprot*/);
+		std::ifstream is(path.c_str(), std::ios::in /*, filebuf::openprot*/);
 		load(is);
 		return is.good();
 	}
@@ -197,7 +197,7 @@ std::string IniProfile::getSection(IniProfile::size_type p) const
 {
 	// return NULL if there are no section loaded at all
 	if (!_sections.empty())
-	{ // check if 'p' has a valid value
+	{// check if 'p' has a valid value
 		if (p < _sections.count() || p == npos && _sectionIndex != npos)
 		{
 			return _sections.at((p == npos) ? _sectionIndex : p)->_name;
@@ -274,7 +274,7 @@ IniProfile::size_type IniProfile::findEntry(const std::string& key)
 		if (_sections.count() && !key.empty())
 		{
 			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '"
-				<< _sections[_sectionIndex]->_name << "' In File '" << _path << std::endl;
+								<< _sections[_sectionIndex]->_name << "' In File '" << _path << std::endl;
 		}
 	}
 	return rv;
@@ -350,7 +350,7 @@ IniProfile::Entry* IniProfile::getEntry(IniProfile::size_type p)
 		Section* section = _sections[_sectionIndex];
 		// Check for valid index
 		if (p < section->_entries.count())
-		{ // Return entry pointer
+		{// Return entry pointer
 			return section->_entries[p];
 		}
 	}
@@ -491,7 +491,7 @@ bool IniProfile::Section::read(std::istream& is)
 	return false;
 }
 
-std::ostream& IniProfile::Section::write(std::ostream& os) // NOLINT(readability-make-member-function-const)
+std::ostream& IniProfile::Section::write(std::ostream& os)// NOLINT(readability-make-member-function-const)
 {
 	// Check stream for errors
 	if (os.good())
@@ -539,7 +539,7 @@ int IniProfile::Section::setEntry(const std::string& key, const std::string& val
 				return 1;
 			}
 		}
-			// if not found
+		// if not found
 		else
 		{
 			// Add entry at the end of the section list
@@ -595,7 +595,7 @@ IniProfile::EntryVector::size_type IniProfile::Section::findEntry(const std::str
 }
 
 bool IniProfile::Section::removeEntry(EntryVector::size_type index)
-{ // check for valid parameters
+{// check for valid parameters
 	if (index != npos && index < _entries.count())
 	{
 		// delete entry instance
@@ -641,7 +641,7 @@ bool IniProfile::Entry::setLine(const std::string& line)
 				_value = line.substr(pos + 1, line.length());
 			}
 		}
-			// Comment line.
+		// Comment line.
 		else
 		{
 			_cmtFlag = true;
@@ -797,4 +797,4 @@ std::ostream& IniProfile::Entry::write(std::ostream& os)
 	return os;
 }
 
-}
+}// namespace sf
