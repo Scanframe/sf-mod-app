@@ -10,7 +10,6 @@ arguments=(
 	"src/com/misc/tests"
 	"${@}"
 )
-arguments=("src/com/misc/tests")
 #arguments+=("com/misc/gen" "com/misc/lnx" "com/misc/win")
 # Add quiet option when call from the Git pre-commit hook.
 if [[ "$(ps -o comm= $PPID)" == "pre-commit" ]]; then

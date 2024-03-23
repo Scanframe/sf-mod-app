@@ -122,23 +122,23 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief Default constructor.
 		 */
-		inline Range();
+		Range();
 
 		/**
 		 * @brief Move assignment operator is default.
 		 */
-		inline Range& operator=(Range&&) = default;
+		Range& operator=(Range&&) = default;
 
 		/**
 		 * @brief Copy constructor.
 		 * @param r
 		 */
-		inline Range(const Range& r);
+		Range(const Range& r);
 
 		/**
 		 * @brief Base class constructor.
 		 */
-		explicit inline Range(const RANGE& r);
+		explicit Range(const RANGE& r);
 
 		/**
 		 * @brief Initializing constructor.
@@ -146,7 +146,7 @@ class _MISC_CLASS Range : private RANGE
 		 * @param stop Start of the range.
 		 * @param id Identifier of the range.
 		 */
-		inline Range(size_type start, size_type stop, id_type id = 0);
+		Range(size_type start, size_type stop, id_type id = 0);
 
 		/**
 		 * @brief Swaps start and stop if the order is wrong.
@@ -165,7 +165,7 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief InitializeBase instance with other instance.
 		 */
-		inline Range& assign(const Range& r);
+		Range& assign(const Range& r);
 
 		/**
 		 * @brief InitializeBase instance with other instance.
@@ -175,32 +175,32 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * Copies the current instance to RANGE base struct.
 		 */
-		inline const Range& copyTo(RANGE& dst) const;
+		const Range& copyTo(RANGE& dst) const;
 
 		/**
 		 * @brief Const function to access the start of the range.
 		 */
-		[[nodiscard]] inline size_type getStart() const;
+		[[nodiscard]] size_type getStart() const;
 
 		/**
 		 * @brief Const function to access the stop of the range.
 		 */
-		[[nodiscard]] inline size_type getStop() const;
+		[[nodiscard]] size_type getStop() const;
 
 		/**
 		 * @brief Clears the range to an empty state.
 		 */
-		inline void clear();
+		void clear();
 
 		/**
 		 * @brief Returns the size of the range minimum is 1.
 		 */
-		[[nodiscard]] inline size_type getSize() const;
+		[[nodiscard]] size_type getSize() const;
 
 		/**
 		 * @brief Return true if the range is empty.
 		 */
-		[[nodiscard]] inline bool isEmpty() const;
+		[[nodiscard]] bool isEmpty() const;
 
 		/**
 		 * @brief Returns if the passed range have some overlap.
@@ -235,7 +235,7 @@ class _MISC_CLASS Range : private RANGE
 		 * @param rl_dst Destination list to receive the range(s) after splitting.
 		 * @return Amount ranges it was split into.
 		 */
-		inline size_type split(size_type seg_sz, Vector& rl_dst) const;
+		size_type split(size_type seg_sz, Vector& rl_dst) const;
 
 		/**
 		 * @brief Splits a range into segments bounded ranges according to the passed segment size.
@@ -261,12 +261,17 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief Check if idx is within this range
 		 */
-		[[nodiscard]] inline bool isInRange(size_type idx) const;
+		[[nodiscard]] bool isInRange(size_type idx) const;
+
+		/**
+		 * @brief Gets the underlying base structure.
+		 */
+		const RANGE& getBase() const;
 
 		/**
 		 * @brief Boolean operator for testing content of this instance.
 		 */
-		explicit inline operator bool() const;
+		explicit operator bool() const;
 
 		/**
 		 * @brief All possible comparison results.<br>
@@ -377,40 +382,40 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief Returns the owner id of this range.
 		 */
-		[[nodiscard]] inline id_type getId() const;
+		[[nodiscard]] id_type getId() const;
 
 		/**
 		 * @brief Set the owner id of this range.
 		 */
-		inline Range& setId(id_type id);
+		Range& setId(id_type id);
 
 		/**
 		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
-		inline Range& operator=(const Range& r);
+		Range& operator=(const Range& r);
 
 		/**
 		 * @brief Assignment operator allow derived classes to copy their data members.
 		 */
-		inline Range& operator=(const RANGE& r);
+		Range& operator=(const RANGE& r);
 
 		/**
 		 * @brief Tests if the range start and stop members are the same.
 		 */
-		inline bool operator==(const Range& r) const;
+		bool operator==(const Range& r) const;
 
 		/**
 		 * @brief Tests if the range start and stop members are not the same.
 		 */
-		inline bool operator!=(const Range& r) const;
+		bool operator!=(const Range& r) const;
 
 		/**
 		 * @brief Operator used for sorting.
 		 * Depends only on the start position first and then the stop position.
-		 * Empty ranges are always larger then non empty ones to be able to
+		 * Empty ranges are always larger than non-empty ones to be able to
 		 * move empty ones to the end of a vector.
 		 */
-		inline bool operator<(const Range& r) const;
+		bool operator<(const Range& r) const;
 
 		/**
 		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
@@ -420,7 +425,7 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief And operator which is a subset of both range where elements of the one also exist in the other range.
 		 */
-		inline Range& operator&=(const Range& r);
+		Range& operator&=(const Range& r);
 
 		/**
 		 * @brief Returns a new range which is a super Set of the two ranges.
@@ -434,7 +439,7 @@ class _MISC_CLASS Range : private RANGE
 		 *
 		 * A gap in between is bridged by the resulting.
 		 */
-		inline Range& operator+=(const Range& r);
+		Range& operator+=(const Range& r);
 
 		/**
 	   * @brief Exclude the range in the other which could result in an single range (0),
@@ -453,14 +458,14 @@ class _MISC_CLASS Range : private RANGE
 		 * @param ofs Offset
 		 * @return Itself
 		 */
-		inline Range& offsetBy(size_type ofs);
+		Range& offsetBy(size_type ofs);
 
 		/**
 		 * @brief Shifts the range using the passed offset.
 		 *
 		 * @return The shifted range
 		 */
-		[[nodiscard]] inline Range offset(size_type ofs) const;
+		[[nodiscard]] Range offset(size_type ofs) const;
 
 		/**
 		 * @brief Not allowed operator.
@@ -600,6 +605,11 @@ inline Range& Range::operator=(const Range& r)
 inline Range& Range::operator=(const RANGE& r)
 {
 	set(r);
+	return *this;
+}
+
+inline const RANGE& Range::getBase() const
+{
 	return *this;
 }
 

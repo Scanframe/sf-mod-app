@@ -34,6 +34,17 @@ TEST_CASE("sf::RangeManager", "[con][generic][range]")
 	// Initialize the accessibles vector.
 	accessibles = {{{0, 20}, {30, 40}, {50, 60}, {70, 80}}};
 
+	SECTION("Stream Range::Vector", "Streaming in and out.")
+	{
+		results = {{{0, 20, 1}, {30, 40, 2}, {50, 60, 3}, {70, 80, 4}}};
+		std::string results_string = "(4, (0,20,1), (30,40,2), (50,60,3), (70,80,4))";
+		REQUIRE((std::stringstream() << results).str() == results_string);
+		// Empty the results vector.
+		results.clear();
+		std::stringstream(results_string) >> results;
+		REQUIRE(results == sf::Range::Vector{{{0, 20, 1}, {30, 40, 2}, {50, 60, 3}, {70, 80, 4}}});
+	}
+
 	SECTION("Request Out Of Range", "Making an out of range request")
 	{
 		// Set the accessible ranges.

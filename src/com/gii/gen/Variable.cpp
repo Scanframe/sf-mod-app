@@ -34,6 +34,13 @@ Variable::Variable(bool global)
 	attachRef(VariableStatic::zero()._reference);
 }
 
+Variable::Variable(const std::string& definition, id_type id_ofs)
+{
+	_global = true;
+	attachRef(VariableStatic::zero()._reference);
+	setup(definition, id_ofs);
+}
+
 bool Variable::isExported() const
 {
 	return _reference->_exported;
@@ -1916,7 +1923,7 @@ bool Variable::isOwner() const
 
 bool Variable::isValid() const
 {
-	return _reference && _reference->_valid;
+	return _reference->_valid;
 }
 
 bool Variable::isNumber() const

@@ -154,23 +154,25 @@ int main()
 	int cleanup;
 
 	//sf::Mutex mutex("outer");
-	sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
-												 TestAutoCleanup cleanup_test(cleanup);
-												 sf::Mutex mutex("inner");
-												 // Need a locked mutex for the condition.
-												 sf::Mutex::Lock lock(mutex);
-												 SF_NORM_NOTIFY(DO_COUT, "Thread is waiting on condition signal");
-												 // Wait for a signal.
-												 condition.wait(mutex);
-												 // Set the flag to signal waiting is over.
-												 flag = true;
-												 SF_NORM_NOTIFY(DO_COUT, "Thread was signaled");
-												 // Simulate the work...
-												 thread.sleep(sf::TimeSpec(0.1));
-												 SF_NORM_NOTIFY(DO_COUT, "Thread done and exiting");
-												 return 0xff;
-											 }),
-											 "closure");
+	sf::ThreadClosure tc(
+		sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
+			TestAutoCleanup cleanup_test(cleanup);
+			sf::Mutex mutex("inner");
+			// Need a locked mutex for the condition.
+			sf::Mutex::Lock lock(mutex);
+			SF_NORM_NOTIFY(DO_COUT, "Thread is waiting on condition signal");
+			// Wait for a signal.
+			condition.wait(mutex);
+			// Set the flag to signal waiting is over.
+			flag = true;
+			SF_NORM_NOTIFY(DO_COUT, "Thread was signaled");
+			// Simulate the work...
+			thread.sleep(sf::TimeSpec(0.1));
+			SF_NORM_NOTIFY(DO_COUT, "Thread done and exiting");
+			return 0xff;
+		}),
+		"closure"
+	);
 	// Enable debug printing.
 	tc.setDebug(true);
 	// Start the thread.

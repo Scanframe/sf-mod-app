@@ -1,6 +1,5 @@
 /*
-General functions, defines, type definitions and templates to
-make C++ programming easier.
+General functions, defines, type definitions and templates to make C++ programming easier.
 */
 
 #pragma once
@@ -47,6 +46,33 @@ inline S calculateOffset(T value, T min, T max, S len, bool clip)
 	}
 	return temp;
 }
+
+/**
+ * @brief Sets locale for a specific scope.
+ */
+class _MISC_CLASS Locale
+{
+	public:
+		/**
+		 * @brief Constructor to set locale 'C'.
+		 */
+		Locale();
+		/**
+		 * @brief Constructor.
+		 * @param locale New locale value defaulting to 'C'.
+		 */
+		Locale(const char* locale);
+		/**
+		 * @brief Destructor restoring stored locale.
+		 */
+		~Locale();
+
+	private:
+		/**
+		 * @brief Holds the previous locale.
+		 */
+		const char* _locale;
+};
 
 /**
  * @brief Return clipped value of v between a and b where a < b.
@@ -180,7 +206,7 @@ std::string string_format(const std::string& format, Args&&... args)
 _MISC_FUNC std::string bitToString(unsigned long wrd, size_t count);
 
 /**
- * The gcvt() function converts number to a minimal length std::string.
+ * @brief The gcvt() function converts number to a minimal length std::string.
  * It produces 'digits' significant digits in either printf(3) F format or E format.
  */
 _MISC_FUNC std::string gcvtString(double value, int digits);
@@ -188,17 +214,17 @@ _MISC_FUNC std::string gcvtString(double value, int digits);
 /**
  * @brief A locale independent version of std::strtold() function which uses locale "C".
  */
-_MISC_FUNC long double stold(const char* ptr, char** end_ptr);
+_MISC_FUNC long double stold(const char* ptr, char** end_ptr = nullptr);
 
 /**
  * @brief A locale independent version of std::strtod() function which uses locale "C".
  */
-_MISC_FUNC double stod(const char* ptr, char** end_ptr);
+_MISC_FUNC double stod(const char* ptr, char** end_ptr = nullptr);
 
 /**
  * @brief A locale independent version of std::strtof() function which uses locale "C".
  */
-_MISC_FUNC float stof(const char* ptr, char** end_ptr);
+_MISC_FUNC float stof(const char* ptr, char** end_ptr = nullptr);
 
 /**
  * @brief Returns numeric the value of the passed hexadecimal character
@@ -326,11 +352,6 @@ _MISC_FUNC std::string trimLeft(std::string s, const std::string& t = " ");
 _MISC_FUNC std::string trimRight(std::string s, const std::string& t = " ");
 
 /**
- * @brief Returns the same string but now uses a new buffer making the string thread save.
- */
-_MISC_FUNC std::string unique(const std::string& s);
-
-/**
  * @brief Generates random numbers within a specified integer range.
  */
 template<typename T>
@@ -382,7 +403,7 @@ _MISC_FUNC int magnitude(double value);
 _MISC_FUNC int requiredDigits(double roundVal, double minVal, double maxVal);
 
 /**
- * Fast integer power-of function.
+ * @brief Fast integer power-of function.
  * @tparam T Integer type.
  * @param base
  * @param exponent
@@ -418,7 +439,7 @@ T ipow(T base, int exponent)
 }
 
 /**
- * Rounds the passed value to a multiple of the rnd value.
+ * @brief Rounds the passed value to a multiple of the rnd value.
  */
 template<typename T>
 T round(T value, T rnd)
@@ -446,10 +467,11 @@ bool not_ref_null(T& r)
 }
 
 /**
- * Converts an integer to a buffer.<br>
- * itoa converts value to a null-terminated buffer and stores the result
- * in buffer. With itoa, value is an integer.<br>
- * <b>Note:</b> The space allocated for buffer must be large enough to hold
+ * @brief Converts an integer to a buffer.
+ *
+ * The itoa function converts value to a null-terminated buffer and stores the result in buffer.
+ * With itoa, value is an integer.
+ * **Note:** The space allocated for buffer must be large enough to hold
  * the returned buffer, including the terminating null character (\0).
  * itoa can return up to (sizeof(T) * CHAR_BIT + 1) bytes.
  */
@@ -499,6 +521,8 @@ std::string itostr(T value, int base = 10)
 
 /**
  * @brief Converts a std::string to a T value and whe not possible it returns the passed default.
+ * In case floating point values the conversion depends on the current locale.
+ * To temporary set the @see sf::Locale which can set the locale for a specific scope.
  *
  * @tparam T Any floating point or integer value.
  * @param s String representation of the value.
@@ -556,7 +580,7 @@ T toTypeDef(const std::string& s, T def)
 }
 
 /**
- * String formats a floating point or integer value using scientific notation where the exponent is always a multiple of 3.
+ * @brief String formats a floating point or integer value using scientific notation where the exponent is always a multiple of 3.
  * @tparam T Type of the template function.
  * @param value Value to be converted to a string.
  * @param digits Resolution in significant digits to represent the value.
@@ -666,7 +690,7 @@ std::string numberString(T value, int digits, bool sign_on = true)
 }
 
 /**
- * Modulo function.
+ * @brief Modulo function.
  * @tparam T Integer type of the template.
  * @param k Is the dividend.
  * @param n Is the divisor.
@@ -682,7 +706,7 @@ T imodulo(T k, T n)
 }
 
 /**
- * Modulo function
+ * @brief Modulo function
  * @tparam T Floating point type of the template.
  * @param k Is the dividend.
  * @param n Is the divisor.
@@ -698,31 +722,31 @@ T fmodulo(T k, T n)
 }
 
 /*
- * The strncspn() function calculates the length of the initial segment of 's'
+ * @brief The strncspn() function calculates the length of the initial segment of 's'
  * which consists entirely of characters not in reject up to a maximum 'n'.
  * When no reject chars were found n is returned.
  */
 _MISC_FUNC size_t strncspn(const char* s, size_t n, const char* reject);
 
 /*
- * The strncspn() function calculates the length of the initial segment of 's'
+ * @brief The strncspn() function calculates the length of the initial segment of 's'
  * which consists entirely of characters in accept up to a maximum 'n'.
  */
 _MISC_FUNC size_t strnspn(const char* s, size_t n, const char* accept);
 
 /*
- * Find the first occurrence of find in s, where the search is limited to the
+ * @brief Find the first occurrence of find in s, where the search is limited to the
  * first slen characters of s.
  */
 _MISC_FUNC const char* strnstr(const char* s, const char* find, size_t n);
 
 /**
- * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
+ * @brief Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
  */
 _MISC_FUNC int wildcmp(const char* wild, const char* str, bool case_s);
 
 /**
- * Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
+ * @brief Matches a string against a wildcard string such as "*.*" or "bl?h.*" etc.
  */
 inline int wildcmp(const std::string& wild, const std::string& str, bool case_s)
 {

@@ -10,7 +10,8 @@ namespace sf
  * This class allows linking of member functions of other classes to handle events generated.<br>
  * See the [Example](sf-gii-Variable.html) on how to use this class and the 'TVariableHandler' template class.<br>
  */
-class _GII_CLASS Variable :public InformationBase, public VariableTypes
+class _GII_CLASS Variable : public InformationBase
+	, public VariableTypes
 {
 	public:
 		/**
@@ -31,7 +32,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		/**
 		 * @brief Copy constructor. Copies also the Desired ID data member.
 		 */
-		inline Variable(const Variable& v);
+		Variable(const Variable& v);
 
 		/**
 		 * @brief Creates an instance having a reference with 'id'.
@@ -39,7 +40,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param id Identifying number.
 		 * @param set_desired When true the desired id data member is set to the passed id as well.
 		 */
-		inline Variable(id_type id, bool set_desired);
+		Variable(id_type id, bool set_desired);
 
 		/**
 		 * @brief Creates a variable according to the definition std::string passed to it.
@@ -49,7 +50,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param definition Definition string.
 		 * @param id_ofs Offset for the 'id'.
 		 */
-		explicit inline Variable(const std::string& definition, id_type id_ofs = 0);
+		explicit Variable(const std::string& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a variable using the passed definition structure.
@@ -57,7 +58,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param def Definition structure.
 		 * @param id_ofs Offset for the 'id'.
 		 */
-		explicit inline Variable(const Definition& def, id_type id_ofs = 0);
+		explicit Variable(const Definition& def, id_type id_ofs = 0);
 
 		/**
 		 * @brief Virtual destructor.
@@ -73,7 +74,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param id_ofs Offset for the 'id'.
 		 * @return True on success.
 		 */
-		inline bool setup(const std::string& definition, id_type id_ofs = 0);
+		bool setup(const std::string& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a variable using the definition structure.
@@ -89,7 +90,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param v
 		 * @return
 		 */
-		inline bool setup(const Variable& v);
+		bool setup(const Variable& v);
 
 		/**
 		 * @brief Sets reference to other by id.
@@ -102,7 +103,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
-		inline bool setup(id_type id, bool set_did = false);
+		bool setup(id_type id, bool set_did = false);
 
 		/**
 		 * @brief Only for local non exported owning variables to set the id after setup is called using a string.
@@ -170,7 +171,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 *
 		 * @return True when global.
 		 */
-		[[nodiscard]] inline bool isGlobal() const;
+		[[nodiscard]] bool isGlobal() const;
 
 		/**
 		 * @brief Sets the variable to be global.
@@ -251,7 +252,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 *
 		 * @return Link instance pointer
 		 */
-		[[nodiscard]] inline VariableHandler* getHandler() const;
+		[[nodiscard]] VariableHandler* getHandler() const;
 
 		/**
 		 * @brief Special handler for converting float variables globally.
@@ -293,14 +294,14 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param data Could be a pointer casted value.
 		 */
 		template<typename T>
-		inline void setData(T data);
+		void setData(T data);
 
 		/**
 		 * @brief Gets the data for this instance for user purposes Set with setData().
 		 * @return Could be a pointer casted value.
 		 */
-		template<typename T=uint64_t>
-		[[nodiscard]] inline T getData() const;
+		template<typename T = uint64_t>
+		[[nodiscard]] T getData() const;
 
 		/**
 		 * @brief Both return true if there was a change and notify all variables of the same variable id through an event.
@@ -318,7 +319,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when the value was actually changed.
 		 */
-		[[nodiscard]] inline bool setCur(const Value& value, bool skip_self = false) const;
+		[[nodiscard]] bool setCur(const Value& value, bool skip_self = false) const;
 
 		/**
 		 * @brief Used in settings loading routines which use the owner to Set a new value.
@@ -426,7 +427,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 *
 		 * @return Desired id.
 		 */
-		[[nodiscard]] inline id_type getDesiredId() const;
+		[[nodiscard]] id_type getDesiredId() const;
 
 		/**
 		 * @brief Gets the name or a part of the name of the attached variable.
@@ -742,12 +743,12 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		/**
 		 * @brief Assignment operator that attaches this instance to the same VariableReference as 'v'.
 		 */
-		inline Variable& operator=(const Variable& v);
+		Variable& operator=(const Variable& v);
 
 		/**
 		 * @brief Comparison operator.
 		 */
-		inline int operator==(const Variable& v) const;
+		int operator==(const Variable& v) const;
 
 		/**
 		 * @brief Returns current converted value in default formatted string or state.
@@ -856,7 +857,7 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		 * During events no instances should be deleted.
 		 * The destructor will be called but the data still exist
 		 */
-		void operator delete(void*); // NOLINT(misc-new-delete-overloads)
+		void operator delete(void*);// NOLINT(misc-new-delete-overloads)
 
 	protected:
 		/**
@@ -979,49 +980,36 @@ class _GII_CLASS Variable :public InformationBase, public VariableTypes
 		friend class VariableStatic;
 };
 
-inline
-Variable::Variable(const Variable& v)
+inline Variable::Variable(const Variable& v)
 {
 	_global = v.isGlobal();
 	setup(v);
 }
 
-inline
-Variable::Variable(const Definition& def, id_type id_ofs)
+inline Variable::Variable(const Definition& def, id_type id_ofs)
 {
 	_global = true;
 	setup(def, id_ofs);
 }
 
-inline
-Variable::Variable(id_type id, bool set_desired)
+inline Variable::Variable(id_type id, bool set_desired)
 {
 	_global = true;
 	setup(id, set_desired);
 }
 
-inline
-Variable::Variable(const std::string& definition, id_type id_ofs)
-{
-	_global = true;
-	setup(definition, id_ofs);
-}
-
-inline
-bool Variable::setup(const std::string& definition, id_type id_ofs)
+inline bool Variable::setup(const std::string& definition, id_type id_ofs)
 {
 	return setup(getDefinition(definition), id_ofs);
 }
 
-inline
-bool Variable::setup(const Variable& v)
+inline bool Variable::setup(const Variable& v)
 {
 	setDesiredId(v._desiredId);
 	return attachRef(v._reference);
 }
 
-inline
-bool Variable::setup(id_type id, bool set_did)
+inline bool Variable::setup(id_type id, bool set_did)
 {
 	if (set_did)
 	{
@@ -1031,8 +1019,7 @@ bool Variable::setup(id_type id, bool set_did)
 	return attachRef(getReferenceById(id));
 }
 
-inline
-Variable& Variable::operator=(const Variable& v)
+inline Variable& Variable::operator=(const Variable& v)
 {
 	if (this != &v)
 	{
@@ -1041,65 +1028,55 @@ Variable& Variable::operator=(const Variable& v)
 	return *this;
 }
 
-inline
-Variable::id_type Variable::getDesiredId() const
+inline Variable::id_type Variable::getDesiredId() const
 {
 	return _desiredId;
 }
 
-inline
-bool Variable::setCur(const Value& value, bool skip_self) const
+inline bool Variable::setCur(const Value& value, bool skip_self) const
 {
 	// Cast this pointer to non-const class.
 	return const_cast<Variable*>(this)->setCur(value, skip_self);
 }
 
-inline
-bool Variable::isGlobal() const
+inline bool Variable::isGlobal() const
 {
 	return _global;
 }
 
-inline
-Value::EType Variable::getType(const char* type)
+inline Value::EType Variable::getType(const char* type)
 {
 	return Value::getType(type);
 }
 
-inline
-const char* Variable::getType(Value::EType type)
+inline const char* Variable::getType(Value::EType type)
 {
 	return Value::getType(type);
 }
 
-inline
-const Variable& Variable::getInstanceById(id_type id, const PtrVector& list)
+inline const Variable& Variable::getInstanceById(id_type id, const PtrVector& list)
 {
 	return Variable::getInstanceById(id, (PtrVector&) list);
 }
 
 template<typename T>
-inline
-void Variable::setData(T data)
+inline void Variable::setData(T data)
 {
-	_data = (uint64_t)data;
+	_data = (uint64_t) data;
 }
 
 template<typename T>
-[[nodiscard]] inline
-T Variable::getData() const
+[[nodiscard]] inline T Variable::getData() const
 {
-	return (T)_data;
+	return (T) _data;
 }
 
-inline
-VariableHandler* Variable::getHandler() const
+inline VariableHandler* Variable::getHandler() const
 {
 	return _handler;
 }
 
-inline
-int Variable::operator==(const Variable& v) const
+inline int Variable::operator==(const Variable& v) const
 {
 	return v._reference == _reference;
 }
@@ -1119,4 +1096,4 @@ _GII_FUNC std::istream& operator>>(std::istream& is, Variable& v);
  */
 _GII_FUNC std::ostream& operator<<(std::ostream& os, const Variable::State::Vector& v);
 
-}
+}// namespace sf

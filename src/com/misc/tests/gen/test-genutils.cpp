@@ -28,7 +28,7 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 		int precision = 8;
 		precision = sf::clip(precision, 0, std::numeric_limits<double>::digits10);
 		auto* strValue = "12345.67890123";
-		auto value = sf::stod(strValue, nullptr);
+		auto value = sf::stod(strValue);
 		CHECK(sf::stringf("%.*lf", precision, value) == strValue);
 	}
 

@@ -1,8 +1,8 @@
-#include <QMetaEnum>
-#include <QInputDialog>
-#include <QMessageBox>
 #include "ConversionListModel.h"
 #include "ConversionDialog.h"
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QMetaEnum>
 
 namespace sf
 {
@@ -25,7 +25,7 @@ class ConversionListModel::Adapter
 };
 
 ConversionListModel::Adapter::Adapter()
-	 :_ev({}, {}, 0, _multiplier, _offset, _to_unit, _to_precision)
+	: _ev({}, {}, 0, _multiplier, _offset, _to_unit, _to_precision)
 {
 }
 
@@ -69,8 +69,8 @@ enum EColumn
 }
 
 ConversionListModel::ConversionListModel(UnitConversionServerEx* ucs, QObject* parent)
-	:QAbstractListModel(parent)
-	 , _ucs(ucs)
+	: QAbstractListModel(parent)
+	, _ucs(ucs)
 {
 	update();
 }
@@ -104,10 +104,12 @@ void ConversionListModel::update()
 						entry._to_unit = QString::fromStdString(sl[idx]);
 						break;
 					case 3:
-						entry._multiplier = std::stod(sl[idx]);
+						// Use local 'C' when calling sf::stod().
+						entry._multiplier = stod(sl[idx].c_str());
 						break;
 					case 4:
-						entry._offset = std::stod(sl[idx]);
+						// Use local 'C' when calling sf::stod().
+						entry._offset = stod(sl[idx].c_str());
 						break;
 					case 5:
 						entry._to_precision = std::stoi(sl[idx]);
@@ -131,8 +133,8 @@ int ConversionListModel::columnCount(const QModelIndex& parent) const
 
 void ConversionListModel::refresh()
 {
-//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-//	endRemoveRows();
+	//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+	//	endRemoveRows();
 	beginResetModel();
 	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
@@ -248,8 +250,7 @@ bool ConversionListModel::edit(QModelIndex index)
 		// Apply the made change to the entry.
 		a.setEntry(entry);
 		// Find entry with the same from unit en precision.
-		auto it = std::find_if(_list.begin(), _list.end(), [&](const Entry& e)->bool
-		{
+		auto it = std::find_if(_list.begin(), _list.end(), [&](const Entry& e) -> bool {
 			return entry._from_unit == e._from_unit && entry._from_precision == e._from_precision;
 		});
 		// Check if the entry  already exists.
@@ -261,8 +262,7 @@ bool ConversionListModel::edit(QModelIndex index)
 		}
 		if (flag)//(edit ? (it != std::next(_list.begin(), index.row())) : (it != _list.end()))
 		{
-			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("Unit Conversion"),
-				tr("Unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
+			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("Unit Conversion"), tr("Unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
 			continue;
 		}
 		// Set the dirty flag before an event is going to be sent from the list modification.
@@ -314,8 +314,7 @@ void ConversionListModel::sync()
 			_ucs->getProfile().removeKeys();
 		}
 		// Sort the list first for readability.
-		std::sort(_list.begin(), _list.end(), [](const Entry& a, const Entry& b) -> bool
-		{
+		std::sort(_list.begin(), _list.end(), [](const Entry& a, const Entry& b) -> bool {
 			if (a._from_unit < b._from_unit)
 			{
 				return true;
@@ -335,4 +334,4 @@ void ConversionListModel::sync()
 	_dirty = false;
 }
 
-}
+}// namespace sf

@@ -20,7 +20,8 @@ bool getUnitConversion(const std::string& option, const std::string& from_unit, 
 	if (UnitConversionClosure)
 	{
 		UnitConversionEvent ev(option, from_unit, from_precision, multiplier, offset, to_unit, to_precision);
-		return UnitConversionClosure(ev);
+		if (UnitConversionClosure(ev))
+			return true;
 	}
 	return false;
 }
@@ -28,7 +29,7 @@ bool getUnitConversion(const std::string& option, const std::string& from_unit, 
 bool UnitConverter::set(const std::string& unit, int sig_digits)
 {
 	_originalSigDigits = sig_digits;
-	_originalUnit.assign(unique(unit));
+	_originalUnit.assign(unit);
 	return set();
 }
 
@@ -60,8 +61,6 @@ std::string UnitConverter::getString(double value) const
 	}
 	else
 	{
-		// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
-		char buf[std::numeric_limits<double>::max_digits10 + std::numeric_limits<double>::max_exponent10 + 5];
 		// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
 		std::string s = gcvtString(value, std::numeric_limits<double>::digits10);
 		// Only needed for Windows since it adds a trailing '.' even when not required.

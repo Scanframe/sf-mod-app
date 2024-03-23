@@ -434,7 +434,7 @@ std::istream& operator>>(std::istream& is, Range::Vector& rl)
 		for (Range::Vector::size_type i = 0; i < count; i++)
 		{
 			is >> c >> r;
-			rl.add(r);
+			rl[i] = r;
 		}
 	}
 	return is >> c;

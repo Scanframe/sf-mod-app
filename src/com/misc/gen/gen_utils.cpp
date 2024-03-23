@@ -29,6 +29,20 @@
 namespace sf
 {
 
+Locale::Locale()
+	: _locale(::setlocale(LC_NUMERIC, "C"))
+{}
+
+Locale::Locale(const char* locale)
+	: _locale(::setlocale(LC_NUMERIC, locale))
+{}
+
+Locale::~Locale()
+{
+	if (_locale)
+		(void) setlocale(LC_NUMERIC, _locale);
+}
+
 std::string error_string(int error_num)
 {
 	char buffer[BUFSIZ];
@@ -553,11 +567,6 @@ std::string trim(std::string s, const std::string& t)
 	return trimLeft(trimRight(std::move(s), t), t);
 }
 
-std::string unique(const std::string& s)
-{
-	return {s.c_str(), s.length()};
-}
-
 int precision(double value)
 {
 	constexpr size_t sz = 64;
@@ -727,12 +736,14 @@ bool getFiles(strings& files, std::string directory, std::string wildcard)// NOL
 
 std::string fileBaseName(const std::string& path)
 {
-	return ::basename(const_cast<char*>(sf::unique(path).c_str()));
+	std::string p(path);
+	return ::basename(const_cast<char*>(p.c_str()));
 }
 
 std::string fileDirName(const std::string& path)
 {
-	return ::dirname(const_cast<char*>(sf::unique(path).c_str()));
+	std::string p(path);
+	return ::dirname(const_cast<char*>(p.c_str()));
 }
 
 bool fileUnlink(const std::string& path)
@@ -815,17 +826,10 @@ long double stold(const char* ptr, char** end_ptr)
 
 double stod(const char* ptr, char** end_ptr)
 {
-	// Fix it so the decimal point is used to convert the string.
-	auto* lc_prev = setlocale(LC_NUMERIC, "C");
+	// Set the locale 'C' fot this scope.
+	Locale locale;
 	// Convert the string.
-	auto rv = std::strtod(ptr, end_ptr);
-	// Check if a previous locale was returned.
-	if (lc_prev)
-	{
-		lc_prev = setlocale(LC_NUMERIC, lc_prev);
-	}
-	// Return the value.
-	return rv;
+	return std::strtod(ptr, end_ptr);
 }
 
 float stof(const char* ptr, char** end_ptr)

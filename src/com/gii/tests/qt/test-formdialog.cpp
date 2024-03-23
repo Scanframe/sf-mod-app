@@ -1,7 +1,5 @@
 #include "misc/qt/qt_utils.h"
 #include <QCoreApplication>
-#include <QFileDialog>
-#include <QStandardPaths>
 #include <QTemporaryDir>
 #include <QTimer>
 #include <gii/gen/UnitConversionServer.h>
@@ -33,7 +31,7 @@ m/s,2="/s,39.37007874015748031496062992126,0,2
 
 TEST_CASE("sf::FormDialog", "[debug]")
 {
-
+	// Initialize variable system since it is also de-initialized here.
 	sf::Variable::initialize();
 
 	SECTION("Create UI Form")
@@ -51,7 +49,8 @@ TEST_CASE("sf::FormDialog", "[debug]")
 		//ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
 		ucs.setUnitSystem(sf::UnitConversionServer::usMetric);
 		// Create a server instance.
-		sf::Variable v_server(std::string("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"));
+//#error "Variable definition fails in setup function probably by locale value not equal 'C' !"
+		sf::Variable v_server("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20", 0);
 		// Makes the server instance retrieve new conversion values.
 		CHECK(v_server.setConvertValues(true));
 		// Set the file location to the resource.
@@ -76,6 +75,7 @@ TEST_CASE("sf::FormDialog", "[debug]")
 		dlg.exec();
 	}
 
+	// Checks for dangling variables.
 	sf::Variable::deinitialize();
 
 }

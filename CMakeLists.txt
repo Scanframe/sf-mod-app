@@ -112,11 +112,11 @@ endif ()
 # This must be the last test added since it relies on previous the calls
 # to 'Sf_AddAsCoverageTest()'.
 list(APPEND _CoverageDirs
-	"com/misc/gen"
-	"com/misc/qt"
-	"com/misc/lnx"
-	"com/gii/gen"
-	"com/gii/qt"
+	"src/com/misc/gen"
+	"src/com/misc/qt"
+	"src/com/misc/lnx"
+	"src/com/gii/gen"
+	"src/com/gii/qt"
 )
 Sf_AddTestCoverageReport("coverage-report" "${_CoverageDirs}" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov")
 

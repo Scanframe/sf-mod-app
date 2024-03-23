@@ -44,8 +44,8 @@ Value::Value()
 }
 
 Value::Value(Value&& v) noexcept
+	: _data(v._data)
 {
-	_data = v._data;
 	_size = v._size;
 	_type = v._type;
 	v._type = vitInvalid;
@@ -206,10 +206,6 @@ Value& Value::set(int type, const void* content, size_t size)
 			}
 			else
 			{
-				if (_size > maxString)
-				{
-					_size = maxString;
-				}
 				_data._ptr = (char*) malloc(_size + _sizeExtra);
 				memset(_data._ptr, 0, _size);
 			}
@@ -411,7 +407,7 @@ Value::flt_type Value::getFloat(int* cnv_err) const// NOLINT(misc-no-recursion)
 		case vitString:
 			if (strlen(_data._ptr))
 			{
-				rv = std::strtod(_data._ptr, &end_ptr);
+				rv = sf::stod(_data._ptr, &end_ptr);
 			}
 			if (end_ptr && *end_ptr != '\0' && cnv_err)
 			{
@@ -453,8 +449,6 @@ std::string Value::getString(int precision) const// NOLINT(misc-no-recursion)
 			}
 			else
 			{
-				// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
-				char buf[std::numeric_limits<flt_type>::max_digits10 + std::numeric_limits<flt_type>::max_exponent10 + 5];
 				// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
 				auto s = gcvtString(_data._flt, std::numeric_limits<flt_type>::digits10);
 				// Only needed for Windows since it adds a trailing '.' even when not required.
@@ -958,9 +952,16 @@ Value Value::calculateOffset(Value value, Value min, Value max, const Value& len
 	max -= min;
 	value -= min;
 	Value temp = (max && value) ? (value * Value(len) / max) : z;
-	return (clip) ? ((temp > len) ? len : (temp < z) ? z
-																									 : temp)
-								: temp;
+	if (clip)
+	{
+		// Check upper boundary.
+		if (temp > len)
+			return len;
+		// Check lower boundary.
+		if (temp < z)
+			return z;
+	}
+	return temp;
 }
 
 }// namespace sf

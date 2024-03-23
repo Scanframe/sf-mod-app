@@ -2,7 +2,8 @@
 
 #include <gii/gen/UnitConversionServer.h>
 
-namespace {
+namespace
+{
 
 const char* IniContent = R"(
 
@@ -44,9 +45,9 @@ rad,6=deg,57.2958,0,5
 
 TEST_CASE("sf::UnitConversion", "[unit][conversion]")
 {
+	using Catch::Approx;
 	using Catch::Matchers::Equals;
 	using Catch::Matchers::Matches;
-	using Catch::Approx;
 
 	std::istringstream is(IniContent);
 	sf::UnitConversionServer ucs;
@@ -80,7 +81,7 @@ TEST_CASE("sf::UnitConversion", "[unit][conversion]")
 		REQUIRE(precision == 2);
 
 		REQUIRE(sf::getUnitConversion("", "rad", 5, multiplier, offset, unit, precision));
-		//std::clog << "New U:" << unit << ", M:" << multiplier << ", M:" << offset << ", P:" << precision << std::endl;
+		//std::clog << "Unit:" << unit << ", Mult:" << multiplier << ", Offset:" << offset << ", P:" << precision << std::endl;
 		REQUIRE(multiplier == Approx(57.2958).margin(0.001));
 		REQUIRE(offset == Approx(0.0).margin(0.001));
 		REQUIRE(unit == "deg");
@@ -100,6 +101,5 @@ TEST_CASE("sf::UnitConversion", "[unit][conversion]")
 		REQUIRE(offset == Approx(32).margin(0.0000001));
 		REQUIRE(unit == "\U000000B0F");
 		REQUIRE(precision == 1);
-
 	}
 }

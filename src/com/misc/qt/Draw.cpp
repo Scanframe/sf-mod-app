@@ -6,7 +6,7 @@ namespace sf
 {
 
 Draw::Draw()
-	:_sepFactor(2.2)
+	: _sepFactor(2.2)
 {
 }
 
@@ -28,19 +28,18 @@ Draw::Tick Draw::_tickListHorizontal[] = {
 	{100, 10},
 };
 
-bool Draw::ruler
-	(
-		QPainter& p,
-		ERulerOrientation ro,
-		const QColor& color,
-		const QColor& font_color,
-		const QRect& bounds,
-		const QRect& area,
-		double start,
-		double stop,
-		int digits,
-		const QString& unit
-	) const
+bool Draw::ruler(
+	QPainter& p,
+	ERulerOrientation ro,
+	const QColor& color,
+	const QColor& font_color,
+	const QRect& bounds,
+	const QRect& area,
+	double start,
+	double stop,
+	int digits,
+	const QString& unit
+) const
 {
 	// Initialize the return value.
 	bool rv = true;
@@ -86,12 +85,12 @@ bool Draw::ruler
 				std::string tmp = stringf("%+.*le", precision, min_dist);
 				// Get the weight of the distance.
 				int dist_weight = std::stoi(tmp.substr(precision + 4));
-				// Convert dist string to a value.
-				double dist = std::stod(tmp);
+				// Convert dist string to a value using locale 'C'.
+				double dist = sf::stod(tmp.c_str());
 				// Remove the comma from the precision part.
 				tmp = tmp.substr(0, precision + 3).erase(2, 1);
 				// Get the value from the list that has a nice dist value.
-				int dist_prec = abs((int) std::stod(tmp));
+				int dist_prec = abs((int) sf::stod(tmp.c_str()));
 				// Pick the nearest from the list.
 				int ticks = 0;
 				for (auto& i: _tickListVertical)
@@ -115,7 +114,7 @@ bool Draw::ruler
 				// Y-point where the last text was drawn.
 				int last_yp = -1;
 				// Iterate through the positions on the screen.
-				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos < end_pos); y_pos += dist) // NOLINT(cert-flp30-c)
+				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos < end_pos); y_pos += dist)// NOLINT(cert-flp30-c)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -195,7 +194,7 @@ bool Draw::ruler
 						}
 					}
 					else
-						// Check if it can be placed a bit lower or higher
+					// Check if it can be placed a bit lower or higher
 					{
 						// Check if the proposed tick line is in the rectangle so that painting text is needed.
 						if (area_rect.contains(QPoint(0, yp)))
@@ -246,11 +245,11 @@ bool Draw::ruler
 				// Get the weight of the distance.
 				int dist_weight = std::stoi(tmp.substr(precision + 4));
 				// Convert dist string to a value.
-				double dist = std::stod(tmp);
+				double dist = sf::stod(tmp.c_str());
 				// Remove the comma from the precision part.
 				tmp = tmp.substr(0, precision + 3).erase(2, 1);
 				// Get the value from the list that has a nice dist value.
-				int dist_prec = abs((int) std::stod(tmp));
+				int dist_prec = abs((int) sf::stod(tmp.c_str()));
 				// Pick the nearest from the list.
 				int ticks = 0;
 				for (auto& i: _tickListHorizontal)
@@ -275,7 +274,7 @@ bool Draw::ruler
 				int last_xp = 0;
 				QRect last_tr;
 				// Iterate through the positions on the ruler.
-				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos < end_pos); x_pos += dist) // NOLINT(cert-flp30-c)
+				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos < end_pos); x_pos += dist)// NOLINT(cert-flp30-c)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -404,16 +403,15 @@ bool Draw::ruler
 	return rv;
 }
 
-bool Draw::gridLines
-	(
-		QPainter& p,
-		EGridOrientation go,
-		const QColor& color,
-		const QRect& bounds,
-		double start,
-		double stop,
-		unsigned digits
-	) const
+bool Draw::gridLines(
+	QPainter& p,
+	EGridOrientation go,
+	const QColor& color,
+	const QRect& bounds,
+	double start,
+	double stop,
+	unsigned digits
+) const
 {
 	// Initialize the return value.
 	bool rv = true;
@@ -456,11 +454,11 @@ bool Draw::gridLines
 			// Get the weight of the distance.
 			int dist_weight = std::stoi(tmp.substr(precision + 4));
 			// Convert dist string to a value.
-			double dist = std::stod(tmp);
+			double dist = sf::stod(tmp.c_str());
 			// Remove the comma from the precision part.
 			tmp = tmp.substr(0, precision + 3).erase(2, 1);
 			// Get the value from the list that has a nice dist value.
-			int dist_prec = abs((int) std::stod(tmp));
+			int dist_prec = abs((int) sf::stod(tmp.c_str()));
 			// Pick the nearest from the list.
 			for (auto& i: (go == goHorizontal) ? _tickListVertical : _tickListHorizontal)
 			{
@@ -476,7 +474,7 @@ bool Draw::gridLines
 			// Determine the end position of the loop.
 			double end_pos = stop + dist;
 			// Iterate through the positions on the screen.
-			for (double pos = real_start; inverted ? (pos > end_pos) : (pos < end_pos); pos += dist) // NOLINT(cert-flp30-c)
+			for (double pos = real_start; inverted ? (pos > end_pos) : (pos < end_pos); pos += dist)// NOLINT(cert-flp30-c)
 			{
 				// Draw the line
 				if (go == goHorizontal)
@@ -542,4 +540,4 @@ bool Draw::textCross(QPainter& painter, const QRect& bounds, const QString& text
 	return true;
 }
 
-}
+}// namespace sf

@@ -79,6 +79,8 @@ bool UnitConversionServer::Handler(UnitConversionEvent& ev)
 		// Need at least 4 parts.
 		if (sl.size() >= 4)
 		{
+			// Fix it so the decimal point is used to convert to the string.
+			Locale locale;
 			ev._to_unit = sl[0].empty() ? "??" : sl[0];
 			ev._multiplier = toTypeDef<double>(sl[1], 1.0);
 			ev._offset = toTypeDef<double>(sl[2], 0.0);
