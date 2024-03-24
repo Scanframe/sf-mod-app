@@ -38,7 +38,9 @@ TEST_CASE("sf::RangeManager", "[con][generic][range]")
 	{
 		results = {{{0, 20, 1}, {30, 40, 2}, {50, 60, 3}, {70, 80, 4}}};
 		std::string results_string = "(4, (0,20,1), (30,40,2), (50,60,3), (70,80,4))";
-		REQUIRE((std::stringstream() << results).str() == results_string);
+		std::stringstream ss;
+		ss << results;
+		REQUIRE(ss.str() == results_string);
 		// Empty the results vector.
 		results.clear();
 		std::stringstream(results_string) >> results;

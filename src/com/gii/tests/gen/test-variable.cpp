@@ -543,6 +543,6 @@ TEST_CASE("sf::Variable", "[variable]")
 		var.setCur(sf::Value(sf::unescape(R"(D:\\Data\\files)")));
 	}
 
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 
 }

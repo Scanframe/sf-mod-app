@@ -1901,7 +1901,7 @@ void Variable::initialize()
 	VariableStatic::initialize(true);
 }
 
-void Variable::deinitialize()
+void Variable::uninitialize()
 {
 	VariableStatic::initialize(false);
 }

@@ -6,11 +6,12 @@ namespace sf
 {
 
 /**
- * @brief Class for creating and referencing global or local created parameters or settings called variables.<br>
- * This class allows linking of member functions of other classes to handle events generated.<br>
- * See the [Example](sf-gii-Variable.html) on how to use this class and the 'TVariableHandler' template class.<br>
+ * @brief Class for creating and referencing global or local created parameters or settings called variables.
+ * This class allows linking of member functions of other classes to handle events generated.
+ * See the [Example](sf-gii-Variable.html) on how to use this class and the 'TVariableHandler' template class.
  */
-class _GII_CLASS Variable : public InformationBase
+class _GII_CLASS Variable
+	: public InformationBase
 	, public VariableTypes
 {
 	public:
@@ -22,7 +23,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Called when terminating the application.
 		 */
-		static void deinitialize();
+		static void uninitialize();
 
 		/**
 		 * @brief Default constructor for a default global variable.
@@ -32,7 +33,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Copy constructor. Copies also the Desired ID data member.
 		 */
-		Variable(const Variable& v);
+		inline Variable(const Variable& v);
 
 		/**
 		 * @brief Creates an instance having a reference with 'id'.
@@ -40,12 +41,12 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param id Identifying number.
 		 * @param set_desired When true the desired id data member is set to the passed id as well.
 		 */
-		Variable(id_type id, bool set_desired);
+		inline Variable(id_type id, bool set_desired);
 
 		/**
 		 * @brief Creates a variable according to the definition std::string passed to it.
 		 *
-		 * The "id" from the definition string is the passed id offset added to to form a final id.
+		 * The "id" from the definition string is the passed id offset added to form a final id.
 		 * This used when instances are created from resource strings for multiple instances of the same module.
 		 * @param definition Definition string.
 		 * @param id_ofs Offset for the 'id'.
@@ -58,7 +59,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param def Definition structure.
 		 * @param id_ofs Offset for the 'id'.
 		 */
-		explicit Variable(const Definition& def, id_type id_ofs = 0);
+		explicit inline Variable(const Definition& def, id_type id_ofs = 0);
 
 		/**
 		 * @brief Virtual destructor.
@@ -74,7 +75,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param id_ofs Offset for the 'id'.
 		 * @return True on success.
 		 */
-		bool setup(const std::string& definition, id_type id_ofs = 0);
+		inline bool setup(const std::string& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a variable using the definition structure.
@@ -90,7 +91,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param v
 		 * @return
 		 */
-		bool setup(const Variable& v);
+		inline bool setup(const Variable& v);
 
 		/**
 		 * @brief Sets reference to other by id.
@@ -103,7 +104,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
-		bool setup(id_type id, bool set_did = false);
+		inline bool setup(id_type id, bool set_did = false);
 
 		/**
 		 * @brief Only for local non exported owning variables to set the id after setup is called using a string.
@@ -171,7 +172,7 @@ class _GII_CLASS Variable : public InformationBase
 		 *
 		 * @return True when global.
 		 */
-		[[nodiscard]] bool isGlobal() const;
+		[[nodiscard]] inline bool isGlobal() const;
 
 		/**
 		 * @brief Sets the variable to be global.
@@ -232,7 +233,7 @@ class _GII_CLASS Variable : public InformationBase
 		bool updateTemporary(bool skip_self = false);
 
 		/**
-		 * @brief Check if the temporary value is differs from the actual value.
+		 * @brief Check if the temporary value differs from the actual value.
 		 *
 		 * Used mainly in dialogs to enable an apply button.
 		 * @return True when different.
@@ -242,7 +243,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Only one link is available at a time.
 		 *
-		 * Sets a event handler for this variable, passing NULL wil disable the link.
+		 * Sets an event handler for this variable, passing NULL wil disable the link.
 		 * @param handler
 		 */
 		void setHandler(VariableHandler* handler);
@@ -252,12 +253,12 @@ class _GII_CLASS Variable : public InformationBase
 		 *
 		 * @return Link instance pointer
 		 */
-		[[nodiscard]] VariableHandler* getHandler() const;
+		[[nodiscard]] inline VariableHandler* getHandler() const;
 
 		/**
 		 * @brief Special handler for converting float variables globally.
 		 *
-		 * Sets a event handler for this variable, passing NULL wil disable the handler
+		 * Sets an event handler for this variable, passing NULL wil disable the handler
 		 * @param handler Handler from conversion interface.
 		 */
 		static void setConvertHandler(VariableHandler* handler);
@@ -268,7 +269,7 @@ class _GII_CLASS Variable : public InformationBase
 		[[nodiscard]] VariableHandler* getConvertHandler() const;
 
 		/**
-		 * @brief Initiate event for all instances of this variables depending on the event value.
+		 * @brief Initiate event for all instances of this variable depending on the event value.
 		 *
 		 * Returns the amount of effected variables by this call.
 		 * @param event
@@ -291,17 +292,17 @@ class _GII_CLASS Variable : public InformationBase
 
 		/**
 		 * @brief Sets the data for this instance for user purposes.
-		 * @param data Could be a pointer casted value.
+		 * @param data Could be a pointer cast value.
 		 */
 		template<typename T>
-		void setData(T data);
+		inline void setData(T data);
 
 		/**
 		 * @brief Gets the data for this instance for user purposes Set with setData().
-		 * @return Could be a pointer casted value.
+		 * @return Could be a pointer cast value.
 		 */
 		template<typename T = uint64_t>
-		[[nodiscard]] T getData() const;
+		[[nodiscard]] inline T getData() const;
 
 		/**
 		 * @brief Both return true if there was a change and notify all variables of the same variable id through an event.
@@ -319,7 +320,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when the value was actually changed.
 		 */
-		[[nodiscard]] bool setCur(const Value& value, bool skip_self = false) const;
+		[[nodiscard]] inline bool setCur(const Value& value, bool skip_self = false) const;
 
 		/**
 		 * @brief Used in settings loading routines which use the owner to Set a new value.
@@ -389,7 +390,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Sets the global conversion values and signals the clients.
 		 *
-		 * Only with owners a call is successful and effective.<br>
+		 * Only with owners a call is successful and effective.
 		 * The formula is: <b><i>converted = (current * multiplier) + offset</i></b>
 		 * When successful event #veConverted emitted.
 		 * @param unit New Unit string.
@@ -418,7 +419,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Returns the current attached ID.
 		 *
-		 * @return Id of the current attached variable.
+		 * @return The id of the current attached variable.
 		 */
 		[[nodiscard]] id_type getId() const;
 
@@ -427,14 +428,14 @@ class _GII_CLASS Variable : public InformationBase
 		 *
 		 * @return Desired id.
 		 */
-		[[nodiscard]] id_type getDesiredId() const;
+		[[nodiscard]] inline id_type getDesiredId() const;
 
 		/**
 		 * @brief Gets the name or a part of the name of the attached variable.
 		 *
 		 * Returns the variable name which is default (level 0) the full variable path name.
-		 * When levels is 'n' and larger then zero the last 'n' levels are returned.
-		 * When levels is 'n' and smaller then zero the first 'n' levels are omitted.
+		 * When levels is 'n' and larger than zero the last 'n' levels are returned.
+		 * When levels is 'n' and smaller than zero the first 'n' levels are omitted.
 		 * @param levels Amount of required levels.
 		 * @return Full or part of name depending on level.
 		 */
@@ -455,7 +456,7 @@ class _GII_CLASS Variable : public InformationBase
 		[[nodiscard]] std::string getUnit() const;
 
 		/**
-		 * @brief Returns variable unit of converted or non converted value.
+		 * @brief Returns variable unit of converted or non-converted value.
 		 *
 		 * @param converted True when getting the converted value.
 		 * @return Unit string.
@@ -639,7 +640,7 @@ class _GII_CLASS Variable : public InformationBase
 		[[nodiscard]] size_type getStateCount() const;
 
 		/**
-		 * @brief Returns the state index of passed value when it exist.
+		 * @brief Returns the state index of passed value when it exists.
 		 *
 		 * @param v Value to lookup.
 		 * @return Valid index and when it does not exist it returns #npos.
@@ -743,12 +744,12 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief Assignment operator that attaches this instance to the same VariableReference as 'v'.
 		 */
-		Variable& operator=(const Variable& v);
+		inline Variable& operator=(const Variable& v);
 
 		/**
 		 * @brief Comparison operator.
 		 */
-		int operator==(const Variable& v) const;
+		inline int operator==(const Variable& v) const;
 
 		/**
 		 * @brief Returns current converted value in default formatted string or state.
@@ -788,7 +789,7 @@ class _GII_CLASS Variable : public InformationBase
 		/**
 		 * @brief load single current value and flags from stream.
 		 *
-		 * If 'list' is other then the default that list is used to seek the according variable instead of the global list.
+		 * If 'list' is other than the default that list is used to seek the according variable instead of the global list.
 		 * @param is
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @param list
@@ -813,7 +814,7 @@ class _GII_CLASS Variable : public InformationBase
 
 		/**
 		 * load single current values from stream.
-		 * If 'list' is other then a NULL_REF that list is used to seek the according variable instead of the global list.
+		 * If 'list' is other than a NULL_REF that list is used to seek the according variable instead of the global list.
 		 * @param is
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @param list
@@ -825,7 +826,7 @@ class _GII_CLASS Variable : public InformationBase
 		 * Reads multiple variable setup strings from stream separated by newline characters.
 		 * Returns true when no error occurred during the process.
 		 * On error returns false and line returns the error line in the stream.
-		 * If 'list' is other then a NULL_REF the created variables are added to that list.
+		 * If 'list' is other than a NULL_REF the created variables are added to that list.
 		 * @param is
 		 * @param list
 		 * @param global
@@ -873,7 +874,7 @@ class _GII_CLASS Variable : public InformationBase
 		explicit Variable(void*, void*);
 
 		/**
-		 * @brief Updates the original non converted version of this instance.
+		 * @brief Updates the original non-converted version of this instance.
 		 *
 		 * @param value
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
@@ -957,7 +958,7 @@ class _GII_CLASS Variable : public InformationBase
 		 */
 		bool _converted{false};
 		/**
-		 * @brief Hold when this pointer is non null this value is changed instead of the current.
+		 * @brief Hold when this pointer is non-null this value is changed instead of the current.
 		 */
 		Value* _temporary{nullptr};
 		/**

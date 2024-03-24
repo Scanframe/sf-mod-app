@@ -412,7 +412,7 @@ TEST_CASE("sf::ResultData", "[result]")
 		});
 	}
 
-	sf::ResultData::deinitialize();
+	sf::ResultData::uninitialize();
 
 }
 

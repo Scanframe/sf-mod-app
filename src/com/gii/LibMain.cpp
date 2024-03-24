@@ -7,8 +7,8 @@ __attribute__((constructor)) void LibraryInitialize()
 	sf::ResultData::initialize();
 }
 
-__attribute__((destructor)) void LibraryDeinitialize()
+__attribute__((destructor)) void LibraryUninitialize()
 {
-	sf::Variable::deinitialize();
-	sf::ResultData::deinitialize();
+	sf::Variable::uninitialize();
+	sf::ResultData::uninitialize();
 }

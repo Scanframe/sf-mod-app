@@ -1,4 +1,5 @@
 #include <misc/gen/TVector.h>
+#include <misc/gen/TVector.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/RangeManager.h>
 #include "ResultData.h"
@@ -20,7 +21,7 @@ void ResultData::initialize()
 	ResultDataStatic::initialize(true);
 }
 
-void ResultData::deinitialize()
+void ResultData::uninitialize()
 {
 	ResultDataStatic::initialize(false);
 }
@@ -310,7 +311,7 @@ bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type
 	return false;
 }
 
-bool ResultData::setup(const ResultData::Definition& definition, ResultData::id_type id_ofs)
+bool ResultData::setup(const ResultData::Definition& definition, const ResultData::id_type id_ofs)
 {
 	// When not valid do not even try.
 	if (!definition._valid)

@@ -154,5 +154,5 @@ TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 	}
   // Delete the conversion server first before deinitializing the variable static stuff.
 	delete &ucs;
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 }

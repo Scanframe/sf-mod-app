@@ -76,6 +76,6 @@ TEST_CASE("sf::FormDialog", "[debug]")
 	}
 
 	// Checks for dangling variables.
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 
 }

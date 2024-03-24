@@ -21,7 +21,7 @@ class _GII_DATA VariableStatic :public VariableTypes
 		static Variable& zero();
 
 		/**
-		 * @brief Called to initialize or deinitialize the variable system.
+		 * @brief Called to initialize or uninitialize the variable system.
 		 */
 		static void initialize(bool);
 

@@ -19,7 +19,7 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		static ResultData& zero();
 
 		/**
-		 * @brief Called to initialize or deinitialize the variable system.
+		 * @brief Called to initialize or uninitialize the variable system.
 		 */
 		static void initialize(bool);
 		/**
@@ -35,7 +35,7 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 
 	private:
 		/**
-		 * @brief Holds the first created instance and place holder with id zero.
+		 * @brief Holds the first created instance and placeholder with id zero.
 		 */
 		static ResultData* _zero;
 
