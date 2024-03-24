@@ -27,7 +27,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
-target_sources(${PROJECT_NAME} PRIVATE
+target_sources("${PROJECT_NAME}" PRIVATE
 	global.h
 	RuntimeIface.h
 	RuntimeIface.cpp

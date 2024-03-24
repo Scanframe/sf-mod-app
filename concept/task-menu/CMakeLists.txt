@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS Core Gui Widgets Designer)
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Qt::Core Qt::Designer Qt::Gui Qt::Widgets)
+target_link_libraries("${PROJECT_NAME}" PUBLIC Qt::Core Qt::Designer Qt::Gui Qt::Widgets)
 
 target_sources(${PROJECT_NAME} PRIVATE
 	TicTacToe.cpp TicTacToe.h

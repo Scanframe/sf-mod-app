@@ -29,7 +29,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets UiPlugin REQUIRED)
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
-target_sources(${PROJECT_NAME} PRIVATE
+target_sources("${PROJECT_NAME}" PRIVATE
 	SfAnalogClock.cpp SfAnalogClock.h
 	SfAnalogClockPlugin.cpp SfAnalogClockPlugin.h
 	SfPushButton.cpp SfPushButton.h
@@ -56,4 +56,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 #Sf_SetTargetSuffix("${PROJECT_NAME}")
 
 # Install designer plugin in plugins directory of current compiler.
-install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)
+#install(TARGETS ${PROJECT_NAME} DESTINATION ${QT_PLUGINS_DIR}/designer)
