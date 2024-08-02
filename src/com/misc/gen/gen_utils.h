@@ -177,7 +177,7 @@ class scope_free
 };
 
 /**
- * @brief Thread safe version ::strerror_r() or ::strerror_s() when cross compiling for Windows.
+ * @brief Thread safe version strerror_r() or strerror_s() when cross compiling for Windows.
  */
 _MISC_FUNC std::string error_string(int error_num);
 

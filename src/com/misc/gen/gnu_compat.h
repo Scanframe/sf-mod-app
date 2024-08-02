@@ -6,10 +6,11 @@
 #ifdef __cplusplus
 	#define SF_CONSTRUCTOR_COMPAT_FUNC(f) \
 		static void f(void);                \
-		struct f##_t_                       \
-		{                                   \
-				f##_t_(void) { f(); }           \
-		};                                  \
+		struct f##_t_{                      \
+			f##_t_(void){f();                 \
+		}                                   \
+		}                                   \
+		;                                   \
 		static f##_t_ f##_;                 \
 		static void f(void)
 #elif defined(_MSC_VER)

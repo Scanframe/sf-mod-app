@@ -427,7 +427,7 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Wraps this class around the main thread of the application.
-		 * @param id
+		 * The boolean bogus argument is to be different from the  default constructor.
 		 */
 		Thread(bool);
 

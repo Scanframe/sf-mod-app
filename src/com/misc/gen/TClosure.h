@@ -55,13 +55,14 @@ class TClosure
 		 *
 		 * Short for passing a std::bind(...) result the #assign().<br>
 		 * For example:
-		 * ```c++
+		 * @code
 		 * bool MyClass::method(const char* s, int i);
 		 *
 		 * TClosure<bool, const char*, int> c2
 		 *
 		 * c2.assign(&MyClass::method, this, std::placeholders::_1, std::placeholders::_2)
-		 * ```
+		 * @endcode
+		 *
 		 * @tparam ClassType Type having the to be called method.
 		 * @tparam MethodType Type from the passed class type.
 		 * @tparam BoundArgs Only std::placeholders::_? enumeration values. (see std::bind)
@@ -69,7 +70,7 @@ class TClosure
 		 * @param cls Pointer of the class having the passed method.
 		 * @param mtd Pointer to method of the given class.
 		 * @param args Amount of arguments needed to call the method using **std::placeholders::_?** enumeration values.
-		 * @return It self.
+		 * @return Itself.
 		 */
 		template<typename ClassType, typename MethodType, typename... BoundArgs>
 		TClosure& assign(ClassType* cls, MethodType mtd, BoundArgs... args)
