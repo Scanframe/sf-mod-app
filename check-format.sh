@@ -16,6 +16,7 @@ if [[ "$(ps -o comm= $PPID)" == "pre-commit" ]]; then
 	arguments+=('--git-hook')
 # Check if called from a GitLab pipeline for a merge request.
 elif [[ -n "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" ]]; then
+	git branch -avv
 	arguments+=('--branch' "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}")
 # Check if called from a GitLab pipeline for a merge request.
 elif [[ -n "${CI}" ]]; then
