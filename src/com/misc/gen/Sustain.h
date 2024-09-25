@@ -181,7 +181,7 @@ class TSustain : public SustainBase
 		/**
 		 * @brief Required type.
 		 */
-		typedef bool (T::* Pmf)(const timespec& t);
+		typedef bool (T::*Pmf)(const timespec& t);
 
 		/**
 		 * @brief One and only initializing constructor.

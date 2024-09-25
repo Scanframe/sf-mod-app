@@ -125,7 +125,7 @@ template<class T>
 class TScriptGlobalEntry : public ScriptGlobalEntry
 {
 	public:
-		typedef Value (T::* FunctionType)(const Value::vector_type&);
+		typedef Value (T::*FunctionType)(const Value::vector_type&);
 
 		TScriptGlobalEntry(T* self, FunctionType func, const std::string& name, int argumentCount, const std::string& description)
 			: ScriptGlobalEntry(name, description, argumentCount)

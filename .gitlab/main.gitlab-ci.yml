@@ -19,7 +19,7 @@ variables:
 
 workflow:
   rules:
-    # No pipeline when commit message starts with an exclamation mark '!'.
+    # No pipeline when SF_SIGNAL equals 'skip'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
     # Run pipeline initiated by a merge request event.
@@ -72,8 +72,6 @@ check-env:
     - 'echo "Working Directory=$(pwd)"'
     # Print all environments variables sorted to make it easier to find.
     - 'echo "Environment Dump" && printenv | sort'
-    # Prevent error when fetching.
-    - git config --global --add safe.directory '*'
     # Check the formatting of the code.
     - 'if [[ -f check-format.sh ]]; then ./check-format.sh; fi'
 
