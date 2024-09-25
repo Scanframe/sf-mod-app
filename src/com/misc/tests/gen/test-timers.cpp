@@ -5,6 +5,9 @@
 #include <misc/gen/PerformanceTimer.h>
 #include <misc/gen/TimeSpec.h>
 #include <misc/gen/gen_utils.h>
+#if IS_WIN
+	#include <misc/win/win_utils.h>
+#endif
 #include <unistd.h>
 
 TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
@@ -109,7 +112,12 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 			::usleep(150000);
 		}
 		// Since the timer is disabled it will never be activated/elapsed.
+#if IS_WIN
+		// Windows has just bad timer/clock accuracy.
+		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(sf::isRunningWine() ? 0.01 : 0.1));
+#else
 		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(0.01));
+#endif
 		// Check if the timer is disabled.
 		CHECK(!et.isEnabled());
 	}

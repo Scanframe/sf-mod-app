@@ -27,10 +27,6 @@
 					"type": "STRING",
 					"value": "Debug"
 				},
-				"Catch2_VERSION": {
-					"type": "STRING",
-					"value": "v3.2.0"
-				},
 				"SF_BUILD_QT": {
 					"type": "BOOL",
 					"value": "OFF"
@@ -54,15 +50,38 @@
 			}
 		},
 		{
+			"name": ".lnx-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		},
+		{
 			"name": ".qt",
 			"hidden": true,
 			"cacheVariables": {
-				"SF_BUILD_QT": "ON"
+				"SF_BUILD_QT": {
+					"type": "BOOL",
+					"value": "ON"
+				}
 			}
 		},
 		{
 			"name": ".cfg-lnx",
 			"inherits": [
+				".lnx-only",
+				".qt",
 				".cfg"
 			],
 			"hidden": true,
@@ -85,6 +104,7 @@
 		{
 			"name": ".cfg-win",
 			"inherits": [
+				".lnx-only",
 				".qt",
 				".cfg"
 			],
@@ -106,12 +126,34 @@
 			}
 		},
 		{
+			"name": ".cfg-w64",
+			"inherits": [
+				".qt",
+				".cfg"
+			],
+			"hidden": true,
+			"displayName": "Debug Windows Template",
+			"description": "Debug config Windows template.",
+			"cacheVariables": {
+				"SF_BUILD_TESTING": {
+					"type": "BOOL",
+					"value": "ON"
+				},
+				"SF_CROSS_WINDOWS": {
+					"type": "BOOL",
+					"value": "OFF"
+				}
+			},
+			"environment": {
+				"PATH": "$penv{PATH}"
+			}
+		},
+		{
 			"name": "gnu-debug",
 			"hidden": false,
 			"displayName": "Dbg GNU Compiler",
 			"description": "Debug config GNU compiler on Linux.",
 			"inherits": [
-				".qt",
 				".cfg-lnx"
 			],
 			"binaryDir": "${sourceDir}/cmake-build/gnu-debug"
@@ -122,7 +164,6 @@
 			"displayName": "Coverage GNU Compiler",
 			"description": "Coverage config GNU compiler on Linux.",
 			"inherits": [
-				".qt",
 				".cfg-lnx"
 			],
 			"cacheVariables": {
@@ -166,7 +207,6 @@
 			"displayName": "Release GNU Compiler",
 			"description": "Release config GNU compiler on Linux.",
 			"inherits": [
-				".qt",
 				".cfg-lnx"
 			],
 			"binaryDir": "${sourceDir}/cmake-build/gnu-release"
@@ -180,6 +220,17 @@
 				".cfg-win"
 			],
 			"binaryDir": "${sourceDir}/cmake-build/gw-release"
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg MinGW Compiler",
+			"description": "Debug config for MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".cfg-w64"
+			],
+			"binaryDir": "${sourceDir}/cmake-build/mingw-debug"
 		}
 	],
 	"buildPresets": [
@@ -196,6 +247,15 @@
 				"type": "equals",
 				"lhs": "${hostSystemName}",
 				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
@@ -277,6 +337,17 @@
 				".build",
 				".lnx-only"
 			]
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg Build MinGW Compiler",
+			"description": "Debug build MinGW compiler on Windows.",
+			"configurePreset": "mingw-debug",
+			"inherits": [
+				".w64-only",
+				".build"
+			]
 		}
 	],
 	"testPresets": [
@@ -298,6 +369,15 @@
 				"type": "equals",
 				"lhs": "${hostSystemName}",
 				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
@@ -365,6 +445,17 @@
 				".lnx-only"
 			],
 			"configurePreset": "gw-release"
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg Test MinGW",
+			"description": "Debug test MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".test"
+			],
+			"configurePreset": "mingw-debug"
 		}
 	],
 	"packagePresets": [
@@ -389,6 +480,15 @@
 			}
 		},
 		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		},
+		{
 			"name": "gnu-debug",
 			"hidden": false,
 			"displayName": "GNU Deb Pack Dbg",
@@ -400,7 +500,8 @@
 			"configurePreset": "gnu-debug",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
-				"DEB"
+				"DEB",
+				"RPM"
 			]
 		},
 		{
@@ -444,6 +545,22 @@
 			"displayName": "GW ZIP + NSIS Pack Release",
 			"description": "GW ZIP + NSIS package release.",
 			"configurePreset": "gw-release",
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"generators": [
+				"NSIS64",
+				"ZIP"
+			]
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"inherits": [
+				".w64-only",
+				".pack"
+			],
+			"displayName": "MinGW ZIP + NSIS Pack Dbg",
+			"description": "MinGW ZIP + NSIS package debug.",
+			"configurePreset": "mingw-debug",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
 				"NSIS64",
@@ -579,6 +696,29 @@
 				{
 					"type": "package",
 					"name": "gw-release"
+				}
+			]
+		},
+		{
+			"name": "mingw-debug",
+			"displayName": "MinGW Dbg Workflow",
+			"description": "MinGW debug workflow.",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "build",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "test",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "package",
+					"name": "mingw-debug"
 				}
 			]
 		}

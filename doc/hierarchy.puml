@@ -66,7 +66,6 @@ top to bottom direction
 
 'title Module Hierarchy
 
-
 interface "AppModule" <<sf-ami>> as i_ami
 interface "Palette" <<sf-pal>> as i_pal
 interface "Qt" <<qt-core>> as i_qt
