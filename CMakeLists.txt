@@ -20,9 +20,6 @@ list(GET _Versions 0 SF_GIT_TAG_VERSION)
 list(GET _Versions 1 SF_GIT_TAG_RC)
 list(GET _Versions 2 SF_GIT_TAG_COMMITS)
 
-# Get the Git version number from the repository of this files directory.
-Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
-
 # Set the global project name.
 project("qt-concepts"
 	VERSION "${SF_GIT_TAG_VERSION}"
@@ -62,7 +59,6 @@ find_package(SfCompiler CONFIG REQUIRED)
 Sf_SetOutputDirs("bin")
 
 if (SF_BUILD_TESTING)
-	set(Catch2_VERSION "v3.5.2")
 	# Prevents Catch2 from adding targets.
 	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.
@@ -72,7 +68,7 @@ if (SF_BUILD_TESTING)
 endif ()
 
 # Configure the rpath.
-if (SF_BUILD_QT STREQUAL "ON")
+if (SF_BUILD_QT)
 	# When the Qt directory is available append it.
 	Sf_GetQtVersionDirectory(_QtVer)
 	if (NOT _QtVer STREQUAL "")

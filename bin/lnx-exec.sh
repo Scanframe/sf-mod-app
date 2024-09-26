@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# Add win64 subdirectory so the WineExec.sh knows where to look for the executables.
-EXECUTABLE_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)/lnx64"
-LD_LIBRARY_PATH="${EXECUTABLE_DIR}/lib"
-# Import the script to prepare environment variables for executing the Windows executable.
-source "${EXECUTABLE_DIR}/../../cmake/lib/bin/LinuxExec.sh"
-
-
+# Get the current script directory.
+dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Set the env variables for the script to act on.
+EXECUTABLE_DIR="${dir}/lnx64" LD_LIBRARY_PATH="${dir}/lnx64/lib" "${dir}/../cmake/lib/bin/LinuxExec.sh" "${@}"

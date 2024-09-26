@@ -14,7 +14,7 @@ namespace sf
 /**
  * @brief Provides a way to stop executing a thread until the main thread enables the thread again.
  *
- * ```c++
+ * @code
  * std::unique_ptr<ThreadRelay> threadRelay;
  *
  * class Worker
@@ -34,7 +34,7 @@ namespace sf
  *   }
  *   return rv;
  * }
- * ```
+ * @endcode
  */
 class _MISC_CLASS ThreadRelay : public Sync
 {

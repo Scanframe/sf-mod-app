@@ -8,7 +8,10 @@
 		static void f(void);                \
 		struct f##_t_                       \
 		{                                   \
-				f##_t_(void) { f(); }           \
+				f##_t_(void)                    \
+				{                               \
+					f();                          \
+				}                               \
 		};                                  \
 		static f##_t_ f##_;                 \
 		static void f(void)

@@ -3,6 +3,7 @@
 /.idea
 /.vscode
 /.vs
+/to-be-migrated
 /CMakeLists.txt.user
 # Any cmake-build directory in the project tree.
 **/cmake-build*/*
@@ -11,12 +12,13 @@
 # Binary directories containg build/packaged results.
 /bin/gcov/*
 /bin/pkg/*
-/bin/lnx64/*
-/bin/win64/*
+/bin/lnx64*/*
+/bin/win64*/*
 /bin/man/*
 # Credential files for testing CI-pipeline called scripts.
 /.nexus-upload-credentials
 /.comment-credentials
+/.gitlab-credentials.ini
 # Debug messages for testing conventinal commit.
 /.version-bump
 # Test bash scripts.

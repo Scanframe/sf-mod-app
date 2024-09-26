@@ -22,7 +22,7 @@
 #endif
 
 /**
- * Declaration of dynamically loadable library information and and function for set/get the library filename.
+ * Declaration of dynamically loadable library information and function for set/get the library filename.
  */
 #define SF_DL_INFORMATION(name, description)                           \
 	namespace                                                            \
@@ -91,7 +91,7 @@ public:                                                               \
 	sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName()    \
 	{                                                                             \
 		static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
-		return entries;                                                             \
+		return sf::TClassRegistration<InterfaceType, ParamType>(entries);           \
 	}
 
 /**
@@ -123,7 +123,7 @@ namespace sf
 {
 
 /**
- * @brief Template class used to register derived classes from an (virtual) interface class.
+ * @brief Template class used to register derived classes from a (virtual) interface class.
  *
  * Registering name and description.<br>
  * [Example](sf-TClassRegistration.html)
@@ -146,11 +146,17 @@ class TClassRegistration
 		/**
 		 * @brief Constructor for the base class.
 		 */
-		inline TClassRegistration<T, P>(entries_t& entries);// NOLINT(google-explicit-constructor)
+		inline explicit TClassRegistration<T, P>(entries_t& entries);
+
 		/**
 		 * @brief Copy constructor
 		 */
 		inline TClassRegistration<T, P>(const TClassRegistration<T, P>& inst);
+
+		/**
+		 * @brief Move constructor
+		 */
+		inline TClassRegistration<T, P>(TClassRegistration<T, P>&& inst);
 
 		/**
 		 * @brief Assignment operator
@@ -178,7 +184,7 @@ class TClassRegistration
 		 * @brief Find a registered class structure index.
 		 *
 		 * @param name Registered name of the class.
-		 * @return Non zero index/position of the class in the registration list where Zero means not found.
+		 * @return Nonzero index/position of the class in the registration list where Zero means not found.
 		 */
 		[[nodiscard]] inline size_t indexOf(const std::string& name) const;
 
@@ -308,6 +314,11 @@ TClassRegistration<T, P>::TClassRegistration(const TClassRegistration<T, P>& ins
 {}
 
 template<typename T, typename P>
+TClassRegistration<T, P>::TClassRegistration(TClassRegistration<T, P>&& inst)
+	: _entries(inst._entries)
+{}
+
+template<typename T, typename P>
 size_t TClassRegistration<T, P>::size() const
 {
 	return _entries->size();
@@ -319,7 +330,7 @@ size_t TClassRegistration<T, P>::registerClass(const char* name, const char* des
 	// Sanity check on existing entry.
 	if (find(name))
 	{
-		std::clog << __FUNCTION__ << ": Entry with name '" << name << "' is already registered!" << std::endl;
+		std::clog << __FUNCTION__ << ": Entry with the name '" << name << "' is already registered!" << std::endl;
 		typename entries_t::const_iterator begin = _entries->begin();
 		return std::distance(begin, lookup(name));
 		//throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);

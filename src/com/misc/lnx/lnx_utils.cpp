@@ -1,7 +1,5 @@
 #include "lnx_utils.h"
 #include "../gen/Exception.h"
-#include "../gen/dbgutils.h"
-#include "../gen/gen_utils.h"
 #include <csignal>
 #include <fcntl.h>
 #include <sys/fsuid.h>
@@ -46,9 +44,7 @@ size_t getThreadCount()
 
 bool kb_hit()
 {
-	struct timeval tv
-	{
-	};
+	struct timeval tv = {};
 	fd_set read_fd;
 	/* do not wait at all, not even a microsecond */
 	tv.tv_sec = 0;
@@ -123,9 +119,7 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 		format = "%Y%m%dT%H%M";
 	}
 	//
-	struct tm timeinfo
-	{
-	};
+	struct tm timeinfo = {};
 	memset(&timeinfo, 0, sizeof(timeinfo));
 	// Returns NULL in case of an error.
 	if (::strptime(str.c_str(), format, &timeinfo) == nullptr)
@@ -134,9 +128,7 @@ time_t time_str2time(const std::string& str, const char* format, bool gmtime)
 	}
 	// set the fields from the time zone which are not Set using strptime().
 	{
-		struct tm ti
-		{
-		};
+		struct tm ti = {};
 		time_t rawtime = 0;
 		(void) ::time(&rawtime);
 		if (gmtime)
@@ -212,7 +204,6 @@ int siginterrupt(int sig, int flag)
 {
 	int ret;
 	struct sigaction act = {};
-
 	sigaction(sig, nullptr, &act);
 	if (flag)
 	{
@@ -353,7 +344,7 @@ bool proc_getgrgid(gid_t gid, group_t& grp)
 	group_type* _grp;
 	//
 	int err = ::getgrgid_r(gid, &grp, grp.buf, grp.buf_sz, &_grp);
-	// Incase of an errror or not found reset the content.
+	// In case of an error or not found reset the content.
 	if (err || !_grp)
 	{
 		grp.reset();
@@ -407,9 +398,7 @@ std::filesystem::path file_fd_path(int fd)
 
 std::string time_format(time_t time, const char* format, bool gmtime)
 {
-	struct tm ti
-	{
-	};
+	struct tm ti = {};
 	// When -1 is passed get the time our selfs.
 	if (time == -1)
 	{
@@ -428,9 +417,7 @@ std::string time_format(time_t time, const char* format, bool gmtime)
 
 std::string time_format(const struct tm* timeinfo, const char* format)
 {
-	struct tm ti
-	{
-	};
+	struct tm ti = {};
 	// When not format has been passed format the XML date.
 	if (!format)
 	{
@@ -470,11 +457,11 @@ bool file_mkdir(const char* path, __mode_t mode)
 			// Check for existence of dir before creating.
 			if (!fileExists(tmp.c_str()))
 			{
-				// Create the sub directory.
+				// Create the subdirectory.
 				if (::mkdir(tmp.c_str(), mode))
 				{
-					SF_NORM_NOTIFY(DO_DEFAULT, "Creating direcory '" << tmp << "' failed!\n"
-																													 << strerror(errno))
+					SF_NORM_NOTIFY(DO_DEFAULT, "Creating directory '" << tmp << "' failed!\n"
+																														<< strerror(errno))
 					// return false in case of an error.
 					return false;
 				}

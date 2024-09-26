@@ -74,9 +74,9 @@ class ExceptionBase : public std::exception
 		/**
 		 * @brief  Formatting function with a class type_info and formatting the message.
 		 * @example
-		 * ```c++
+		 * @code
 		 * ExceptionType.Function(typeid(*this).name(), __FUNCTION__, "Terminating (%d)", 123);
-		 * ```
+		 * @endcode
 		 */
 		template<typename... Args>
 		T Function(const char* mangled_name, const char* func, const char* format, Args&&... args)
@@ -142,11 +142,10 @@ class _MISC_CLASS Exception : public ExceptionBase<Exception>
 
 /**
  * @brief Exception implementation for system calls failing within a wrapper class.
- * @example
  *
- * ```c++
+ * @code
  * throw ExceptionSystemCall("pthread_mutex_lock", error, typeid(*this).name(), __FUNCTION__);
- * ```
+ * @endcode
  */
 class _MISC_CLASS ExceptionSystemCall : public Exception
 {

@@ -1,4 +1,4 @@
-# Modular Applicatiographvizn Reference {#main}
+# Modular Application Reference {#main}
 
 <small>
 Generated from code by [Doxygen](https://www.doxygen.nl/) (_[GitHub](https://github.com/doxygen/doxygen.git)_).

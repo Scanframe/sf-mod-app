@@ -28,7 +28,7 @@ namespace sf
  *     class Lock;            Handles locking and unlocking of member functions.
  *
  * Example
- * ```c++
+ * @code
  *     class ThreadSafe : private Sync
  *     {
  *       public:
@@ -51,7 +51,7 @@ namespace sf
  *       if (i == 3)
  *         i = 2;
  *     }
- * ```
+ * @endcode
  */
 class _MISC_CLASS Sync
 {

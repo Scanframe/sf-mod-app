@@ -3,6 +3,7 @@
 #include "../global.h"
 #include <cstdio>
 #include <cstring>
+#include <inttypes.h>
 #include <iostream>
 
 namespace sf
