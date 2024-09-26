@@ -29,7 +29,7 @@ namespace sf
  *     class Lock;            Handles locking and unlocking of member functions.
  *
  * Example:
- * ```c++
+ * @code
  *     class ThreadSafe : private TStaticSync<ThreadSafe>
  *     {
  *       public:
@@ -52,7 +52,7 @@ namespace sf
  *       if (i == 3)
  *         i = 2;
  *     }
- * ```
+ * @endcode
  */
 template<class T>
 class TStaticSync

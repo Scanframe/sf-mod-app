@@ -1,6 +1,7 @@
 #pragma once
 
 #include <climits>
+#include <inttypes.h>
 #include <iostream>
 #include <iterator>
 #include <limits>

@@ -53,9 +53,9 @@
 #include <utility>
 
 #if IS_QT
-	#include <QtGlobal>
-	#include <QString>
 	#include <QDebug>
+	#include <QString>
+	#include <QtGlobal>
 #endif
 
 // This define should be defined externally in the project or make file.

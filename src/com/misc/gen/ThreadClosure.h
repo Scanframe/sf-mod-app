@@ -9,7 +9,7 @@ namespace sf
  *
  * Allows linking of a lambda function to be called as a thread run function.
  * Usage is like:
- * ```c++
+ * @code
  * ThreadClosure tc(ThreadClosure::func_type([](Thread& thread)->int
  * {
  * 	while (!thread.shouldTerminate());
@@ -28,7 +28,7 @@ namespace sf
  * tc.start();
  * sf::Thread::sleep(sf::TimeSpec(0.5));
  * tc.terminateAndWait();
- * ```
+ * @endcode
  */
 class ThreadClosure
 	: public Thread
@@ -46,7 +46,8 @@ class ThreadClosure
 
 		/**
 		 * @brief Thread run function assigment constructor.
-		 * @param func Function ruin by the thread.
+		 * @param func Function run by the thread.
+		 * @param name Optional name of the thread executing.
 		 */
 		explicit ThreadClosure(const func_type& func, const std::string& name = "")
 			: Thread(name)

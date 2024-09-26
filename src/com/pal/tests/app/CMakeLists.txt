@@ -35,7 +35,7 @@ target_link_libraries("${TEST_APP_TARGET}" PRIVATE Qt::Widgets sf-misc sf-gii sf
 # You can also run examples and check the output, as well.
 # Command can be a target
 add_test(NAME "${TEST_APP_TARGET}"
-	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,win-exec.sh,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_APP_TARGET}>")
+	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,$<IF:$<BOOL:${SF_CROSS_WINDOWS}>,win-exec.sh,win-exec.cmd>,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_APP_TARGET}>")
 
 
 # Make sure this test is executed before coverage test.

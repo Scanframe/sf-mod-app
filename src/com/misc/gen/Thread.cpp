@@ -10,9 +10,9 @@
 #include <string>
 #include <typeinfo>
 #if IS_WIN
-	#include <windows.h>
-	#include <processthreadsapi.h>
 	#include "../win/win_utils.h"
+	#include <processthreadsapi.h>
+	#include <windows.h>
 #else
 	#include <sys/syscall.h>
 #endif
@@ -25,8 +25,7 @@ thread_local Thread* thisThread{nullptr};
 #if !IS_WIN
 __attribute__((constructor)) void installSignalHandlers()
 {
-	struct sigaction sa
-	{
+	struct sigaction sa{
 	};
 	sa.sa_handler = nullptr;
 	sa.sa_flags = SA_SIGINFO;
@@ -339,8 +338,7 @@ bool Thread::setPriority(int pri, int sp)
 	auto pri_max = ::sched_get_priority_max(sp);
 	auto pri_min = ::sched_get_priority_min(sp);
 	// IMPL: What is with this second param in ::sched_setscheduler()
-	struct sched_param param
-	{
+	struct sched_param param{
 	};
 	// Clip the priority to what is allowed by the OS.
 	param.sched_priority = clip(pri, pri_max, pri_min);
@@ -355,8 +353,7 @@ bool Thread::setPriority(int pri, int sp)
 int Thread::getPriority() const
 {
 	int policy = 0;
-	struct sched_param param
-	{
+	struct sched_param param{
 	};
 	int error = pthread_getschedparam(_threadId, &policy, &param);
 	//int error = ::sched_getparam(_threadId, &param);
