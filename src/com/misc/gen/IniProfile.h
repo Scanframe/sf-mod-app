@@ -1,13 +1,12 @@
 #pragma once
 
+#include "../global.h"
+#include "TStrings.h"
+#include "TVector.h"
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-
-#include "../global.h"
-#include "TVector.h"
-#include "gen_utils.h"
 
 namespace sf
 {

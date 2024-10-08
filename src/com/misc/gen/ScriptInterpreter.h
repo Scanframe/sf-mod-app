@@ -475,13 +475,13 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		std::string getProfilePath();
 
 		/**
-		 * @brief Contains execute state.
+		 * @brief contains execute state.
 		 *
 		 * Use the Get and Set methods to change it's value.
 		 */
 		const EState _currentState{esEmpty};
 		/**
-		 * @brief Contains previous execute state.
+		 * @brief contains previous execute state.
 		 */
 		EState _prevState{esEmpty};
 		/**
@@ -509,7 +509,7 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		 */
 		bool _flagStepMode{false};
 		/**
-		 * @brief Contains compiled instructions.
+		 * @brief contains compiled instructions.
 		 */
 		TVector<Instruction> _instructions{};
 		/**
@@ -546,7 +546,7 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		 */
 		TVector<StackEntry> _stack;
 		/**
-		 * @brief Contains variables declared the script.
+		 * @brief contains variables declared the script.
 		 */
 		TVector<VariableInfo*> _variables;
 		/**
@@ -570,15 +570,15 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		 */
 		static IdInfo _info[];
 		/**
-		 * @brief Contains static names of instruction names.
+		 * @brief contains static names of instruction names.
 		 */
 		static const char* _instructionNames[];
 		/**
-		 * @brief Contains static execute states names.
+		 * @brief contains static execute states names.
 		 */
 		static const char* _stateNames[];
 		/**
-		 * @brief Contains static exit code names
+		 * @brief contains static exit code names
 		 */
 		static const char* _exitCodeNames[];
 

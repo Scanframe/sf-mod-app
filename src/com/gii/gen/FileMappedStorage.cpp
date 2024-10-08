@@ -1,18 +1,16 @@
-#include <iostream>
-#include <cstring>
-
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/gen_utils.h>
 #include "FileMappedStorage.h"
+#include <cstring>
+#include <iostream>
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/pointer.h>
 
 namespace sf
 {
 
-Mutex FileMappedStorage::_staticSync; // NOLINT(cert-err58-cpp)
+Mutex FileMappedStorage::_staticSync;// NOLINT(cert-err58-cpp)
 
-FileMappedStorage::FileMappedStorage(FileMappedStorage::size_type seg_sz, FileMappedStorage::size_type blk_sz,
-	FileMappedStorage::size_type recycle)
-	:_segmentRecycleCount(recycle)
+FileMappedStorage::FileMappedStorage(FileMappedStorage::size_type seg_sz, FileMappedStorage::size_type blk_sz, FileMappedStorage::size_type recycle)
+	: _segmentRecycleCount(recycle)
 {
 	_reference = new Reference();
 	_reference->_threadId = Thread::getCurrentId();
@@ -145,7 +143,7 @@ bool FileMappedStorage::cacheSegment(FileMappedStorage::size_type idx)
 	{
 		// Check if a previous locked segment must be unlocked.
 		if (_cachedSegmentIndex != std::numeric_limits<size_type>::max())
-		{ // Unlock the segment,
+		{// Unlock the segment,
 			_reference->_segmentList[_cachedSegmentIndex]->doUnlockMemory();
 			// Set the cached segment index to none.
 			_cachedSegmentIndex = npos;
@@ -171,8 +169,7 @@ void FileMappedStorage::uncacheSegment(FileMappedStorage::size_type idx)
 	// Do nothing yet.
 }
 
-bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz,
-	void* data)
+bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* data)
 {
 	Reference::MtLock lock(_reference->_mutex);
 	// Check if the size addressed data is in range
@@ -183,8 +180,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 	}
 	if ((ofs + sz) > getBlockCount())
 	{
-		SF_RTTI_NOTIFY
-		(
+		SF_RTTI_NOTIFY(
 			DO_DEFAULT,
 			(rd ? "load(" : "read(") << ofs << ',' << sz << ") out of scope!"
 		)
@@ -204,24 +200,23 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 	{
 		// Write as long as count is larger than zero.
 		do
-		{ // Lock the segment if it hasn't been locked yet.
+		{// Lock the segment if it hasn't been locked yet.
 			cacheSegment(seg_i);
 			// Calculate the amount of blocks to write for write in loop.
 			// Calculate the amount of blocks to write for first write in loop.
 			size_type blocks = (offset)
 				? (_reference->_segmentSize - offset) > count ? count : (_reference->_segmentSize - offset)
-				: (count < _reference->_segmentSize) ? count : _reference->_segmentSize;
+				: (count < _reference->_segmentSize) ? count
+																						 : _reference->_segmentSize;
 			// Check iterator scope.
 			if (seg_i >= (int) _reference->_segmentList.count())
 			{
 				throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() block iterator out of scope!");
 			}
 			// Abort loop when a read/write fails.
-			if
-				(rd
-				? !_reference->_segmentList[seg_i]->read(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
-				: !_reference->_segmentList[seg_i]->write(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
-				)
+			if (rd
+						? !_reference->_segmentList[seg_i]->read(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
+						: !_reference->_segmentList[seg_i]->write(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp))
 			{
 				SF_RTTI_NOTIFY(DO_DEFAULT, "Block" << (rd ? "load" : "read") << " Failed!")
 				// Return false indicating failure.
@@ -231,7 +226,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 			uncacheSegment(seg_i);
 			// Set offset to zero so next segment starts at offset zero.
 			if (offset)
-			{ // Clear offset
+			{// Clear offset
 				offset = 0;
 			}
 			// Correct read/write pointer
@@ -240,8 +235,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 			count -= blocks;
 			// Increment the segment counter for the loop.
 			seg_i++;
-		}
-		while (count > 0);
+		} while (count > 0);
 	}
 	// Return true on success.
 	return true;
@@ -310,8 +304,8 @@ std::ostream& FileMappedStorage::writeStatus(std::ostream& os) const
 }
 
 FileMappedStorage::Segment::Segment(FileMappedStorage::size_type sz)
-	:_fileMapper(*IFileMapper::instantiate(true))
-	 , _size(sz)
+	: _fileMapper(*IFileMapper::instantiate(true))
+	, _size(sz)
 {
 	// Use the system page file.
 	_fileMapper.initialize();
@@ -362,10 +356,10 @@ void FileMappedStorage::Segment::doUnlockMemory()
 	if (!_lockCount)
 	{
 		if (!_fileMapper.unmapView()) SF_RTTI_NOTIFY(DO_DEFAULT, "UnmapView On FileMapper Failed!")
-		{
-			// Null the data pointer.
-			_dataPtr = nullptr;
-		}
+			{
+				// Null the data pointer.
+				_dataPtr = nullptr;
+			}
 	}
 	// Check if the lock count is lower then zero
 	if (_lockCount < 0)
@@ -376,8 +370,7 @@ void FileMappedStorage::Segment::doUnlockMemory()
 	}
 }
 
-bool
-FileMappedStorage::Segment::write(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, const void* src)
+bool FileMappedStorage::Segment::write(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, const void* src)
 {
 	// Debug notify of writing zero bytes of memory.
 	SF_COND_RTTI_NOTIFY(!sz, DO_DEFAULT, "Tried to write zero bytes of data!")
@@ -455,7 +448,7 @@ bool FileMappedStorage::Lock::acquire(FileMappedStorage::size_type seg_idx)
 	FileMappedStorage::Reference::MtLock(_store._reference->_mutex);
 	// Check if the segment can be locked.
 	if (seg_idx >= 0 && seg_idx < (size_type) _store._reference->_segmentList.count())
-	{ // Get the segment pointer.
+	{// Get the segment pointer.
 		_segment = _store._reference->_segmentList[seg_idx];
 		// Lock the segment memory.
 		_data = _segment->lockMemory();
@@ -491,4 +484,4 @@ void FileMappedStorage::Lock::release()
 	_segmentIndex = -1;
 }
 
-}
+}// namespace sf

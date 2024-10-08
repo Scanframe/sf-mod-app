@@ -3,7 +3,7 @@
 
 #include "DynamicLibraryInfo.h"
 #include "TDynamicBuffer.h"
-#include "gen_utils.h"
+#include "file.h"
 
 namespace sf
 {
@@ -43,7 +43,7 @@ bool DynamicLibraryInfo::read(const std::string& dir, const std::string& fn)
 	// Get the markers to look for.
 	const uint64_t mark_beg = *((uint64_t*) (SF_DL_MARKER_BEGIN));
 	const uint64_t mark_end = *((uint64_t*) (SF_DL_MARKER_END));
-	// Set to 1 when the begin marker has been found and to 2 when both are found.
+	// Set to 1 when the begin-marker has been found and to 2 when both are found.
 	int flag = 0;
 	// Sanity check.
 	if (!fileExists(filepath))

@@ -1,6 +1,7 @@
-#include "misc/gen/ElapseTimer.h"
 #include <iostream>
+#include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Semaphore.h>
+#include <misc/gen/TStrings.h>
 #include <misc/gen/ThreadClosure.h>
 #include <test/catch.h>
 

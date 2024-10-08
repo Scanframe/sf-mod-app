@@ -26,9 +26,15 @@ set(LIBRARIES pthread)
 set(SOURCES
 	global.h
 	gen/target.h
+	gen/pointer.h
+	gen/file.cpp gen/file.h
+	gen/system.cpp gen/system.h
+	gen/string.cpp gen/string.h
+	gen/math.cpp gen/math.h
+	gen/time.cpp gen/time.h
+	gen/Locale.cpp gen/Locale.h
 	gen/Sustain.cpp gen/Sustain.h
-	gen/IFileMapper.cpp gen/IFileMapper.h
-	gen/gen_utils.cpp gen/gen_utils.h
+	gen/Md5Hash.cpp gen/Md5Hash.h
 	gen/dbgutils.cpp gen/dbgutils.h
 	gen/TimeSpec.cpp gen/TimeSpec.h
 	gen/IntervalTimer.cpp gen/IntervalTimer.h
@@ -47,13 +53,14 @@ set(SOURCES
 	gen/Exception.cpp gen/Exception.h
 	gen/Range.cpp gen/Range.h
 	gen/RangeManager.cpp gen/RangeManager.h
+	gen/Sync.h
 	gen/Mutex.cpp gen/Mutex.h
+	gen/Semaphore.cpp gen/Semaphore.h
+	gen/Condition.cpp gen/Condition.h
 	gen/Thread.cpp gen/Thread.h
 	gen/ThreadClosure.h
-	gen/Semaphore.cpp gen/Semaphore.h
 	gen/ThreadRelay.cpp gen/ThreadRelay.h
-	gen/Condition.cpp gen/Condition.h
-	gen/Sync.h
+	gen/IFileMapper.cpp gen/IFileMapper.h
 	gen/TClassRegistration.h
 	gen/TDynamicBuffer.h
 	gen/TDynamicArray.h
@@ -66,7 +73,6 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
-	gen/Md5Hash.cpp gen/Md5Hash.h
 )
 
 if (NOT WIN32)

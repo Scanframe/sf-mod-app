@@ -1,10 +1,10 @@
 #pragma once
 #include "InformationPacket.h"
 #include "VariableCollector.h"
-#include "misc/gen/ThreadRelay.h"
-#include <gii/gen/VariableTypes.h>
-#include <gii/gen/ResultDataTypes.h>
 #include <QIODevice>
+#include <gii/gen/ResultDataTypes.h>
+#include <gii/gen/VariableTypes.h>
+#include <misc/gen/ThreadRelay.h>
 
 namespace sf
 {
@@ -12,10 +12,10 @@ namespace sf
 /**
  * @brief Class handling the connection exchanging data using a QIODevice.
  */
-class ServerConnection :public QObject, protected InformationTypes
+class ServerConnection : public QObject
+	, protected InformationTypes
 {
 	public:
-
 		enum EState
 		{
 			sError = -1,
@@ -49,7 +49,6 @@ class ServerConnection :public QObject, protected InformationTypes
 		void relayThread();
 
 	private:
-
 		ThreadRelay _relay;
 
 		VariableCollector* _varCollector;
@@ -70,4 +69,4 @@ class ServerConnection :public QObject, protected InformationTypes
 		DynamicBuffer _bufferWrite;
 };
 
-}
+}// namespace sf

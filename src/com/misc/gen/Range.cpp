@@ -1,7 +1,5 @@
 #include "Range.h"
-#include "gen_utils.h"
 #include <algorithm>
-#include <string>
 
 namespace sf
 {
@@ -30,7 +28,7 @@ void Range::normalize()
 	if (_stop < _start)
 	{
 		// Swap start and stop.
-		swap_it(_start, _stop);
+		std::swap(_start, _stop);
 	}
 }
 
@@ -396,7 +394,7 @@ Range::size_type Range::split(Range::size_type seg_sz, const Range::Vector& req,
 
 std::istream& operator>>(std::istream& is, Range& r)
 {
-	char c;
+	char c{0};
 	return is >> c >> r._start >> c >> r._stop >> c >> r._id >> c;
 }
 

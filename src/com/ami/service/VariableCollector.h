@@ -1,13 +1,15 @@
 #pragma once
 
+#include <gii/gen/Variable.h>
+#include <map>
 #include <misc/gen/Sync.h>
 #include <misc/gen/TFifoClass.h>
-#include <gii/gen/Variable.h>
 
 namespace sf
 {
 
-class VariableCollector :public VariableHandler, protected Sync
+class VariableCollector : public VariableHandler
+	, protected Sync
 {
 	public:
 		explicit VariableCollector();
@@ -26,12 +28,19 @@ class VariableCollector :public VariableHandler, protected Sync
 
 		struct Data
 		{
-			enum {dtNone, dtAdd, dtRemove, dtValue, dtFlags} _type{dtNone};
-			id_type _id{0};
-			Value _value{};
+				enum
+				{
+					dtNone,
+					dtAdd,
+					dtRemove,
+					dtValue,
+					dtFlags
+				} _type{dtNone};
+				id_type _id{0};
+				Value _value{};
 		};
 		//
 		TFifoClass<Data> _fifo{1000};
 };
 
-}
+}// namespace sf

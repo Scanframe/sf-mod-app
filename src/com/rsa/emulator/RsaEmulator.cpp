@@ -1,5 +1,3 @@
-#include <misc/gen/gen_utils.h>
-
 #include "RsaEmulator.h"
 
 namespace sf
@@ -24,98 +22,98 @@ namespace sf
 #define NO_CHANNEL 0xFF
 
 // Macro's for mapping parameter enumerates PID numbers.
-#define PID_MAP(n)         (n)
+#define PID_MAP(n) (n)
 #define PID_CHANNEL_MAP(n) ((n) & ~apChannel_Mask)
-#define PID_GATE_MAP(n)    ((n) & ~apGate_Mask)
+#define PID_GATE_MAP(n) ((n) & ~apGate_Mask)
 // Macro's for added parameter enumerates PID numbers.
-#define PID_ADDED(n)         (apUserFirst + (n))
+#define PID_ADDED(n) (apUserFirst + (n))
 #define PID_CHANNEL_ADDED(n) ((apChannel_UserFirst + (n)) & ~apChannel_Mask)
-#define PID_GATE_ADDED(n)    ((apGate_UserFirst + (n)) & ~apGate_Mask)
+#define PID_GATE_ADDED(n) ((apGate_UserFirst + (n)) & ~apGate_Mask)
 // Macro's for mapping result enumerates PID numbers.
-#define RID_MAP(n)         (n)
+#define RID_MAP(n) (n)
 #define RID_CHANNEL_MAP(n) ((n) & ~arChannel_Mask)
-#define RID_GATE_MAP(n)    ((n) & ~arGate_Mask)
+#define RID_GATE_MAP(n) ((n) & ~arGate_Mask)
 // Macro's for added result enumerates PID numbers.
-#define RID_ADDED(n)         (arLAST + (n))
+#define RID_ADDED(n) (arLAST + (n))
 #define RID_CHANNEL_ADDED(n) ((arChannel_UserFirst + (n)) & ~arChannel_Mask)
-#define RID_GATE_ADDED(n)    ((arGate_UserFirst + (n)) & ~arGate_Mask)
+#define RID_GATE_ADDED(n) ((arGate_UserFirst + (n)) & ~arGate_Mask)
 
 // Map default parameters to our own ID's.
-#define PID_CHANNELS       PID_MAP(apChannels)
-#define PID_AMPUNITS       PID_MAP(apAmplitudeUnit)
-#define PID_ERROR          PID_MAP(apError)
+#define PID_CHANNELS PID_MAP(apChannels)
+#define PID_AMPUNITS PID_MAP(apAmplitudeUnit)
+#define PID_ERROR PID_MAP(apError)
 // TCG is a non channel parameter now because of limited number
 // of params per channel.
-#define PID_TCG            PID_ADDED(16)
+#define PID_TCG PID_ADDED(16)
 // TCG Record member offsets
-#define PID_TCG_TIME(n)    (PID_TCG + (n))
-#define PID_TCG_GAIN(n)    (PID_TCG + (n) + 16)
+#define PID_TCG_TIME(n) (PID_TCG + (n))
+#define PID_TCG_GAIN(n) (PID_TCG + (n) + 16)
 //
-#define PID_ONESHOTDELAY   PID_ADDED(12)
-#define PID_ONESHOTSTATE   PID_ADDED(13)
+#define PID_ONESHOTDELAY PID_ADDED(12)
+#define PID_ONESHOTSTATE PID_ADDED(13)
 // Map default channel parameters to our own ID's.
-#define PID_REPRATE         PID_CHANNEL_MAP(apChannel_RepRate)
-#define PID_SYNCMODE        PID_CHANNEL_MAP(apChannel_SyncMode)
-#define PID_GATES           PID_CHANNEL_MAP(apChannel_Gates)
-#define PID_INPUTS          PID_CHANNEL_MAP(apChannel_Inputs)
-#define PID_TIMEUNITS       PID_CHANNEL_MAP(apChannel_TimeUnits)
-#define PID_COPY_DELAY      PID_CHANNEL_MAP(apChannel_CopyDelay)
-#define PID_COPY_RANGE      PID_CHANNEL_MAP(apChannel_CopyRange)
-#define PID_COPY_ENABLE     PID_CHANNEL_MAP(apChannel_CopyEnable)
-#define PID_POPMANUAL       PID_CHANNEL_MAP(apChannel_PopManual)
-#define PID_BIDIRMODE       PID_CHANNEL_MAP(apChannel_BiDirMode)
+#define PID_REPRATE PID_CHANNEL_MAP(apChannel_RepRate)
+#define PID_SYNCMODE PID_CHANNEL_MAP(apChannel_SyncMode)
+#define PID_GATES PID_CHANNEL_MAP(apChannel_Gates)
+#define PID_INPUTS PID_CHANNEL_MAP(apChannel_Inputs)
+#define PID_TIMEUNITS PID_CHANNEL_MAP(apChannel_TimeUnits)
+#define PID_COPY_DELAY PID_CHANNEL_MAP(apChannel_CopyDelay)
+#define PID_COPY_RANGE PID_CHANNEL_MAP(apChannel_CopyRange)
+#define PID_COPY_ENABLE PID_CHANNEL_MAP(apChannel_CopyEnable)
+#define PID_POPMANUAL PID_CHANNEL_MAP(apChannel_PopManual)
+#define PID_BIDIRMODE PID_CHANNEL_MAP(apChannel_BiDirMode)
 // Emulator added parameters
-#define PID_GAIN            PID_CHANNEL_ADDED(1)
-#define PID_POPDIV          PID_CHANNEL_ADDED(2)
-#define PID_IF_POSITION     PID_CHANNEL_ADDED(3)
+#define PID_GAIN PID_CHANNEL_ADDED(1)
+#define PID_POPDIV PID_CHANNEL_ADDED(2)
+#define PID_IF_POSITION PID_CHANNEL_ADDED(3)
 // Map default gate params to our own ID's.
-#define PID_GATE_NAME       PID_GATE_MAP(apGate_Name)
-#define PID_GATE_DELAY      PID_GATE_MAP(apGate_Delay)
-#define PID_GATE_RANGE      PID_GATE_MAP(apGate_Range)
-#define PID_GATE_SLAVETO    PID_GATE_MAP(apGate_SlaveTo)
-#define PID_GATE_ENABLE     PID_GATE_MAP(apGate_Enable)
-#define PID_GATE_METHOD     PID_GATE_MAP(apGate_Method)
-#define PID_GATE_THRESHOLD  PID_GATE_MAP(apGate_Threshold)
-#define PID_GATE_AMP        PID_GATE_MAP(apGate_Amplitude)
-#define PID_GATE_TOF        PID_GATE_MAP(apGate_TimeOfFlight)
+#define PID_GATE_NAME PID_GATE_MAP(apGate_Name)
+#define PID_GATE_DELAY PID_GATE_MAP(apGate_Delay)
+#define PID_GATE_RANGE PID_GATE_MAP(apGate_Range)
+#define PID_GATE_SLAVETO PID_GATE_MAP(apGate_SlaveTo)
+#define PID_GATE_ENABLE PID_GATE_MAP(apGate_Enable)
+#define PID_GATE_METHOD PID_GATE_MAP(apGate_Method)
+#define PID_GATE_THRESHOLD PID_GATE_MAP(apGate_Threshold)
+#define PID_GATE_AMP PID_GATE_MAP(apGate_Amplitude)
+#define PID_GATE_TOF PID_GATE_MAP(apGate_TimeOfFlight)
 //
-#define PID_GATE_POLARITY   PID_GATE_ADDED(2)
+#define PID_GATE_POLARITY PID_GATE_ADDED(2)
 //
-#define PID_GAIN                PID_CHANNEL_ADDED(1)
-#define PID_SEC_GAIN            PID_CHANNEL_ADDED(2)
-#define PID_TESTMODE            PID_CHANNEL_ADDED(3)
-#define PID_PULSEWIDTH          PID_CHANNEL_ADDED(4)
-#define PID_VOLTAGE             PID_CHANNEL_ADDED(5)
-#define PID_TCG_ENABLE          PID_CHANNEL_ADDED(6)
-#define PID_RFFILTER            PID_CHANNEL_ADDED(7)
-#define PID_REPPERIOD           PID_CHANNEL_ADDED(8)
-#define PID_ASCAN_RECTIFY       PID_CHANNEL_ADDED(10)
-#define PID_ASCAN_DISPLAY_MODE  PID_CHANNEL_ADDED(11)
-#define PID_ASCAN_REJECT        PID_CHANNEL_ADDED(12)
-#define PID_ATTN_ENABLE         PID_CHANNEL_ADDED(13)
-#define PID_SEC_ATTN_ENABLE     PID_CHANNEL_ADDED(14)
-#define PID_PULS_FREQUENCY      PID_CHANNEL_ADDED(15)
-#define PID_TCG_SLAVETO         PID_CHANNEL_ADDED(16)
-#define PID_TCG_DELAY           PID_CHANNEL_ADDED(17)
-#define PID_TCG_RANGE           PID_CHANNEL_ADDED(18)
+#define PID_GAIN PID_CHANNEL_ADDED(1)
+#define PID_SEC_GAIN PID_CHANNEL_ADDED(2)
+#define PID_TESTMODE PID_CHANNEL_ADDED(3)
+#define PID_PULSEWIDTH PID_CHANNEL_ADDED(4)
+#define PID_VOLTAGE PID_CHANNEL_ADDED(5)
+#define PID_TCG_ENABLE PID_CHANNEL_ADDED(6)
+#define PID_RFFILTER PID_CHANNEL_ADDED(7)
+#define PID_REPPERIOD PID_CHANNEL_ADDED(8)
+#define PID_ASCAN_RECTIFY PID_CHANNEL_ADDED(10)
+#define PID_ASCAN_DISPLAY_MODE PID_CHANNEL_ADDED(11)
+#define PID_ASCAN_REJECT PID_CHANNEL_ADDED(12)
+#define PID_ATTN_ENABLE PID_CHANNEL_ADDED(13)
+#define PID_SEC_ATTN_ENABLE PID_CHANNEL_ADDED(14)
+#define PID_PULS_FREQUENCY PID_CHANNEL_ADDED(15)
+#define PID_TCG_SLAVETO PID_CHANNEL_ADDED(16)
+#define PID_TCG_DELAY PID_CHANNEL_ADDED(17)
+#define PID_TCG_RANGE PID_CHANNEL_ADDED(18)
 //
-#define PID_GATE_MODE           PID_GATE_ADDED(1)
-#define PID_GATE_DETECTION      PID_GATE_ADDED(2)
-#define PID_GATE_PHASE          PID_GATE_ADDED(3)
+#define PID_GATE_MODE PID_GATE_ADDED(1)
+#define PID_GATE_DETECTION PID_GATE_ADDED(2)
+#define PID_GATE_PHASE PID_GATE_ADDED(3)
 
 //
 // Map default results to our own ID's.
 //
-#define RID_POPINDEX        RID_CHANNEL_MAP(arChannel_PopIndex)
-#define RID_COPYDATA        RID_CHANNEL_MAP(arChannel_CopyData)
-#define RID_COPYINDEX       RID_CHANNEL_MAP(arChannel_CopyIndex)
+#define RID_POPINDEX RID_CHANNEL_MAP(arChannel_PopIndex)
+#define RID_COPYDATA RID_CHANNEL_MAP(arChannel_CopyData)
+#define RID_COPYINDEX RID_CHANNEL_MAP(arChannel_CopyIndex)
 //
-#define RID_PEAK_AMP        RID_GATE_MAP(arGate_Amplitude)
-#define RID_PEAK_TOF        RID_GATE_MAP(arGate_TimeOfFlight)
-#define RID_COPY            RID_GATE_MAP(arGate_Copy)
+#define RID_PEAK_AMP RID_GATE_MAP(arGate_Amplitude)
+#define RID_PEAK_TOF RID_GATE_MAP(arGate_TimeOfFlight)
+#define RID_COPY RID_GATE_MAP(arGate_Copy)
 
 // Offset of zero level for TOF values.
-#define TOF_OFFSET      0x7FFFFF
+#define TOF_OFFSET 0x7FFFFF
 
 // Map method names to our ID's.
 #define MID_NONE 0x0000
@@ -156,9 +154,9 @@ bool PeakNormal(
 );
 
 AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
-	:RsaInterface(parameters)
-	 , FChannelInfo(new TChannelInfo[EMU_CHANNELCOUNT])
-	 , SustainEntry(this, &AcquisitionEmulator::sustain, SustainBase::spDefault)
+	: RsaInterface(parameters)
+	, FChannelInfo(new TChannelInfo[EMU_CHANNELCOUNT])
+	, SustainEntry(this, &AcquisitionEmulator::sustain, SustainBase::spDefault)
 {
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Constructor of " << parameters._mode);
 	// Disable the single shot timer.
@@ -206,7 +204,7 @@ AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
 			ParamInfo info;
 			// Get the default value by getting the info struct.
 			if (handleParam(ids[i], &info, nullptr, nullptr))
-			{ // Set the value using the info structs default.
+			{// Set the value using the info structs default.
 				handleParam(ids[i], nullptr, &info.Default, nullptr);
 			}
 		}
@@ -253,16 +251,14 @@ long AcquisitionEmulator::TimeUnits(const TChannelInfo& ci, const Value& value) 
 	return static_cast<long>(round<Value::flt_type>(value.getFloat() / ci.TimeUnits, 1.0));
 }
 
-RsaTypes::IdType AcquisitionEmulator::getParamId
-	(
-		EDefaultParam param,
-		unsigned gate,
-		unsigned channel
-	) const
+RsaTypes::IdType AcquisitionEmulator::getParamId(
+	EDefaultParam param,
+	unsigned gate,
+	unsigned channel
+) const
 {
 	// Form the id on basis of the masks in the param.
-	int id = MAKE_ID
-	(
+	int id = MAKE_ID(
 		((param & apChannel_Mask) | (param & apGate_Mask)) ? channel : NO_CHANNEL,
 		(param & apGate_Mask) ? gate : NO_GATE,
 		param & ~(apChannel_Mask | apGate_Mask)
@@ -270,16 +266,14 @@ RsaTypes::IdType AcquisitionEmulator::getParamId
 	return id;
 }
 
-RsaTypes::IdType AcquisitionEmulator::getResultId
-	(
-		EDefaultResult result,
-		unsigned gate,
-		unsigned channel
-	) const
+RsaTypes::IdType AcquisitionEmulator::getResultId(
+	EDefaultResult result,
+	unsigned gate,
+	unsigned channel
+) const
 {
 	// Form the id on basis of the masks in the param.
-	IdType id = MAKE_ID
-	(
+	IdType id = MAKE_ID(
 		((result & arChannel_Mask) | (result & arGate_Mask)) ? channel : NO_CHANNEL,
 		(result & arGate_Mask) ? gate : NO_GATE,
 		result & ~(arChannel_Mask | arGate_Mask)
@@ -289,20 +283,19 @@ RsaTypes::IdType AcquisitionEmulator::getResultId
 
 void AcquisitionEmulator::TGateInfo::CalculateThreshold()
 {
-	auto val = ThresholdValue; //calc_offset(ThresholdValue, 0.0, 100.0, 128, true);
+	auto val = ThresholdValue;//calc_offset(ThresholdValue, 0.0, 100.0, 128, true);
 	val *= Polarity ? Polarity : 1;
 	val += Polarity ? 128 : 0;
 	Threshold = (unsigned) val;
 	//SF_RTTI_NOTIFY(DO_DEFAULT, "Threshold Level set to : " << val);
 }
 
-bool AcquisitionEmulator::handleParam
-	(
-		IdType id,
-		ParamInfo* info,
-		const Value* setval,
-		Value* getval
-	)
+bool AcquisitionEmulator::handleParam(
+	IdType id,
+	ParamInfo* info,
+	const Value* setval,
+	Value* getval
+)
 {
 	// Check if info must be filled in.
 	if (info)
@@ -326,7 +319,7 @@ bool AcquisitionEmulator::handleParam
 		{
 			case PID_ERROR:
 				if (setval)
-				{ // Allow only when the current error is recoverable.
+				{// Allow only when the current error is recoverable.
 					// and the passed value is zero.
 					if (ErrorValue > 0 && setval->getInteger())
 					{
@@ -388,7 +381,7 @@ bool AcquisitionEmulator::handleParam
 				if (info)
 				{
 					info->Id = id;
-					info->Name = "Amplitude Unit";
+					info->Name = "Amplitude unit";
 					info->Unit = "V";
 					info->Description += "Amplitude units of the digitiser single step.";
 					info->Default.set(0.01);
@@ -469,8 +462,7 @@ bool AcquisitionEmulator::handleParam
 			case PID_TCG_TIME(12):
 			case PID_TCG_TIME(13):
 			case PID_TCG_TIME(14):
-			case PID_TCG_TIME(15):
-			{
+			case PID_TCG_TIME(15): {
 				// Calculate the point number in the tcg list.
 				int index = pid - PID_TCG_TIME(0);
 				if (setval)
@@ -492,8 +484,7 @@ bool AcquisitionEmulator::handleParam
 					info->Minimum.set(0.0);
 					info->Maximum.set(326E-6);
 				}
-			}
-				break;
+			} break;
 
 				// Receiver tcg point Gain slope in 0.1dB steps
 			case PID_TCG_GAIN(0):
@@ -511,8 +502,7 @@ bool AcquisitionEmulator::handleParam
 			case PID_TCG_GAIN(12):
 			case PID_TCG_GAIN(13):
 			case PID_TCG_GAIN(14):
-			case PID_TCG_GAIN(15):
-			{
+			case PID_TCG_GAIN(15): {
 				// Calculate the point number in the tcg list.
 				int index = pid - PID_TCG_GAIN(0);
 				if (setval)
@@ -534,12 +524,11 @@ bool AcquisitionEmulator::handleParam
 					info->Minimum.set(0.0);
 					info->Maximum.set(80.0);
 				}
-			}
-				break;
+			} break;
 
 			default:
 				// Report the id was not found.
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Param ID " << stringf("0x%lX", id) << " does not exist!");
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Param ID " << stringf("0x%lX", id) << " does not exist!");
 				return false;
 		}
 	}
@@ -554,7 +543,7 @@ bool AcquisitionEmulator::handleParam
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT, "Channel Param ID 0x" << itostr(id, 16) << " does not exist!");
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Channel Param ID 0x" << itostr(id, 16) << " does not exist!");
 					return false;
 
 				case PID_REPRATE:
@@ -720,7 +709,7 @@ bool AcquisitionEmulator::handleParam
 					if (info)
 					{
 						info->Id = id;
-						info->Name = "Time Unit";
+						info->Name = "Time unit";
 						info->Unit = "s";
 						info->Description += "Time in seconds that is used for the time dependant results.";
 						info->Default.set(1e-6);
@@ -1004,7 +993,7 @@ bool AcquisitionEmulator::handleParam
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT,"Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
 					return false;
 
 				case PID_GATE_NAME:
@@ -1037,7 +1026,7 @@ bool AcquisitionEmulator::handleParam
 						info->States.add(ParamState("Independent", Value(-1)));
 						// Only add gates to slave to if this is not the IF gate
 						if (gate != 0)
-						{ // Add all the gates that come before this gate
+						{// Add all the gates that come before this gate
 							for (int i = 0; i < gate; i++)
 							{
 								// When it has peak type of method
@@ -1170,10 +1159,9 @@ bool AcquisitionEmulator::handleParam
 					}
 					break;
 
-				case PID_GATE_AMP:
-				{
+				case PID_GATE_AMP: {
 					if (getval)
-					{ // Check if a peak was found at all.
+					{// Check if a peak was found at all.
 						if (gi.PeakFound)
 						{
 							getval->set(abs((int) gi.PeakAmp - 127));
@@ -1196,11 +1184,9 @@ bool AcquisitionEmulator::handleParam
 						info->Flags |= pfReadonly;
 						info->Flags &= ~pfArchive;
 					}
-				}
-					break;
+				} break;
 
-				case PID_GATE_TOF:
-				{
+				case PID_GATE_TOF: {
 					if (getval)
 					{
 						getval->set(ci.TimeUnits * (gi.PeakTof - TOF_OFFSET));
@@ -1218,8 +1204,7 @@ bool AcquisitionEmulator::handleParam
 						info->Flags |= pfReadonly;
 						info->Flags &= ~pfArchive;
 					}
-				}
-					break;
+				} break;
 
 				case PID_GATE_POLARITY:
 					if (setval)
@@ -1273,7 +1258,6 @@ bool AcquisitionEmulator::handleParam
 						}
 					}
 					break;
-
 			}
 		}
 	}
@@ -1302,7 +1286,7 @@ bool AcquisitionEmulator::enumParamIds(IdList& ids)
 	}
 	// Add channel parameters
 	for (unsigned channel = 0; channel < ChannelCount; channel++)
-	{ // Fast local reference.
+	{// Fast local reference.
 		TChannelInfo& ci(FChannelInfo[channel]);
 		//
 		ids.add(MAKE_ID(channel, NO_GATE, PID_REPRATE));
@@ -1384,7 +1368,7 @@ bool AcquisitionEmulator::handleResult(IdType id, ResultInfo* info, BufferInfo* 
 		{
 			default:
 				// Report the id was not found.
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Result ID " << stringf("0x%lX", id) << " does not exist!");
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Result ID " << stringf("0x%lX", id) << " does not exist!");
 				return false;
 		}
 	}
@@ -1399,7 +1383,7 @@ bool AcquisitionEmulator::handleResult(IdType id, ResultInfo* info, BufferInfo* 
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT, "Channel Result ID " << stringf("0x%lX", id) << " does not exist!");
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Channel Result ID " << stringf("0x%lX", id) << " does not exist!");
 					return false;
 
 				case RID_POPINDEX:
@@ -1490,7 +1474,7 @@ bool AcquisitionEmulator::handleResult(IdType id, ResultInfo* info, BufferInfo* 
 			{
 				default:
 					// Report the id was not found.
-				SF_RTTI_NOTIFY(DO_DEFAULT, "Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Gate " << info->Gate << " Param ID " << stringf("0x%lX", id) << " does not exist!");
 					return false;
 
 				case RID_COPY:
@@ -1727,27 +1711,25 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 							delay += ci.GateInfo[0].Delay;
 						}
 						//
-						FillDataBuffer
-							(
-								gi.CopyBuf,
-								gi.Range,
-								1,
-								8,
-								pow(10, ci.Gain / 20.0),
-								ci.Sweep[0] - delay + ci.IfPos + 100.0,
-								ci.Sweep[1] - delay + ci.IfPos + 250.0,
-								ci.Sweep[2] - delay + ci.IfPos + 350.0
-							);
+						FillDataBuffer(
+							gi.CopyBuf,
+							gi.Range,
+							1,
+							8,
+							pow(10, ci.Gain / 20.0),
+							ci.Sweep[0] - delay + ci.IfPos + 100.0,
+							ci.Sweep[1] - delay + ci.IfPos + 250.0,
+							ci.Sweep[2] - delay + ci.IfPos + 350.0
+						);
 						//
 						switch (gi.MethodId)
 						{
-							case MID_PEAK:
-							{
-								gi.PeakFound = PeakNormal(gi.Polarity, gi.Threshold, gi.Range, (uint8_t*) gi.CopyBuf.data(), gi.PeakTof,gi.PeakAmp);
+							case MID_PEAK: {
+								gi.PeakFound = PeakNormal(gi.Polarity, gi.Threshold, gi.Range, (uint8_t*) gi.CopyBuf.data(), gi.PeakTof, gi.PeakAmp);
 								//SF_RTTI_NOTIFY(DO_CLOG, "Gate: " << gate << " Tof: " << gi.PeakTof << " Amp: " << gi.PeakAmp)
 								// Correct found peak with delay and result offset.
 								gi.PeakTof += gi.Delay + TOF_OFFSET;
-/*
+								/*
 							//
 							// List of frequencies and amplitude combinations.
 							struct
@@ -1829,13 +1811,12 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 	return true;
 }
 
-double FormWave
-	(
-		double x,     // x-position
-		double delta, // tooth width
-		double slope, // steepness of the form
-		double freq   // amount of waves in the delta.
-	)
+double FormWave(
+	double x,// x-position
+	double delta,// tooth width
+	double slope,// steepness of the form
+	double freq// amount of waves in the delta.
+)
 {
 	double value = 0.0;
 	double xd2 = delta / 2;
@@ -1862,17 +1843,16 @@ double FormWave
 	return value * -1;
 }
 
-void FillDataBuffer
-	(
-		DynamicBuffer buf,
-		unsigned width,
-		unsigned wordSize,
-		unsigned bits,
-		double gain,
-		int delay1,
-		int delay2,
-		int delay3
-	)
+void FillDataBuffer(
+	DynamicBuffer buf,
+	unsigned width,
+	unsigned wordSize,
+	unsigned bits,
+	double gain,
+	int delay1,
+	int delay2,
+	int delay3
+)
 {
 	uint32_t amplitude = (1 << bits) - 1;
 	buf.resize(wordSize * width);
@@ -1912,15 +1892,14 @@ void FillDataBuffer
 //
 // Simple method implementation:
 //
-bool PeakNormal
-	(
-		int polarity, // <0 = neg, 0= full, >0 = pos
-		unsigned threshold,
-		unsigned count,
-		const unsigned char* values,
-		unsigned& _peakidx,
-		unsigned& _peakval
-	)
+bool PeakNormal(
+	int polarity,// <0 = neg, 0= full, >0 = pos
+	unsigned threshold,
+	unsigned count,
+	const unsigned char* values,
+	unsigned& _peakidx,
+	unsigned& _peakval
+)
 {
 	// Set impossible value to detect if a peak was found at the end.
 	unsigned peakidx = UINT_MAX;
@@ -1975,7 +1954,7 @@ bool PeakNormal
 			}
 		}
 	}
-	else // (polarity == 0)
+	else// (polarity == 0)
 	{
 		peakval = 0;
 		for (unsigned i = 0; i < count; i++)
@@ -1985,7 +1964,7 @@ bool PeakNormal
 			val = abs(val - 127);
 			//
 			if ((val >= threshold) && (val >= peakval))
-			{ // Count the amount of peak which are the same.
+			{// Count the amount of peak which are the same.
 				if (val == peakval)
 				{
 					peaksame++;
@@ -2026,4 +2005,4 @@ bool PeakNormal
 	}
 }
 
-}
+}// namespace sf

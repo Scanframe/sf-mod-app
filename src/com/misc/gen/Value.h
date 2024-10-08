@@ -78,7 +78,7 @@ class _MISC_CLASS Value
 		 * Creates an alias instance to reference the instance passed by pointer.
 		 * @param v Instance pointer to reference to.
 		 */
-		explicit Value(Value* v);
+		explicit Value(const Value* v);
 
 		/**
 		 * @brief Constructs an empty but typed value.
@@ -461,14 +461,14 @@ class _MISC_CLASS Value
 		[[nodiscard]] inline flt_type getFloat() const;
 
 		/**
-		 * @brief	Returns a integer value of the current value if possible.
+		 * @brief	Returns an integer value of the current value if possible.
 		 * if the current type is a string the 'cnv_err' is Set to
 		 * the error position and is zero on success.
 		 */
 		int_type getInteger(int* cnv_err) const;
 
 		/**
-		 * @brief	Returns a integer value of the current value if possible.
+		 * @brief	Returns an integer value of the current value if possible.
 		 */
 		[[nodiscard]] inline int_type getInteger() const;
 
@@ -494,7 +494,7 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Gets the string of the value with the specified precision.
 		 *
-		 * This is only useful when when the type is #vitFloat or #vitInteger
+		 * This is only useful when the type is #vitFloat or #vitInteger
 		 * @param precision When not set uses the natural formatting of the value. (#vitFloat only)
 		 * @return Formatted string of the value.
 		 */
@@ -519,8 +519,8 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Returns if the instance is type is zero.
 		 *
-		 * For non numeric values this is when the data length is zero.<br>
-		 * For numerical values this is when the value it self is zero.<br>
+		 * For non-numeric values this is when the data length is zero.<br>
+		 * For numerical values this is when the value itself is zero.<br>
 		 * For floating point value a special approach is taken because floating point values are approximations by default.<br>
 		 * So the absolute value is compared to the minimum positive subnormal value.
 		 * @return True when zero.
@@ -568,22 +568,22 @@ class _MISC_CLASS Value
 		inline int operator!=(const Value& v) const;
 
 		/**
-		 * @brief Larger then operator.
+		 * @brief Larger than operator.
 		 */
 		inline int operator>(const Value& v) const;
 
 		/**
-		 * @brief Larger then or equal operator.
+		 * @brief Larger than or equal operator.
 		 */
 		inline int operator>=(const Value& v) const;
 
 		/**
-		 * @brief Less then operator.
+		 * @brief Less than operator.
 		 */
 		inline int operator<(const Value& v) const;
 
 		/**
-		 * @brief Less then or equal operator.
+		 * @brief Less than or equal operator.
 		 */
 		inline int operator<=(const Value& v) const;
 
@@ -787,12 +787,12 @@ inline Value& Value::set(flt_type v)
 
 inline Value& Value::set(const char* v)
 {
-	return set(vitString, (void*) v);
+	return set(vitString, static_cast<const void*>(v));
 }
 
 inline Value& Value::set(const std::string& v)
 {
-	return set(vitString, (const void*) v.c_str());
+	return set(vitString, static_cast<const void*>(v.data()));
 }
 
 #if IS_QT
@@ -988,7 +988,7 @@ inline Value& Value::operator=(Value* v)
 
 inline Value& Value::set(Value* v)
 {
-	return set(vitReference, (void*) v);
+	return set(vitReference, static_cast<const void*>(v));
 }
 
 inline Value::flt_type Value::getFloat() const

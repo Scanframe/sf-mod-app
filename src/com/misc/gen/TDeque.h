@@ -251,7 +251,7 @@ std::ostream& TDeque<T>::write(std::ostream& os, bool inc_hex) const
 	for (const auto& x: *this)
 	{
 		os << std::dec << x;
-		if (inc_hex && std::numeric_limits<T>::is_integer)
+		if (inc_hex && std::is_integral<T>::value)
 		{
 			os << " (" << std::hex << "0x" << x << ')';
 		}

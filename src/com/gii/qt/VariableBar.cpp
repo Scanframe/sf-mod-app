@@ -1,132 +1,132 @@
 #include "VariableBar.h"
+#include "VariableWidgetBasePrivate.h"
 #include <QApplication>
 #include <QMouseEvent>
-#include <QStyle>
-#include <QVBoxLayout>
-#include <QStylePainter>
-#include <QStyleOption>
 #include <QPainter>
+#include <QStyle>
+#include <QStyleOption>
+#include <QStylePainter>
 #include <QTimer>
+#include <QVBoxLayout>
 #include <misc/qt/qt_utils.h>
-#include "VariableWidgetBasePrivate.h"
 
 namespace sf
 {
 
-struct VariableBar::Private :QObject, PrivateBase
+struct VariableBar::Private : QObject
+	, PrivateBase
 {
-	int margin{1};
+		int margin{1};
 
-	VariableBar* _widget{nullptr};
-	QLabel* _labelNameAlt{nullptr};
-	int _nameLevel{-1};
+		VariableBar* _widget{nullptr};
+		QLabel* _labelNameAlt{nullptr};
+		int _nameLevel{-1};
 
-	static Private* cast(PrivateBase* data)
-	{
-		return static_cast<Private*>(data); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-	}
-
-	explicit Private(VariableBar* widget)
-		:_widget(widget)
-	{
-		// Make the widget get focus when clicked in.
-		_widget->setFocusPolicy(Qt::StrongFocus);
-		// Also, when using the keyboard.
-		_widget->setAttribute(Qt::WA_KeyboardFocusChange);
-		// Only link when not in design mode.
-		if (!ObjectExtension::inDesigner())
+		static Private* cast(PrivateBase* data)
 		{
-			_variable.setHandler(this);
+			return static_cast<Private*>(data);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 		}
-		QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
-	}
 
-	void onDestroyed(QObject* obj = nullptr) // NOLINT(readability-make-member-function-const)
-	{
-		if (_labelNameAlt && _labelNameAlt == obj)
+		explicit Private(VariableBar* widget)
+			: _widget(widget)
 		{
-			disconnect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
-			_labelNameAlt = nullptr;
+			// Make the widget get focus when clicked in.
+			_widget->setFocusPolicy(Qt::StrongFocus);
+			// Also, when using the keyboard.
+			_widget->setAttribute(Qt::WA_KeyboardFocusChange);
+			// Only link when not in design mode.
+			if (!ObjectExtension::inDesigner())
+			{
+				_variable.setHandler(this);
+			}
+			QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
 		}
-	}
 
-	void connectLabelNameAlt()
-	{
-		// Try finding label where this widget is its buddy.
-		if (auto label = findLabelByBuddy(_widget))
+		void onDestroyed(QObject* obj = nullptr)// NOLINT(readability-make-member-function-const)
 		{
-			// Assign the pointer to alternate name label.
-			_labelNameAlt = label;
-			// Connect handler for when the label is destroyed to null the alternate label.
-			connect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
-			// Trigger event to fill in the label text and tool tip.
-			_variable.emitEvent(Variable::veUserPrivate);
+			if (_labelNameAlt && _labelNameAlt == obj)
+			{
+				disconnect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+				_labelNameAlt = nullptr;
+			}
 		}
-	}
 
-	~Private() override
-	{
-		// Clear the handler when destructing.
-		_variable.setHandler(nullptr);
-	}
+		void connectLabelNameAlt()
+		{
+			// Try finding label where this widget is its buddy.
+			if (auto label = findLabelByBuddy(_widget))
+			{
+				// Assign the pointer to alternate name label.
+				_labelNameAlt = label;
+				// Connect handler for when the label is destroyed to null the alternate label.
+				connect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+				// Trigger event to fill in the label text and tool tip.
+				_variable.emitEvent(Variable::veUserPrivate);
+			}
+		}
 
-	void variableEventHandler
-		(
+		~Private() override
+		{
+			// Clear the handler when destructing.
+			_variable.setHandler(nullptr);
+		}
+
+		void variableEventHandler(
 			EEvent event,
 			const Variable& call_var,
 			Variable& link_var,
 			bool same_inst
 		) override
-	{
-		switch (event)
 		{
-			case veLinked:
-			case veIdChanged:
-				_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
-				_widget->setToolTip(QString::fromStdString(link_var.getDescription()));
-				_widget->update();
-				// Run into next.
-			case veUserPrivate:
-				if (_labelNameAlt)
-				{
-					_labelNameAlt->setToolTip(_widget->toolTip());
-					_labelNameAlt->setText(QString::fromStdString(link_var.getName(_nameLevel)));
-				}
-				break;
+			switch (event)
+			{
+				case veLinked:
+				case veIdChanged:
+					_widget->applyReadOnly(_readOnly || link_var.isReadOnly());
+					_widget->setToolTip(QString::fromStdString(link_var.getDescription()));
+					_widget->update();
+					// Run into next.
+				case veUserPrivate:
+					if (_labelNameAlt)
+					{
+						_labelNameAlt->setToolTip(_widget->toolTip());
+						_labelNameAlt->setText(QString::fromStdString(link_var.getName(_nameLevel)));
+					}
+					break;
 
-			case veValueChange:
-			case veConverted:
-				_widget->update();
-				break;
+				case veValueChange:
+				case veConverted:
+					_widget->update();
+					break;
 
-			default:
-				break;
+				default:
+					break;
+			}
 		}
-	}
 
-	[[nodiscard]] QRect clipRect() const
-	{
-		const QWidget* w = _widget;
-		if (!w->isVisible())
+		[[nodiscard]] QRect clipRect() const
 		{
-			return {};
+			const QWidget* w = _widget;
+			if (!w->isVisible())
+			{
+				return {};
+			}
+			QRect r = _widget->rect();
+			int ox = 0;
+			int oy = 0;
+			while (w->isVisible() && !w->isWindow() && w->parentWidget())
+			{
+				ox -= w->x();
+				oy -= w->y();
+				w = w->parentWidget();
+				r &= QRect(ox, oy, w->width(), w->height());
+			}
+			return r;
 		}
-		QRect r = _widget->rect();
-		int ox = 0;
-		int oy = 0;
-		while (w->isVisible() && !w->isWindow() && w->parentWidget())
-		{
-			ox -= w->x();
-			oy -= w->y();
-			w = w->parentWidget();
-			r &= QRect(ox, oy, w->width(), w->height());
-		}
-		return r;
-	}
 };
 
 VariableBar::VariableBar(QWidget* parent)
-	:VariableWidgetBase(parent, this)
+	: VariableWidgetBase(parent, this)
 {
 	_p = new Private(this);
 }
@@ -194,7 +194,7 @@ void VariableBar::paintEvent(QPaintEvent* event)
 	// Create 1 pixel spacing between border and
 	inflate(rc, -p->margin);
 	// Set designer text as default.
-	QString text("Value Unit");
+	QString text("Value unit");
 	// Initialize the position.
 	auto pos = rc.width() / 2;
 	// When not designing.
@@ -238,4 +238,4 @@ void VariableBar::setNameLevel(int level)
 	}
 }
 
-}
+}// namespace sf

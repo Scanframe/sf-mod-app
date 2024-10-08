@@ -1,9 +1,8 @@
 #pragma once
 
-
+#include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Sustain.h>
 #include <misc/gen/TDynamicBuffer.h>
-#include <misc/gen/ElapseTimer.h>
 #include <rsa/iface/RsaInterface.h>
 
 namespace sf
@@ -38,7 +37,7 @@ class AcquisitionEmulator : public RsaInterface
 		/**
 		 * Polarity enumeration.
 		 */
-		enum EPolarity :int
+		enum EPolarity : int
 		{
 			/** Detect a negative peak. */
 			plNegative = -1,
@@ -68,81 +67,83 @@ class AcquisitionEmulator : public RsaInterface
 		//
 		struct TGateInfo
 		{
-			// Holds the name of the gate.
-			std::string Name;
-			// Holds the id of the method selected for this gate.
-			int MethodId{0};
-			// Holds the delay of this gate in time units.
-			long Delay{200};
-			// Holds the range of this gate in time units.
-			long Range{100};
-			// Holds the gate to which this gate is slaved.
-			long SlavedTo{-1};
-			// Holds the data generation enable status of this gate.
-			bool DataEnable{true};
-			// Hold the threshold level.
-			unsigned Threshold{60};
-			// Actual value in percentages.
-			double ThresholdValue{70.0};
-			// Copy method buffer.
-			DynamicBuffer CopyBuf;
-			// Holds the last peak value.
-			unsigned PeakAmp{0};
-			// Holds the last peak time of flight value.
-			unsigned PeakTof{0};
-			// Flag telling if a peak was found.
-			bool PeakFound{false};
-			// Gate polarity.
-			EPolarity Polarity{plFull};
-			// Calculate the threshold depending on the polarity.
-			void CalculateThreshold();
+				// Holds the name of the gate.
+				std::string Name;
+				// Holds the id of the method selected for this gate.
+				int MethodId{0};
+				// Holds the delay of this gate in time units.
+				long Delay{200};
+				// Holds the range of this gate in time units.
+				long Range{100};
+				// Holds the gate to which this gate is slaved.
+				long SlavedTo{-1};
+				// Holds the data generation enable status of this gate.
+				bool DataEnable{true};
+				// Hold the threshold level.
+				unsigned Threshold{60};
+				// Actual value in percentages.
+				double ThresholdValue{70.0};
+				// Copy method buffer.
+				DynamicBuffer CopyBuf;
+				// Holds the last peak value.
+				unsigned PeakAmp{0};
+				// Holds the last peak time of flight value.
+				unsigned PeakTof{0};
+				// Flag telling if a peak was found.
+				bool PeakFound{false};
+				// Gate polarity.
+				EPolarity Polarity{plFull};
+				// Calculate the threshold depending on the polarity.
+				void CalculateThreshold();
 		};
 		//
 		struct TChannelInfo
 		{
-			TChannelInfo() :GateInfo(new TGateInfo[8]){}
-			~TChannelInfo() {delete[] GateInfo;}
+				TChannelInfo()
+					: GateInfo(new TGateInfo[8])
+				{}
+				~TChannelInfo() { delete[] GateInfo; }
 
-			// Holds the time offset when the RepRate was changed on the fly.
-			double SyncTimeOffset{0.0};
+				// Holds the time offset when the RepRate was changed on the fly.
+				double SyncTimeOffset{0.0};
 
-			// Params
-			long CopyDelay{0};
-			long CopyRange{0};
-			// Interface gate position for emulation.
-			long IfPos{0};
-			//
-			unsigned GateCount{0};
-			double RepRate{100};
-			double TimeUnits{1e6};
-			double Gain{30};
-			long SyncMode{0};
-			// Divider used to generate the position orientation pulse result.
-			long PopDivider{100};
-			int PopManual{0};
-			//
-			TGateInfo* GateInfo;
-			// Current sync counter value.
-			uint32_t SyncCounter{0};
-			// Buffer used for copy info transport.
-			DynamicBuffer CopyBuf;
-			// Sync Index table for the async copy result.
-			uint32_t CopySyncIndex{0};
-			// Position orientation pulse sync counter value.
-			uint32_t PopIndex{0};
-			//
-			bool CopyEnabled{false};
-			// TCG gate info.
-			int TcgSlavedTo{-1};
-			long TcgRange{0};
-			long TcgDelay{0};
-			bool TcgEnable{false};
-			// Bidirectional scanning.
-			bool BiDirMode{false};
-			//
-			int AscanRectify{0};
-			// Offset for the indications.
-			double Sweep[3]{0, 0, 0};
+				// Params
+				long CopyDelay{0};
+				long CopyRange{0};
+				// Interface gate position for emulation.
+				long IfPos{0};
+				//
+				unsigned GateCount{0};
+				double RepRate{100};
+				double TimeUnits{1e6};
+				double Gain{30};
+				long SyncMode{0};
+				// Divider used to generate the position orientation pulse result.
+				long PopDivider{100};
+				int PopManual{0};
+				//
+				TGateInfo* GateInfo;
+				// Current sync counter value.
+				uint32_t SyncCounter{0};
+				// Buffer used for copy info transport.
+				DynamicBuffer CopyBuf;
+				// Sync Index table for the async copy result.
+				uint32_t CopySyncIndex{0};
+				// Position orientation pulse sync counter value.
+				uint32_t PopIndex{0};
+				//
+				bool CopyEnabled{false};
+				// TCG gate info.
+				int TcgSlavedTo{-1};
+				long TcgRange{0};
+				long TcgDelay{0};
+				bool TcgEnable{false};
+				// Bidirectional scanning.
+				bool BiDirMode{false};
+				//
+				int AscanRectify{0};
+				// Offset for the indications.
+				double Sweep[3]{0, 0, 0};
 		};
 		//
 		TChannelInfo* FChannelInfo{nullptr};
@@ -157,9 +158,9 @@ class AcquisitionEmulator : public RsaInterface
 		 */
 		struct
 		{
-			double Time{0};
-			double Gain{0};
+				double Time{0};
+				double Gain{0};
 		} Tcg[20];
 };
 
-}
+}// namespace sf

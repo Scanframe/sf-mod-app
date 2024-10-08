@@ -4,10 +4,12 @@
 	#include <cxxabi.h>
 #endif
 
+#include <array>
 #include <csignal>
 #include <cstring>
 #include <fstream>
 #include <mutex>
+#include <regex>
 #include <string>
 
 #if IS_QT
@@ -17,11 +19,13 @@
 #if IS_WIN
 	#include <debugapi.h>
 	#include <processenv.h>
+#else
+	#include <execinfo.h>
 #endif
 
 #include "TimeSpec.h"
 #include "dbgutils.h"
-#include "gen_utils.h"
+#include "system.h"
 
 namespace sf
 {
@@ -169,6 +173,54 @@ void SetDefaultDebugOutput(unsigned int type)
 unsigned int GetDefaultDebugOutput()
 {
 	return DefaultDebugOutputType;
+}
+
+std::string executeShellCommand(const std::string& cmd)
+{
+	std::string result;
+#if !IS_WIN
+	std::array<char, 1024> buffer;
+	std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
+	// Check if the pipe was opened successfully.
+	if (!pipe)
+	{
+		throw std::runtime_error("popen() failed!");
+	}
+	while (!feof(pipe.get()))
+	{
+		if (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+		{
+			result.append(buffer.data());
+		}
+	}
+#endif
+	return result;
+}
+
+void printBacktrace()
+{
+#if !IS_WIN
+	void* bt[128];
+	int bt_size;
+	char** bt_syms;
+	int i;
+	bt_size = backtrace(bt, sizeof(bt) / sizeof(bt[0]));
+	bt_syms = backtrace_symbols(bt, bt_size);
+	std::regex re("^(.*)\\((.*)(\\+0x[0-9a-f]*)\\)\\s\\[(0x[0-9a-f]*)\\]$");
+	std::regex re2("\\n$");
+	for (i = 1; i < bt_size; i++)
+	{
+		std::string sym = bt_syms[i];
+		std::smatch ms;
+		if (std::regex_search(sym, ms, re))
+		{
+			auto r = executeShellCommand("addr2line -e " + ms[1].str() + " -Cifpsa " + ms[3].str());
+			auto r2 = std::regex_replace(r, re2, "");
+			std::cerr << r2 << std::endl;
+		}
+	}
+	free(bt_syms);
+#endif
 }
 
 bool isDebug()

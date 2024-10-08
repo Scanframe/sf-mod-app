@@ -1,8 +1,8 @@
 #include <misc/gen/dbgutils.h>
 
-#include "VariableStatic.h"
-#include "VariableReference.h"
 #include "Variable.h"
+#include "VariableReference.h"
+#include "VariableStatic.h"
 
 namespace sf
 {
@@ -22,8 +22,7 @@ Variable& VariableStatic::zero()
 {
 	if (!_zero)
 	{
-		throw notify_exception(SF_RTTI_NAME(_zero).append("::").append(__FUNCTION__)
-			.append("() Zero variable is NOT present yet or NOT anymore!"));
+		throw notify_exception(SF_RTTI_NAME(_zero).append("::").append(__FUNCTION__).append("() Zero variable is NOT present yet or NOT anymore!"));
 	}
 	return *_zero;
 }
@@ -51,15 +50,15 @@ void sf::VariableStatic::initialize(bool init)
 			// Prevent deletion of zero before all other instances.
 			if (sz > 1)
 			{
-				std::stringstream os;
+				std::ostringstream os;
 				// Skip the first one which is zero variable.
 				for (ReferenceVector::size_type i = 1; i < sz; i++)
 				{
 					auto k = _references->at(i);
 					os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 				}
-				SF_NORM_NOTIFY(DO_CERR, "VariableStatic::" << __FUNCTION__ << "(false) Unable to perform, ("
-					<< (sz - 1) << ") references still remain!" << std::endl << '\t' << os.str())
+				SF_NORM_NOTIFY(DO_CERR, "VariableStatic::" << __FUNCTION__ << "(false) Unable to perform, (" << (sz - 1) << ") references still remain!" << std::endl
+																									 << '\t' << os.str())
 			}
 			else
 			{
@@ -87,7 +86,6 @@ VariableStatic::FlagLetters VariableStatic::_flagLetters[] =
 		{'H', flgHidden},
 		{'E', flgExport},
 		{'W', flgWriteable},
-	};
+};
 
-}
-
+}// namespace sf

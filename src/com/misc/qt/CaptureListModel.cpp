@@ -1,11 +1,10 @@
+#include <QApplication>
 #include <QDebug>
 #include <QListView>
-#include <QApplication>
 
 #include "CaptureListModel.h"
-#include "gen/gen_utils.h"
-#include "qt/qt_utils.h"
 #include "Resource.h"
+#include "qt/qt_utils.h"
 
 namespace sf
 {
@@ -21,8 +20,7 @@ CaptureListModel::CaptureListModel(QObject* parent)
 	, _contextMenu(nullptr)
 {
 	// Assign the new line event handler.
-	_streamBuf->setNewLineHandler(LineBuffer::event_t([this](LineBuffer* sender, const std::string& line)->void
-	{
+	_streamBuf->setNewLineHandler(LineBuffer::event_t([this](LineBuffer* sender, const std::string& line) -> void {
 		append(line.c_str());
 	}));
 	// When the parent is a widget.
@@ -32,7 +30,7 @@ CaptureListModel::CaptureListModel(QObject* parent)
 		connect(avi, &QWidget::customContextMenuRequested, this, &CaptureListModel::contextMenuRequested);
 		_contextMenu = new QMenu(avi);
 		//
-		auto action = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Clear), QPalette::ColorRole::ButtonText), "Clear", this);
+		auto action = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Clear), QPalette::ColorRole::ButtonText), "clear", this);
 		_contextMenu->addAction(action);
 		connect(action, &QAction::triggered, this, &CaptureListModel::onClear);
 
@@ -120,7 +118,7 @@ bool CaptureListModel::append(const QString& str)
 	{
 		dataChanged(QModelIndex(), index(_streamBuf->lineCount() - 1));
 	}
-/*
+	/*
 	beginInsertRows(QModelIndex(), _streamBuf->lineCount() - 1, _streamBuf->lineCount());
 	endInsertRows();
 */
@@ -199,4 +197,4 @@ unsigned CaptureListModel::setSource(unsigned ss)
 	return _source;
 }
 
-}
+}// namespace sf

@@ -1,17 +1,17 @@
-#include <misc/qt/Resource.h>
-#include <QPushButton>
-#include <QTimer>
-#include <QInputDialog>
-#include <qt/InformationSelectDialog.h>
 #include "FollowersDialog.h"
 #include "ui_FollowersDialog.h"
+#include <QInputDialog>
+#include <QPushButton>
+#include <QTimer>
+#include <misc/qt/Resource.h>
+#include <qt/InformationSelectDialog.h>
 
 namespace sf
 {
 
 FollowersDialog::FollowersDialog(QWidget* parent)
-:QDialog(parent)
-, ui(new Ui::FollowersDialog)
+	: QDialog(parent)
+	, ui(new Ui::FollowersDialog)
 {
 	ui->setupUi(this);
 	//
@@ -28,12 +28,11 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 	ui->lblMessage->setVisible(false);
 
 	// Create the actions for the buttons.
-	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>
-		{
-			{ui->tbEdit, _actionEdit, Resource::Edit, tr("Edit"), tr("Edit the selected entry.")},
-			{ui->tbAdd, _actionAdd, Resource::Add, tr("Add"), tr("Add entry.")},
-			{ui->tbRemove, _actionRemove, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
-		})
+	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>{
+				 {ui->tbEdit, _actionEdit, Resource::Edit, tr("Edit"), tr("Edit the selected entry.")},
+				 {ui->tbAdd, _actionAdd, Resource::Add, tr("Add"), tr("Add entry.")},
+				 {ui->tbRemove, _actionRemove, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
+			 })
 	{
 		std::get<1>(t) = new QAction(
 			Resource::getSvgIcon(Resource::getSvgIconResource(std::get<2>(t)), QPalette::ButtonText),
@@ -46,8 +45,7 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 		ui->lwFollowers->addAction(std::get<1>(t));
 	}
 	//
-	connect(_actionEdit, &QAction::triggered, [&]()
-	{
+	connect(_actionEdit, &QAction::triggered, [&]() {
 		auto si = ui->lwFollowers->selectedItems();
 		if (!si.empty())
 		{
@@ -58,15 +56,13 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 			}
 		}
 	});
-	connect(_actionAdd, &QAction::triggered, [&]()
-	{
+	connect(_actionAdd, &QAction::triggered, [&]() {
 		for (auto id: InformationSelectDialog(this).execute(Gii::Multiple))
 		{
 			ui->lwFollowers->addItem(QString("0x%1").arg(id, 0, 16));
 		}
 	});
-	connect(_actionRemove, &QAction::triggered, [&]()
-	{
+	connect(_actionRemove, &QAction::triggered, [&]() {
 		for (auto item: ui->lwFollowers->selectedItems())
 		{
 			delete ui->lwFollowers->takeItem(ui->lwFollowers->row(item));
@@ -86,10 +82,9 @@ bool FollowersDialog::checkContent()
 	ui->leFormula->setText(ui->leFormula->text().remove('\''));
 	if (ui->leUnit->text().isEmpty())
 	{
-		ui->lblMessage->setText("Unit cannot be empty!");
+		ui->lblMessage->setText("unit cannot be empty!");
 		ui->lblMessage->setVisible(true);
-		QTimer::singleShot(5000, [&]()
-		{
+		QTimer::singleShot(5000, [&]() {
 			ui->lblMessage->setVisible(false);
 		});
 		return false;
@@ -113,8 +108,8 @@ bool FollowersDialog::execute(FollowersListModel::Entry& fle)
 	for (auto id: fle._followerIds)
 	{
 		Variable var(id, false);
-//		ui->lwFollowers->addItem(QString("0x%1 %2").arg(id, 0, 16).arg(QString::fromStdString(var.getName())));
-		auto item =	new QListWidgetItem(QString("0x%1").arg(id, 0, 16), ui->lwFollowers);
+		//		ui->lwFollowers->addItem(QString("0x%1 %2").arg(id, 0, 16).arg(QString::fromStdString(var.getName())));
+		auto item = new QListWidgetItem(QString("0x%1").arg(id, 0, 16), ui->lwFollowers);
 		ui->lwFollowers->addItem(item);
 	}
 	//
@@ -143,4 +138,4 @@ bool FollowersDialog::execute(FollowersListModel::Entry& fle)
 	return false;
 }
 
-}
+}// namespace sf

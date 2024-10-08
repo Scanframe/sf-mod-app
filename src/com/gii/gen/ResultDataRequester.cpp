@@ -1,20 +1,20 @@
-#include <misc/gen/dbgutils.h>
+#include "ResultDataRequester.h"
 #include "ResultData.h"
 #include "ResultDataHandler.h"
-#include "ResultDataRequester.h"
+#include <misc/gen/dbgutils.h>
 
 namespace sf
 {
 
 ResultDataRequester::ResultDataRequester()
-	:_sustain(this, &ResultDataRequester::sustain, _sustain.spTimer)
-	 , _handlerData(this, &ResultDataRequester::resultCallback)
-// Default time for state machine to wait for a state change.
-	 , _timeoutTimer({1, 0})
-	 , _handler(nullptr)
-	 , _rdIndex(nullptr)
+	: _sustain(this, &ResultDataRequester::sustain, _sustain.spTimer)
+	, _handlerData(this, &ResultDataRequester::resultCallback)
+	// Default time for state machine to wait for a state change.
+	, _timeoutTimer({1, 0})
+	, _handler(nullptr)
+	, _rdIndex(nullptr)
 	// Is used for debugging timing of the state machine.
-	 , _byPass(false)
+	, _byPass(false)
 {
 	// Timer is just needed for testing the timeout.
 	_sustain.setInterval({1, 0});
@@ -131,14 +131,13 @@ void ResultDataRequester::detachData(ResultData* rd)
 	}
 }
 
-void ResultDataRequester::resultCallback
-	(
-		ResultDataTypes::EEvent event,
-		const ResultData& caller,
-		ResultData& link,
-		const Range& rng,
-		bool sameInst
-	)
+void ResultDataRequester::resultCallback(
+	ResultDataTypes::EEvent event,
+	const ResultData& caller,
+	ResultData& link,
+	const Range& rng,
+	bool sameInst
+)
 {
 	// Disable global events to pass beyond here.
 	if (event < reFirstLocal)
@@ -155,8 +154,7 @@ void ResultDataRequester::resultCallback
 				break;
 
 			case ResultData::reIdChanged:
-			case ResultData::reClear:
-			{
+			case ResultData::reClear: {
 				// When an id changes the state machine must be reset.
 				reset();
 				break;
@@ -165,20 +163,20 @@ void ResultDataRequester::resultCallback
 			case ResultData::reAccessChange:
 				if (&link != _rdIndex)
 				{
-					if (!_work._dataAccess.Bits || !link.getId())
+					if (!_work._dataAccess._bits || !link.getId())
 					{
 						break;
 					}
 					// Check if this result has to catch up.
-					if (_work._dataAccess.Has(link.getData<int>()))
+					if (_work._dataAccess.has(link.getData<int>()))
 					{
 						// Check if the result has caught up with the working range of the index.
 						if (rng.isWithinSelf(_work._range))
 						{
-							_work._dataAccess.Unset(link.getData<int>());
+							_work._dataAccess.unset(link.getData<int>());
 						}
 						// Speed up thing by calling process when waiting is over.
-						if (!_work._dataAccess.Bits)
+						if (!_work._dataAccess._bits)
 						{
 							process();
 						}
@@ -200,14 +198,14 @@ void ResultDataRequester::resultCallback
 				}
 				else
 				{
-					if (!_work._dataRequest.Has(link.getData<int>()))
+					if (!_work._dataRequest.has(link.getData<int>()))
 					{
 						setError("Data GotRange event not expected");
 					}
 					// Clear the bit of the request placed.
-					_work._dataRequest.Unset(link.getData<int>());
+					_work._dataRequest.unset(link.getData<int>());
 					// Speed up thing by calling process wen waiting is over.
-					if (!_work._dataRequest.Bits)
+					if (!_work._dataRequest._bits)
 					{
 						process();
 					}
@@ -226,14 +224,13 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 {
 	if (_handler)
 	{
-		_handler->resultDataEventHandler
-			(
-				(ResultData::EEvent) event,
-				*_rdIndex,
-				*_rdIndex,
-				_rdIndex->getId() ? _work._index : _work._range,
-				true
-			);
+		_handler->resultDataEventHandler(
+			(ResultData::EEvent) event,
+			*_rdIndex,
+			*_rdIndex,
+			_rdIndex->getId() ? _work._index : _work._range,
+			true
+		);
 	}
 }
 
@@ -307,9 +304,7 @@ bool ResultDataRequester::setError(const std::string& text)
 	// Assign the new state first so that msg boxes can appear.
 	_state = drsError;
 	// Do some debug printing in case of an error.
-	SF_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '"
-		<< text << "'. SetState(" << getStateName(old_prev) << "=>"
-		<< getStateName(_statePrevious) << "=>" << getStateName(_state) << ")" << _work._index << _work._range)
+	SF_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '" << text << "'. SetState(" << getStateName(old_prev) << "=>" << getStateName(_statePrevious) << "=>" << getStateName(_state) << ")" << _work._index << _work._range)
 	//
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Resetting the state machine.")
 	// Reset the state machine after each error.
@@ -368,14 +363,14 @@ bool ResultDataRequester::requestData(const Range& range)
 	// Trigger the state machine to go to work on the data and skip
 	// getting the index result.
 	if (setState(drsTryData))
-	{ // This could speed up things.
+	{// This could speed up things.
 		process();
 		return true;
 	}
 	return false;
 }
 
-bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
+bool ResultDataRequester::process()// NOLINT(misc-no-recursion)
 {
 	//
 	switch (_state)
@@ -425,16 +420,16 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 				{
 					if (!_rdDataList[i]->getAccessRange().isWithinSelf(_work._range))
 					{
-						_work._dataAccess.Set(i);
+						_work._dataAccess.set(i);
 					}
 				}
 				else
 				{
-					_work._dataAccess.Unset(i);
+					_work._dataAccess.unset(i);
 				}
 			}
 			// If all needed data was not accessible it must be waited for.
-			if (_work._dataAccess.Bits)
+			if (_work._dataAccess._bits)
 			{
 				// If not wait for it.
 				return waitForState(drsGetData);
@@ -451,23 +446,23 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 					{
 						// Set the work on bit for this data result for when a request
 						// is handled immediately and will reenter during the request call.
-						_work._dataRequest.Set(i);
+						_work._dataRequest.set(i);
 						// Request the needed range and check for an error.
 						if (!_rdDataList[i]->requestRange(_work._range))
 						{
-							_work._dataRequest.Unset(i);
+							_work._dataRequest.unset(i);
 							return setError("Data '" + _rdDataList[i]->getName() + "' request failed");
 						}
 					}
 				}
 				else
 				{
-					_work._dataRequest.Unset(i);
+					_work._dataRequest.unset(i);
 				}
 			}
 			// When requests were made and thus the data was not valid yet we
 			// must wait for it to get valid.
-			if (_work._dataRequest.Bits)
+			if (_work._dataRequest._bits)
 			{
 				// Make the state machine wait for the request events.
 				return waitForState(drsApply);
@@ -505,8 +500,7 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 			}
 			break;
 
-		case drsWait:
-		{
+		case drsWait: {
 			// When the wait timer timed out generate an error.
 			if (_timeoutTimer)
 			{
@@ -515,14 +509,13 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 				// Check which result caused the timeout.
 				for (int i = 0; i < _rdDataList.count(); i++)
 				{
-					if (_work._dataRequest.Has(i))
+					if (_work._dataRequest.has(i))
 					{
 						SF_RTTI_NOTIFY(DO_DEFAULT, "Data Req " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
 					}
-					if (_work._dataAccess.Has(i))
+					if (_work._dataAccess.has(i))
 					{
-						SF_RTTI_NOTIFY(DO_DEFAULT,
-							"Data Access " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
+						SF_RTTI_NOTIFY(DO_DEFAULT, "Data Access " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
 					}
 				}
 				// Set error state.
@@ -533,7 +526,7 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 			{
 				case drsApply:
 					// If requests are still out continue waiting.
-					if (_work._dataRequest.Bits)
+					if (_work._dataRequest._bits)
 					{
 						break;
 					}
@@ -566,7 +559,7 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 				case drsGetData:
 					// Continue as long as the bits of the request are not
 					// zeroed by the result event handler.
-					if (_work._dataAccess.Bits)
+					if (_work._dataAccess._bits)
 					{
 						break;
 					}
@@ -584,8 +577,7 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 					// Cannot wait for any other state.
 					return setError("Impossible state to wait for");
 			}
-		}
-			break;
+		} break;
 	}
 	return true;
 }
@@ -593,9 +585,9 @@ bool ResultDataRequester::process() // NOLINT(misc-no-recursion)
 std::ostream& ResultDataRequester::getStatus(std::ostream& os)
 {
 	os << "State (prev > cur): " << getStateName(_statePrevious) << " > " << getStateName(_state) << std::endl
-		<< "Work Index: " << _work._index << std::endl
-		<< "Work Range: " << _work._range << std::endl;
+		 << "Work Index: " << _work._index << std::endl
+		 << "Work Range: " << _work._range << std::endl;
 	return os;
 }
 
-}
+}// namespace sf

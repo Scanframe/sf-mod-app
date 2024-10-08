@@ -1,66 +1,66 @@
 #include "LayoutEditor.h"
 #include "pages/WidgetPropertyPage.h"
-#include <misc/qt/Resource.h>
-#include <misc/qt/FormBuilder.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include <misc/qt/Globals.h>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QEvent>
+#include <QFileDialog>
+#include <QGuiApplication>
+#include <QLayout>
+#include <QMessageBox>
+#include <QSaveFile>
+#include <ami/layout/pages/ContainerPropertyPage.h>
+#include <ami/layout/pages/MiscellaneousPropertyPage.h>
+#include <ami/layout/pages/PositionPropertyPage.h>
 #include <gii/qt/LayoutData.h>
 #include <gii/qt/VariableWidgetBase.h>
-#include <ami/layout/pages/PositionPropertyPage.h>
-#include <ami/layout/pages/MiscellaneousPropertyPage.h>
-#include <ami/layout/pages/ContainerPropertyPage.h>
-#include <QGuiApplication>
-#include <QApplication>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QSaveFile>
-#include <QCloseEvent>
-#include <QLayout>
+#include <misc/qt/FormBuilder.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
-struct LayoutEditor::Data :LayoutData
+struct LayoutEditor::Data : LayoutData
 {
-	explicit Data(LayoutEditor* parent)
-	:LayoutData(parent)
-	, _layoutEditor(parent)
-	{
-	}
-
-	void popupContextMenu(QObject* target, const QPoint& pos) override
-	{
-		_layoutEditor->popupContextMenu(target, pos);
-	}
-
-	void openPropertyEditor(QObject* target) override
-	{
-		if (!getReadOnly())
+		explicit Data(LayoutEditor* parent)
+			: LayoutData(parent)
+			, _layoutEditor(parent)
 		{
-			_layoutEditor->openPropertyEditor(target);
 		}
-	}
 
-	[[nodiscard]] QDir getDirectory() const override
-	{
-		return _layoutEditor->getDirectory();
-	}
-	//
-	LayoutEditor* _layoutEditor;
+		void popupContextMenu(QObject* target, const QPoint& pos) override
+		{
+			_layoutEditor->popupContextMenu(target, pos);
+		}
+
+		void openPropertyEditor(QObject* target) override
+		{
+			if (!getReadOnly())
+			{
+				_layoutEditor->openPropertyEditor(target);
+			}
+		}
+
+		[[nodiscard]] QDir getDirectory() const override
+		{
+			return _layoutEditor->getDirectory();
+		}
+		//
+		LayoutEditor* _layoutEditor;
 };
 
 LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
-	:QWidget(parent)
-	 , MultiDocInterface()
-	 , _settings(settings)
-	 , _isUntitled(true)
-	 , _rootName("FormRoot")
+	: QWidget(parent)
+	, MultiDocInterface()
+	, _settings(settings)
+	, _isUntitled(true)
+	, _rootName("FormRoot")
 	// Add the layout data object for widgets to find.
 	, _layoutEditorData(new LayoutEditor::Data(this))
 {
 
-/*
+	/*
 	_scrollArea = new QScrollArea(this);
 	_scrollArea->setFrameShape(QFrame::Shape::Box);
 	_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
@@ -77,8 +77,7 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 	_actionEdit->setToolTip(tr("Edit the properties of this widget."));
 	_actionEdit->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Edit), QPalette::ColorRole::ButtonText));
 	_targetContextMenu->addAction(_actionEdit);
-	connect(_actionEdit, &QAction::triggered, [&]()
-	{
+	connect(_actionEdit, &QAction::triggered, [&]() {
 		if (_currentTarget)
 		{
 			openPropertyEditor(_currentTarget);
@@ -88,8 +87,7 @@ LayoutEditor::LayoutEditor(QSettings* settings, QWidget* parent)
 	actionLookup->setToolTip(tr("Look widget up in the tree."));
 	actionLookup->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Search), QPalette::ColorRole::ButtonText));
 	_targetContextMenu->addAction(actionLookup);
-	connect(actionLookup, &QAction::triggered, [&]()
-	{
+	connect(actionLookup, &QAction::triggered, [&]() {
 		if (_currentTarget)
 		{
 			Q_EMIT objectSelected(_currentTarget);
@@ -161,7 +159,7 @@ bool LayoutEditor::loadFile(const QString& fileName)
 	if (_widget)
 	{
 		// Now set the parent after successful loading and buddy resolving.
-		_widget->setParent(_scrollArea ? (QWidget*)_scrollArea : this);
+		_widget->setParent(_scrollArea ? (QWidget*) _scrollArea : this);
 		//
 		if (!_widget->objectName().length())
 		{
@@ -447,4 +445,4 @@ ObjectHierarchyModel* LayoutEditor::getHierarchyModel()
 	return _model;
 }
 
-}
+}// namespace sf

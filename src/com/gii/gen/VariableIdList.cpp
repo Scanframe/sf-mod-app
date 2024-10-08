@@ -1,4 +1,6 @@
 #include "VariableIdList.h"
+#include <misc/gen/TStrings.h>
+#include <misc/gen/string.h>
 
 namespace sf
 {
@@ -64,4 +66,4 @@ std::string VariableIdList::getIds() const
 	return rv.join(",");
 }
 
-}
+}// namespace sf

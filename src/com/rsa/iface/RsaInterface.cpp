@@ -1,33 +1,32 @@
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/Exception.h>
-#include <misc/gen/Value.h>
-#include <misc/gen/TVector.h>
 #include <misc/gen/ConfigLocation.h>
+#include <misc/gen/Exception.h>
 #include <misc/gen/IniProfile.h>
+#include <misc/gen/TVector.h>
+#include <misc/gen/Value.h>
+#include <misc/gen/dbgutils.h>
 
 #include "RsaInterface.h"
 
 namespace sf
 {
 
-
 // Implementations of static functions and data members to be able to create registered stars implementations.
 SF_IMPL_IFACE(RsaInterface, RsaInterface::Parameters, Interface)
 
 RsaInterface::RsaInterface(const RsaInterface::Parameters&)
-	:_paramNotifyProcedure(nullptr)
-	 , _resultNotifyProcedure(nullptr)
-	 , _paramNotifyData(nullptr)
-	 , _resultNotifyData(nullptr)
-	 , _initialized(false)
-	 , _acquisitionType(atUltrasonic)
+	: _paramNotifyProcedure(nullptr)
+	, _resultNotifyProcedure(nullptr)
+	, _paramNotifyData(nullptr)
+	, _resultNotifyData(nullptr)
+	, _initialized(false)
+	, _acquisitionType(atUltrasonic)
 {
 }
 
 RsaInterface::~RsaInterface()
 {
 	// Should actually be done in the derived class's destructor.
-	uinitialize();
+	uninitialize();
 }
 
 RsaTypes::EAcquisitionType RsaInterface::getType() const
@@ -52,7 +51,7 @@ void RsaInterface::addPropertyPages(PropertySheetDialog* sheet)
 	// Deliberate not implemented.
 }
 
-bool RsaInterface::uinitialize()
+bool RsaInterface::uninitialize()
 {
 	// Uninitialize the hardware.
 	if (doInitialize(false))
@@ -67,7 +66,7 @@ bool RsaInterface::initialize()
 	bool rv = false;
 	// Prevent initialize from being called twice or when an error occurred.
 	if (!_initialized && getError() == 0)
-	{ // Try to initialize the hardware driver.
+	{// Try to initialize the hardware driver.
 		if (doInitialize(true))
 		{
 			// Read the implementation driver settings from profile.
@@ -161,13 +160,12 @@ void RsaInterface::callResultHook(IdType id)
 	}
 }
 
-bool RsaInterface::getParam
-	(
-		EDefaultParam param,
-		unsigned gate,
-		unsigned ch,
-		Value& value
-	) const
+bool RsaInterface::getParam(
+	EDefaultParam param,
+	unsigned gate,
+	unsigned ch,
+	Value& value
+) const
 {
 	// Get the local ID of the default parameter.
 	auto id = getParamId(param, gate, ch);
@@ -177,19 +175,17 @@ bool RsaInterface::getParam
 		return getParam(id, value);
 	}
 	//
-	SF_RTTI_NOTIFY(DO_DEFAULT,
-		"GetParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!");
+	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!");
 	return false;
 }
 
-bool RsaInterface::setParam
-	(
-		EDefaultParam param,
-		unsigned gate,
-		unsigned ch,
-		const Value& value,
-		bool skip_event
-	)
+bool RsaInterface::setParam(
+	EDefaultParam param,
+	unsigned gate,
+	unsigned ch,
+	const Value& value,
+	bool skip_event
+)
 {
 	// Get the local ID of the default parameter.
 	auto id = getParamId(param, gate, ch);
@@ -199,8 +195,7 @@ bool RsaInterface::setParam
 		return setParam(id, value, skip_event);
 	}
 	// Signal ID failure.
-	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of channel, gate: "
-		<< ch << ", " << gate << " is not present!");
+	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!");
 	return false;
 }
 
@@ -335,7 +330,7 @@ bool RsaInterface::settingsReadWrite(bool rd)
 						}
 					}
 					else
-					{ // Temporary value for storage.
+					{// Temporary value for storage.
 						Value value;
 						// Get the parameter.
 						if (getParam(ids[i], value))
@@ -353,7 +348,7 @@ bool RsaInterface::settingsReadWrite(bool rd)
 		}
 		// Signal if something went wrong.
 		return rv;
-	} // try
+	}// try
 	catch (std::exception& ex)
 	{
 		SF_RTTI_NOTIFY(DO_DEFAULT, "ReadWriteSettings() Exception: " << ex.what() << "!");
@@ -361,4 +356,4 @@ bool RsaInterface::settingsReadWrite(bool rd)
 	}
 }
 
-}
+}// namespace sf

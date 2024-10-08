@@ -1,12 +1,12 @@
-#include <misc/gen/ScriptEngine.h>
-#include "UnitConversion.h"
 #include "UnitConversionServerEx.h"
+#include "UnitConversion.h"
+#include <misc/gen/ScriptEngine.h>
 
 namespace sf
 {
 
 UnitConversionServerEx::Entry::Entry(UnitConversionServerEx* owner)
-	:_owner(owner)
+	: _owner(owner)
 {
 	// Add entry at the end.
 	_owner->_entries.push_back(std::unique_ptr<Entry>(this));
@@ -49,11 +49,11 @@ bool UnitConversionServerEx::Entry::convertVariable(Variable& var) const
 		auto factor = calculator(_script, 1.0, _vMaster.getCur(false).getFloat());
 		// Significant digits calculated using the factor and both variable rounding values.
 		auto sig = digits(_vMaster.getRnd(false).getFloat() * factor * var.getRnd(false).getFloat());
-//		auto sig = 1;
-//		sig += magnitude(_vMaster.getRnd(false).getFloat());
-//		sig -= magnitude(factor);
-//		sig -= magnitude(var.getRnd(false).getFloat());
-//		qDebug() << "Sig = " << sig;
+		//		auto sig = 1;
+		//		sig += magnitude(_vMaster.getRnd(false).getFloat());
+		//		sig -= magnitude(factor);
+		//		sig -= magnitude(var.getRnd(false).getFloat());
+		//		qDebug() << "Sig = " << sig;
 		// Declare multiplier and offset to be filled in.
 		double multiplier = 1;
 		double offset = 0;
@@ -153,7 +153,7 @@ void UnitConversionServerEx::configReadWrite(bool save)
 		for (auto& key: keys)
 		{
 			// Get the numeric id from the profile key.
-			auto id = toTypeDef<id_type>(key, 0);
+			auto id = toNumberDefault<id_type>(key, 0);
 			// Passing this class as the owner will attach it to the list.
 			auto entry = new Entry(this);
 			// Setup master variable using the id.
@@ -172,7 +172,7 @@ void UnitConversionServerEx::configReadWrite(bool save)
 					for (strings::size_type i = 2; i < sl.size(); i++)
 					{
 						// Convert the 64bit id decimal or hex.
-						id = toTypeDef<id_type>(sl[i], 0);
+						id = toNumberDefault<id_type>(sl[i], 0);
 						// Only add when a non-zero id.
 						if (id)
 						{
@@ -249,8 +249,7 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 		default:
 			break;
 
-		case veConvert:
-		{
+		case veConvert: {
 			// Lookup the variable if it should be converted in a dependency list.
 			if (getUnitSystem() != usPassThrough)
 			{
@@ -259,8 +258,7 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 			break;
 		}
 
-		case veNewId:
-		{
+		case veNewId: {
 			// Let the variable resolve the unit conversion.
 			const_cast<Variable&>(call_var).getOwner().setConvertValues(getUnitSystem() != usPassThrough);
 			break;
@@ -268,8 +266,7 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 
 		// For variable controlling the enable-status.
 		case veIdChanged:
-		case veValueChange:
-		{
+		case veValueChange: {
 			// Enable or disable conversion lists when there is an ID.
 			if (link_var.getId())
 			{
@@ -317,7 +314,7 @@ void UnitConversionServerEx::setAskHandler(const UnitConversionServerClosure& cl
 bool UnitConversionServerEx::Handler(UnitConversionEvent& ev)
 {
 	// Try first to get a conversion.
-	auto rv =  UnitConversionServer::Handler(ev);
+	auto rv = UnitConversionServer::Handler(ev);
 	// Check if the handler was successful and if not, if an ask handler was assigned.
 	if (!rv && _askHandler && getUnitSystem() != usPassThrough)
 	{
@@ -335,7 +332,7 @@ bool UnitConversionServerEx::Handler(UnitConversionEvent& ev)
 void UnitConversionServerEx::setUnitSystem(int us)
 {
 	// Detect a change is selection.
-	if (us  != getUnitSystem())
+	if (us != getUnitSystem())
 	{
 		UnitConversionServer::setUnitSystem(us);
 		// Reinitialize when a unit system change occurred.
@@ -348,4 +345,4 @@ const char* UnitConversionServerEx::getFollowersSectionName() const
 	return "Followers";
 }
 
-}
+}// namespace sf

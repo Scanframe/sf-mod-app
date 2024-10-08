@@ -30,12 +30,6 @@ project("qt-concepts"
 # Add top target for displaying info on the compiled targets where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Declare some cmake flags for decisions on building targets.
-set(SF_BUILD_TESTING "OFF" CACHE BOOL "Enable test targets to be build.")
-set(SF_BUILD_QT "OFF" CACHE BOOL "Enable QT targets to be build.")
-set(SF_BUILD_GUI_TESTING "OFF" CACHE BOOL "Enable testing of tests using the GUI.")
-set(SF_TEST_NAME_PREFIX "t_" CACHE STRING "Prefix for test applications to allow skipping when packaging.")
-
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.

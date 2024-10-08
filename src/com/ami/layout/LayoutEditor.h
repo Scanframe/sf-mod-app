@@ -1,19 +1,20 @@
 #pragma once
 
-#include <QWidget>
+#include "ObjectHierarchyModel.h"
 #include <QDir>
 #include <QMenu>
 #include <QScrollArea>
 #include <QSettings>
+#include <QWidget>
 #include <ami/iface/MultiDocInterface.h>
-#include "ObjectHierarchyModel.h"
 
 namespace sf
 {
 
-class LayoutEditor :public QWidget, public MultiDocInterface
+class LayoutEditor : public QWidget
+	, public MultiDocInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		explicit LayoutEditor(QSettings* settings, QWidget* parent);
@@ -66,7 +67,6 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 
 		void setReadOnly(bool readOnly);
 
-
 	public Q_SLOTS:
 
 		/**
@@ -88,7 +88,6 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 		void resizeEvent(QResizeEvent* event) override;
 
 	private:
-
 		struct Data;
 		Data* _layoutEditorData;
 
@@ -109,4 +108,4 @@ class LayoutEditor :public QWidget, public MultiDocInterface
 		QAction* _actionEdit{nullptr};
 };
 
-}
+}// namespace sf

@@ -39,6 +39,11 @@
 					"type": "BOOL",
 					"value": "OFF"
 				},
+				"SF_COVERAGE_ONLY_TARGET":
+				{
+					"type": "STRING",
+					"value": ""
+				},
 				"SF_CROSS_WINDOWS": {
 					"type": "BOOL",
 					"value": "OFF"

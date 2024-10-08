@@ -1,8 +1,8 @@
-#include "misc/gen/Md5Hash.h"
-#include "misc/gen/dbgutils.h"
-#include "misc/gen/gen_utils.h"
 #include <QCryptographicHash>
 #include <cstring>
+#include <misc/gen/Md5Hash.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/string.h>
 #include <test/catch.h>
 
 TEST_CASE("sf::md5hash", "[con][generic][md5]")

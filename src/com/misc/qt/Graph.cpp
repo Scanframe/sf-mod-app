@@ -1,24 +1,24 @@
 #include "Graph.h"
+#include "gen/math.h"
 #include "qt_utils.h"
 
 namespace sf
 {
 
 Graph::Graph(const QPalette& palette)
-	:_colors({
-//	cRulerText,
-	palette.color(QPalette::ColorRole::WindowText),
-//	cRulerLine,
-	palette.color(QPalette::ColorRole::Dark),
-//	cGrid,
-	palette.color(QPalette::ColorRole::AlternateBase),
-//	cRulerBackground,
-	palette.color(QPalette::ColorRole::Window),
-//	cGraphBackground,
-	palette.color(QPalette::ColorRole::Base),
-//	cGraphForeground,
-	palette.color(QPalette::ColorRole::Text)
-})
+	: _colors({//	cRulerText,
+						 palette.color(QPalette::ColorRole::WindowText),
+						 //	cRulerLine,
+						 palette.color(QPalette::ColorRole::Dark),
+						 //	cGrid,
+						 palette.color(QPalette::ColorRole::AlternateBase),
+						 //	cRulerBackground,
+						 palette.color(QPalette::ColorRole::Window),
+						 //	cGraphBackground,
+						 palette.color(QPalette::ColorRole::Base),
+						 //	cGraphForeground,
+						 palette.color(QPalette::ColorRole::Text)
+		})
 {
 }
 
@@ -72,7 +72,8 @@ void Graph::setBounds(const QFontMetrics& fm, const QRect& bounds)
 		_left.enabled ? _left.size : 0,
 		_top.enabled ? _top.size : 0,
 		_right.enabled ? -_right.size : 0,
-		_bottom.enabled ? -_bottom.size : 0);
+		_bottom.enabled ? -_bottom.size : 0
+	);
 }
 
 const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
@@ -111,8 +112,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roLeft, _colors[cRulerLine], _colors[cRulerText],
-				_left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
+			draw.ruler(painter, Draw::roLeft, _colors[cRulerLine], _colors[cRulerText], _left.rect, area, _left.start, _left.stop, _left.digits, _left.unit);
 		}
 	}
 	// When there is a right ruler.
@@ -142,8 +142,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roRight, _colors[cRulerLine], _colors[cRulerText],
-				_right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
+			draw.ruler(painter, Draw::roRight, _colors[cRulerLine], _colors[cRulerText], _right.rect, area, _right.start, _right.stop, _right.digits, _right.unit);
 		}
 	}
 	// When there is a top ruler.
@@ -172,8 +171,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roTop, _colors[cRulerLine], _colors[cRulerText],
-				_top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
+			draw.ruler(painter, Draw::roTop, _colors[cRulerLine], _colors[cRulerText], _top.rect, area, _top.start, _top.stop, _top.digits, _top.unit);
 		}
 	}
 	// When there is a bottom ruler.
@@ -203,8 +201,7 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug)
 		{
-			draw.ruler(painter, Draw::roBottom, _colors[cRulerLine], _colors[cRulerText],
-				_bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
+			draw.ruler(painter, Draw::roBottom, _colors[cRulerLine], _colors[cRulerText], _bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
 		}
 	}
 	// Check if horizontal grid is enabled.
@@ -261,4 +258,4 @@ const QRect& Graph::getPlotArea() const
 	return _plotArea;
 }
 
-}
+}// namespace sf

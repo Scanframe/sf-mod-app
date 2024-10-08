@@ -1,5 +1,3 @@
-#include "misc/gen/gen_utils.h"
-#include <iostream>
 #include <misc/win/FileMapper.h>
 #include <test/catch.h>
 

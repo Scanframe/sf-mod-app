@@ -4,7 +4,7 @@
 #include <QFileInfo>
 #include <misc/gen/ConfigLocation.h>
 #include <misc/gen/Sustain.h>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/pointer.h>
 #include <misc/qt/Globals.h>
 
 namespace sf

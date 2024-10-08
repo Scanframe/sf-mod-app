@@ -1,12 +1,12 @@
 #pragma once
-#include <QPainter>
 #include "../global.h"
+#include <QPainter>
 
 namespace sf
 {
 
 /**
- * @brief Contains functions for drawing general stuff for graphs.
+ * @brief contains functions for drawing general stuff for graphs.
  *
  * @showrefs
  */
@@ -21,7 +21,7 @@ class _MISC_CLASS Draw
 		/**
 		 * @brief Orientation for drawing a graph ruler.
 		 */
-		enum ERulerOrientation :int
+		enum ERulerOrientation : int
 		{
 			/** Disable value. */
 			roNone = 0x0,
@@ -43,31 +43,30 @@ class _MISC_CLASS Draw
 		 * @param color Color for the ticks.
 		 * @param font_color Color of the texts.
 		 * @param bounds Boundaries for the ruler.
-		 * @param area Area available to paint texts on.
+		 * @param area area available to paint texts on.
 		 * @param start Start value of ruler.
 		 * @param stop Stop value of ruler.
 		 * @param digits Amount of significant digits or resolution of the printed values.
-		 * @param unit Unit string.
+		 * @param unit unit string.
 		 * @return True on success false in case of an exception.
 		 */
-		bool ruler
-			(
-				QPainter& painter,
-				ERulerOrientation ro,
-				const QColor& color,
-				const QColor& font_color,
-				const QRect& bounds,
-				const QRect& area,
-				double start,
-				double stop,
-				int digits,
-				const QString& unit
-			) const;
+		bool ruler(
+			QPainter& painter,
+			ERulerOrientation ro,
+			const QColor& color,
+			const QColor& font_color,
+			const QRect& bounds,
+			const QRect& area,
+			double start,
+			double stop,
+			int digits,
+			const QString& unit
+		) const;
 
 		/**
 		 * @brief Orientation for drawing grid lines in a graph.
 		 */
-		enum EGridOrientation :int
+		enum EGridOrientation : int
 		{
 			/** Draws grid horizontally. */
 			goHorizontal = 0x1,
@@ -81,28 +80,27 @@ class _MISC_CLASS Draw
 		 * @param painter Painter context.
 		 * @param go Orientation.
 		 * @param color Color of the grid lines.
-		 * @param bounds Area boundaries for the ruler.
+		 * @param bounds area boundaries for the ruler.
 		 * @param start Start value of grid lines.
 		 * @param stop Stop value of grid lines.
 		 * @param digits To make the grid correspond with the ruler when vertical.
 		 * @return True on success false in case of an exception.
 		 */
-		bool gridLines
-			(
-				QPainter& painter,
-				EGridOrientation go,
-				const QColor& color,
-				const QRect& bounds,
-				double start,
-				double stop,
-				unsigned digits
-			) const;
+		bool gridLines(
+			QPainter& painter,
+			EGridOrientation go,
+			const QColor& color,
+			const QRect& bounds,
+			double start,
+			double stop,
+			unsigned digits
+		) const;
 
 		/**
 		 * @brief Draws a cross with text rectangle in the middle.
 		 *
 		 * @param painter Painter context.
-		 * @param bounds Area boundaries for the ruler.
+		 * @param bounds area boundaries for the ruler.
 		 * @param text Text put in a rectangle in the middle.
 		 * @param color Color of the cross and text.
 		 * @return True on success false in case of an exception.
@@ -120,9 +118,9 @@ class _MISC_CLASS Draw
 		 */
 		static struct Tick
 		{
-			int Value;
-			int Ticks;
+				int Value;
+				int Ticks;
 		} _tickListVertical[], _tickListHorizontal[];
 };
 
-}
+}// namespace sf

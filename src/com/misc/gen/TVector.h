@@ -1,7 +1,8 @@
 #pragma once
 
+#include <cassert>
+#include <cinttypes>
 #include <climits>
-#include <inttypes.h>
 #include <iostream>
 #include <iterator>
 #include <limits>
@@ -238,9 +239,8 @@ class TVector : public std::vector<T>
 		}
 
 		/**
-		 * @brief Returns the amount of entries in the vector.
-		 *
-		 * @return Entry count.
+		 * @brief Gets the first element of the vector.
+		 * @return Reference of the typed value.
 		 */
 		inline T& first()
 		{
@@ -248,31 +248,48 @@ class TVector : public std::vector<T>
 			return *base_type::begin();
 		}
 
+		/**
+		 * @brief Gets the first element of the vector.
+		 * @return Const reference of the typed value.
+		 */
 		inline const T& first() const noexcept
 		{
-			assert(!base_type::empty());
+			static_assert(!base_type::empty());
 			return *base_type::begin();
 		}
 
+		/**
+		 * @brief Gets the last element of the vector.
+		 * @return Const reference of the typed value.
+		 */
 		inline T& last()
 		{
 			assert(!base_type::empty());
 			return *(base_type::end() - 1);
 		}
 
+		/**
+		 * @brief Gets the last element of the vector.
+		 * @return Const reference of the typed value.
+		 */
 		inline const T& last() const noexcept
 		{
 			assert(!base_type::empty());
 			return *(base_type::end() - 1);
 		}
 
+		/**
+		 * @brief Checks if the first element is of the passed value.
+		 */
 		inline bool startsWith(T t) const
 		{
 			return !base_type::empty() && first() == t;
 		}
 
-		inline bool
-		endsWith(T t) const
+		/**
+		 * @brief Checks if the last element is of the passed value.
+		 */
+		inline bool endsWith(T t) const
 		{
 			return !base_type::empty() && last() == t;
 		}
@@ -361,7 +378,7 @@ std::ostream& TVector<T>::write(std::ostream& os, bool inc_hex) const
 	for (const auto& x: *this)
 	{
 		os << std::dec << x;
-		if (inc_hex && std::numeric_limits<T>::is_integer)
+		if (inc_hex && std::is_integral<T>::value)
 		{
 			uint64_t _x{0};
 			for (int i = 0; i < sizeof(T); i++)

@@ -4,7 +4,6 @@
 #include <misc/gen/IntervalTimer.h>
 #include <misc/gen/PerformanceTimer.h>
 #include <misc/gen/TimeSpec.h>
-#include <misc/gen/gen_utils.h>
 #if IS_WIN
 	#include <misc/win/win_utils.h>
 #endif
@@ -119,7 +118,7 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		CHECK(pt.elapse().toDouble() == Approx(1.5).margin(0.01));
 #endif
 		// Check if the timer is disabled.
-		CHECK(!et.isEnabled());
+		CHECK_FALSE(et.isEnabled());
 	}
 
 	SECTION("IntervalTimer", "Individual class only")

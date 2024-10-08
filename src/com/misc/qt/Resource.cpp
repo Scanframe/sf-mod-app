@@ -1,12 +1,12 @@
-#include <QFile>
-#include <QRegularExpression>
+#include "Resource.h"
+#include "gen/math.h"
+#include <QApplication>
 #include <QDebug>
 #include <QDomDocument>
+#include <QFile>
 #include <QFileInfo>
 #include <QPainter>
-#include <QApplication>
-#include "Resource.h"
-#include "../gen/gen_utils.h"
+#include <QRegularExpression>
 
 namespace sf
 {
@@ -60,7 +60,7 @@ const char* Resource::_iconResources[] =
 		":icon/svg/location",
 		":icon/svg/tools",
 		":icon/svg/graph",
-	};
+};
 
 int Resource::_defaultIconSize = 128;
 
@@ -212,4 +212,4 @@ QIcon Resource::getSvgIcon(const QString& resource, const QPalette& palette, QPa
 	return getSvgIcon(resource, palette.color(role), size);
 }
 
-}
+}// namespace sf

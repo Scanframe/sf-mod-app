@@ -1,9 +1,9 @@
 #pragma once
 
+#include "ResultData.h"
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Sustain.h>
 #include <misc/gen/TBitSet.h>
-#include "ResultData.h"
 
 namespace sf
 {
@@ -14,7 +14,7 @@ namespace sf
  * #sf::ResultData instances can be attached to this type of instance to handle
  * request on multiple results for when all data must be available at a time for processing.
  */
-class _GII_CLASS ResultDataRequester :public ResultDataTypes
+class _GII_CLASS ResultDataRequester : public ResultDataTypes
 {
 	public:
 		/**
@@ -245,47 +245,47 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		 */
 		struct WorkData
 		{
-			/**
+				/**
 			 * @brief Default constructor.
 			 */
-			WorkData()
-			{
-				clear();
-			}
+				WorkData()
+				{
+					clear();
+				}
 
-			/**
+				/**
 			 * @brief Clears all dat members to their initial state.
 			 */
-			void clear()
-			{
-				_indexRequest = false;
-				_dataRequest.Bits = 0;
-				_range.clear();
-				_index.clear();
-				_dataRequest.Bits = 0;
-				_dataAccess.Bits = 0;
-			}
+				void clear()
+				{
+					_indexRequest = false;
+					_dataRequest._bits = 0;
+					_range.clear();
+					_index.clear();
+					_dataRequest._bits = 0;
+					_dataAccess._bits = 0;
+				}
 
-			/**
+				/**
 			 * @brief Data range of a request.
 			 */
-			Range _range;
-			/**
+				Range _range;
+				/**
 			 * @brief Index range of a request.
 			 */
-			Range _index;
-			/**
+				Range _index;
+				/**
 			 * @brief True when a request index was made.
 			 */
-			bool _indexRequest{};
-			/**
+				bool _indexRequest{};
+				/**
 			 * @brief True when a request data was made and it must be waited for.
 			 */
-			TSet<int> _dataRequest;
-			/**
+				TSet<int> _dataRequest;
+				/**
 			 * @brief True when it must wait for results to catch up with the index result.
 			 */
-			TSet<int> _dataAccess;
+				TSet<int> _dataAccess;
 		};
 
 		/**
@@ -302,40 +302,34 @@ class _GII_CLASS ResultDataRequester :public ResultDataTypes
 		bool _byPass;
 };
 
-inline
-ResultDataRequester::EState ResultDataRequester::getState() const
+inline ResultDataRequester::EState ResultDataRequester::getState() const
 {
 	return _state;
 }
 
-inline
-void ResultDataRequester::setTimeout(const TimeSpec& timeout)
+inline void ResultDataRequester::setTimeout(const TimeSpec& timeout)
 {
 	_timeoutTimer.set(timeout);
 }
 
-inline
-bool ResultDataRequester::requestIndex(size_type index)
+inline bool ResultDataRequester::requestIndex(size_type index)
 {
 	return requestIndex(Range(index, index + 1));
 }
 
-inline
-const ResultDataHandler* ResultDataRequester::getHandler() const
+inline const ResultDataHandler* ResultDataRequester::getHandler() const
 {
 	return _handler;
 }
 
-inline
-const Range& ResultDataRequester::getIndexRange() const
+inline const Range& ResultDataRequester::getIndexRange() const
 {
 	return _work._index;
 }
 
-inline
-const Range& ResultDataRequester::getDataRange() const
+inline const Range& ResultDataRequester::getDataRange() const
 {
 	return _work._range;
 }
 
-}
+}// namespace sf

@@ -7,7 +7,6 @@
 #include "ScriptEngine.h"
 #include "Value.h"
 #include "dbgutils.h"
-#include "gen_utils.h"
 
 namespace sf
 {
@@ -538,7 +537,7 @@ void ScriptEngine::getNumber(Value& result)
 {
 	char* dp = nullptr;
 	char* lp = nullptr;
-	double d = sf::stod(&_cmd[_pos], &dp);
+	auto d = sf::stod<double>(&_cmd[_pos], &dp);
 	Value::int_type l = std::strtol(&_cmd[_pos], &lp, 0);
 	// see which one converted the most characters
 	if (dp > lp)

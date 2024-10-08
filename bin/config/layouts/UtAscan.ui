@@ -108,7 +108,7 @@
       <string>Ultrasonic Amplitude units of the digitiser single step.</string>
      </property>
      <property name="text">
-      <string>Amplitude Unit</string>
+      <string>Amplitude unit</string>
      </property>
      <property name="buddy">
       <cstring>vAmpUnit</cstring>
@@ -146,7 +146,7 @@
       <string>Ultrasonic Time in seconds that is used for the time dependant results.</string>
      </property>
      <property name="text">
-      <string>Time Unit</string>
+      <string>Time unit</string>
      </property>
      <property name="buddy">
       <cstring>veTimeUnit</cstring>

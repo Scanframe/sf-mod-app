@@ -1,8 +1,8 @@
 #pragma once
 
-#include <misc/gen/TVector.h>
-#include "InformationBase.h"
 #include "FileMappedStorage.h"
+#include "InformationBase.h"
+#include <misc/gen/TVector.h>
 
 namespace sf
 {
@@ -22,7 +22,7 @@ class ResultData;
  * Multiple inheritance makes these types local for other classes as well.<br>
  * Making code more readable and also prevents name space problems.<br>
  */
-class _GII_CLASS ResultDataTypes :public InformationTypes
+class _GII_CLASS ResultDataTypes : public InformationTypes
 {
 	public:
 		/**
@@ -43,7 +43,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		/**
 		 * @brief Event enumerate values used in broadcasting where global events have a negative value.
 		 */
-		enum EEvent :int
+		enum EEvent : int
 		{
 			/** New ID was created.*/
 			reNewId = -32000,
@@ -94,7 +94,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		/**
 		 * @brief This enumerate is the order of fields in the setup string
 		 */
-		enum EField :int
+		enum EField : int
 		{
 			/** Identifier field.*/
 			rfId = 0,
@@ -119,7 +119,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		/**
 		 * @brief This enumerate is used to identify the type of data.
 		 */
-		enum EType :int
+		enum EType : int
 		{
 			/** Invalid type indicating a faulty setup string represented by  'INVALID'.*/
 			rtInvalid = 0,
@@ -139,7 +139,7 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		/**
 		 * @brief Flags of the flags description field.
 		 */
-		enum EFlag :flags_type
+		enum EFlag : flags_type
 		{
 			/** Represented by character 'R' only the owner can change set it. */
 			flgRecycle = 1 << 0,
@@ -174,48 +174,48 @@ class _GII_CLASS ResultDataTypes :public InformationTypes
 		 */
 		struct Definition
 		{
-			/**
+				/**
 			 * @brief Flag indicating this structure is valid.
 			 */
-			bool _valid{false};
-			/**
+				bool _valid{false};
+				/**
 			 * @brief ID of the new global instance.
 			 */
-			id_type _id{0};
-			/**
+				id_type _id{0};
+				/**
 			 * @brief Name path separated using '|' characters.
 			 */
-			std::string _name;
-			/**
+				std::string _name;
+				/**
 			 * @brief Combination of EFlag flags.
 			 */
-			flags_type _flags{0};
-			/**
+				flags_type _flags{0};
+				/**
 			 * @brief Description of the instance without comma's.
 			 */
-			std::string _description;
-			/**
+				std::string _description;
+				/**
 			 * @brief Type of a single the element.
 			 */
-			EType _type{rtInvalid};
-			/**
+				EType _type{rtInvalid};
+				/**
 			 * @brief Amount of elements in a block.
 			 */
-			size_type _blockSize{0};
-			/**
+				size_type _blockSize{0};
+				/**
 			 * @brief Amount of segments in a block.
 			 */
-			size_type _segmentSize{0};
-			/**
+				size_type _segmentSize{0};
+				/**
 			 * @brief Amount of significant bits in an element.
 			 */
-			size_t _significantBits{0};
-			/**
-			 * @brief Offset to produce a negative value or better set the nul value base line.
+				size_t _significantBits{0};
+				/**
+			 * @brief offset to produce a negative value or better set the nul value base line.
 			 * Needed to produce an element value to calculate with.
 			 */
-			size_type _offset{0};
+				size_type _offset{0};
 		};
 };
 
-}
+}// namespace sf

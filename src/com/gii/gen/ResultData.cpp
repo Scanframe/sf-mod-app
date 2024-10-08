@@ -1,11 +1,9 @@
-#include <misc/gen/TVector.h>
-#include <misc/gen/TVector.h>
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/RangeManager.h>
 #include "ResultData.h"
 #include "ResultDataHandler.h"
-#include "ResultDataStatic.h"
 #include "ResultDataReference.h"
+#include "ResultDataStatic.h"
+#include <misc/gen/TStrings.h>
+#include <misc/gen/dbgutils.h>
 
 namespace sf
 {
@@ -40,7 +38,7 @@ ResultData::ResultData(void*, void*)
 	}
 }
 
-void ResultData::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
+void ResultData::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 {
 	if (ResultDataStatic::_globalActive)
 	{
@@ -68,7 +66,7 @@ void ResultData::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
 
 ResultData::~ResultData()
 {
-/*
+	/*
 	// Remove this clients current unfulfilled requests from the range manager.
 	if (!isOwner())
 	{
@@ -102,7 +100,7 @@ bool ResultData::recycleEnable(bool recycle)
 				return true;
 			}
 		}
-		else // Disable recycling.
+		else// Disable recycling.
 		{
 			// Should recycling be disabled.
 			if (!recycle && _reference->_data->getRecycleCount())
@@ -257,7 +255,7 @@ bool ResultData::attachRef(ResultDataReference* ref)
 			delete _reference;
 		}
 		else
-		{ // Just remove result from list if it is not the owner.
+		{// Just remove result from list if it is not the owner.
 			if (!_reference->_list.detach(this))
 			{
 				SF_COND_RTTI_NOTIFY(isDebug(), DO_MSGBOX | DO_CERR, "Could not remove instance from list!")
@@ -296,8 +294,7 @@ bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type
 	// Setup of the 'Data' member of the reference.
 	// Create a new TDataStore instance for this reference
 	// The block size is the size of the type times the given type instances per block.
-	ref->_data = new FileMappedStorage(segment_size,
-		block_size * ResultDataStatic::_typeInfoArray[ref->_type].Size, recycle);
+	ref->_data = new FileMappedStorage(segment_size, block_size * ResultDataStatic::_typeInfoArray[ref->_type].Size, recycle);
 	// Attach ref to this result instance.
 	if (attachRef(ref))
 	{
@@ -339,8 +336,8 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 		if (ref != ResultDataStatic::zero()._reference)
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
-				<< stringf("0x%lX,%s", definition._id, definition._name.c_str()) << "\nover!\n"
-				<< ref->_name << '!')
+														<< stringf("0x%lX,%s", definition._id, definition._name.c_str()) << "\nover!\n"
+														<< ref->_name << '!')
 			// If ref already exist return false.
 			return false;
 		}
@@ -361,9 +358,7 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 		ref->_curFlags = ref->_flags;
 		ref->_description = definition._description;
 		ref->_type = definition._type;
-		ref->_significantBits = sf::clip<size_type>(definition._significantBits ?
-			definition._significantBits :
-			getTypeSize(definition._type) * 8, 1, getTypeSize(definition._type) * 8);
+		ref->_significantBits = sf::clip<size_type>(definition._significantBits ? definition._significantBits : getTypeSize(definition._type) * 8, 1, getTypeSize(definition._type) * 8);
 		ref->_offset = definition._offset;
 		//
 		auto block_size = definition._blockSize;
@@ -537,7 +532,7 @@ void ResultData::setHandler(ResultDataHandler* handler)
 			_transactionId = (Range::id_type) ResultDataStatic::getUniqueId();
 		}
 		else
-		{ // Notify instance losing event link in the was already a link
+		{// Notify instance losing event link in the was already a link
 			if (_handler)
 			{
 				emitEvent(reUnlinked, *this, _reference->_rangeManager->getManaged());
@@ -576,9 +571,9 @@ bool ResultData::getRequests(Range::Vector& requests) const
 	requests.flush();
 	// Can only get when it is the owner.
 	if (isOwner())
-	{ // Check if there is anything to get.
+	{// Check if there is anything to get.
 		if (_reference->_rangeManager->getActualRequests().count())
-		{ // Just make a copy of the real request list of the manager.
+		{// Just make a copy of the real request list of the manager.
 			requests = _reference->_rangeManager->getActualRequests();
 			//
 			return true;
@@ -595,19 +590,18 @@ bool ResultData::getSplitRequests(Range::Vector& req_list) const
 	if (isOwner())
 	{
 		// Check if there is anything to get.
-		return Range::split
-			(
-				_reference->_data->getSegmentSize(),
-				_reference->_rangeManager->getRequests(),
-				req_list
-			) > 0;
+		return Range::split(
+						 _reference->_data->getSegmentSize(),
+						 _reference->_rangeManager->getRequests(),
+						 req_list
+					 ) > 0;
 	}
 	return false;
 }
 
 const Range& ResultData::getAccessRange() const
 {
-	return const_cast<Range&> (_reference->_rangeManager->getManaged()).setId((Range::id_type) _reference->_id);
+	return const_cast<Range&>(_reference->_rangeManager->getManaged()).setId((Range::id_type) _reference->_id);
 }
 
 bool ResultData::setAccessRange(const Range& rng, bool skip_self)
@@ -616,7 +610,8 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 	{
 		// Add clipped new range to existing range.
 		Range nr(
-			_reference->_rangeManager->getManaged() + rng & Range(0, npos));
+			_reference->_rangeManager->getManaged() + rng & Range(0, npos)
+		);
 		// Compare the new formed range with the existing one.
 		if (nr != _reference->_rangeManager->getManaged())
 		{
@@ -631,8 +626,7 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 				}
 				// Generate an event to notify users of the change in reserved blocks.
 				// The new value is passed in the 'Stop' Value of the passed 'Range' argument.
-				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(),
-					(Range::id_type) _reference->_id), skip_self);
+				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(), (Range::id_type) _reference->_id), skip_self);
 			}
 			// Set the new managed range.
 			_reference->_rangeManager->setManaged(nr);
@@ -653,7 +647,7 @@ ResultData::EType ResultData::getType(const char* type)
 
 const char* ResultData::getType(ResultData::EType type)
 {
-	return ResultDataStatic::_typeInfoArray[(type < 0 ||type >= rtLastEntry) ? rtInvalid : type].Name;
+	return ResultDataStatic::_typeInfoArray[(type < 0 || type >= rtLastEntry) ? rtInvalid : type].Name;
 }
 
 ResultData::size_type ResultData::getTypeSize(ResultData::EType type)
@@ -793,7 +787,7 @@ bool ResultData::setFlag(int flag, bool skip_self)
 }
 
 bool ResultData::unsetFlag(int flag, bool skip_self)
-{ // Only the owner is allowed to set the flags.
+{// Only the owner is allowed to set the flags.
 	if (isOwner())
 	{
 		// Test for the recycle flag and try to disable.
@@ -828,15 +822,15 @@ bool ResultData::updateFlags(int flags, bool skip_self)
 	bool rv = false;
 	// Only the owner is allowed to set the flags.
 	if (isOwner())
-	{ // Initially signal success.
+	{// Initially signal success.
 		rv = true;
 		// Test for a change in the recycle flag.
 		if ((_reference->_curFlags ^ flags) & flgRecycle)
-		{ // Establish for enable or disable of mode.
+		{// Establish for enable or disable of mode.
 			bool enable = (_reference->_curFlags & flgRecycle) != 0;
 			// Enable or disable the recycle mode of the data store.
 			if (!recycleEnable(enable))
-			{ // On failure skip change of the flag change.
+			{// On failure skip change of the flag change.
 				if (enable)
 				{
 					flags &= ~flgRecycle;
@@ -865,14 +859,14 @@ bool ResultData::updateFlags(int flags, bool skip_self)
 std::ostream& ResultData::reportStatus(std::ostream& os) const
 {
 	os << "Block Size   : " << getBlockSize() << '\n'
-		<< "Segment Size : " << getSegmentSize() << '\n'
-		<< "Block Count  : " << getBlockCount() << '\n'
-		<< "Segment Count: " << getSegmentCount() << '\n'
-		<< "Res. Blocks  : " << getReservedBlockCount() << '\n'
-		<< "Total Res.   : " << getReservedSize() << '\n'
-		<< "Access List  : " << _reference->_rangeManager->getAccessibles() << '\n'
-		<< "Request.List : " << _reference->_rangeManager->getRequests() << '\n'
-		<< "Real Req.List: " << _reference->_rangeManager->getActualRequests() << '\n';
+		 << "Segment Size : " << getSegmentSize() << '\n'
+		 << "Block Count  : " << getBlockCount() << '\n'
+		 << "Segment Count: " << getSegmentCount() << '\n'
+		 << "Res. Blocks  : " << getReservedBlockCount() << '\n'
+		 << "Total Res.   : " << getReservedSize() << '\n'
+		 << "Access List  : " << _reference->_rangeManager->getAccessibles() << '\n'
+		 << "Request.List : " << _reference->_rangeManager->getRequests() << '\n'
+		 << "Real Req.List: " << _reference->_rangeManager->getActualRequests() << '\n';
 	return os;
 }
 
@@ -1016,8 +1010,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 		// Check if the extends have changed and generate an event for it.
 		if (aer != _reference->_rangeManager->getManaged())
 		{
-			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT,
-				"Access range has changed: " << _reference->_rangeManager->getManaged())
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Access range has changed: " << _reference->_rangeManager->getManaged())
 			// Generate an event for all the results having the same ID as this instance.
 			rv += emitLocalEvent(reAccessChange, _reference->_rangeManager->getManaged(), skip_self);
 		}
@@ -1038,7 +1031,7 @@ bool ResultData::clearValidations(bool skip_self)
 		_reference->_validatedCache.flush();
 		// Check if flushing has any effect of calling it
 		if (_reference->_rangeManager->isFlushable())
-		{ // Notify clients before it is actually cleared.
+		{// Notify clients before it is actually cleared.
 			emitLocalEvent(reClear, _reference->_rangeManager->getManaged(), skip_self);
 			// Flush all ranges within the range manager.
 			_reference->_rangeManager->flush();
@@ -1160,10 +1153,10 @@ ResultData::sdata_type ResultData::getValue(const void* data) const
 	else
 	{
 		// Set all the bits in the mask.
-		mask = (data_type) - 1;
+		mask = (data_type) -1;
 	}
 	//
-	return (sdata_type)((*(data_type*) data & mask) - _reference->_offset);
+	return (sdata_type) ((*(data_type*) data & mask) - _reference->_offset);
 }
 
 ResultData::data_type ResultData::getValueU(ResultData::size_type idx, const void* data) const
@@ -1211,15 +1204,15 @@ bool ResultData::requestRange(const Range& rng)
 	auto result = _reference->_rangeManager->request(r, rrl);
 	switch (result)
 	{
-		case RangeManager::rmAccessible: SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request " << rng << " Is accessible!")
+		case RangeManager::rmAccessible:
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request " << rng << " Is accessible!")
 			break;
 
-		case RangeManager::rmOutOfRange: SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT,
-			"Request " << rng << " Is out of range!")
+		case RangeManager::rmOutOfRange:
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request " << rng << " Is out of range!")
 			break;
 
-		case RangeManager::rmInaccessible:
-		{
+		case RangeManager::rmInaccessible: {
 			// Check if the owner of the result reference has an event link.
 			ResultData* rd = _reference->_list[0];
 			if (rd->_handler)
@@ -1341,7 +1334,7 @@ const char* ResultData::getEventName(EEvent event)
 			break;
 
 		case reClear:
-			rv = "Clear";
+			rv = "clear";
 			break;
 
 		default:
@@ -1395,8 +1388,7 @@ bool ResultData::readUpdate(std::istream& is, bool skip_self, PtrVector& list)
 	{
 		// GetResultDataById get reference to owner to be able to update.
 		// Check if the reference pointer is non-zero and look only into that list for the id.
-		auto& res = const_cast<ResultData&>(not_ref_null(list) ?
-			getInstanceById(rng.getId(), list) : getInstanceById(rng.getId()));
+		auto& res = const_cast<ResultData&>(not_ref_null(list) ? getInstanceById(rng.getId(), list) : getInstanceById(rng.getId()));
 		// Check if new passed 'Stop' value is smaller than current one.
 		// If so this result should be cleared. first
 		if (rng.getStop() < res._reference->_rangeManager->getManaged().getStop())
@@ -1458,7 +1450,8 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 		def._offset = std::stoull(fields[rfOffset], nullptr, 0);
 	}
 	// Notify when not valid notify.
-	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n" << str);
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n"
+												<< str);
 	//
 	return def;
 }
@@ -1516,7 +1509,7 @@ bool ResultData::create(std::istream& is, PtrVector& list, int& err_line)
 				ret_val = false;
 			}
 		}
-	} // while
+	}// while
 	return ret_val;
 }
 
@@ -1702,7 +1695,7 @@ std::string ResultData::getFieldName(int field)
 		case rfSigBits:
 			return "SignificantBits";
 		case rfOffset:
-			return "Offset";
+			return "offset";
 		case rfBlockSize:
 			return "BlockSize";
 		case rfSegmentSize:
@@ -1734,4 +1727,4 @@ std::istream& operator>>(std::istream& is, ResultData& rd)
 	return is;
 }
 
-}
+}// namespace sf

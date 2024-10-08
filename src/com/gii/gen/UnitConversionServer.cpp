@@ -1,13 +1,14 @@
-#include <iostream>
-#include <algorithm>
-
 #include "UnitConversionServer.h"
+#include <algorithm>
+#include <iostream>
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/string.h>
 
 namespace sf
 {
 
 UnitConversionServer::UnitConversionServer()
-	:_profile()
+	: _profile()
 {
 	// Install handler.
 	setUnitConversionHandler(UnitConversionServerClosure().assign(this, &UnitConversionServer::Handler, std::placeholders::_1));
@@ -40,13 +41,11 @@ void UnitConversionServer::setConversion(UnitConversionEvent& ev)
 		if (_profile.setSection(getUnitSystemName(_unitSystem)))
 		{
 			auto key = std::string(ev._from_unit).append(",").append(itostr(ev._from_precision));
-			auto value = std::string(ev._to_unit).append(",").append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), ".")).append(",").append(
-			trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
+			auto value = std::string(ev._to_unit).append(",").append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), ".")).append(",").append(trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
 			_profile.setString(key, value);
 		}
 	}
 }
-
 
 void UnitConversionServer::removeConversion(const std::string& key)
 {
@@ -82,9 +81,9 @@ bool UnitConversionServer::Handler(UnitConversionEvent& ev)
 			// Fix it so the decimal point is used to convert to the string.
 			Locale locale;
 			ev._to_unit = sl[0].empty() ? "??" : sl[0];
-			ev._multiplier = toTypeDef<double>(sl[1], 1.0);
-			ev._offset = toTypeDef<double>(sl[2], 0.0);
-			ev._to_precision = toTypeDef<int>(sl[3], ev._from_precision);
+			ev._multiplier = toNumberDefault<double>(sl[1], 1.0);
+			ev._offset = toNumberDefault<double>(sl[2], 0.0);
+			ev._to_precision = toNumberDefault<int>(sl[3], ev._from_precision);
 			return true;
 		}
 	}
@@ -127,8 +126,7 @@ const std::vector<std::pair<UnitConversionServer::EUnitSystem, const char*>>& Un
 const char* UnitConversionServer::getUnitSystemName(int us)
 {
 	auto& names = getUnitSystemNames();
-	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool
-	{
+	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool {
 		return usp.first == us;
 	});
 	if (it == names.end())
@@ -148,4 +146,4 @@ bool UnitConversionServer::isDirty() const
 	return _profile.isDirty();
 }
 
-}
+}// namespace sf

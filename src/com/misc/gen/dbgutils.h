@@ -1,5 +1,5 @@
 /**
-	@brief Contains debugging macro's that are defined when define DEBUG_LEVEL is defined as non-zero.
+	@brief contains debugging macro's that are defined when define DEBUG_LEVEL is defined as non-zero.
 
 	Introduces macro's:
 	===================
@@ -161,6 +161,11 @@ _MISC_FUNC void SetDefaultDebugOutput(unsigned int type);
  * @brief Returns the combination of EDebugOutputType which is the default output.
  */
 _MISC_FUNC unsigned int GetDefaultDebugOutput();
+
+/**
+ * @brief Prints the backtrace to std::cerr.
+ */
+_MISC_FUNC void printBacktrace();
 
 /**
  * @brief Gets the debug status

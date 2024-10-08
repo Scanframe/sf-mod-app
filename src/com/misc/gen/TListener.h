@@ -1,7 +1,8 @@
 #pragma once
 
-#include "gen_utils.h"
+#include "pointer.h"
 #include <functional>
+#include <memory>
 
 namespace sf
 {
@@ -20,7 +21,7 @@ class ListenerList
 				virtual ~base_type() = default;
 
 				/**
-			 * @brief Will be over loaded in template to check the emitter has gone away.
+			 * @brief Will be overloaded in template to check the emitter has gone away.
 			 *
 			 * @return True when shared pointer is still shared.
 			 */
@@ -274,7 +275,7 @@ class TListener : private ListenerList::base_type
 
 			private:
 				/**
-				 * @brief List of weak pointers to an std::function.
+				 * @brief List of weak pointers to a std::function.
 				 */
 				std::vector<std::weak_ptr<func_type>> list;
 		};

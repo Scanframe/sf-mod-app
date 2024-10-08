@@ -1,8 +1,9 @@
-#include <QMetaEnum>
-#include <QInputDialog>
-#include <QMessageBox>
 #include "FollowersListModel.h"
 #include "FollowersDialog.h"
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QMetaEnum>
+#include <misc/gen/string.h>
 
 namespace sf
 {
@@ -22,8 +23,8 @@ enum EColumn
 }
 
 FollowersListModel::FollowersListModel(UnitConversionServerEx* ucs, QObject* parent)
-	:QAbstractListModel(parent)
-	 , _ucs(ucs)
+	: QAbstractListModel(parent)
+	, _ucs(ucs)
 {
 	update();
 }
@@ -74,8 +75,8 @@ int FollowersListModel::columnCount(const QModelIndex& parent) const
 
 void FollowersListModel::refresh()
 {
-//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-//	endRemoveRows();
+	//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+	//	endRemoveRows();
 	beginResetModel();
 	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
@@ -97,7 +98,7 @@ QVariant FollowersListModel::headerData(int section, Qt::Orientation orientation
 			case cScript:
 				return QString(tr("Script"));
 			case vcUnit:
-				return QString(tr("Unit"));
+				return QString(tr("unit"));
 			case cFollowers:
 				return QString(tr("Followers"));
 			default:
@@ -138,8 +139,7 @@ QVariant FollowersListModel::data(const QModelIndex& index, int role) const
 			case vcUnit:
 				return entry._unit;
 
-			case cFollowers:
-			{
+			case cFollowers: {
 				QStringList sl;
 				for (auto id: entry._followerIds)
 				{
@@ -227,7 +227,7 @@ void FollowersListModel::sync()
 			strings value;
 			value.append("'" + e._formula.toStdString() + "'");
 			value.append(e._unit.toStdString());
-			for(auto id: e._followerIds)
+			for (auto id: e._followerIds)
 			{
 				value.append("0x" + itostr(id, 16));
 			}
@@ -237,4 +237,4 @@ void FollowersListModel::sync()
 	_dirty = false;
 }
 
-}
+}// namespace sf

@@ -1,8 +1,9 @@
+#include "IniProfile.h"
+#include "file.h"
+#include "pointer.h"
+#include "string.h"
 #include <cstring>
 #include <string>
-
-#include "IniProfile.h"
-#include "gen_utils.h"
 
 namespace sf
 {

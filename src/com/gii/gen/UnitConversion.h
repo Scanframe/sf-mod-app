@@ -2,9 +2,8 @@
 
 #include <utility>
 
-#include "misc/gen/gen_utils.h"
-#include "misc/gen/TVector.h"
-#include "misc/gen/TClosure.h"
+#include <misc/gen/TClosure.h>
+#include <misc/gen/TVector.h>
 
 #include "../global.h"
 
@@ -16,28 +15,33 @@ namespace sf
  */
 struct UnitConversionEvent
 {
-	/**
+		/**
 	 * @brief Constructor.
 	 */
-	UnitConversionEvent(std::string option, std::string from_unit, int from_precision,
-		double& multiplier, double& offset, std::string& to_unit, int& to_precision)
-		:_option(std::move(option)), _from_unit(std::move(from_unit)), _from_precision(from_precision)
-		 , _multiplier(multiplier), _offset(offset), _to_precision(to_precision), _to_unit(to_unit) {}
+		UnitConversionEvent(std::string option, std::string from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision)
+			: _option(std::move(option))
+			, _from_unit(std::move(from_unit))
+			, _from_precision(from_precision)
+			, _multiplier(multiplier)
+			, _offset(offset)
+			, _to_precision(to_precision)
+			, _to_unit(to_unit)
+		{}
 
-	/** @brief Special conversion option code. */
-	std::string _option;
-	/** @brief current unit string. */
-	std::string _from_unit;
-	/** @brief  Decimals of current unit. (can be negative) */
-	int _from_precision;
-	/** @brief Multiplication factor. */
-	double& _multiplier;
-	/** @brief Offset value. */
-	double& _offset;
-	/** @brief New precision after conversion. */
-	std::string& _to_unit;
-	/** @brief New unit string. */
-	int& _to_precision;
+		/** @brief Special conversion option code. */
+		std::string _option;
+		/** @brief current unit string. */
+		std::string _from_unit;
+		/** @brief  Decimals of current unit. (can be negative) */
+		int _from_precision;
+		/** @brief Multiplication factor. */
+		double& _multiplier;
+		/** @brief offset value. */
+		double& _offset;
+		/** @brief New precision after conversion. */
+		std::string& _to_unit;
+		/** @brief New unit string. */
+		int& _to_precision;
 };
 
 /**
@@ -67,24 +71,23 @@ _GII_FUNC void setUnitConversionHandler(const UnitConversionServerClosure& closu
  * @param from_unit current unit string.
  * @param from_precision Decimals of current unit. (can be negative)
  * @param multiplier Multiplication factor.
- * @param offset Offset value.
+ * @param offset offset value.
  * @param to_unit New unit string.
  * @param to_precision New precision after conversion.
  * @return True on success.
  */
-_GII_FUNC bool getUnitConversion
-	(
-		const std::string& option,
-		const std::string& from_unit,
-		int from_precision,
-		double& multiplier,
-		double& offset,
-		std::string& to_unit,
-		int& to_precision
-	);
+_GII_FUNC bool getUnitConversion(
+	const std::string& option,
+	const std::string& from_unit,
+	int from_precision,
+	double& multiplier,
+	double& offset,
+	std::string& to_unit,
+	int& to_precision
+);
 
 /**
- * @brief Unit conversion class to easy the pain of conversions in dialogs.
+ * @brief unit conversion class to easy the pain of conversions in dialogs.
  *
  * Used dialogs to convert SI-unit's to be displayed as required and to store them as SI-units.<br>
  * When performing scientific formula calculations in applications there is no need for obscure
@@ -186,7 +189,7 @@ class _GII_CLASS UnitConverter
 		[[nodiscard]] double getOrgValue(const std::string& value, double def = 0.0) const;
 
 		/**
-		 * @brief Clear the conversion and make it invalid.
+		 * @brief clear the conversion and make it invalid.
 		 *
 		 * Clearing makes this class pass through values unconverted.
 		 */
@@ -227,34 +230,29 @@ class _GII_CLASS UnitConverter
 		int _sigDigits{0};
 };
 
-inline
-UnitConverter::UnitConverter(const std::string& unit, int sig_digits)
+inline UnitConverter::UnitConverter(const std::string& unit, int sig_digits)
 {
 	set(unit, sig_digits);
 }
 
-inline
-void UnitConverter::clear()
+inline void UnitConverter::clear()
 {
 	_valid = false;
 }
 
-inline
-bool UnitConverter::isValid() const
+inline bool UnitConverter::isValid() const
 {
 	return _valid;
 }
 
-inline
-std::string UnitConverter::getUnit() const
+inline std::string UnitConverter::getUnit() const
 {
 	return _valid ? _unit : _originalUnit;
 }
 
-inline
-int UnitConverter::getSigDigits() const
+inline int UnitConverter::getSigDigits() const
 {
 	return _valid ? _sigDigits : _originalSigDigits;
 }
 
-}
+}// namespace sf

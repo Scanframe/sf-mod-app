@@ -4,25 +4,24 @@
 namespace sf
 {
 
-SF_REG_CLASS
-(
+SF_REG_CLASS(
 	ScriptObject, ScriptObject::Parameters, Interface,
 	ResultDataScriptObject, "ResultData", "Generic information interface result data."
 )
 
 // ResultData object members.
-#define SID_ID           1
-#define SID_NAME         2
-#define SID_FLAGS        3
-#define SID_OFFSET       4
-#define SID_RANGE        5
-#define SID_DATA         6
-#define SID_BLOCKCOUNT   7
-#define SID_REQUEST      8
+#define SID_ID 1
+#define SID_NAME 2
+#define SID_FLAGS 3
+#define SID_OFFSET 4
+#define SID_RANGE 5
+#define SID_DATA 6
+#define SID_BLOCKCOUNT 7
+#define SID_REQUEST 8
 // Events
-#define SID_ON_ID       50
-#define SID_ON_ACCESS   51
-#define SID_ON_CLEAR    52
+#define SID_ON_ID 50
+#define SID_ON_ACCESS 51
+#define SID_ON_CLEAR 52
 #define SID_ON_GOTRANGE 53
 
 ScriptObject::IdInfo ResultDataScriptObject::_info[] =
@@ -30,7 +29,7 @@ ScriptObject::IdInfo ResultDataScriptObject::_info[] =
 		{SID_ID, ScriptObject::idConstant, "Id", 0, nullptr},
 		{SID_NAME, ScriptObject::idFunction, "Name", 1, nullptr},
 		{SID_FLAGS, ScriptObject::idConstant, "Flags", 0, nullptr},
-		{SID_OFFSET, ScriptObject::idConstant, "Offset", 0, nullptr},
+		{SID_OFFSET, ScriptObject::idConstant, "offset", 0, nullptr},
 		{SID_RANGE, ScriptObject::idConstant, "Range", 0, nullptr},
 		{SID_DATA, ScriptObject::idFunction, "Data", 1, nullptr},
 		{SID_REQUEST, ScriptObject::idFunction, "Request", 2, nullptr},
@@ -39,11 +38,11 @@ ScriptObject::IdInfo ResultDataScriptObject::_info[] =
 		{SID_ON_ACCESS, ScriptObject::idVariable, "OnAccess", 0, nullptr},
 		{SID_ON_CLEAR, ScriptObject::idVariable, "OnClear", 0, nullptr},
 		{SID_ON_GOTRANGE, ScriptObject::idVariable, "OnGotRange", 0, nullptr},
-	};
+};
 
 ResultDataScriptObject::ResultDataScriptObject(const ScriptObject::Parameters& params)
-	:ScriptObject("ResultData", params._parent)
-	 , ResultData()
+	: ScriptObject("ResultData", params._parent)
+	, ResultData()
 {
 	// Link the handler.
 	setHandler(this);
@@ -87,8 +86,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 {
 	switch (info->_index)
 	{
-		case SID_ID:
-		{
+		case SID_ID: {
 			if (flag_set)
 			{
 				setup(value->getInteger(), true);
@@ -100,8 +98,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_NAME:
-		{
+		case SID_NAME: {
 			if (!flag_set)
 			{
 				value->set(getName((int) (*params)[0].getInteger()));
@@ -109,8 +106,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_OFFSET:
-		{
+		case SID_OFFSET: {
 			if (!flag_set)
 			{
 				value->set((Value::int_type) getValueOffset());
@@ -118,8 +114,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_RANGE:
-		{
+		case SID_RANGE: {
 			if (!flag_set)
 			{
 				value->set((Value::int_type) getValueRange());
@@ -127,8 +122,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_DATA:
-		{
+		case SID_DATA: {
 			Value::int_type data = 0;
 			// Check for a valid ID.
 			if (getId() && getBlockSize() == 1 && getTypeSize() <= sizeof(Value::int_type))
@@ -148,14 +142,12 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_BLOCKCOUNT:
-		{
+		case SID_BLOCKCOUNT: {
 			value->set((Value::int_type) getBlockCount());
 			break;
 		}
 
-		case SID_REQUEST:
-		{
+		case SID_REQUEST: {
 			Range::size_type ofs = (*params)[0].getInteger();
 			Range::size_type sz = (*params)[1].getInteger();
 			// When the size is negative the data till the end is requested.
@@ -168,8 +160,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_FLAGS:
-		{
+		case SID_FLAGS: {
 			if (!flag_set)
 			{
 				value->set(getFlagsString());
@@ -177,8 +168,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_ON_ID:
-		{
+		case SID_ON_ID: {
 			if (flag_set)
 			{
 				OnId = (ip_type) value->getInteger();
@@ -190,8 +180,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_ON_ACCESS:
-		{
+		case SID_ON_ACCESS: {
 			if (flag_set)
 			{
 				OnAccess = (ip_type) value->getInteger();
@@ -203,8 +192,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_ON_CLEAR:
-		{
+		case SID_ON_CLEAR: {
 			if (flag_set)
 			{
 				OnId = (ip_type) value->getInteger();
@@ -216,8 +204,7 @@ bool ResultDataScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 			break;
 		}
 
-		case SID_ON_GOTRANGE:
-		{
+		case SID_ON_GOTRANGE: {
 			if (flag_set)
 			{
 				OnId = (ip_type) value->getInteger();
@@ -245,7 +232,8 @@ void ResultDataScriptObject::resultDataEventHandler(ResultDataTypes::EEvent even
 	// Do not allow events when not compiled.
 	if (si->getState() == ScriptInterpreter::esError || si->getState() == ScriptInterpreter::esCompiled)
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, "Event avoided because script was in Error or not Initialized!\n" << si->getDebugText());
+		SF_RTTI_NOTIFY(DO_DEFAULT, "Event avoided because script was in Error or not Initialized!\n"
+										 << si->getDebugText());
 		return;
 	}
 	//
@@ -300,4 +288,4 @@ std::string ResultDataScriptObject::getStatusText()
 	return rv;
 }
 
-}
+}// namespace sf

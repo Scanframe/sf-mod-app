@@ -135,7 +135,7 @@ class _MISC_CLASS FileMapper : public IFileMapper
 		 */
 		size_t _size{0};
 		/**
-		 * Offset of the locked area.
+		 * offset of the locked area.
 		 */
 		size_t _offset{0};
 		/**

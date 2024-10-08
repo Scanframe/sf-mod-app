@@ -1,8 +1,6 @@
-#include <cmath>
-#include "misc/gen/gen_utils.h"
-#include "misc/gen/ScriptEngine.h"
-
 #include "UnitConversion.h"
+#include <cmath>
+#include <misc/gen/ScriptEngine.h>
 
 namespace sf
 {
@@ -51,9 +49,7 @@ bool UnitConverter::set()
 std::string UnitConverter::getString(double value) const
 {
 	value = getValue(value);
-	//
 	int precision = getSigDigits();
-	//
 	if (precision != std::numeric_limits<int>::max())
 	{
 		precision = clip(precision, 0, std::numeric_limits<double>::max_digits10 - 1);
@@ -61,8 +57,7 @@ std::string UnitConverter::getString(double value) const
 	}
 	else
 	{
-		// It seems the last digit is not reliable so the 'max_digits10 - 1' is given.
-		std::string s = gcvtString(value, std::numeric_limits<double>::digits10);
+		std::string s = gcvtString(value);
 		// Only needed for Windows since it adds a trailing '.' even when not required.
 		return s.erase(s.find_last_not_of('.') + 1);
 	}
@@ -82,6 +77,4 @@ double UnitConverter::getOrgValue(const std::string& value, double def) const
 	return getOrgValue(calculator(value, def));
 }
 
-} // namespace
-
-
+}// namespace sf

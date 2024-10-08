@@ -1,10 +1,10 @@
 #pragma once
 
 #include "global.h"
-#include "misc/gen/TClosure.h"
+#include <QColor>
 #include <QList>
 #include <QRgb>
-#include <QColor>
+#include <misc/gen/TClosure.h>
 
 namespace sf
 {
@@ -21,4 +21,4 @@ _PAL_FUNC void shiftSaturation(const QColor& color, ColorTable::iterator fromEnt
 
 _PAL_FUNC void shiftRgb(const QColor& colorBegin, const QColor& colorEnd, ColorTable::iterator fromEntry, ColorTable::iterator toEntry, const ColorShiftCurve& curve = {});
 
-}
+}// namespace sf

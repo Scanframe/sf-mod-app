@@ -1,5 +1,6 @@
 #include "TimeSpec.h"
-#include "gen/gen_utils.h"
+#include "string.h"
+#include <cmath>
 #include <sys/time.h>// NOLINT(modernize-deprecated-headers)
 
 namespace sf

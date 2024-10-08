@@ -1,85 +1,81 @@
 #include "Editor.h"
-#include "FindReplaceDialog.h"
-#include "../gen/gen_utils.h"
 #include "../qt/Globals.h"
+#include "FindReplaceDialog.h"
+#include "gen/pointer.h"
 #include "qt_utils.h"
-#include <QtWidgets>
+#include <QMessageBox>
 #include <QPainter>
+#include <QSaveFile>
 #include <QTextBlock>
 #include <QTextStream>
-#include <QMessageBox>
-#include <QSaveFile>
+#include <QtWidgets>
 
 namespace sf
 {
 
 struct Editor::Private
 {
-	explicit Private(Editor* editor)
-		:_editor(editor)
-		 , _actionFind(editor)
-		 ,_settings(getGlobalSettings())
-	{
-		_editor->addAction(&_actionFind);
-		_actionFind.setShortcut(QKeySequence(tr("Ctrl+F", "Find|Replace")));
-		connect(&_actionFind, &QAction::triggered, [&]()
+		explicit Private(Editor* editor)
+			: _editor(editor)
+			, _actionFind(editor)
+			, _settings(getGlobalSettings())
 		{
-			if (!_dlgFindReplace)
-			{
-				_dlgFindReplace = new FindReplaceDialog(_editor);
-				_dlgFindReplace->setEditor(_editor);
-				connect(_dlgFindReplace, &QDialog::finished, [&]()
+			_editor->addAction(&_actionFind);
+			_actionFind.setShortcut(QKeySequence(tr("Ctrl+F", "Find|Replace")));
+			connect(&_actionFind, &QAction::triggered, [&]() {
+				if (!_dlgFindReplace)
 				{
-					stateSaveRestore(true);
-				});
-			}
-			if (_dlgFindReplace->isVisible())
+					_dlgFindReplace = new FindReplaceDialog(_editor);
+					_dlgFindReplace->setEditor(_editor);
+					connect(_dlgFindReplace, &QDialog::finished, [&]() {
+						stateSaveRestore(true);
+					});
+				}
+				if (_dlgFindReplace->isVisible())
+				{
+					_dlgFindReplace->activateWindow();
+				}
+				else
+				{
+					stateSaveRestore(false);
+					_dlgFindReplace->show();
+				}
+			});
+		}
+
+		void stateSaveRestore(bool save) const
+		{
+			if (!_settings || !_dlgFindReplace)
 			{
-				_dlgFindReplace->activateWindow();
+				return;
+			}
+			_settings->beginGroup(getObjectNamePath(_dlgFindReplace).join('.').prepend("State."));
+			QString key("State");
+			if (save)
+			{
+				_settings->setValue(key, _dlgFindReplace->saveGeometry());
 			}
 			else
 			{
-				stateSaveRestore(false);
-				_dlgFindReplace->show();
+				_dlgFindReplace->restoreGeometry(_settings->value(key).toByteArray());
 			}
-
-		});
-	}
-
-	void stateSaveRestore(bool save) const
-	{
-		if (!_settings || !_dlgFindReplace)
-		{
-			return;
+			_settings->endGroup();
 		}
-		_settings->beginGroup(getObjectNamePath(_dlgFindReplace).join('.').prepend("State."));
-		QString key("State");
-		if (save)
-		{
-			_settings->setValue(key, _dlgFindReplace->saveGeometry());
-		}
-		else
-		{
-			_dlgFindReplace->restoreGeometry(_settings->value(key).toByteArray());
-		}
-		_settings->endGroup();
-	}
 
-	Editor* _editor;
-	QString curFile;
-	bool isUntitled{true};
-	QWidget* lineNumberArea{nullptr};
-	int spacingNumber{1};
-	// Color for background of current line.
-	QColor curLineColor;
-	QAction _actionFind;
-	FindReplaceDialog* _dlgFindReplace{nullptr};
-	QSettings* _settings;
-
+		Editor* _editor;
+		QString curFile;
+		bool isUntitled{true};
+		QWidget* lineNumberArea{nullptr};
+		int spacingNumber{1};
+		// Color for background of current line.
+		QColor curLineColor;
+		QAction _actionFind;
+		FindReplaceDialog* _dlgFindReplace{nullptr};
+		QSettings* _settings;
 };
 
 Editor::Configuration::Configuration(QSettings* settings)
-	:_settings(settings)
+	: _settings(settings)
 {
 }
 
@@ -115,11 +111,13 @@ void Editor::Configuration::settingsReadWrite(bool save)
 }
 
 // Internal class.
-class Editor::LineNumberArea :public QWidget
+class Editor::LineNumberArea : public QWidget
 {
 	public:
 		explicit LineNumberArea(Editor* editor)
-			:QWidget(editor), codeEditor(editor) {}
+			: QWidget(editor)
+			, codeEditor(editor)
+		{}
 
 		[[nodiscard]] QSize sizeHint() const override
 		{
@@ -137,9 +135,9 @@ class Editor::LineNumberArea :public QWidget
 };
 
 Editor::Editor(QWidget* parent)
-	:QPlainTextEdit(parent)
-	 , _p(*new Private(this))
-	 , ObjectExtension(this)
+	: QPlainTextEdit(parent)
+	, _p(*new Private(this))
+	, ObjectExtension(this)
 {
 	setWindowIcon(QIcon(":icon/svg/code-editor"));
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -303,4 +301,4 @@ void Editor::closeEvent(QCloseEvent* event)
 	}
 }
 
-}
+}// namespace sf

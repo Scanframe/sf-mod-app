@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
+#include "../global.h"
+#include <gii/gen/UnitConversion.h>
 #include <iostream>
 #include <misc/gen/IniProfile.h>
-#include <gii/gen/UnitConversion.h>
-#include "../global.h"
+#include <string>
 
 namespace sf
 {
@@ -18,7 +18,6 @@ namespace sf
 class _GII_CLASS UnitConversionServer
 {
 	public:
-
 		/**
 		 * @brief Default constructor.
 		 */
@@ -68,7 +67,7 @@ class _GII_CLASS UnitConversionServer
 		/**
 		 * @brief Different unit conversion systems.
 		 */
-		enum EUnitSystem :int
+		enum EUnitSystem : int
 		{
 			/**
 			 * No conversion use as is which should be SI-units.
@@ -89,7 +88,7 @@ class _GII_CLASS UnitConversionServer
 		/**
 		 * @brief Sets the unit system to be applied.
 		 *
-		 * @param us Unit system vale #EUnitSystem.
+		 * @param us unit system vale #EUnitSystem.
 		 */
 		virtual void setUnitSystem(int us);
 
@@ -106,7 +105,7 @@ class _GII_CLASS UnitConversionServer
 		/**
 		 * @brief Gets the section name of the passed enumerate.
 		 *
-		 * @param us Unit system enumerate.
+		 * @param us unit system enumerate.
 		 * @return Name of the system.
 		 */
 		static const char* getUnitSystemName(int us);
@@ -140,4 +139,4 @@ class _GII_CLASS UnitConversionServer
 		EUnitSystem _unitSystem{usPassThrough};
 };
 
-}
+}// namespace sf

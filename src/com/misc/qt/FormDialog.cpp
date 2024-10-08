@@ -1,20 +1,20 @@
-#include <QDebug>
-#include <QLayout>
-#include <QScrollArea>
-#include <QResizeEvent>
-#include <QCoreApplication>
-#include <QFormBuilder>
-#include <QPushButton>
 #include "FormDialog.h"
 #include "Globals.h"
-#include "../gen/gen_utils.h"
-#include "../qt/qt_utils.h"
+#include "gen/pointer.h"
+#include "qt_utils.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFormBuilder>
+#include <QLayout>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QScrollArea>
 
 namespace sf
 {
 
 FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
-	:QDialog(parent, f)
+	: QDialog(parent, f)
 {
 	setModal(true);
 	setSizeGripEnabled(true);
@@ -25,8 +25,7 @@ FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
 	_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	//scrollArea->setSizeAdjustPolicy(QScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow);
 	// Connect the resizing signal from the FormDialog to the scroll area.
-	connect(this, &FormDialog::resizing, [&](QResizeEvent* event)->void
-	{
+	connect(this, &FormDialog::resizing, [&](QResizeEvent* event) -> void {
 		_scrollArea->setGeometry(QRect(QPoint(), event->size()));
 	});
 }
@@ -82,8 +81,7 @@ void FormDialog::Load(QFile file)
 			// Somehow this is lost.
 			_widget->layout()->setContentsMargins(6, 6, 6, 6);
 			//
-			connect(this, &FormDialog::resizing, [&](QResizeEvent* event)->void
-			{
+			connect(this, &FormDialog::resizing, [&](QResizeEvent* event) -> void {
 				if (_widget)
 				{
 					_widget->setGeometry(QRect(QPoint(), geometry().size()));
@@ -113,7 +111,7 @@ void FormDialog::Load2(QFile file)
 			_widget->setMinimumSize(_widget->size());
 			// Copy the title from the widget.
 			setWindowTitle(_widget->windowTitle());
-/*
+			/*
 			// Set the widget onto the layout.
 			_scrollArea->setWidget(_widget);
 */
@@ -134,4 +132,4 @@ void FormDialog::connectChildren()
 	}
 }
 
-}
+}// namespace sf

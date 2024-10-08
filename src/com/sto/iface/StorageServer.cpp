@@ -1,14 +1,14 @@
-#include "StorageInterface.h"
 #include "StorageServer.h"
+#include "StorageInterface.h"
+#include <misc/gen/pointer.h>
 
 namespace sf
 {
 
 StorageServer::StorageServer(id_type deviceNumber, const std::string& serverName)
-: _deviceNumber(deviceNumber)
-, _serverName(serverName.empty() ? "Storage" : serverName)
+	: _deviceNumber(deviceNumber)
+	, _serverName(serverName.empty() ? "Storage" : serverName)
 {
-
 }
 
 StorageServer::~StorageServer()
@@ -95,7 +95,6 @@ bool StorageServer::createImplementation(int index)
 	return false;
 }
 
-
 void StorageServer::createInterface()
 {
 }
@@ -104,4 +103,4 @@ void StorageServer::destroyInterface()
 {
 }
 
-}
+}// namespace sf

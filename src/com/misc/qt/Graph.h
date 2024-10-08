@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../gen/pointer.h"
+#include "../global.h"
 #include "Draw.h"
 #include <QPainter>
 #include <QPalette>
-#include "../gen/gen_utils.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -31,7 +31,7 @@ class _MISC_CLASS Graph
 		 * @param start ruler start value.
 		 * @param stop ruler stop value.
 		 * @param digits Precision of the ruler values.
-		 * @param unit Unit text of the ruler.
+		 * @param unit unit text of the ruler.
 		 */
 		void setRuler(Draw::ERulerOrientation ro, double start, double stop, int digits, const QString& unit);
 
@@ -77,7 +77,7 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Gets the remaining area to plot the graph after rulers and grid have been painted.
 		 *
-		 * @return Area rectangle to plot the actual graphic.
+		 * @return area rectangle to plot the actual graphic.
 		 */
 		[[nodiscard]] const QRect& getPlotArea() const;
 
@@ -128,38 +128,38 @@ class _MISC_CLASS Graph
 		 */
 		struct RulerInfo
 		{
-			/**
+				/**
 			 * @brief Ruler enabled flag.
 			 */
-			bool enabled{false};
-			/**
+				bool enabled{false};
+				/**
 			 * @brief Ruler start value.
 			 */
-			double start{0};
-			/**
+				double start{0};
+				/**
 			 * @brief Ruler stop value.
 			 */
-			double stop{0};
-			/**
+				double stop{0};
+				/**
 			 * @brief Precision digits.
 			 */
-			int digits{3};
-			/**
-			 * @brief Unit text.
+				int digits{3};
+				/**
+			 * @brief unit text.
 			 */
-			QString unit;
-			/**
+				QString unit;
+				/**
 			 * @brief Bounds of the ruler area for painting value texts i.e.
 			 */
-			QRect bounds;
-			/**
+				QRect bounds;
+				/**
 			 * @brief Rectangle for the ticks.
 			 */
-			QRect rect;
-			/**
+				QRect rect;
+				/**
 			 * @brief Calculated ruler size (width/height).
 			 */
-			int size{100};
+				int size{100};
 
 		} _top, _left, _right, _bottom;
 
@@ -179,7 +179,7 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Holds the last calculated graph area rectangle.
 		 */
-		 QRect _plotArea;
+		QRect _plotArea;
 };
 
-}
+}// namespace sf

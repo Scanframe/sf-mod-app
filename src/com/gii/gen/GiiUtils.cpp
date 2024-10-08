@@ -1,5 +1,7 @@
 #include "GiiUtils.h"
 #include "Variable.h"
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/string.h>
 
 namespace sf
 {
@@ -8,20 +10,19 @@ namespace sf
 #define MAX_LOAD_LOOPS 10
 #define KEY_NAME "Name"
 #define KEY_VALUE "Value"
-#define KEY_UNIT "Unit"
+#define KEY_UNIT "unit"
 #define SEC_SYSPARAMS "System Parameters"
-
 
 bool shouldBeSaved(const Variable& var)
 {
 	// Save when variable is global and as the parameter flag set.
 	bool yesno =
 		var.isGlobal() &&
-			var.isFlag(Variable::flgParameter) &&
-			!var.isFlag(Variable::flgExport);
+		var.isFlag(Variable::flgParameter) &&
+		!var.isFlag(Variable::flgExport);
 	// If it has currently the readonly flag set test the creation flags.
 	if (yesno && var.isFlag(Variable::flgReadonly))
-	{ // When the creation flag was read only doe not save it.
+	{// When the creation flag was read only doe not save it.
 		if (var.getFlags() & Variable::flgReadonly)
 			yesno = false;
 	}
@@ -34,9 +35,9 @@ bool shouldBeLoaded(const Variable& var)
 	// Load when variable is global and as the parameter flag set and is
 	// not read only.
 	bool yesno = var.isGlobal() &&
-			!var.isFlag(Variable::flgExport) &&
-			var.isFlag(Variable::flgParameter) &&
-			!var.isFlag(Variable::flgReadonly);
+		!var.isFlag(Variable::flgExport) &&
+		var.isFlag(Variable::flgParameter) &&
+		!var.isFlag(Variable::flgReadonly);
 	return yesno;
 }
 
@@ -105,4 +106,4 @@ bool LoadVariableValues(IniProfile& profile)
 	return true;
 }
 
-}
+}// namespace sf

@@ -1,9 +1,9 @@
-#include <iostream>
-#include <QException>
-#include <QFileInfo>
-#include <QDir>
 #include "FileMapper.h"
 #include "gen/Exception.h"
+#include <QDir>
+#include <QException>
+#include <QFileInfo>
+#include <iostream>
 
 // TODO: This class is not fool proof yet.
 
@@ -11,7 +11,7 @@ namespace sf::qt
 {
 
 FileMapper::FileMapper()
-	:_file(nullptr)
+	: _file(nullptr)
 {
 }
 
@@ -22,7 +22,7 @@ FileMapper::FileMapper(const QString& filepath, qint64 ofs, qint64 sz)
 
 FileMapper::~FileMapper()
 {
-	(void)this;
+	(void) this;
 }
 
 void FileMapper::initialize()
@@ -30,7 +30,6 @@ void FileMapper::initialize()
 	_file.setFileTemplate(QDir::temp().filePath("temp-file-test-XXXXXX.tmp"));
 	_file.setAutoRemove(true);
 }
-
 
 void FileMapper::initialize(const QString& filepath, qint64 ofs, qint64 sz)
 {
@@ -48,7 +47,7 @@ void FileMapper::setView(qint64 ofs, qint64 sz)
 	// Check if offset and size are in range of the file.
 	if ((ofs + sz) > QFileInfo(_file).size())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Offset + Size are out of range!");
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "offset + Size are out of range!");
 	}
 	// Assign the new values.
 	_offset = ofs;
@@ -76,14 +75,12 @@ void FileMapper::createView(size_t sz)
 	// Open then file.
 	if (!_file.open())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"open '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "open '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
 	}
 	// Resize the file.
 	if (!_file.resize(_size))
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__,
-			"resize '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "resize '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
 	}
 }
 
@@ -109,4 +106,4 @@ bool FileMapper::unmapView()
 	return true;
 }
 
-}
+}// namespace sf::qt

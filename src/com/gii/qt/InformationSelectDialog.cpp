@@ -1,19 +1,20 @@
 #include "InformationSelectDialog.h"
 #include "ui_InformationSelectDialog.h"
-#include <QDialogButtonBox>
 #include <QAction>
+#include <QDialogButtonBox>
 #include <QTimer>
+#include <misc/gen/pointer.h>
+#include <misc/qt/Globals.h>
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
-#include <misc/qt/Globals.h>
 
 namespace sf
 {
 
 InformationSelectDialog::InformationSelectDialog(QWidget* parent)
-	:QDialog(parent)
-	 , ui(new Ui::InformationSelectDialog)
-	 , _proxyModel(new QSortFilterProxyModel(this))
+	: QDialog(parent)
+	, ui(new Ui::InformationSelectDialog)
+	, _proxyModel(new QSortFilterProxyModel(this))
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
@@ -27,23 +28,20 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	//
 	ui->treeView->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 	// Create the actions for the buttons.
-	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>
-		{
-			{ui->tbCollapseAll, _actionCollapseAll, Resource::Collapse, tr("Collapse"), tr("Collapse all rows.")},
-			{ui->tbExpandAll, _actionExpandAll, Resource::Expand, tr("Expand"), tr("Expand all rows.")}
-		})
+	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>{
+				 {ui->tbCollapseAll, _actionCollapseAll, Resource::Collapse, tr("Collapse"), tr("Collapse all rows.")},
+				 {ui->tbExpandAll, _actionExpandAll, Resource::Expand, tr("Expand"), tr("Expand all rows.")}
+			 })
 	{
 		std::get<1>(t) = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(std::get<2>(t)), QPalette::ButtonText), std::get<3>(t), this);
 		std::get<1>(t)->setToolTip(std::get<3>(t));
 		std::get<0>(t)->setDefaultAction(std::get<1>(t));
 		ui->treeView->addAction(std::get<1>(t));
 	}
-	connect(ui->treeView, &QTreeView::expanded, [&]()
-	{
+	connect(ui->treeView, &QTreeView::expanded, [&]() {
 		resizeColumnsToContents(ui->treeView);
 	});
-	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index)
-	{
+	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index) {
 		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
 			if (_mode == Gii::Multiple)
@@ -60,18 +58,15 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 			}
 		}
 	});
-	connect(_actionCollapseAll, &QAction::triggered, [&]()
-	{
+	connect(_actionCollapseAll, &QAction::triggered, [&]() {
 		childrenExpandCollapse(false);
 	});
-	connect(_actionExpandAll, &QAction::triggered, [&]()
-	{
+	connect(_actionExpandAll, &QAction::triggered, [&]() {
 		childrenExpandCollapse(true);
 	});
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-	connect(this, &QDialog::accepted, [&]()
-	{
+	connect(this, &QDialog::accepted, [&]() {
 		if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 		{
 			auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
@@ -88,7 +83,7 @@ void InformationSelectDialog::applyFilter(const QString& filter)
 	expandTreeView(ui->treeView, true);
 }
 
-void InformationSelectDialog::childrenExpandCollapse(bool expand, const QModelIndex& index) // NOLINT(misc-no-recursion)
+void InformationSelectDialog::childrenExpandCollapse(bool expand, const QModelIndex& index)// NOLINT(misc-no-recursion)
 {
 	if (!index.isValid())
 	{
@@ -173,4 +168,4 @@ InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode m
 	return {};
 }
 
-}
+}// namespace sf

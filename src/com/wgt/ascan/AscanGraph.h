@@ -1,19 +1,20 @@
 #pragma once
 
-#include <QtUiPlugin/QDesignerExportWidget>
-#include <QWidget>
 #include <QPaintEvent>
-#include <misc/qt/ObjectExtension.h>
+#include <QWidget>
+#include <QtUiPlugin/QDesignerExportWidget>
 #include <gii/qt/Macros.h>
+#include <misc/qt/ObjectExtension.h>
 
 class QStyleOptionFrame;
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT AscanGraph : public QWidget
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 		// Need full namespace for this property macro.
 		Q_PROPERTY(sf::Gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
 		Q_PROPERTY(sf::Gii::IdType idDelay READ getIdDelay WRITE setIdDelay)
@@ -46,7 +47,6 @@ class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget, public ObjectExtension
 		SF_DECL_INFO_ID(IdAttenuation)
 
 	protected:
-
 		void paintEvent(QPaintEvent* event) override;
 
 		void initStyleOption(QStyleOptionFrame* option) const;
@@ -56,4 +56,4 @@ class QDESIGNER_WIDGET_EXPORT AscanGraph :public QWidget, public ObjectExtension
 		Private* _p;
 };
 
-}
+}// namespace sf

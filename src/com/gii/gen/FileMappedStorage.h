@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../global.h"
 #include <iostream>
+#include <misc/gen/IFileMapper.h>
 #include <misc/gen/TVector.h>
 #include <misc/gen/Thread.h>
-#include <misc/gen/IFileMapper.h>
-#include "../global.h"
 
 namespace sf
 {
@@ -101,7 +101,7 @@ class _GII_CLASS FileMappedStorage
 
 		/**
 		 * @brief Function that store blocks in several segments when needed.
-		 * @param ofs Offset in blocks
+		 * @param ofs offset in blocks
 		 * @param sz Size in blocks
 		 * @param src Pointer to source of data.
 		 * @return True on success.
@@ -110,7 +110,7 @@ class _GII_CLASS FileMappedStorage
 
 		/**
 		 * @brief Function that store blocks in several segments when needed.
-		 * @param ofs Offset in blocks
+		 * @param ofs offset in blocks
 		 * @param sz Size in blocks
 		 * @param dst Pointer to destination of data.
 		 * @return True on success.
@@ -174,7 +174,7 @@ class _GII_CLASS FileMappedStorage
 		/**
 		 * @brief Method used in blockRead and Block read
 		 * @param rd True makes it read and false write.
-		 * @param ofs Offset in blocks
+		 * @param ofs offset in blocks
 		 * @param sz Size in blocks
 		 * @param src Source data.
 		 * @return True on success.
@@ -233,7 +233,7 @@ class _GII_CLASS FileMappedStorage
 
 				/**
 				 * @brief Writes to the file mapped memory.
-				 * @param ofs Offset in bytes.
+				 * @param ofs offset in bytes.
 				 * @param sz Size in bytes to write.
 				 * @param src Pointer to source location.
 				 * @return True on success.
@@ -242,7 +242,7 @@ class _GII_CLASS FileMappedStorage
 
 				/**
 				 * Function that reads the memory.
-				 * @param ofs Offset
+				 * @param ofs offset
 				 * @param sz Size in bytes.
 				 * @param dst Pointer to destination location.
 				 * @return True on success.
@@ -298,45 +298,44 @@ class _GII_CLASS FileMappedStorage
 		 */
 		struct Reference
 		{
-			/**
+				/**
 			 * @brief Constructor.
 			 */
-			Reference();
+				Reference();
 
-			/**
+				/**
 			 * @brief Destructor.
 			 */
-			~Reference();
+				~Reference();
 
-			/**
+				/**
 			 * @brief Thread id of the thread who created the data store reference.
 			 */
-			Thread::id_type _threadId{0};
-			/**
-			 * @brief Contains the block size of this instance.
+				Thread::id_type _threadId{0};
+				/**
+			 * @brief contains the block size of this instance.
 			 */
-			size_type _blockSize{0};
-			/**
-			 * @brief Contains the segment size of this instance.
+				size_type _blockSize{0};
+				/**
+			 * @brief contains the segment size of this instance.
 			 */
-			size_type _segmentSize{0};
-			/**
+				size_type _segmentSize{0};
+				/**
 			 * @brief Holds the amount of times this instance is referenced.
 			 */
-			int _referenceCount{0};
-			/**
-			 * @brief Contains a vector of pointers to all segments of this instance.
+				int _referenceCount{0};
+				/**
+			 * @brief contains a vector of pointers to all segments of this instance.
 			 */
-			TVector<Segment*> _segmentList;
-			/**
+				TVector<Segment*> _segmentList;
+				/**
 			 * @brief Mutex for MT safety.
 			 */
-			Mutex _mutex;
-			/**
+				Mutex _mutex;
+				/**
 			 * @brief Lock type for multi threading safety.
 			 */
-			typedef Mutex::Lock MtLock;
-
+				typedef Mutex::Lock MtLock;
 		};
 
 		/**
@@ -394,7 +393,7 @@ class _GII_CLASS FileMappedStorage
 				/**
 				 * @brief Returns  pointer to .
 				 *
-				 * @param blk_ofs Offset in blocks.
+				 * @param blk_ofs offset in blocks.
 				 * @return Data pointer
 				 */
 				void* data(size_type blk_ofs);
@@ -402,7 +401,7 @@ class _GII_CLASS FileMappedStorage
 				/**
 				 * Typed template method.
 				 * @tparam T Type of the return value.
-				 * @param blk_ofs Offset in to the data.
+				 * @param blk_ofs offset in to the data.
 				 * @return Typed pointer.
 				 */
 				template<typename T = void*>
@@ -440,7 +439,6 @@ class _GII_CLASS FileMappedStorage
 		};
 
 	private:
-
 		/**
 		 * Optimization functions for limiting the amount of locks and unlocks.
 		 */
@@ -466,83 +464,74 @@ class _GII_CLASS FileMappedStorage
 		static Mutex _staticSync;
 };
 
-inline
-FileMappedStorage::size_type FileMappedStorage::Segment::getSize() const
+inline FileMappedStorage::size_type FileMappedStorage::Segment::getSize() const
 {
 	return _size;
 }
 
-inline
-bool FileMappedStorage::Segment::isLocked() const
+inline bool FileMappedStorage::Segment::isLocked() const
 {
 	return (_lockCount > 0);
 }
 
-inline
-void* FileMappedStorage::Segment::lockMemory()
+inline void* FileMappedStorage::Segment::lockMemory()
 {
 	doLockMemory();
 	return _dataPtr;
 }
 
-inline
-const void* FileMappedStorage::Segment::lockMemory() const
+inline const void* FileMappedStorage::Segment::lockMemory() const
 {
 	const_cast<FileMappedStorage::Segment*>(this)->doLockMemory();
 	return const_cast<FileMappedStorage::Segment*>(this)->_dataPtr;
 }
 
-inline
-void FileMappedStorage::Segment::unlockMemory() const
+inline void FileMappedStorage::Segment::unlockMemory() const
 {
 	const_cast<FileMappedStorage::Segment*>(this)->doUnlockMemory();
 }
 
-inline
-bool FileMappedStorage::blockWrite(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, const void* src)
+inline bool FileMappedStorage::blockWrite(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, const void* src)
 {
 	return blockReadWrite(false, ofs, sz, (void*) src);
 }
 
-inline
-bool FileMappedStorage::blockRead(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
+inline bool FileMappedStorage::blockRead(FileMappedStorage::size_type ofs, FileMappedStorage::size_type sz, void* dst) const
 {
 	return const_cast<FileMappedStorage*>(this)->blockReadWrite(true, ofs, sz, dst);
 }
 
-inline
-FileMappedStorage::size_type FileMappedStorage::getRecycleCount() const
+inline FileMappedStorage::size_type FileMappedStorage::getRecycleCount() const
 {
 	return _segmentRecycleCount;
 }
 
-inline
-FileMappedStorage::Lock::Lock(FileMappedStorage& ds)
-	:_store(ds), _blockSize(ds.getBlockSize()) {}
+inline FileMappedStorage::Lock::Lock(FileMappedStorage& ds)
+	: _store(ds)
+	, _blockSize(ds.getBlockSize())
+{}
 
-inline
-FileMappedStorage::Lock::Lock(FileMappedStorage& ds, FileMappedStorage::size_type seg_idx)
-	:_store(ds), _segmentIndex(-1), _blockSize(ds.getBlockSize())
+inline FileMappedStorage::Lock::Lock(FileMappedStorage& ds, FileMappedStorage::size_type seg_idx)
+	: _store(ds)
+	, _segmentIndex(-1)
+	, _blockSize(ds.getBlockSize())
 {
 	acquire(seg_idx);
 }
 
-inline
-FileMappedStorage::Lock::~Lock()
+inline FileMappedStorage::Lock::~Lock()
 {
 	release();
 }
 
-inline
-bool FileMappedStorage::Lock::isAcquired() const
+inline bool FileMappedStorage::Lock::isAcquired() const
 {
 	return _data != nullptr;
 }
 
-inline
-FileMappedStorage::Lock::operator bool() const
+inline FileMappedStorage::Lock::operator bool() const
 {
 	return isAcquired();
 }
 
-}
+}// namespace sf

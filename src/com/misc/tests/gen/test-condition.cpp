@@ -3,6 +3,7 @@
 #include <misc/gen/PerformanceTimer.h>
 #include <misc/gen/ThreadClosure.h>
 #include <misc/gen/ThreadRelay.h>
+#include <misc/gen/dbgutils.h>
 #include <test/catch.h>
 
 extern int debug_level;

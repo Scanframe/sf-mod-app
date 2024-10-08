@@ -1,20 +1,12 @@
 #pragma once
 
-#include "../gen/gen_utils.h"
+#include "../gen/TStrings.h"
+#include "../gen/system.h"
 #include "../global.h"
-#include <cerrno>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <fcntl.h>
 #include <filesystem>
-#include <ftw.h>
 #include <grp.h>
-#include <iostream>
-#include <memory>
 #include <pwd.h>
-#include <string>
 
 namespace sf
 {
@@ -64,7 +56,7 @@ typedef struct stat stat_t;
  */
 _MISC_FUNC bool file_stat(const std::string& path, stat_t& _stat);
 /**
- * Formats the time to a the given format.
+ * Formats the time to the given format.
  * When the format is NULL the XML format is used.
  * When the timeinfo is NULL the current local time is used.
  */
@@ -74,7 +66,7 @@ _MISC_FUNC std::string time_format(const struct tm* timeinfo, const char* format
  */
 _MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullptr, bool gmtime = false);
 /**
- * Returns the unix time from the passed string in the passed format.
+ * Returns the unix time from the passed string in the format that was passed.
  * When the format is NULL the XML format is used.
  * When gmtime is true GMT is used otherwise the local time.
  */

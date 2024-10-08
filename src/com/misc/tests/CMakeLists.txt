@@ -56,5 +56,3 @@ add_test(NAME "${TEST_TARGET}"
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_TARGET}")
-
-

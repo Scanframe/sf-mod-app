@@ -1,6 +1,8 @@
 #include "BscanGraphPrivate.h"
 #include <QImage>
 #include <misc/gen/Sustain.h>
+#include <misc/gen/TSet.h>
+#include <misc/gen/dbgutils.h>
 #include <misc/qt/Draw.h>
 #include <misc/qt/qt_utils.h>
 
@@ -26,7 +28,7 @@ Value::int_type toBitMask(Qt::KeyboardModifiers modifiers, Qt::MouseButtons butt
 	// First bit signals down.
 	if (buttonDown)
 	{
-		mask.Set(0);
+		mask.set(0);
 	}
 	int i = 0;
 	for (auto m: ModifierList)
@@ -34,7 +36,7 @@ Value::int_type toBitMask(Qt::KeyboardModifiers modifiers, Qt::MouseButtons butt
 		i++;
 		if (modifiers.testFlag(m))
 		{
-			mask.Set(i);
+			mask.set(i);
 		}
 	}
 	for (auto b: MouseButtonList)
@@ -42,11 +44,11 @@ Value::int_type toBitMask(Qt::KeyboardModifiers modifiers, Qt::MouseButtons butt
 		i++;
 		if (buttons.testFlag(b))
 		{
-			mask.Set(i);
+			mask.set(i);
 		}
 	}
 	//
-	return mask.Bits;
+	return mask._bits;
 }
 
 // TODO: Must be moved to a library eventually.
@@ -66,7 +68,7 @@ QPair<Qt::KeyboardModifiers, Qt::MouseButtons> bitMaskToModifiers(Value::int_typ
 	for (auto m: ModifierList)
 	{
 		i++;
-		if (mask.Has(i))
+		if (mask.has(i))
 		{
 			modifiers.setFlag(m);
 		}
@@ -74,7 +76,7 @@ QPair<Qt::KeyboardModifiers, Qt::MouseButtons> bitMaskToModifiers(Value::int_typ
 	for (auto b: MouseButtonList)
 	{
 		i++;
-		if (mask.Has(i))
+		if (mask.has(i))
 		{
 			buttons.setFlag(b);
 		}
@@ -83,10 +85,10 @@ QPair<Qt::KeyboardModifiers, Qt::MouseButtons> bitMaskToModifiers(Value::int_typ
 }
 
 BscanGraph::Private::Private(BscanGraph* widget)
-	:_w(widget)
-	 , _graph(widget->palette())
-	 , _paletteServer()
-	 , _sustain{this, &BscanGraph::Private::sustain, SustainBase::spTimer}
+	: _w(widget)
+	, _graph(widget->palette())
+	, _paletteServer()
+	, _sustain{this, &BscanGraph::Private::sustain, SustainBase::spTimer}
 {
 	// Make the widget get focus when clicked in.
 	_w->setFocusPolicy(Qt::StrongFocus);
@@ -125,8 +127,7 @@ void BscanGraph::Private::initialize()
 	// Bind the data result to the request handler object.
 	_requester.attachData(&_rData);
 	//
-	connect(&_paletteServer, &PaletteServer::changed, [&]()
-	{
+	connect(&_paletteServer, &PaletteServer::changed, [&]() {
 		if (_rcPalette.isValid())
 		{
 			_w->update(_rcPalette);
@@ -168,8 +169,8 @@ void BscanGraph::Private::setRulerBottom()
 			// Set the converted unit
 			unit = QString::fromStdString(_vTimeRange.getUnit(true));
 		}
-			// When range variable is NOT present and time unit is.
-			// Then use block size and time unit to establish the range.
+		// When range variable is NOT present and time unit is.
+		// Then use block size and time unit to establish the range.
 		else if (_vTimeUnit.getId())
 		{
 			// When the delay parameter is present it is used to for conversion as well.
@@ -191,8 +192,8 @@ void BscanGraph::Private::setRulerBottom()
 				unit = QString::fromStdString(_vTimeUnit.getUnit(true));
 			}
 		}
-			// Only able to use block size to set range.
-			// Use the copy data block size to fill the bottom ruler.
+		// Only able to use block size to set range.
+		// Use the copy data block size to fill the bottom ruler.
 		else
 		{
 			// If Delay exists the value is presumed to be an offset in samples.
@@ -225,8 +226,7 @@ void BscanGraph::Private::handlerVariable(VariableTypes::EEvent event, const Var
 
 		case Variable::veIdChanged:
 		case Variable::veValueChange:
-		case Variable::veConverted:
-		{
+		case Variable::veConverted: {
 			setRulerBottom();
 			// Redraw the ruler by updating the whole area.
 			_w->update(_area);
@@ -243,15 +243,13 @@ void BscanGraph::Private::handlerResultData(ResultDataTypes::EEvent event, const
 		default:
 			break;
 
-		case ResultData::reIdChanged:
-		{
+		case ResultData::reIdChanged: {
 			// Check if drawing is possible.
 			setCanDraw();
 			break;
 		}
 
-		case ResultData::reClear:
-		{
+		case ResultData::reClear: {
 			// Makes sure that no new data is drawn until an access change event has passed.
 			_rangeNext.clear();
 			reinitialize(true);
@@ -278,8 +276,7 @@ void BscanGraph::Private::handlerResultData(ResultDataTypes::EEvent event, const
 			}
 			break;
 
-		case (ResultData::EEvent) ResultDataRequester::reDataValid:
-		{
+		case (ResultData::EEvent) ResultDataRequester::reDataValid: {
 			//SF_RTTI_NOTIFY(DO_CLOG, "Event reDataValid " << range);
 			// The requested index range is passed in 'rng' and is assigned to the new plot range.
 			_rangeNext = range;
@@ -309,7 +306,8 @@ bool BscanGraph::Private::draw(QPainter& painter, const QRect& rect, const QRegi
 	}
 	// Were any access changes skipped during an active cursor.
 	if (!_cursor.Active && !_skippedAccessRange.isEmpty())
-	{ // Try the request again here.
+	{
+		// Try the request again here.
 		if (getData(_skippedAccessRange))
 		{
 			// On success prevent reentry be clearing the range.
@@ -362,8 +360,7 @@ bool BscanGraph::Private::generateData(const Range& range)
 	// Adjust the data buffer size to hold the image data.
 	_imageData.grow(_rData.getBlockSize() * (rng.getSize() + 1));
 	// Create new image.
-	QImage img(static_cast<const uchar*>(_imageData.data()), static_cast<int>(_rData.getBlockSize()), static_cast<int>(rng.getSize()),
-		static_cast<qsizetype>(_rData.getBlockSize()), QImage::Format_Grayscale8);
+	QImage img(static_cast<const uchar*>(_imageData.data()), static_cast<int>(_rData.getBlockSize()), static_cast<int>(rng.getSize()), static_cast<qsizetype>(_rData.getBlockSize()), QImage::Format_Grayscale8);
 	// Swap the old with the new image.
 	_image.swap(img);
 	// Fill the dib data buffer at the specified position.
@@ -413,7 +410,8 @@ bool BscanGraph::Private::sustain(const timespec& ts)
 	{
 		// Handle changes of the cursor pop index.
 		if (!_cursor.SkippedPopIndex.isEmpty())
-		{ // Try the request again here.
+		{
+			// Try the request again here.
 			if (getData(_cursor.SkippedPopIndex))
 			{
 				// On success prevent reentry be clearing the range.
@@ -438,8 +436,7 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veValueChange:
-		{
+		case Variable::veValueChange: {
 			// Prevent looping when even came from within.
 			if (!sameInst)
 			{
@@ -485,7 +482,7 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 				// The Pop index has changed
 				//-----------------------------------
 				if (&link == &_cursor.VPopIndex)
-				{ // Set local copy.
+				{// Set local copy.
 					_cursor.PopIndex = _cursor.VPopIndex.getCur().getInteger();
 					if (_cursor.PopIndex < 0)
 					{
@@ -631,8 +628,7 @@ void BscanGraph::Private::handlerScanVariable(Variable::EEvent event, const Vari
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veValueChange:
-		{
+		case Variable::veValueChange: {
 			// ScanDelay has changed
 			if (&link == &_scan.VDelay)
 			{
@@ -757,7 +753,7 @@ void BscanGraph::Private::mark(const QPoint& pt, bool active)
 		updatePlotArea(_mark.Rect);
 	}
 	else
-	{ // Make the plot redraw the affected area.
+	{// Make the plot redraw the affected area.
 		updatePlotArea(_mark.Rect);
 		// Clear accumulated rectangle.
 		_mark.Rect = {};
@@ -782,8 +778,7 @@ bool BscanGraph::Private::calculatePosIndexAt(BscanGraph::Private::Marker& mark)
 	// Update pop index variable.
 	_cursor.VPopIndex.setCur(Value(_cursor.PopIndex), true);
 	// Get the Actual data Index of this position
-	_cursor.Index = static_cast<Value::int_type>(_dataRange.getStart() +
-		static_cast<Range::size_type>(_cursor.Fraction * static_cast<Value::flt_type>(_dataRange.getSize())));
+	_cursor.Index = static_cast<Value::int_type>(_dataRange.getStart() + static_cast<Range::size_type>(_cursor.Fraction * static_cast<Value::flt_type>(_dataRange.getSize())));
 	// Update ClickIndex value.
 	_cursor.VIndex.setCur(Value(_cursor.Index), true);
 	// Clear update flag because it has been updated one way or the other.
@@ -934,4 +929,4 @@ void BscanGraph::Private::paint(QPainter& painter, QPaintEvent* event)
 	}
 }
 
-}
+}// namespace sf

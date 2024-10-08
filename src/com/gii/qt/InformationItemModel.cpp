@@ -1,16 +1,17 @@
 #include "InformationItemModel.h"
-#include "../gen/Variable.h"
 #include "../gen/ResultData.h"
-#include <misc/qt/qt_utils.h>
+#include "../gen/Variable.h"
+#include <misc/gen/TStrings.h>
 #include <misc/qt/Resource.h>
+#include <misc/qt/qt_utils.h>
 #include <utility>
 
 namespace sf
 {
 
 InformationItemModel::TreeItem::TreeItem(InformationItemModel::TreeItem* parent, QString name)
-	:_parentItem(parent)
-	 , _name(std::move(name))
+	: _parentItem(parent)
+	, _name(std::move(name))
 {
 	if (parent)
 	{
@@ -60,13 +61,13 @@ enum
 	rcDescription,
 	rcColumnCount
 };
-}
+}// namespace
 
 InformationItemModel::InformationItemModel(Gii::SelectionMode mode, Gii::TypeId idType, QObject* parent)
-	:QAbstractItemModel(parent)
-	 , _rootItem(new TreeItem(nullptr, "Root"))
-	 , _mode(mode)
-	 , _idType(idType)
+	: QAbstractItemModel(parent)
+	, _rootItem(new TreeItem(nullptr, "Root"))
+	, _mode(mode)
+	, _idType(idType)
 {
 	_icons[TreeItem::dtFolder] = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Folder), QPalette::ColorRole::Mid);
 	_icons[TreeItem::dtVariable] = Resource::getSvgIcon(":icon/svg/variable", QPalette::ColorRole::Mid);
@@ -105,7 +106,7 @@ QModelIndex InformationItemModel::parent(const QModelIndex& child) const
 		return {};
 	}
 	auto row = childItem->_parentItem->_parentItem->_childItems.indexOf(childItem->_parentItem);
-	return createIndex((int)row, 0, parentItem);
+	return createIndex((int) row, 0, parentItem);
 }
 
 QVariant InformationItemModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -127,7 +128,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 				case vcDescription:
 					return QString(tr("Description"));
 				case vcUnit:
-					return QString(tr("Unit"));
+					return QString(tr("unit"));
 				case vcType:
 					return QString(tr("Type"));
 				case vcFlags:
@@ -162,7 +163,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 
 int InformationItemModel::columnCount(const QModelIndex& parent) const
 {
-/*
+	/*
 	if (parent.isValid())
 	{
 		if (auto parentItem = static_cast<TreeItem*>(parent.internalPointer()))
@@ -375,8 +376,7 @@ InformationItemModel::TreeItem* InformationItemModel::createPath(const QStringLi
 		for (auto it = namePath.begin(); it != namePath.end(); it++)
 		{
 			// Find the name in the child list.
-			auto found = std::find_if(cur->_childItems.begin(), cur->_childItems.end(), [&](const TreeItem* i) -> bool
-			{
+			auto found = std::find_if(cur->_childItems.begin(), cur->_childItems.end(), [&](const TreeItem* i) -> bool {
 				return *it == i->_name && (it + 1) != namePath.end() && i->_type == TreeItem::dtFolder;
 			});
 			// When found.
@@ -413,8 +413,7 @@ void InformationItemModel::updateList()
 	if (_idType == Gii::Variable)
 	{
 		auto vl = Variable::getList();
-		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool
-		{
+		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool {
 			return v1->getName() < v2->getName();
 		});
 		for (auto v: vl)
@@ -435,8 +434,7 @@ void InformationItemModel::updateList()
 	else if (_idType == Gii::ResultData)
 	{
 		auto rl = ResultData::getList();
-		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool
-		{
+		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool {
 			return r1->getName() < r2->getName();
 		});
 		for (auto r: rl)
@@ -500,4 +498,4 @@ Gii::IdType InformationItemModel::getId(const QModelIndex& index)
 	return static_cast<TreeItem*>(index.internalPointer())->_id;
 }
 
-}
+}// namespace sf

@@ -1,22 +1,24 @@
+#include "AcquisitionControlPrivate.h"
+#include "AcquisitionControl.h"
 #include <QLabel>
 #include <QToolTip>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/TDynamicBuffer.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/Draw.h>
 #include <misc/qt/HintWindow.h>
 #include <misc/qt/qt_utils.h>
-#include <misc/qt/Draw.h>
-#include "AcquisitionControlPrivate.h"
 
 namespace sf
 {
 
 AcquisitionControl::Private::Private(AcquisitionControl* widget)
-	:_w(widget)
-	 , _sustainEntry(this, &AcquisitionControl::Private::sustain)
-	 , _infoWindow(new HintWindow(_w))
-	 , _idsTcgTime(_tcg.TimeVars)
-	 , _idsTcgGain(_tcg.GainVars)
-	 , _timeoutTimer{TimeSpec(1.0)}
-	 , _debug(false)
+	: _w(widget)
+	, _sustainEntry(this, &AcquisitionControl::Private::sustain)
+	, _infoWindow(new HintWindow(_w))
+	, _idsTcgTime(_tcg.TimeVars)
+	, _idsTcgGain(_tcg.GainVars)
+	, _timeoutTimer{TimeSpec(1.0)}
+	, _debug(false)
 {
 	// Make the widget get focus when clicked in.
 	_w->setFocusPolicy(Qt::StrongFocus);
@@ -61,8 +63,8 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	_rCopyData.setHandler(&_copyResHandler);
 	_rCopyIndex.setHandler(&_copyResHandler);
 	// Hook change handler to the list.
-	_idsTcgTime.onChange.assign([&](void* p) {tcgIdChange(p);});
-	_idsTcgGain.onChange.assign([&](void* p) {tcgIdChange(p);});
+	_idsTcgTime.onChange.assign([&](void* p) { tcgIdChange(p); });
+	_idsTcgGain.onChange.assign([&](void* p) { tcgIdChange(p); });
 	// Hook the TCG handler to TCG variables setting the data field
 	// to UINT_MAX to make a possible switch int the handler.
 	_vTcgEnable.setData(std::numeric_limits<uint64_t>::max());
@@ -201,7 +203,7 @@ bool AcquisitionControl::Private::getDisplayRangeVert(sdata_type& minVal, sdata_
 			maxVal = static_cast<sdata_type>(_rCopyData.getValueRange() - _rCopyData.getValueOffset());
 		}
 		else
-		{  // When the current result has an offset
+		{// When the current result has an offset
 			if (_rCopyData.getValueOffset())
 			{
 				minVal = -_valueMax;
@@ -266,8 +268,8 @@ void AcquisitionControl::Private::setBottomRuler()
 		// Set the converted unit
 		unit = _vCopyRange.getUnit(true);
 	}
-		// When range variable is NOT present and time unit is.
-		// Then use block size and time unit to establish the range.
+	// When range variable is NOT present and time unit is.
+	// Then use block size and time unit to establish the range.
 	else if (_vTimeUnit.getId())
 	{
 		// When the delay parameter is present it is used to for conversion as well.
@@ -281,15 +283,15 @@ void AcquisitionControl::Private::setBottomRuler()
 			unit = _vCopyDelay.getUnit(true);
 		}
 		else
-		{ // Delay variable is not present so the time unit is used for conversion.
+		{// Delay variable is not present so the time unit is used for conversion.
 			// Get the range of the ascan by getting the block size.
 			range = _vTimeUnit.getCur(true).getFloat() * static_cast<Value::flt_type>(_rCopyData.getBlockSize());
 			// Set the converted unit
 			unit = _vTimeUnit.getUnit(true);
 		}
 	}
-		// Only able to use block size to set range.
-		// Use the copy data block size to fill the bottom ruler.
+	// Only able to use block size to set range.
+	// Use the copy data block size to fill the bottom ruler.
 	else if (_rCopyData.getId())
 	{
 		// If Delay exists the value is presumed to be an offset in samples.
@@ -353,7 +355,7 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 				// Update the polygon.
 				_polygon.setPoint(x, QPoint(px, py));
 			}
-/*
+			/*
 			// Get fast temporary values for width and height of the bounds.
 			auto width = bounds.width();
 			auto height = bounds.height() - 1;
@@ -447,8 +449,8 @@ void AcquisitionControl::Private::generatePeakData()
 					j = _gates[j].SlavedTo;
 				}
 			}
-				// Check for artificial way of slaving.
-				// Actual gate delay is IF delay + gate delay.
+			// Check for artificial way of slaving.
+			// Actual gate delay is IF delay + gate delay.
 			else if (gi.SlavedTo == -2 && gi.Gate != 0)
 			{
 				// Just add the delay of the IF gate.
@@ -507,8 +509,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 		{
 			// Limit the dac range when the successor point is less or
 			// equal then the predecessor point.
-			if (!_tcg.TimeVars[i].getId() || !_tcg.GainVars[i].getId()
-				|| _tcg.TimeVars[i].getCur() <= dac_last)
+			if (!_tcg.TimeVars[i].getId() || !_tcg.GainVars[i].getId() || _tcg.TimeVars[i].getCur() <= dac_last)
 			{
 				count = i;
 			}
@@ -569,12 +570,12 @@ void AcquisitionControl::Private::generateTcgData(int point)
 			tcgDelay += _gates[0].VDelay.getCur().getFloat();
 			tcgDelay -= plotDelay;
 		}
-			// When the TCG is not slaved but from the initial pulse.
+		// When the TCG is not slaved but from the initial pulse.
 		else if (_tcg.SlavedTo == -1)
 		{
 			tcgDelay -= plotDelay;
 		}
-			// When the TCG is slaved the interface gate.
+		// When the TCG is slaved the interface gate.
 		else if (_tcg.SlavedTo == 0)
 		{
 			// Do nothing the offset is added in the draw function.
@@ -604,7 +605,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 		// The TCG gate delay is start of the TCG so this is the starting point.
 		tm = tcgDelay + _tcg.TimeVars[i].getCur().getFloat();
 		// Clip it if a TCG range exists.
-		auto t = /*do_clip ? clip(tm, tcgDelay, tcgDelay + tcgRange) : */tm;
+		auto t = /*do_clip ? clip(tm, tcgDelay, tcgDelay + tcgRange) : */ tm;
 		// Retrieve the gain of the variable.
 		auto gain = _tcg.GainVars[i].getCur().getFloat();
 		// Scale the values within the windows boundaries.
@@ -622,12 +623,12 @@ void AcquisitionControl::Private::generateTcgData(int point)
 			_tcg.Points[0] = irc.topLeft();
 			// Calculate the left and right positions of the TCG active area.
 			if (_tcg.AreaLeft != irc.left())
-			{ // Add the changed part to the invalidation rectangle.
+			{// Add the changed part to the invalidation rectangle.
 				irc |= QRect(_tcg.AreaLeft, 0, left, height).normalized();
 				_tcg.AreaLeft = left;
 			}
 			if (_tcg.AreaRight != right)
-			{ // Add the changed part to the invalidation rectangle.
+			{// Add the changed part to the invalidation rectangle.
 				irc |= QRect(_tcg.AreaRight, 0, right, height).normalized();
 				_tcg.AreaRight = right;
 			}
@@ -745,8 +746,8 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 			// Add the delay of the slaved gate.
 			gateDelayOfs += sgt.VDelay.getCur().getFloat();
 		}
-			// Check for artificial (-2) way of slaving.
-			// Actual gate delay is IF delay + gate delay.
+		// Check for artificial (-2) way of slaving.
+		// Actual gate delay is IF delay + gate delay.
 		else if (gt.SlavedTo == -2 && gt.Gate != 0)
 		{
 			// Just add the delay of the IF gate.
@@ -885,7 +886,7 @@ const char* AcquisitionControl::Private::getStateName(int state)
 	}
 }
 
-bool AcquisitionControl::Private::setState(EState state) // NOLINT(misc-no-recursion)
+bool AcquisitionControl::Private::setState(EState state)// NOLINT(misc-no-recursion)
 {
 	// Only change the previous state when the state is not psWAIT.
 	if (_stateCurrent != psWait)
@@ -902,7 +903,7 @@ bool AcquisitionControl::Private::setState(EState state) // NOLINT(misc-no-recur
 	return true;
 }
 
-bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no-recursion)
+bool AcquisitionControl::Private::setError(const QString& txt)// NOLINT(misc-no-recursion)
 {
 	int oldPrevious = _statePrevious;
 	// Update the previous state.
@@ -913,12 +914,7 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 	// Assign the new state first so that msg boxes can appear.
 	_stateCurrent = psError;
 	// Do some debug printing in case of an error.
-	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error! "
-		<< txt << " SetState("
-		<< getStateName(oldPrevious) << "=>"
-		<< getStateName(_statePrevious) << "=>"
-		<< getStateName(_stateCurrent)
-		<< ")");
+	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error! " << txt << " SetState(" << getStateName(oldPrevious) << "=>" << getStateName(_statePrevious) << "=>" << getStateName(_stateCurrent) << ")");
 	// Recover from the error.
 	setState(psIdle);
 	// Always return false for being able to use it as a return value.
@@ -927,7 +923,7 @@ bool AcquisitionControl::Private::setError(const QString& txt) // NOLINT(misc-no
 
 bool AcquisitionControl::Private::waitForState(EState state)
 {
-//	SF_RTTI_NOTIFY(DO_CLOG, "WaitForState(" << getStateName(state) << ")" << " CopyRange" << _work.CopyRange);
+	//	SF_RTTI_NOTIFY(DO_CLOG, "WaitForState(" << getStateName(state) << ")" << " CopyRange" << _work.CopyRange);
 	_stateToWaitFor = state;
 	_stateCurrent = psWait;
 	// Reset the timer to generate an error when waiting takes too long.
@@ -936,7 +932,7 @@ bool AcquisitionControl::Private::waitForState(EState state)
 	return true;
 }
 
-bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
+bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 {
 	switch (_stateCurrent)
 	{
@@ -946,8 +942,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 		case psError:
 			return false;
 
-		case psGetCopy:
-		{
+		case psGetCopy: {
 			// Set the maximum range to start with.
 			Range rng(0, std::numeric_limits<Range::size_type>::max());
 			//
@@ -1018,8 +1013,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 		}
 
 			// When the data was available we skip waiting and continue to next statement.
-		case psProcessCopy:
-		{
+		case psProcessCopy: {
 			// No index request can be out for the asynchronous results at this stage.
 			if (_work.IndexReq || _work.CopyReq)
 			{
@@ -1043,8 +1037,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			// Run into next statement.
 		}
 
-		case psTryGate:
-		{
+		case psTryGate: {
 			// The range ID is used here as a flag.
 			Range rng(0, std::numeric_limits<Range::size_type>::max(), 0);
 			// Iterate through the gate results to retrieve a common accessible range.
@@ -1054,7 +1047,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 				Gate& gi(_gates[i]);
 				// Only check on those who are available.
 				if (gi.RAmp.getId())
-				{ // And the accessible range to create a gate common accessible range.
+				{// And the accessible range to create a gate common accessible range.
 					rng &= gi.RAmp.getAccessRange();
 					// The id is used as a flag.
 					rng.setId(1);
@@ -1145,8 +1138,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			// Run into next statement.
 		}
 
-		case psApply:
-		{
+		case psApply: {
 			if (_dynamicGates)
 			{
 				// Iterate through the gate results to retrieve possible range.
@@ -1204,8 +1196,7 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			return setState(psReady);
 		}
 
-		case psWait:
-		{
+		case psWait: {
 			// When the wait timer timed out generate an error.
 			if (_timeoutTimer)
 			{
@@ -1247,7 +1238,6 @@ bool AcquisitionControl::Private::processState() // NOLINT(misc-no-recursion)
 			}
 			break;
 		}
-
 	}
 	return true;
 }
@@ -1264,8 +1254,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			invalidate();
 			break;
 
-		case ResultData::reIdChanged:
-		{
+		case ResultData::reIdChanged: {
 			// Set the bottom ruler. It is possible that it is dependent on the block size.
 			if (&link == &_rCopyData)
 			{
@@ -1275,7 +1264,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			if (&link == &_rCopyIndex)
 			{
 				// When the copy index is not present dynamic gates can not be presented.
-				_dynamicGates = _rCopyIndex.getId() ? true : false;
+				_dynamicGates = _rCopyIndex.getId() != 0;
 				// Can only draw peaks when index data is of the correct type.
 				_flagCanDrawPeak = link.getTypeSize() == ResultData::rtInt32 && link.getBlockSize() == 1;
 			}
@@ -1288,8 +1277,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			break;
 		}
 
-		case ResultData::reClear:
-		{
+		case ResultData::reClear: {
 			// Clear the points array so no plot is drawn.
 			_polygon.clear();
 			_lastRange.clear();
@@ -1314,7 +1302,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 				}
 				//
 				if ((!_dynamicGates && &link == &_rCopyData) ||
-					(_dynamicGates && &link == &_rCopyIndex))
+						(_dynamicGates && &link == &_rCopyIndex))
 				{
 					// Trigger the generation of new plot data.
 					if (_stateCurrent == psIdle || _stateCurrent == psReady)
@@ -1325,14 +1313,13 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			}
 			break;
 
-		case ResultData::reGotRange:
-		{
+		case ResultData::reGotRange: {
 			if (&link == &_rCopyIndex)
-			{ // Was a got range event expected?
+			{// Was a got range event expected?
 				if (_work.IndexReq)
-				{ // Was this the expected range.
+				{// Was this the expected range.
 					if (rng == _work.CopyRange)
-					{ // Request was received.
+					{// Request was received.
 						_work.IndexReq = false;
 						// If this fixes up all async result requests continue processing.
 						if (_stateCurrent == psWait)
@@ -1340,16 +1327,18 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 							processState();
 						}
 					}
-					else SF_RTTI_NOTIFY(DO_DEFAULT, "Expected range is not the same as the gotten range!");
+					else
+						SF_RTTI_NOTIFY(DO_DEFAULT, "Expected range is not the same as the gotten range!");
 				}
-				else SF_RTTI_NOTIFY(DO_DEFAULT, "Did not expect a gotten range!");
+				else
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Did not expect a gotten range!");
 			}
 			else if (&link == &_rCopyData)
-			{ // Was a got range event expected?
+			{// Was a got range event expected?
 				if (_work.CopyReq)
-				{ // Was this the expected range.
+				{// Was this the expected range.
 					if (rng == _work.CopyRange)
-					{ // Request was received.
+					{// Request was received.
 						_work.CopyReq = false;
 						// If this fixes up all async result requests continue processing.
 						if (_stateCurrent == psWait)
@@ -1389,8 +1378,7 @@ void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, co
 			// TODO: Could call ProcessState here when some conditions are met.
 			break;
 
-		case ResultData::reGotRange:
-		{
+		case ResultData::reGotRange: {
 			if (&link == &gi.RAmp)
 			{
 				// Was a got range event expected?
@@ -1443,8 +1431,7 @@ void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, co
 					SF_RTTI_NOTIFY(DO_DEFAULT, "Did not expect a gotten range!");
 				}
 			}
-		}
-			break;
+		} break;
 	}
 }
 
@@ -1457,8 +1444,7 @@ void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, c
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veConverted:
-		{
+		case Variable::veConverted: {
 			// Set the FFlagCanDraw if possible.
 			setCanDraw();
 			// Set the bottom ruler depending on the hooked variables.
@@ -1466,8 +1452,7 @@ void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, c
 			break;
 		}
 
-		case Variable::veValueChange:
-		{
+		case Variable::veValueChange: {
 			setBottomRuler();
 			// Recalculate gate positions on screen.
 			_flagGateVerticalPos = true;
@@ -1488,8 +1473,7 @@ void AcquisitionControl::Private::handlerDefaultVariable(Variable::EEvent event,
 			break;
 
 		case Variable::veValueChange:
-		case Variable::veIdChanged:
-		{
+		case Variable::veIdChanged: {
 			if (&link == &_vGateCount)
 			{
 				_gateCount = std::min<int>(MaxGates, (int) _vGateCount.getCur().getInteger());
@@ -1512,8 +1496,7 @@ void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, con
 
 		case Variable::veLinked:
 		case Variable::veIdChanged:
-		case Variable::veValueChange:
-		{
+		case Variable::veValueChange: {
 			//
 			if (&link == &_vTcgSlavedTo)
 			{
@@ -1534,7 +1517,6 @@ void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, con
 			//else GenerateTcgData(link.Data);
 			break;
 		}
-
 	}
 }
 
@@ -1549,8 +1531,7 @@ void AcquisitionControl::Private::handlerGateVariable(Variable::EEvent event, co
 			break;
 
 		case Variable::veValueChange:
-		case Variable::veIdChanged:
-		{
+		case Variable::veIdChanged: {
 			// Is the slaved to parameter changed.
 			if (&link == &gt->VSlavedTo)
 			{
@@ -1881,7 +1862,6 @@ void AcquisitionControl::Private::focus(bool yn)
 			_flagFrozen = false;
 		}
 	}
-
 }
 
 void AcquisitionControl::Private::keyDown(int key, Qt::KeyboardModifiers modifiers)
@@ -1894,14 +1874,14 @@ void AcquisitionControl::Private::keyDown(int key, Qt::KeyboardModifiers modifie
 	}
 }
 
-bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, const QRegion& region) // NOLINT(readability-make-member-function-const)
+bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, const QRegion& region)// NOLINT(readability-make-member-function-const)
 {
 	// Check if there is anything to be painted.
 	if (_flagCanDraw)
 	{
 		// Offset for drawing the TCG part.
 		QPoint tcg_ofs(0, 0);
-/*
+		/*
 		//
 		if (FTcg.SlavedTo == 0 && FGateCount)
 		{
@@ -1919,7 +1899,7 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 		painter.fillRect(rc_right, FColorBackground);
 		painter.fillRect(QRect(rc_left.topRight(), rc_right.bottomLeft()), FColorTcgRange);
 */
-/*
+		/*
 		// Check, if the grid lines must be drawn at all by checking the color value.
 		if (FColorGridLines.isValid() && FColorGridLines.alpha() > 0 && bounds.width() > 0)
 		{
@@ -2073,4 +2053,4 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 	return false;
 }
 
-}
+}// namespace sf

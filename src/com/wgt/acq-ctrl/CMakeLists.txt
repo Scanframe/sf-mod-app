@@ -48,6 +48,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	sf-misc
 	sf-gii
 	)
-	
+
+# Explicitly tell the compiled code the QT libraries are included.
+target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
+
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)

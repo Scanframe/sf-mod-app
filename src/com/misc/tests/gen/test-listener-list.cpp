@@ -1,5 +1,4 @@
 #include <misc/gen/TListener.h>
-#include <misc/gen/gen_utils.h>
 #include <test/catch.h>
 
 struct MyEmitter

@@ -1,8 +1,9 @@
-#include "misc/gen/Md5Hash.h"
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <misc/gen/Exception.h>
+#include <misc/gen/Md5Hash.h>
+#include <misc/gen/file.h>
 #include <misc/lnx/FileMapper.h>
 #include <misc/lnx/SegmentFaultHandler.h>
 #include <misc/lnx/lnx_utils.h>
@@ -56,20 +57,17 @@ TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 		// Call the lambda function wrapped in a SegmentFaultHandler class.
 		REQUIRE(sf::SegmentFaultHandler(f2));
 		// Read the still existing file into a string.
-		std::stringstream ss;
-		ss << std::ifstream(fp).rdbuf();
+		std::ostringstream os;
+		os << std::ifstream(fp).rdbuf();
 		//std::clog << ss.str();
 		// Sizes must be the same.
-		REQUIRE(ss.str().length() == sz);
+		REQUIRE(os.str().length() == sz);
 		// Also the MD5 hash on both must be the same.
-
-		REQUIRE(sf::Md5Hash(std::string(ss.str())) == sf::Md5Hash(ptr, sz));
-
+		REQUIRE(sf::Md5Hash(std::string(os.str())) == sf::Md5Hash(ptr, sz));
 		// Release the locked pointer.
 		fm->unlock();
 		// Check if pointer is null.
 		REQUIRE(fm->getPtr() == nullptr);
-
 		// Delete the file map which implicates unlinking the temporary file.
 		delete fm;
 		// Check if the temp file has been deleted.

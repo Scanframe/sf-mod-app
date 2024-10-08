@@ -2,11 +2,10 @@
 
 #include <utility>
 
-#include <misc/gen/gen_utils.h>
-#include <misc/gen/Value.h>
-#include <misc/gen/TVector.h>
-#include <misc/gen/TClassRegistration.h>
 #include "global.h"
+#include <misc/gen/TClassRegistration.h>
+#include <misc/gen/TVector.h>
+#include <misc/gen/Value.h>
 
 namespace sf
 {
@@ -20,12 +19,13 @@ class PropertySheetDialog;
 class _STO_CLASS StorageInterface
 {
 	public:
-
 		struct Parameters
 		{
-			explicit Parameters(int mode) :_mode(mode) {}
+				explicit Parameters(int mode)
+					: _mode(mode)
+				{}
 
-			int _mode;
+				int _mode;
 		};
 
 		/**
@@ -64,15 +64,14 @@ class _STO_CLASS StorageInterface
 		 * @param init True when initializing.
 		 * @return True on success.
 		 */
-		virtual bool doInitialize(bool init) {return true;}
+		virtual bool doInitialize(bool init) { return true; }
 
 	private:
 		// Holds flag of implementation initialization.
 		bool _initialized;
 
 		// Declarations of static functions and data members to be able to create registered implementations.
-	SF_DECL_IFACE(StorageInterface, StorageInterface::Parameters, Interface)
-
+		SF_DECL_IFACE(StorageInterface, StorageInterface::Parameters, Interface)
 };
 
-}
+}// namespace sf

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../global.h"
-#include "gen_utils.h"
+#include "time.h"
 #include <ctime>
 #include <string>
 
@@ -106,7 +106,7 @@ struct _MISC_CLASS TimeSpec : public timespec
 		}
 
 		/**
-	 * @brief Clear this instance.
+	 * @brief clear this instance.
 	 */
 		inline void clear()
 		{
@@ -265,7 +265,7 @@ struct _MISC_CLASS TimeSpec : public timespec
 		TimeSpec& randomize(double factor = 0.1);
 
 		/**
-	 * @brief Assign the current time.
+	 * @brief assign the current time.
 	 *
 	 * @return Itself.
 	 */

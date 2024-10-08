@@ -1,8 +1,9 @@
+#include <gii/gen/UnitConversionServerEx.h>
+#include <misc/gen/math.h>
 #include <test/catch.h>
 
-#include <gii/gen/UnitConversionServerEx.h>
-
-namespace {
+namespace
+{
 
 const char* IniContent = R"(
 
@@ -75,9 +76,9 @@ rad,6=deg,57.2958,0,5
 
 TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 {
+	using Catch::Approx;
 	using Catch::Matchers::Equals;
 	using Catch::Matchers::Matches;
-	using Catch::Approx;
 
 	sf::Variable::initialize();
 
@@ -152,7 +153,7 @@ TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 		CHECK(v_client.getCurString() == "300");
 		//std::clog << "Client value: " << v_client.getCurString() << " " << v_client.getUnit() << std::endl;
 	}
-  // Delete the conversion server first before deinitializing the variable static stuff.
+	// Delete the conversion server first before deinitializing the variable static stuff.
 	delete &ucs;
 	sf::Variable::uninitialize();
 }

@@ -13,7 +13,7 @@ class BufferStitcher
 		BufferStitcher() = default;
 
 		/**
-		 * @brief Assign the destination buffer and the size expected.
+		 * @brief assign the destination buffer and the size expected.
 		 *
 		 * @param data Pointer to the buffer.
 		 * @param sz Size of the buffer.
@@ -51,7 +51,6 @@ class BufferStitcher
 		size_t _size{0};
 		// Holds the position where to write into the buffer.
 		size_t _pos{0};
-
 };
 
-}
+}// namespace sf

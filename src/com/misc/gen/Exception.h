@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../global.h"
-#include "gen_utils.h"
+#include "string.h"
 #include <cxxabi.h>
 #include <exception>
 #include <memory>

@@ -1,135 +1,135 @@
 #include "LayoutTabs.h"
-#include <gii/qt/VariableWidgetBasePrivate.h>
-#include <gii/qt/LayoutData.h>
-#include <misc/gen/dbgutils.h>
-#include <misc/gen/ScriptEngine.h>
-#include <misc/qt/Globals.h>
-#include <misc/qt/qt_utils.h>
-#include <QKeyEvent>
-#include <QVBoxLayout>
 #include <QGuiApplication>
+#include <QKeyEvent>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTimer>
+#include <QVBoxLayout>
+#include <gii/qt/LayoutData.h>
+#include <gii/qt/VariableWidgetBasePrivate.h>
+#include <misc/gen/ScriptEngine.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
-struct LayoutTabs::Private :QObject, VariableWidgetBase::PrivateBase
+struct LayoutTabs::Private : QObject
+	, VariableWidgetBase::PrivateBase
 {
-	struct TabWidget :QTabWidget
-	{
-		explicit TabWidget(QWidget* parent)
-			:QTabWidget(parent) {}
-
-		// Fix for keeping the same size after changing the tab index.
-		[[nodiscard]] QSize sizeHint() const override
+		struct TabWidget : QTabWidget
 		{
-			return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::sizeHint();
+				explicit TabWidget(QWidget* parent)
+					: QTabWidget(parent)
+				{}
+
+				// Fix for keeping the same size after changing the tab index.
+				[[nodiscard]] QSize sizeHint() const override
+				{
+					return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::sizeHint();
+				}
+
+				// Fix for keeping the same size after changing the tab index.
+				[[nodiscard]] QSize minimumSizeHint() const override
+				{
+					return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::minimumSizeHint();
+				}
+
+				// Holds the size hint when layouts have been loaded.
+				QSize _fixedSizeHint;
+		};
+
+		QStringList _tabsConfig;
+		LayoutTabs* _w{nullptr};
+		QVBoxLayout* _layout{nullptr};
+		TabWidget* _tabWidget{nullptr};
+
+		static LayoutTabs::Private* cast(PrivateBase* data)
+		{
+			return static_cast<LayoutTabs::Private*>(data);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 		}
 
-		// Fix for keeping the same size after changing the tab index.
-		[[nodiscard]] QSize minimumSizeHint() const override
+		explicit Private(LayoutTabs* widget)
+			: _w(widget)
 		{
-			return _fixedSizeHint.isValid() ? _fixedSizeHint : QTabWidget::minimumSizeHint();
+			_w->_p = this;
+			_tabWidget = new TabWidget(_w);
+			// Name the widget for ease of reference.
+			_tabWidget->setObjectName("tabWidget");
+			// Format using Horizontal layout.
+			_layout = new QVBoxLayout(_w);
+			// Clear margins for now.
+			_layout->setContentsMargins(0, 0, 0, 0);
+			// Add the tab-widget.
+			_layout->addWidget(_tabWidget);
+			// Allows setting tab order in designer.
+			_w->setFocusPolicy(Qt::StrongFocus);
+			// Then when getting focus pass it to the child line edit widget.
+			_w->setFocusProxy(_tabWidget);
+			// Only link when not in design mode.
+			if (!ObjectExtension::inDesigner())
+			{
+				_variable.setHandler(this);
+			}
+			connect(_tabWidget, &QTabWidget::currentChanged, [&](int index) {
+				_variable.setCur(Value(index), true);
+			});
 		}
 
-		// Holds the size hint when layouts have been loaded.
-		QSize _fixedSizeHint;
-	};
-
-	QStringList _tabsConfig;
-	LayoutTabs* _w{nullptr};
-	QVBoxLayout* _layout{nullptr};
-	TabWidget* _tabWidget{nullptr};
-
-	static LayoutTabs::Private* cast(PrivateBase* data)
-	{
-		return static_cast<LayoutTabs::Private*>(data); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-	}
-
-	explicit Private(LayoutTabs* widget)
-		:_w(widget)
-	{
-		_w->_p = this;
-		_tabWidget = new TabWidget(_w);
-		// Name the widget for ease of reference.
-		_tabWidget->setObjectName("tabWidget");
-		// Format using Horizontal layout.
-		_layout = new QVBoxLayout(_w);
-		// Clear margins for now.
-		_layout->setContentsMargins(0, 0, 0, 0);
-		// Add the tab-widget.
-		_layout->addWidget(_tabWidget);
-		// Allows setting tab order in designer.
-		_w->setFocusPolicy(Qt::StrongFocus);
-		// Then when getting focus pass it to the child line edit widget.
-		_w->setFocusProxy(_tabWidget);
-		// Only link when not in design mode.
-		if (!ObjectExtension::inDesigner())
+		~Private() override
 		{
-			_variable.setHandler(this);
+			// Clear the handler when destructing.
+			_variable.setHandler(nullptr);
 		}
-		connect(_tabWidget, &QTabWidget::currentChanged, [&](int index)
-		{
-			_variable.setCur(Value(index), true);
-		});
-	}
 
-	~Private() override
-	{
-		// Clear the handler when destructing.
-		_variable.setHandler(nullptr);
-	}
+		void recreateTabs();
 
-	void recreateTabs();
-
-	void variableEventHandler
-		(
+		void variableEventHandler(
 			EEvent event,
 			const Variable& call_var,
 			Variable& link_var,
 			bool same_inst
 		) override
-	{
-		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, Variable::getEventName(event));
-		switch (event)
 		{
-			default:
-				break;
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, Variable::getEventName(event));
+			switch (event)
+			{
+				default:
+					break;
 
-			case veLinked:
-			case veIdChanged:
-			case veValueChange:
-				// When the variable is to be linked the variable readonly state matters.
-				_w->applyReadOnly(_readOnly || (link_var.getDesiredId() ? link_var.isReadOnly() : false));
-				_tabWidget->setCurrentIndex(static_cast<int>(link_var.getCur().getInteger()));
-				break;
+				case veLinked:
+				case veIdChanged:
+				case veValueChange:
+					// When the variable is to be linked the variable readonly state matters.
+					_w->applyReadOnly(_readOnly || (link_var.getDesiredId() ? link_var.isReadOnly() : false));
+					_tabWidget->setCurrentIndex(static_cast<int>(link_var.getCur().getInteger()));
+					break;
 
-			case veFlagsChange:
-				_w->applyReadOnly(_readOnly || link_var.isReadOnly());
-				break;
+				case veFlagsChange:
+					_w->applyReadOnly(_readOnly || link_var.isReadOnly());
+					break;
+			}
 		}
-	}
 
-	void updateValue(bool skip)
-	{
-		_variable.setCur(Value(_tabWidget->currentIndex()));
-		// Update the control with the recently set value.
-		if (!skip)
+		void updateValue(bool skip)
 		{
-			variableEventHandler(Variable::veValueChange, _variable, _variable, true);
+			_variable.setCur(Value(_tabWidget->currentIndex()));
+			// Update the control with the recently set value.
+			if (!skip)
+			{
+				variableEventHandler(Variable::veValueChange, _variable, _variable, true);
+			}
 		}
-	}
 
-	void onClicked(bool/* checked*/)
-	{
-		updateValue(false);
-	}
+		void onClicked(bool /* checked*/)
+		{
+			updateValue(false);
+		}
 };
 
 LayoutTabs::LayoutTabs(QWidget* parent)
-	:VariableWidgetBase(parent, this)
+	: VariableWidgetBase(parent, this)
 {
 	// Is assigning itself to '_p' member.
 	new LayoutTabs::Private(this);
@@ -207,7 +207,7 @@ void LayoutTabs::Private::recreateTabs()
 				QMessageBox mb(_w);
 				mb.setIcon(QMessageBox::QMessageBox::Warning);
 				mb.setWindowTitle(tr("Open file failed!"));
-				mb.setText(tr("Could open file '%1'\nin directory\n'%2'").arg(file.fileName()).arg(plw->getDirectory().path()));
+				mb.setText(tr("Could open file '%1'\nin directory\n'%2'").arg(file.fileName().arg(plw->getDirectory().path())));
 				mb.exec();
 				return;
 			}
@@ -262,4 +262,4 @@ SF_IMPL_PROP_GSP(QTabWidget::TabShape, LayoutTabs, TabShape, LayoutTabs::Private
 
 SF_IMPL_PROP_GSP(int, LayoutTabs, CurrentIndex, LayoutTabs::Private::cast(_p)->_tabWidget, currentIndex)
 
-}
+}// namespace sf

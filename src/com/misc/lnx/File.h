@@ -211,7 +211,7 @@ class _MISC_CLASS File
 
 	private:
 		/**
-		 * Assign the last error number.
+		 * assign the last error number.
 		 */
 		int setErrorNo(int error_no);
 		/**

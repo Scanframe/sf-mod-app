@@ -1,7 +1,6 @@
 #pragma once
 
 #include <misc/gen/TVector.h>
-#include <misc/gen/gen_utils.h>
 
 #include "../global.h"
 
@@ -39,11 +38,11 @@ class _GII_CLASS InformationTypes
 		 */
 		typedef size_t size_type;
 		/**
-		 * @brief Type used for containing the a single data element which is the largest integer.
+		 * @brief Type used for containing a single data element which is the largest integer.
 		 */
 		typedef uint64_t data_type;
 		/**
-		 * @brief Type used for containing the a single data element which is the largest signed integer.
+		 * @brief Type used for containing a single data element which is the largest signed integer.
 		 */
 		typedef int64_t sdata_type;
 		/**
@@ -60,4 +59,4 @@ class _GII_CLASS InformationTypes
 		static constexpr size_t npos = std::numeric_limits<size_type>::max();
 };
 
-}
+}// namespace sf

@@ -78,8 +78,7 @@ int main(int argc, char* argv[])
 	};
 #if IS_QT
 	QTimer::singleShot(0, func);
-	//
-	QCoreApplication::instance()->exec();
+	return QCoreApplication::instance()->exec();
 #else
 	return func();
 #endif

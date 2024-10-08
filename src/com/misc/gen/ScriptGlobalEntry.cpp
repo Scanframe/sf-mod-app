@@ -1,4 +1,5 @@
 #include "ScriptGlobalEntry.h"
+#include "pointer.h"
 #include <map>
 
 namespace sf
@@ -10,7 +11,7 @@ namespace
 typedef std::map<std::string, ScriptGlobalEntry*> MapType;
 
 // Pointer to the default vector which is automatically created when
-MapType* mapGlobalScriptEntry;
+MapType* mapGlobalScriptEntry{nullptr};
 
 }// namespace
 
@@ -34,7 +35,7 @@ ScriptGlobalEntry::~ScriptGlobalEntry()
 		mapGlobalScriptEntry->erase(_name);
 	}
 	// When the map is empty delete it.
-	if (mapGlobalScriptEntry->empty())
+	if (mapGlobalScriptEntry && mapGlobalScriptEntry->empty())
 	{
 		delete_null(mapGlobalScriptEntry);
 	}

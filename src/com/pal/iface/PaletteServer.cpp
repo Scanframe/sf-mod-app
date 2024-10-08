@@ -1,16 +1,17 @@
 #include "PaletteServer.h"
 #include "PaletteServerPropertyPage.h"
+#include <misc/gen/pointer.h>
 #include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 PaletteServer::PaletteServer(QObject* parent)
-	:QObject(parent)
-	 , _implementation(nullptr)
-	 , _colorsUsed(256)
-	 , _colorsSize(256)
-	 , _flagGenerate(true)
+	: QObject(parent)
+	, _implementation(nullptr)
+	, _colorsUsed(256)
+	, _colorsSize(256)
+	, _flagGenerate(true)
 {
 }
 
@@ -52,7 +53,7 @@ void PaletteServer::paint(QPainter& painter, const QRect& bounds) const
 	// Fill the data list with incremental values from 0 to colors used.
 	std::iota(std::begin(data), std::end(data), 0);
 	// Create grayscale image from the data.
-	QImage image((const uchar*)data.data(), _colorsUsed, 1, _colorsUsed, QImage::Format_Grayscale8);
+	QImage image((const uchar*) data.data(), _colorsUsed, 1, _colorsUsed, QImage::Format_Grayscale8);
 	if (_implementation)
 	{
 		// Convert the image to an 8-bit indexed format and set the color table for each index.
@@ -75,8 +76,7 @@ void PaletteServer::paint(QPainter& painter, const QRect& bounds) const
 		for (int i = 0; i <= count; i++)
 		{
 			auto x = (1.0 * i) / count;
-			polygon.append(bounds.bottomLeft() + QPoint(static_cast<int>(bounds.width() * x),
-				static_cast<int>((1 - bounds.height()) * _implementation->getCurveLevel(x))));
+			polygon.append(bounds.bottomLeft() + QPoint(static_cast<int>(bounds.width() * x), static_cast<int>((1 - bounds.height()) * _implementation->getCurveLevel(x))));
 		}
 		// Select black for the curve.
 		painter.setPen(Qt::white);
@@ -128,13 +128,12 @@ bool PaletteServer::createImplementation(const std::string& name)
 	if (!name.empty())
 	{
 		// Create a new implementation of a registered class.
-		_implementation = PaletteInterface::Interface().create(name, PaletteInterface::Parameters(PaletteInterface::Parameters::Callback([&]()
-		{
-			// Make a call to getColorTable() generate a new local copy.
-			_flagGenerate = true;
-			// Signal a change.
-			Q_EMIT changed(this);
-		})));
+		_implementation = PaletteInterface::Interface().create(name, PaletteInterface::Parameters(PaletteInterface::Parameters::Callback([&]() {
+																														 // Make a call to getColorTable() generate a new local copy.
+																														 _flagGenerate = true;
+																														 // Signal a change.
+																														 Q_EMIT changed(this);
+																													 })));
 		if (_implementation)
 		{
 			// Make a call to getColorTable() generate a new local copy.
@@ -218,4 +217,4 @@ const QStringList& PaletteServer::getImplementationProperties()
 	return _implementationProperties;
 }
 
-}
+}// namespace sf

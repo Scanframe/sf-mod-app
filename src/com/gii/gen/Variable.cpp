@@ -1,12 +1,12 @@
+#include "Variable.h"
+#include "UnitConversion.h"
+#include "VariableReference.h"
+#include "VariableStatic.h"
 #include <cmath>
 #include <cstdio>
+#include <misc/gen/TStrings.h>
 #include <misc/gen/dbgutils.h>
-#include <misc/gen/gen_utils.h>
-#include <misc/gen/Value.h>
-#include "UnitConversion.h"
-#include "Variable.h"
-#include "VariableStatic.h"
-#include "VariableReference.h"
+#include <misc/gen/string.h>
 
 namespace sf
 {
@@ -52,17 +52,17 @@ bool Variable::setExport(bool global)
 	if (
 		// Only an owner can be exported.
 		!isOwner()
-			// And it must be exportable.
-			|| !isFlag(flgExport)
-			// The reference pointer cannot be NULL.
-			|| !_reference
-			// The attached reference may not be the Zero one.
-			|| _reference == VariableStatic::zero()._reference
-			// To make an owner appear global it must be local.
-			|| _global
-			// The local variable ID cannot be zero when global.
-			|| (global && !_reference->_id)
-		)
+		// And it must be exportable.
+		|| !isFlag(flgExport)
+		// The reference pointer cannot be NULL.
+		|| !_reference
+		// The attached reference may not be the Zero one.
+		|| _reference == VariableStatic::zero()._reference
+		// To make an owner appear global it must be local.
+		|| _global
+		// The local variable ID cannot be zero when global.
+		|| (global && !_reference->_id)
+	)
 	{
 		//_RTTI_NOTIFY(DO_DEFAULT, "Cannot make this instance global!")
 		// Signal failure to make it global.
@@ -90,7 +90,8 @@ bool Variable::setExport(bool global)
 		if (ref != VariableStatic::zero()._reference)
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n"
-				<< stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n" << ref->_name << '!')
+											 << stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n"
+											 << ref->_name << '!')
 			// If the ID already exist return false.
 			return false;
 		}
@@ -99,7 +100,7 @@ bool Variable::setExport(bool global)
 		// Iterate through global variable instances and attach those having the desired ID just created.
 		attachDesired();
 	}
-		// When variable must be made local again.
+	// When variable must be made local again.
 	else
 	{
 		// Create a temporary vector pointers to variables that must be attached because attachRef() modifies '_list'.
@@ -135,7 +136,7 @@ bool Variable::setGlobal(bool global)
 	return false;
 }
 
-void Variable::operator delete(void* p) // NOLINT(misc-new-delete-overloads)
+void Variable::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 {
 	if (VariableStatic::_globalActive)
 	{
@@ -274,7 +275,7 @@ void Variable::makeOwner()
 	prev_owner->emitEvent(veLostOwner, *this);
 	// Notify this instance of getting ownership.
 	emitEvent(veGetOwner, *this);
-/*
+	/*
   // Check
   if (_reference->_list[0] != this)
     RTTI_NOTIFY(DO_DEFAULT, "Variable is NOT Owner!");
@@ -333,7 +334,7 @@ bool Variable::attachRef(VariableReference* ref)
 			delete _reference;
 		}
 		else
-		{ // Just remove variable from list if it is not the owner.
+		{// Just remove variable from list if it is not the owner.
 			if (!_reference->_list.detach(this))
 			{
 				SF_RTTI_NOTIFY(DO_DEFAULT, __FUNCTION__ << ": Could not remove instance from list!")
@@ -365,7 +366,7 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 		{
 			// Check if the new ID is different and non-zero.
 			if (id && _reference->_id != id)
-			{ // Assign the new ID.
+			{// Assign the new ID.
 				_reference->_id = id;
 				// Notify all local referenced instances.
 				emitLocalEvent(veIdChanged, skip_self);
@@ -408,13 +409,12 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		if (ref && ref != VariableStatic::zero()._reference)
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to create duplicate ID: !\n"
-				<< "(0x" << std::hex << (definition._id + id_ofs) << ") " << definition._name
-				<< "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!')
+											 << "(0x" << std::hex << (definition._id + id_ofs) << ") " << definition._name << "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!')
 			// If ref already exist return false.
 			return false;
 		}
 		else
-		{ // Create new or use old one.
+		{// Create new or use old one.
 			if (local_owner)
 			{
 				// Reuse the current reference
@@ -532,8 +532,7 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	SF_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: "
-		<< definition._name << " (0x" << std::hex << (definition._id) << ") offset (0x" << id_ofs << ")!")
+	SF_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: " << definition._name << " (0x" << std::hex << (definition._id) << ") offset (0x" << id_ofs << ")!")
 	//
 	return ret_val;
 }
@@ -561,7 +560,7 @@ std::string Variable::getName(int levels) const
 		{
 			std::string::size_type i = len;
 			while (i--)
-			{ // Is the character a separator character.
+			{// Is the character a separator character.
 				if (ret_val[i] == '|')
 				{
 					ret_val[i] = ' ';
@@ -583,7 +582,7 @@ std::string Variable::getName(int levels) const
 			{
 				// Is the character a separator character.
 				if (ret_val[i] == '|')
-				{ // Clear the separator character.
+				{// Clear the separator character.
 					ret_val[i] = ' ';
 					//
 					if (!++levels)
@@ -630,7 +629,7 @@ const Value& Variable::getStateValue(Variable::size_type state) const
 }
 
 std::string Variable::getStateName(Variable::size_type state) const
-{ // check index versus range
+{// check index versus range
 	if (state < _reference->_states.size())
 	{
 		return _reference->_states[state]._name;
@@ -658,14 +657,13 @@ bool Variable::increase(int steps, bool skip_self)
 	}
 }
 
-void Variable::emitEvent(EEvent event, const Variable& caller) // NOLINT(misc-no-recursion)
+void Variable::emitEvent(EEvent event, const Variable& caller)// NOLINT(misc-no-recursion)
 {
 	// If the caller is another instance then this one when the value changes.
 	// When one these events passes, Update the temporary value.
 	if (_temporary)
 	{
-		if ((&caller != this && event == veValueChange)
-			|| event == veIdChanged || event == veConverted)
+		if ((&caller != this && event == veValueChange) || event == veIdChanged || event == veConverted)
 		{
 			// Skip self here because we're already handling an event.
 			updateTemporary(true);
@@ -679,7 +677,7 @@ void Variable::emitEvent(EEvent event, const Variable& caller) // NOLINT(misc-no
 }
 
 Variable::size_type Variable::emitEvent(EEvent event, bool skip_self)
-{ // check if the event must be global or not
+{// check if the event must be global or not
 	if (event < veFirstLocal)
 	{
 		return emitGlobalEvent(event, skip_self);
@@ -819,12 +817,12 @@ void Variable::setHandler(VariableHandler* handler)
 	if (_handler != handler)
 	{
 		if (handler)
-		{ // notify instance getting event link
+		{// notify instance getting event link
 			_handler = handler;
 			emitEvent(veLinked, *this);
 		}
 		else
-		{ // notify instance losing event link in the was already a link
+		{// notify instance losing event link in the was already a link
 			if (_handler)
 			{
 				emitEvent(veUnlinked, *this);
@@ -890,7 +888,7 @@ bool Variable::updateFlags(int flags, bool skip_self)
 		auto cur_flags = _reference->_curFlags;
 		_reference->_curFlags = flags;
 		if (_reference->_curFlags != cur_flags)
-		{ // skip self
+		{// skip self
 			emitLocalEvent(veFlagsChange, skip_self);
 			// Changes were made.
 			return true;
@@ -971,7 +969,7 @@ bool Variable::loadCur(const Value& value) const
 	{
 		// Check if this instance is not read-only and global because only globals are loadable.
 		if (!isFlag(flgReadonly) && const_cast<Variable*>(this)->getOwner()._global)
-		{  // Make a writable copy of the passed value.
+		{// Make a writable copy of the passed value.
 			Value new_val(value);
 			// Adjust the new_val type
 			if (!new_val.setType(getType()))
@@ -980,7 +978,7 @@ bool Variable::loadCur(const Value& value) const
 			}
 			// Clip when clipping is needed.
 			if (isNumber() && _reference->_maxValue != _reference->_minValue)
-			{ // Adjust new value to the allowed range.
+			{// Adjust new value to the allowed range.
 				new_val = (new_val > _reference->_maxValue) ? _reference->_maxValue : new_val;
 				new_val = (new_val < _reference->_minValue) ? _reference->_minValue : new_val;
 			}
@@ -1009,8 +1007,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 	switch (getType())
 	{
 		case Value::vitInteger:
-		case Value::vitFloat:
-		{
+		case Value::vitFloat: {
 			// If the new value is numerical adjust type to _curValue type
 			// create non const Value type
 			Value new_val = value;
@@ -1039,8 +1036,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 			break;
 		}
 
-		case Value::vitString:
-		{
+		case Value::vitString: {
 			// Create non const std::string that can be modified.
 			std::string s;
 			// Get the filter string from the type.
@@ -1056,7 +1052,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 					s = filter(value.getString(), "/*?\"<>|,");
 					// Strip also space from both ends.
 					s = trim(s, " ");
-					if (s.length() && s[s.length() - 1] != '\\')
+					if (s.length() && s.back() != '\\')
 					{
 						s.append(1, '\\');
 					}
@@ -1102,8 +1098,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 		}
 
 		case Value::vitBinary:
-		case Value::vitCustom:
-		{
+		case Value::vitCustom: {
 			// create non const Value type
 			Value new_val = value;
 			// adjust the new_val type
@@ -1124,7 +1119,7 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 
 		default:
 			break;
-	} // switch
+	}// switch
 	// Check if there was a change of the current value.
 	if (changed)
 	{
@@ -1149,8 +1144,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 	switch (getType())
 	{
 		case Value::vitInteger:
-		case Value::vitFloat:
-		{
+		case Value::vitFloat: {
 			// If the new value is numerical adjust type to _curValue type
 			// create non const Value type
 			Value new_val = value;
@@ -1168,8 +1162,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 			break;
 		}
 
-		case Value::vitString:
-		{
+		case Value::vitString: {
 			// create non const std::string to modify
 			std::string s = value.getString();
 			auto max_len = (size_t) _reference->_rndValue.getInteger();
@@ -1188,8 +1181,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 		}
 
 		case Value::vitBinary:
-		case Value::vitCustom:
-		{ // Create non const Value type.
+		case Value::vitCustom: {// Create non const Value type.
 			Value new_val = value;
 			// adjust the new_val type
 			if (!new_val.setType(getType()))
@@ -1225,7 +1217,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 bool Variable::writeUpdate(std::ostream& os) const
 {
 	os << '(' << _reference->_id << ',' << _reference->_curValue << ',' << getFlagsString(_reference->_curFlags) << ')'
-		<< '\n';
+		 << '\n';
 	// check if out stream is valid
 	return !os.fail() && !os.bad();
 }
@@ -1242,7 +1234,7 @@ bool Variable::readUpdate(std::istream& is, bool skip_self, PtrVector& list)
 	getline(is, flags, ')');
 
 	if (!is.fail() && !is.bad() && value.isValid())
-	{ // GetReferenceById get reference to owner to be able to update readonly vars
+	{// GetReferenceById get reference to owner to be able to update readonly vars
 		auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
 		var.updateValue(value, skip_self);
 		var.updateFlags(toFlags(flags), skip_self);
@@ -1316,13 +1308,13 @@ bool Variable::create(std::istream& is, Variable::PtrVector& list, bool global, 
 				ret_val = false;
 			}
 		}
-	} // while
+	}// while
 	return ret_val;
 }
 
 std::string Variable::getSetupString() const
 {
-	const char sep = ',';
+	constexpr char sep = ',';
 	//  vfId,
 	std::string rv = "0x" + itostr(getId(), 16) + sep;
 	//  vfName,
@@ -1401,8 +1393,7 @@ std::string Variable::getCurString(bool use_states) const
 		default:
 		case Value::vitBinary:
 		case Value::vitCustom:
-		case Value::vitString:
-		{
+		case Value::vitString: {
 			if (_temporary)
 			{
 				return _temporary->getString();
@@ -1413,8 +1404,7 @@ std::string Variable::getCurString(bool use_states) const
 			}
 		}
 
-		case Value::vitInteger:
-		{
+		case Value::vitInteger: {
 			// there are states return the state name if 'states' is true if not run in to default switch
 			if (use_states && !_reference->_states.empty())
 			{
@@ -1429,8 +1419,7 @@ std::string Variable::getCurString(bool use_states) const
 			// run into next switch is state was not found
 		}
 
-		case Value::vitFloat:
-		{
+		case Value::vitFloat: {
 			// When a temporary is used then it is already converted or not.
 			if (isConverted())
 			{
@@ -1441,7 +1430,7 @@ std::string Variable::getCurString(bool use_states) const
 				return (_temporary ? (*_temporary) : _reference->_curValue).getString(_reference->_sigDigits);
 			}
 		}
-	} // switch
+	}// switch
 }
 
 void Variable::setConvertHandler(VariableHandler* handler)
@@ -1452,20 +1441,19 @@ void Variable::setConvertHandler(VariableHandler* handler)
 	}
 }
 
-bool Variable::setConvertValues
-	(
-		const std::string& unit,
-		const Value& multiplier,
-		const Value& offset,
-		int digits
-	)
+bool Variable::setConvertValues(
+	const std::string& unit,
+	const Value& multiplier,
+	const Value& offset,
+	int digits
+)
 {
 	// Only owners are allowed to Set the conversion values.
 	if (isOwner() && _reference->_type == Value::vitFloat)
 	{
 		// Check if something has changed.
 		if (_reference->_convertMultiplier == multiplier && _reference->_convertOffset == offset &&
-			_reference->_convertUnit == unit)
+				_reference->_convertUnit == unit)
 		{
 			// Check if the significant digits are to be calculated here or passed here.
 			if (!(digits != std::numeric_limits<int>::max() && _reference->_convertSigDigits != digits))
@@ -1662,7 +1650,7 @@ bool Variable::isTemporaryDifferent() const
 	return false;
 }
 
-bool Variable::updateTemporary(bool skip_self) // NOLINT(misc-no-recursion)
+bool Variable::updateTemporary(bool skip_self)// NOLINT(misc-no-recursion)
 {
 	// Check if the temporary value is used.
 	if (_temporary)
@@ -1699,7 +1687,7 @@ std::istream& operator>>(std::istream& is, Variable& v)
 	auto bad = !is.fail() && !is.bad();
 	// check stream state length and ignore lines starting with character ';'
 	if (!bad && st.length() > 10 && st[0] != ';')
-	{ // setup this variable with the read line from the input stream
+	{// setup this variable with the read line from the input stream
 		v.setup(st);
 	}
 	return is;
@@ -1933,7 +1921,7 @@ bool Variable::isNumber() const
 
 bool Variable::isConverted() const
 {
-	return _converted && _reference->_type == Value::vitFloat &&	!_reference->_convertUnit.empty();
+	return _converted && _reference->_type == Value::vitFloat && !_reference->_convertUnit.empty();
 }
 
 bool Variable::isTemporary()
@@ -2066,8 +2054,7 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 		// Split the string in using a csv format.
 		strings sl;
 		sl.split(str, ',', '"');
-		auto getField = [sl](strings::size_type i) -> std::string
-		{
+		auto getField = [sl](strings::size_type i) -> std::string {
 			if (i < sl.size())
 			{
 				return sl[i];
@@ -2151,7 +2138,8 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 		def._valid = false;
 	}
 	// Notify when not valid notify.
-	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n" << str);
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n"
+												<< str);
 	//
 	return def;
 }
@@ -2167,7 +2155,7 @@ std::string Variable::getFieldName(int field)
 		case vfFlags:
 			return "Flags";
 		case vfUnit:
-			return "Unit";
+			return "unit";
 		case vfType:
 			return "Type";
 		case vfConversionType:
@@ -2194,4 +2182,4 @@ std::string Variable::getFieldName(int field)
 	}
 }
 
-}
+}// namespace sf

@@ -1,7 +1,7 @@
 #include "FileMapper.h"
 #include "../gen/Exception.h"
 #include "../gen/dbgutils.h"
-#include "../gen/gen_utils.h"
+#include "../win/win_utils.h"
 #include <cstring>
 #include <windows.h>
 

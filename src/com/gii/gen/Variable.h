@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VariableHandler.h"
+#include <misc/gen/pointer.h>
 
 namespace sf
 {
@@ -49,7 +50,7 @@ class _GII_CLASS Variable
 		 * The "id" from the definition string is the passed id offset added to form a final id.
 		 * This used when instances are created from resource strings for multiple instances of the same module.
 		 * @param definition Definition string.
-		 * @param id_ofs Offset for the 'id'.
+		 * @param id_ofs offset for the 'id'.
 		 */
 		explicit Variable(const std::string& definition, id_type id_ofs = 0);
 
@@ -57,7 +58,7 @@ class _GII_CLASS Variable
 		 * @brief Creates a variable using the passed definition structure.
 		 *
 		 * @param def Definition structure.
-		 * @param id_ofs Offset for the 'id'.
+		 * @param id_ofs offset for the 'id'.
 		 */
 		explicit inline Variable(const Definition& def, id_type id_ofs = 0);
 
@@ -72,7 +73,7 @@ class _GII_CLASS Variable
 		 * The passed identifier offset 'id_ofs' is added to the id in the string.
 		 * This used when instances are created from resource strings for multiple instances of the same module.
 		 * @param definition Comma separated definition string.
-		 * @param id_ofs Offset for the 'id'.
+		 * @param id_ofs offset for the 'id'.
 		 * @return True on success.
 		 */
 		inline bool setup(const std::string& definition, id_type id_ofs = 0);
@@ -80,7 +81,7 @@ class _GII_CLASS Variable
 		/**
 		 * @brief Creates a variable using the definition structure.
 		 * @param definition Definition structure.
-		 * @param id_ofs Offset for the 'id'.
+		 * @param id_ofs offset for the 'id'.
 		 * @return True on success.
 		 */
 		bool setup(const Definition& definition, Variable::id_type id_ofs = 0);
@@ -393,9 +394,9 @@ class _GII_CLASS Variable
 		 * Only with owners a call is successful and effective.
 		 * The formula is: <b><i>converted = (current * multiplier) + offset</i></b>
 		 * When successful event #veConverted emitted.
-		 * @param unit New Unit string.
+		 * @param unit New unit string.
 		 * @param multiplier Multiplier value.
-		 * @param offset Offset value.
+		 * @param offset offset value.
 		 * @param digits Significant digits for the new unit.
 		 * @return
 		 */
@@ -451,7 +452,7 @@ class _GII_CLASS Variable
 		/**
 		 * @brief Returns variable unit
 		 *
-		 * @return Unit string.
+		 * @return unit string.
 		 */
 		[[nodiscard]] std::string getUnit() const;
 
@@ -459,12 +460,11 @@ class _GII_CLASS Variable
 		 * @brief Returns variable unit of converted or non-converted value.
 		 *
 		 * @param converted True when getting the converted value.
-		 * @return Unit string.
+		 * @return unit string.
 		 */
 		[[nodiscard]] std::string getUnit(bool converted) const;
 
 		/**
-		 * @deprecated
 		 * @brief Returns the conversion option string.
 		 *
 		 * This string determines how the value is to be converted when exporting.

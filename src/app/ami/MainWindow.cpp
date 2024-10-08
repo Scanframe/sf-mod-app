@@ -1,22 +1,22 @@
-#include <QtWidgets>
-#include <QPlainTextEdit>
-#include <misc/qt/Resource.h>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/ModuleConfiguration.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include <ami/iface/AppModuleInterface.h>
-#include <misc/gen/gen_utils.h>
-#include <misc/qt/Globals.h>
 #include "ApplicationPropertyPage.h"
 #include "MainWindowPropertyPage.h"
+#include <QPlainTextEdit>
+#include <QtWidgets>
+#include <ami/iface/AppModuleInterface.h>
+#include <misc/gen/pointer.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/ModuleConfiguration.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/Resource.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 MainWindow::MainWindow(QSettings* settings, Application* application)
-	:_application(application)
-	 , _mdiArea(new QMdiArea)
-	 , _settings(settings)
+	: _application(application)
+	, _mdiArea(new QMdiArea)
+	, _settings(settings)
 {
 	// Set the object name for the getObjectNamePath() function so property sheet settings get a correct section assigned.
 	setObjectName("MainWindow");
@@ -25,10 +25,10 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	// Set the parent that can be used for floating windows created from script functions.
 	setGlobalParent(this);
 	//
-	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-	{
-		setWindowTitle(QApplication::applicationDisplayName());
-	});
+	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]()// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+					{
+						setWindowTitle(QApplication::applicationDisplayName());
+					});
 	//
 	_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
@@ -39,8 +39,7 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	setCentralWidget(_mdiArea);
 	connect(_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::mdiSubActivated);
 	//
-	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface*
-	{
+	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface* {
 		return openFile(filename);
 	};
 	//
@@ -370,8 +369,7 @@ void MainWindow::updateWindowMenu()
 		{
 			text = tr("%1 %2").arg(i + 1).arg(child->userFriendlyCurrentFile());
 		}
-		QAction* action = _menuWindow->addAction(text, mdiSubWindow, [this, mdiSubWindow]()
-		{
+		QAction* action = _menuWindow->addAction(text, mdiSubWindow, [this, mdiSubWindow]() {
 			_mdiArea->setActiveSubWindow(mdiSubWindow);
 		});
 		action->setCheckable(true);
@@ -539,8 +537,7 @@ void MainWindow::createActions()
 
 	auto developIcon = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Development), colorIcon);
 	_actionDevelop = new QAction(developIcon, tr("&Develop"), this);
-	connect(_actionDevelop, &QAction::triggered, [&](bool) -> void
-	{
+	connect(_actionDevelop, &QAction::triggered, [&](bool) -> void {
 		if (auto mdi = activeMdiChild())
 		{
 			mdi->develop();
@@ -653,8 +650,7 @@ void MainWindow::settingsReadWrite(bool save)
 	else
 	{
 		QApplication::setApplicationDisplayName(_settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
-		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(_settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView,
-			QMdiArea::ViewMode::TabbedView));
+		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(_settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView, QMdiArea::ViewMode::TabbedView));
 	}
 	_settings->endGroup();
 }
@@ -673,8 +669,7 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 		// When the file does not exist.
 		if (!fi.exists())
 		{
-			QMessageBox::information(this, tr("File does not exist!"),
-				tr("Missing: '%1'").arg(fi.filePath()));
+			QMessageBox::information(this, tr("File does not exist!"), tr("Missing: '%1'").arg(fi.filePath()));
 			return nullptr;
 		}
 		// Get the instance that can handle it.
@@ -694,10 +689,7 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 			// Restore the state of the child after it got its actual parent.
 			child->stateSaveRestore(false);
 			//
-			sw->setWindowIcon(Resource::getSvgIcon(entry->getSvgIconResource(),
-				QApplication::palette().color(
-					_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ?
-						QPalette::ColorRole::ButtonText : QPalette::ColorRole::WindowText)));
+			sw->setWindowIcon(Resource::getSvgIcon(entry->getSvgIconResource(), QApplication::palette().color(_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ? QPalette::ColorRole::ButtonText : QPalette::ColorRole::WindowText)));
 			// Connect the MDI actions to the
 			connect(&child->mdiSignals, &MultiDocInterfaceSignals::modificationChanged, _actionSave, &QAction::setEnabled);
 			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _actionCut, &QAction::setEnabled);
@@ -780,4 +772,4 @@ void MainWindow::createDockWindows()
 	}
 }
 
-}
+}// namespace sf

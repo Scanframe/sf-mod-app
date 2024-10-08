@@ -1,12 +1,11 @@
 #pragma once
 
-#include "global.h"
 #include "ColorTable.h"
 #include "Persistent.h"
+#include "global.h"
 #include <misc/gen/TClassRegistration.h>
 #include <misc/gen/TClosure.h>
 #include <misc/gen/Value.h>
-#include <misc/gen/gen_utils.h>
 #include <utility>
 
 namespace sf
@@ -18,23 +17,24 @@ class PropertySheetDialog;
 /**
  * @brief Base class for the interface.
  */
-class _PAL_CLASS PaletteInterface :public QObject, public Persistent
+class _PAL_CLASS PaletteInterface : public QObject
+	, public Persistent
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		struct Parameters
 		{
-			typedef TClosure<void> Callback;
+				typedef TClosure<void> Callback;
 
-			explicit Parameters(const Callback& callback, QObject* parent = nullptr)
-				:_parent(parent)
-				 , _callback(callback)
-			{
-			}
+				explicit Parameters(const Callback& callback, QObject* parent = nullptr)
+					: _parent(parent)
+					, _callback(callback)
+				{
+				}
 
-			QObject* _parent{};
-			Callback _callback;
+				QObject* _parent{};
+				Callback _callback;
 		};
 
 		/**
@@ -82,7 +82,7 @@ class _PAL_CLASS PaletteInterface :public QObject, public Persistent
 		qsizetype _colorsSize{256};
 
 		// Declarations of static functions and data members to be able to create registered implementations.
-	SF_DECL_IFACE(PaletteInterface, PaletteInterface::Parameters, Interface)
+		SF_DECL_IFACE(PaletteInterface, PaletteInterface::Parameters, Interface)
 };
 
-}
+}// namespace sf

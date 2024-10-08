@@ -1,8 +1,8 @@
-#include <test/catch.h>
 #include "../BufferChopper.h"
-#include "misc/gen/dbgutils.h"
-#include "ami/service/BufferStitcher.h"
-#include "misc/gen/ElapseTimer.h"
+#include <ami/service/BufferStitcher.h>
+#include <misc/gen/ElapseTimer.h>
+#include <misc/gen/dbgutils.h>
+#include <test/catch.h>
 
 TEST_CASE("AmiModService", "[buffer]")
 {
@@ -37,8 +37,7 @@ TEST_CASE("AmiModService", "[buffer]")
 				{
 					CHECK(ch[i] == i);
 				}
-			}
-			while (bc.moveNext());
+			} while (bc.moveNext());
 		}
 		CHECK(bc.getChunkData() == nullptr);
 		CHECK(bc.getChunkSize() == 0);
@@ -76,8 +75,7 @@ TEST_CASE("AmiModService", "[buffer]")
 				sz = std::min(bs.getWriteSize(), sv.length());
 				memcpy(bs.getWritePointer(), sv.data(), sz);
 				pos += sz;
-			}
-			while (!bs.movePosition(sz));
+			} while (!bs.movePosition(sz));
 		}
 		// Check the remainder is correct.
 		CHECK(sz == len % sv.length());
@@ -86,5 +84,4 @@ TEST_CASE("AmiModService", "[buffer]")
 		//
 		CHECK(buffer == "ABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABXXX");
 	}
-
 }

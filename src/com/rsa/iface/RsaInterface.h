@@ -1,13 +1,11 @@
 #pragma once
 
-#include <utility>
-
-#include <misc/gen/gen_utils.h>
-#include <misc/gen/Value.h>
-#include <misc/gen/TVector.h>
-#include <misc/gen/TClassRegistration.h>
 #include "RsaTypes.h"
 #include "global.h"
+#include <misc/gen/TClassRegistration.h>
+#include <misc/gen/TVector.h>
+#include <misc/gen/Value.h>
+#include <utility>
 
 namespace sf
 {
@@ -18,15 +16,16 @@ class PropertySheetDialog;
 /**
  * @brief Base class for the repetitive signal acquisition interface.
  */
-class _RSA_CLASS RsaInterface :public RsaTypes
+class _RSA_CLASS RsaInterface : public RsaTypes
 {
 	public:
-
 		struct Parameters
 		{
-			explicit Parameters(int mode) :_mode(mode) {}
+				explicit Parameters(int mode)
+					: _mode(mode)
+				{}
 
-			int _mode;
+				int _mode;
 		};
 
 		/**
@@ -46,10 +45,10 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		bool initialize();
 
 		/**
-		 * @brief Uninitializes the implementation. Calls DoInitialize.
+		 * @brief Un-initializes the implementation. Calls DoInitialize.
 		 * @return True on success.
 		 */
-		bool uinitialize();
+		bool uninitialize();
 
 		/**
 		 * Gets the type of acquisition.
@@ -191,7 +190,7 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @return True on success.
 		 */
 		[[nodiscard]] virtual IdType
-		getParamId(EDefaultParam param, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
+		getParamId(EDefaultParam param, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0;// NOLINT(google-default-arguments)
 
 		/**
 		 * @brief Gets all interface parameters ids.
@@ -220,7 +219,7 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @return True on success.
 		 */
 		[[nodiscard]] virtual IdType
-		getResultId(EDefaultResult result, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0; // NOLINT(google-default-arguments)
+		getResultId(EDefaultResult result, unsigned gate = UINT_MAX, unsigned channel = UINT_MAX) const = 0;// NOLINT(google-default-arguments)
 
 		/**
 		 * @brief Gets interface results ids.
@@ -250,7 +249,7 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @brief For testing initialization by the implementation.
 		 * @return True on success.
 		 */
-		[[nodiscard]] bool isInitialized() const {return _initialized;}
+		[[nodiscard]] bool isInitialized() const { return _initialized; }
 
 		/**
 		 * @brief Returns the path of the static configuration of the driver.
@@ -272,17 +271,17 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		 * @param init True when initializing.
 		 * @return True on success.
 		 */
-		virtual bool doInitialize(bool init) {return true;}
+		virtual bool doInitialize(bool init) { return true; }
 
 		/**
-		 * @brief Calls the hooked function if it exist.
+		 * @brief Calls the hooked function when it exists.
 		 *
 		 * @param id Parameter identifier.
 		 */
 		void callParamHook(IdType id);
 
 		/**
-		 * @brief Calls the hooked function if it exist.
+		 * @brief Calls the hooked function when it exists.
 		 *
 		 * @param id Result identifier.
 		 */
@@ -312,8 +311,7 @@ class _RSA_CLASS RsaInterface :public RsaTypes
 		EAcquisitionType _acquisitionType;
 
 		// Declarations of static functions and data members to be able to create registered RSA implementations.
-	SF_DECL_IFACE(RsaInterface, RsaInterface::Parameters, Interface)
-
+		SF_DECL_IFACE(RsaInterface, RsaInterface::Parameters, Interface)
 };
 
-}
+}// namespace sf

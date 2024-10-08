@@ -72,9 +72,9 @@ Classes/Interfaces for exchanging information between application modules (dynam
 * `::sf::ScriptEngine`
 * `::sf::calculator()`
 
-### Unit Conversion
+### unit Conversion
 
-Unit conversion related functions and classes.
+unit conversion related functions and classes.
 
 * `::sf::getUnitConversion()`
 * `::sf::setUnitConversionHandler()`
@@ -85,7 +85,7 @@ Unit conversion related functions and classes.
 ## Examples
 
 * [Variable Handler](sf-gii-Variable.html)
-* [Unit Conversion](sf-gii-UnitConversionServer.html)
+* [unit Conversion](sf-gii-UnitConversionServer.html)
 
 ## Designs
 

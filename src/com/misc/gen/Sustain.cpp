@@ -1,5 +1,6 @@
 #include "Sustain.h"
-#include "gen_utils.h"
+#include "dbgutils.h"
+#include "pointer.h"
 #include "target.h"
 #if IS_QT
 	#include <QTimer>

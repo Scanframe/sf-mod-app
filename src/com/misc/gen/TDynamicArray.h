@@ -8,7 +8,7 @@ namespace sf
 /**
  * @brief A dynamic buffer as typed array.
  *
- * Has range check on any index.
+ * has range check on any index.
  *
  * @see ::sf::TDynamicBuffer
  */

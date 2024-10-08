@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/string.h>
 #include <misc/lnx/File.h>
 #include <test/catch.h>
 

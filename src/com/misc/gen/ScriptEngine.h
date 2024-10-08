@@ -2,6 +2,7 @@
 
 #include "../global.h"
 #include "ScriptObject.h"
+#include "TStrings.h"
 
 namespace sf
 {
@@ -260,7 +261,7 @@ class _MISC_CLASS ScriptEngine : public ScriptObject
 };
 
 /**
- * @brief Calculator function that converts a formula in the passed string to a #::sf::Value.
+ * @brief Calculator function that converts a formula of the passed string to a #::sf::Value.
  * @param script Script text to calculate.
  * @param def Default value.
  * @return Result or default value depending on success or not.
@@ -268,7 +269,7 @@ class _MISC_CLASS ScriptEngine : public ScriptObject
 _MISC_FUNC Value calculator(const std::string& script, const Value& def);
 
 /**
- * @brief Calculator function that converts a formula in the passed string to a floating point value.
+ * @brief Calculator function that converts a formula of the passed string to a floating point value.
  * @param script Script text to calculate.
  * @param def Default value.
  * @return Result or default value depending on success or not.

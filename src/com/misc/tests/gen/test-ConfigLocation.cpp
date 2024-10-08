@@ -1,6 +1,5 @@
-#include <iostream>
 #include <misc/gen/ConfigLocation.h>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/file.h>
 #include <test/catch.h>
 
 namespace sf

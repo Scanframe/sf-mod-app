@@ -1,6 +1,6 @@
 #include <iostream>
 #include <misc/gen/IniProfile.h>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/file.h>
 #include <test/catch.h>
 
 TEST_CASE("sf::IniProfile", "[con][generic][ini]")
@@ -9,8 +9,9 @@ TEST_CASE("sf::IniProfile", "[con][generic][ini]")
 
 	SECTION("sf::Create")
 	{
+
 		// Use test file in the working directory.
-		auto ini_path = sf::getWorkingDirectory() + sf::getDirectorySeparator() + "default.ini";
+		auto ini_path = sf::getTemporaryDirectory() + sf::getDirectorySeparator() + "default.ini";
 		// Keys and values to compare.
 		std::string key1("StringKey1");
 		std::string value1("This is micro [\U000000B5] and this is squared [\U000000B2]");

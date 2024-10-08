@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../gen/gen_utils.h"
+#include "../gen/system.h"
 #include "../global.h"
 #include <cstddef>
 #if IS_WIN

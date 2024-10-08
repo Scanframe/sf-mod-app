@@ -1,5 +1,7 @@
 #include "lnx_utils.h"
-#include "../gen/Exception.h"
+#include "gen/Exception.h"
+#include "gen/dbgutils.h"
+#include "gen/file.h"
 #include <csignal>
 #include <fcntl.h>
 #include <sys/fsuid.h>
@@ -250,7 +252,7 @@ void passwd_t::reset()
 	memset(this, 0, sizeof(passwd_type));// NOLINT(bugprone-undefined-memory-manipulation)
 }
 
-bool proc_getpwnam(std::string name, passwd_t& pwd)// NOLINT(performance-unnecessary-value-param)
+bool proc_getpwnam(std::string name, passwd_t& pwd)
 {
 	passwd_type* _pwd;
 	//

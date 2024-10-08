@@ -26,7 +26,7 @@ class Variable;
  * Multiple inheritance makes these types local for other classes as well.
  * Making code more readable and also prevents name space problems.
  */
-class VariableTypes :public InformationTypes
+class VariableTypes : public InformationTypes
 {
 	public:
 		/**
@@ -49,74 +49,77 @@ class VariableTypes :public InformationTypes
 		 */
 		struct State
 		{
-			/**
+				/**
 			 * @brief Default constructor.
 			 */
-			State()
-				:_name(Value::_invalidStr) {}
+				State()
+					: _name(Value::_invalidStr)
+				{}
 
-			/**
+				/**
 			 * @brief Initialization constructor.
 			 */
-			State(std::string name, const Value& value)
-				:_name(std::move(name)), _value(value) {}
+				State(std::string name, const Value& value)
+					: _name(std::move(name))
+					, _value(value)
+				{}
 
-			/**
+				/**
 			 * @brief Copy constructor.
 			 */
-			State(const State& s)
-			{
-				assign(s);
-			}
+				State(const State& s)
+				{
+					assign(s);
+				}
 
-			/**
+				/**
 			 * @brief Name of the contained value.
 			 */
-			std::string _name;
-			/**
+				std::string _name;
+				/**
 			 * @brief Value which belongs to the name.
 			 */
-			Value _value;
+				Value _value;
 
-			/**
+				/**
 			 * @brief Assignment function for save copying of the structure.
 			 */
-			State& assign(const State& s)
-			{
-				_name = s._name;
-				_value = s._value;
-				return *this;
-			}
+				State& assign(const State& s)
+				{
+					_name = s._name;
+					_value = s._value;
+					return *this;
+				}
 
-			/**
+				/**
 			 * @brief Assignment operator for save copying of the structure.
 			 */
-			State& operator=(const State& s)
-			{
-				assign(s);
-				return *this;
-			}
+				State& operator=(const State& s)
+				{
+					assign(s);
+					return *this;
+				}
 
-			/**
+				/**
 			 * @brief Compare equal operator.
 			 */
-			bool operator==(const State& s) const
-			{
-				return (_name == s._name) && (_value == s._value);
-			}
+				bool operator==(const State& s) const
+				{
+					return (_name == s._name) && (_value == s._value);
+				}
 
-			/**
+				/**
 			 * @brief Compare unequal operator.
 			 */
-			bool operator!=(const State& s) const
-			{
-				return (_name != s._name) || (_value != s._value);
-			}
+				bool operator!=(const State& s) const
+				{
+					return (_name != s._name) || (_value != s._value);
+				}
 
-			/**
+				/**
 			 * @brief Vector class to be able to create a state list.
 			 */
-			typedef TVector<State> Vector;
+				typedef TVector<State> Vector;
 		};
 
 		/**
@@ -126,7 +129,7 @@ class VariableTypes :public InformationTypes
 		 * that called the #sf::Variable::setHandler method and the param parameter
 		 * isn't also the one passed to function #sf::Variable::setHandler either.
 		 */
-		enum EEvent :int
+		enum EEvent : int
 		{
 			/** Special event passed to the global conversion handler.*/
 			veConvert = 64000,
@@ -171,7 +174,7 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration of the order of fields in the setup string.
 		 */
-		enum EField :int
+		enum EField : int
 		{
 			/** Integer identifier */
 			vfId = 0,
@@ -201,7 +204,7 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration type for specifying flags.
 		 */
-		enum EFlag :flags_type
+		enum EFlag : flags_type
 		{
 			/**
 			 * Represented by character <b>'R'</b>.<br>Only the owner can change Set it.
@@ -249,7 +252,7 @@ class VariableTypes :public InformationTypes
 		/**
 		 * Enumeration of string types used for filtering.
 		 */
-		enum EStringType :int
+		enum EStringType : int
 		{
 			/** When the instance is not of type string.*/
 			stNoString = -1,
@@ -271,61 +274,61 @@ class VariableTypes :public InformationTypes
 		 */
 		struct Definition
 		{
-			/**
+				/**
 			 * @brief Flag indicating this structure is valid.
 			 */
-			bool _valid{false};
-			/**
+				bool _valid{false};
+				/**
 			 * @brief Id of the new global instance.
 			 */
-			id_type _id{0};
-			/**
+				id_type _id{0};
+				/**
 			 * @brief Name path separated using '|' characters.
 			 */
-			std::string _name;
-			/**
+				std::string _name;
+				/**
 			 * @brief Combination of EFlag flags.
 			 */
-			flags_type _flags{0};
-			/**
+				flags_type _flags{0};
+				/**
 			 * @brief Description of the instance without comma's.
 			 */
-			std::string _description;
-			/**
-			 * @brief Unit preferably in SI units so conversion and calculations are simple.<br>
+				std::string _description;
+				/**
+			 * @brief unit preferably in SI units so conversion and calculations are simple.<br>
 			 * Also used to Set the string filter type.
 			 */
-			std::string _unit;
-			/**
+				std::string _unit;
+				/**
 			 * @brief Additional option used during conversion. (not used yet)
 			 */
-			std::string _convertOption;
-			/**
+				std::string _convertOption;
+				/**
 			 * @brief Internal type of the instance.
 			 */
-			Value::EType _type;
-			/**
+				Value::EType _type;
+				/**
 			 * @brief Rounding value. The value is a multiple of this value.
 			 */
-			Value _roundValue;
-			/**
+				Value _roundValue;
+				/**
 			 * @brief This is the value this instance starts with.
 			 */
-			Value _defaultValue;
-			/**
+				Value _defaultValue;
+				/**
 			 * @brief Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
 			 */
-			Value _minValue;
-			/**
+				Value _minValue;
+				/**
 			 * @brief Maximum limit of this instance.<br>
 			 * When the min and max limits are zero no limits are applied.
 			 */
-			Value _maxValue;
-			/**
+				Value _maxValue;
+				/**
 			 * @brief A vector of VariableTypes::State` instances.
 			 */
-			State::Vector _states;
+				State::Vector _states;
 		};
 };
 
-}
+}// namespace sf

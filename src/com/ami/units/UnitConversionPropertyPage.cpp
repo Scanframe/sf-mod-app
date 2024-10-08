@@ -1,17 +1,18 @@
-#include <misc/qt/Resource.h>
-#include <gii/gen/UnitConversionServerEx.h>
-#include <misc/qt/qt_utils.h>
 #include "UnitConversionPropertyPage.h"
 #include "ConversionListModel.h"
 #include "FollowersListModel.h"
 #include "ui_UnitConversionPropertyPage.h"
+#include <gii/gen/UnitConversionServerEx.h>
+#include <misc/qt/Resource.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& ucm, QWidget* parent)
-	:PropertyPage(parent), ui(new Ui::UnitConversionPropertyPage)
-	 , _ucm(ucm)
+	: PropertyPage(parent)
+	, ui(new Ui::UnitConversionPropertyPage)
+	, _ucm(ucm)
 {
 	ui->setupUi(this);
 	//
@@ -20,16 +21,15 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 		ui->cbSystem->addItem(QString::fromStdString(UnitConversionServerEx::getUnitSystemName(us)), us);
 	}
 	// Create the actions for the buttons.
-	for (auto& t: std::vector<std::tuple<QAbstractItemView*, QToolButton*, QAction*&, Resource::Icon, QString, QString>>
-		{
-			{ui->tvConversions, ui->tbEditConversion, _actionEditConversion, Resource::Edit, tr("Edit"), tr("Edit the selected conversion entry.")},
-			{ui->tvConversions, ui->tbAddConversion, _actionAddConversion, Resource::Add, tr("Add"), tr("Add a conversion entry.")},
-			{ui->tvConversions, ui->tbRemoveConversion, _actionRemoveConversion, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
+	for (auto& t: std::vector<std::tuple<QAbstractItemView*, QToolButton*, QAction*&, Resource::Icon, QString, QString>>{
+				 {ui->tvConversions, ui->tbEditConversion, _actionEditConversion, Resource::Edit, tr("Edit"), tr("Edit the selected conversion entry.")},
+				 {ui->tvConversions, ui->tbAddConversion, _actionAddConversion, Resource::Add, tr("Add"), tr("Add a conversion entry.")},
+				 {ui->tvConversions, ui->tbRemoveConversion, _actionRemoveConversion, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
 
-			{ui->tvFollowers, ui->tbEditFollower, _actionEditFollower, Resource::Edit, tr("Edit"), tr("Edit the selected entry.")},
-			{ui->tvFollowers, ui->tbAddFollower, _actionAddFollower, Resource::Add, tr("Add"), tr("Add a master or follower entry.")},
-			{ui->tvFollowers, ui->tbRemoveFollower, _actionRemoveFollower, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
-		})
+				 {ui->tvFollowers, ui->tbEditFollower, _actionEditFollower, Resource::Edit, tr("Edit"), tr("Edit the selected entry.")},
+				 {ui->tvFollowers, ui->tbAddFollower, _actionAddFollower, Resource::Add, tr("Add"), tr("Add a master or follower entry.")},
+				 {ui->tvFollowers, ui->tbRemoveFollower, _actionRemoveFollower, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
+			 })
 	{
 		std::get<2>(t) = new QAction(
 			Resource::getSvgIcon(Resource::getSvgIconResource(std::get<3>(t)), QPalette::ButtonText),
@@ -42,8 +42,7 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 		std::get<0>(t)->addAction(std::get<2>(t));
 	}
 	// Function to get the selected item in an item view widget.
-	auto getIndex = [&](QAbstractItemView* tv) -> QModelIndex
-	{
+	auto getIndex = [&](QAbstractItemView* tv) -> QModelIndex {
 		auto list = tv->selectionModel()->selectedIndexes();
 		return list.isEmpty() ? QModelIndex() : list.first();
 	};
@@ -57,23 +56,21 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 	resizeColumnsToContents(ui->tvConversions);
 	resizeColumnsToContents(ui->tvFollowers);
 	//
-	connect(ui->tvConversions, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index)
-	{
+	connect(ui->tvConversions, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) {
 		_lmConversions->edit(index);
 	});
 	//
-	connect(ui->tvFollowers, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index)
-	{
+	connect(ui->tvFollowers, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) {
 		_lmFollowers->edit(index);
 	});
 	//
-	connect(_actionEditConversion, &QAction::triggered, [&](){_lmConversions->edit(getIndex(ui->tvConversions));});
-	connect(_actionAddConversion, &QAction::triggered, [&](){_lmConversions->add();});
-	connect(_actionRemoveConversion, &QAction::triggered, [&](){_lmConversions->remove(getIndex(ui->tvConversions));});
+	connect(_actionEditConversion, &QAction::triggered, [&]() { _lmConversions->edit(getIndex(ui->tvConversions)); });
+	connect(_actionAddConversion, &QAction::triggered, [&]() { _lmConversions->add(); });
+	connect(_actionRemoveConversion, &QAction::triggered, [&]() { _lmConversions->remove(getIndex(ui->tvConversions)); });
 	//
-	connect(_actionEditFollower, &QAction::triggered, [&](){_lmFollowers->edit(getIndex(ui->tvFollowers));});
-	connect(_actionAddFollower, &QAction::triggered, [&](){_lmFollowers->add();});
-	connect(_actionRemoveFollower, &QAction::triggered, [&](){_lmFollowers->remove(getIndex(ui->tvFollowers));});
+	connect(_actionEditFollower, &QAction::triggered, [&]() { _lmFollowers->edit(getIndex(ui->tvFollowers)); });
+	connect(_actionAddFollower, &QAction::triggered, [&]() { _lmFollowers->add(); });
+	connect(_actionRemoveFollower, &QAction::triggered, [&]() { _lmFollowers->remove(getIndex(ui->tvFollowers)); });
 }
 
 UnitConversionPropertyPage::~UnitConversionPropertyPage()
@@ -83,7 +80,7 @@ UnitConversionPropertyPage::~UnitConversionPropertyPage()
 
 QString UnitConversionPropertyPage::getPageName() const
 {
-	return tr("Unit Conversion");
+	return tr("unit Conversion");
 }
 
 QString UnitConversionPropertyPage::getPageDescription() const
@@ -114,7 +111,6 @@ void UnitConversionPropertyPage::applyPage()
 	_ucm._ucs.setEnableId(ui->iieEnableId->getId());
 	// This must be done last so the system can use its new settings.
 	_ucm._ucs.setUnitSystem(static_cast<UnitConversionServerEx::EUnitSystem>(ui->cbSystem->currentIndex()));
-
 }
 
 bool UnitConversionPropertyPage::isPageModified() const
@@ -151,4 +147,4 @@ void UnitConversionPropertyPage::stateSaveRestore(QSettings& settings, bool save
 	}
 }
 
-}
+}// namespace sf

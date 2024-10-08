@@ -10,104 +10,102 @@ template<typename T = int, typename S = int>
 struct TSet
 {
 		/**
-	 * Default constructor.
-	 */
+		 * Default constructor.
+		 */
 		TSet()
-			: Bits(0)
+			: _bits(0)
 		{}
 
 		/**
-	 * @brief initialize constructor.
-	 */
+		 * @brief Initialize constructor.
+		 */
 		explicit TSet(S bits)
-			: Bits(bits)
+			: _bits(bits)
 		{}
 
 		/**
-	 * @brief Copy constructor.
-	 */
+		 * @brief Copy constructor.
+		 */
 		TSet(const TSet& set)
-			: Bits(set.Bits)
+			: _bits(set._bits)
 		{}
 
 		/**
-	 * @brief Assign operator.
-	 */
+		 * @brief assign operator.
+		 */
 		TSet& operator=(const TSet& set)
 		{
-			Bits = set.Bits;
+			_bits = set._bits;
 			return *this;
 		}
 
 		/**
-	 * @brief Returns true when the bit was Set.
-	 */
-		bool Has(T bit) const
+		 * @brief Returns true when the bit was Set.
+		 */
+		bool has(T bit) const
 		{
-			return (Bits & (1ull << bit)) > 0;
+			return (_bits & (1ull << bit)) > 0;
 		}
 
 		/**
-	 * @brief Sets bits in the mask.
-	 */
-		TSet& Set(T bit)
+		 * @brief Sets bits in the mask.
+		 */
+		TSet& set(T bit)
 		{
-			Bits |= (1ull << bit);
+			_bits |= (1ull << bit);
 			return *this;
 		}
 
 		/**
-	 * @brief Unsets bits in the mask.
-	 */
-		TSet& Unset(T bit)
+		 * @brief Unsets bits in the mask.
+		 */
+		TSet& unset(T bit)
 		{
-			Bits &= ~(1ull << bit);
+			_bits &= ~(1ull << bit);
 			return *this;
 		}
 
 		/**
-	 * @brief Toggles a bit in the mask.
-	 */
-		TSet& Toggle(T bit) { return Has(bit) ? Unset(bit) : Set(bit); }
+		 * @brief Toggles a bit in the mask.
+		 */
+		TSet& toggle(T bit) { return has(bit) ? Unset(bit) : Set(bit); }
 
 		/**
-	 * @brief Compare equal operator.
-	 */
-		bool operator==(const TSet& set) const { return Bits == set.Bits; }
+		 * @brief Compare equal operator.
+		 */
+		bool operator==(const TSet& set) const { return _bits == set._bits; }
 
 		/**
-	 * @brief Compare unequal operator.
-	 */
-		bool operator!=(const TSet& set) const { return Bits != set.Bits; }
+		 * @brief Compare unequal operator.
+		 */
+		bool operator!=(const TSet& set) const { return _bits != set._bits; }
 
 		/**
-	 * @brief Operators and functions that are also available in the VCL 'Set' template.
-	 * @return True when bit is in the bit mask.
-	 */
-		bool Contains(T bit) const { return Has(bit); }
+		 * @brief Operators and functions that are also available in the VCL 'Set' template.
+		 * @return True when bit is in the bit mask.
+		 */
+		bool contains(T bit) const { return has(bit); }
 
 		/**
-	 * @brief Operator for adding bits to the mask.
-	 */
+		 * @brief Operator for adding bits to the mask.
+		 */
 		TSet& operator<<(T bit)
 		{
-			Set(bit);
-			return *this;
+			return set(bit);
 		}
 
 		/**
-	 * @brief Operator for removing bits from the mask.
-	 */
+		 * @brief Operator for removing bits from the mask.
+		 */
 		TSet& operator>>(T bit)
 		{
-			Unset(bit);
-			return *this;
+			return unset(bit);
 		}
 
 		/**
-	 * @brief Holds the actual bits.
-	 */
-		S Bits;
+		 * @brief Holds the actual bits.
+		 */
+		S _bits;
 };
 
 }// namespace sf

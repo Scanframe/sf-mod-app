@@ -1,5 +1,6 @@
 #include "win_utils.h"
 #include <cstring>
+#include <stdexcept>
 #include <tlhelp32.h>
 
 namespace sf

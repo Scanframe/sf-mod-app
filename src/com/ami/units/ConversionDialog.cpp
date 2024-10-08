@@ -1,16 +1,17 @@
-#include <gii/gen/UnitConversion.h>
-#include <misc/qt/Resource.h>
-#include <QPushButton>
-#include <QTimer>
 #include "ConversionDialog.h"
 #include "ui_ConversionDialog.h"
+#include <QPushButton>
+#include <QTimer>
+#include <gii/gen/UnitConversion.h>
+#include <misc/gen/string.h>
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
 
 ConversionDialog::ConversionDialog(QWidget* parent)
-:QDialog(parent)
-, ui(new Ui::ConversionDialog)
+	: QDialog(parent)
+	, ui(new Ui::ConversionDialog)
 {
 	ui->setupUi(this);
 	//
@@ -47,10 +48,9 @@ bool ConversionDialog::checkContent()
 
 	if (ui->leFromUnit->text().isEmpty() || ui->leToUnit->text().isEmpty())
 	{
-		ui->lblMessage->setText("Unit cannot be empty!");
+		ui->lblMessage->setText("unit cannot be empty!");
 		ui->lblMessage->setVisible(true);
-		QTimer::singleShot(5000, [&]()
-		{
+		QTimer::singleShot(5000, [&]() {
 			ui->lblMessage->setVisible(false);
 		});
 		return false;
@@ -98,4 +98,4 @@ bool ConversionDialog::execute(UnitConversionEvent& ev, bool restricted)
 	return false;
 }
 
-}
+}// namespace sf

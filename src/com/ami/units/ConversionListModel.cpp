@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMetaEnum>
+#include <misc/gen/string.h>
 
 namespace sf
 {
@@ -98,21 +99,21 @@ void ConversionListModel::update()
 						entry._from_unit = QString::fromStdString(sl[idx]);
 						break;
 					case 1:
-						entry._from_precision = std::stoi(sl[idx]);
+						entry._from_precision = toNumberDefault(sl[idx], entry._from_precision);
 						break;
 					case 2:
 						entry._to_unit = QString::fromStdString(sl[idx]);
 						break;
 					case 3:
-						// Use local 'C' when calling sf::stod().
-						entry._multiplier = stod(sl[idx].c_str());
+						// Use local 'C' when converting the string.
+						entry._multiplier = toNumberDefault(sl[idx], entry._multiplier);
 						break;
 					case 4:
-						// Use local 'C' when calling sf::stod().
-						entry._offset = stod(sl[idx].c_str());
+						// Use local 'C' when converting the string.
+						entry._offset = toNumberDefault(sl[idx], entry._offset);
 						break;
 					case 5:
-						entry._to_precision = std::stoi(sl[idx]);
+						entry._to_precision = toNumberDefault(sl[idx], entry._to_precision);
 						break;
 				}
 			}
@@ -164,17 +165,17 @@ QVariant ConversionListModel::headerData(int section, Qt::Orientation orientatio
 		switch (section)
 		{
 			case cFromUnit:
-				return QString(tr("Unit"));
+				return QString(tr("unit"));
 			case cFromPrecision:
 				return QString(tr("Precision"));
 			case cToUnit:
-				return QString(tr("To Unit"));
+				return QString(tr("To unit"));
 			case cToPrecision:
 				return QString(tr("To Precision"));
 			case cMultiplier:
 				return QString(tr("Multiplier"));
 			case cOffset:
-				return QString(tr("Offset"));
+				return QString(tr("offset"));
 			default:
 				return QString("Field %1").arg(section);
 		}
@@ -262,7 +263,7 @@ bool ConversionListModel::edit(QModelIndex index)
 		}
 		if (flag)//(edit ? (it != std::next(_list.begin(), index.row())) : (it != _list.end()))
 		{
-			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("Unit Conversion"), tr("Unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
+			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("unit Conversion"), tr("unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
 			continue;
 		}
 		// Set the dirty flag before an event is going to be sent from the list modification.

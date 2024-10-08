@@ -32,12 +32,6 @@ class TStrings : public TVector<T>
 		 * @brief Iteration const type of the template.
 		 */
 		typedef const iter_type const_iter_type;
-
-		/**
-		 * @brief Value returned by various member functions when they fail.
-		 */
-		static constexpr size_t npos = base_type::npos;
-
 		/**
 		 * @brief Default constructor.
 		 */
@@ -186,5 +180,14 @@ class TStrings : public TVector<T>
 			return *this;
 		}
 };
+
+/**
+ * @brief Vector of std::strings with additional functionality.
+ */
+typedef TStrings<std::string, std::string::value_type> strings;
+/**
+ * @brief Vector of std::wstrings with additional functionality.
+ */
+typedef TStrings<std::wstring, std::wstring::value_type> wstrings;
 
 }// namespace sf

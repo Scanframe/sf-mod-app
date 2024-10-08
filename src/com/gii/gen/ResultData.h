@@ -4,7 +4,8 @@
 #include "ResultDataHandler.h"
 #include "ResultDataReference.h"
 #include "ResultDataTypes.h"
-#include "misc/gen/RangeManager.h"
+#include <misc/gen/RangeManager.h>
+#include <misc/gen/pointer.h>
 
 namespace sf
 {
@@ -53,7 +54,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Constructor for creating a completely new reference.
 		 *
 		 * @param definition Comma separated string with fields according the #EField enumerate.
-		 * @param id_ofs Offset added to the id passed in the string.
+		 * @param id_ofs offset added to the id passed in the string.
 		 */
 		explicit inline ResultData(const std::string& definition, ResultData::id_type id_ofs = 0);
 
@@ -61,7 +62,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Creates a new result using the passed definition structure.
 		 *
 		 * @param definition Definition structure.
-		 * @param id_ofs Offset given to the id.
+		 * @param id_ofs offset given to the id.
 		 */
 		explicit inline ResultData(const Definition& definition, ResultData::id_type id_ofs = 0);
 
@@ -74,7 +75,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Creates a new reference from a setup string for this instance.
 		 *
 		 * @param definition Comma separated string with fields according the #EField enumerate.
-		 * @param id_ofs Offset for the id in the definition string.
+		 * @param id_ofs offset for the id in the definition string.
 		 * @return True when successful.
 		 */
 		inline bool setup(const std::string& definition, id_type id_ofs = 0);
@@ -83,7 +84,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Creates a new TResultDataReference from a structure for this instance.
 		 *
 		 * @param definition Definition structure.
-		 * @param id_ofs Offset given to the definition id.
+		 * @param id_ofs offset given to the definition id.
 		 * @return True when successful.
 		 */
 		bool setup(const Definition& definition, id_type id_ofs);
@@ -196,7 +197,7 @@ class _GII_CLASS ResultData : public InformationBase
 		/**
 		 * @brief Returns the correction offset for each value to get the real value.
 		 *
-		 * @return Offset of the value.
+		 * @return offset of the value.
 		 */
 		[[nodiscard]] data_type getValueOffset() const;
 
@@ -386,7 +387,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Reads blocks from the storage using an offset.
 		 *
 		 * This function also calls #isRangeValid() to check the validity of the data.
-		 * @param ofs Offset in blocks as start to read.
+		 * @param ofs offset in blocks as start to read.
 		 * @param sz Size in blocks to read.
 		 * @param dest Destination to write the data to.
 		 * @param force When true the function won't check the validity of the range but only the block count.
@@ -410,7 +411,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * @brief Reads a range when this instance holds indices.
 		 *
 		 * An index instance groups blocks together for processing/imaging purposes.
-		 * @param ofs Offset in the storage container to read the index range.
+		 * @param ofs offset in the storage container to read the index range.
 		 * @param range Resulting range that was read.
 		 * @return True on success false on failure and not valid.
 		 */
@@ -428,7 +429,7 @@ class _GII_CLASS ResultData : public InformationBase
 		/**
 		 * @brief Checks if the passed block range depicted by offset and size is valid to access/read.
 		 *
-		 * @param ofs Offset in blocks.
+		 * @param ofs offset in blocks.
 		 * @param sz Size in blocks.
 		 * @return True when the passed range is valid to read.
 		 */
@@ -546,7 +547,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 *
 		 * This method is useful when file mapped storage is written when locking it in memory
 		 * when not using method #blockWrite() which implies this.
-		 * @param ofs Offset in blocks.
+		 * @param ofs offset in blocks.
 		 * @param sz Size in blocks.
 		 * @see #commitValidations()
 		 */
@@ -577,7 +578,7 @@ class _GII_CLASS ResultData : public InformationBase
 		 * Emits event #reGetRange to the owner when a handler is assigned to it.
 		 * Returns false when the request was rejected by the range manager due to being already valid or
 		 * when the range is not within the current accessible range.
-		 * @param ofs Offset in blocks.
+		 * @param ofs offset in blocks.
 		 * @param sz Size in blocks.
 		 * @return True when the request was excepted.
 		 */

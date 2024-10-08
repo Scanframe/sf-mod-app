@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../gen/gen_utils.h"
 #include "../global.h"
 #include "Range.h"
 
@@ -162,19 +161,19 @@ class _MISC_CLASS RangeManager
 		 */
 		bool _autoManaged{false};
 		/**
-		 * Contains the range that is managed.
+		 * contains the range that is managed.
 		 */
 		Range _managedRange;
 		/**
-		 * Contains all ranges that are accessible.
+		 * contains all ranges that are accessible.
 		 */
 		Range::Vector _accessibles;
 		/**
-		 * Contains all initially made requests.
+		 * contains all initially made requests.
 		 */
 		Range::Vector _requests;
 		/**
-		 * Contains the real requests made.
+		 * contains the real requests made.
 		 */
 		Range::Vector _actualRequests;
 		/**
@@ -190,7 +189,7 @@ inline void RangeManager::setDebug(bool debug)
 
 inline bool RangeManager::setAutoManaged(bool flag)
 {
-	swap_it(flag, _autoManaged);
+	std::swap(flag, _autoManaged);
 	return flag;
 }
 

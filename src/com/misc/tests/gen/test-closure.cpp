@@ -1,6 +1,6 @@
 #include <iostream>
 #include <misc/gen/TClosure.h>
-#include <misc/gen/gen_utils.h>
+#include <misc/gen/string.h>
 #include <test/catch.h>
 
 TEST_CASE("sf::Closure", "[con][generic]")

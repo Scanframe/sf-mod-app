@@ -1,13 +1,13 @@
 #include "HintWindow.h"
+#include "../gen/ScriptObject.h"
 #include "Globals.h"
 #include <QGuiApplication>
-#include "../gen/ScriptObject.h"
 
 namespace sf
 {
 
 HintWindow::HintWindow(QWidget* parent)
-	:QLabel(parent)
+	: QLabel(parent)
 {
 	setFrameStyle(QFrame::Shape::StyledPanel);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
@@ -34,38 +34,40 @@ void HintWindow::setActive(bool active)
 	setVisible(active);
 }
 
-struct HintWindowScriptObject :HintWindow, ScriptObject
+struct HintWindowScriptObject : HintWindow
+	, ScriptObject
 {
-	explicit HintWindowScriptObject(const ScriptObject::Parameters& params)
-		:HintWindow(getGlobalParent())
-		 , ScriptObject("HintWindow", params._parent) {}
+		explicit HintWindowScriptObject(const ScriptObject::Parameters& params)
+			: HintWindow(getGlobalParent())
+			, ScriptObject("HintWindow", params._parent)
+		{}
 
-	bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
+		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
-	[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
+		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 
-	void destroyObject(bool& should_delete) override;
+		void destroyObject(bool& should_delete) override;
 
-	static ScriptObject::IdInfo _info[];
+		static ScriptObject::IdInfo _info[];
 
-	enum EPosition
-	{
-		MousePosition,
-		/** Window is shown at the current mouse position. */
-		WidgetPosition,
-		/** Window is shown at the active widget upper left corner. */
-	};
-	EPosition _position{MousePosition};
+		enum EPosition
+		{
+			MousePosition,
+			/** Window is shown at the current mouse position. */
+			WidgetPosition,
+			/** Window is shown at the active widget upper left corner. */
+		};
+		EPosition _position{MousePosition};
 };
 
-#define  SID_TEXT 1
-#define  SID_OFFSET 2
-#define  SID_ACTIVE 3
-#define  SID_POSITION 4
+#define SID_TEXT 1
+#define SID_OFFSET 2
+#define SID_ACTIVE 3
+#define SID_POSITION 4
 
 ScriptObject::IdInfo HintWindowScriptObject::_info[] = {
 	{SID_TEXT, ScriptObject::idVariable, "Text", 0, nullptr},
-	{SID_OFFSET, ScriptObject::idFunction, "Offset", 2, nullptr},
+	{SID_OFFSET, ScriptObject::idFunction, "offset", 2, nullptr},
 	{SID_ACTIVE, ScriptObject::idVariable, "Active", 0, nullptr},
 	{SID_POSITION, ScriptObject::idVariable, "Position", 0, nullptr},
 };
@@ -96,7 +98,7 @@ bool HintWindowScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 				switch (_position)
 				{
 					case WidgetPosition:
-						if (auto wgt = qobject_cast<QWidget*>(qApp->focusObject())) // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+						if (auto wgt = qobject_cast<QWidget*>(qApp->focusObject()))// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 						{
 							QPoint pt(0, 0);
 							wgt->mapToGlobal(pt);
@@ -118,7 +120,7 @@ bool HintWindowScriptObject::getSetValue(const ScriptObject::IdInfo* info, Value
 		case SID_POSITION:
 			if (flag_set)
 			{
-				_position = clip<EPosition>((EPosition)value->getInteger(), MousePosition, WidgetPosition);
+				_position = clip<EPosition>((EPosition) value->getInteger(), MousePosition, WidgetPosition);
 			}
 			else
 			{
@@ -153,10 +155,9 @@ void HintWindowScriptObject::destroyObject(bool& should_delete)
 	should_delete = true;
 }
 
-SF_REG_CLASS
-(
+SF_REG_CLASS(
 	ScriptObject, ScriptObject::Parameters, Interface,
 	HintWindowScriptObject, "HintWindow", "Floating hint window."
 )
 
-}
+}// namespace sf

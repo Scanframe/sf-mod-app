@@ -1,27 +1,27 @@
-#include "PropertySheetDialog.h"
 #include "PropertyPage.h"
-#include "../gen/gen_utils.h"
+#include "PropertySheetDialog.h"
 #include "Resource.h"
-#include <QSpinBox>
-#include <QDateTimeEdit>
+#include "gen/string.h"
 #include <QCheckBox>
 #include <QComboBox>
-#include <QLineEdit>
-#include <QToolButton>
-#include <QPlainTextEdit>
-#include <QLayout>
+#include <QDateTimeEdit>
 #include <QDial>
-#include <QTreeView>
+#include <QGroupBox>
 #include <QKeySequenceEdit>
 #include <QLabel>
-#include <QGroupBox>
+#include <QLayout>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QSpinBox>
+#include <QToolButton>
+#include <QTreeView>
 
 namespace sf
 {
 
 PropertyPage::PropertyPage(QWidget* parent)
-	:QWidget(parent)
-	 , _sheet(qobject_cast<PropertySheetDialog*>(parent))
+	: QWidget(parent)
+	, _sheet(qobject_cast<PropertySheetDialog*>(parent))
 {
 }
 
@@ -43,13 +43,13 @@ QIcon PropertyPage::getPageIcon() const
 namespace
 {
 
-void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // NOLINT(misc-no-recursion)
+void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv)// NOLINT(misc-no-recursion)
 {
 	if (!sheet)
 	{
 		return;
 	}
-/*
+	/*
 	// Layout
 	if (auto w = qobject_cast<QWidget*>(parent))
 	{
@@ -90,8 +90,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// CheckBox
 		if (auto o = qobject_cast<QCheckBox*>(widget))
 		{
-			QObject::connect(o, &QCheckBox::stateChanged, [o, sheet](int)
-			{
+			QObject::connect(o, &QCheckBox::stateChanged, [o, sheet](int) {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -99,8 +98,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// LineEdit
 		if (auto o = qobject_cast<QLineEdit*>(widget))
 		{
-			QObject::connect(o, &QLineEdit::textChanged, [o, sheet](const QString&)
-			{
+			QObject::connect(o, &QLineEdit::textChanged, [o, sheet](const QString&) {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -108,8 +106,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// TextEdit
 		if (auto o = qobject_cast<QTextEdit*>(widget))
 		{
-			QObject::connect(o, &QTextEdit::textChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QTextEdit::textChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -117,8 +114,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// QPlainTextEdit
 		if (auto o = qobject_cast<QPlainTextEdit*>(widget))
 		{
-			QObject::connect(o, &QPlainTextEdit::textChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QPlainTextEdit::textChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -128,15 +124,13 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		{
 			if (o->isEditable())
 			{
-				QObject::connect(o, &QComboBox::currentTextChanged, [o, sheet](const QString&)
-				{
+				QObject::connect(o, &QComboBox::currentTextChanged, [o, sheet](const QString&) {
 					sheet->checkModified(o);
 				});
 			}
 			else
 			{
-				QObject::connect(o, &QComboBox::currentIndexChanged, [o, sheet](int)
-				{
+				QObject::connect(o, &QComboBox::currentIndexChanged, [o, sheet](int) {
 					sheet->checkModified(o);
 				});
 			}
@@ -145,8 +139,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// DateTimeEdit
 		if (auto o = qobject_cast<QDateTimeEdit*>(widget))
 		{
-			QObject::connect(o, &QDateTimeEdit::dateTimeChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QDateTimeEdit::dateTimeChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -154,8 +147,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// SpinBox
 		if (auto o = qobject_cast<QSpinBox*>(widget))
 		{
-			QObject::connect(o, &QSpinBox::valueChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QSpinBox::valueChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -163,8 +155,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// DoubleSpinBox
 		if (auto o = qobject_cast<QDoubleSpinBox*>(widget))
 		{
-			QObject::connect(o, &QDoubleSpinBox::valueChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QDoubleSpinBox::valueChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -172,8 +163,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// Dial
 		if (auto o = qobject_cast<QDial*>(widget))
 		{
-			QObject::connect(o, &QDial::valueChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QDial::valueChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -181,8 +171,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 		// KeySequenceEdit
 		if (auto o = qobject_cast<QKeySequenceEdit*>(widget))
 		{
-			QObject::connect(o, &QKeySequenceEdit::keySequenceChanged, [o, sheet]()
-			{
+			QObject::connect(o, &QKeySequenceEdit::keySequenceChanged, [o, sheet]() {
 				sheet->checkModified(o);
 			});
 			continue;
@@ -193,20 +182,16 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 			// When no model is connected avoid erroneous connections.
 			if (o->model())
 			{
-				QObject::connect(o->model(), &QAbstractItemModel::dataChanged, [sheet, widget]()
-				{
+				QObject::connect(o->model(), &QAbstractItemModel::dataChanged, [sheet, widget]() {
 					sheet->checkModified(widget);
 				});
-				QObject::connect(o->model(), &QAbstractItemModel::rowsInserted, [sheet, widget]()
-				{
+				QObject::connect(o->model(), &QAbstractItemModel::rowsInserted, [sheet, widget]() {
 					sheet->checkModified(widget);
 				});
-				QObject::connect(o->model(), &QAbstractItemModel::rowsMoved, [sheet, widget]()
-				{
+				QObject::connect(o->model(), &QAbstractItemModel::rowsMoved, [sheet, widget]() {
 					sheet->checkModified(widget);
 				});
-				QObject::connect(o->model(), &QAbstractItemModel::rowsRemoved, [sheet, widget]()
-				{
+				QObject::connect(o->model(), &QAbstractItemModel::rowsRemoved, [sheet, widget]() {
 					sheet->checkModified(widget);
 				});
 			}
@@ -217,7 +202,7 @@ void connectIt(PropertySheetDialog* sheet, QObject* parent, QWidgetList& rv) // 
 	}
 }
 
-} // namespace
+}// namespace
 
 QWidgetList PropertyPage::connectControls()
 {
@@ -259,4 +244,4 @@ bool PropertyPage::canApplyPage() const
 	return true;
 }
 
-}
+}// namespace sf

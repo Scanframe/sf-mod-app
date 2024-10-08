@@ -16,7 +16,7 @@ Add compiler definition flags:
 #pragma once
 
 // Import of defines for this target.
-#include "misc/gen/target.h"
+#include <misc/gen/target.h>
 
 // When DL target and the gii PKG is not used the gii DL is being build.
 #if IS_DL_TARGET && defined(_GII_PKG)
@@ -25,7 +25,7 @@ Add compiler definition flags:
 	#define _GII_CLASS TARGET_EXPORT
 // Is used as an archive so no importing is needed.
 #elif defined(_GII_ARC)
-#define _GII_DATA
+	#define _GII_DATA
 	#define _GII_FUNC
 	#define _GII_CLASS
 // When no flags are defined assume the package is imported.

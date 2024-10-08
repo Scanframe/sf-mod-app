@@ -1,46 +1,46 @@
 #include "LayoutButton.h"
-#include <misc/qt/FormDialog.h>
-#include <misc/qt/qt_utils.h>
-#include <gii/qt/LayoutData.h>
-#include <misc/qt/Globals.h>
-#include <QMessageBox>
-#include <QLayout>
-#include <QScreen>
 #include <QGuiApplication>
+#include <QLayout>
+#include <QMessageBox>
+#include <QScreen>
+#include <gii/qt/LayoutData.h>
+#include <misc/qt/FormDialog.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 struct LayoutButton::Private
 {
-	LayoutButton* _w;
-	/**
+		LayoutButton* _w;
+		/**
 	 * @brief Holds the relative file to the layout ui-file.
 	 */
-	QString _layoutFile;
+		QString _layoutFile;
 
-	/**
+		/**
 	 * @brief Holds the relative file to the layout ui-file.
 	 */
-	Gii::IdType _idOffset{0};
-	/**
+		Gii::IdType _idOffset{0};
+		/**
 	 * @brief Holds the widget containing layout.
 	 */
-	QWidget* _layoutContainer{nullptr};
+		QWidget* _layoutContainer{nullptr};
 
-	/**
+		/**
 	 * Constructor.
 	 */
-	explicit Private(LayoutButton* widget)
-		:_w(widget)
-	{
-		_w->_p = this;
-	}
+		explicit Private(LayoutButton* widget)
+			: _w(widget)
+		{
+			_w->_p = this;
+		}
 };
 
 LayoutButton::LayoutButton(QWidget* parent)
-	:QToolButton(parent)
-	 , ObjectExtension(this)
+	: QToolButton(parent)
+	, ObjectExtension(this)
 {
 	new Private(this);
 	auto action = new QAction(this);
@@ -73,7 +73,7 @@ void LayoutButton::openLayout()
 			QMessageBox mb(this);
 			mb.setIcon(QMessageBox::QMessageBox::Warning);
 			mb.setWindowTitle(tr("Open file failed!"));
-			mb.setText(tr("Could open file '%1'\nin directory\n'%2'").arg(fn).arg(ld->getDirectory().path()));
+			mb.setText(tr("Could open file '%1' in directory '%2'").arg(fn).arg(ld->getDirectory().path()));
 			mb.exec();
 			return;
 		}
@@ -156,4 +156,4 @@ SF_IMPL_PROP_GRS(QString, LayoutButton, LayoutFile, _p->_layoutFile)
 
 SF_IMPL_PROP_GS(Gii::IdType, LayoutButton, IdOffset, _p->_idOffset)
 
-}
+}// namespace sf

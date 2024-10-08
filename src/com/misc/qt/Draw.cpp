@@ -1,5 +1,5 @@
 #include "Draw.h"
-#include "../gen/gen_utils.h"
+#include "../gen/string.h"
 #include "../qt/qt_utils.h"
 
 namespace sf
@@ -86,11 +86,11 @@ bool Draw::ruler(
 				// Get the weight of the distance.
 				int dist_weight = std::stoi(tmp.substr(precision + 4));
 				// Convert dist string to a value using locale 'C'.
-				double dist = sf::stod(tmp.c_str());
+				auto dist = toNumber<double>(tmp);
 				// Remove the comma from the precision part.
 				tmp = tmp.substr(0, precision + 3).erase(2, 1);
 				// Get the value from the list that has a nice dist value.
-				int dist_prec = abs((int) sf::stod(tmp.c_str()));
+				int dist_prec = static_cast<int>(std::fabs(toNumber<double>(tmp)));
 				// Pick the nearest from the list.
 				int ticks = 0;
 				for (auto& i: _tickListVertical)
@@ -104,7 +104,7 @@ bool Draw::ruler(
 					}
 				}
 				// Get the nearest value to start with dealing when inverted.
-				double real_start = start - fmodulo(start, dist);
+				double real_start = start - modulo(start, dist);
 				// Calculate the pixels between two values.
 				int dist_height = static_cast<int>(std::round(dist / units_per_pixel));
 				// Specify the end position.
@@ -165,8 +165,8 @@ bool Draw::ruler(
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(numberString<double>((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
-					// Get the size of the to be drawn text. Seems it is to narrow, so it is adjusted to fit the text.
+					auto text = QString::fromStdString(numberString((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
+					// Get the size of the to be drawn text. Seems it is too narrow, so it is adjusted to fit the text.
 					auto tr = fm.boundingRect(text).adjusted(-1, 0, 1, 0);
 					// Paint the text values.
 					QPoint pt(0, yp - font_height / 2);
@@ -245,11 +245,11 @@ bool Draw::ruler(
 				// Get the weight of the distance.
 				int dist_weight = std::stoi(tmp.substr(precision + 4));
 				// Convert dist string to a value.
-				double dist = sf::stod(tmp.c_str());
+				auto dist = toNumber<double>(tmp);
 				// Remove the comma from the precision part.
 				tmp = tmp.substr(0, precision + 3).erase(2, 1);
 				// Get the value from the list that has a nice dist value.
-				int dist_prec = abs((int) sf::stod(tmp.c_str()));
+				auto dist_prec = abs(static_cast<int>(toNumber<double>(tmp)));
 				// Pick the nearest from the list.
 				int ticks = 0;
 				for (auto& i: _tickListHorizontal)
@@ -263,7 +263,7 @@ bool Draw::ruler(
 					}
 				}
 				// Get the nearest value to start with dealing when inverted.
-				double real_start = start - fmodulo(start, dist);
+				double real_start = start - modulo(start, dist);
 				// Calculate the pixels between two values.
 				int dist_width = static_cast<int>(std::round(dist / units_per_pixel));
 				// Specify the end position.
@@ -321,7 +321,7 @@ bool Draw::ruler(
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(numberString<double>((abs(x_pos) < abs(units_per_pixel) / 2) ? 0.0 : x_pos, digits, true));
+					auto text = QString::fromStdString(numberString((abs(x_pos) < abs(units_per_pixel) / 2) ? 0.0 : x_pos, digits, true));
 					// Get the size of the to be drawn text.
 					auto tr = fm.boundingRect(text);
 					tr.setWidth(tr.width() + 2);
@@ -454,11 +454,11 @@ bool Draw::gridLines(
 			// Get the weight of the distance.
 			int dist_weight = std::stoi(tmp.substr(precision + 4));
 			// Convert dist string to a value.
-			double dist = sf::stod(tmp.c_str());
+			auto dist = sf::toNumber<double>(tmp);
 			// Remove the comma from the precision part.
 			tmp = tmp.substr(0, precision + 3).erase(2, 1);
 			// Get the value from the list that has a nice dist value.
-			int dist_prec = abs((int) sf::stod(tmp.c_str()));
+			int dist_prec = abs((int) sf::toNumber<double>(tmp));
 			// Pick the nearest from the list.
 			for (auto& i: (go == goHorizontal) ? _tickListVertical : _tickListHorizontal)
 			{
@@ -470,7 +470,7 @@ bool Draw::gridLines(
 				}
 			}
 			// Get the nearest value to start with dealing when inverted.
-			double real_start = start - fmodulo(start, dist);
+			double real_start = start - modulo(start, dist);
 			// Determine the end position of the loop.
 			double end_pos = stop + dist;
 			// Iterate through the positions on the screen.

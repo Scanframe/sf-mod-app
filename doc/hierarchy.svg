@@ -503,7 +503,7 @@
      <path style="fill:url(#gradient3)" d="M 7031,13430 L 5126,13430 5126,12218 8935,12218 8935,13430 7031,13430 Z"/>
     </g>
     <path fill="none" stroke="rgb(205,133,63)" stroke-width="50" stroke-linejoin="round" d="M 7031,13430 L 5126,13430 5126,12218 8935,12218 8935,13430 7031,13430 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400"><tspan class="TextPosition" x="5326" y="12833"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Unit Conversion</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="5326" y="13248"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">sf-ami-units</tspan></tspan></tspan></text>
+    <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400"><tspan class="TextPosition" x="5326" y="12833"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">unit Conversion</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="5326" y="13248"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">sf-ami-units</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">

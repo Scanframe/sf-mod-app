@@ -1,20 +1,12 @@
-#include "misc/gen/ThreadClosure.h"
 #include <chrono>
 #include <csignal>
 #include <iostream>
-#include <misc/gen/ElapseTimer.h>
-#include <misc/gen/Thread.h>
+#include <misc/gen/ThreadClosure.h>
 #include <misc/gen/dbgutils.h>
-#include <misc/gen/gen_utils.h>
 #include <thread>
 #if !IS_WIN
 	#include <misc/lnx/lnx_utils.h>
 #endif
-
-void TestNumberString()
-{
-	std::clog << sf::numberString(double(-0.99999), 2) << std::endl;
-}
 
 void TestStdSignal()
 {
@@ -130,7 +122,6 @@ void TestThreads(int how = 0)
 
 int main(/*int argc, char* argv[]*/)
 {
-	TestNumberString();
 #if !IS_WIN
 	TestThreads(1);
 	TestThreads(0);
@@ -140,4 +131,5 @@ int main(/*int argc, char* argv[]*/)
 	TestThreads(0);
 	TestStdThreads();
 #endif
+	return 0;
 }

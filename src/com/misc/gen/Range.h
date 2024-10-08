@@ -455,7 +455,7 @@ class _MISC_CLASS Range : private RANGE
 		/**
 		 * @brief Shifts this range using the passed offset.
 		 *
-		 * @param ofs Offset
+		 * @param ofs offset
 		 * @return Itself
 		 */
 		inline Range& offsetBy(size_type ofs);

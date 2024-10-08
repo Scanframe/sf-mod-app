@@ -1,6 +1,7 @@
-#include "RsaInterface.h"
 #include "RsaServer.h"
 #include "MakeIds.h"
+#include "RsaInterface.h"
+#include <misc/gen/TStrings.h>
 
 namespace sf
 {
@@ -16,43 +17,42 @@ void RsaServer::resultNotifyProc(void* data, id_type id)
 }
 
 RsaServer::RsaServer(int compatible, id_type deviceNumber, const std::string& serverName)
-	:InformationServer()
-	 , _serverVariableHandler(this, &RsaServer::serverVariableHandler)
-	 , _serverResultDataHandler(this, &RsaServer::serverResultDataHandler)
-	 , _implementationId(0)
-	 , _vImplementation()
-	 , _deviceNumber(deviceNumber)
-	 , _serverName(serverName.empty() ? "Acquisition" : serverName)
-	 , _acquisition(nullptr)
-	 , _lock(false)
-	 , _handledParamId(0)
-	 , _compatible(compatible)
+	: InformationServer()
+	, _serverVariableHandler(this, &RsaServer::serverVariableHandler)
+	, _serverResultDataHandler(this, &RsaServer::serverResultDataHandler)
+	, _implementationId(0)
+	, _vImplementation()
+	, _deviceNumber(deviceNumber)
+	, _serverName(serverName.empty() ? "Acquisition" : serverName)
+	, _acquisition(nullptr)
+	, _lock(false)
+	, _handledParamId(0)
+	, _compatible(compatible)
 {
 	// Only for backward UT device compatibility.
 	if (_compatible == 1 && _deviceNumber == DEVICENR_UT)
 	{
 		_implementationId = MAKE_VID(_deviceNumber, 0);
-		// TODO: Some un wanted situation in the VID generation.
+		// TODO: Some unwanted situation in the VID generation.
 		if (_deviceNumber == DEVICENR_UT)
 		{
 			_implementationId = OLD_MAKE_UT_CHAN_VID(0, DEVICENR_UT, 0L, 0);
 		}
 		// Set up the implementation string using the names of the
 		// names of possible implementations.
-		std::string s = stringf
-			(
-				"0x%lX,%s|Implementation,,S,Implementation of acquisition server,"
-				"INTEGER,,"
-				"1,0,0,%i,None=0,",
-				_implementationId,
-				_serverName.c_str(),
-				RsaInterface::Interface().size()
-			);
+		std::string s = stringf(
+			"0x%lX,%s|Implementation,,S,Implementation of acquisition server,"
+			"INTEGER,,"
+			"1,0,0,%i,None=0,",
+			_implementationId,
+			_serverName.c_str(),
+			RsaInterface::Interface().size()
+		);
 		// Add the states generated from the registered names.
 		for (size_t i = 0; i < RsaInterface::Interface().size(); i++)
 		{
 			s += RsaInterface::Interface().getName(i);
-			s + "=" + itostr(i + 1);
+			s += "=" + itostr(i + 1);
 		}
 		// Set the variable up.
 		_vImplementation.setup(s);
@@ -109,7 +109,7 @@ bool RsaServer::createImplementation(const std::string& name)
 	{
 		// Destroy all variables and result-data instances of this server.
 		destroyInterface();
-		_acquisition->uinitialize();
+		_acquisition->uninitialize();
 		delete _acquisition;
 		_acquisition = nullptr;
 	}
@@ -144,7 +144,7 @@ bool RsaServer::createImplementation(int index)
 		// Destroy all variables and result-data instances of this server.
 		destroyInterface();
 		// Uninitialize.
-		_acquisition->uinitialize();
+		_acquisition->uninitialize();
 		// Delete the implementation.
 		delete _acquisition;
 		// Null the pointer.
@@ -228,7 +228,7 @@ std::string RsaServer::getDescription(const ParamInfo& info)
 		}
 		// Also check for gate related.
 		if (info.Gate != UINT_MAX)
-		{ // Add gate offset using the implementations name of the gate.
+		{// Add gate offset using the implementations name of the gate.
 			ofs += " " + _acquisition->getGateName(info.Gate, info.Channel);
 		}
 	}
@@ -262,7 +262,7 @@ std::string RsaServer::getNameOffset(const ResultInfo& info)
 		}
 		// Also check for gate related.
 		if (info.Gate != UINT_MAX)
-		{ // Add gate offset using the implementations name of the gate.
+		{// Add gate offset using the implementations name of the gate.
 			ofs += _acquisition->getGateName(info.Gate, info.Channel) + "|";
 		}
 	}
@@ -276,14 +276,14 @@ std::string RsaServer::getDescription(const ResultInfo& info)
 	std::string ofs = _serverName;
 	// Check if the parameter is a channel related parameter.
 	if (info.Channel != UINT_MAX)
-	{ // Add channel offset when there are more than one channels.
+	{// Add channel offset when there are more than one channels.
 		if (_acquisition->getChannelCount() > 1)
 		{
 			ofs += stringf(" Channel %i ", info.Channel + 1);
 		}
 		// Also check for gate related.
 		if (info.Gate != UINT_MAX)
-		{ // Add gate offset using the implementations name of the gate.
+		{// Add gate offset using the implementations name of the gate.
 			ofs += " " + _acquisition->getGateName(info.Gate, info.Channel);
 		}
 	}
@@ -340,7 +340,8 @@ std::string RsaServer::createSetupString(const ParamInfo& info, long vid)
 	{
 		flags |= Variable::flgArchive;
 		// When not an Alias for another parameter or it is a system parameter it may be used to restore parameters.
-		if (info.Flags & (pfAlias | pfSystem)) {}
+		if (info.Flags & (pfAlias | pfSystem)) {
+		}
 		else
 		{
 			flags |= Variable::flgParameter;
@@ -418,7 +419,8 @@ std::string RsaServer::createSetupString(const ResultInfo& info, long vid)
 		case 8:
 			type = ResultData::rtInt64;
 			break;
-		default: SF_RTTI_NOTIFY(DO_CLOG, _serverName << " not correct implemented!");
+		default:
+			SF_RTTI_NOTIFY(DO_CLOG, _serverName << " not correct implemented!");
 			break;
 	}
 	// The array size cannot be zero.
@@ -507,7 +509,7 @@ bool RsaServer::createVariable(Variable*& var, ParamInfo& info, const std::strin
 	bool newed = false;
 	// Test the variable pointer for an existing pointer.
 	if (!var)
-	{ // Assign a new variable.
+	{// Assign a new variable.
 		var = new Variable();
 		newed = true;
 	}
@@ -563,7 +565,7 @@ bool RsaServer::createVariable(Variable*& var, ParamInfo& info, const std::strin
 	// If the variable was created in this function it should also be deleted
 	// in case of an error.
 	if (newed)
-	{ // Delete the variable.
+	{// Delete the variable.
 		delete var;
 	}
 	// Signal failure.
@@ -576,7 +578,7 @@ bool RsaServer::createResultData(ResultData*& res, ResultInfo& info, const std::
 	bool newed = false;
 	// Test the pointer for an existing pointer.
 	if (!res)
-	{ // Assign a new variable.
+	{// Assign a new variable.
 		res = new ResultData();
 		newed = true;
 	}
@@ -686,7 +688,7 @@ void RsaServer::evaluateInterfaceParams()
 			ExtraInfo* ei = castExtraInfo(*it);
 			// If the info struct is present continue.
 			if (ei)
-			{ // Check if the ID is found in not wanted list of ID's.
+			{// Check if the ID is found in not wanted list of ID's.
 				if (ids.find(ei->_id) == Variable::PtrVector::npos)
 				{
 					// Call the special function to delete a variable from the VarList.
@@ -729,7 +731,7 @@ void RsaServer::evaluateInterfaceParams()
 						vid = MAKE_UT_GATE_VID(0, _deviceNumber, info.Channel + 1, info.Gate + 1, info.Index);
 					}
 					else
-					{ // Check if this is a non channel parameter.
+					{// Check if this is a non channel parameter.
 						if (info.Channel != UINT_MAX)
 						{
 							vid = MAKE_UT_CHAN_VID(0, _deviceNumber, info.Channel + 1, info.Index);
@@ -781,7 +783,7 @@ void RsaServer::evaluateInterfaceParams()
 				Variable* var = _variableVector[index];
 				// Check if the variable successfully was created.
 				if (!createVariable(var, info, setup))
-				{ // Remove the current variable.
+				{// Remove the current variable.
 					destroyVariable(var);
 				}
 				// Do not call our own event handler for this event.
@@ -789,7 +791,7 @@ void RsaServer::evaluateInterfaceParams()
 			}
 		}
 		else
-		{ // Create a new one.
+		{// Create a new one.
 			Variable* var = nullptr;
 			if (createVariable(var, info, setup))
 			{
@@ -822,7 +824,7 @@ void RsaServer::evaluateInterfaceResults()
 			// Get the extra info pointer of the result data instance.
 			// If the info struct is present continue.
 			if (auto ei = castExtraInfo(*it))
-			{ // Check if the ID is found in not wanted list of ID's.
+			{// Check if the ID is found in not wanted list of ID's.
 				if (ids.find(ei->_id) == IdList::npos)
 				{
 					// Call the special function to delete a variable from the VarList.
@@ -866,7 +868,7 @@ void RsaServer::evaluateInterfaceResults()
 						rid = MAKE_UT_GATE_VID(0, _deviceNumber, info.Channel + 1, info.Gate + 1, info.Index);
 					}
 					else
-					{ // Check if this is a non channel parameter.
+					{// Check if this is a non channel parameter.
 						if (info.Channel != UINT_MAX)
 						{
 							rid = MAKE_UT_CHAN_VID(0, _deviceNumber, info.Channel + 1, info.Index);
@@ -908,8 +910,7 @@ void RsaServer::evaluateInterfaceResults()
 		{
 			ResultData* res = _resultVector[index];
 			ExtraInfo* ei = castExtraInfo(res);
-			// If the setup string does match the result
-			// does not have to be recreated.
+			// If the setup string does match the result does not have to be recreated.
 			if (setup != ei->_setupString)
 			{
 				// Check if only the flags fields has changed.
@@ -936,9 +937,11 @@ void RsaServer::evaluateInterfaceResults()
 					}
 				}
 				else
-				{ // Check if the instance was successfully created.
+				{
+					// Check if the instance was successfully created.
 					if (!createResultData(res, info, setup))
-					{  // If not, destroy it.
+					{
+						// If not, destroy it.
 						destroyResultData(res);
 					}
 				}
@@ -951,7 +954,6 @@ void RsaServer::evaluateInterfaceResults()
 			createResultData(res, info, setup);
 		}
 	}
-
 }
 
 void RsaServer::destroyInterface()
@@ -996,15 +998,18 @@ void RsaServer::onStateChange(EState prevState, EState nextState)
 			default:
 				break;
 
-			case issOff: SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set OFF and Data CLEARED");
+			case issOff:
+				SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set OFF and Data CLEARED");
 				_acquisition->setRunMode(false, true);
 				break;
 
-			case issRun: SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set ON and Data CLEARED");
+			case issRun:
+				SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set ON and Data CLEARED");
 				_acquisition->setRunMode(true, true);
 				break;
 
-			case issRecord: SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set ON and Data CLEARED");
+			case issRecord:
+				SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set ON and Data CLEARED");
 				// Clear can be prevented when coming from PAUSED state.
 				if (prevState == issPause)
 				{
@@ -1017,7 +1022,8 @@ void RsaServer::onStateChange(EState prevState, EState nextState)
 				break;
 
 			case issPause:
-			case issStop: SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set OFF");
+			case issStop:
+				SF_RTTI_NOTIFY(DO_CLOG, "Run Mode set OFF");
 				_acquisition->setRunMode(false, false);
 				break;
 		}
@@ -1063,13 +1069,12 @@ void RsaServer::checkReadOnly()
 	}
 }
 
-void RsaServer::serverVariableHandler
-	(
-		Variable::EEvent event,
-		const Variable& caller,
-		Variable& link,
-		bool sameInst
-	)
+void RsaServer::serverVariableHandler(
+	Variable::EEvent event,
+	const Variable& caller,
+	Variable& link,
+	bool sameInst
+)
 {
 	// get ID
 	auto vid = caller.getId();
@@ -1086,7 +1091,7 @@ void RsaServer::serverVariableHandler
 				createImplementation(static_cast<int>(link.getCur().getInteger() - 1));
 			}
 			else
-			{ // Get the flags now from the extra info because it could be that
+			{// Get the flags now from the extra info because it could be that
 				// this variable does not exist anymore after the SetGetParam() call.
 				int flags = castExtraInfo(&link)->_flags;
 				// Temporary storage of current run mode.
@@ -1112,7 +1117,7 @@ void RsaServer::serverVariableHandler
 					// which means it means in this case it is not deleted by
 					// the previous call to SetGetParam.
 					if (link.isValid())
-					{ // Set the current value because it might be changed.
+					{// Set the current value because it might be changed.
 						link.setCur(value, true);
 					}
 				}
@@ -1124,7 +1129,7 @@ void RsaServer::serverVariableHandler
 				}
 				// Check if this parameter had an effect on other result's geometry.
 				if (flags & pfEffectsResult)
-				{ // Set the acquisition implementation to off and clear the current data.
+				{// Set the acquisition implementation to off and clear the current data.
 					_acquisition->setRunMode(false, true);
 					// If so  reevaluate the results.
 					evaluateInterfaceResults();
@@ -1134,7 +1139,7 @@ void RsaServer::serverVariableHandler
 				// TODO: Maybe this should be done in a sustain using a flag/timer.
 				// Switch on run mode again when it was switched OFF.
 				if (runmode && !_acquisition->getRunMode())
-				{ // Enable run-mode again
+				{// Enable run-mode again
 					_acquisition->setRunMode(true, false);
 					SF_COND_RTTI_NOTIFY(flags & pfWriteAtOff, DO_CLOG, "Run Mode set ON after parameter change.");
 				}
@@ -1142,12 +1147,12 @@ void RsaServer::serverVariableHandler
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veRemove:    // variable is being removed
-		case Variable::veGetOwner:  // this instance has lost ownership
-		case Variable::veLostOwner: // this instance has become owner
-		case Variable::veLinked:    // this instance has been linked
-		case Variable::veUnlinked:  // this instance has lost link
-		case Variable::veInvalid:   // variable reference is becoming invalid for this instance
+		case Variable::veRemove:// variable is being removed
+		case Variable::veGetOwner:// this instance has lost ownership
+		case Variable::veLostOwner:// this instance has become owner
+		case Variable::veLinked:// this instance has been linked
+		case Variable::veUnlinked:// this instance has lost link
+		case Variable::veInvalid:// variable reference is becoming invalid for this instance
 			break;
 	}//switch
 }
@@ -1192,22 +1197,22 @@ void RsaServer::paramNotify(id_type id)
 
 void RsaServer::resultNotify(InformationTypes::id_type id)
 {
-//  RTTI_NOTIFY(DO_DEFAULT, "ResultNotify("<< id << ")");
+	//  RTTI_NOTIFY(DO_DEFAULT, "ResultNotify("<< id << ")");
 	// Looks up a result data id.
 	auto idx = resultListFind(id);
 	// When found process the available.
 	if (idx != ResultData::PtrVector::npos)
-	{ // Get a pointer to the result.
+	{// Get a pointer to the result.
 		ResultData* res = _resultVector[idx];
 		unsigned blkByteSize = res->getBufferSize(1);
 		// Declare buffer info structure to receive
 		BufferInfo bufInfo;
 		do
-		{ // Reset the data members of the info structure.
+		{// Reset the data members of the info structure.
 			bufInfo.Clear();
 			// Get the buffer information from the implementation.
 			if (_acquisition->getResultBuffer(id, bufInfo) && bufInfo.BlockBufSize)
-			{ // Write the data into the result.
+			{// Write the data into the result.
 				if (blkByteSize != bufInfo.BlockBufSize)
 				{
 					throw Exception("ResultNotify(): Block size '%s' is not of the expected size!", res->getName(2).c_str());
@@ -1220,9 +1225,8 @@ void RsaServer::resultNotify(InformationTypes::id_type id)
 				// Commit all writes.
 				res->commitValidations();
 			}
-		}
-		while (bufInfo.Remain);
+		} while (bufInfo.Remain);
 	}
 }
 
-}
+}// namespace sf

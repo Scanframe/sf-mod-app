@@ -1,6 +1,6 @@
 #include "ColorTable.h"
-#include <misc/gen/gen_utils.h>
 #include <misc/gen/Value.h>
+#include <misc/gen/math.h>
 
 namespace sf
 {
@@ -43,6 +43,7 @@ void shiftHsv(const QColor& colorBegin, const QColor& colorEnd, ColorTable::iter
 
 void shiftHsl(const QColor& colorBegin, const QColor& colorEnd, ColorTable::iterator fromEntry, ColorTable::iterator toEntry, const ColorShiftCurve& curve)
 {
+	(void) curve;
 	if (fromEntry >= toEntry)
 	{
 		return;
@@ -82,7 +83,7 @@ void shiftSaturation(const QColor& color, ColorTable::iterator fromEntry, ColorT
 		// Linear is default.
 		auto level = x;
 		// When curve closure has been set.
-		if (curve)
+		if (curve.isAssigned())
 		{
 			level = curve(level);
 		}
@@ -119,4 +120,4 @@ void shiftRgb(const QColor& colorBegin, const QColor& colorEnd, ColorTable::iter
 	}
 }
 
-}
+}// namespace sf

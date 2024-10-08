@@ -64,7 +64,7 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 		// Number types test function.
 		CHECK(sf::Value(4).isNumber());
 		CHECK(sf::Value(4.4).isNumber());
-		CHECK(!sf::Value("123").isNumber());
+		CHECK_FALSE(sf::Value("123").isNumber());
 		// Round function rounding in multiples of given value.
 		// Float rounding.
 		CHECK_THAT(Helper(sf::Value(123.999).round(sf::Value(0.01))), Equals("(FLOAT,\"124\")"));
@@ -78,15 +78,15 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 	SECTION("Operators")
 	{
 		// Bool operator on integer type.
-		CHECK(!!sf::Value(0));
+		CHECK_FALSE(!sf::Value(0));
 		CHECK(!sf::Value(1));
 		CHECK(!sf::Value(true));
 		// Bool operator on an empty string.
-		CHECK(!!sf::Value(""));
+		CHECK_FALSE(!sf::Value(""));
 		// Bool operator on smallest value float value.
-		CHECK(!!sf::Value(std::numeric_limits<sf::Value::flt_type>::denorm_min()));
+		CHECK_FALSE(!sf::Value(std::numeric_limits<sf::Value::flt_type>::denorm_min()));
 		// Check if the bool operator on an undefined type.
-		CHECK(!!sf::Value());
+		CHECK_FALSE(!sf::Value());
 	}
 
 	SECTION("Reference")
@@ -273,6 +273,6 @@ TEST_CASE("sf::Value", "[con][generic][value]")
 
 	SECTION("Binary Data")
 	{
-		//CHECK(!sf::Value(sf::Value::vitBinary, nullptr, 0).IsZero());
+		CHECK(sf::Value(sf::Value::vitBinary, nullptr, 0).isZero());
 	}
 }

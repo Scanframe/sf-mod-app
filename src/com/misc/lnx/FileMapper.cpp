@@ -1,6 +1,6 @@
 #include "FileMapper.h"
-#include "../gen/Exception.h"
-#include "../gen/gen_utils.h"
+#include "gen/Exception.h"
+#include "gen/file.h"
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -78,7 +78,7 @@ void FileMapper::setView(size_t ofs, size_t sz)
 	// Check if offset and size are in range of the file.
 	if ((ssize_t) (ofs + sz) > _file.getStatus(true).st_size)
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "Offset + Size are out of range!");
+		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "offset + Size are out of range!");
 	}
 	// Assign the new values.
 	_offset = ofs;
