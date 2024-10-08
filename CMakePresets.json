@@ -288,6 +288,7 @@
 				"t_sf-misc",
 				"t_sf-misc-mutex",
 				"t_sf-misc-threads",
+				"t_sf-math",
 				"t_sf-gii",
 				"t_sf-ami-service"
 			]
