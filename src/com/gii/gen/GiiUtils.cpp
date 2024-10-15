@@ -10,7 +10,7 @@ namespace sf
 #define MAX_LOAD_LOOPS 10
 #define KEY_NAME "Name"
 #define KEY_VALUE "Value"
-#define KEY_UNIT "unit"
+#define KEY_UNIT "Unit"
 #define SEC_SYSPARAMS "System Parameters"
 
 bool shouldBeSaved(const Variable& var)

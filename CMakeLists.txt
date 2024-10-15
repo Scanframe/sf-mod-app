@@ -25,7 +25,7 @@ project("qt-concepts"
 	VERSION "${SF_GIT_TAG_VERSION}"
 	DESCRIPTION "Scanframe Modular Application"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
-	)
+)
 
 # Add top target for displaying info on the compiled targets where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
@@ -38,15 +38,18 @@ if (WIN32)
 	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 		# Make some cmake files happy so they do report "Not found".
 		set(Vulkan_INCLUDE_DIR "/tmp")
-	endif()
+	endif ()
 endif ()
 
 # Make sure builds do not wind up in the source directory.
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 
-# Set the C++ standard to 20 for all projects which is required for the SfCompiler package.1
-set(CMAKE_CXX_STANDARD 20)
+# Set the C++ standard to 17 for all projects to allow building with
+# Ubuntu 22.04 and the Qt provided 'libstdc++-6.dll'.
+# When building with Ubuntu 24.04 g++ version 13 it gets a bit complicated
+# for running on Windows where 'libstdc++-6.dll' is needed from Linux MinGW.
+set(CMAKE_CXX_STANDARD 17)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.

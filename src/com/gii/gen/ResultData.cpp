@@ -1695,7 +1695,7 @@ std::string ResultData::getFieldName(int field)
 		case rfSigBits:
 			return "SignificantBits";
 		case rfOffset:
-			return "offset";
+			return "Offset";
 		case rfBlockSize:
 			return "BlockSize";
 		case rfSegmentSize:

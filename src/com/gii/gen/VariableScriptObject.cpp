@@ -34,7 +34,7 @@ ScriptObject::IdInfo VariableScriptObject::_info[] =
 		{SID_SETUP, ScriptObject::idFunction, "Setup", 1, nullptr},
 		{SID_ID, ScriptObject::idConstant, "Id", 0, nullptr},
 		{SID_NAME, ScriptObject::idFunction, "Name", 1, nullptr},
-		{SID_UNIT, ScriptObject::idConstant, "unit", 0, nullptr},
+		{SID_UNIT, ScriptObject::idConstant, "Unit", 0, nullptr},
 		{SID_CUR, ScriptObject::idVariable, "Cur", 0, nullptr},
 		{SID_CURSTR, ScriptObject::idConstant, "CurStr", 0, nullptr},
 		{SID_RND, ScriptObject::idConstant, "Rnd", 0, nullptr},

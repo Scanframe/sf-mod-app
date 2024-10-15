@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+static std::ios_base::Init __ioinit;
+
 std::string findAndReplaceAll(std::string data, std::string_view toSearch, std::string_view replaceStr)
 {
 	// Get the first occurrence

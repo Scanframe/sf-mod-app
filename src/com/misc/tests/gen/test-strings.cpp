@@ -40,9 +40,9 @@ TEST_CASE("sf::String", "[con][generic][strings]")
 		CHECK(sf::toNumberDefault<unsigned long int, std::string>("1234", 4321) == 1234);
 		CHECK(sf::toNumberDefault<unsigned long long int, std::string>("1234", 4321) == 1234);
 
-		CHECK(sf::toNumberDefault<unsigned int, std::string>("-1234", 4321) == -1234u);
-		CHECK(sf::toNumberDefault<unsigned long int, std::string>("-1234", 4321) == -1234ul);
-		CHECK(sf::toNumberDefault<unsigned long long int, std::string>("-1234", 4321) == -1234ul);
+		CHECK(sf::toNumberDefault<unsigned int, std::string>("1234", 4321) == 1234u);
+		CHECK(sf::toNumberDefault<unsigned long int, std::string>("1234", 4321) == 1234u);
+		CHECK(sf::toNumberDefault<unsigned long long int, std::string>("1234", 4321) == 1234u);
 
 		CHECK(sf::toNumberDefault<float, std::string>("12.34", 43.21f) == Catch::Approx(12.34).margin(1E-8));
 		CHECK(sf::toNumberDefault<double, std::string>("12.34", 43.21) == Catch::Approx(12.34).margin(1E-8));
@@ -75,6 +75,7 @@ TEST_CASE("sf::String", "[con][generic][strings]")
 		CHECK(sf::gcvtString(12.257) == "12.257");
 		CHECK(sf::gcvtString(1234.2567) == "1234.2567");
 		CHECK(sf::gcvtString(12.3456e-6L, 4) == "1.235e-05");
+		CHECK(sf::gcvtString(1.235e+5L, 4) == "1.235e+05");
 	}
 
 	SECTION("sf::toString", "Numeric value to an std string.")

@@ -98,7 +98,7 @@ QVariant FollowersListModel::headerData(int section, Qt::Orientation orientation
 			case cScript:
 				return QString(tr("Script"));
 			case vcUnit:
-				return QString(tr("unit"));
+				return QString(tr("Unit"));
 			case cFollowers:
 				return QString(tr("Followers"));
 			default:

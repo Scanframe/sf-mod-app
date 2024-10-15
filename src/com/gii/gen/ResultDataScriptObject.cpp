@@ -29,7 +29,7 @@ ScriptObject::IdInfo ResultDataScriptObject::_info[] =
 		{SID_ID, ScriptObject::idConstant, "Id", 0, nullptr},
 		{SID_NAME, ScriptObject::idFunction, "Name", 1, nullptr},
 		{SID_FLAGS, ScriptObject::idConstant, "Flags", 0, nullptr},
-		{SID_OFFSET, ScriptObject::idConstant, "offset", 0, nullptr},
+		{SID_OFFSET, ScriptObject::idConstant, "Offset", 0, nullptr},
 		{SID_RANGE, ScriptObject::idConstant, "Range", 0, nullptr},
 		{SID_DATA, ScriptObject::idFunction, "Data", 1, nullptr},
 		{SID_REQUEST, ScriptObject::idFunction, "Request", 2, nullptr},

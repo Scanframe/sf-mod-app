@@ -11,7 +11,7 @@ class TMatrix2D;
 
 // Forward declaration.
 template<typename T>
-class TRect2D;
+class TRectangle2D;
 
 /**
  * @brief 2-dimensional vector for math operations.
@@ -305,7 +305,7 @@ class TVector2D
 				} coord;
 		} _data{0, 0};
 
-		friend class TRect2D<T>;
+		friend class TRectangle2D<T>;
 };
 
 }// namespace sf

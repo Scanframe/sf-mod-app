@@ -67,7 +67,7 @@ struct HintWindowScriptObject : HintWindow
 
 ScriptObject::IdInfo HintWindowScriptObject::_info[] = {
 	{SID_TEXT, ScriptObject::idVariable, "Text", 0, nullptr},
-	{SID_OFFSET, ScriptObject::idFunction, "offset", 2, nullptr},
+	{SID_OFFSET, ScriptObject::idFunction, "Offset", 2, nullptr},
 	{SID_ACTIVE, ScriptObject::idVariable, "Active", 0, nullptr},
 	{SID_POSITION, ScriptObject::idVariable, "Position", 0, nullptr},
 };

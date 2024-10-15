@@ -8,12 +8,24 @@ namespace sf
 
 bool isRunningWine()
 {
-	HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
-	if (ntdllMod && GetProcAddress(ntdllMod, "wine_get_version"))
+	HMODULE handle = ::GetModuleHandleA("ntdll.dll");
+	if (handle && ::GetProcAddress(handle , "wine_get_version"))
 	{
 		return true;
 	}
 	return false;
+}
+
+std::string getModulePath(const std::string& dll_name)
+{
+	HMODULE handle = ::GetModuleHandleA(dll_name.c_str());
+	if (handle)
+	{
+		std::string rv(MAX_PATH, '\0');
+		rv.resize(::GetModuleFileNameA(handle, rv.data(), rv.capacity()));
+		return rv;
+	}
+	return {};
 }
 
 size_t getThreadCount()

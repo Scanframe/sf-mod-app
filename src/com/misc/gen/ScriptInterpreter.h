@@ -58,7 +58,7 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		void setOutputStream(std::ostream* os);
 
 		/**
-		 * @brief Sate of the running script.
+		 * @brief State of the running script.
 		 */
 		enum EState
 		{
@@ -378,7 +378,7 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 
 	private:
 		/**
-		 * @brief Gets the external source. First non white character is also delimiting character.
+		 * @brief Gets the external source. First non-white character is also delimiting character.
 		 */
 		void getExternalSource(std::string& source);
 
@@ -477,7 +477,7 @@ class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 		/**
 		 * @brief contains execute state.
 		 *
-		 * Use the Get and Set methods to change it's value.
+		 * Use the Get and Set methods to change its value.
 		 */
 		const EState _currentState{esEmpty};
 		/**

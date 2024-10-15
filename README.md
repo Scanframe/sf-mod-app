@@ -1,100 +1,112 @@
-8# Modular C++ Application &amp; Library (using Qt6)
+# Modular C++ Application &amp; Library (using Qt6)
 
 The concepts-directory contains projects used to proof if what is needed is feasible.
 C++ concepts for proofing for me needed concepts using the Qt framework.
 Common basic libraries are not Qt dependent.
-This makes building non Gui application modules without Qt possible.  
+This makes building non Gui application modules without Qt is also possible.  
 
 ## Prerequisites
 
-Before building some packages need to be installed:
+Easiest is to prepare a Linux system by following the 
+[cpp.Dockerfile](https://git.scanframe.com/docker/gitlab-runner/-/blob/main/builder/cpp.Dockerfile "Link to repository")
+from the [gitlab-runner repository](https://git.scanframe.com/docker/gitlab-runner "Docker image build repository."). 
 
-* cmake (Linux) _(Required)_
-* libopengl0 (Linux) _(Required)_
-* libgl1-mesa-dev (Linux) _(Stops cmake warnings)_
-* libxkbcommon-dev (Linux) _(Stops cmake warnings)_
-* libxkbfile-dev (Linux) _(Stops cmake warnings)
-* libvulkan-dev (Linux) _(Stops cmake warnings)_
-* libssl-dev (Linux) _(Required)_
-* gcc or gcc-12(Linux) _(Required)_
-* g++ or g++-12 (Linux) _(Required)_
-* doxygen (Linux, Cygwin) _(Required)_
-* graphviz (Linux, Cygwin) _(Required)_
+An image can be pulled from `nexus.scanframe.com/gnu-cpp:24.04-6.7.2` or [docker.com**](https://hub.docker.com/u/avolphen) 
+by `avolphen/gnu-cpp:latest`.  
+Where the tag **24.04** is the Ubuntu-LTS version and **6.7.2** the Qt-version.
 
-### Linux
+The `build.sh` a symbolic link to `cmake/lib/bin/build.sh`, part of the [`cmake-lib`](https://git.scanframe.com/library/cmake-lib) 
+common repository to build Qt projects. 
 
-```bash
-sudo apt install libopengl0 libgl1-mesa-dev libxkbcommon-dev libxkbfile-dev libvulkan-dev doxygen graphviz
+To install required packages for non-docker usage `./build.sh --required` is called also from a Cygwin-bash command line for 
+Windows packages using `winget`. (see [Cygwin bash scripts](https://git.scanframe.com/shared/bin-bash)) 
+
+The `docker-build.sh` script forwards commands to the `build.sh` script to the container.  
+To operate faster a running container can be started using `./docker-build.sh start` command.  
+The script check if the container is running attaches to it to execute the command instead of running it.  
+To use **JetBrains Gateway** start the container using command `./docker-build.sh sshd` which starts an 
+ssh-service on port 3022 which can be connected to with user "**user**" and password "**user**".
+
+Listing of `docker-build.sh` commands.
+
+```text
+Same as 'build.sh' script but running from Docker image 'nexus.scanframe.com/gnu-cpp:24.04-6.7.2' but allows Docker specific commands.
+
+Usage: docker-build.sh [command] <args...>
+  pull      : Pulls the docker image 'nexus.scanframe.com/gnu-cpp:24.04-6.7.2' from the Docker registry.
+  run       : Runs a command as user 'user' in the container using Docker command
+              'run' or 'exec' depending on a running container in the background.
+  start     : Starts/Detaches a container named 'cpp_builder' in the background.
+  attach    : Attaches to the  in the background running container named 'cpp_builder'.
+  status    : Returns info of the running container 'cpp_builder' in the background.
+  stop      : Stops the container named 'cpp_builder' running in the background.
+  kill      : Kills the container named 'cpp_builder' running in the background.
+  versions  : Shows versions of most installed applications within the container.
+  sshd      : Starts sshd service on port 3022 to allow remote control.
+
+Set environment variable 'DOCKER_BUILD=1' for using 'docker' as offset in the build directory to prevent mixing host build directories.
+When a the container is detached it executes the 'build.sh' script by attaching to the container which is much faster.
 ```
 
-### Windows Build (Cross Compile & Run from Wine)
+Listing of `build.sh` options.  
+This script is used to execute the workflows from the GitLab pipelines.
 
-To cross compile for Windows-64bit the MinGW 64bit c++ compiler must be installed.
+```text
+Executes CMake commands using the 'CMakePresets.json' and 'CMakeUserPresets.json' files
+of which the first is mandatory to exist.
 
-```bash
-sudo apt install g++-mingw-w64-x86-64
+Usage: build.sh [<options>] [<presets> ...]
+  -h, --help       : Shows this help.
+  -d, --debug      : Debug: Show executed commands rather then executing them.
+  -i, --info       : Return information on all available build, test and package presets.
+  -s, --submodule  : Return branch information on all Git submodules of last commit.
+  -p, --package    : Create packages using a preset.
+  --required       : Install required Linux packages using debian apt package manager.
+  -m, --make       : Create build directory and makefiles only.
+  -f, --fresh      : Configure a fresh build tree, removing any existing cache file.
+  -C, --wipe       : Wipe clean build tree directory by removing all contents from the build directory.
+  -c, --clean      : Cleans build targets first (adds build option '--clean-first')
+  -b, --build      : Build target and make config when it does not exist.
+  -B, --build-only : Build target only and fail when the configuration does note exist.
+  -t, --test       : Runs the ctest application using a test-preset.
+  -r, --regex      : Regular expression on which test names are to be executed.
+  -w, --workflow   : Runs the passed work flow presets.
+  -l, --list-only  : Lists the ctest test defined application by the project and selected preset.
+  -n, --target     : Overrides the build targets set in the preset by a single target.
+  Where <sub-dir> is the directory used as build root for the CMakeLists.txt in it.
+  This is usually the current directory '.'.
+  When the <target> argument is omitted it defaults to 'all'.
+  The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
+
+  Examples:
+    Get all project presets info: ./build.sh -i
+    Make/Build project: ./build.sh -b my-build-preset1 my-build-preset2
+    Test project: ./build.sh -t my-test-preset1 my-test-preset2
+    Make/Build/Test/Pack project: ./build.sh -w my-workflow-preset
 ```
 
-#### Work-around "9.3-posix" error (Ubuntu 22.04 LTS)
-
-For some reason WineHQ-staging (stable not present yet) references to directory `/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix` 
-which is not  it is not available but `/usr/lib/gcc/x86_64-w64-mingw32/10-posix` is.
-
-To fix this a symbolic link need to be created for the `9.3-posix` directory pointing to `10-posix` for now.
-
-```bash
-sudo ln -s  10-posix  /usr/lib/gcc/x86_64-w64-mingw32/9.3-posix
-```
-
-
-#### Preparing Windows Qt6 for Linux 
-
-To access the needed Windows build DLL's and binaries for compiling the next directory is only copied to a 
-Linux directory (`~/lib/QtWin/<qtversion>/mingw_64`).
-
-The script `cross-windows-fix.sh` which creates links to the needed executable binaries required by the CMake files.
-It also appends some to Cmake files to allow them to compile.
-
-Running the application from wine using the `wine-exec.sh` script a Wine version 7 or later is required.
-For this run the next line to accomplish that.
-```bash 
-wget -q https://dl.winehq.org/wine-builds/winehq.key -O- | apt-key add -
-apt-add-repository "deb https://dl.winehq.org/wine-builds/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/ $(lsb_release -cs) main"
-apt install --install-recommends winehq-stable
-```
-
-### Windows Cygwin
-
-```bash
-apt-cyg install doxygen graphviz
-```
-
-For Cygwin a script `apt-cyg` it there to install packages from the command line. 
-
-## General Building (Compiling/Linking) 
-
-### Linux Build
-
-Use the `build.sh` to call the `cmake` command having the needed options. 
-All projects are configured to drop the result into the **`./bin`** directory.
-
-The usage is `./build.sh <directory>`.<br>
-Where the directory is any with a `CMakelists.txt` project file in it.
-
-On Ubuntu 20.04 LTS in order to use the GCC 10 compiler the next packages need to be installed.
-
-```bash
-sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10 libstdc++-10-dev libstdc++-10-doc
-```
-Check with this command the C++20 GNU defined values.  
-```bash
-g++-10 -x c++ -std=c++2a -dM -E - </dev/null | grep -i GNU
-```
-
-### Windows Build
+## Cygwin for Builds from Windows
 
 Install **Cygwin** to build this project the same way as for Linux using the same bash script.
 
->For installing **Cygwin** see the git repository [Cygwin Bash Scripts](https://git.scanframe.com/shared/bin-bash)
+>For installing **Cygwin** see the git repository [Cygwin Bash Scripts](https://git.scanframe.com/shared/bin-bash).  
 >This allows to call the bash `build.sh` to be called in side Windows.
 
+
+## Compiler Issues and DLL
+
+Check with these commands if the C++20 is supported on compilers.
+
+```bash
+g++ -x c++ -std=c++20 -dM -E - </dev/null | grep __cplusplus
+x86_64-w64-mingw32-g++ -x c++ -std=c++20 -dM -E - </dev/null | grep __cplusplus 
+```
+
+The correct version of `libstdc++-6.dll` is required and depends on the compiler.
+Qt on Windows as of (2024-10-09) only supports GNU compiler version 10 and 11 
+which comes with a different `libstdc++-6.dll` then for version 13.
+
+On Linux running Wine this is no problem setting the `WINEPATH` environment 
+variable to look for the correct location first but running the Linux compiled
+version on actual Windows requires `libstdc++-6.dll` to be copied into the 
+application or its `lib` directory.

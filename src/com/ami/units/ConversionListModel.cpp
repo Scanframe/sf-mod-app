@@ -165,7 +165,7 @@ QVariant ConversionListModel::headerData(int section, Qt::Orientation orientatio
 		switch (section)
 		{
 			case cFromUnit:
-				return QString(tr("unit"));
+				return QString(tr("Unit"));
 			case cFromPrecision:
 				return QString(tr("Precision"));
 			case cToUnit:
@@ -175,7 +175,7 @@ QVariant ConversionListModel::headerData(int section, Qt::Orientation orientatio
 			case cMultiplier:
 				return QString(tr("Multiplier"));
 			case cOffset:
-				return QString(tr("offset"));
+				return QString(tr("Offset"));
 			default:
 				return QString("Field %1").arg(section);
 		}

@@ -7,6 +7,22 @@
 namespace sf
 {
 
+namespace numbers
+{
+
+#if __cplusplus <= 201703L
+
+template<typename T>
+inline constexpr T pi_v = static_cast<T>(3.141592653589793238462643383279502884L);
+
+#else
+
+template<typename T>
+inline constexpr T pi_v = ::std::numbers::pi_v<T>;
+
+#endif
+}// namespace numbers
+
 /**
  * @brief Rounds the passed value to a multiple of the rnd value.
  */
@@ -176,7 +192,7 @@ T ipow(T base, int exponent)
 template<typename T>
 inline constexpr T toRadials(T degrees)
 {
-	return degrees * (std::numbers::pi_v<T> / 180);
+	return degrees * (numbers::pi_v<T> / 180);
 }
 
 /**
@@ -185,7 +201,7 @@ inline constexpr T toRadials(T degrees)
 template<typename T>
 inline constexpr T toDegrees(T radials)
 {
-	return radials / std::numbers::pi_v<T> * 180;
+	return radials / numbers::pi_v<T> * 180;
 }
 
 /**

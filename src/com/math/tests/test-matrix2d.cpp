@@ -3,6 +3,22 @@
 #include <sstream>
 #include <test/catch.h>
 
+namespace
+{
+/**
+ * Helper class getting streamed output in to a string for comparison of type and value.
+ */
+struct
+{
+		std::string operator()(const sf::Matrix2D& m)
+		{
+			std::ostringstream os;
+			return dynamic_cast<std::ostringstream&>(os << m).str();
+		}
+} Helper;
+
+}// namespace
+
 TEST_CASE("sf::Matrix2D", "[con][generic][vector]")
 {
 	using Catch::Matchers::Equals, Catch::Approx;
@@ -71,8 +87,8 @@ TEST_CASE("sf::Matrix2D", "[con][generic][vector]")
 		std::istringstream("({2,3},{4,6})") >> m2;
 		CHECK(m2 == sf::Matrix2D(2.0, 3.0, 4.0, 6.0));
 		// Output string stream.
-		CHECK((std::ostringstream() << sf::Matrix2D(2.0, 3.0, 4.0, 6.0)).str() == "({2,3},{4,6})");
-		CHECK((std::ostringstream() << sf::Matrix2D(0.123e4, 3.432, +43e+9, -0.6e-4)).str() == "({1230,3.432},{43e9,-6e-05})");
+		CHECK(Helper(sf::Matrix2D(2.0, 3.0, 4.0, 6.0)) == "({2,3},{4,6})");
+		CHECK(Helper(sf::Matrix2D(0.123e4, 3.432, +43e+9, -0.6e-4)) == "({1230,3.432},{43e9,-6e-05})");
 		// Check if it throws correct exception on faulty string argument.
 		CHECK_THROWS_AS(sf::Matrix2D().fromString(std::string("({1,0}, {0,1})")), std::invalid_argument);
 	}

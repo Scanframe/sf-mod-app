@@ -2,8 +2,8 @@
 #include "TStrings.h"
 #include "dbgutils.h"
 #include "gnu_compat.h"
-#include "pointer.h"
 #include "string.h"
+#include <csignal>
 #include <cstring>
 #include <dirent.h>
 #include <libgen.h>
@@ -42,7 +42,7 @@ bool fileUnlink(const std::string& path)
 #if IS_WIN
 	if (::_unlink(path.c_str()) == -1)
 #else
-	if (::unlink(path.c_str()) == -1)
+	if (unlink(path.c_str()) == -1)
 #endif
 	{
 		char buffer[BUFSIZ];

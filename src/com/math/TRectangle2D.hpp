@@ -4,7 +4,7 @@ namespace sf
 {
 
 template<typename T>
-TRect2D<T>::TRect2D(std::initializer_list<T> list)
+TRectangle2D<T>::TRectangle2D(std::initializer_list<T> list)
 {
 	// Check the given initializer size.
 	if (list.size() != sizeof(_data.array) / sizeof(_data.array[0]))
@@ -17,7 +17,7 @@ TRect2D<T>::TRect2D(std::initializer_list<T> list)
 }
 
 template<typename T>
-TRect2D<T>::TRect2D(const TRect2D& rect)
+TRectangle2D<T>::TRectangle2D(const TRectangle2D& rect)
 {
 	_data.rect.left = rect._data.rect.left;
 	_data.rect.bottom = rect._data.rect.bottom;
@@ -26,13 +26,13 @@ TRect2D<T>::TRect2D(const TRect2D& rect)
 }
 
 template<typename T>
-TRect2D<T>::TRect2D(const TRect2D&& rect)
+TRectangle2D<T>::TRectangle2D(const TRectangle2D&& rect)
 {
 	_data = rect._data;
 }
 
 template<typename T>
-TRect2D<T>::TRect2D(T left, T bottom, T right, T top)
+TRectangle2D<T>::TRectangle2D(T left, T bottom, T right, T top)
 {
 	_data.rect.left = left;
 	_data.rect.bottom = bottom;
@@ -41,27 +41,27 @@ TRect2D<T>::TRect2D(T left, T bottom, T right, T top)
 }
 
 template<typename T>
-TRect2D<T>::TRect2D(const TVector2D<T>& loLeft, const TVector2D<T>& upRight)
+TRectangle2D<T>::TRectangle2D(const TVector2D<T>& loLeft, const TVector2D<T>& upRight)
 {
 	_data.pt[0] = loLeft._data.coord;
 	_data.pt[1] = upRight._data.coord;
 }
 
 template<typename T>
-void TRect2D<T>::clear()
+void TRectangle2D<T>::clear()
 {
 	_data.rect.left = _data.rect.top = _data.rect.right = _data.rect.bottom = 0.0;
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::assign(const TRect2D& rect)
+TRectangle2D<T>& TRectangle2D<T>::assign(const TRectangle2D& rect)
 {
 	_data = rect._data;
 	return *this;
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::assign(T left, T bottom, T right, T top)
+TRectangle2D<T>& TRectangle2D<T>::assign(T left, T bottom, T right, T top)
 {
 	_data.rect.left = left;
 	_data.rect.bottom = bottom;
@@ -71,7 +71,7 @@ TRect2D<T>& TRect2D<T>::assign(T left, T bottom, T right, T top)
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::assign(const TVector2D<T>& loLeft, const TVector2D<T>& upRight)
+TRectangle2D<T>& TRectangle2D<T>::assign(const TVector2D<T>& loLeft, const TVector2D<T>& upRight)
 {
 	_data.pt[0] = loLeft._data.coord;
 	_data.pt[1] = upRight._data.coord;
@@ -84,7 +84,7 @@ TRect2D<T>& TRect2D<T>::assign(const TVector2D<T>& loLeft, const TVector2D<T>& u
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::assignWidthHeight(T left, T bottom, T w, T h)
+TRectangle2D<T>& TRectangle2D<T>::assignWidthHeight(T left, T bottom, T w, T h)
 {
 	_data.rect.left = left;
 	_data.rect.bottom = bottom;
@@ -94,7 +94,7 @@ TRect2D<T>& TRect2D<T>::assignWidthHeight(T left, T bottom, T w, T h)
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::assignWidthHeight(const TVector2D<T>& bottom_left, const TVector2D<T>& wh)
+TRectangle2D<T>& TRectangle2D<T>::assignWidthHeight(const TVector2D<T>& bottom_left, const TVector2D<T>& wh)
 {
 	_data.rect.left = bottom_left.x();
 	_data.rect.bottom = bottom_left.y();
@@ -104,13 +104,19 @@ TRect2D<T>& TRect2D<T>::assignWidthHeight(const TVector2D<T>& bottom_left, const
 }
 
 template<typename T>
-inline bool TRect2D<T>::operator==(const TRect2D<T>& rect) const
+inline bool TRectangle2D<T>::operator==(const TRectangle2D<T>& rect) const
 {
 	return isEqual(rect);
 }
 
 template<typename T>
-bool TRect2D<T>::isEmpty() const
+inline bool TRectangle2D<T>::operator!=(const TRectangle2D<T>& rect) const
+{
+	return !isEqual(rect);
+}
+
+template<typename T>
+bool TRectangle2D<T>::isEmpty() const
 {
 	if (std::fabs(_data.rect.left) > tolerance)
 		return false;
@@ -124,7 +130,7 @@ bool TRect2D<T>::isEmpty() const
 }
 
 template<typename T>
-bool TRect2D<T>::isEqual(const TRect2D<T>& rect) const
+bool TRectangle2D<T>::isEqual(const TRectangle2D<T>& rect) const
 {
 	if (std::fabs(_data.rect.left - rect._data.rect.left) > tolerance)
 		return false;
@@ -138,7 +144,7 @@ bool TRect2D<T>::isEqual(const TRect2D<T>& rect) const
 }
 
 template<typename T>
-bool TRect2D<T>::contains(const TVector2D<T>& point) const
+bool TRectangle2D<T>::contains(const TVector2D<T>& point) const
 {
 	return point.x() >= _data.rect.left &&
 		point.x() <= _data.rect.right &&
@@ -147,7 +153,7 @@ bool TRect2D<T>::contains(const TVector2D<T>& point) const
 }
 
 template<typename T>
-bool TRect2D<T>::contains(const TRect2D<T>& other) const
+bool TRectangle2D<T>::contains(const TRectangle2D<T>& other) const
 {
 	return other._data.rect.left >= _data.rect.left &&
 		other._data.rect.right <= _data.rect.right &&
@@ -156,7 +162,7 @@ bool TRect2D<T>::contains(const TRect2D<T>& other) const
 }
 
 template<typename T>
-bool TRect2D<T>::touches(const TRect2D<T>& other) const
+bool TRectangle2D<T>::touches(const TRectangle2D<T>& other) const
 {
 	return other._data.rect.right >= _data.rect.left &&
 		other._data.rect.left <= _data.rect.right &&
@@ -165,61 +171,61 @@ bool TRect2D<T>::touches(const TRect2D<T>& other) const
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::bottomLeft() const
+TVector2D<T> TRectangle2D<T>::bottomLeft() const
 {
 	return {_data.rect.left, _data.rect.bottom};
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::topRight() const
+TVector2D<T> TRectangle2D<T>::topRight() const
 {
 	return {_data.rect.right, _data.rect.top};
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::bottomRight() const
+TVector2D<T> TRectangle2D<T>::bottomRight() const
 {
 	return {_data.rect.right, _data.rect.bottom};
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::topLeft() const
+TVector2D<T> TRectangle2D<T>::topLeft() const
 {
 	return {_data.rect.left, _data.rect.top};
 }
 
 template<typename T>
-T TRect2D<T>::width() const
+T TRectangle2D<T>::width() const
 {
 	return _data.rect.right - _data.rect.left;
 }
 
 template<typename T>
-T TRect2D<T>::height() const
+T TRectangle2D<T>::height() const
 {
 	return _data.rect.top - _data.rect.bottom;
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::Size() const
+TVector2D<T> TRectangle2D<T>::Size() const
 {
 	return {width(), height()};
 }
 
 template<typename T>
-T TRect2D<T>::area() const
+T TRectangle2D<T>::area() const
 {
 	return width() * height();
 }
 
 template<typename T>
-TVector2D<T> TRect2D<T>::center() const
+TVector2D<T> TRectangle2D<T>::center() const
 {
 	return {_data.rect.left + width() / 2, _data.rect.bottom + height() / 2};
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::normalize()
+TRectangle2D<T>& TRectangle2D<T>::normalize()
 {
 	if (_data.rect.left > _data.rect.right)
 		std::swap(_data.rect.left, _data.rect.right);
@@ -229,7 +235,7 @@ TRect2D<T>& TRect2D<T>::normalize()
 }
 
 template<typename T>
-TRect2D<T> TRect2D<T>::normalized() const
+TRectangle2D<T> TRectangle2D<T>::normalized() const
 {
 	return {
 		std::min(_data.rect.left, _data.rect.right),
@@ -240,7 +246,7 @@ TRect2D<T> TRect2D<T>::normalized() const
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::offset(T dx, T dy)
+TRectangle2D<T>& TRectangle2D<T>::offset(T dx, T dy)
 {
 	_data.rect.left += dx;
 	_data.rect.bottom += dy;
@@ -250,13 +256,13 @@ TRect2D<T>& TRect2D<T>::offset(T dx, T dy)
 }
 
 template<typename T>
-inline TRect2D<T> TRect2D<T>::offsetBy(T dx, T dy) const
+inline TRectangle2D<T> TRectangle2D<T>::offsetBy(T dx, T dy) const
 {
-	return TRect2D(*this).offset(dx, dy);
+	return TRectangle2D(*this).offset(dx, dy);
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::moveTo(T x, T y)
+TRectangle2D<T>& TRectangle2D<T>::moveTo(T x, T y)
 {
 	_data.rect.right = x + width();
 	_data.rect.top = y + height();
@@ -266,25 +272,25 @@ TRect2D<T>& TRect2D<T>::moveTo(T x, T y)
 }
 
 template<typename T>
-TRect2D<T> TRect2D<T>::movedTo(T x, T y)
+TRectangle2D<T> TRectangle2D<T>::movedTo(T x, T y)
 {
-	return TRect2D(*this).moveTo(x, y);
+	return TRectangle2D(*this).moveTo(x, y);
 }
 
 template<typename T>
-inline TRect2D<T>& TRect2D<T>::operator+=(const TVector2D<T>& delta)
+inline TRectangle2D<T>& TRectangle2D<T>::operator+=(const TVector2D<T>& delta)
 {
 	return offset(delta.x(), delta.y());
 }
 
 template<typename T>
-inline TRect2D<T>& TRect2D<T>::operator-=(const TVector2D<T>& delta)
+inline TRectangle2D<T>& TRectangle2D<T>::operator-=(const TVector2D<T>& delta)
 {
 	return offset(-delta.x(), -delta.y());
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::inflate(T dx, T dy)
+TRectangle2D<T>& TRectangle2D<T>::inflate(T dx, T dy)
 {
 	_data.rect.left -= dx;
 	_data.rect.bottom -= dy;
@@ -295,25 +301,25 @@ TRect2D<T>& TRect2D<T>::inflate(T dx, T dy)
 }
 
 template<typename T>
-inline TRect2D<T>& TRect2D<T>::inflate(const TVector2D<T>& delta)
+inline TRectangle2D<T>& TRectangle2D<T>::inflate(const TVector2D<T>& delta)
 {
 	return inflate(delta.x(), delta.y());
 }
 
 template<typename T>
-TRect2D<T> TRect2D<T>::inflatedBy(T dx, T dy) const
+TRectangle2D<T> TRectangle2D<T>::inflatedBy(T dx, T dy) const
 {
 	return {_data.rect.left - dx, _data.rect.bottom - dy, _data.rect.top + dy, _data.rect.right + dx};
 }
 
 template<typename T>
-inline TRect2D<T> TRect2D<T>::inflatedBy(const TVector2D<T>& delta) const
+inline TRectangle2D<T> TRectangle2D<T>::inflatedBy(const TVector2D<T>& delta) const
 {
 	return inflatedBy(delta.x(), delta.y());
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::operator&=(const TRect2D& other)
+TRectangle2D<T>& TRectangle2D<T>::operator&=(const TRectangle2D& other)
 {
 	if (!isEmpty())
 	{
@@ -331,7 +337,7 @@ TRect2D<T>& TRect2D<T>::operator&=(const TRect2D& other)
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::operator|=(const TRect2D<T>& other)
+TRectangle2D<T>& TRectangle2D<T>::operator|=(const TRectangle2D<T>& other)
 {
 	// When the passed rectangle is empty ignore it.
 	if (!other.isEmpty())
@@ -354,19 +360,19 @@ TRect2D<T>& TRect2D<T>::operator|=(const TRect2D<T>& other)
 }
 
 template<typename T>
-TRect2D<T> TRect2D<T>::operator&(const TRect2D& other) const
+TRectangle2D<T> TRectangle2D<T>::operator&(const TRectangle2D& other) const
 {
-	return (TRect2D(*this) &= other).normalize();
+	return (TRectangle2D(*this) &= other).normalize();
 }
 
 template<typename T>
-TRect2D<T> TRect2D<T>::operator|(const TRect2D<T>& other) const
+TRectangle2D<T> TRectangle2D<T>::operator|(const TRectangle2D<T>& other) const
 {
-	return (TRect2D(*this) |= other).normalize();
+	return (TRectangle2D(*this) |= other).normalize();
 }
 
 template<typename T>
-std::string TRect2D<T>::toString() const
+std::string TRectangle2D<T>::toString() const
 {
 	return std::string() + '(' +
 		sf::toString<T>(_data.rect.left) + ',' +
@@ -376,7 +382,7 @@ std::string TRect2D<T>::toString() const
 }
 
 template<typename T>
-TRect2D<T>& TRect2D<T>::fromString(const std::string& s) noexcept(false)
+TRectangle2D<T>& TRectangle2D<T>::fromString(const std::string& s) noexcept(false)
 {
 	std::regex re(R"(\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\))", std::regex::icase);
 	std::smatch match;
@@ -397,7 +403,7 @@ TRect2D<T>& TRect2D<T>::fromString(const std::string& s) noexcept(false)
 }
 
 template<typename T>
-std::istream& operator>>(std::istream& is, TRect2D<T>& rect)
+std::istream& operator>>(std::istream& is, TRectangle2D<T>& rect)
 {
 	std::string s;
 	auto delimiter = ')';
@@ -407,7 +413,7 @@ std::istream& operator>>(std::istream& is, TRect2D<T>& rect)
 }
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const TRect2D<T>& rect)
+std::ostream& operator<<(std::ostream& os, const TRectangle2D<T>& rect)
 {
 	return os << rect.toString();
 }

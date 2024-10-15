@@ -102,16 +102,16 @@ T TVector2D<T>::angle() const
 		if (v1._data.coord.x < 0.0)
 		{
 			if (v1._data.coord.y < 0.0)
-				rv = std::numbers::pi / 2;
+				rv = numbers::pi_v<T> / 2;
 			else
-				rv = -std::numbers::pi / 2;
+				rv = -numbers::pi_v<T> / 2;
 		}
 		else
 		{
 			if (v1._data.coord.y < 0.0)
-				rv = -std::numbers::pi / 2;
+				rv = -numbers::pi_v<T> / 2;
 			else
-				rv = std::numbers::pi / 2;
+				rv = numbers::pi_v<T> / 2;
 		}
 	}
 	else
@@ -129,7 +129,7 @@ T TVector2D<T>::angleNormalized() const
 	auto rv = angle();
 	// When the angle is still negative add 360 degrees in radials to it.
 	if (rv < 0.0)
-		rv += 2.0 * std::numbers::pi;
+		rv += 2.0 * numbers::pi_v<T>;
 	return rv;
 }
 
@@ -163,7 +163,7 @@ T TVector2D<T>::angle(const TVector2D& v) const
 	// When the cross product is zero the 2 vectors are parallel to each other and thew angle is therefore zero.
 	if (std::fabs(cp) < std::numeric_limits<T>::epsilon())
 	{
-		return (dp > 0) ? 0.0 : std::numbers::pi;
+		return (dp > 0) ? 0.0 : numbers::pi_v<T>;
 	}
 	// Calculation using dot-product.
 	return std::acos(dp / len);

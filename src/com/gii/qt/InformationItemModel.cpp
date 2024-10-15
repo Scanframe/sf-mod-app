@@ -128,7 +128,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 				case vcDescription:
 					return QString(tr("Description"));
 				case vcUnit:
-					return QString(tr("unit"));
+					return QString(tr("Unit"));
 				case vcType:
 					return QString(tr("Type"));
 				case vcFlags:

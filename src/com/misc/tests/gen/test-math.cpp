@@ -106,14 +106,14 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 		// Scope for type T as double.
 		{
 			typedef double T;
-			CHECK(sf::toDegrees<T>(std::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
-			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(std::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toDegrees<T>(sf::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
 		}
 		// Scope for type T as long double.
 		{
 			typedef double T;
-			CHECK(sf::toDegrees<T>(std::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
-			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(std::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toDegrees<T>(sf::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
 		}
 	}
 

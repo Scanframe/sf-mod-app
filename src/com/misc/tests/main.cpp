@@ -1,5 +1,6 @@
 #include <iostream>
 #include <misc/gen/target.h>
+#include <misc/gen/dbgutils.h>
 #include <test/catch.h>
 
 // Some user variable you want to be able to set
@@ -7,7 +8,7 @@ int debug_level = 0;
 
 #if IS_QT
 	#if IS_WIN
-		#include "misc/win/win_utils.h"
+		#include <misc/win/win_utils.h>
 	#endif
 	#include <QApplication>
 	#include <QDir>
@@ -25,7 +26,10 @@ int main(int argc, char* argv[])
 	#if !IS_WIN
 	std::unique_ptr<QCoreApplication> app((display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
 	#else
-	std::unique_ptr<QCoreApplication> app((sf::isRunningWine() && display.length() > 0) ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
+	//printf("libstdc++-6.dll: %s\n", sf::getModulePath("libstdc++-6.dll").c_str());
+	// When running Wine and DISPLAY variable is set or Windows is the OS run the graphics tests.
+	bool graphics = (sf::isRunningWine() && !display.isEmpty()) || !sf::isRunningWine();
+	std::unique_ptr<QCoreApplication> app(graphics ? new QApplication(argc, argv) : new QCoreApplication(argc, argv));
 	#endif
 	// InitializeBase using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());

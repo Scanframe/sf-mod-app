@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Variable.h"
-#include "gii/global.h"
 #include "gii/gen/UnitConversionServer.h"
+#include "gii/global.h"
+#include <memory>
 
 namespace sf
 {
@@ -10,10 +11,10 @@ namespace sf
 /**
  * @brief Extended #UnitConversionServer with master and slaved variables.
  */
-class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private VariableHandler
+class _GII_CLASS UnitConversionServerEx : public UnitConversionServer
+	, private VariableHandler
 {
 	public:
-
 		/**
 		 * @brief Default constructor.
 		 */
@@ -53,7 +54,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		/**
 		 * @brief Enables or disables the conversion on Variables that are following the master.
 		 *
-		 * This is normally controlled bu the Enable variable when linked.
+		 * This is normally controlled by the Enable variable when linked.
 		 *
 		 * @param enable True to enable False to disable.
 		 */
@@ -100,7 +101,6 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		bool Handler(UnitConversionEvent& ev) override;
 
 	private:
-
 		/**
 		 * @brief Handler which is registered to handle the global unit conversion calls.
 		 */
@@ -118,7 +118,7 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		/**
 		 * @brief Entry binding a slave variables to master variable.
 		 */
-		class Entry :private VariableHandler
+		class Entry : private VariableHandler
 		{
 			public:
 				// Constructor.
@@ -168,4 +168,4 @@ class _GII_CLASS UnitConversionServerEx :public UnitConversionServer, private Va
 		std::map<Variable::id_type, Entry*> _map;
 };
 
-}
+}// namespace sf

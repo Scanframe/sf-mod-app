@@ -497,16 +497,23 @@ std::string gcvtString(double value, int digits)
 	{
 		digits = std::numeric_limits<decltype(value)>::digits10;
 	}
+//#error "Fix the Windows (2) and Linux (1) superfluous zero put at the exponent."
 #if IS_WIN
 	::_gcvt_s(buf, sizeof(buf), value, digits);
+	// Only needed for Windows since it adds a trailing '.' even when not required.
+	auto rv = trimRight(decimal_separator_fix(buf, sizeof(buf)), ".");
+/*
+	// Fix the discrepancy between Windows and linux function.
+	auto pos = rv.find('e');
+	if (pos != std::string::npos && pos < rv.size())
+	{
+		substr(rv.subpos)
+	}
+*/
+	return rv;
 #else
 	// Convert the string.
 	::gcvt(value, digits, buf);
-#endif
-#if IS_WIN
-	// Only needed for Windows since it adds a trailing '.' even when not required.
-	return trimRight(decimal_separator_fix(buf, sizeof(buf)), ".");
-#else
 	// Get the value fixed decimal separator string.
 	return decimal_separator_fix(buf, sizeof(buf));
 #endif
@@ -522,7 +529,7 @@ std::string qgcvtString(long double value, int digits)
 		digits = std::numeric_limits<decltype(value)>::digits10;
 	}
 #if IS_WIN
-	// FIXME: Windowqs does not have a equivalent qgcvt() function.
+	// FIXME: Windows does not have a equivalent qgcvt() function.
 	::_gcvt_s(buf, sizeof(buf), value, digits);
 #else
 	// Convert the string.
@@ -567,12 +574,12 @@ std::string numberString(double value, int digits, bool sign_on)
 	}
 #if IS_WIN
 	rv.resize(_CVTBUFSIZE + 1);
-	_ecvt_s(rv.data(), rv.size(), value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign);
+	::_ecvt_s(rv.data(), rv.size(), value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign);
 	rv.resize(strlen(rv.c_str()));
 #else
 	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 	rv.resize(std::numeric_limits<decltype(value)>::max_digits10 + 1);
-	ecvt_r(value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign, rv.data(), rv.size());
+	::ecvt_r(value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign, rv.data(), rv.size());
 	rv.resize(std::numeric_limits<decltype(value)>::digits10);
 #endif
 	// Round the integer value up to its required digits.

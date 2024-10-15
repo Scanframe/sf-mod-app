@@ -231,7 +231,7 @@ int getSustainTimer()
 #if IS_QT
 	return globalSustainQtTimer->_timer.interval();
 #elif IS_WIN
-	return StaticSustainWinTimer.getInterval();
+	return globalSustainWinTimer->getInterval();
 #else
 	return 0;
 #endif

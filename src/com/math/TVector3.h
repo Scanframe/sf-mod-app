@@ -375,7 +375,7 @@ std::istream& TVector3<T, T2>::Read(std::istream& is)
 template<class T, class T2>
 std::string TVector3<T, T2>::GetString() const
 {
-	return std::stringstream() << toString<T>(_data.x) << ',' << toString<T>(_data.y) << ',' << toString<T>(_data.z).str();
+	return std::ostringstream() << toString<T>(_data.x) << ',' << toString<T>(_data.y) << ',' << toString<T>(_data.z).str();
 }
 
 template<class T, class T2>

@@ -44,7 +44,7 @@ struct VariableEdit::Private : QObject
 		{
 			_labelName = new QLabel("&Name");
 			_editValue = new LineEdit("Value");
-			_labelUnit = new QLabel("unit");
+			_labelUnit = new QLabel("Unit");
 			//
 			_labelName->setObjectName("name");
 			_editValue->setObjectName("value");

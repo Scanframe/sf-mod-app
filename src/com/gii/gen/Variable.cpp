@@ -2155,7 +2155,7 @@ std::string Variable::getFieldName(int field)
 		case vfFlags:
 			return "Flags";
 		case vfUnit:
-			return "unit";
+			return "Unit";
 		case vfType:
 			return "Type";
 		case vfConversionType:

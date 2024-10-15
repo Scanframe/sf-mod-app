@@ -28,7 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Quat.h
 	TVector2D.h TVector2D.hpp
 	TMatrix2D.h TMatrix2D.hpp
-	TRect2D.h TRect2D.hpp
+	TRectangle2D.h TRectangle2D.hpp
 	TVector3.h
 	TVector4.h
 )

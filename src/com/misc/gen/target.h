@@ -110,4 +110,10 @@ Defines these with true (1) or false (0):
 	#if IS_SL_TARGET
 		#pragma message("Target: Static Library")
 	#endif
+// Report the C++ version using preprocessor directives
+	#define _STRINGIFY_(x) #x
+	#define _TOSTRING_(x) _STRINGIFY_(x)
+	#pragma message("C++: " _TOSTRING_(__cplusplus))
+	#undef _STRINGIFY_
+	#undef _TOSTRING_
 #endif// REPORT_TARGET

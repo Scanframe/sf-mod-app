@@ -3,6 +3,22 @@
 #include <sstream>
 #include <test/catch.h>
 
+namespace
+{
+/**
+ * Helper class getting streamed output in to a string for comparison of type and value.
+ */
+struct
+{
+		std::string operator()(const sf::Vector2D& v)
+		{
+			std::ostringstream os;
+			return dynamic_cast<std::ostringstream&>(os << v).str();
+		}
+} Helper;
+
+}// namespace
+
 TEST_CASE("sf::Vector2D", "[con][generic][vector]")
 {
 	using Catch::Matchers::Equals, Catch::Approx;
@@ -45,7 +61,7 @@ TEST_CASE("sf::Vector2D", "[con][generic][vector]")
 		CHECK(v2[0] == Catch::Approx(1.23).margin(sf::Vector2D::tolerance));
 		CHECK(v2[1] == Catch::Approx(4.56).margin(sf::Vector2D::tolerance));
 		// Output string stream.
-		CHECK((std::ostringstream() << v2).str() == "(1.23,4.56)");
+		CHECK(Helper(v2) == "(1.23,4.56)");
 		// Check if it throws correct exception on faulty string argument.
 		CHECK_THROWS_AS(v1.fromString(std::string("[1.23,345]")), std::invalid_argument);
 	}
