@@ -110,6 +110,7 @@ list(APPEND _CoverageDirs
 	"src/com/misc/lnx"
 	"src/com/gii/gen"
 	"src/com/gii/qt"
+	"src/com/math"
 )
 Sf_AddTestCoverageReport("coverage-report" "${_CoverageDirs}" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov")
 
