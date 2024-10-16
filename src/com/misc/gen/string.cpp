@@ -502,14 +502,14 @@ std::string gcvtString(double value, int digits)
 	::_gcvt_s(buf, sizeof(buf), value, digits);
 	// Only needed for Windows since it adds a trailing '.' even when not required.
 	auto rv = trimRight(decimal_separator_fix(buf, sizeof(buf)), ".");
-/*
+	/*
 	// Fix the discrepancy between Windows and linux function.
 	auto pos = rv.find('e');
 	if (pos != std::string::npos && pos < rv.size())
 	{
 		substr(rv.subpos)
 	}
-*/
+	*/
 	return rv;
 #else
 	// Convert the string.

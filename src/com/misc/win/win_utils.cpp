@@ -9,7 +9,7 @@ namespace sf
 bool isRunningWine()
 {
 	HMODULE handle = ::GetModuleHandleA("ntdll.dll");
-	if (handle && ::GetProcAddress(handle , "wine_get_version"))
+	if (handle && ::GetProcAddress(handle, "wine_get_version"))
 	{
 		return true;
 	}
