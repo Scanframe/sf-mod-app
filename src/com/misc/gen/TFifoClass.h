@@ -9,7 +9,7 @@ namespace sf
  * Provides an array operator to iterate through the fifo.
  * Allows peeking for the next without popping the item.
  */
-template<class T>
+template<typename T>
 class TFifoClass
 {
 	public:
@@ -175,7 +175,7 @@ class TFifoClass
  * Doxygen 1.8.17 breaks on the functions having 'typename TFifoClass<T>::size_type' in it.
  */
 
-template<class T>
+template<typename T>
 TFifoClass<T>::~TFifoClass()
 {
 	if (_valid)
@@ -184,7 +184,7 @@ TFifoClass<T>::~TFifoClass()
 	}
 }
 
-template<class T>
+template<typename T>
 void TFifoClass<T>::initialize()
 {
 	_valid = 0;
@@ -195,7 +195,7 @@ void TFifoClass<T>::initialize()
 	memset(&_zero, 0, sizeof(T));
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::set(TFifoClass<T>::size_type size)
 {
 	if (size < 1)
@@ -214,7 +214,7 @@ bool TFifoClass<T>::set(TFifoClass<T>::size_type size)
 	return true;
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::push(const T& item)
 {
 	if ((((_tail + 1) % _bufSize)) == _head)
@@ -226,25 +226,26 @@ bool TFifoClass<T>::push(const T& item)
 	return true;
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::push(const T* item, TFifoClass<T>::size_type count)
 {
 	if (sizeRemain() < count)
 	{
 		return true;
 	}
-	for (size_type i = 0; i < count; push(item[i++])) {
+	for (size_type i = 0; i < count; push(item[i++]))
+	{
 	}
 	return false;
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::push()
 {
 	return push(_zero);
 }
 
-template<class T>
+template<typename T>
 const T& TFifoClass<T>::peek() const
 {
 	if (_head == _tail)
@@ -254,7 +255,7 @@ const T& TFifoClass<T>::peek() const
 	return _buffer[_head];
 }
 
-template<class T>
+template<typename T>
 const T& TFifoClass<T>::latest() const
 {
 	if (_head == _tail)
@@ -264,7 +265,7 @@ const T& TFifoClass<T>::latest() const
 	return _buffer[(((_tail + _bufSize - 1) % _bufSize))];
 }
 
-template<class T>
+template<typename T>
 T TFifoClass<T>::pop()
 {
 	if (_tail == _head)
@@ -276,7 +277,7 @@ T TFifoClass<T>::pop()
 	return tmp;
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::pop(T& item)
 {
 	if (_tail == _head)
@@ -289,48 +290,46 @@ bool TFifoClass<T>::pop(T& item)
 	return true;
 }
 
-template<class T>
+template<typename T>
 bool TFifoClass<T>::empty() const
 {
 	return size() == 0;
 }
 
-template<class T>
+template<typename T>
 typename TFifoClass<T>::size_type TFifoClass<T>::size() const
 {
 	return (_tail < _head) ? (_bufSize + (_tail - _head)) : (_tail - _head);
 }
 
-template<class T>
+template<typename T>
 T& TFifoClass<T>::operator[](TFifoClass<T>::size_type pos)
 {
 	return _buffer[(pos + _head) % _bufSize];
 }
 
-template<class T>
+template<typename T>
 const T& TFifoClass<T>::operator[](TFifoClass<T>::size_type pos) const
 {
 	return _buffer[(pos + _head) % _bufSize];
 }
 
-template<class T>
+template<typename T>
 inline const T* TFifoClass<T>::getBuffer(TFifoClass<T>::size_type pos) const
 {
 	return &_buffer[pos];
 }
 
-template<class T>
-inline
-	typename TFifoClass<T>::size_type
-	TFifoClass<T>::getTail() const
+template<typename T>
+inline typename TFifoClass<T>::size_type
+TFifoClass<T>::getTail() const
 {
 	return _tail;
 }
 
-template<class T>
-inline
-	typename TFifoClass<T>::size_type
-	TFifoClass<T>::getHead() const
+template<typename T>
+inline typename TFifoClass<T>::size_type
+TFifoClass<T>::getHead() const
 {
 	return _head;
 }

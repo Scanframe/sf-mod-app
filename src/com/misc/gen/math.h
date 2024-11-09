@@ -41,7 +41,7 @@ T round(T value, T rnd)
 /**
  * @brief Calculates the offset for a given range and set point.
  */
-template<class T, class S>
+template<typename T, typename S>
 inline S calculateOffset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
@@ -68,7 +68,7 @@ inline S calculateOffset(T value, T min, T max, S len, bool clip)
 /**
  * @brief Return clipped value of v between a and b where a < b.
  */
-template<class T>
+template<typename T>
 T clip(const T v, const T a, const T b)
 {
 	return (v < a) ? a : ((v > b) ? b : v);
@@ -187,21 +187,25 @@ T ipow(T base, int exponent)
 }
 
 /**
- * @brief Converts degrees to radials.
+ * @brief Converts degrees to radians.
  */
 template<typename T>
-inline constexpr T toRadials(T degrees)
+inline constexpr T toRadians(T degrees)
 {
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
 	return degrees * (numbers::pi_v<T> / 180);
 }
 
 /**
- * @brief Converts radials to degrees.
+ * @brief Converts radians to degrees.
  */
 template<typename T>
-inline constexpr T toDegrees(T radials)
+inline constexpr T toDegrees(T radians)
 {
-	return radials / numbers::pi_v<T> * 180;
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	return radians / numbers::pi_v<T> * 180;
 }
 
 /**

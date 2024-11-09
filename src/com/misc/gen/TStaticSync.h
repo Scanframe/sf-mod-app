@@ -54,7 +54,7 @@ namespace sf
  *     }
  * @endcode
  */
-template<class T>
+template<typename T>
 class TStaticSync
 {
 	public:
@@ -113,7 +113,7 @@ class TStaticSync
 		static unsigned _count;
 };
 
-template<class T>
+template<typename T>
 inline TStaticSync<T>::TStaticSync()
 {
 	/**
@@ -128,13 +128,13 @@ inline TStaticSync<T>::TStaticSync()
 	}
 }
 
-template<class T>
+template<typename T>
 inline TStaticSync<T>::TStaticSync(const TStaticSync<T>&)
 {
 	_count++;
 }
 
-template<class T>
+template<typename T>
 inline TStaticSync<T>::~TStaticSync()
 {
 	// If this is the only remaining TStaticSync<T> object, destroy the semaphore.

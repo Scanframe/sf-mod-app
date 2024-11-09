@@ -12,7 +12,7 @@ namespace sf
  *
  * @see ::sf::TDynamicBuffer
  */
-template<class T, class Alloc = Allocator>
+template<typename T, typename Alloc = Allocator>
 class TDynamicArray
 {
 	public:

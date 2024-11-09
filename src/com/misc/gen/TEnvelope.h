@@ -22,25 +22,40 @@ namespace sf
  *  TAEnvelope<T> e2 = e1;           // e2 safely shares the letter with e1
  * </code>
 */
-template<class T>
+template<typename T>
 class TEnvelope
 {
 	public:
-		explicit TEnvelope(T* object)
-			: _letter(new TLetter(object))
+		/**
+		 * @brief Constructor for the envelope's letter object.
+		 * @param object
+		 */
+		explicit TEnvelope(T* letter)
+			: _letter(new TLetter(letter))
 		{}
 
+		/**
+		 * @brief Copy constructor.
+		 */
 		TEnvelope(const TEnvelope& src)
 			: _letter(src._letter)
 		{
-			_letter->AddRef();
+			_letter->addRef();
 		}
 
-		~TEnvelope() { _letter->Release(); }
+		/**
+		 * @brief Move constructor.
+		 */
+		TEnvelope(const TEnvelope&& src)
+			: _letter(src._letter)
+		{
+		}
+
+		~TEnvelope() { _letter->release(); }
 
 		TEnvelope& operator=(const TEnvelope& src);
 
-		TEnvelope& operator=(T* object);
+		TEnvelope& operator=(T* letter);
 
 		T* operator->() { return _letter->Object; }
 
@@ -50,7 +65,7 @@ class TEnvelope
 
 		explicit operator T*() { return _letter->Object; }
 
-		[[nodiscard]] int RefCount() const { return _letter ? _letter->_refCount : 0; }
+		[[nodiscard]] int referencedCount() const { return _letter ? _letter->_refCount : 0; }
 
 	private:
 		struct TLetter
@@ -65,12 +80,12 @@ class TEnvelope
 					delete Object;
 				}
 
-				void AddRef()
+				void addRef()
 				{
 					_refCount++;
 				}
 
-				void Release()
+				void release()
 				{
 					if (--_refCount == 0)
 					{
@@ -86,22 +101,22 @@ class TEnvelope
 };
 
 //
-template<class T>
+template<typename T>
 TEnvelope<T>& TEnvelope<T>::operator=(const TEnvelope<T>& src)
 {
 	if (this != &src)
 	{
-		_letter->Release();
+		_letter->release();
 		_letter = src._letter;
-		_letter->AddRef();
+		_letter->addRef();
 	}
 	return *this;
 }
 
-template<class T>
+template<typename T>
 TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 {
-	_letter->Release();
+	_letter->release();
 	_letter = new TLetter(object);// Assumes non-null! Use with new
 	return *this;
 }
@@ -109,7 +124,7 @@ TEnvelope<T>& TEnvelope<T>::operator=(T* object)
 /**
 * @brief class TAEnvelope
 */
-template<class T>
+template<typename T>
 class TAEnvelope
 {
 	public:
@@ -120,10 +135,10 @@ class TAEnvelope
 		TAEnvelope(const TAEnvelope& src)
 			: _letter(src._letter)
 		{
-			_letter->AddRef();
+			_letter->addRef();
 		}
 
-		~TAEnvelope() { _letter->Release(); }
+		~TAEnvelope() { _letter->release(); }
 
 		TAEnvelope& operator=(const TAEnvelope& src);
 
@@ -143,11 +158,12 @@ class TAEnvelope
 
 				~TLetter() { delete[] _array; }
 
-				void AddRef() { _refCount++; }
+				void addRef() { _refCount++; }
 
-				void Release()
+				void release()
 				{
-					if (--_refCount == 0) {
+					if (--_refCount == 0)
+					{
 						delete this;
 					}
 				}
@@ -159,23 +175,24 @@ class TAEnvelope
 		TLetter* _letter;
 };
 
-template<class T>
+template<typename T>
 TAEnvelope<T>& TAEnvelope<T>::operator=(const TAEnvelope<T>& src)
 {
 	if (this != &src)
 	{
-		_letter->Release();
+		_letter->release();
 		_letter = src._letter;
-		_letter->AddRef();
+		_letter->addRef();
 	}
 	return *this;
 }
 
-template<class T>
-TAEnvelope<T>& TAEnvelope<T>::operator=(T array[])
+template<typename T>
+TAEnvelope<T>& TAEnvelope<T>::operator=(T arr[])
 {
-	_letter->Release();
-	_letter = new TLetter(array);// Assumes non-null! Use with new
+	_letter->release();
+	// Assumes non-null! Use with new
+	_letter = new TLetter(arr);
 	return *this;
 }
 

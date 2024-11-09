@@ -24,3 +24,5 @@
 # Test bash scripts.
 /test-*.sh
 /lib/*
+/.tools-dir-*
+

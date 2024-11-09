@@ -1,6 +1,5 @@
 #include "math.h"
 #include "gnu_compat.h"
-#include "pointer.h"
 #include "string.h"
 
 namespace sf
@@ -12,7 +11,7 @@ int precision(double value)
 	char buf[sz];
 	constexpr int len = std::numeric_limits<double>::digits10;
 	int i;
-	ecvt_r(value, len, &i, &i, buf, sz);
+	ecvt_r<double>(value, len, &i, &i, buf, sz);
 	i = len;
 	while (i--)
 	{
@@ -27,8 +26,8 @@ int precision(double value)
 int digits(double value)
 {
 	constexpr size_t sz = 64;
-	char buf[sz];
 	constexpr int len = std::numeric_limits<double>::digits10;
+	char buf[sz];
 	int dec, sign;
 	ecvt_r(value, len, &dec, &sign, buf, sz);
 	int i = len;
@@ -46,11 +45,11 @@ int magnitude(double value)
 {
 	if (value != 0.0)
 	{
-		constexpr int digits = std::numeric_limits<double>::digits10;
+		constexpr int ndigits = std::numeric_limits<double>::digits10;
 		constexpr size_t buf_sz = 64;
 		char buf[buf_sz + 1];
 		int dec, sign;
-		ecvt_r(value, digits, &dec, &sign, buf, buf_sz);
+		ecvt_r(value, ndigits, &dec, &sign, buf, buf_sz);
 		return dec;
 	}
 	return 0;

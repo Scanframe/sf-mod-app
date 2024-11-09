@@ -101,19 +101,19 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 		}
 	}
 
-	SECTION("sf::toDegrees, sf::toRadials", "Back and forth radial to degrees conversion.")
+	SECTION("sf::toDegrees, sf::toRadians", "Back and forth radial to degrees conversion.")
 	{
 		// Scope for type T as double.
 		{
 			typedef double T;
 			CHECK(sf::toDegrees<T>(sf::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
-			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toRadians<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
 		}
 		// Scope for type T as long double.
 		{
 			typedef double T;
 			CHECK(sf::toDegrees<T>(sf::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
-			CHECK(sf::toRadials<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
+			CHECK(sf::toRadians<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
 		}
 	}
 

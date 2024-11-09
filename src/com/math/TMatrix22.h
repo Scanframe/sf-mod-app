@@ -10,10 +10,10 @@ template<typename T>
 class TVector2D;
 
 /**
- * @brief Generic 2 x 2 matrix.
+ * @brief Generic 2 x 2 matrix template.
  */
 template<typename T>
-class TMatrix2D
+class TMatrix22
 {
 	public:
 		/**
@@ -24,74 +24,74 @@ class TMatrix2D
 		/**
 		 * @brief Default constructor.
 		 */
-		TMatrix2D();
+		TMatrix22();
 
 		/**
 		 * @brief Copy constructor.
 		 */
-		TMatrix2D(const TMatrix2D<T>& m);
+		TMatrix22(const TMatrix22<T>& m);
 
 		/**
 		 * @brief Move constructor.
 		 */
-		TMatrix2D(TMatrix2D<T>&&);
+		TMatrix22(TMatrix22<T>&&);
 
 		/**
 		 * @brief Initializer list constructor.
 		 */
-		TMatrix2D(std::initializer_list<T> list);
+		TMatrix22(std::initializer_list<T> list);
 
 		/**
 		 * @brief Initializing constructor.
 		 */
-		TMatrix2D(T m00, T m01, T m10, T m11);
+		TMatrix22(T m00, T m01, T m10, T m11);
 
 		/**
 		 * @brief Scaling constructor.
 		 */
-		TMatrix2D(T scale_x, T scale_y);
+		TMatrix22(T scale_x, T scale_y);
 
 		/**
 		 * @brief Constructs a rotation matrix passing a single angle.
 		 * @param angle angle of rotation.
 		 */
-		TMatrix2D(T angle);
+		TMatrix22(T angle);
 
 		/**
 		 * @brief Gets the transposed version of the matrix.
 		 * A transposed rotation matrix inverts the rotation.
 		 * @return Transposed matrix.
 		 */
-		TMatrix2D<T> transposed() const;
+		TMatrix22<T> transposed() const;
 
 		/**
 		 * @brief Assignment using a 2 by 2 array.
 		 * @return The matrix itself.
 		 */
-		TMatrix2D<T>& assign(const T[2][2]);
+		TMatrix22<T>& assign(const T[2][2]);
 
 		/**
 		 * @brief Assignment using 4 separate values.
 		 * @return The matrix itself.
 		 */
-		TMatrix2D<T>& assign(value_type m00, value_type m01, value_type m10, value_type m11);
+		TMatrix22<T>& assign(value_type m00, value_type m01, value_type m10, value_type m11);
+
+		/**
+		 * @brief Assignment operator.
+		 * @return Matrix itself.
+		 */
+		TMatrix22<T>& operator=(const TMatrix22<T>& m);
 
 		/**
 		 * @brief Assignment move operator.
 		 */
-		TMatrix2D<T>& operator=(TMatrix2D<T>&& m) noexcept;
-
-		/**
-		 * @brief Assignment operator slows things down considerably !!
-		 * @return Matrix itself.
-		 */
-		TMatrix2D<T>& operator=(const TMatrix2D<T>& m);
+		TMatrix22<T>& operator=(TMatrix22<T>&& m) noexcept;
 
 		/**
 		 * @brief Vector transformation operator.
 		 * @return Matrix itself.
 		 */
-		TMatrix2D<T>& operator*=(const TMatrix2D<T>& m);
+		TMatrix22<T>& operator*=(const TMatrix22<T>& m);
 
 		/**
 		 * @brief Vector transformation method.
@@ -113,45 +113,36 @@ class TMatrix2D
 		/**
 		 * @brief Const pointer cast operators.
 		 */
-		constexpr operator const T*();
-
-		/*
-		 * A Normal vector transforms differently as well because
-		 * mathematically it can better be interpreted as a plane
-		 * perpendicular to the vector, so the transformation for a normal
-		 * vector is like that of the transformation of a perpendicular plane.
-		 * Normal vectors are transformed by the inverse transpose of the
-		 * transformation that transforms points.
-		 */
+		constexpr operator const T*() const;
 
 		/**
-		 * @brief Compare equal operator.
+		 * @brief Compare equal operator using the #tolerance for comparing.
 		 * @return True when equal.
 		 */
-		bool operator==(const TMatrix2D<T>&) const;
+		bool operator==(const TMatrix22<T>&) const;
 
 		/**
-		 * @brief Compare unequal operator.
+		 * @brief Compare unequal operator using the #tolerance for comparing.
 		 * @return True when unequal.
 		 */
-		bool operator!=(const TMatrix2D<T>&) const;
+		bool operator!=(const TMatrix22<T>&) const;
 
 		/**
 		 * @brief Reset the matrix to the so-called 'identity' matrix where a vector
 		 * is not changed during transformation.
 		 * @return Matrix itself.
 		 */
-		TMatrix2D<T>& resetOrientation();
+		TMatrix22<T>& resetOrientation();
 
 		/**
 		 * Sets the rotation for the matrix.
-		 * @param angle Angle in radials.
+		 * @param angle Angle in radians.
 		 */
 		void setRotation(T angle);
 
 		/**
 		 * Gets the rotation of the matrix when it is a square matrix.
-		 * @param angle Angle in radials.
+		 * @param angle Angle in radians.
 		 */
 		T getRotation() const;
 
@@ -161,9 +152,9 @@ class TMatrix2D
 		std::string toString() const;
 
 		/**
-		 * @brief Gets 2D vector value from the string representation formed like '((1.2,4.5),(5.6,7.8))'.
+		 * @brief Gets 22 matrix values from the string representation formed like '((1.2,4.5),(5.6,7.8))'.
 		 */
-		TMatrix2D<T>& fromString(const std::string& s) noexcept(false);
+		TMatrix22<T>& fromString(const std::string& s) noexcept(false);
 
 		/**
 		 * @brief Copy to matrix to 2 by 2 value_type array.
@@ -179,15 +170,45 @@ class TMatrix2D
 
 	protected:
 		/**
-		 * @brief Storage union of the 2D matrix.
+		 * @brief Storage union of the 2x2 matrix.
 		 */
-		union
+		union data_type
 		{
-				T array[4];
+				T array[2 * 2];
 				T mtx[2][2];
 		} _data = {0, 0, 0, 0};
 };
 
+/**
+ * @brief Operator for writing the matrix to an output-stream.
+ * @tparam T Base floating point type.
+ * @param os Output stream.
+ * @param mtx Matrix to stream out.
+ * @return The passed output stream.
+ */
+template<typename T>
+inline std::ostream& operator<<(std::ostream& os, const TMatrix22<T>& mtx)
+{
+	return os << mtx.toString();
+}
+
+/**
+ * @brief Operator for reading the matrix from an input stream.
+ * @tparam T Base floating point type.
+ * @param os Input stream.
+ * @param mtx Matrix to stream.
+ * @return The passed input stream.
+ */
+template<typename T>
+inline std::istream& operator>>(std::istream& is, TMatrix22<T>& mtx) noexcept(false)
+{
+	std::string s;
+	auto delimiter = ')';
+	std::getline(is, s, delimiter);
+	mtx.fromString(s.append(1, delimiter));
+	return is;
+}
+
 }// namespace sf
 
-#include "TMatrix2D.hpp"
+#include "TMatrix22.hpp"

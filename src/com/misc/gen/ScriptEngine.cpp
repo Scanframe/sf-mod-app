@@ -259,7 +259,7 @@ bool ScriptEngine::getSetValue(
 					switch (info->_index)
 					{
 						case SID_PI:
-							result->assign(M_PI);
+							result->assign(numbers::pi_v<Value::flt_type>);
 							break;
 
 						default:
@@ -537,7 +537,7 @@ void ScriptEngine::getNumber(Value& result)
 {
 	char* dp = nullptr;
 	char* lp = nullptr;
-	auto d = sf::stod<double>(&_cmd[_pos], &dp);
+	auto d = sf::toFloat<double>(&_cmd[_pos], &dp);
 	Value::int_type l = std::strtol(&_cmd[_pos], &lp, 0);
 	// see which one converted the most characters
 	if (dp > lp)

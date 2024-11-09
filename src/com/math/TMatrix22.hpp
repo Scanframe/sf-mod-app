@@ -10,7 +10,7 @@ namespace sf
 {
 
 template<typename T>
-TMatrix2D<T>::TMatrix2D(std::initializer_list<T> list)
+TMatrix22<T>::TMatrix22(std::initializer_list<T> list)
 {
 	if (list.size() != 4)
 		throw std::invalid_argument("");
@@ -22,25 +22,25 @@ TMatrix2D<T>::TMatrix2D(std::initializer_list<T> list)
 }
 
 template<typename T>
-TMatrix2D<T>::TMatrix2D()
+TMatrix22<T>::TMatrix22()
 {
 	resetOrientation();
 }
 
 template<typename T>
-TMatrix2D<T>::TMatrix2D(const TMatrix2D& m)
+TMatrix22<T>::TMatrix22(const TMatrix22& m)
 {
 	_data = m._data;
 }
 
 template<typename T>
-TMatrix2D<T>::TMatrix2D(TMatrix2D<T>&& m)
+TMatrix22<T>::TMatrix22(TMatrix22<T>&& m)
 {
 	_data = m._data;
 }
 
 template<typename T>
-inline TMatrix2D<T>::TMatrix2D(T factor_x, T factor_y)
+inline TMatrix22<T>::TMatrix22(T factor_x, T factor_y)
 {
 	_data.mtx[0][0] = factor_x;
 	_data.mtx[0][1] = 0.0;
@@ -49,13 +49,13 @@ inline TMatrix2D<T>::TMatrix2D(T factor_x, T factor_y)
 }
 
 template<typename T>
-inline TMatrix2D<T>::TMatrix2D(T angle)
+inline TMatrix22<T>::TMatrix22(T angle)
 {
 	setRotation(angle);
 }
 
 template<typename T>
-TMatrix2D<T>::TMatrix2D(T m00, T m01, T m10, T m11)
+TMatrix22<T>::TMatrix22(T m00, T m01, T m10, T m11)
 {
 	_data.mtx[0][0] = m00;
 	_data.mtx[0][1] = m01;
@@ -64,14 +64,7 @@ TMatrix2D<T>::TMatrix2D(T m00, T m01, T m10, T m11)
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::operator=(TMatrix2D<T>&& m) noexcept
-{
-	_data = m._data;
-	return *this;
-}
-
-template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::assign(T m00, T m01, T m10, T m11)
+TMatrix22<T>& TMatrix22<T>::assign(T m00, T m01, T m10, T m11)
 {
 	_data.array = {m00, m01, m10, m11};
 
@@ -79,31 +72,38 @@ TMatrix2D<T>& TMatrix2D<T>::assign(T m00, T m01, T m10, T m11)
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::operator=(const TMatrix2D& mat)
+TMatrix22<T>& TMatrix22<T>::operator=(const TMatrix22& m)
 {
-	return assign(mat);
+	return assign(m);
 }
 
 template<typename T>
-inline const TMatrix2D<T> operator*(const TMatrix2D<T>& lhs, const TMatrix2D<T>& rhs)
+TMatrix22<T>& TMatrix22<T>::operator=(TMatrix22<T>&& m) noexcept
 {
-	return TMatrix2D(lhs) *= rhs;
+	_data = m._data;
+	return *this;
 }
 
 template<typename T>
-constexpr TMatrix2D<T>::operator T*()
+inline const TMatrix22<T> operator*(const TMatrix22<T>& lhs, const TMatrix22<T>& rhs)
+{
+	return TMatrix22(lhs) *= rhs;
+}
+
+template<typename T>
+constexpr TMatrix22<T>::operator T*()
 {
 	return &_data.mtx[0][0];
 }
 
 template<typename T>
-constexpr TMatrix2D<T>::operator const T*()
+constexpr TMatrix22<T>::operator const T*() const
 {
 	return &_data.mtx[0][0];
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::assign(const T mat[2][2])
+TMatrix22<T>& TMatrix22<T>::assign(const T mat[2][2])
 {
 	_data.mtx[0][0] = mat[0][0];
 	_data.mtx[0][1] = mat[0][1];
@@ -113,13 +113,13 @@ TMatrix2D<T>& TMatrix2D<T>::assign(const T mat[2][2])
 }
 
 template<typename T>
-TMatrix2D<T> TMatrix2D<T>::transposed() const
+TMatrix22<T> TMatrix22<T>::transposed() const
 {
 	return {_data.mtx[0][0], _data.mtx[1][0], _data.mtx[0][1], _data.mtx[1][1]};
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::operator*=(const TMatrix2D<T>& rhs)
+TMatrix22<T>& TMatrix22<T>::operator*=(const TMatrix22<T>& rhs)
 {
 	*this = {
 		rhs._data.mtx[0][0] * _data.mtx[0][0] + rhs._data.mtx[0][1] * _data.mtx[1][0],
@@ -131,13 +131,13 @@ TMatrix2D<T>& TMatrix2D<T>::operator*=(const TMatrix2D<T>& rhs)
 }
 
 template<typename T>
-inline TVector2D<T> TMatrix2D<T>::operator*(const TVector2D<T>& v) const
+inline TVector2D<T> TMatrix22<T>::operator*(const TVector2D<T>& v) const
 {
 	return transformed(v);
 }
 
 template<typename T>
-TVector2D<T> TMatrix2D<T>::transformed(const TVector2D<T>& v) const
+TVector2D<T> TMatrix22<T>::transformed(const TVector2D<T>& v) const
 {
 	return {
 		_data.mtx[0][0] * v.x() + _data.mtx[0][1] * v.y(),
@@ -146,7 +146,7 @@ TVector2D<T> TMatrix2D<T>::transformed(const TVector2D<T>& v) const
 }
 
 template<typename T>
-bool TMatrix2D<T>::operator==(const TMatrix2D<T>& m) const
+bool TMatrix22<T>::operator==(const TMatrix22<T>& m) const
 {
 	for (size_t i = 0; i < sizeof(_data.array) / sizeof(_data.array[0]); i++)
 	{
@@ -160,19 +160,19 @@ bool TMatrix2D<T>::operator==(const TMatrix2D<T>& m) const
 }
 
 template<typename T>
-bool TMatrix2D<T>::operator!=(const TMatrix2D<T>& m) const
+bool TMatrix22<T>::operator!=(const TMatrix22<T>& m) const
 {
 	return !operator==(m);
 }
 
 template<typename T>
-void TMatrix2D<T>::copyTo(T mat[2][2]) const
+void TMatrix22<T>::copyTo(T mat[2][2]) const
 {
 	std::memcpy(mat, _data.mtx, sizeof(_data));
 }
 
 template<typename T>
-void TMatrix2D<T>::setRotation(T angle)
+void TMatrix22<T>::setRotation(T angle)
 {
 	T sx = std::sin(angle);
 	T cx = std::cos(angle);
@@ -183,7 +183,7 @@ void TMatrix2D<T>::setRotation(T angle)
 }
 
 template<typename T>
-T TMatrix2D<T>::getRotation() const
+T TMatrix22<T>::getRotation() const
 {
 	// Check if the matrix is orthogonal
 	double det = _data.mtx[0][0] * _data.mtx[1][1] - _data.mtx[0][1] * _data.mtx[1][0];
@@ -196,7 +196,7 @@ T TMatrix2D<T>::getRotation() const
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::resetOrientation(void)
+TMatrix22<T>& TMatrix22<T>::resetOrientation(void)
 {
 	_data.mtx[1][0] = _data.mtx[0][1] = 0.0;
 	_data.mtx[0][0] = _data.mtx[1][1] = 1.0;
@@ -204,7 +204,7 @@ TMatrix2D<T>& TMatrix2D<T>::resetOrientation(void)
 }
 
 template<typename T>
-std::string TMatrix2D<T>::toString() const
+std::string TMatrix22<T>::toString() const
 {
 	return std::string() + "({" +
 		sf::toString<T>(_data.mtx[0][0]) + ',' +
@@ -214,9 +214,9 @@ std::string TMatrix2D<T>::toString() const
 }
 
 template<typename T>
-TMatrix2D<T>& TMatrix2D<T>::fromString(const std::string& s) noexcept(false)
+TMatrix22<T>& TMatrix22<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(R"(\(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\},\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\}\))", std::regex::icase);
+	std::regex re(R"(^\(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\},\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\}\)$)", std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != 5)
@@ -232,22 +232,6 @@ TMatrix2D<T>& TMatrix2D<T>::fromString(const std::string& s) noexcept(false)
 		}
 	}
 	return *this;
-}
-
-template<typename T>
-inline std::ostream& operator<<(std::ostream& os, const TMatrix2D<T>& mtx)
-{
-	return os << mtx.toString();
-}
-
-template<typename T>
-inline std::istream& operator>>(std::istream& is, TMatrix2D<T>& mtx) noexcept(false)
-{
-	std::string s;
-	auto delimiter = ')';
-	std::getline(is, s, delimiter);
-	mtx.fromString(s.append(1, delimiter));
-	return is;
 }
 
 }// namespace sf

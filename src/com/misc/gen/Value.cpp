@@ -408,7 +408,7 @@ Value::flt_type Value::getFloat(int* cnv_err) const
 		case vitString:
 			if (strlen(_data._ptr))
 			{
-				rv = sf::stod<flt_type>(_data._ptr, &end_ptr);
+				rv = sf::toFloat<flt_type>(_data._ptr, &end_ptr);
 			}
 			if (end_ptr && *end_ptr != '\0' && cnv_err)
 			{

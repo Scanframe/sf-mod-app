@@ -487,63 +487,6 @@ char* decimal_separator_fix(char* buffer, size_t len)
 	return buffer;
 }
 
-std::string gcvtString(double value, int digits)
-{
-	// Buffer large enough to hold the string.
-	char buf[std::numeric_limits<decltype(value)>::max_digits10 + std::numeric_limits<decltype(value)>::max_exponent10 + 5];
-	// When zero digits is given use the maximum.
-	digits = clip(digits, 0, std::numeric_limits<decltype(value)>::digits10);
-	if (digits <= 0)
-	{
-		digits = std::numeric_limits<decltype(value)>::digits10;
-	}
-//#error "Fix the Windows (2) and Linux (1) superfluous zero put at the exponent."
-#if IS_WIN
-	::_gcvt_s(buf, sizeof(buf), value, digits);
-	// Only needed for Windows since it adds a trailing '.' even when not required.
-	auto rv = trimRight(decimal_separator_fix(buf, sizeof(buf)), ".");
-	/*
-	// Fix the discrepancy between Windows and linux function.
-	auto pos = rv.find('e');
-	if (pos != std::string::npos && pos < rv.size())
-	{
-		substr(rv.subpos)
-	}
-	*/
-	return rv;
-#else
-	// Convert the string.
-	::gcvt(value, digits, buf);
-	// Get the value fixed decimal separator string.
-	return decimal_separator_fix(buf, sizeof(buf));
-#endif
-}
-
-std::string qgcvtString(long double value, int digits)
-{
-	// Buffer large enough to hold the string.
-	char buf[std::numeric_limits<decltype(value)>::max_digits10 + std::numeric_limits<decltype(value)>::max_exponent10 + 5];
-	// When zero digits is given use the maximum for the float type.
-	if (digits <= 0)
-	{
-		digits = std::numeric_limits<decltype(value)>::digits10;
-	}
-#if IS_WIN
-	// FIXME: Windows does not have a equivalent qgcvt() function.
-	::_gcvt_s(buf, sizeof(buf), value, digits);
-#else
-	// Convert the string.
-	::qgcvt(value, digits, buf);
-#endif
-#if IS_WIN
-	// Only needed for Windows since it adds a trailing '.' even when not required.
-	return trimRight(decimal_separator_fix(buf, sizeof(buf)), ".");
-#else
-	// Get the value fixed decimal separator string.
-	return decimal_separator_fix(buf, sizeof(buf));
-#endif
-}
-
 std::string toStringPrecision(double value, int precision)
 {
 	// Buffer large enough to hold the string.

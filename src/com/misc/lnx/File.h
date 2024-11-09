@@ -106,7 +106,7 @@ class _MISC_CLASS File
 		 * @tparam T Type of the structure written.
 		 * @param t
 		 */
-		template<class T>
+		template<typename T>
 		void write(const T& t);
 
 		/**
@@ -129,7 +129,7 @@ class _MISC_CLASS File
 		 * @param t
 		 * @param pos File position.
 		 */
-		template<class T>
+		template<typename T>
 		void read(T& t, size_t pos) const;
 
 		/**
@@ -289,14 +289,14 @@ inline void File::write(const char* s)
 	write(s, strlen(s));
 }
 
-template<class T>
-void File::write(const T& t)
+template<typename T>
+inline void File::write(const T& t)
 {
 	write(&t, sizeof(T));
 }
 
-template<class T>
-void File::read(T& t, size_t pos) const
+template<typename T>
+inline void File::read(T& t, size_t pos) const
 {
 	read(&t, pos, sizeof(T));
 }

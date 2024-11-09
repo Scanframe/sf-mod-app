@@ -25,12 +25,12 @@ Sf_AddTargetForCoverage("${PROJECT_NAME}")
 target_sources(${PROJECT_NAME} PRIVATE
 	global.h
 	LibMain.cpp
-	Quat.h
 	TVector2D.h TVector2D.hpp
-	TMatrix2D.h TMatrix2D.hpp
 	TRectangle2D.h TRectangle2D.hpp
-	TVector3.h
-	TVector4.h
+	TMatrix22.h TMatrix22.hpp
+	TVector3D.h TVector3D.hpp
+	TMatrix44.h TMatrix44.hpp
+	TQuaternion.h TQuaternion.hpp
 )
 
 # Link the Qt widgets library.

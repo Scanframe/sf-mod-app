@@ -85,8 +85,11 @@ TEST_CASE("sf::Vector2D", "[con][generic][vector]")
 
 	SECTION("Compare Operators")
 	{
-		sf::Vector2D v1;
-		v1.assign(3.0, 6.0);
+		auto epsilon = std::numeric_limits<sf::Vector2D::value_type>::epsilon();
+		CHECK(sf::Vector2D(3.0, 6.0) == sf::Vector2D(3.0, 6.0));
+		CHECK(sf::Vector2D(3.0, 6.0) == sf::Vector2D(3.0 - epsilon, 6.0 + epsilon));
+		CHECK(sf::Vector2D(6.0, 3.0) != sf::Vector2D(3.0, 6.0));
+		CHECK(sf::Vector2D(6.0, 3.0) != sf::Vector2D(6.0 + epsilon * 11, 3.0));
 	}
 
 	SECTION("Arithmetic Operators")
@@ -125,9 +128,9 @@ TEST_CASE("sf::Vector2D", "[con][generic][vector]")
 		sf::Vector2D v3{3.0, 6.0};
 		CHECK(v3.slope() == Approx(2.0).margin(sf::Vector2D::tolerance));
 		// Dot product calculation.
-		CHECK(v3.dotProduct({-1, -3}) == Approx(-21.0).margin(sf::Vector2D::tolerance));
+		CHECK(v3.dotProduct({-1.0, -3.0}) == Approx(-21.0).margin(sf::Vector2D::tolerance));
 		// Cross product calculation.
-		CHECK(v3.crossProduct({-1, -3}) == Approx(15.0).margin(sf::Vector2D::tolerance));
+		CHECK(v3.crossProduct({-1.0, -3.0}) == Approx(15.0).margin(sf::Vector2D::tolerance));
 		// Angle calculation.
 		CHECK(v3.angle() == Approx(1.10714871779409041).margin(sf::Vector2D::tolerance));
 		CHECK(sf::toDegrees(v1.assign(1, 1).angle()) == Approx(45.0).margin(sf::Vector2D::tolerance));

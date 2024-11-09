@@ -63,7 +63,7 @@ TEST_CASE("sf::String", "[con][generic][strings]")
 		int precision = 8;
 		precision = sf::clip(precision, 0, std::numeric_limits<double>::digits10);
 		auto* strValue = "12345.67890123";
-		auto value = sf::stod<double>(strValue);
+		auto value = sf::toFloat<double>(strValue);
 		CHECK(sf::stringf("%.*lf", precision, value) == strValue);
 	}
 
@@ -76,6 +76,7 @@ TEST_CASE("sf::String", "[con][generic][strings]")
 		CHECK(sf::gcvtString(1234.2567) == "1234.2567");
 		CHECK(sf::gcvtString(12.3456e-6L, 4) == "1.235e-05");
 		CHECK(sf::gcvtString(1.235e+5L, 4) == "1.235e+05");
+		CHECK(sf::gcvtString(1.234567e+5L, 5) == "1.2346e+05");
 	}
 
 	SECTION("sf::toString", "Numeric value to an std string.")

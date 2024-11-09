@@ -12,7 +12,7 @@
 namespace sf
 {
 
-template<class T>
+template<typename T>
 class TIterator;
 
 /**

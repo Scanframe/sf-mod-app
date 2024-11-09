@@ -66,7 +66,7 @@ class _MISC_CLASS FileMapper : public IFileMapper
 		 * @param readonly Flag making the resulting pointer readonly.
 		 * @return Pointer of specified type.
 		 */
-		template<class T>
+		template<typename T>
 		T* lock(bool readonly = false)
 		{
 			return static_cast<T*>(doLock(readonly));
@@ -139,7 +139,7 @@ class _MISC_CLASS FileMapper : public IFileMapper
 		 */
 		size_t _offset{0};
 		/**
-		 * Real page aligned offset into the file.
+		 * real page aligned offset into the file.
 		 */
 		size_t _realOffset{0};
 };

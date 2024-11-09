@@ -121,7 +121,7 @@ class _MISC_CLASS ScriptGlobalEntry
  *
  * @tparam T Class containing the method of type FunctionType.
  */
-template<class T>
+template<typename T>
 class TScriptGlobalEntry : public ScriptGlobalEntry
 {
 	public:

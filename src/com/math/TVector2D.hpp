@@ -16,7 +16,7 @@ TVector2D<T>::TVector2D(T xp, T yp)
 {}
 
 template<typename T>
-TVector2D<T>::operator const T*()
+TVector2D<T>::operator const T*() const
 {
 	return _data.array;
 }
@@ -58,7 +58,9 @@ TVector2D<T>& TVector2D<T>::normalize()
 	auto len = length();
 	// Prevent division by near zero.
 	if (len != std::numeric_limits<T>::epsilon())
-		*this /= static_cast<T>(len);
+	{
+		*this /= len;
+	}
 	return *this;
 }
 
@@ -66,6 +68,20 @@ template<typename T>
 TVector2D<T> TVector2D<T>::normalized() const
 {
 	return TVector2D(_data.coord.x, _data.coord.y).normalize();
+}
+
+template<typename T>
+TVector2D<T>& TVector2D<T>::scale(T factor)
+{
+	_data.coord.x *= factor;
+	_data.coord.y *= factor;
+	return *this;
+}
+
+template<typename T>
+TVector2D<T> TVector2D<T>::scaled(T factor) const
+{
+	return {_data.coord.x * factor, _data.coord.y * factor};
 }
 
 template<typename T>
@@ -102,16 +118,24 @@ T TVector2D<T>::angle() const
 		if (v1._data.coord.x < 0.0)
 		{
 			if (v1._data.coord.y < 0.0)
+			{
 				rv = numbers::pi_v<T> / 2;
+			}
 			else
+			{
 				rv = -numbers::pi_v<T> / 2;
+			}
 		}
 		else
 		{
 			if (v1._data.coord.y < 0.0)
+			{
 				rv = -numbers::pi_v<T> / 2;
+			}
 			else
+			{
 				rv = numbers::pi_v<T> / 2;
+			}
 		}
 	}
 	else
@@ -127,9 +151,11 @@ template<typename T>
 T TVector2D<T>::angleNormalized() const
 {
 	auto rv = angle();
-	// When the angle is still negative add 360 degrees in radials to it.
+	// When the angle is still negative add 360 degrees in radians to it.
 	if (rv < 0.0)
+	{
 		rv += 2.0 * numbers::pi_v<T>;
+	}
 	return rv;
 }
 
@@ -153,16 +179,16 @@ T TVector2D<T>::angle(const TVector2D& v) const
 	}
 	// Quick and dirty to get the angle by using in-product and out-product
 	// to get the cos alpha and the sinus alpha.
-	value_type len = v1.length() * v2.length();
+	auto len = v1.length() * v2.length();
 	if (len < std::numeric_limits<T>::epsilon())
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid length/magnitude !");
 	}
-	value_type cp(v1.crossProduct(v2));
-	value_type dp = v1.dotProduct(v2);
-	// When the cross product is zero the 2 vectors are parallel to each other and thew angle is therefore zero.
-	if (std::fabs(cp) < std::numeric_limits<T>::epsilon())
+	auto dp = v1.dotProduct(v2);
+	// When the cross product is zero the 2 vectors are parallel to each other and the angle is therefore zero.
+	if (std::fabs(v1.crossProduct(v2)) < std::numeric_limits<T>::epsilon())
 	{
+		// TODO: Is the result 0.0 not always the case here?
 		return (dp > 0) ? 0.0 : numbers::pi_v<T>;
 	}
 	// Calculation using dot-product.
@@ -174,7 +200,9 @@ T TVector2D<T>::slope() const
 {
 	// Check for a possible division by zero.
 	if (std::abs(_data.coord.x) < std::numeric_limits<T>::epsilon())
+	{
 		return std::numeric_limits<T>::max();
+	}
 	return _data.coord.y / _data.coord.x;
 }
 
@@ -205,7 +233,8 @@ constexpr T& TVector2D<T>::y()
 template<typename T>
 T& TVector2D<T>::operator[](size_t i)
 {
-	if (i > 1)
+	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
+	if (i >= sz)
 	{
 		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
 	}
@@ -215,7 +244,8 @@ T& TVector2D<T>::operator[](size_t i)
 template<typename T>
 const T& TVector2D<T>::operator[](size_t i) const
 {
-	if (i > 1)
+	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
+	if (i >= sz)
 	{
 		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
 	}
@@ -223,15 +253,22 @@ const T& TVector2D<T>::operator[](size_t i) const
 }
 
 template<typename T>
-TVector2D<T>& TVector2D<T>::assign(T ix, T iy)
+TVector2D<T>& TVector2D<T>::assign(T xp, T yp)
 {
-	_data.coord.x = ix;
-	_data.coord.y = iy;
+	_data.coord.x = xp;
+	_data.coord.y = yp;
 	return *this;
 }
 
 template<typename T>
 TVector2D<T>& TVector2D<T>::assign(const TVector2D<T>& v)
+{
+	_data = v._data;
+	return *this;
+}
+
+template<typename T>
+TVector2D<T>& TVector2D<T>::operator=(TVector2D& v) noexcept
 {
 	_data = v._data;
 	return *this;
@@ -245,9 +282,9 @@ TVector2D<T>& TVector2D<T>::operator=(TVector2D&& v) noexcept
 }
 
 template<typename T>
-TVector2D<T>& TVector2D<T>::operator*=(const TMatrix2D<T>& m)
+TVector2D<T>& TVector2D<T>::operator*=(const TMatrix22<T>& mtx)
 {
-	return assign(m.transformed(*this));
+	return assign(mtx.transformed(*this));
 }
 
 template<typename T>
@@ -275,18 +312,14 @@ TVector2D<T>& TVector2D<T>::operator-=(const TVector2D& v)
 template<typename T>
 TVector2D<T>& TVector2D<T>::operator*=(T c)
 {
-	_data.coord.x *= c;
-	_data.coord.y *= c;
-	return *this;
+	return scale(c);
 }
 
 template<typename T>
 TVector2D<T>& TVector2D<T>::operator/=(T c)
 {
-	double inv = 1.0 / c;
-	_data.coord.x *= inv;
-	_data.coord.y *= inv;
-	return *this;
+	T inv = 1.0 / c;
+	return scale(inv);
 }
 
 template<typename T>
@@ -312,25 +345,35 @@ TVector2D<T> TVector2D<T>::operator/(T c) const
 }
 
 template<typename T>
-bool TVector2D<T>::operator==(const TVector2D& v) const
+bool TVector2D<T>::isEqual(const TVector2D<T>& v, T tol) const
 {
-	return std::fabs(_data.coord.x - v._data.coord.x) < tolerance &&
-		std::fabs(_data.coord.y - v._data.coord.y) < tolerance;
+	return std::fabs(_data.coord.x - v._data.coord.x) < tol &&
+		std::fabs(_data.coord.y - v._data.coord.y) < tol;
 }
 
 template<typename T>
-bool TVector2D<T>::operator!=(const TVector2D& v) const
+inline bool TVector2D<T>::operator==(const TVector2D<T>& v) const
 {
-	return !operator==(v);
+	return isEqual(v, tolerance);
+}
+
+template<typename T>
+inline bool TVector2D<T>::operator!=(const TVector2D<T>& v) const
+{
+	return !isEqual(v, tolerance);
 }
 
 template<typename T>
 void TVector2D<T>::updateMin(const TVector2D& vertex)
 {
 	if (vertex._data.coord.x < _data.coord.x)
+	{
 		_data.coord.x = vertex._data.coord.x;
+	}
 	if (vertex._data.coord.y < _data.coord.y)
+	{
 		_data.coord.y = vertex._data.coord.y;
+	}
 }
 
 template<typename T>
@@ -355,16 +398,17 @@ std::string TVector2D<T>::toString() const
 template<typename T>
 TVector2D<T>& TVector2D<T>::fromString(const std::string& s)
 {
-	std::regex re(R"(\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\))", std::regex::icase);
+	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
+	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
-	if (!std::regex_match(s, match, re) || match.size() != 3)
+	if (!std::regex_match(s, match, re) || match.size() != sz + 1)
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid string '" + s + "' conversion!");
 	}
 	else
 	{
-		for (size_t i = 0; i <= 4; i++)
+		for (size_t i = 0; i < sz; i++)
 		{
 			// First match is the group so skip it (+1).
 			_data.array[i] = toNumber<T>(match[i + 1].str());
@@ -374,43 +418,11 @@ TVector2D<T>& TVector2D<T>::fromString(const std::string& s)
 }
 
 template<typename T>
-TVector2D<T> operator*(T c, TVector2D<T> const& v)
-{
-	return {v.x() * c, v.y() * c};
-}
-
-template<typename T>
-TVector2D<T> operator*(TVector2D<T> const& v, T c)
-{
-	return {v.x() * c, v.y() * c};
-}
-
-/**
- * @brief Operator for reading a vector from a stream.
- */
-template<typename T>
-std::istream& operator>>(std::istream& is, TVector2D<T>& v) noexcept(false)
-{
-	std::string s;
-	auto delimiter = ')';
-	std::getline(is, s, delimiter);
-	v.fromString(s.append(1, delimiter));
-	return is;
-}
-
-/**
- * @brief Operator for writing a vector to a stream.
- */
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const TVector2D<T>& v)
-{
-	return os << v.toString();
-}
-
-template<typename T>
 int TVector2D<T>::areOnSameSide(
-	const TVector2D<T>& lp1, const TVector2D<T>& lp2,
-	const TVector2D<T>& p1, const TVector2D<T>& p2
+	const TVector2D<T>& lp1,
+	const TVector2D<T>& lp2,
+	const TVector2D<T>& p1,
+	const TVector2D<T>& p2
 )
 {
 	T dx = lp2._data.coord.x - lp1._data.coord.x;

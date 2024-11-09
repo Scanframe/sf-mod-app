@@ -12,7 +12,7 @@ namespace sf
  * Defines and templates for deleting allocated memory and
  * testing for zero and clearing the pointer at the same time.
  */
-template<class T>
+template<typename T>
 inline void delete_null(T& p)
 {
 	if (p)
@@ -25,7 +25,7 @@ inline void delete_null(T& p)
 /**
  * @brief Template function deleting an array previous allocated by 'new[]' when the pointer is non-null and also nulls the passed pointer.
  */
-template<class T>
+template<typename T>
 inline void delete_anull(T& p)
 {
 	if (p)
@@ -38,7 +38,7 @@ inline void delete_anull(T& p)
 /**
  * @brief Template function freeing a pointer previous allocated by 'malloc' when the pointer is non-null and also nulls the passed pointer.
  */
-template<class T>
+template<typename T>
 inline void free_null(T& p)
 {
 	if (p)
@@ -56,7 +56,7 @@ inline void free_null(T& p)
  * @param t1 Parameter 1 of type
  * @param t2 Parameter 2 of type
  */
-template<class T>
+template<typename T>
 [[deprecated]] inline void swap_it(T& t1, T& t2)
 {
 	std::swap(t1, t2);
@@ -66,7 +66,7 @@ template<class T>
  * @brief Deletes the pointer of type T allocated by 'new' when this instance goes out of scope.
  * @tparam T
  */
-template<class T>
+template<typename T>
 class scope_delete
 {
 	public:
@@ -84,7 +84,7 @@ class scope_delete
  * @brief Frees the pointer of type T allocated by 'malloc' when this instance goes out of scope.
  * @tparam T
  */
-template<class T>
+template<typename T>
 class scope_free
 {
 	public:

@@ -75,7 +75,7 @@ class _GII_CLASS UnitConversionServer
 			usPassThrough,
 			/**
 			 * Conversion in the metric system depending on precision.
-			 * Radials become degrees and 'm/s' can become 'km/h'.
+			 * Radians become degrees and 'm/s' can become 'km/h'.
 			 */
 			usMetric,
 			/**

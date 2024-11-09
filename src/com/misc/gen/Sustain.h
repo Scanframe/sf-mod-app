@@ -174,7 +174,7 @@ class _MISC_CLASS SustainBase
  *
  * @tparam T Class containing the method.
  */
-template<class T>
+template<typename T>
 class TSustain : public SustainBase
 {
 	public:
@@ -225,7 +225,7 @@ class TSustain : public SustainBase
 		}
 };
 
-template<class T>
+template<typename T>
 TSustain<T>::TSustain(T* self, Pmf pmf, int priority, PtrVector* vector)
 	: SustainBase(vector, priority)
 	, _self(self)

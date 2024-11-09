@@ -239,43 +239,43 @@ class TDynamicBuffer
 		}* _reference;
 };
 
-template<class Alloc>
+template<typename Alloc>
 inline size_t TDynamicBuffer<Alloc>::size()
 {
 	return _reference->_size - _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline size_t TDynamicBuffer<Alloc>::size() const
 {
 	return _reference->_size - _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline void* TDynamicBuffer<Alloc>::data()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline const void* TDynamicBuffer<Alloc>::data() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline char* TDynamicBuffer<Alloc>::c_str()
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline const char* TDynamicBuffer<Alloc>::c_str() const
 {
 	return static_cast<char*>(_reference->_data) + _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline void* TDynamicBuffer<Alloc>::data(size_t offset)
 {
 	// Compensate for the offset.
@@ -283,7 +283,7 @@ inline void* TDynamicBuffer<Alloc>::data(size_t offset)
 	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 {
 	// Compensate for the offset.
@@ -291,7 +291,7 @@ inline const void* TDynamicBuffer<Alloc>::data(size_t offset) const
 	return &(static_cast<char*>(_reference->_data))[offset];
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline char TDynamicBuffer<Alloc>::operator[](size_t i) const
 {
 	// Compensate for the offset.
@@ -304,7 +304,7 @@ inline char TDynamicBuffer<Alloc>::operator[](size_t i) const
 	return (static_cast<char*>(_reference->_data))[i];
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline char& TDynamicBuffer<Alloc>::operator[](size_t i)
 {
 	if (i > _reference->_size)
@@ -315,7 +315,7 @@ inline char& TDynamicBuffer<Alloc>::operator[](size_t i)
 	return (static_cast<char*>(_reference->_data))[i];
 }
 
-template<class Alloc>
+template<typename Alloc>
 TDynamicBuffer<Alloc>& TDynamicBuffer<Alloc>::operator=(const TDynamicBuffer<Alloc>& db)
 {
 	// Prevent self copying.
@@ -344,31 +344,31 @@ TDynamicBuffer<Alloc>& TDynamicBuffer<Alloc>::operator=(const TDynamicBuffer<All
 	return *this;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::operator void*()
 {
 	return _reference->_data;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::operator const void*() const
 {
 	return _reference->_data;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::operator char*()
 {
 	return _reference->_data;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::operator const char*() const
 {
 	return _reference->_data;
 }
 
-template<class Alloc>
+template<typename Alloc>
 TDynamicBuffer<Alloc>::TDynamicBuffer()
 {
 	_reference = new Reference;
@@ -379,14 +379,14 @@ TDynamicBuffer<Alloc>::TDynamicBuffer()
 	_reference->_usage = 1;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::TDynamicBuffer(const TDynamicBuffer& db)
 {
 	_reference = db._reference;
 	_reference->_usage++;
 }
 
-template<class Alloc>
+template<typename Alloc>
 TDynamicBuffer<Alloc>::TDynamicBuffer(size_t sz)
 {
 	_reference = new Reference;
@@ -398,7 +398,7 @@ TDynamicBuffer<Alloc>::TDynamicBuffer(size_t sz)
 	resize(sz);
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline TDynamicBuffer<Alloc>::~TDynamicBuffer()
 {
 	_reference->_usage--;
@@ -413,7 +413,7 @@ inline TDynamicBuffer<Alloc>::~TDynamicBuffer()
 	}
 }
 
-template<class Alloc>
+template<typename Alloc>
 void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 {
 	if (sz == 0)
@@ -450,20 +450,20 @@ void TDynamicBuffer<Alloc>::reserve(size_t sz, bool shrink)
 	}
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline void TDynamicBuffer<Alloc>::offset(size_t ofs)
 {
 	// Assign the new offset.
 	_reference->_offset = ofs;
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline size_t TDynamicBuffer<Alloc>::offset() const
 {
 	return _reference->_offset;
 }
 
-template<class Alloc>
+template<typename Alloc>
 void TDynamicBuffer<Alloc>::resize(size_t sz, bool shrink)
 {
 	// When resizing to zero the offset can ben cleared too.
@@ -481,7 +481,7 @@ void TDynamicBuffer<Alloc>::resize(size_t sz, bool shrink)
 	_reference->_size = sz;
 }
 
-template<class Alloc>
+template<typename Alloc>
 void TDynamicBuffer<Alloc>::grow(size_t sz)
 {
 	// Compensate with the offset.
@@ -522,19 +522,19 @@ void TDynamicBuffer<Alloc>::grow(size_t sz)
 	}
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline void TDynamicBuffer<Alloc>::set(int c, bool reserved)
 {
 	memset(_reference->_data, c, reserved ? _reference->_allocated : _reference->_size);
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline void TDynamicBuffer<Alloc>::zero(bool reserved)
 {
 	set(0, reserved);
 }
 
-template<class Alloc>
+template<typename Alloc>
 inline size_t TDynamicBuffer<Alloc>::reserved() const
 {
 	return _reference->_allocated - _reference->_offset;

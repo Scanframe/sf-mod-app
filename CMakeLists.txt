@@ -112,7 +112,7 @@ list(APPEND _CoverageDirs
 	"src/com/gii/qt"
 	"src/com/math"
 )
-Sf_AddTestCoverageReport("coverage-report" "${_CoverageDirs}" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov")
+Sf_AddTestCoverageReport("coverage-report" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov" "--cleanup --html nested" "${_CoverageDirs}")
 
 # Add package build config when not building coverage.
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
@@ -120,3 +120,5 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
 		include(cmake/cpack/CPackConfig.cmake)
 	endif ()
 endif ()
+
+

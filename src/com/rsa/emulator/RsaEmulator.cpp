@@ -1751,7 +1751,7 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 							double val = 0.0;
 							for (int k = 0; k < count; k++)
 								val += 0.5 * comp[k].Amp *
-									sin(calc_offset(ti, 0L, ci.PopDivider, 2.0 * M_PI * comp[k].Freq, true));
+									sin(calc_offset(ti, 0L, ci.PopDivider, 2.0 * numbers::pi_v<double> * comp[k].Freq, true));
 							// Apply the gain on the amplitude.
 							val *= pow(10, (ci.Gain - 40.0) / 20.0);
 							//
@@ -1837,7 +1837,7 @@ double FormWave(
 		value = pow(-fabs(x / xd2) + shift, slope);
 		//--------------------------------
 		// Super seed cosin wave form on top of other form.
-		value *= -cos(2 * M_PI * freq * (x / delta));
+		value *= -cos(2 * numbers::pi_v<decltype(freq)> * freq * (x / delta));
 		//--------------------------------
 	}
 	return value * -1;

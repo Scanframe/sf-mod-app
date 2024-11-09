@@ -96,7 +96,7 @@ _MISC_FUNC std::string filter(std::string str, const std::string& filter);
 _MISC_FUNC std::string toLower(std::string s);
 
 /**
- * @brief Converts the passed string into a upper case one and returns it.
+ * @brief Converts the passed string into an upper case one and returns it.
  */
 _MISC_FUNC std::string toUpper(std::string s);
 
@@ -153,20 +153,60 @@ std::string string_format(const std::string& format, Args&&... args)
 }
 
 /**
- * @brief The gcvt() function converts number to a minimal length.
+ * @brief Converts a floating-point number to a string always using a decimal point.
  * It produces 'digits' significant digits in either printf(3) F format or E (scientific) format.
  * Always returns a decimal point without setting the global locale.
- * @see sf::toString()
+ * @tparam T Floating point type.
+ * @param value Floating point value to convert.
+ * @param ndigits Amount of digits.
+ * @param buf Buffer pointer.
+ * @param len Length of the buffer.
+ * @return Pointer to passed buffer.
  */
-_MISC_FUNC std::string gcvtString(double value, int digits = 0);
+template<typename T>
+char* gcvt(T value, int ndigits, char* buf, size_t len)
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	if constexpr (std::is_same<T, long double>())
+	{
+		std::snprintf(buf, len, "%.*Lg", std::min(ndigits, std::numeric_limits<T>::max_digits10), value);
+	}
+	if constexpr (std::is_same<T, double>())
+	{
+		std::snprintf(buf, len, "%.*lg", std::min(ndigits, std::numeric_limits<T>::max_digits10), value);
+	}
+	if constexpr (std::is_same<T, float>())
+	{
+		std::snprintf(buf, len, "%.*g", std::min(ndigits, std::numeric_limits<T>::max_digits10), value);
+	}
+	return decimal_separator_fix(buf, len);
+}
 
 /**
- * @brief The qgcvt() function converts number to a minimal length. (Not supported in Windows.)
- * It produces 'digits' significant digits in either printf(3) F format or E (scientific) format.
- * Always returns a decimal point without setting the global locale.
-* @see sf::toString()
+ * @brief Converts a floating-point number to a string always using a decimal point.
+ * @see sf::gcvt()
+ * @tparam T Floating point type.
+ * @param value Floating point value to convert.
+ * @param ndigits Amount of digits default to 0 which is means the minimum amount to represent the value.
+ * @return String containing converted value.
  */
-_MISC_FUNC std::string qgcvtString(long double value, int digits = 0);
+template<typename T>
+std::string gcvtString(T value, int ndigits = 0)
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	// Buffer large enough to hold the string.
+	char buf[std::numeric_limits<T>::max_digits10 + std::numeric_limits<decltype(value)>::max_exponent10 + 5];
+	// When zero digits is given use the maximum.
+	ndigits = clip<int>(ndigits, 0, std::numeric_limits<T>::digits10);
+	if (ndigits <= 0)
+	{
+		ndigits = std::numeric_limits<T>::digits10;
+	}
+	// Convert the string.
+	return gcvt<T>(value, ndigits, buf, sizeof(buf));
+}
 
 /**
  * @brief Converts an integer type value to a buffer.
@@ -176,9 +216,15 @@ _MISC_FUNC std::string qgcvtString(long double value, int digits = 0);
  * **Note:** The space allocated for buffer must be large enough to hold
  * the returned buffer, including the terminating null character (\0).
  * itoa can return up to (sizeof(T) * CHAR_BIT + 1) bytes.
+ *
+ * @tparam T Integer type.
+ * @param value Integer value.
+ * @param buffer Receiving buffer pointer.
+ * @param base  Base of number system or radix defaulting to 10.
+ * @return Null terminated pointer buffer. (Not the same as the buffer pointer.)
  */
 template<typename T>
-char* itoa(T value, char* buffer, int base)
+char* itoa(T value, char* buffer, int base = 10)
 {
 	// Prevent non-integer types from implementing this template.
 	static_assert(std::is_integral<T>::value, "Type T must be an integer type.");
@@ -217,6 +263,13 @@ char* itoa(T value, char* buffer, int base)
 	return &buffer[i + 1];
 }
 
+/**
+ * @brief Converts an integer type value to a std::string.
+ * @tparam T Integer type.
+ * @param value Integer value.
+ * @param base  Base of number system or radix defaulting to 10.
+ * @return Null terminated pointer buffer. (Not the same as the buffer pointer.)
+ */
 template<typename T>
 std::string itostr(T value, int base = 10)
 {
@@ -227,10 +280,14 @@ std::string itostr(T value, int base = 10)
 }
 
 /**
- * @brief A locale independent version of std::strtod() function which uses locale "C".
+ * @brief A locale independent template version for std::strtof(), std::strtod() and std::strtold() functions which uses locale "C".
+ * @tparam T Floating point type.
+ * @param ptr String buffer pointer to start.
+ * @param end_ptr Optional pointer to pointer where conversion stopped reading.
+ * @return The floating point value.
  */
 template<typename T>
-T stod(const char* ptr, char** end_ptr = nullptr)
+T toFloat(const char* ptr, char** end_ptr = nullptr)
 {
 	// Prevent non-integer and non-float types from implementing this template.
 	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
@@ -349,14 +406,7 @@ std::string toString(T value, int digits = 0)
 	}
 	else
 	{
-		if constexpr (std::is_same<T, long double>())
-		{
-			rv = qgcvtString(value, digits);
-		}
-		else
-		{
-			rv = gcvtString(value, digits);
-		}
+		rv = gcvtString(value, digits);
 		// Check for trailing zeros and convert to scientific notation if necessary.
 		if (rv.find('e') == std::string::npos && rv.find('.') == std::string::npos)
 		{
@@ -391,23 +441,35 @@ std::string toStringPrecision(T value, int prec = std::numeric_limits<int>::max(
 	if constexpr (std::is_same<T, long double>())
 	{
 		if (prec == std::numeric_limits<int>::max())
+		{
 			std::snprintf(buf, sz, "%Lf", value);
+		}
 		else
+		{
 			std::snprintf(buf, sz, "%.*Lf", clip(prec, 0, std::numeric_limits<T>::digits10), value);
+		}
 	}
 	if constexpr (std::is_same<T, double>())
 	{
 		if (prec == std::numeric_limits<int>::max())
+		{
 			std::snprintf(buf, sz, "%lf", value);
+		}
 		else
+		{
 			std::snprintf(buf, sz, "%.*lf", clip(prec, 0, std::numeric_limits<T>::digits10), value);
+		}
 	}
 	if constexpr (std::is_same<T, float>())
 	{
 		if (prec == std::numeric_limits<int>::max())
+		{
 			std::snprintf(buf, sz, "%f", value);
+		}
 		else
+		{
 			std::snprintf(buf, sz, "%.*f", clip(prec, 0, std::numeric_limits<T>::digits10), value);
+		}
 	}
 	return decimal_separator_fix(buf, sz);
 }
@@ -430,5 +492,220 @@ _MISC_FUNC std::string numberString(double value, int digits, bool sign_on = tru
  * @return Passed input stream.
  */
 _MISC_FUNC std::istream& read_to_delimiter(std::istream& is, std::string& s, char delimiter);
+
+/**
+ * @brief Function identical to ecvt(), except that 'ndigits' specifies the number of digits after the decimal point.
+ *
+ * @tparam T Floating point type.
+ * @param value Floating point value to convert.
+ * @param ndigit Amount of digits.
+ * @param decpt Decimal point.
+ * @param sign Non-zero when the value is negative.
+ * @param buf Receiving character buffer pointer.
+ * @param len Receiving buffer size.
+ * @return 0 on success, and -1 otherwise.
+ *
+ * @note Copied from glibc and modified for C++.
+ */
+template<typename T>
+int fcvt_r(T value, int ndigit, int* decpt, int* sign, char* buf, size_t len)
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	ssize_t n, i;
+	int left;
+	if (buf == nullptr)
+	{
+		errno = (EINVAL);
+		return -1;
+	}
+	left = 0;
+	if (std::isfinite(value))
+	{
+		*sign = std::signbit(value) != 0;
+		if (*sign)
+		{
+			value = -value;
+		}
+		if (ndigit < 0)
+		{
+			// Rounding to the left of the decimal point.
+			while (ndigit < 0)
+			{
+				T new_value = value * 0.1;
+				if (new_value < 1.0)
+				{
+					ndigit = 0;
+					break;
+				}
+				value = new_value;
+				++left;
+				++ndigit;
+			}
+		}
+	}
+	else
+	{
+		// Value is Inf or NaN.
+		*sign = 0;
+	}
+	if constexpr (std::is_same<T, long double>())
+	{
+		n = snprintf(buf, len, "%.*Lf", std::min(ndigit, std::numeric_limits<T>::max_digits10), value);
+	}
+	if constexpr (std::is_same<T, double>())
+	{
+		n = snprintf(buf, len, "%.*lf", std::min(ndigit, std::numeric_limits<T>::max_digits10), value);
+	}
+	if constexpr (std::is_same<T, float>())
+	{
+		n = snprintf(buf, len, "%.*f", std::min(ndigit, std::numeric_limits<T>::max_digits10), value);
+	}
+	// Check for a too small buffer.
+	if (n >= (ssize_t) len)
+	{
+		return -1;
+	}
+	i = 0;
+	while (i < n && std::isdigit(buf[i]))
+	{
+		++i;
+	}
+	*decpt = i;
+	if (i == 0)
+	{
+		// Value is Inf or NaN.
+		return 0;
+	}
+	if (i < n)
+	{
+		do
+		{
+			++i;
+		} while (i < n && !isdigit(buf[i]));
+
+		if (*decpt == 1 && buf[0] == '0' && value != 0.0)
+		{
+			// We must not have leading zeroes.  Strip them all out and adjust *DECPT if necessary.
+			--*decpt;
+			while (i < n && buf[i] == '0')
+			{
+				--*decpt;
+				++i;
+			}
+		}
+		memmove(&buf[std::max(*decpt, 0)], &buf[i], n - i);
+		buf[n - (i - std::max(*decpt, 0))] = '\0';
+	}
+
+	if (left)
+	{
+		*decpt += left;
+		if ((ssize_t) --len > n)
+		{
+			while (left-- > 0 && n < (ssize_t) len)
+			{
+				buf[n++] = '0';
+			}
+			buf[n] = '\0';
+		}
+	}
+	return 0;
+}
+
+/**
+ * @brief Converts number to a null-terminated string of 'ndigits' digits.
+ * where 'ndigits' is reduced to a system-specific limit determined by the precision of a double.
+ * The high-order digit is nonzero, unless number is zero.
+ * The low order digit is rounded. The string itself does not contain a decimal point; however,
+ * the position of the decimal point relative to the start of the string is stored in *decpt.
+ * A negative value for *decpt means that the decimal point is to the left of the start of the string.
+ * If the sign of number is negative, *sign is set to a nonzero value, otherwise it is set to 0.
+ * If number is zero, it is unspecified whether *decpt is 0 or 1.
+ *
+ * @tparam T Floating point type.
+ * @param value Floating point value to convert.
+ * @param ndigit Amount of digits.
+ * @param decpt Decimal point.
+ * @param sign Non-zero when the value is negative.
+ * @param buf Receiving character buffer pointer.
+ * @param len Receiving buffer size.
+ * @return 0 on success, and -1 otherwise.
+ *
+ * @note Copied from glibc and modified for C++.
+ */
+template<typename T>
+int ecvt_r(T value, int ndigit, int* decpt, int* sign, char* buf, size_t len)
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	// Type constexpr is not possible since std::pow so a static is used.
+	static const T min_10_norm = std::pow(static_cast<T>(10), std::numeric_limits<T>::min_exponent10);
+	int exponent = 0;
+	if (std::isfinite(value) && value != 0.0)
+	{
+		// Slow code that doesn't require -lm functions.
+		T d;
+		T f = 1.0;
+		if (value < 0.0)
+		{
+			d = -value;
+		}
+		else
+		{
+			d = value;
+		}
+		// For denormalized numbers the d < 1.0 case below won't work, as f can overflow to +Inf.
+		if (d < min_10_norm)
+		{
+			value /= min_10_norm;
+			if (value < 0.0)
+			{
+				d = -value;
+			}
+			else
+			{
+				d = value;
+			}
+			exponent += std::numeric_limits<T>::min_exponent10;
+		}
+		if (d < 1.0)
+		{
+			do
+			{
+				f *= 10.0;
+				--exponent;
+			} while (d * f < 1.0);
+			value *= f;
+		}
+		else if (d >= 10.0)
+		{
+			do
+			{
+				f *= 10;
+				++exponent;
+			} while (d >= f * 10.0);
+			value /= f;
+		}
+	}
+	else if (value == 0.0)
+	{
+		// SUSv2 leaves it unspecified whether *DECPT is 0 or 1 for 0.0.
+		// This could be changed to -1 if we want to return 0.
+		exponent = 0;
+	}
+	if (ndigit <= 0 && len > 0)
+	{
+		buf[0] = '\0';
+		*decpt = 1;
+		*sign = std::isfinite(value) ? std::signbit(value) != 0 : 0;
+	}
+	else if (fcvt_r<T>(value, std::min(ndigit, std::numeric_limits<T>::max_digits10) - 1, decpt, sign, buf, len))
+	{
+		return -1;
+	}
+	*decpt += exponent;
+	return 0;
+}
 
 }// namespace sf
