@@ -487,6 +487,19 @@ char* decimal_separator_fix(char* buffer, size_t len)
 	return buffer;
 }
 
+std::string replaceAll(const std::string& s, const std::string& from, const std::string& to)
+{
+	std::string rv(s);
+	size_t start_pos = 0;
+	while ((start_pos = rv.find(from, start_pos)) != std::string::npos)
+	{
+		rv.replace(start_pos, from.length(), to);
+		// Handles case where 'to' is a substring of 'from'
+		start_pos += to.length();
+	}
+	return rv;
+}
+
 std::string toStringPrecision(double value, int precision)
 {
 	// Buffer large enough to hold the string.

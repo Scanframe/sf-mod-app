@@ -46,7 +46,7 @@ class TQuaternion
 		/**
 		 * @brief Initializing constructor for 4 element parts.
 		 */
-		TQuaternion(T imag_x, T imag_y, T imag_z, T real);
+		TQuaternion(T real_w, T imag_x, T imag_y, T imag_z);
 
 		/**
 		 * @brief Assigns of another instance elements.
@@ -63,14 +63,14 @@ class TQuaternion
 		 */
 		enum EElement : size_t
 		{
-			/** @brief X imaginary of the quaternion. */
-			imagX = 0,
-			/** @brief Y-axis of the matrix. */
-			imagY = 1,
-			/** @brief Z-axis of the matrix. */
-			imagZ = 2,
 			/** @brief Translation axis of the matrix. */
-			realR = 3
+			realW = 0,
+			/** @brief X imaginary part of the quaternion. */
+			imagX = 1,
+			/** @brief Y imaginary part of the quaternion. */
+			imagY = 2,
+			/** @brief Z imaginary part of the quaternion. */
+			imagZ = 3
 		};
 
 		/**
@@ -94,6 +94,23 @@ class TQuaternion
 		T& real();
 
 		/**
+		 * @brief Get the imaginary part as a 3D-vector.
+		 */
+		TVector3D<T> imaginary() const;
+
+		/**
+		 * @brief Gets the w or real part of this instance.
+		 * Same as #real() method.
+		 */
+		T w() const;
+
+		/**
+		 * @brief Gets the w or real part reference of this instance.
+		 * Same as #real() method.
+		 */
+		T& w();
+
+		/**
 		 * @brief Get the imaginary X-part of this instance.
 		 */
 		T x() const;
@@ -103,6 +120,9 @@ class TQuaternion
 		 */
 		T& x();
 
+		/**
+		 * @brief Get the imaginary Y-part of this instance.
+		 */
 		T y() const;
 
 		/**
@@ -121,39 +141,30 @@ class TQuaternion
 		T& z();
 
 		/**
-		 * @brief Check if the passed value is zero or near zero according the #tolerance.
+		 * @brief Gets a copy of this instance where the imaginary (vector) part of a quaternion is negated.
 		 */
-		bool isZero(T);
-
-		/**
-		 * @brief Get the imaginary part as a 3D-vector.
-		 */
-		TVector3D<T> imaginary() const;
-
-		/**
-		 * @brief Inverts (or negates) the imaginary (vector) part of a quaternion.
-		 */
-		TQuaternion& conjugate();
-
-		/**
-		 * @brief Gets a copy of this instance with inverted (or negated) the imaginary (vector) part of a quaternion.
-		 */
-		TQuaternion conjugated() const;
+		TQuaternion conjugate() const;
 
 		/**
 		 * @brief Inverse the imaginary part of this instance.
 		 */
-		TQuaternion& inverse();
+		TQuaternion inverse() const;
 
 		/**
-		 * @brief Gets an inversed copy of this instance.
+		 * @brief Normalizes this instance.
 		 */
-		TQuaternion inversed() const;
+		TQuaternion& normalize();
 
 		/**
-		 * @brief
+		 * @brief Get a normalizes copy of this instance.
 		 */
-		void normalize();
+		TQuaternion normalized() const;
+
+		/**
+		 * @briew Gets the squared magnitude which is used in computations and the #magnitude() method for the actual magnitude.
+		 * @return
+		 */
+		T magnitudeSqr() const;
 
 		/**
 		 * @brief Gets the magnitude of this quaternion.
@@ -164,52 +175,42 @@ class TQuaternion
 		T magnitude() const;
 
 		/**
-		 * @brief Sets the orientation part of the passed matrix value array.
-		 */
-		void toMatrix(T[4][4]) const;
-
-		/**
 		 * @brief Sets the orientation part of the passed TMatrix instance.
 		 */
-		void toMatrix(TMatrix44<T>&) const;
+		TMatrix44<T> toMatrix(TMatrix44<T>&) const;
 
 		/**
-		 * @brief
+		 * @brief Get a unit matrix having the orientation part set using this instance.
 		 */
-		TVector3D<T> getXAxis() const;
+		TMatrix44<T> toMatrix() const;
 
 		/**
-		 * @brief
+		 * @brief Transforms a 3D-vector not using the quaternion directly instead of a matrix.
 		 */
-		TVector3D<T> getYAxis() const;
+		TVector3D<T> transform(TVector3D<T> v) const;
 
 		/**
-		 * @brief
-		 */
-		TVector3D<T> getZAxis() const;
-
-		/**
-		 * @brief operator.
+		 * @brief Negation operator.
 		 */
 		TQuaternion operator-() const;
 
 		/**
-		 * @brief operator.
+		 * @brief Addition assignment operator.
 		 */
 		TQuaternion& operator+=(const TQuaternion&);
 
 		/**
-		 * @brief operator.
+		 * @brief Subtraction assignment operator.
 		 */
 		TQuaternion& operator-=(const TQuaternion&);
 
 		/**
-		 * @brief operator.
+		 * @brief Multiplication assignment operator.
 		 */
 		TQuaternion& operator*=(const TQuaternion&);
 
 		/**
-		 * @brief operator.
+		 * @brief Division assignment operator.
 		 */
 		TQuaternion& operator/=(const TQuaternion&);
 
@@ -219,17 +220,17 @@ class TQuaternion
 		TQuaternion& operator^=(const TQuaternion&);
 
 		/**
-		 * @brief operator.
+		 * @brief Multiplication assignment operator.
 		 */
 		TQuaternion& operator*=(T c);
 
 		/**
-		 * @brief operator.
+		 * @brief Division operator.
 		 */
 		TQuaternion& operator/=(T c);
 
 		/**
-		 * @brief operator.
+		 * @brief Pointer cast operator.
 		 */
 		TQuaternion operator*(T) const;
 
@@ -237,6 +238,14 @@ class TQuaternion
 		 * @brief operator.
 		 */
 		TQuaternion operator/(T) const;
+
+		/**
+		 * @brief Compares the passed quaternion within the set tolerance.
+		 * @param v Vector to compare with.
+		 * @param tol The tolerance when comparing which has a default.
+		 * @return True when equal.
+		 */
+		bool isEqual(const TQuaternion& v, T tol = tolerance) const;
 
 		/**
 		 * @brief operator.
@@ -248,11 +257,47 @@ class TQuaternion
 		 */
 		bool operator!=(const TQuaternion&) const;
 
-		TQuaternion squared();
+		/**
+		 * @brief Squares this instance.
+		 * If the quaternion is a unit quaternion (meaning it has magnitude 1),
+		 * squaring it produces another quaternion with the same magnitude.
+		 * When a unit quaternion represents a rotation, squaring the quaternion effectively
+		 * doubles the rotation angle while keeping the axis the same.
+		 * @return Squared quaternion.
+		 */
+		TQuaternion squared() const;
 
-		TQuaternion exp();
+		/**
+		 * @brief Gets the logarithm form of this instance.
+		 * The logarithm log(q) of a quaternion is a mathematical operation that maps the quaternion
+		 * from its rotational form to a form that can be linearly interpolated in logarithmic space.
+		 * This is particularly useful for spherical blending or spline interpolation of rotations,
+		 * where transformations are more natural in logarithmic form.
+		 * To move back from the logarithmic form to a quaternion, use the quaternion exponential #exp(),
+		 * which reconstructs the quaternion from its angle-axis form.
+		 * By converting a quaternion to its logarithmic form, it allows linearly interpolate between two rotations.
+		 * This is helpful in spline-based interpolation techniques for smooth rotational blending.
+		 * @return Logarithm quaternion.
+		 */
+		TQuaternion log() const;
 
-		TQuaternion log();
+		/**
+		 * @brief Gets the exponential of a quaternion which is the inverse of #log().
+		 * Moves back from the logarithmic form to a quaternion, which reconstructs the quaternion from its angle-axis form.
+		 * @return Regular quaternion.
+		 */
+		TQuaternion exp() const;
+
+		/**
+		 * @brief Spherical Linear Interpolation (SLERP) function.
+		 * Used to smoothly blending or transitioning between two quaternions, typically representing rotations in 3D space.
+		 * Interpolation is used in animation that require smooth rotational transitions,
+		 * as it avoids issues like gimbal lock and provides a smooth, natural path between orientations.
+		 * @param q Quaternion to transition to.
+		 * @param t Transition ranges from 0 to 1.
+		 * @return Intermediate quaternion.
+		 */
+		TQuaternion interpolate(const TQuaternion<T>& q, T t) const;
 
 		/**
 		 * @brief Gets the string representation of the quaternion formed like '(x,y,z,r)'.
@@ -278,56 +323,75 @@ class TQuaternion
 		union data_type
 		{
 				T array[4];
-				struct imag_real_type
-				{
-						struct point_type
-						{
-								T x;
-								T y;
-								T z;
-						} imag;
-						T real;
-				} ir;
 				struct quat_type
 				{
+						T w;
 						T x;
 						T y;
 						T z;
-						T w;
 				} q;
-		} _data{0, 0, 0, 1.0};
+		} _data{1, 0, 0, 0};
 };
 
+/**
+ * @brief Adds two quaternions.
+ * @tparam T Base floating point type.
+ * @param lhs Left value of the addition.
+ * @param rhs Right value of the addition.
+ * @return New matrix.
+ */
 template<typename T>
 inline const TQuaternion<T> operator+(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
-	return Quaterion(lhs) += rhs;
+	return TQuaternion<T>(lhs) += rhs;
 }
 
+/**
+ * @brief Subtracts two quaternions.
+ * @tparam T Base floating point type.
+ * @param lhs Left value of the subtraction.
+ * @param rhs Right value of the subtraction.
+ * @return New matrix.
+ */
 template<typename T>
 inline const TQuaternion<T> operator-(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
-	return Quaterion(lhs) -= rhs;
+	return TQuaternion<T>(lhs) -= rhs;
 }
 
+/**
+ * @brief Multiplies two quaternions.
+ * @tparam T Base floating point type.
+ * @param lhs Left value of the multiplication.
+ * @param rhs Right value of the multiplication.
+ * @return New matrix.
+ */
 template<typename T>
 inline const TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) *= rhs;
 }
 
+/**
+ * @brief Divides two quaternions.
+ * @tparam T Base floating point type.
+ * @param lhs Left value of the division.
+ * @param rhs Right value of the division.
+ * @return New matrix.
+ */
 template<typename T>
 inline const TQuaternion<T> operator/(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) /= rhs;
 }
 
-template<typename T>
-inline const TQuaternion<T> operator^(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
-{
-	return TQuaternion<T>(lhs) ^= rhs;
-}
-
+/**
+ * @brief Multiplies a scalar value with a quaternion.
+ * @tparam T Base floating point type.
+ * @param Scalar left value of the multiplication.
+ * @param quat Quaternion right value of the multiplication.
+ * @return New matrix.
+ */
 template<typename T>
 TQuaternion<T> operator*(T c, const TQuaternion<T>& quat)
 {

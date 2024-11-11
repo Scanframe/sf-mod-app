@@ -209,6 +209,33 @@ inline constexpr T toDegrees(T radians)
 }
 
 /**
+ * @brief Compares 2 floating point values of the same type with a given epsilon.
+ * @tparam T Base floating point type.
+ * @param a Floating point value 1.
+ * @param b Floating point value 2.
+ * @param epsilon
+ * @return True when near equal.
+ */
+template<typename T>
+inline bool isEqual(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	return std::abs(a - b) <= epsilon;
+}
+
+/**
+ * @brief Check if the passed value is zero or near zero according the given epsilon.
+ */
+template<typename T>
+inline bool isZero(T value, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	// Only implemented for floating point values.
+	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	return std::fabs(value) < epsilon;
+}
+
+/**
  * @brief Returns the precision of the passed floating point value.
  * This is the amount of characters after the point without the trailing zeros.
  * When the value is 12300.00 the value returned is 3.

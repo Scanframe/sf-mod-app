@@ -298,7 +298,7 @@ class TVector2D
 		/**
 		 * @brief Tolerance for when comparing in the equal operator.
 		 * Empirical chosen epsilon multiplier to make it work.
-		 * Used as: std::fabs(x1 - x2) < tolerance
+		 * Used in: #sf::isEqual(f1, f2, tolerance)
 		 */
 		static constexpr auto tolerance = std::numeric_limits<T>::epsilon() * 10.0;
 

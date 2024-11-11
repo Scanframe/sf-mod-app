@@ -160,6 +160,14 @@ class TMatrix44
 		operator const T*() const;
 
 		/**
+		 * @brief Compares the passed matrix within the set tolerance.
+		 * @param v Vector to compare with.
+		 * @param tol The tolerance when comparing which has a default.
+		 * @return True when equal.
+		 */
+		bool isEqual(const TMatrix44& v, T tol = tolerance) const;
+
+		/**
 		 * @brief Compare equal operator using the #tolerance when comparing.
 		 * @return True when equal.
 		 */

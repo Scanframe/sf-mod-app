@@ -146,13 +146,15 @@ TVector2D<T> TMatrix22<T>::transformed(const TVector2D<T>& v) const
 }
 
 template<typename T>
-bool TMatrix22<T>::operator==(const TMatrix22<T>& m) const
+bool TMatrix22<T>::isEqual(const TMatrix22& m, T tol) const
 {
+	// Iterate through the array which makes up the matrix.
 	for (size_t i = 0; i < sizeof(_data.array) / sizeof(_data.array[0]); i++)
 	{
 		// Use the tolerance when comparing.
-		if (std::fabs(_data.array[i] - m._data.array[i]) > tolerance)
+		if (!sf::isEqual<T>(_data.array[i] , m._data.array[i], tol))
 		{
+			// Bailout on first inequality entry.
 			return false;
 		}
 	}
@@ -160,9 +162,15 @@ bool TMatrix22<T>::operator==(const TMatrix22<T>& m) const
 }
 
 template<typename T>
-bool TMatrix22<T>::operator!=(const TMatrix22<T>& m) const
+inline bool TMatrix22<T>::operator==(const TMatrix22<T>& m) const
 {
-	return !operator==(m);
+	return isEqual(m, tolerance);
+}
+
+template<typename T>
+inline bool TMatrix22<T>::operator!=(const TMatrix22<T>& m) const
+{
+	return !isEqual(m, tolerance);
 }
 
 template<typename T>
@@ -207,10 +215,10 @@ template<typename T>
 std::string TMatrix22<T>::toString() const
 {
 	return std::string() + "({" +
-		sf::toString<T>(_data.mtx[0][0]) + ',' +
-		sf::toString<T>(_data.mtx[0][1]) + "},{" +
-		sf::toString<T>(_data.mtx[1][0]) + ',' +
-		sf::toString<T>(_data.mtx[1][1]) + "})";
+		sf::toString<T>(isZero(_data.mtx[0][0], tolerance) ? T(0) : _data.mtx[0][0]) + ',' +
+		sf::toString<T>(isZero(_data.mtx[0][1], tolerance) ? T(0) : _data.mtx[0][1]) + "},{" +
+		sf::toString<T>(isZero(_data.mtx[1][0], tolerance) ? T(0) : _data.mtx[1][0]) + ',' +
+		sf::toString<T>(isZero(_data.mtx[1][1], tolerance) ? T(0) : _data.mtx[1][1]) + "})";
 }
 
 template<typename T>

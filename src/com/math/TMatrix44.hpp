@@ -197,12 +197,13 @@ T TMatrix44<T>::invert()
 template<typename T>
 TMatrix44<T>& TMatrix44<T>::transpose()
 {
-	_data.array = {
+	_data = {
 		_data.mtx[0][0], _data.mtx[1][0], _data.mtx[2][0], _data.mtx[3][0],
 		_data.mtx[0][1], _data.mtx[1][1], _data.mtx[2][1], _data.mtx[3][1],
 		_data.mtx[0][2], _data.mtx[1][2], _data.mtx[2][2], _data.mtx[3][2],
 		_data.mtx[0][3], _data.mtx[1][3], _data.mtx[2][3], _data.mtx[3][3]
 	};
+	return *this;
 }
 
 template<typename T>
@@ -220,7 +221,6 @@ void TMatrix44<T>::unit()
 		_data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[3][1] =
 			_data.mtx[0][2] = _data.mtx[1][2] = _data.mtx[3][2] =
 				_data.mtx[0][3] = _data.mtx[1][3] = _data.mtx[2][3] = 0.0;
-
 	_data.mtx[0][0] = _data.mtx[1][1] = _data.mtx[2][2] = _data.mtx[3][3] = 1.0;
 }
 
@@ -362,11 +362,14 @@ inline TMatrix44<T>& TMatrix44<T>::operator*=(const TMatrix44<T>& lhs)
 template<typename T>
 TVector3D<T> TMatrix44<T>::operator*(const TVector3D<T>& v) const
 {
-	return TVector3D<T>(
-		_data.mtx[0][0] * v.x() + _data.mtx[1][0] * v.y() + _data.mtx[2][0] * v.z(),
-		_data.mtx[0][1] * v.x() + _data.mtx[1][1] * v.y() + _data.mtx[2][1] * v.z(),
-		_data.mtx[0][2] * v.x() + _data.mtx[1][2] * v.y() + _data.mtx[2][2] * v.z()
-	);
+	// Get a local copy of X, Y and Z for fast access.
+	T vt[3];
+	v.copyTo(vt);
+	return {
+		_data.mtx[0][0] * vt[0] + _data.mtx[0][1] * vt[1] + _data.mtx[0][2] * vt[2],
+		_data.mtx[1][0] * vt[0] + _data.mtx[1][1] * vt[1] + _data.mtx[1][2] * vt[2],
+		_data.mtx[2][0] * vt[0] + _data.mtx[2][1] * vt[1] + _data.mtx[2][2] * vt[2]
+	};
 }
 
 template<typename T>
@@ -382,13 +385,15 @@ inline TMatrix44<T>::operator const T*() const
 }
 
 template<typename T>
-bool TMatrix44<T>::operator==(const TMatrix44& m) const
+bool TMatrix44<T>::isEqual(const TMatrix44& m, T tol) const
 {
+	// Iterate through the array which makes up the matrix.
 	for (size_t i = 0; i < sizeof(_data.array) / sizeof(_data.array[0]); i++)
 	{
 		// Use the tolerance when comparing.
-		if (std::fabs(_data.array[i] - m._data.array[i]) > tolerance)
+		if (!sf::isEqual<T>(_data.array[i] , m._data.array[i], tol))
 		{
+			// Bailout on first inequality entry.
 			return false;
 		}
 	}
@@ -396,9 +401,15 @@ bool TMatrix44<T>::operator==(const TMatrix44& m) const
 }
 
 template<typename T>
+inline bool TMatrix44<T>::operator==(const TMatrix44& m) const
+{
+	return isEqual(m);
+}
+
+template<typename T>
 inline bool TMatrix44<T>::operator!=(const TMatrix44& m) const
 {
-	return !operator==(m);
+	return !isEqual(m);
 }
 
 template<typename T>
@@ -455,7 +466,7 @@ void TMatrix44<T>::getTiltPanRoll(T& tilt, T& pan, T& roll) const
 	T sx = -_data.mtx[2][1];
 	T cx = sqrt(1.0 - sx * sx);
 	// Check for a small value of cx.
-	if (cx < tolerance)
+	if (isZero(cx, tolerance))
 	{
 		tilt = sx * 2.0 * numbers::pi_v<T>;
 		pan = 0.0f;
@@ -691,10 +702,10 @@ std::string TMatrix44<T>::toString() const
 	// Lambda function to get the string of each row.
 	auto row = [this](int row) -> std::string {
 		return std::string() + "{" +
-			sf::toString<T>(_data.mtx[row][0]) + ',' +
-			sf::toString<T>(_data.mtx[row][1]) + ',' +
-			sf::toString<T>(_data.mtx[row][2]) + ',' +
-			sf::toString<T>(_data.mtx[row][3]) + '}';
+			sf::toString<T>(isZero(_data.mtx[row][0], tolerance) ? T(0) : _data.mtx[row][0]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[row][1], tolerance) ? T(0) : _data.mtx[row][1]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[row][2], tolerance) ? T(0) : _data.mtx[row][2]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[row][3], tolerance) ? T(0) : _data.mtx[row][3]) + '}';
 	};
 	return '(' + row(0) + ',' + row(1) + ',' + row(2) + ',' + row(3) + ')';
 }

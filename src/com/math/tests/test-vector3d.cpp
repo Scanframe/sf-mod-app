@@ -91,11 +91,13 @@ TEST_CASE("sf::Vector3D", "[con][generic][vector]")
 
 	SECTION("Compare Operators")
 	{
-		auto epsilon = std::numeric_limits<sf::Vector2D::value_type>::epsilon();
 		CHECK(sf::Vector3D(3.0, 6.0, 9.0) == sf::Vector3D(3.0, 6.0, 9.0));
-		CHECK(sf::Vector3D(3.0, 6.0, 9.0) == sf::Vector3D(3.0 - epsilon, 6.0 + epsilon, 9.0 + epsilon));
 		CHECK(sf::Vector3D(6.0, 3.0, 9.0) != sf::Vector3D(3.0, 6.0, 9.0));
-		CHECK(sf::Vector3D(6.0, 3.0, 9.0) != sf::Vector3D(6.0 + epsilon * 11, 3.0, 9.0));
+		// Adding a few epsilons should not make it unequal.
+		auto epsilon = std::numeric_limits<sf::Vector2D::value_type>::epsilon();
+		CHECK(sf::Vector3D(3.0, 6.0, 9.0) == sf::Vector3D(3.0 - epsilon * 2, 6.0 + epsilon * 2, 9.0 + epsilon * 2));
+		// Check if the adding the tolerance will make it unequal.
+		CHECK(sf::Vector3D(6.0, 3.0, 9.0) != sf::Vector3D(6.0 + sf::Vector2D::tolerance * 2, 3.0, 9.0));
 	}
 
 	SECTION("Arithmetic Operators")

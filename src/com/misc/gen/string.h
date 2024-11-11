@@ -139,6 +139,15 @@ _MISC_FUNC std::string error_string(int error_num);
 _MISC_FUNC std::string stringf(const char* fmt, ...);
 
 /**
+ * @brief Replaces all occurrences of 'from' substring and replaces them with 'to' string.
+ * @param s Source string.
+ * @param from String to be replaced.
+ * @param to  String to replace it with.
+ * @return Resulting string.
+ */
+_MISC_FUNC std::string replaceAll(const std::string& s, const std::string& from, const std::string& to);
+
+/**
  * @brief Better implementation of 'stringf' ?
  */
 template<typename... Args>
@@ -265,6 +274,7 @@ char* itoa(T value, char* buffer, int base = 10)
 
 /**
  * @brief Converts an integer type value to a std::string.
+ *
  * @tparam T Integer type.
  * @param value Integer value.
  * @param base  Base of number system or radix defaulting to 10.
@@ -281,6 +291,7 @@ std::string itostr(T value, int base = 10)
 
 /**
  * @brief A locale independent template version for std::strtof(), std::strtod() and std::strtold() functions which uses locale "C".
+ *
  * @tparam T Floating point type.
  * @param ptr String buffer pointer to start.
  * @param end_ptr Optional pointer to pointer where conversion stopped reading.

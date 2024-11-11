@@ -116,6 +116,14 @@ class TMatrix22
 		constexpr operator const T*() const;
 
 		/**
+		 * @brief Compares the passed matrix within the set tolerance.
+		 * @param v Vector to compare with.
+		 * @param tol The tolerance when comparing which has a default.
+		 * @return True when equal.
+		 */
+		bool isEqual(const TMatrix22& v, T tol = tolerance) const;
+
+		/**
 		 * @brief Compare equal operator using the #tolerance for comparing.
 		 * @return True when equal.
 		 */

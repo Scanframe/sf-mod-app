@@ -3,13 +3,11 @@ namespace sf
 
 template<typename T>
 TVector3D<T>::TVector3D(const TVector3D<T>& v)
-	: _data(v._data)
-{}
+	: _data(v._data) {}
 
 template<typename T>
 TVector3D<T>::TVector3D(T xp, T yp, T zp)
-	: _data({xp, yp, zp})
-{}
+	: _data({xp, yp, zp}) {}
 
 template<typename T>
 TVector3D<T>& TVector3D<T>::assign(T xp, T yp, T zp)
@@ -116,9 +114,9 @@ TVector3D<T> TVector3D<T>::operator/(T c) const
 template<typename T>
 bool TVector3D<T>::isEqual(const TVector3D<T>& v, T tol) const
 {
-	return std::fabs(_data.coord.x - v._data.coord.x) < tol &&
-		std::fabs(_data.coord.y - v._data.coord.y) < tol &&
-		std::fabs(_data.coord.z - v._data.coord.z) < tol;
+	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) &&
+		sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol) &&
+		sf::isEqual<T>(_data.coord.z, v._data.coord.z, tol);
 }
 
 template<typename T>
@@ -307,14 +305,14 @@ T TVector3D<T>::angle(const TVector3D& v) const
 	// Quick and dirty to get the angle by using in-product and out-product
 	// to get the cos alpha and the sinus alpha.
 	value_type len = v1.length() * v2.length();
-	if (len < std::numeric_limits<T>::epsilon())
+	if (isZero(len))
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid length/magnitude !");
 	}
 	auto cp = v1.crossProduct(v2);
 	auto dp = v1.dotProduct(v2);
 	// When the cross product is zero the 2 vectors are parallel to each other and the angle is therefore zero.
-	if (v1.crossProduct(v2).isEqual({0, 0, 0}))
+	if (v1.crossProduct(v2) == TVector3D(0, 0, 0))
 	{
 		return 0.0;
 	}
@@ -398,7 +396,10 @@ void TVector3D<T>::updateMax(const TVector3D<T>& vertex)
 template<typename T>
 std::string TVector3D<T>::toString() const
 {
-	return '(' + sf::toString<T>(_data.coord.x) + ',' + sf::toString<T>(_data.coord.y) + ',' + sf::toString<T>(_data.coord.z) + ')';
+	return '(' +
+		sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
+		sf::toString<T>(isZero(_data.coord.y, tolerance) ? T(0) : _data.coord.y) + ',' +
+		sf::toString<T>(isZero(_data.coord.z, tolerance) ? T(0) : _data.coord.z) + ')';
 }
 
 template<typename T>
@@ -426,9 +427,9 @@ TVector3D<T>& TVector3D<T>::fromString(const std::string& s)
 template<typename T>
 int TVector3D<T>::dominantAxis(void)
 {
-	if (toAbs(_data.coord.x) > std::fabs(_data.coord.y))
+	if (std::fabs(_data.coord.x) > std::fabs(_data.coord.y))
 	{
-		if (toAbs(_data.coord.x) > std::fabs(_data.coord.z))
+		if (std::fabs(_data.coord.x) > std::fabs(_data.coord.z))
 		{
 			return 0;
 		}

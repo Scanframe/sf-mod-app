@@ -8,7 +8,9 @@ TRectangle2D<T>::TRectangle2D(std::initializer_list<T> list)
 {
 	// Check the given initializer size.
 	if (list.size() != sizeof(_data.array) / sizeof(_data.array[0]))
+	{
 		throw std::invalid_argument("");
+	}
 	size_t i = 0;
 	for (auto el: list)
 	{
@@ -118,29 +120,19 @@ inline bool TRectangle2D<T>::operator!=(const TRectangle2D<T>& rect) const
 template<typename T>
 bool TRectangle2D<T>::isEmpty() const
 {
-	if (std::fabs(_data.rect.left) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.bottom) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.right) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.top) > tolerance)
-		return false;
-	return true;
+	return isZero(_data.rect.left, tolerance) &&
+		isZero(_data.rect.bottom, tolerance) &&
+		isZero(_data.rect.right, tolerance) &&
+		isZero(_data.rect.top, tolerance);
 }
 
 template<typename T>
-bool TRectangle2D<T>::isEqual(const TRectangle2D<T>& rect) const
+bool TRectangle2D<T>::isEqual(const TRectangle2D<T>& rect, T tol) const
 {
-	if (std::fabs(_data.rect.left - rect._data.rect.left) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.bottom - rect._data.rect.bottom) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.right - rect._data.rect.right) > tolerance)
-		return false;
-	if (std::fabs(_data.rect.top - rect._data.rect.top) > tolerance)
-		return false;
-	return true;
+	return sf::isEqual(_data.rect.left, rect._data.rect.left, tol) &&
+		sf::isEqual(_data.rect.bottom, rect._data.rect.bottom, tol) &&
+		sf::isEqual(_data.rect.right, rect._data.rect.right, tol) &&
+		sf::isEqual(_data.rect.top, rect._data.rect.top, tol);
 }
 
 template<typename T>
@@ -228,9 +220,13 @@ template<typename T>
 TRectangle2D<T>& TRectangle2D<T>::normalize()
 {
 	if (_data.rect.left > _data.rect.right)
+	{
 		std::swap(_data.rect.left, _data.rect.right);
+	}
 	if (_data.rect.bottom > _data.rect.top)
+	{
 		std::swap(_data.rect.bottom, _data.rect.top);
+	}
 	return *this;
 }
 
@@ -324,7 +320,9 @@ TRectangle2D<T>& TRectangle2D<T>::operator&=(const TRectangle2D& other)
 	if (!isEmpty())
 	{
 		if (other.isEmpty())
+		{
 			clear();
+		}
 		else
 		{
 			_data.rect.left = std::max(_data.rect.left, other._data.rect.left);
@@ -347,7 +345,7 @@ TRectangle2D<T>& TRectangle2D<T>::operator|=(const TRectangle2D<T>& other)
 		{
 			assign(other);
 		}
-		// Not empty do the heavy lifting.
+			// Not empty do the heavy lifting.
 		else
 		{
 			_data.rect.left = std::min(_data.rect.left, other._data.rect.left);
@@ -375,16 +373,17 @@ template<typename T>
 std::string TRectangle2D<T>::toString() const
 {
 	return std::string() + '(' +
-		sf::toString<T>(_data.rect.left) + ',' +
-		sf::toString<T>(_data.rect.bottom) + ',' +
-		sf::toString<T>(_data.rect.right) + ',' +
-		sf::toString<T>(_data.rect.top) + ')';
+		sf::toString<T>(isZero(_data.rect.left, tolerance) ? T(0) : _data.rect.left) + ',' +
+		sf::toString<T>(isZero(_data.rect.bottom, tolerance) ? T(0) : _data.rect.bottom) + ',' +
+		sf::toString<T>(isZero(_data.rect.right, tolerance) ? T(0) : _data.rect.right) + ',' +
+		sf::toString<T>(isZero(_data.rect.top, tolerance) ? T(0) : _data.rect.top) + ')';
 }
 
 template<typename T>
 TRectangle2D<T>& TRectangle2D<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
+	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)",
+		std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches which is required.
 	if (!std::regex_match(s, match, re) || match.size() != sizeof(_data.array) / sizeof(_data.array[0]) + 1)

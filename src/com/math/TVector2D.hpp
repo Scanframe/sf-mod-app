@@ -7,13 +7,11 @@ namespace sf
 
 template<typename T>
 TVector2D<T>::TVector2D(const TVector2D& v)
-	: _data(v._data)
-{}
+	: _data(v._data) {}
 
 template<typename T>
 TVector2D<T>::TVector2D(T xp, T yp)
-	: _data({xp, yp})
-{}
+	: _data({xp, yp}) {}
 
 template<typename T>
 TVector2D<T>::operator const T*() const
@@ -108,12 +106,12 @@ T TVector2D<T>::angle() const
 	value_type rv = 0.0;
 	TVector2D v1(*this);
 	// Check for a very small length and increment it since it does not change the outcome.
-	if (v1.length() < std::numeric_limits<T>::epsilon() * 1E6)
+	if (isZero(v1.length(), tolerance * 1E5))
 	{
 		v1 /= v1.lengthSqr();
 	}
 	// Avoid an almost division by zero.
-	if (std::fabs(v1._data.coord.x) < std::numeric_limits<T>::epsilon())
+	if (isZero(v1._data.coord.x, tolerance))
 	{
 		if (v1._data.coord.x < 0.0)
 		{
@@ -151,7 +149,7 @@ template<typename T>
 T TVector2D<T>::angleNormalized() const
 {
 	auto rv = angle();
-	// When the angle is still negative add 360 degrees in radians to it.
+	// When the angle is still negative add 360 degrees in radials to it.
 	if (rv < 0.0)
 	{
 		rv += 2.0 * numbers::pi_v<T>;
@@ -186,7 +184,7 @@ T TVector2D<T>::angle(const TVector2D& v) const
 	}
 	auto dp = v1.dotProduct(v2);
 	// When the cross product is zero the 2 vectors are parallel to each other and the angle is therefore zero.
-	if (std::fabs(v1.crossProduct(v2)) < std::numeric_limits<T>::epsilon())
+	if (isZero(v1.crossProduct(v2), tolerance))
 	{
 		// TODO: Is the result 0.0 not always the case here?
 		return (dp > 0) ? 0.0 : numbers::pi_v<T>;
@@ -347,8 +345,8 @@ TVector2D<T> TVector2D<T>::operator/(T c) const
 template<typename T>
 bool TVector2D<T>::isEqual(const TVector2D<T>& v, T tol) const
 {
-	return std::fabs(_data.coord.x - v._data.coord.x) < tol &&
-		std::fabs(_data.coord.y - v._data.coord.y) < tol;
+	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) &&
+		sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol);
 }
 
 template<typename T>
@@ -392,7 +390,9 @@ void TVector2D<T>::updateMax(const TVector2D& vertex)
 template<typename T>
 std::string TVector2D<T>::toString() const
 {
-	return '(' + sf::toString<T>(_data.coord.x) + ',' + sf::toString<T>(_data.coord.y) + ')';
+	return '(' +
+		sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
+		sf::toString<T>(isZero(_data.coord.y, tolerance) ? T(0) : _data.coord.y) + ')';
 }
 
 template<typename T>

@@ -16,17 +16,19 @@ TQuaternion<T>::TQuaternion(const TQuaternion& quat)
 template<typename T>
 TQuaternion<T>::TQuaternion(T real, const TVector3D<T>& imag)
 {
-	_data.ir.imag(imag);
-	_data.ir.real(real);
+	_data.q.w = real;
+	_data.q.x = imag.x();
+	_data.q.y = imag.y();
+	_data.q.z = imag.z();
 }
 
 template<typename T>
-TQuaternion<T>::TQuaternion(T imag_x, T imag_y, T imag_z, T real)
+TQuaternion<T>::TQuaternion(T real_w, T imag_x, T imag_y, T imag_z)
 {
+	_data.q.w = real_w;
 	_data.q.x = imag_x;
 	_data.q.y = imag_y;
 	_data.q.z = imag_z;
-	_data.q.w = real;
 }
 
 template<typename T>
@@ -34,13 +36,12 @@ TQuaternion<T>::TQuaternion(const TVector3D<T>& axis, T angle)
 {
 	if (!isZero(angle))
 	{
-		_data.ir.real = std::cos(angle * T(0.5));
-		((std::sin(angle * T(0.5))) * axis.normalized()).copyTo(_data.array);
+		_data.q.w = std::cos(angle * T(0.5));
+		((std::sin(angle * T(0.5))) * axis.normalized()).copyTo(&_data.array[imagX]);
 	}
 	else
 	{
-		_data.ir.real = T(1.0);
-		_data.ir.imag = {T(0), T(0), T(0)};
+		_data.q = {T(0), T(0), T(0), T(1.0)};
 	}
 }
 
@@ -48,7 +49,7 @@ template<typename T>
 TQuaternion<T>& TQuaternion<T>::assign(const TQuaternion& quat)
 {
 	_data.ir.imag = quat._data.ir.imag;
-	_data.ir.real = quat._data.ir.real;
+	_data.q.w = quat._data.q.w;
 	return *this;
 }
 
@@ -61,7 +62,7 @@ inline TQuaternion<T>& TQuaternion<T>::operator=(const TQuaternion& quat)
 template<typename T>
 T& TQuaternion<T>::operator[](size_t elem)
 {
-	if (elem > realR)
+	if (elem > imagZ)
 	{
 		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
 	}
@@ -71,7 +72,7 @@ T& TQuaternion<T>::operator[](size_t elem)
 template<typename T>
 const T& TQuaternion<T>::operator[](size_t elem) const
 {
-	if (elem > realR)
+	if (elem > imagZ)
 	{
 		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
 	}
@@ -81,13 +82,13 @@ const T& TQuaternion<T>::operator[](size_t elem) const
 template<typename T>
 T TQuaternion<T>::real() const
 {
-	return _data.ir.real;
+	return _data.q.w;
 }
 
 template<typename T>
 T& TQuaternion<T>::real()
 {
-	return _data.ir.real;
+	return _data.q.w;
 }
 
 template<typename T>
@@ -97,77 +98,77 @@ inline TVector3D<T> TQuaternion<T>::imaginary() const
 }
 
 template<typename T>
+inline T TQuaternion<T>::w() const
+{
+	return _data.q.w;
+}
+
+template<typename T>
+inline T& TQuaternion<T>::w()
+{
+	return _data.q.w;
+}
+
+template<typename T>
 inline T TQuaternion<T>::x() const
 {
-	return _data.ir.imag.x;
+	return _data.q.x;
 }
 
 template<typename T>
 inline T& TQuaternion<T>::x()
 {
-	return _data.ir.imag.x;
+	return _data.q.x;
 }
 
 template<typename T>
 inline T TQuaternion<T>::y() const
 {
-	return _data.ir.imag.y;
+	return _data.q.y;
 }
 
 template<typename T>
 inline T& TQuaternion<T>::y()
 {
-	return _data.ir.imag.y;
+	return _data.q.y;
 }
 
 template<typename T>
 inline T TQuaternion<T>::z() const
 {
-	return _data.ir.imag.z;
+	return _data.q.x;
 }
 
 template<typename T>
 inline T& TQuaternion<T>::z()
 {
-	return _data.ir.imag.z;
+	return _data.q.z;
 }
 
 template<typename T>
-bool TQuaternion<T>::isZero(T value)
+TQuaternion<T> TQuaternion<T>::conjugate() const
 {
-	return std::fabs(value) < tolerance;
+	return {_data.q.w, -_data.q.x, -_data.q.y, -_data.q.z};
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::conjugate()
+TQuaternion<T> TQuaternion<T>::inverse() const
 {
-	_data.ir.imag.x = -_data.ir.imag.x;
-	_data.ir.imag.y = -_data.ir.imag.y;
-	_data.ir.imag.z = -_data.ir.imag.z;
+	/*
+	// Step 1: Compute the Conjugate of the Quaternion.
+	auto conj = conjugate();
+	// Step 2: Compute the Norm (Magnitude) of the Quaternion.
+	auto mag = conj.magnitudeSqr();
+	// Step 3: Divide the Conjugate by the Norm Squared
+	return conj / mag;
+	//
+*/
+	// Simplified where magnitudeSqr() from this instance is the same as the conjugate one.
+	return conjugate() / magnitudeSqr();
 }
 
 template<typename T>
-inline TQuaternion<T> TQuaternion<T>::conjugated() const
-{
-	return TQuaternion().conjugate();
-}
-
-template<typename T>
-TQuaternion<T>& TQuaternion<T>::inverse()
-{
-	conjugate();
-	normalize();
-	return *this;
-}
-
-template<typename T>
-TQuaternion<T> TQuaternion<T>::inversed() const
-{
-	return TQuaternion(*this).inverse();
-}
-
-template<typename T>
-void TQuaternion<T>::normalize()
+TQuaternion<T>& TQuaternion<T>::normalize()
 {
 	T c = magnitude();
 	if (isZero(c))
@@ -178,51 +179,67 @@ void TQuaternion<T>::normalize()
 	_data.q.y /= c;
 	_data.q.z /= c;
 	_data.q.w /= c;
+	return *this;
 }
 
 template<typename T>
-T TQuaternion<T>::magnitude() const
+TQuaternion<T> TQuaternion<T>::normalized() const
 {
-	return std::sqrt(_data.q.x * _data.q.x + _data.q.y * _data.q.y + _data.q.z * _data.q.z + _data.q.w * _data.q.w);
+	return TQuaternion(*this).normalize();
+}
+
+template<typename T>
+T TQuaternion<T>::magnitudeSqr() const
+{
+	return _data.q.x * _data.q.x +
+		_data.q.y * _data.q.y +
+		_data.q.z * _data.q.z +
+		_data.q.w * _data.q.w;
+}
+
+template<typename T>
+inline T TQuaternion<T>::magnitude() const
+{
+	return std::sqrt(magnitudeSqr());
 }
 
 template<typename T>
 TQuaternion<T> TQuaternion<T>::operator-() const
 {
-	return {-_data.q.x, -_data.q.y, -_data.q.z, -_data.q.w};
+	return {-_data.q.w, -_data.q.x, -_data.q.y, -_data.q.z};
 }
 
 template<typename T>
 TQuaternion<T>& TQuaternion<T>::operator+=(const TQuaternion<T>& quat)
 {
+	_data.q.w += quat._data.q.w;
 	_data.q.x += quat._data.q.x;
 	_data.q.y += quat._data.q.y;
 	_data.q.z += quat._data.q.z;
-	_data.q.w += quat._data.q.w;
 	return *this;
 }
 
 template<typename T>
 TQuaternion<T>& TQuaternion<T>::operator-=(const TQuaternion<T>& quat)
 {
+	_data.q.w -= quat._data.q.w;
 	_data.q.x -= quat._data.q.x;
 	_data.q.y -= quat._data.q.y;
 	_data.q.z -= quat._data.q.z;
-	_data.q.w -= quat._data.q.w;
 	return *this;
 }
 
 template<typename T>
 TQuaternion<T>& TQuaternion<T>::operator*=(const TQuaternion<T>& q)
 {
-	TVector3D<T> mul{
-		_data.q.w * q._data.q.x + q._data.q.w * _data.q.x + _data.q.y * q._data.q.z - _data.q.z * q._data.q.y,
-		_data.q.w * q._data.q.y + q._data.q.w * _data.q.y + _data.q.z * q._data.q.x - _data.q.x * q._data.q.z,
-		_data.q.w * q._data.q.z + q._data.q.w * _data.q.z + _data.q.x * q._data.q.y - _data.q.y * q._data.q.x
-	};
+	auto x = _data.q.w * q._data.q.x + q._data.q.w * _data.q.x + _data.q.y * q._data.q.z - _data.q.z * q._data.q.y;
+	auto y = _data.q.w * q._data.q.y + q._data.q.w * _data.q.y + _data.q.z * q._data.q.x - _data.q.x * q._data.q.z;
+	auto z = _data.q.w * q._data.q.z + q._data.q.w * _data.q.z + _data.q.x * q._data.q.y - _data.q.y * q._data.q.x;
 	// Do not change the order of these lines! (w needs old value).
 	_data.q.w = _data.q.w * q._data.q.w - _data.q.x * q._data.q.x - _data.q.y * q._data.q.y - _data.q.z * q._data.q.z;
-	mul.copyTo(_data.array);
+	_data.q.x = x;
+	_data.q.y = y;
+	_data.q.z = z;
 	return *this;
 }
 
@@ -236,8 +253,7 @@ TQuaternion<T>& TQuaternion<T>::operator/=(const TQuaternion<T>& quat)
 template<typename T>
 TQuaternion<T>& TQuaternion<T>::operator^=(const TQuaternion<T>& quat)
 {
-	assign((quat * log(*this)).exp());
-	return *this;
+	return assign((quat * log()).exp());
 }
 
 template<typename T>
@@ -257,14 +273,17 @@ TQuaternion<T>& TQuaternion<T>::operator/=(T c)
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() possible division by near zero!");
 	}
-	*this = *this / c;
+	_data.q.x /= c;
+	_data.q.y /= c;
+	_data.q.z /= c;
+	_data.q.w /= c;
 	return *this;
 }
 
 template<typename T>
 TQuaternion<T> TQuaternion<T>::operator*(T c) const
 {
-	return {_data.q.x * c, _data.q.y * c, _data.q.z * c, _data.q.w * c};
+	return {_data.q.w * c, _data.q.x * c, _data.q.y * c, _data.q.z * c};
 }
 
 template<typename T>
@@ -274,77 +293,85 @@ TQuaternion<T> TQuaternion<T>::operator/(T c) const
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() possible division by near zero!");
 	}
-	return {_data.q.x / c, _data.q.y / c, _data.q.z / c, _data.q.w / c};
+	return {_data.q.w / c, _data.q.x / c, _data.q.y / c, _data.q.z / c};
 }
 
 template<typename T>
-bool TQuaternion<T>::operator==(const TQuaternion<T>& quat) const
+bool TQuaternion<T>::isEqual(const TQuaternion& quat, T tol) const
 {
-	return (
-		isZero(_data.ir.real - quat._data.ir.real) &&
-		isZero(_data.ir.imag.x - quat._data.ir.imag.x) &&
-		isZero(_data.ir.imag.y - quat._data.ir.imag.y) &&
-		isZero(_data.ir.imag.z - quat._data.ir.imag.z)
-	);
+	return sf::isEqual<T>(_data.q.w, quat._data.q.w, tol) &&
+		sf::isEqual<T>(_data.q.x, quat._data.q.x, tol) &&
+		sf::isEqual<T>(_data.q.y, quat._data.q.y, tol) &&
+		sf::isEqual<T>(_data.q.z, quat._data.q.z, tol);
 }
 
 template<typename T>
-bool TQuaternion<T>::operator!=(const TQuaternion<T>& quat) const
+inline bool TQuaternion<T>::operator==(const TQuaternion<T>& quat) const
 {
-	return !operator==(quat);
+	return isEqual(quat);
 }
 
 template<typename T>
-TQuaternion<T> TQuaternion<T>::squared()
+inline bool TQuaternion<T>::operator!=(const TQuaternion<T>& quat) const
 {
-	TVector3D<T> imag{_data.ir.imag.x, _data.ir.imag.y, _data.ir.imag.z};
-	return TQuaternion<T>(_data.ir.real * _data.ir.real - imag.lengthSqr(), 2 * _data.ir.real * imag);
+	return !isEqual(quat);
 }
 
 template<typename T>
-TQuaternion<T> TQuaternion<T>::exp()
+TQuaternion<T> TQuaternion<T>::squared() const
+{
+	TVector3D<T> imag{_data.q.x, _data.q.y, _data.q.z};
+	return TQuaternion<T>(_data.q.w * _data.q.w - imag.lengthSqr(), 2 * _data.q.w * imag);
+}
+
+template<typename T>
+TQuaternion<T> TQuaternion<T>::exp() const
 {
 	TQuaternion q(*this);
-	auto s = q._data.ir.real;
-	auto se = exp(s);
-	q._data.ir.real = 0.0;
+	auto s = q._data.q.w;
+	auto se = std::exp(s);
+	q._data.q.w = 0.0;
 	auto scale = se;
 	auto theta = q.magnitude();
 	if (theta > 0.0001)
 	{
 		scale *= std::sin(theta) / theta;
 	}
-	q._data.ir.imag *= scale;
-	q._data.ir.real = se * std::cos(theta);
+	q._data.q.w = se * std::cos(theta);
+	q._data.q.x *= scale;
+	q._data.q.y *= scale;
+	q._data.q.z *= scale;
 	return q;
 }
 
 template<typename T>
-TQuaternion<T> TQuaternion<T>::log()
+TQuaternion<T> TQuaternion<T>::log() const
 {
 	TQuaternion q(*this);
 	T sl = q.magnitude();
 	q.normalize();
-	T s = q._data.ir.real;
-	q._data.ir.real = 0.0;
+	T s = q._data.q.w;
+	q._data.q.w = 0.0;
 	T scale = q.magnitude();
 	T theta = atan2(scale, s);
-	if (scale > 0.0)
+	if (!isZero(scale, tolerance))
 	{
 		scale = theta / scale;
 	}
-	q._data.ir.imag *= scale;
-	q._data.ir.real = log(sl);
+	q._data.q.w = std::log(sl);
+	q._data.q.x *= scale;
+	q._data.q.y *= scale;
+	q._data.q.z *= scale;
 	return q;
 }
 
 template<typename T>
-TQuaternion<T> interpolate(const TQuaternion<T>& p, const TQuaternion<T>& q, T t)
+TQuaternion<T> TQuaternion<T>::interpolate(const TQuaternion<T>& q, T t) const
 {
+	const TQuaternion& p(*this);
 	TQuaternion<T> qt(q), q1;
 	T sp, sq;
-
-	if ((p - q).absolute() > (p + q).absolute())
+	if ((p - q).magnitude() > (p + q).magnitude())
 	{
 		q1 = -q;
 	}
@@ -352,24 +379,22 @@ TQuaternion<T> interpolate(const TQuaternion<T>& p, const TQuaternion<T>& q, T t
 	{
 		q1 = q;
 	}
-
 	auto c = p.real() * q1.real() + p.x() * q1.x() + p.y() * q1.y() + p.z() * q1.z();
-
 	if (c > T(-0.9999999999))
 	{
 		if (c < T(0.9999999999))
 		{
-			auto o = acos(c);
-			auto s = T(1.0) / sin(o);
-			sp = sin((1.0 - t) * o) * s;
-			sq = sin(t * o) * s;
+			auto o = std::acos(c);
+			auto s = T(1.0) / std::sin(o);
+			sp = std::sin((1.0 - t) * o) * s;
+			sq = std::sin(t * o) * s;
 		}
 		else
 		{
 			sp = T(1.0) - t;
 			sq = t;
 		}
-		qt._real = sp * p._real + sq * q1._real;
+		qt.real() = sp * p.real() + sq * q1.real();
 		qt.x() = sp * p.x() + sq * q1.x();
 		qt.y() = sp * p.y() + sq * q1.y();
 		qt.z() = sp * p.z() + sq * q1.z();
@@ -390,83 +415,75 @@ TQuaternion<T> interpolate(const TQuaternion<T>& p, const TQuaternion<T>& q, T t
 }
 
 template<typename T>
-void TQuaternion<T>::toMatrix(TMatrix44<T>& mtx) const
+TMatrix44<T> TQuaternion<T>::toMatrix(TMatrix44<T>& mtx) const
 {
-	T m[4][4];
-	toMatrix(m);
-	mtx.setElement(0, 0, m[0][0]);
-	mtx.setElement(1, 0, m[1][0]);
-	mtx.setElement(2, 0, m[2][0]);
-	mtx.setElement(0, 1, m[0][1]);
-	mtx.setElement(1, 1, m[1][1]);
-	mtx.setElement(2, 1, m[2][1]);
-	mtx.setElement(0, 1, m[0][2]);
-	mtx.setElement(1, 1, m[1][2]);
-	mtx.setElement(2, 1, m[2][2]);
+	auto x2 = _data.q.x * _data.q.x;
+	auto y2 = _data.q.y * _data.q.y;
+	auto z2 = _data.q.z * _data.q.z;
+	auto wx = _data.q.w * _data.q.x;
+	auto wy = _data.q.w * _data.q.y;
+	auto wz = _data.q.w * _data.q.z;
+	auto xy = _data.q.x * _data.q.y;
+	auto xz = _data.q.x * _data.q.z;
+	auto yz = _data.q.y * _data.q.z;
+
+	mtx.setElement(0, 0, T(1.0) - T(2.0) * (y2 + z2));
+	mtx.setElement(0, 1, T(2.0) * (xy - wz));
+	mtx.setElement(0, 2, T(2.0) * (xz + wy));
+
+	mtx.setElement(1, 0, T(2.0) * (xy + wz));
+	mtx.setElement(1, 1, T(1.0) - T(2.0) * (x2 + z2));
+	mtx.setElement(1, 2, T(2.0) * (yz - wx));
+
+	mtx.setElement(2, 0, T(2.0) * (xz - wy));
+	mtx.setElement(2, 1, T(2.0) * (yz + wx));
+	mtx.setElement(2, 2, T(1.0) - T(2.0) * (x2 + y2));
+	return mtx;
 }
 
 template<typename T>
-void TQuaternion<T>::toMatrix(T m[4][4]) const
+inline TMatrix44<T> TQuaternion<T>::toMatrix() const
 {
-	auto x2 = x() + x();
-	auto y2 = y() + y();
-	auto z2 = z() + z();
-	auto wx = real() * x2;
-	auto wy = real() * y2;
-	auto wz = real() * z2;
-	auto xx = x() * x2;
-	auto xy = x() * y2;
-	auto xz = x() * z2;
-	auto yy = y() * y2;
-	auto yz = y() * z2;
-	auto zz = z() * z2;
-
-	m[0][0] = 1.0 - yy - zz;
-	m[1][0] = xy + wz;
-	m[2][0] = xz - wy;
-	m[0][1] = xy - wz;
-	m[1][1] = 1.0 - xx - zz;
-	m[2][1] = yz + wx;
-	m[0][2] = xz + wy;
-	m[1][2] = yz - wx;
-	m[2][2] = 1.0 - xx - yy;
+	TMatrix44<T> mtx;
+	return normalized().toMatrix(mtx);
 }
 
 template<typename T>
-TVector3D<T> TQuaternion<T>::getXAxis() const
+TVector3D<T> TQuaternion<T>::transform(TVector3D<T> v) const
 {
-	TMatrix44<T> mat;
-	toMatrix(mat);
-	return mat.getAxis(TMatrix44<T>::axisX);
-}
-
-template<typename T>
-TVector3D<T> TQuaternion<T>::getYAxis() const
-{
-	TMatrix44<T> mat;
-	toMatrix(mat);
-	return mat.getAxis(TMatrix44<T>::axisY);
-}
-
-template<typename T>
-TVector3D<T> TQuaternion<T>::getZAxis() const
-{
-	TMatrix44<T> mat;
-	toMatrix(mat);
-	return mat.getAxis(TMatrix44<T>::axisZ);
+	auto x2 = _data.q.x + _data.q.x;
+	auto y2 = _data.q.y + _data.q.y;
+	auto z2 = _data.q.z + _data.q.z;
+	auto wx2 = _data.q.w * x2;
+	auto wy2 = _data.q.w * y2;
+	auto wz2 = _data.q.w * z2;
+	auto xx2 = _data.q.x * x2;
+	auto xy2 = _data.q.x * y2;
+	auto xz2 = _data.q.x * z2;
+	auto yy2 = _data.q.y * y2;
+	auto yz2 = _data.q.y * z2;
+	auto zz2 = _data.q.z * z2;
+	auto xp = ((v.x() * ((T(1) - yy2) - zz2)) + (v.y() * (xy2 - wz2))) + (v.z() * (xz2 + wy2));
+	auto yp = ((v.x() * (xy2 + wz2)) + (v.y() * ((T(1) - xx2) - zz2))) + (v.z() * (yz2 - wx2));
+	auto zp = ((v.x() * (xz2 - wy2)) + (v.y() * (yz2 + wx2))) + (v.z() * ((T(1) - xx2) - yy2));
+	return {xp, yp, zp};
 }
 
 template<typename T>
 std::string TQuaternion<T>::toString() const
 {
-	return '(' + sf::toString<T>(_data.q.x) + ',' + sf::toString<T>(_data.q.y) + ',' + sf::toString<T>(_data.q.z) + ',' + sf::toString<T>(_data.q.w) + ')';
+	return '(' + sf::toString<T>(isZero(_data.q.w, tolerance) ? T(0) : _data.q.w) + ',' +
+		sf::toString<T>(isZero(_data.q.x, tolerance) ? T(0) : _data.q.x) + ',' +
+		sf::toString<T>(isZero(_data.q.y, tolerance) ? T(0) : _data.q.y) + ',' +
+		sf::toString<T>(isZero(_data.q.z, tolerance) ? T(0) : _data.q.z) + ')';
 }
 
 template<typename T>
 TQuaternion<T>& TQuaternion<T>::fromString(const std::string& s) noexcept(false)
 {
 	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
+	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)",
+		std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != sz + 1)

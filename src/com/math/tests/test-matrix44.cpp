@@ -211,9 +211,9 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK((m * sf::Vector3D(1.0, 2.0, 3.0)) == sf::Vector3D(1, -2, -3));
 		// Rotating around each axis for 180 degree results in the same matrix.
 		CHECK((sf::Matrix44(sf::toRadians(180.0), sf::toRadians(180.0), sf::toRadians(180.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 2, 3));
-		CHECK((sf::Matrix44(sf::toRadians(90.0), 0, 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, -3, 2));
-		CHECK((sf::Matrix44(0, sf::toRadians(90.0), 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(3, 2, -1));
-		CHECK((sf::Matrix44(0, 0, sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(-2, 1, 3));
+		CHECK((sf::Matrix44(sf::toRadians(90.0), 0, 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
+		CHECK((sf::Matrix44(0, sf::toRadians(90.0), 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(-3, 2, 1));
+		CHECK((sf::Matrix44(0, 0, sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(2, -1, 3));
 	}
 
 #if 0

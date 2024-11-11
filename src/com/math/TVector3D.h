@@ -338,10 +338,10 @@ class TVector3D
 
 		/**
 		 * @brief Tolerance for when comparing in the equal operator.
-		 * Empirical chosen epsilon multiplier to make it work.
+		 * Empirical chosen epsilon multiplier to make it work after calculations.
 		 * Used as: std::fabs(x1 - x2) < tolerance
 		 */
-		static constexpr auto tolerance = std::numeric_limits<T>::epsilon() * T(10.0);
+		static constexpr auto tolerance = std::numeric_limits<T>::epsilon() * T(15.0);
 
 		/**
 		 * @brief Copies the X, Y and Z values to an array of type 'T' or type 'TVector3D<T>::value_type'.

@@ -103,7 +103,7 @@ class TRectangle2D
 		 * @see tolerance
 		 * @return True when equal.
 		 */
-		bool isEqual(const TRectangle2D<T>& other) const;
+		bool isEqual(const TRectangle2D<T>& other, T tol=tolerance) const;
 
 		/**
 		 * @brief Call the isEqual() function to compare.
