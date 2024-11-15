@@ -7,11 +7,13 @@ namespace sf
 
 template<typename T>
 TVector2D<T>::TVector2D(const TVector2D& v)
-	: _data(v._data) {}
+	: _data(v._data)
+{}
 
 template<typename T>
 TVector2D<T>::TVector2D(T xp, T yp)
-	: _data({xp, yp}) {}
+	: _data({xp, yp})
+{}
 
 template<typename T>
 TVector2D<T>::operator const T*() const

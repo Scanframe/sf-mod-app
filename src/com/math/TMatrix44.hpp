@@ -56,24 +56,9 @@ TMatrix44<T>::TMatrix44(TMatrix44&& m)
 
 // Copy Constructor
 template<typename T>
-TMatrix44<T>::TMatrix44(const TMatrix44& rhs)
+TMatrix44<T>::TMatrix44(const TMatrix44& m)
 {
-	_data.mtx[0][0] = rhs._data.mtx[0][0];
-	_data.mtx[0][1] = rhs._data.mtx[0][1];
-	_data.mtx[0][2] = rhs._data.mtx[0][2];
-	_data.mtx[0][3] = rhs._data.mtx[0][3];
-	_data.mtx[1][0] = rhs._data.mtx[1][0];
-	_data.mtx[1][1] = rhs._data.mtx[1][1];
-	_data.mtx[1][2] = rhs._data.mtx[1][2];
-	_data.mtx[1][3] = rhs._data.mtx[1][3];
-	_data.mtx[2][0] = rhs._data.mtx[2][0];
-	_data.mtx[2][1] = rhs._data.mtx[2][1];
-	_data.mtx[2][2] = rhs._data.mtx[2][2];
-	_data.mtx[2][3] = rhs._data.mtx[2][3];
-	_data.mtx[3][0] = rhs._data.mtx[3][0];
-	_data.mtx[3][1] = rhs._data.mtx[3][1];
-	_data.mtx[3][2] = rhs._data.mtx[3][2];
-	_data.mtx[3][3] = rhs._data.mtx[3][3];
+	_data = m._data;
 }
 
 template<typename T>
@@ -95,7 +80,7 @@ TMatrix44<T>::TMatrix44(
 template<typename T>
 TMatrix44<T>::TMatrix44(const T arr[4][4])
 {
-	_data.array = arr;
+	std::memcpy(_data.mtx, arr, sizeof(_data));
 }
 
 template<typename T>
@@ -114,16 +99,23 @@ TMatrix44<T>& TMatrix44<T>::transposeAssign(const T arr[4][4])
 }
 
 template<typename T>
-T TMatrix44<T>::invert()
+T TMatrix44<T>::determinant() const
+{
+	return _data.mtx[0][0] * (_data.mtx[1][1] * _data.mtx[2][2] - _data.mtx[1][2] * _data.mtx[2][1]) -
+		_data.mtx[0][1] * (_data.mtx[1][0] * _data.mtx[2][2] - _data.mtx[1][2] * _data.mtx[2][0]) +
+		_data.mtx[0][2] * (_data.mtx[1][0] * _data.mtx[2][1] - _data.mtx[1][1] * _data.mtx[2][0]);
+}
+
+template<typename T>
+TMatrix44<T>& TMatrix44<T>::invert()
 {
 	int indxc[4], indxr[4], ipiv[4];
 	int i, icol, irow, j, k, l, ll;
 	T big, dum, pivinv;
-
 	icol = irow = 0;
 	ipiv[0] = ipiv[1] = ipiv[2] = ipiv[3] = 0;
 
-	for (i = 0; i < 4; i++)// compile with loop unrolling
+	for (i = 0; i < 4; i++)
 	{
 		big = 0;
 		for (j = 0; j < 4; j++)
@@ -134,7 +126,7 @@ T TMatrix44<T>::invert()
 				{
 					if (!ipiv[k])
 					{
-						if ((dum = fabs(_data.mtx[j][k])) >= big)
+						if ((dum = std::fabs(_data.mtx[j][k])) >= big)
 						{
 							big = dum;
 							irow = j;
@@ -143,7 +135,7 @@ T TMatrix44<T>::invert()
 					}
 					else if (ipiv[k] > 1)
 					{
-						return 0;
+						throw std::range_error(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid matrix!");
 					}
 				}
 			}
@@ -160,7 +152,7 @@ T TMatrix44<T>::invert()
 		indxc[i] = icol;
 		if ((dum = _data.mtx[icol][icol]) == 0)
 		{
-			return 0;
+			throw std::range_error(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid matrix!");
 		}
 		pivinv = 1 / dum;
 		_data.mtx[icol][icol] = 1;
@@ -191,7 +183,13 @@ T TMatrix44<T>::invert()
 			}
 		}
 	}
-	return 1;
+	return *this;
+}
+
+template<typename T>
+inline TMatrix44<T> TMatrix44<T>::inverted() const
+{
+	return TMatrix44(*this).invert();
 }
 
 template<typename T>
@@ -391,11 +389,27 @@ bool TMatrix44<T>::isEqual(const TMatrix44& m, T tol) const
 	for (size_t i = 0; i < sizeof(_data.array) / sizeof(_data.array[0]); i++)
 	{
 		// Use the tolerance when comparing.
-		if (!sf::isEqual<T>(_data.array[i] , m._data.array[i], tol))
+		if (!sf::isEqual<T>(_data.array[i], m._data.array[i], tol))
 		{
 			// Bailout on first inequality entry.
 			return false;
 		}
+	}
+	return true;
+}
+
+template<typename T>
+bool TMatrix44<T>::isRotational() const
+{
+	// A rotation matrix has a determinant of 1.
+	if (!sf::isEqual<T>(determinant(), 1.0, tolerance))
+	{
+		return false;
+	}
+	// Ensure the passed matrix is a valid rotation matrix by checking the matrix inverse multiplication is an identiy matrix.
+	if ((*this) * inverted() != TMatrix44())
+	{
+		return false;
 	}
 	return true;
 }
@@ -561,49 +575,23 @@ inline void TMatrix44<T>::setElement(unsigned int row, unsigned int column, T va
 }
 
 template<typename T>
-TQuaternion<T> TMatrix44<T>::getQuaternion() const
+inline void TMatrix44<T>::element(unsigned int row, unsigned int column, T value) const
 {
-	int next_idx[3] = {1, 2, 0};
-	TQuaternion<T> q;
-	auto tr = _data.mtx[0][0] + _data.mtx[1][1] + _data.mtx[2][2];
-	if (tr > 0.0)
+	if (row >= 4 || column >= 4)
 	{
-		auto s = sqrt(tr + 1.0);
-		q.w = 0.5 * s;
-		s = 0.5 / s;
-		q.v.x = (_data.mtx[2][1] - _data.mtx[1][2]) * s;
-		q.v.y = (_data.mtx[0][2] - _data.mtx[2][0]) * s;
-		q.v.z = (_data.mtx[1][0] - _data.mtx[0][1]) * s;
+		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
 	}
-	else
-	{
-		int i = 0;
-		if (_data.mtx[1][1] > _data.mtx[0][0])
-		{
-			i = 1;
-		}
-		if (_data.mtx[2][2] > _data.mtx[i][i])
-		{
-			i = 2;
-		}
-		int j = next_idx[i];
-		int k = next_idx[j];
-		auto s = sqrt((_data.mtx[i][i] - (_data.mtx[j][j] + _data.mtx[k][k])) + 1.0);
-		q[i] = 0.5 * s;
-		s = 0.5 / s;
-		q.w = (_data.mtx[k][j] - _data.mtx[j][k]) * s;
-		q[j] = (_data.mtx[j][i] + _data.mtx[i][j]) * s;
-		q[k] = (_data.mtx[k][i] + _data.mtx[i][k]) * s;
-	}
-	q.Normalize();
-	return q;
+	return _data.mtx[row][column];
 }
 
 template<typename T>
-bool TMatrix44<T>::setOrientationXY(
-	const TVector3D<T>& ixaxis,
-	const TVector3D<T>& iyaxis
-)
+TQuaternion<T> TMatrix44<T>::quaternion() const
+{
+	return TQuaternion<T>().fromMatrix(_data.mtx);
+}
+
+template<typename T>
+bool TMatrix44<T>::setOrientationXY(const TVector3D<T>& ixaxis, const TVector3D<T>& iyaxis)
 {
 	auto xaxis(ixaxis);
 	auto yaxis(iyaxis);
@@ -619,10 +607,8 @@ bool TMatrix44<T>::setOrientationXY(
 		return false;
 	}
 	zaxis.normalize();
-
 	xaxis = yaxis * zaxis;
 	xaxis.normalize();
-
 	_data.mtx[0][0] = xaxis.x;
 	_data.mtx[0][1] = xaxis.y;
 	_data.mtx[0][2] = xaxis.z;

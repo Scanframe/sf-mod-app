@@ -345,7 +345,7 @@ TRectangle2D<T>& TRectangle2D<T>::operator|=(const TRectangle2D<T>& other)
 		{
 			assign(other);
 		}
-			// Not empty do the heavy lifting.
+		// Not empty do the heavy lifting.
 		else
 		{
 			_data.rect.left = std::min(_data.rect.left, other._data.rect.left);
@@ -382,8 +382,7 @@ std::string TRectangle2D<T>::toString() const
 template<typename T>
 TRectangle2D<T>& TRectangle2D<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)",
-		std::regex::icase);
+	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches which is required.
 	if (!std::regex_match(s, match, re) || match.size() != sizeof(_data.array) / sizeof(_data.array[0]) + 1)

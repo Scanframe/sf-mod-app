@@ -142,11 +142,13 @@ class TVector3D
 
 		/**
 		 * @brief Access like an array.
+		 * @throw std::out_of_range
 		 */
 		T& operator[](size_t);
 
 		/**
 		 * @brief Access like a const array.
+		 * @throw std::out_of_range
 		 */
 		const T& operator[](size_t) const;
 
@@ -327,6 +329,8 @@ class TVector3D
 
 		/**
 		 * @brief Gets the vector value from the string representation formed like '(1.23,4.56,7.89)'.
+		 * Throws an exception when the string is not in the correct format.
+		 * @throw std::invalid_argument
 		 */
 		TVector3D<T>& fromString(const std::string& s) noexcept(false);
 

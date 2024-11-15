@@ -46,6 +46,12 @@ TQuaternion<T>::TQuaternion(const TVector3D<T>& axis, T angle)
 }
 
 template<typename T>
+TQuaternion<T>& TQuaternion<T>::assign(T real_w, T imag_x, T imag_y, T imag_z)
+{
+	_data = {real_w, imag_x, imag_y, imag_z};
+}
+
+template<typename T>
 TQuaternion<T>& TQuaternion<T>::assign(const TQuaternion& quat)
 {
 	_data.ir.imag = quat._data.ir.imag;
@@ -136,7 +142,7 @@ inline T& TQuaternion<T>::y()
 template<typename T>
 inline T TQuaternion<T>::z() const
 {
-	return _data.q.x;
+	return _data.q.z;
 }
 
 template<typename T>
@@ -321,23 +327,52 @@ template<typename T>
 TQuaternion<T> TQuaternion<T>::squared() const
 {
 	TVector3D<T> imag{_data.q.x, _data.q.y, _data.q.z};
-	return TQuaternion<T>(_data.q.w * _data.q.w - imag.lengthSqr(), 2 * _data.q.w * imag);
+	return TQuaternion<T>(_data.q.w * _data.q.w - imag.lengthSqr(), T(2.0) * _data.q.w * imag);
 }
 
 template<typename T>
 TQuaternion<T> TQuaternion<T>::exp() const
 {
 	TQuaternion q(*this);
-	auto s = q._data.q.w;
-	auto se = std::exp(s);
-	q._data.q.w = 0.0;
+	auto se = std::exp(q._data.q.w);
 	auto scale = se;
+	// Zero the real part for the magnitude calculation.
+	q._data.q.w = 0.0;
 	auto theta = q.magnitude();
-	if (theta > 0.0001)
+	// Check if theta is near zero.
+	if (!isZero(theta, tolerance))
 	{
 		scale *= std::sin(theta) / theta;
 	}
 	q._data.q.w = se * std::cos(theta);
+	q._data.q.x *= scale;
+	q._data.q.y *= scale;
+	q._data.q.z *= scale;
+	return q;
+}
+
+template<typename T>
+TQuaternion<T> TQuaternion<T>::exp2() const
+{
+	TQuaternion q(*this);
+	// Save the real part.
+	auto s = q._data.q.w;
+	// Zero the real part for the magnitude calculation.
+	q._data.q.w = 0.0;
+	//
+	auto theta = q.magnitude();
+	T scale(1);
+	// Check if theta is near zero.
+	if (isZero(theta, tolerance))
+	{
+		// Return default identity quaternion.
+		return TQuaternion();
+	}
+	else
+	{
+		scale *= std::sin(theta) / theta;
+	}
+	q._data.q.w = std::cos(theta);
 	q._data.q.x *= scale;
 	q._data.q.y *= scale;
 	q._data.q.z *= scale;
@@ -363,6 +398,15 @@ TQuaternion<T> TQuaternion<T>::log() const
 	q._data.q.y *= scale;
 	q._data.q.z *= scale;
 	return q;
+}
+
+template<typename T>
+TQuaternion<T> TQuaternion<T>::interpolateLogarithmic(const TQuaternion<T>& q2, T t) const
+{
+	auto q_diff = q2 * conjugate();
+	auto log_q_diff = q_diff.log();
+	auto log_q_scaled = t * log_q_diff;
+	return log_q_scaled.exp() * (*this);
 }
 
 template<typename T>
@@ -449,6 +493,59 @@ inline TMatrix44<T> TQuaternion<T>::toMatrix() const
 }
 
 template<typename T>
+TQuaternion<T>& TQuaternion<T>::fromMatrix(const T mtx[4][4])
+{
+	// Check if the matrix passed is a rotation matrix.
+	if (!TMatrix44<T>(mtx).isRotational())
+	{
+		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() matrix is not rotational!");
+	}
+	// Calculate the Trace of the matrix where trace(R)=R11+R22+R33 .
+	auto trace = mtx[0][0] + mtx[1][1] + mtx[2][2];
+	// Based on the Trace when the Trace is > 0.
+	if (trace > 0)
+	{
+		auto s = T(2) * (trace + 1);
+		_data.q.w = s / 4;
+		_data.q.x = (mtx[2][1] - mtx[1][2]) / s;
+		_data.q.y = (mtx[0][2] - mtx[2][0]) / s;
+		_data.q.z = (mtx[1][0] - mtx[0][1]) / s;
+	}
+	else
+	{
+		auto index = sf::maxArgumentIndex(mtx[0][0], mtx[1][1], mtx[2][2]);
+		// Value of mtx[0][0] is the largest.
+		if (index == 0)
+		{
+			auto s = T(2) * std::sqrt(T(1) + mtx[0][0] - mtx[1][1] - mtx[2][2]);
+			_data.q.w = (mtx[2][1] - mtx[2][1]) / s;
+			_data.q.x = s / 4;
+			_data.q.y = (mtx[0][1] + mtx[1][0]) / s;
+			_data.q.z = (mtx[0][2] + mtx[2][0]) / s;
+		}
+		// Value of mtx[1][1] is the largest.
+		else if (index == 1)
+		{
+			auto s = T(2) * std::sqrt(T(1) + mtx[1][1] - mtx[0][0] - mtx[2][2]);
+			_data.q.w = (mtx[0][2] - mtx[2][0]) / s;
+			_data.q.x = (mtx[0][1] + mtx[1][0]) / s;
+			_data.q.y = s / 4;
+			_data.q.z = (mtx[1][2] + mtx[2][1]) / s;
+		}
+		// Value of mtx[2][2] is the largest.
+		else
+		{
+			auto s = T(2) * std::sqrt(T(1) + mtx[2][2] - mtx[0][0] - mtx[1][1]);
+			_data.q.w = (mtx[1][0] - mtx[0][1]) / s;
+			_data.q.x = (mtx[0][2] + mtx[2][0]) / s;
+			_data.q.y = (mtx[1][2] + mtx[2][1]) / s;
+			_data.q.z = s / 4;
+		}
+	}
+	return *this;
+}
+
+template<typename T>
 TVector3D<T> TQuaternion<T>::transform(TVector3D<T> v) const
 {
 	auto x2 = _data.q.x + _data.q.x;
@@ -482,8 +579,8 @@ template<typename T>
 TQuaternion<T>& TQuaternion<T>::fromString(const std::string& s) noexcept(false)
 {
 	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)",
-		std::regex::icase);
+	auto res = R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)";
+	std::regex re(res, std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != sz + 1)

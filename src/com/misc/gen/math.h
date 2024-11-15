@@ -30,12 +30,16 @@ template<typename T>
 T round(T value, T rnd)
 {
 	// Prevent non-integer and non-float types from implementing this template.
-	static_assert(std::is_arithmetic<T>::value, "Type T must be a arithmetic type.");
+	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
 	if constexpr (std::is_integral<T>::value)
+	{
 		return ((value + (rnd / T(2))) / rnd) * rnd;
+	}
 	if constexpr (std::is_floating_point<T>::value)
+	{
 		// Function 'std::floor' has al float types implemented.
 		return std::floor(value / rnd + T(0.5)) * rnd;
+	}
 }
 
 /**
@@ -96,7 +100,7 @@ template<typename T>
 T modulo(T k, T n)
 {
 	// Only implementations of arithmetic values are allowed.
-	static_assert(std::is_arithmetic<T>::value, "Type T must be a arithmetic type.");
+	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
 	// Distinguish between floats and integers.
 	if constexpr (std::is_floating_point<T>::value)
 	{
@@ -124,23 +128,35 @@ T modulo(T k, T n)
 template<typename T>
 T toAbs(T v)
 {
-	static_assert(std::is_arithmetic<T>::value, "Type T must be a arithmetic type.");
+	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
 	if constexpr (std::is_same<T, long double>())
+	{
 		return fabsl(v);
+	}
 	if constexpr (std::is_same<T, double>())
+	{
 		return fabs(v);
+	}
 	if constexpr (std::is_same<T, float>())
+	{
 		return fabsf(v);
+	}
 	if constexpr (std::is_integral<T>::value)
 	{
 		if constexpr (std::numeric_limits<T>::is_signed)
 		{
 			if constexpr (std::is_same<T, long long int>())
+			{
 				return std::llabs(v);
+			}
 			if constexpr (std::is_same<T, long int>())
+			{
 				return std::labs(v);
+			}
 			if constexpr (std::is_same<T, int>())
+			{
 				return std::abs(v);
+			}
 			// Smaller integers are handled here.
 			return static_cast<T>(std::abs(v));
 		}
@@ -233,6 +249,96 @@ inline bool isZero(T value, T epsilon = std::numeric_limits<T>::epsilon())
 	// Only implemented for floating point values.
 	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
 	return std::fabs(value) < epsilon;
+}
+
+/**
+ * @brief Finds the index of the largest element passed as an argument.
+ */
+template<typename T, typename... Args>
+size_t maxArgumentIndex(T first, Args... args)
+{
+	T largest = first;
+	size_t idx = 0;
+	size_t idx_cur = 0;
+	// Lambda to find the largest value and its index
+	auto compare = [&largest, &idx, &idx_cur](T value) {
+		if (value > largest)
+		{
+			largest = value;
+			idx = idx_cur;
+		}
+		++idx_cur;
+	};
+	(compare(first), ..., compare(args));// Apply to all arguments
+	return idx;
+}
+
+/**
+ * @brief Finds the index of the smallest element passed as an argument.
+ */
+template<typename T, typename... Args>
+size_t minArgumentIndex(T first, Args... args)
+{
+	T largest = first;
+	size_t idx = 0;
+	size_t idx_cur = 0;
+	// Lambda to find the largest value and its index
+	auto compare = [&largest, &idx, &idx_cur](T value) {
+		if (value < largest)
+		{
+			largest = value;
+			idx = idx_cur;
+		}
+		++idx_cur;
+	};
+	(compare(first), ..., compare(args));// Apply to all arguments
+	return idx;
+}
+
+/**
+ * @brief Finds the largest element index of the passed array.
+ * @tparam T Type of elements in the array.
+ * @tparam N Size of the elements in the array.
+ * @param arr Array of type std::array<T, N>
+ * @return Zero based index of largest array entry.
+ */
+template<typename T, size_t N>
+size_t maxArrayIndex(const std::array<T, N>& arr)
+{
+	T cur = arr[0];
+	size_t index = 0;
+	for (size_t i = 1; i < arr.size(); ++i)
+	{
+		if (arr[i] > cur)
+		{
+			cur = arr[i];
+			index = i;
+		}
+	}
+	return index;
+}
+
+/**
+ * @brief Finds the largest element index of the passed array.
+ * @tparam T Type of elements in the array.
+ * @tparam N Size of the elements in the array.
+ * @param arr Array of type std::array<T, N>
+ * @return Zero based index of largest array entry.
+ */
+template<typename T, size_t N>
+size_t minArrayIndex(const std::array<T, N>& arr)
+{
+	T cur = arr[0];
+	size_t index = 0;
+	for (size_t i = 1; i < arr.size(); ++i)
+	{
+		if (arr[i] < cur)
+		{
+			cur = arr[i];
+			index = i;
+		}
+	}
+	return index;
 }
 
 /**

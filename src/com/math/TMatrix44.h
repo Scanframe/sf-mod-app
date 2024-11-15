@@ -58,7 +58,7 @@ class TMatrix44
 		/**
 		 * @brief Initialization constructor for 4x4 floating point values.
 		 */
-		explicit TMatrix44(const T[4][4]);
+		explicit TMatrix44(const T mtx[4][4]);
 
 		/**
 		 * @brief Construct from a translation vector.
@@ -97,10 +97,22 @@ class TMatrix44
 		void unit();
 
 		/**
-		 * @brief Inverts matrix44 and gets determinant only when the determinant != 0.
-		 * @return The matrix determinant.
+		 * @brief Gets the 3x3 determinant from this matrix.
+		 * @return Determinant 3x3 value.
 		 */
-		T invert();
+		T determinant() const;
+
+		/**
+		 * @brief Inverts the matrix.
+		 * @throw std::range_error
+		 */
+		TMatrix44& invert();
+
+		/**
+		 * @brief Gets an inverted copy of the matrix.
+		 * @throw std::range_error
+		 */
+		TMatrix44 inverted() const;
 
 		/**
 		 * @brief Get a transposed matrix of this instance.
@@ -168,6 +180,12 @@ class TMatrix44
 		bool isEqual(const TMatrix44& v, T tol = tolerance) const;
 
 		/**
+		 * @brief Determines if the matrix is a rotation matrix.
+		 * @return
+		 */
+		bool isRotational() const;
+
+		/**
 		 * @brief Compare equal operator using the #tolerance when comparing.
 		 * @return True when equal.
 		 */
@@ -217,7 +235,7 @@ class TMatrix44
 		void getTiltPanRoll(T& tilt, T& pan, T& roll) const;
 
 		/**
-		 * @brief
+		 * @brief Sets the projection for this matrix.
 		 * @param near_plane
 		 * @param far_plane
 		 * @param fov
@@ -293,15 +311,24 @@ class TMatrix44
 		void setElement(unsigned int row, unsigned int column, T value);
 
 		/**
-		 * @brief Convert rotation matrix part to unit quaternion.
-		 * @return Quaternion
+		 * @brief Gets the element specified by the row and column.
+		 * @param row Row number between 0 and 3.
+		 * @param column` Column number between 0 and 3.
 		 */
-		TQuaternion<T> getQuaternion(void) const;
+		void element(unsigned int row, unsigned int column, T value) const;
+
+		/**
+		 * @brief Convert rotation matrix part to unit quaternion.
+		 * Calls #sf::TQuaternion::fromMatrix()
+		 * @return A Quaternion instance.
+		 * @see sf::TQuaternion::fromMatrix()
+		 */
+		TQuaternion<T> quaternion() const;
 
 		/**
 		 * @brief Resets the orientation and leaves the translation as is.
 		 */
-		void resetOrientation(void);
+		void resetOrientation();
 
 		/**
 		 * @brief Set orientation using 2 direction vectors.
@@ -336,6 +363,8 @@ class TMatrix44
 
 		/**
 		 * @brief Gets matrix values from the string representation formed like '({1,2,3,4},{11,12,13,14},{21,22,23,24},{31,32,33,34})'.
+		 * Throws an exception when the string is not in the correct format.
+		 * @throw std::invalid_argument
 		 */
 		TMatrix44& fromString(const std::string& s) noexcept(false);
 

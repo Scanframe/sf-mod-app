@@ -152,7 +152,7 @@ bool TMatrix22<T>::isEqual(const TMatrix22& m, T tol) const
 	for (size_t i = 0; i < sizeof(_data.array) / sizeof(_data.array[0]); i++)
 	{
 		// Use the tolerance when comparing.
-		if (!sf::isEqual<T>(_data.array[i] , m._data.array[i], tol))
+		if (!sf::isEqual<T>(_data.array[i], m._data.array[i], tol))
 		{
 			// Bailout on first inequality entry.
 			return false;

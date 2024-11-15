@@ -91,15 +91,41 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 
 	SECTION("Transformations")
 	{
-		auto sq = std::sqrt(2.0) / 2;
-		CHECK(sf::Quaternion(sq, sq, 0, 0).toMatrix() == sf::Matrix44(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1));
+		// Check the conversion of a quaternion to a matrix.
+		CHECK((sf::Quaternion(1, 2, 3, 4).toMatrix()) == sf::Matrix44(-0.666666666666666, 0.133333333333333, 0.733333333333333, 0.0, 0.666666666666667, -0.333333333333333, 0.666666666666667, 0.0, 0.333333333333333, 0.933333333333333, 0.133333333333334, 0.0, 0.0, 0.0, 0.0, 1.0));
+		CHECK(sf::Quaternion(std::sqrt(2.0) / 2, std::sqrt(2.0) / 2, 0, 0).toMatrix() == sf::Matrix44(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1));
 		// Transform a 3D-vector using the quaternion transform function.
 		CHECK(sf::Quaternion(1, 2, 3, 4).normalize().transform(sf::Vector3D(1, 2, 3)) == sf::Vector3D(1.8, 2, 2.6));
 		// When using an intermediate matrix the result must be the same.
-		auto mtx2 = sf::Quaternion(1, 2, 3, 4).toMatrix();
-		std::cout << sf::replaceAll(mtx2.toString(), "},{", "}\n{") << std::endl;
-		CHECK((mtx2 * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1.8, 2, 2.6));
-		//CHECK((sf::Quaternion(1, 2, 3, 4).toMatrix()) == sf::Matrix44());
-		//CHECK(sf::Quaternion(1.0, 2.0, 3.0, 4.0).exp() == sf::Quaternion());
+		CHECK((sf::Quaternion(1, 2, 3, 4).toMatrix() * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1.8, 2, 2.6));
+		// Logarithm and exponential function must result in the original sf::Quaternion.
+		CHECK(sf::Quaternion(1.0, 2.0, 3.0, 4.0).log().exp() == sf::Quaternion(1.0, 2.0, 3.0, 4.0));
+		// Log interpolation.
+		auto q1 = sf::Quaternion(1.0, 2.0, 3.0, 4.0).normalize();
+		auto q2 = sf::Quaternion(4.0, 3.0, 2.0, 1.0).normalize();
+		CHECK(q1 == sf::Quaternion(0.182574185835055, 0.365148371670111, 0.547722557505166, 0.730296743340221));
+		CHECK(q2 == sf::Quaternion(0.730296743340221, 0.547722557505166, 0.365148371670111, 0.182574185835055));
+		auto q_diff = q2 * q1.conjugate();
+		CHECK(q_diff == sf::Quaternion(0.666666666666667, -0.333333333333333, 0, -0.666666666666667));
+		auto log_q_diff = q_diff.log();
+		CHECK(log_q_diff == sf::Quaternion(0, -0.376137344227054, 0, -0.752274688454107));
+		double t = 0.5;
+		auto log_q_scaled = t * log_q_diff;
+		CHECK(log_q_scaled == sf::Quaternion(0, -0.376137344227054 * 0.5, 0, -0.752274688454107 * 0.5));
+		CHECK(log_q_scaled.exp2() == sf::Quaternion(0.912870929175277, -0.182574185835055, 0, -0.365148371670111));
+		CHECK(log_q_scaled.exp() == sf::Quaternion(0.912870929175277, -0.182574185835055, 0, -0.365148371670111));
+		CHECK(log_q_scaled.exp() * q1 == sf::Quaternion(0.5, 0.5, 0.5, 0.5));
+		CHECK(q1.interpolateLogarithmic(q2, 0.5) == sf::Quaternion(0.5, 0.5, 0.5, 0.5));
+		// Check when factor is 0.0 the result is equal to q1 only for normalized quaternions.
+		CHECK(q1.interpolateLogarithmic(q2, 0.0) == q1);
+		// Check when factor is 0.0 the result is equal to q2 only for normalized quaternions.
+		CHECK(q1.interpolateLogarithmic(q2, 1.0) == q2);
+		// Check the whole interpolation of non-normalized quaternions.
+		CHECK(sf::Quaternion(1.0, 2.0, 3.0, 4.0).interpolateLogarithmic(sf::Quaternion(4.0, 3.0, 2.0, 1.0), 0.5) == sf::Quaternion(15, 15, 15, 15));
+		CHECK(sf::Quaternion(4.0, 3.0, 2.0, 1.0).interpolateLogarithmic(sf::Quaternion(1.0, 2.0, 3.0, 4.0), 0.5) == sf::Quaternion(15, 15, 15, 15));
+		sf::Matrix44::value_type mtx[4][4];
+		sf::Quaternion(1, 2, 3, 4).toMatrix().copyTo(mtx);
+		CHECK(sf::Quaternion().fromMatrix(mtx) == sf::Quaternion(1, 2, 3, 4).normalize());
+		CHECK(sf::Quaternion(1, 2, 3, 4).toMatrix().quaternion() == sf::Quaternion(1, 2, 3, 4).normalize());
 	}
 }

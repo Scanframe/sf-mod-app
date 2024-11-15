@@ -3,11 +3,13 @@ namespace sf
 
 template<typename T>
 TVector3D<T>::TVector3D(const TVector3D<T>& v)
-	: _data(v._data) {}
+	: _data(v._data)
+{}
 
 template<typename T>
 TVector3D<T>::TVector3D(T xp, T yp, T zp)
-	: _data({xp, yp, zp}) {}
+	: _data({xp, yp, zp})
+{}
 
 template<typename T>
 TVector3D<T>& TVector3D<T>::assign(T xp, T yp, T zp)

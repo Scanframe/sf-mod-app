@@ -214,16 +214,20 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK((sf::Matrix44(sf::toRadians(90.0), 0, 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
 		CHECK((sf::Matrix44(0, sf::toRadians(90.0), 0) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(-3, 2, 1));
 		CHECK((sf::Matrix44(0, 0, sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(2, -1, 3));
+		//
+		CHECK(sf::Matrix44(1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 1).determinant() == Approx(0).margin(sf::Matrix44::tolerance));
+		CHECK(sf::Matrix44(-1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34).determinant() == Approx(20).margin(sf::Matrix44::tolerance));
 	}
-
-#if 0
 
 	SECTION("Vector Operations")
 	{
-		// Create rotation matrix
-		CHECK((sf::Matrix44(sf::toRadians(90)) * sf::Vector2D(3, 5)).toString() == "(-5,3)");
+		// Rotation matrix.
+		CHECK((sf::Matrix44().setTiltPanRoll(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
+		CHECK(sf::Matrix44().setTiltPanRoll(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)).determinant() == Approx(1.0).margin(sf::Matrix44::tolerance));
+
+		/*
 		// Get the rotation of a matrix.
-		CHECK(sf::toDegrees(sf::Matrix44(sf::toRadians(-45)).getRotation()) == Approx(-45).margin(sf::Vector2D::tolerance));
+		CHECK(sf::toDegrees(sf::Matrix44(sf::toRadians(-45), sf::Matrix44(sf::toRadians(-45), sf::Matrix44(sf::toRadians(-45)).getRotation()) == Approx(-45).margin(sf::Vector2D::tolerance));
 		// Check for a correct domain error when not having a square.
 		CHECK_THROWS_AS(sf::Matrix44(1, 2, 1, 2).getRotation(), std::domain_error);
 		//
@@ -241,7 +245,6 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		sf::Vector2D v(1, std::sqrt(3));
 		v *= sf::Matrix44(sf::toRadians(-60));
 		CHECK(v == sf::Vector2D(2, 0));
+*/
 	}
-
-#endif
 }

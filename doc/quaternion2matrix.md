@@ -81,14 +81,21 @@ Thus, the resulting 3x3 rotation matrix R is:
 | 26       | 52       | -22      |
 
 
+## Mathlab for Testing and Conformation
+
+### Quaternion to Matrix
+
+This Mathlab script is used to check rotation from a matrix retrieved from a quaternion.  
+
 ```javascript
-% Define the rotation matrix R
+% 'Define the rotation matrix R from quaternion (1, 2, 3, 4) 
 R0 = [
- -0.6666666667,     0.13333333333,   0.733333333;
-  0.6666666666667, -0.3333333333333, 0.6666666666666667;
-  0.3333333333333,  0.9333333333,    0.1333333333;
+ -0.6666666666667,  0.13333333333, 0.73333333333;
+  0.6666666666667, -0.33333333333, 0.66666666667;
+  0.3333333333333,  0.93333333333, 0.13333333333;
 ];
 
+% 'Rotation matrix using Mathlab function. 
 R = quat2rotm(quaternion(1, 2, 3, 4))
 
 % Define the vector v
@@ -99,10 +106,129 @@ x1 = x * R(1,1) + y * R(1,2) + z * R(1,3)
 y1 = x * R(2,1) + y * R(2,2) + z * R(2,3)
 z1 = x * R(3,1) + y * R(3,2) + z * R(3,3)
 
-% Apply the rotation matrix to the vector
+% 'Apply the rotation matrix to the vector
 v_rotated = R * v;
 
-% Display the rotated vector
+% 'Display the rotated vector
 disp('The rotated vector is:');
 disp(v_rotated);
+```
+
+### Quaternion Logarithmic Interpolation 
+
+```
+% Quaternion interpolation using logarithmic and exponential functions in MATLAB.
+
+% Define the initial quaternions q1 and q2.
+q1 = [1.0, 2.0, 3.0, 4.0];
+q2 = [4.0, 3.0, 2.0, 1.0];
+
+% Set interpolation factor
+t = 0.5;
+
+% Normalize the quaternions (important for accurate results).
+q1 = q1 / norm(q1);
+q2 = q2 / norm(q2);
+
+% Compute the inverse of q1
+q1_inv = quatconj(q1);
+
+% Calculate the difference quaternion q_diff = q2 * q1_inv
+q_diff = quatmultiply(q2, q1_inv);
+
+% Take the logarithm of q_diff (only for the vector part)
+log_q_diff = quatlog(q_diff);
+
+% Scale the log by the interpolation factor t.
+log_q_scaled = t * log_q_diff;
+
+% Take the exponential to return to quaternion space
+exp_q_interp = quatexp(log_q_scaled);
+
+% Multiply by q1 to get the interpolated quaternion
+q_result = quatmultiply(exp_q_interp, q1);
+
+% Display the result
+disp('Interpolated Quaternion (t=0.5):');
+```
+
+### Quaternion from Matrix
+
+```
+% Create a normalize quaternion.
+q1 = [1, 2, 3, 4];
+q1 = q1 / norm(q1);
+% Create the rotation matrix from the quaternion.
+R = quat2rotm(q);
+
+% Reverse check.
+assert(~isequal(R, q1), 'This must be the same.')
+
+% Ensure R is a valid rotation matrix by checking the determinant.
+if abs(det(R) - 1) > 1e-6
+    error('Determinant of matrix is not equal to zero!');
+end
+
+% Ensure R is a valid rotation matrix by checking the matrix inverse
+% multiplication is an identity matrix.
+if ~isequal(ismembertol(R* R', [1, 1, 1,;1, 1, 1;1, 1, 1], 1e-12), eye(3.0))
+    error('The matrix multiplied by its inverse self is not an identity matrix!');
+end
+
+% Calculate the trace of the matrix
+trace_R = trace(R);
+
+if trace_R > 0
+    S = 2 * sqrt(trace_R + 1);
+    w = 0.25 * S;
+    x = (R(3, 2) - R(2, 3)) / S;
+    y = (R(1, 3) - R(3, 1)) / S;
+    z = (R(2, 1) - R(1, 2)) / S;
+elseif R(1, 1) > R(2, 2) && R(1, 1) > R(3, 3)
+    S = 2 * sqrt(1 + R(1, 1) - R(2, 2) - R(3, 3));
+    w = (R(3, 2) - R(2, 3)) / S;
+    x = 0.25 * S;
+    y = (R(1, 2) + R(2, 1)) / S;
+    z = (R(1, 3) + R(3, 1)) / S;
+elseif R(2, 2) > R(3, 3)
+    S = 2 * sqrt(1 + R(2, 2) - R(1, 1) - R(3, 3));
+    w = (R(1, 3) - R(3, 1)) / S;
+    x = (R(1, 2) + R(2, 1)) / S;
+    y = 0.25 * S;
+    z = (R(2, 3) + R(3, 2)) / S;
+else
+    S = 2 * sqrt(1 + R(3, 3) - R(1, 1) - R(2, 2));
+    w = (R(2, 1) - R(1, 2)) / S;
+    x = (R(1, 3) + R(3, 1)) / S;
+    y = (R(2, 3) + R(3, 2)) / S;
+    z = 0.25 * S;
+end
+
+% A quaternion as [w, x, y, z]
+q2 = [w, x, y, z];
+
+disp(q1)
+disp(q2)
+
+% Check for equality.
+if ~isequal(q1, q2)
+   disp('Success: Quaternions are the same.') 
+else
+   disp('Failure: Quaternions are NOT the same!') 
+end
+```
+
+### Matrix3x3 Determinant
+
+```
+% Establish a 3x3 matrix.
+A = [1 2 3; 4 5 6; 7 8 9];
+
+% Compute determinant
+detA = A(1,1)*(A(2,2)*A(3,3) - A(2,3)*A(3,2)) ...
+     - A(1,2)*(A(2,1)*A(3,3) - A(2,3)*A(3,1)) ...
+     + A(1,3)*(A(2,1)*A(3,2) - A(2,2)*A(3,1));
+
+disp('Determinant of the matrix:');
+disp(detA);
 ```

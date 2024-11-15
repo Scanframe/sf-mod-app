@@ -385,7 +385,7 @@ T toNumber(const S& s, size_t* idx = nullptr)
 template<typename T, typename S = std::string>
 T toNumberDefault(const S& s, T def)
 {
-	static_assert(std::is_arithmetic<T>::value, "Type T must be a arithmetic type.");
+	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
 	static_assert(std::is_same<S, std::string>() || std::is_same<S, std::wstring>(), "Type T must be of std::string or std::wstring.");
 	size_t idx;
 	auto rv = toNumber<T>(s, &idx);
@@ -409,7 +409,7 @@ T toNumberDefault(const S& s, T def)
 template<typename T>
 std::string toString(T value, int digits = 0)
 {
-	static_assert(std::is_arithmetic<T>::value, "Type T must be a arithmetic type.");
+	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
 	std::string rv;
 	if constexpr (std::is_integral<T>::value)
 	{

@@ -160,7 +160,9 @@ class TMatrix22
 		std::string toString() const;
 
 		/**
-		 * @brief Gets 22 matrix values from the string representation formed like '((1.2,4.5),(5.6,7.8))'.
+		 * @brief Gets matrix values from the string representation formed like '({1.2,4.5},{5.6,7.8})'.
+		 * Throws an exception when the string is not in the correct format.
+		 * @throw std::invalid_argument
 		 */
 		TMatrix22<T>& fromString(const std::string& s) noexcept(false);
 

@@ -5,11 +5,6 @@
 #include <misc/gen/string.h>
 #include <unistd.h>
 
-namespace sf
-{
-
-}
-
 TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 {
 	using Catch::Matchers::Equals;
@@ -115,6 +110,18 @@ TEST_CASE("sf::General-Utils", "[con][generic][utils]")
 			CHECK(sf::toDegrees<T>(sf::numbers::pi_v<T> / 2.0) == Catch::Approx(90.0).margin(std::numeric_limits<T>::epsilon() * 10));
 			CHECK(sf::toRadians<T>(90.0) == Catch::Approx(sf::numbers::pi_v<T> / 2.0).margin(std::numeric_limits<T>::epsilon() * 10));
 		}
+	}
+
+	SECTION("sf::maxXxxIndex")
+	{
+		CHECK(sf::maxArrayIndex(std::array{5, 10, 3, 18}) == 3);
+		CHECK(sf::maxArrayIndex(std::array{5, 10, 3, 8}) == 1);
+		CHECK(sf::maxArgumentIndex(5, 10, 3, 18) == 3);
+		CHECK(sf::maxArgumentIndex(5, 10, 3, 8) == 1);
+		CHECK(sf::minArrayIndex(std::array{5, 10, 3, 18}) == 2);
+		CHECK(sf::minArrayIndex(std::array{5, 10, 3, 1}) == 3);
+		CHECK(sf::minArgumentIndex(5, 10, 3, 18) == 2);
+		CHECK(sf::minArgumentIndex(5, 10, 3, 1) == 3);
 	}
 
 	SECTION("sf::getExecutableName", "Executable functions")

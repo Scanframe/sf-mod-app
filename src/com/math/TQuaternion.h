@@ -51,6 +51,10 @@ class TQuaternion
 		/**
 		 * @brief Assigns of another instance elements.
 		 */
+		TQuaternion& assign(T real_w, T imag_x, T imag_y, T imag_z);
+		/**
+		 * @brief Assigns of another instance elements.
+		 */
 		TQuaternion& assign(const TQuaternion&);
 
 		/**
@@ -75,11 +79,13 @@ class TQuaternion
 
 		/**
 		 * @brief Array access operator.
+		 * @throw std::out_of_range
 		 */
 		T& operator[](size_t);
 
 		/**
 		 * @brief Array access const operator to the elements.
+		 * @throw std::out_of_range
 		 */
 		const T& operator[](size_t) const;
 
@@ -185,6 +191,12 @@ class TQuaternion
 		TMatrix44<T> toMatrix() const;
 
 		/**
+		 * @brief Transforms a rotation matrix to this Quaternion.
+		 * Throws an exception when the passed matrix is not a rotation matrix.
+		 * @throw std::invalid_argument
+		 */
+		TQuaternion<T>& fromMatrix(const T[4][4]);
+		/**
 		 * @brief Transforms a 3D-vector not using the quaternion directly instead of a matrix.
 		 */
 		TVector3D<T> transform(TVector3D<T> v) const;
@@ -287,6 +299,7 @@ class TQuaternion
 		 * @return Regular quaternion.
 		 */
 		TQuaternion exp() const;
+		TQuaternion exp2() const;
 
 		/**
 		 * @brief Spherical Linear Interpolation (SLERP) function.
@@ -300,12 +313,22 @@ class TQuaternion
 		TQuaternion interpolate(const TQuaternion<T>& q, T t) const;
 
 		/**
+		 * @brief Implements a logarithmic interpolation function.
+		 * @param q Targeted quaternion value.
+		 * @param t Value from 0.0 to 1.0
+		 * @return
+		 */
+		TQuaternion interpolateLogarithmic(const TQuaternion<T>& q, T t) const;
+
+		/**
 		 * @brief Gets the string representation of the quaternion formed like '(x,y,z,r)'.
 		 */
 		std::string toString() const;
 
 		/**
 		 * @brief Gets the quaternion values from the string representation formed like '(1,2,3,4)'.
+		 * Throws an exception when the string is not in the correct format.
+		 * @throw std::invalid_argument
 		 */
 		TQuaternion& fromString(const std::string& s) noexcept(false);
 
@@ -364,7 +387,7 @@ inline const TQuaternion<T> operator-(const TQuaternion<T>& lhs, const TQuaterni
  * @tparam T Base floating point type.
  * @param lhs Left value of the multiplication.
  * @param rhs Right value of the multiplication.
- * @return New matrix.
+ * @return New quaternion instance.
  */
 template<typename T>
 inline const TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
@@ -377,7 +400,7 @@ inline const TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaterni
  * @tparam T Base floating point type.
  * @param lhs Left value of the division.
  * @param rhs Right value of the division.
- * @return New matrix.
+ * @return New quaternion instance.
  */
 template<typename T>
 inline const TQuaternion<T> operator/(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
@@ -388,18 +411,19 @@ inline const TQuaternion<T> operator/(const TQuaternion<T>& lhs, const TQuaterni
 /**
  * @brief Multiplies a scalar value with a quaternion.
  * @tparam T Base floating point type.
- * @param Scalar left value of the multiplication.
+ * @param c Scalar left value of the multiplication.
  * @param quat Quaternion right value of the multiplication.
- * @return New matrix.
+ * @return New quaternion instance.
  */
 template<typename T>
 TQuaternion<T> operator*(T c, const TQuaternion<T>& quat)
 {
-	return TQuaternion<T>(c * quat.real(), c * quat.imag());
+	return {c * quat.w(), c * quat.x(), c * quat.y(), c * quat.z()};
 }
 
 /**
  * @brief Operator for writing the quaternion to an output-stream.
+ * Calls #TQuaternion<T>::toString() for the operator.
  * @tparam T Base floating point type.
  * @param os Output stream.
  * @param mtx Matrix to stream out.
@@ -413,6 +437,7 @@ inline std::ostream& operator<<(std::ostream& os, const TQuaternion<T>& quat)
 
 /**
  * @brief Operator for reading the quaternion from an input stream.
+ * Calls #TQuaternion<T>::fromString() to perform this operator.
  * @tparam T Base floating point type.
  * @param os Input stream.
  * @param mtx Matrix to stream.

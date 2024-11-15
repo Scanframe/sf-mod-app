@@ -103,7 +103,7 @@ class TRectangle2D
 		 * @see tolerance
 		 * @return True when equal.
 		 */
-		bool isEqual(const TRectangle2D<T>& other, T tol=tolerance) const;
+		bool isEqual(const TRectangle2D<T>& other, T tol = tolerance) const;
 
 		/**
 		 * @brief Call the isEqual() function to compare.
@@ -268,6 +268,8 @@ class TRectangle2D
 
 		/**
 		 * @brief Gets rectangle value from the string representation formed like '(left, bottom, right, top)'.
+		 * Throws an exception when the string is not in the correct format.
+		 * @throw std::invalid_argument
 		 */
 		TRectangle2D<T>& fromString(const std::string& s) noexcept(false);
 
