@@ -84,7 +84,6 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 		CHECK(sf::Quaternion(2, 3, 4, 5).exp() == sf::Quaternion(5.21185524897636, 2.22221706442803, 2.96295608590404, 3.70369510738005));
 		// Check if the log() and consequent exp() result in the original quaternion.
 		CHECK(sf::Quaternion(1.0, 2.0, 3.0, 4.0).log().exp() == sf::Quaternion(1.0, 2.0, 3.0, 4.0));
-
 		CHECK((sf::Quaternion(1, 2, 3, 4).log() * sf::Quaternion(2, 0, 0, 0)).exp().isEqual(sf::Quaternion(-28, 4, 6, 8), sf::Quaternion::tolerance * 10.0));
 		CHECK((sf::Quaternion(1, 2, 3, 4).log() * 2.0).exp().isEqual(sf::Quaternion(-28, 4, 6, 8), sf::Quaternion::tolerance * 10.0));
 	}
@@ -112,7 +111,6 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 		double t = 0.5;
 		auto log_q_scaled = t * log_q_diff;
 		CHECK(log_q_scaled == sf::Quaternion(0, -0.376137344227054 * 0.5, 0, -0.752274688454107 * 0.5));
-		CHECK(log_q_scaled.exp2() == sf::Quaternion(0.912870929175277, -0.182574185835055, 0, -0.365148371670111));
 		CHECK(log_q_scaled.exp() == sf::Quaternion(0.912870929175277, -0.182574185835055, 0, -0.365148371670111));
 		CHECK(log_q_scaled.exp() * q1 == sf::Quaternion(0.5, 0.5, 0.5, 0.5));
 		CHECK(q1.interpolateLogarithmic(q2, 0.5) == sf::Quaternion(0.5, 0.5, 0.5, 0.5));

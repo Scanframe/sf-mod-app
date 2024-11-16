@@ -148,11 +148,18 @@ class TQuaternion
 
 		/**
 		 * @brief Gets a copy of this instance where the imaginary (vector) part of a quaternion is negated.
+		 * The conjugate of a quaternion is a simple operation that reflects the imaginary components of
+		 * the quaternion while leaving the real component unchanged. It is often used in quaternion
+		 * operations such as finding the inverse or performing transformations.
 		 */
 		TQuaternion conjugate() const;
 
 		/**
 		 * @brief Inverse the imaginary part of this instance.
+		 * The inverse of a quaternion is a quaternion that "reverses" the effect of the original quaternion
+		 * when combined through quaternion multiplication.
+		 * For unit quaternions, the inverse undoes the rotation described by the quaternion.
+		 * This property is analogous to the inverse of a matrix or a number.
 		 */
 		TQuaternion inverse() const;
 
@@ -186,7 +193,8 @@ class TQuaternion
 		TMatrix44<T> toMatrix(TMatrix44<T>&) const;
 
 		/**
-		 * @brief Get a unit matrix having the orientation part set using this instance.
+		 * @brief Get the matrix having only the orientation part set using this instance normalized version.
+		 * Before the matrix is calculated the quaternion is normalized.
 		 */
 		TMatrix44<T> toMatrix() const;
 
@@ -289,6 +297,7 @@ class TQuaternion
 		 * which reconstructs the quaternion from its angle-axis form.
 		 * By converting a quaternion to its logarithmic form, it allows linearly interpolate between two rotations.
 		 * This is helpful in spline-based interpolation techniques for smooth rotational blending.
+		 * Before the logarithm is calculated the quaternion is normalized and result is scaled back accordingly.
 		 * @return Logarithm quaternion.
 		 */
 		TQuaternion log() const;
@@ -299,7 +308,6 @@ class TQuaternion
 		 * @return Regular quaternion.
 		 */
 		TQuaternion exp() const;
-		TQuaternion exp2() const;
 
 		/**
 		 * @brief Spherical Linear Interpolation (SLERP) function.

@@ -160,15 +160,9 @@ TQuaternion<T> TQuaternion<T>::conjugate() const
 template<typename T>
 TQuaternion<T> TQuaternion<T>::inverse() const
 {
-	/*
 	// Step 1: Compute the Conjugate of the Quaternion.
-	auto conj = conjugate();
 	// Step 2: Compute the Norm (Magnitude) of the Quaternion.
-	auto mag = conj.magnitudeSqr();
 	// Step 3: Divide the Conjugate by the Norm Squared
-	return conj / mag;
-	//
-*/
 	// Simplified where magnitudeSqr() from this instance is the same as the conjugate one.
 	return conjugate() / magnitudeSqr();
 }
@@ -334,6 +328,7 @@ template<typename T>
 TQuaternion<T> TQuaternion<T>::exp() const
 {
 	TQuaternion q(*this);
+	// Save the real part to scale back afterward.
 	auto se = std::exp(q._data.q.w);
 	auto scale = se;
 	// Zero the real part for the magnitude calculation.
@@ -345,34 +340,6 @@ TQuaternion<T> TQuaternion<T>::exp() const
 		scale *= std::sin(theta) / theta;
 	}
 	q._data.q.w = se * std::cos(theta);
-	q._data.q.x *= scale;
-	q._data.q.y *= scale;
-	q._data.q.z *= scale;
-	return q;
-}
-
-template<typename T>
-TQuaternion<T> TQuaternion<T>::exp2() const
-{
-	TQuaternion q(*this);
-	// Save the real part.
-	auto s = q._data.q.w;
-	// Zero the real part for the magnitude calculation.
-	q._data.q.w = 0.0;
-	//
-	auto theta = q.magnitude();
-	T scale(1);
-	// Check if theta is near zero.
-	if (isZero(theta, tolerance))
-	{
-		// Return default identity quaternion.
-		return TQuaternion();
-	}
-	else
-	{
-		scale *= std::sin(theta) / theta;
-	}
-	q._data.q.w = std::cos(theta);
 	q._data.q.x *= scale;
 	q._data.q.y *= scale;
 	q._data.q.z *= scale;
@@ -403,10 +370,7 @@ TQuaternion<T> TQuaternion<T>::log() const
 template<typename T>
 TQuaternion<T> TQuaternion<T>::interpolateLogarithmic(const TQuaternion<T>& q2, T t) const
 {
-	auto q_diff = q2 * conjugate();
-	auto log_q_diff = q_diff.log();
-	auto log_q_scaled = t * log_q_diff;
-	return log_q_scaled.exp() * (*this);
+	return (t * (q2 * conjugate()).log()).exp() * (*this);
 }
 
 template<typename T>
