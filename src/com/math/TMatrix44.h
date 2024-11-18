@@ -43,7 +43,7 @@ class TMatrix44
 		/**
 		 * @brief Default constructor which is by default a unit-matrix.
 		 */
-		TMatrix44();
+		TMatrix44() = default;
 
 		/**
 		 * @brief Initialization constructor for 16 single floating point values.
@@ -88,7 +88,7 @@ class TMatrix44
 		TMatrix44(TMatrix44&&);
 
 		/**
-		 * @brief Makes this a unit-matrix.
+		 * @brief Set or resets this instance as unit/identity matrix.
 		 * A unit matrix, also known as the identity matrix, is a square matrix in which all the
 		 * elements along the main diagonal (from the top-left to the bottom-right) are 1,
 		 * and all other elements are 0. It acts as the multiplicative identity in matrix algebra,
@@ -97,22 +97,24 @@ class TMatrix44
 		void unit();
 
 		/**
-		 * @brief Gets the 3x3 determinant from this matrix.
+		 * @brief Gets the 3x3 determinant from this instance.
 		 * @return Determinant 3x3 value.
 		 */
 		T determinant() const;
 
 		/**
-		 * @brief Inverts the matrix.
+		 * @brief Inverts this matrix.
 		 * @throw std::range_error
 		 */
 		TMatrix44& invert();
 
 		/**
-		 * @brief Gets an inverted copy of the matrix.
+		 * @brief Gets the inverted version of this instance.
+		 * Call the method #invert() to do this.
 		 * @throw std::range_error
+		 * @see invert()
 		 */
-		TMatrix44 inverted() const;
+		TMatrix44 inverse() const;
 
 		/**
 		 * @brief Get a transposed matrix of this instance.
@@ -236,38 +238,45 @@ class TMatrix44
 
 		/**
 		 * @brief Sets the projection for this matrix.
-		 * @param near_plane
-		 * @param far_plane
-		 * @param fov
+		 * @param near_plane Near plane of the camera frustum.
+		 * @param far_plane Far plane of the camera frustum.
+		 * @param fov Field of view in radians.
+		 * @see https://learnwebgl.brown37.net/08_projections/projections_perspective.html
 		 */
-		void setProjectionMatrix(T near_plane, T far_plane, T fov);
+		void setPerspectiveProjection(T near_plane, T far_plane, T fov);
 
 		/**
 		 * @brief Multiplies this matrix with the passed one so that the passed matrix is applied on the matrix axes.
-		 * @return this matrix.
+		 * @return This matrix reference.
 		*/
 		TMatrix44& multiply(const TMatrix44& m);
 
 		/**
+		 * @brief Applies this matrix rotation and translation up on a 3D-vector.
+		 * @param v 3D vector.
+		 * @return Rotated and translated 3D-vector.
+		 */
+		TVector3D<T> applyTo(const TVector3D<T>& v) const;
+		/**
 		 * @brief Zero's or clears translation part of this instance.
 		 */
-		void clearPos();
+		void clearTranslation();
 
 		/**
 		 * @brief Sets the translation vector of this instance using a 3D vector.
 		 */
-		void setPos(const TVector3D<T>& v);
+		TMatrix44& setTranslation(const TVector3D<T>& v);
 
 		/**
 		 * @brief Sets the translation vector of this instance using individual
 		 */
-		void setPos(T x, T y, T z);
+		TMatrix44& setTranslation(T x, T y, T z);
 
 		/**
 		 * @brief Gets translation part of matrix.
 		 * @return Translation vector.
 		 */
-		TVector3D<T> getPos() const;
+		TVector3D<T> getTranslation() const;
 
 		/**
 		 * @brief Enumerate for identifying a matrix axis.
@@ -301,7 +310,7 @@ class TMatrix44
 		/**
 		 * @brief Gets the orientation part of matrix.
 		 */
-		TMatrix44 orientation(void) const;
+		TMatrix44 orientation() const;
 
 		/**
 		 * @brief Sets the element specified by the row and column.
@@ -315,10 +324,17 @@ class TMatrix44
 		 * @param row Row number between 0 and 3.
 		 * @param column` Column number between 0 and 3.
 		 */
-		void element(unsigned int row, unsigned int column, T value) const;
+		T element(unsigned int row, unsigned int column, T value) const;
 
 		/**
-		 * @brief Convert rotation matrix part to unit quaternion.
+		 * @brief Gets the element reference specified by the row and column.
+		 * @param row Row number between 0 and 3.
+		 * @param column` Column number between 0 and 3.
+		 */
+		T& element(unsigned int row, unsigned int column, T value);
+
+		/**
+		 * @brief Convert rotation matrix part to identity or unit quaternion.
 		 * Calls #sf::TQuaternion::fromMatrix()
 		 * @return A Quaternion instance.
 		 * @see sf::TQuaternion::fromMatrix()
@@ -327,34 +343,37 @@ class TMatrix44
 
 		/**
 		 * @brief Resets the orientation and leaves the translation as is.
+		 * @return This instance reference.
 		 */
-		void resetOrientation();
+		TMatrix44<T>& resetOrientation();
 
 		/**
 		 * @brief Set orientation using 2 direction vectors.
 		 * y-axis direction dominates x-axis (x-axis is corrected if x-axis and y-axis not perpendicular)
 		 * @param x_axis
 		 * @param y_axis
-		 * @return true on success.
+		 * @return This instance reference.
+		 * @throw std::invalid_argument
 		 */
-		bool setOrientationXY(const TVector3D<T>& x_axis, const TVector3D<T>& y_axis);
+		TMatrix44& setOrientationXY(const TVector3D<T>& x_axis, const TVector3D<T>& y_axis);
 
 		/**
 		 * @brief Set orientation using 2 direction vectors.
 		 * The z-axis direction dominates y-axis (y-axis is corrected if y & z not perpendicular)
 		 * @param z_axis
 		 * @param y_axis
-		 * @return true on success.
+		 * @return This instance reference.
+		 * @throw std::invalid_argument
 		 */
-		bool setOrientationZY(const TVector3D<T>& z_axis, const TVector3D<T>& y_axis);
+		TMatrix44& setOrientationZY(const TVector3D<T>& z_axis, const TVector3D<T>& y_axis);
 
 		/**
 		 * @brief Another way of applying rotation to the matrix.
-		 * @param rx x Radians
-		 * @param ry
-		 * @param rz
+		 * @param rx X in Radians.
+		 * @param ry Y in Radians
+		 * @param rz Z in Radians.
 		 */
-		void insertGIGRotXYZ(T rx, T ry, T rz);
+		TMatrix44& insertGIGRotXYZ(T rx, T ry, T rz);
 
 		/**
 		 * @brief Gets the string representation of the matrix formed like '({m00,m01,m02,m03},{m10,m11,m12,m13},{m20,m21,m22,m23},{m30,m31,m32,m33})'.

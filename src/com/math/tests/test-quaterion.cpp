@@ -108,8 +108,7 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 		CHECK(q_diff == sf::Quaternion(0.666666666666667, -0.333333333333333, 0, -0.666666666666667));
 		auto log_q_diff = q_diff.log();
 		CHECK(log_q_diff == sf::Quaternion(0, -0.376137344227054, 0, -0.752274688454107));
-		double t = 0.5;
-		auto log_q_scaled = t * log_q_diff;
+		auto log_q_scaled = 0.5 * log_q_diff;
 		CHECK(log_q_scaled == sf::Quaternion(0, -0.376137344227054 * 0.5, 0, -0.752274688454107 * 0.5));
 		CHECK(log_q_scaled.exp() == sf::Quaternion(0.912870929175277, -0.182574185835055, 0, -0.365148371670111));
 		CHECK(log_q_scaled.exp() * q1 == sf::Quaternion(0.5, 0.5, 0.5, 0.5));

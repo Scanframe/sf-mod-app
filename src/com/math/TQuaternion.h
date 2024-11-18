@@ -155,13 +155,19 @@ class TQuaternion
 		TQuaternion conjugate() const;
 
 		/**
-		 * @brief Inverse the imaginary part of this instance.
+		 * @brief Gets the inverse of the current instance.
 		 * The inverse of a quaternion is a quaternion that "reverses" the effect of the original quaternion
 		 * when combined through quaternion multiplication.
 		 * For unit quaternions, the inverse undoes the rotation described by the quaternion.
 		 * This property is analogous to the inverse of a matrix or a number.
 		 */
 		TQuaternion inverse() const;
+
+		/**
+		 * @brief Turns this instance into it inverse.
+		 * @see inverse()
+		 */
+		TQuaternion& invert();
 
 		/**
 		 * @brief Normalizes this instance.

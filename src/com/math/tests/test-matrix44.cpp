@@ -206,6 +206,9 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK((sf::Matrix44() * sf::Matrix44()).toString() == "({1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1})");
 		sf::Matrix44 mtx(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34);
 		CHECK((mtx * sf::Matrix44()) == mtx);
+		// Turn/reset the matrix into a unit matrix.
+		mtx.unit();
+		CHECK(mtx == sf::Matrix44());
 		//
 		sf::Matrix44 m(sf::toRadians(180.0), 0.0, 0.0);
 		CHECK((m * sf::Vector3D(1.0, 2.0, 3.0)) == sf::Vector3D(1, -2, -3));
@@ -221,30 +224,20 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 
 	SECTION("Vector Operations")
 	{
+		// Check detection of a 3D rotational
+		CHECK(sf::Matrix44(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)).setTranslation(1, 5, -1).isRotational());
+		CHECK_FALSE(sf::Matrix44(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34).isRotational());
 		// Rotation matrix.
-		CHECK((sf::Matrix44().setTiltPanRoll(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
-		CHECK(sf::Matrix44().setTiltPanRoll(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)).determinant() == Approx(1.0).margin(sf::Matrix44::tolerance));
-
-		/*
-		// Get the rotation of a matrix.
-		CHECK(sf::toDegrees(sf::Matrix44(sf::toRadians(-45), sf::Matrix44(sf::toRadians(-45), sf::Matrix44(sf::toRadians(-45)).getRotation()) == Approx(-45).margin(sf::Vector2D::tolerance));
-		// Check for a correct domain error when not having a square.
-		CHECK_THROWS_AS(sf::Matrix44(1, 2, 1, 2).getRotation(), std::domain_error);
-		//
-		CHECK(sf::toDegrees(sf::Matrix44(sf::toRadians(-45)).transposed().getRotation()) == Approx(45).margin(sf::Vector2D::tolerance));
-		CHECK(sf::toDegrees(sf::Matrix44(sf::toRadians(90)).getRotation()) == Approx(90).margin(sf::Vector2D::tolerance));
-		//
-		CHECK((sf::Matrix44(sf::toRadians(-60)) * sf::Vector2D(1, std::sqrt(3))) == sf::Vector2D(2, 0));
-		CHECK((sf::Matrix44(sf::toRadians(60)).transposed() * sf::Vector2D(1, std::sqrt(3))) == sf::Vector2D(2, 0));
-		// Check scaling a vector.
-		CHECK((sf::Matrix44(-2, -2) * sf::Vector2D(1.5, 3)) == sf::Vector2D(-3, -6));
-		// Combine scale and rotation matrices to a single one.
-		CHECK(sf::Matrix44(2, 2) * sf::Matrix44(sf::toRadians(-60)) * sf::Vector2D(1, std::sqrt(3)) == sf::Vector2D(4, 0));
-
-		// Check operator '*=' for matrix transformation (Rvalue) on vector (Lvalue).
-		sf::Vector2D v(1, std::sqrt(3));
-		v *= sf::Matrix44(sf::toRadians(-60));
-		CHECK(v == sf::Vector2D(2, 0));
-*/
+		CHECK((sf::Matrix44(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
+		CHECK(sf::Matrix44(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)).determinant() == Approx(1.0).margin(sf::Matrix44::tolerance));
+		// Check Transpose a matrix
+		CHECK(sf::Matrix44(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34).transposed() == sf::Matrix44(1,11,21,31,2,12,22,32,3,13,23,33,4,14,24,34));
+		// Check if the rotation and translation are applied to the vector.
+		sf::Matrix44 mtx(0, 0, sf::toRadians(-90.0));
+		mtx.setTranslation(10, 10, 10);
+		CHECK(mtx * sf::Vector3D(1, 0, 0) == sf::Vector3D(10, 11, 10));
+		// Check if the matrix multiplied by its inverse is a unit/identity matrix.
+		auto rot = sf::toRadians(45.0);
+		CHECK(sf::Matrix44(rot, rot, rot) * sf::Matrix44(rot, rot, rot).inverse() == sf::Matrix44());
 	}
 }

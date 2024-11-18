@@ -154,49 +154,49 @@ const T& TVector3D<T>::operator[](size_t i) const
 }
 
 template<typename T>
-constexpr TVector3D<T>::operator T*()
+inline constexpr TVector3D<T>::operator T*()
 {
 	return _data.array;
 }
 
 template<typename T>
-TVector3D<T>::operator const T*() const
+inline TVector3D<T>::operator const T*() const
 {
 	return _data.array;
 }
 
 template<typename T>
-constexpr T TVector3D<T>::x() const
+inline constexpr T TVector3D<T>::x() const
 {
 	return _data.coord.x;
 }
 
 template<typename T>
-constexpr T& TVector3D<T>::x()
+inline constexpr T& TVector3D<T>::x()
 {
 	return _data.coord.x;
 }
 
 template<typename T>
-constexpr T TVector3D<T>::y() const
+inline constexpr T TVector3D<T>::y() const
 {
 	return _data.coord.y;
 }
 
 template<typename T>
-constexpr T& TVector3D<T>::y()
+inline constexpr T& TVector3D<T>::y()
 {
 	return _data.coord.y;
 }
 
 template<typename T>
-constexpr T TVector3D<T>::z() const
+inline constexpr T TVector3D<T>::z() const
 {
 	return _data.coord.z;
 }
 
 template<typename T>
-constexpr T& TVector3D<T>::z()
+inline constexpr T& TVector3D<T>::z()
 {
 	return _data.coord.z;
 }

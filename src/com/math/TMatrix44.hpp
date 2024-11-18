@@ -10,15 +10,8 @@ namespace sf
 {
 
 template<typename T>
-inline TMatrix44<T>::TMatrix44()
-{
-	unit();
-}
-
-template<typename T>
 inline TMatrix44<T>::TMatrix44(T tilt, T pan, T roll)
 {
-	unit();
 	setTiltPanRoll(tilt, pan, roll);
 }
 
@@ -114,7 +107,7 @@ TMatrix44<T>& TMatrix44<T>::invert()
 	T big, dum, pivinv;
 	icol = irow = 0;
 	ipiv[0] = ipiv[1] = ipiv[2] = ipiv[3] = 0;
-
+	//
 	for (i = 0; i < 4; i++)
 	{
 		big = 0;
@@ -187,7 +180,7 @@ TMatrix44<T>& TMatrix44<T>::invert()
 }
 
 template<typename T>
-inline TMatrix44<T> TMatrix44<T>::inverted() const
+inline TMatrix44<T> TMatrix44<T>::inverse() const
 {
 	return TMatrix44(*this).invert();
 }
@@ -210,29 +203,20 @@ TMatrix44<T> TMatrix44<T>::transposed() const
 	return TMatrix44(*this).transpose();
 }
 
-// Unit: construct a unit-matrix
 template<typename T>
 void TMatrix44<T>::unit()
 {
-	//_data.array = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[3][0] =
-		_data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[3][1] =
-			_data.mtx[0][2] = _data.mtx[1][2] = _data.mtx[3][2] =
-				_data.mtx[0][3] = _data.mtx[1][3] = _data.mtx[2][3] = 0.0;
-	_data.mtx[0][0] = _data.mtx[1][1] = _data.mtx[2][2] = _data.mtx[3][3] = 1.0;
+	// Set values for the unit matrix.
+	_data = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
 // SetProjectionMatrix
 template<typename T>
-void TMatrix44<T>::setProjectionMatrix(
-	T near_plane,
-	T far_plane,
-	T fov
-)
+void TMatrix44<T>::setPerspectiveProjection(T near_plane, T far_plane, T fov)
 {
 	auto c = std::cos(fov * 0.5);
 	auto s = std::sin(fov * 0.5);
-	T Q = s / (1.0 - near_plane / far_plane);
+	auto Q = s / (1.0 - near_plane / far_plane);
 	_data.mtx[0][0] = c;
 	_data.mtx[0][1] = 0.0;
 	_data.mtx[0][2] = 0.0;
@@ -358,16 +342,21 @@ inline TMatrix44<T>& TMatrix44<T>::operator*=(const TMatrix44<T>& lhs)
 }
 
 template<typename T>
-TVector3D<T> TMatrix44<T>::operator*(const TVector3D<T>& v) const
+TVector3D<T> TMatrix44<T>::applyTo(const TVector3D<T>& v) const
 {
 	// Get a local copy of X, Y and Z for fast access.
-	T vt[3];
-	v.copyTo(vt);
+	T vt[3]{v.x(), v.y(), v.z()};
 	return {
-		_data.mtx[0][0] * vt[0] + _data.mtx[0][1] * vt[1] + _data.mtx[0][2] * vt[2],
-		_data.mtx[1][0] * vt[0] + _data.mtx[1][1] * vt[1] + _data.mtx[1][2] * vt[2],
-		_data.mtx[2][0] * vt[0] + _data.mtx[2][1] * vt[1] + _data.mtx[2][2] * vt[2]
+		_data.mtx[0][0] * vt[0] + _data.mtx[0][1] * vt[1] + _data.mtx[0][2] * vt[2] + _data.mtx[3][0],
+		_data.mtx[1][0] * vt[0] + _data.mtx[1][1] * vt[1] + _data.mtx[1][2] * vt[2] + _data.mtx[3][1],
+		_data.mtx[2][0] * vt[0] + _data.mtx[2][1] * vt[1] + _data.mtx[2][2] * vt[2] + _data.mtx[3][2]
 	};
+}
+
+template<typename T>
+TVector3D<T> TMatrix44<T>::operator*(const TVector3D<T>& v) const
+{
+	return applyTo(v);
 }
 
 template<typename T>
@@ -407,7 +396,7 @@ bool TMatrix44<T>::isRotational() const
 		return false;
 	}
 	// Ensure the passed matrix is a valid rotation matrix by checking the matrix inverse multiplication is an identiy matrix.
-	if ((*this) * inverted() != TMatrix44())
+	if ((*this) * inverse() != TMatrix44())
 	{
 		return false;
 	}
@@ -501,31 +490,30 @@ inline TMatrix44<T>& TMatrix44<T>::rotate(T x, T y, T z)
 }
 
 template<typename T>
-inline void TMatrix44<T>::setPos(const TVector3D<T>& v)
+inline TMatrix44<T>& TMatrix44<T>::setTranslation(const TVector3D<T>& v)
 {
-	_data.mtx[3][0] = v.x();
-	_data.mtx[3][1] = v.y();
-	_data.mtx[3][2] = v.z();
+	return setTranslation(v.x(), v.y(), v.z());
 }
 
 template<typename T>
-inline void TMatrix44<T>::setPos(T x, T y, T z)
+inline TMatrix44<T>& TMatrix44<T>::setTranslation(T x, T y, T z)
 {
 	_data.mtx[3][0] = x;
 	_data.mtx[3][1] = y;
 	_data.mtx[3][2] = z;
+	return *this;
 }
 
 // TMatrix44.ClrPos
 //  overrides translation part of matrix to zero.
 template<typename T>
-inline void TMatrix44<T>::clearPos()
+inline void TMatrix44<T>::clearTranslation()
 {
 	_data.mtx[3][0] = _data.mtx[3][1] = _data.mtx[3][2] = 0.0;
 }
 
 template<typename T>
-inline TVector3D<T> TMatrix44<T>::getPos(void) const
+inline TVector3D<T> TMatrix44<T>::getTranslation(void) const
 {
 	return {_data.mtx[3][0], _data.mtx[3][1], _data.mtx[3][2]};
 }
@@ -543,14 +531,7 @@ inline TVector3D<T> TMatrix44<T>::getAxis(EAxis axis) const
 template<typename T>
 TMatrix44<T> TMatrix44<T>::orbit(T horizontal, T vertical) const
 {
-	auto x_axis = getAxis(axisX);
-	auto y_axis = getAxis(axisY);
-	TQuaternion<T> h_q(y_axis, horizontal);
-	TQuaternion<T> v_q(x_axis, vertical);
-	TQuaternion<T> qmul = v_q * h_q;
-	// Was left out?
-	qmul.Normalize();
-	return TMatrix44<T>(qmul);
+	return TMatrix44<T>(TQuaternion<T>(getAxis(axisX), vertical) * TQuaternion<T>(getAxis(axisY), horizontal).normalize());
 }
 
 template<typename T>
@@ -565,7 +546,7 @@ TMatrix44<T> TMatrix44<T>::orientation() const
 }
 
 template<typename T>
-inline void TMatrix44<T>::setElement(unsigned int row, unsigned int column, T value)
+void TMatrix44<T>::setElement(unsigned int row, unsigned int column, T value)
 {
 	if (row >= 4 || column >= 4)
 	{
@@ -575,7 +556,17 @@ inline void TMatrix44<T>::setElement(unsigned int row, unsigned int column, T va
 }
 
 template<typename T>
-inline void TMatrix44<T>::element(unsigned int row, unsigned int column, T value) const
+T TMatrix44<T>::element(unsigned int row, unsigned int column, T value) const
+{
+	if (row >= 4 || column >= 4)
+	{
+		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() index out of range!");
+	}
+	return _data.mtx[row][column];
+}
+
+template<typename T>
+T& TMatrix44<T>::element(unsigned int row, unsigned int column, T value)
 {
 	if (row >= 4 || column >= 4)
 	{
@@ -591,70 +582,64 @@ TQuaternion<T> TMatrix44<T>::quaternion() const
 }
 
 template<typename T>
-bool TMatrix44<T>::setOrientationXY(const TVector3D<T>& ixaxis, const TVector3D<T>& iyaxis)
+TMatrix44<T>& TMatrix44<T>::setOrientationXY(const TVector3D<T>& x_axis, const TVector3D<T>& y_axis)
 {
-	auto xaxis(ixaxis);
-	auto yaxis(iyaxis);
+	auto xv(x_axis.normalized());
+	auto yv(y_axis.normalized());
 	// Check whether axes are valid for orientation by examining the cross product.
-	xaxis.normalize();
-	yaxis.normalize();
-	auto zaxis = xaxis * yaxis;
-	if (zaxis.x == 0.0 &&
-			zaxis.y == 0.0 &&
-			zaxis.z == 0.0)
+	auto zv = xv * yv;
+	if (isZero(zv.x, tolerance) && isZero(zv.y, tolerance) && isZero(zv.z, tolerance))
 	{
-		// Invalid axes, no effect
-		return false;
+		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() the vectors do not have a valid orientation!");
 	}
-	zaxis.normalize();
-	xaxis = yaxis * zaxis;
-	xaxis.normalize();
-	_data.mtx[0][0] = xaxis.x;
-	_data.mtx[0][1] = xaxis.y;
-	_data.mtx[0][2] = xaxis.z;
-	_data.mtx[1][0] = yaxis.x;
-	_data.mtx[1][1] = yaxis.y;
-	_data.mtx[1][2] = yaxis.z;
-	_data.mtx[2][0] = zaxis.x;
-	_data.mtx[2][1] = zaxis.y;
-	_data.mtx[2][2] = zaxis.z;
-	return true;
-}
-
-template<typename T>
-bool TMatrix44<T>::setOrientationZY(const TVector3D<T>& izaxis, const TVector3D<T>& iyaxis)
-{
-	auto zaxis(izaxis);
-	auto yaxis(iyaxis);
-	// Check whether axes are valid for orientation by examining the cross product
-	yaxis.normalize();
-	zaxis.normalize();
-	// Cross-product.
-	auto xaxis = yaxis * zaxis;
-	// Check if the vector is zero or near zero according the tolerance.
-	if (xaxis.isEqual(TVector3D<T>(0, 0, 0), tolerance))
-	{
-		// invalid axes, no effect
-		return false;
-	}
-	xaxis.normalize();
-	yaxis = zaxis * xaxis;
-	yaxis.normalize();
+	zv.normalize();
+	xv = yv * zv;
+	xv.normalize();
+	_data.mtx[0][0] = xv.x;
+	_data.mtx[0][1] = xv.y;
+	_data.mtx[0][2] = xv.z;
+	_data.mtx[1][0] = yv.x;
+	_data.mtx[1][1] = yv.y;
+	_data.mtx[1][2] = yv.z;
+	_data.mtx[2][0] = zv.x;
+	_data.mtx[2][1] = zv.y;
+	_data.mtx[2][2] = zv.z;
 	//
-	_data.mtx[0][0] = xaxis.x();
-	_data.mtx[0][1] = xaxis.y();
-	_data.mtx[0][2] = xaxis.z();
-	_data.mtx[1][0] = yaxis.x();
-	_data.mtx[1][1] = yaxis.y();
-	_data.mtx[1][2] = yaxis.z();
-	_data.mtx[2][0] = zaxis.x();
-	_data.mtx[2][1] = zaxis.y();
-	_data.mtx[2][2] = zaxis.z();
-	return true;
+	return *this;
 }
 
 template<typename T>
-void TMatrix44<T>::resetOrientation(void)
+TMatrix44<T>& TMatrix44<T>::setOrientationZY(const TVector3D<T>& z_axis, const TVector3D<T>& y_axis)
+{
+	auto zv(z_axis.normalized());
+	auto yv(y_axis.normalized());
+	// Check whether axes are valid for orientation by examining the cross product
+	// Cross-product.
+	auto xv = yv * zv;
+	// Check if the vector is zero or near zero according the tolerance.
+	if (isZero(xv.x, tolerance) && isZero(xv.y, tolerance) && isZero(xv.z, tolerance))
+	{
+		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() the vectors do not have a valid orientation!");
+	}
+	xv.normalize();
+	yv = zv * xv;
+	yv.normalize();
+	//
+	_data.mtx[0][0] = xv.x();
+	_data.mtx[0][1] = xv.y();
+	_data.mtx[0][2] = xv.z();
+	_data.mtx[1][0] = yv.x();
+	_data.mtx[1][1] = yv.y();
+	_data.mtx[1][2] = yv.z();
+	_data.mtx[2][0] = zv.x();
+	_data.mtx[2][1] = zv.y();
+	_data.mtx[2][2] = zv.z();
+	//
+	return *this;
+}
+
+template<typename T>
+TMatrix44<T>& TMatrix44<T>::resetOrientation(void)
 {
 	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] =
 		_data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] =
@@ -663,7 +648,7 @@ void TMatrix44<T>::resetOrientation(void)
 }
 
 template<typename T>
-void TMatrix44<T>::insertGIGRotXYZ(T rx, T ry, T rz)
+TMatrix44<T>& TMatrix44<T>::insertGIGRotXYZ(T rx, T ry, T rz)
 {
 	auto sx = std::sin(rx);
 	auto cx = std::cos(rx);
@@ -680,6 +665,7 @@ void TMatrix44<T>::insertGIGRotXYZ(T rx, T ry, T rz)
 	_data.mtx[0][1] = sx * sz - cx * sy * cz;
 	_data.mtx[2][1] = sx * cz + cx * sy * sz;
 	_data.mtx[1][1] = cx * cy;
+	return *this;
 }
 
 template<typename T>

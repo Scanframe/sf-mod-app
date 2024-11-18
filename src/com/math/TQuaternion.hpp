@@ -168,6 +168,12 @@ TQuaternion<T> TQuaternion<T>::inverse() const
 }
 
 template<typename T>
+TQuaternion<T>& TQuaternion<T>::invert()
+{
+	return assign(conjugate() / magnitudeSqr());
+}
+
+template<typename T>
 TQuaternion<T>& TQuaternion<T>::normalize()
 {
 	T c = magnitude();
