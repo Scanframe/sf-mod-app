@@ -5,104 +5,104 @@
 namespace sf::gmi
 {
 
-TAxesCoord::TAxesCoord(const TAxesCoord& ac)
+AxesCoord::AxesCoord(const AxesCoord& ac)
 {
 	FMap = ac.FMap;
 	std::memcpy(&FData, &ac.FData, sizeof(FData));
 }
 
-TAxesCoord& TAxesCoord::operator=(const TAxesCoord& ac)
+AxesCoord& AxesCoord::operator=(const AxesCoord& ac)
 {
 	FMap = ac.FMap;
 	std::memcpy(&FData, &ac.FData, sizeof(FData));
 	return *this;
 }
 
-void TAxesCoord::Clear()
+void AxesCoord::Clear()
 {
 	FMap._bits = 0;
 	memset(&FData, 0, sizeof(FData));
 }
 
-TAxesCoord::TAxesCoord()
+AxesCoord::AxesCoord()
 {
 	Clear();
 }
 
-TAxesCoord::TAxesCoord(std::string s)
+AxesCoord::AxesCoord(std::string s)
 {
 	Clear();
 	SetString(s);
 }
 
-double& TAxesCoord::Value(unsigned int axis_loc)
+double& AxesCoord::Value(unsigned int axis_loc)
 {
 	return FData[axis_loc % alLAST_ENTRY];
 }
 
-double TAxesCoord::Value(unsigned int axis_loc) const
+double AxesCoord::Value(unsigned int axis_loc) const
 {
 	return FData[axis_loc % alLAST_ENTRY];
 }
 
-TAxisValue TAxesCoord::operator[](size_t al) const
+AxisValue AxesCoord::operator[](size_t al) const
 {
-	return FMap.contains(al) ? TAxisValue(EAxisLocation(al), FData[al]) : TAxisValue();
+	return FMap.contains(al) ? AxisValue(EAxisLocation(al), FData[al]) : AxisValue();
 }
 
-bool TAxesCoord::IsSet(int axis_loc) const
+bool AxesCoord::IsSet(int axis_loc) const
 {
 	return FMap.contains(axis_loc);
 }
 
-void TAxesCoord::Set(unsigned int axis_loc, double value)
+void AxesCoord::Set(unsigned int axis_loc, double value)
 {
 	FMap << axis_loc;
 	FData[axis_loc] = value;
 }
 
-void TAxesCoord::Unset(int axis_loc)
+void AxesCoord::Unset(int axis_loc)
 {
 	FMap >> axis_loc;
 }
 
-TAxesCoord& TAxesCoord::operator<<(const TAxisValue& av)
+AxesCoord& AxesCoord::operator<<(const AxisValue& av)
 {
-	FMap << av.location;
-	if (av.location >= 0)
-		FData[av.location] = av.value;
+	FMap << av._location;
+	if (av._location >= 0)
+		FData[av._location] = av._value;
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator=(const TAxisValue& av)
+AxesCoord& AxesCoord::operator=(const AxisValue& av)
 {
-	FMap << av.location;
-	if (av.location >= 0)
+	FMap << av._location;
+	if (av._location >= 0)
 	{
-		FData[av.location] = av.value;
+		FData[av._location] = av._value;
 	}
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator-=(const TAxisValue& av)
+AxesCoord& AxesCoord::operator-=(const AxisValue& av)
 {
-	if (FMap.contains(av.location))
+	if (FMap.contains(av._location))
 	{
-		FData[av.location] -= av.value;
+		FData[av._location] -= av._value;
 	}
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator+=(const TAxisValue& av)
+AxesCoord& AxesCoord::operator+=(const AxisValue& av)
 {
-	if (FMap.contains(av.location))
+	if (FMap.contains(av._location))
 	{
-		FData[av.location] += av.value;
+		FData[av._location] += av._value;
 	}
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator>>(unsigned int axis_loc)
+AxesCoord& AxesCoord::operator>>(unsigned int axis_loc)
 {
 	FMap >> axis_loc;
 	if (axis_loc >= 0)
@@ -112,29 +112,29 @@ TAxesCoord& TAxesCoord::operator>>(unsigned int axis_loc)
 	return *this;
 }
 
-bool TAxesCoord::operator==(const TAxesCoord& ac) const
+bool AxesCoord::operator==(const AxesCoord& ac) const
 {
 	int cmp = std::memcmp(this, &ac, sizeof(ac));
 	return cmp ? false : true;
 }
 
-bool TAxesCoord::operator!=(const TAxesCoord& ac) const
+bool AxesCoord::operator!=(const AxesCoord& ac) const
 {
 	int cmp = std::memcmp(this, &ac, sizeof(ac));
 	return cmp ? true : false;
 }
 
-int TAxesCoord::GetMap() const
+int AxesCoord::GetMap() const
 {
 	return FMap._bits;
 }
 
-void TAxesCoord::SetMap(int map)
+void AxesCoord::SetMap(int map)
 {
 	FMap._bits = map;
 }
 
-TAxesCoord& TAxesCoord::Offset(const Vector3D& ofs)
+AxesCoord& AxesCoord::Offset(const Vector3D& ofs)
 {
 	if (IsSet(alX))
 		Value(alX) += ofs.x();
@@ -145,7 +145,7 @@ TAxesCoord& TAxesCoord::Offset(const Vector3D& ofs)
 	return *this;
 }
 
-Vector3D TAxesCoord::GetVector() const
+Vector3D AxesCoord::GetVector() const
 {
 	Vector3D rv;
 	if (IsSet(alX))
@@ -157,7 +157,7 @@ Vector3D TAxesCoord::GetVector() const
 	return rv;
 }
 
-TAxesCoord& TAxesCoord::SetVector(const Vector3D& vect)
+AxesCoord& AxesCoord::SetVector(const Vector3D& vect)
 {
 	if (IsSet(alX))
 		Value(alX) = vect.x();
@@ -168,13 +168,13 @@ TAxesCoord& TAxesCoord::SetVector(const Vector3D& vect)
 	return *this;
 }
 
-TAxesCoord TAxesCoord::OffsetBy(const Vector3D& ofs) const
+AxesCoord AxesCoord::OffsetBy(const Vector3D& ofs) const
 {
-	TAxesCoord ac = *this;
+	AxesCoord ac = *this;
 	return ac.Offset(ofs);
 }
 
-TAxesCoord& TAxesCoord::operator|=(const TAxesCoord& ac)
+AxesCoord& AxesCoord::operator|=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
 	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
@@ -188,7 +188,7 @@ TAxesCoord& TAxesCoord::operator|=(const TAxesCoord& ac)
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator&=(const TAxesCoord& ac)
+AxesCoord& AxesCoord::operator&=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
 	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
@@ -202,7 +202,7 @@ TAxesCoord& TAxesCoord::operator&=(const TAxesCoord& ac)
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator-=(const TAxesCoord& ac)
+AxesCoord& AxesCoord::operator-=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
 	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
@@ -216,7 +216,7 @@ TAxesCoord& TAxesCoord::operator-=(const TAxesCoord& ac)
 	return *this;
 }
 
-TAxesCoord& TAxesCoord::operator+=(const TAxesCoord& ac)
+AxesCoord& AxesCoord::operator+=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
 	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
@@ -230,12 +230,12 @@ TAxesCoord& TAxesCoord::operator+=(const TAxesCoord& ac)
 	return *this;
 }
 
-TAxesCoord::ECompare TAxesCoord::Compare(const TAxesCoord& ac, const TAxesCoord& tolerance) const
+AxesCoord::ECompare AxesCoord::Compare(const AxesCoord& ac, const AxesCoord& tolerance) const
 {
 	return Compare(ac, tolerance, AxisLocations() << alC << alD);
 }
 
-TAxesCoord::ECompare TAxesCoord::Compare(const TAxesCoord& ac, const TAxesCoord& tolerances, const AxisLocations rad_unlimited) const
+AxesCoord::ECompare AxesCoord::Compare(const AxesCoord& ac, const AxesCoord& tolerances, const AxisLocations rad_unlimited) const
 {
 	TSet<int> cmp;
 	// Get the mapped values which can be compared.
@@ -275,7 +275,7 @@ TAxesCoord::ECompare TAxesCoord::Compare(const TAxesCoord& ac, const TAxesCoord&
 	return crEQUAL;
 }
 
-std::string TAxesCoord::GetString() const
+std::string AxesCoord::GetString() const
 {
 	int prec = 10;
 	std::string s;
@@ -300,7 +300,7 @@ std::string TAxesCoord::GetString() const
 	return s;
 }
 
-bool TAxesCoord::SetString(std::string str)
+bool AxesCoord::SetString(std::string str)
 {
 	bool rv = true;
 	// Split the string in using a csv format.
@@ -340,13 +340,12 @@ bool TAxesCoord::SetString(std::string str)
 
 }// namespace sf::gmi
 
-
-std::ostream& operator<<(std::ostream& os, const sf::gmi::TAxesCoord& ac)
+std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac)
 {
 	return (os << '(' << ac.GetString() << ')');
 }
 
-std::istream& operator>>(std::istream& is, sf::gmi::TAxesCoord& ac)
+std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac)
 {
 	char c;
 	std::string s;

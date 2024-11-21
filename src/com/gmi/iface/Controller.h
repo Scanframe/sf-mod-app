@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GmiInterface.h"
-#include "global.h"
 #include <misc/gen/TClassRegistration.h>
 #include <misc/qt/PropertySheetDialog.h>
 
@@ -11,7 +10,7 @@ namespace sf::gmi
 /**
  * @brief Pure virtual class for implementation of motion controllers.
  */
-class _GMI_CLASS TController
+class _GMI_CLASS Controller
 {
 	public:
 		/**
@@ -20,210 +19,247 @@ class _GMI_CLASS TController
 		struct Parameters
 		{
 				Parameters() = default;
+
 				explicit Parameters(int mode)
 					: _mode(mode)
 				{}
 
 				int _mode{0};
 		};
+
 		/**
 		 * @brief Constructor for passing general structure for derived classes.
 		 */
-		TController(const Parameters&);
-		/**
-		 * @brief Must be called from a derived class in the destructor before anything.
-		 */
-		void Destroy();
-		/**
-		 * @brief Initializes the hardware for operation and starts the thread when DoInitialize returns true.
-		 */
-		bool Initialize();
-		/**
-		 * @brief Un-initializes the hardware.
-		 */
-		bool Uninitialize();
+		Controller(const Parameters&);
+
 		/**
 		 * @brief Virtual destructor for derived classes.
 		 */
-		virtual ~TController();
+		virtual ~Controller();
+
+		/**
+		 * @brief Must be called from a derived class in the destructor before anything.
+		 */
+		void destroy();
+
+		/**
+		 * @brief Initializes the hardware for operation and starts the thread when doInitialize returns true.
+		 */
+		bool initialize();
+
+		/**
+		 * @brief Un-initializes the hardware.
+		 */
+		bool uninitialize();
+
 		/**
 		 * @brief Attaches the event handler for events.
 		 */
-		void HookEventHandler(TControllerEvent handler);
+		void hookEventHandler(ControllerEvent handler);
+
 		/**
 		 * @brief Detaches the event handler for events.
 		 */
-		void UnhookEventHandler(TControllerEvent handler);
+		void unhookEventHandler(ControllerEvent handler);
+
 		/**
-		 * @brief Writes the non exported parameters to profile.
+		 * @brief Reads or writes the non exported parameters/settings to profile.
+		 * @param rd When true settings are read.
+		 * @return True on success.
 		 */
-		bool ReadWriteSettings(bool rd);
+		bool settingsReadWrite(bool rd);
 
 		/**
 		 * @brief Interface class to access Axis properties and functions.
 		 */
-		class _GMI_CLASS TAxis
+		class _GMI_CLASS Axis
 		{
 			public:
 				/**
 				 * @brief Returns the location of the axis in the constellation of axes.
 				 */
-				EAxisLocation GetLocation() const;
+				EAxisLocation getLocation() const;
+
 				/**
 				 * @brief Returns the possible movements the is instance can make.
 				 */
-				AxisMovements GetMovements() const;
+				AxisMovements getMovements() const;
+
 				/**
 				 * @brief Returns the name of this instance.
 				 */
-				const char* GetName() const;
+				const char* getName() const;
+
 				/**
 				 * @brief Returns the description of this instance.
 				 */
-				const char* GetDescription() const;
+				const char* getDescription() const;
+
 				/**
 			 * @brief Returns the current position/velocity/acceleration.
 			 */
-				double GetCurrent(EAxisValueType avt) const;
+				double getCurrent(EAxisValueType avt) const;
+
 				/**
 				 * @brief Sets the current position/velocity/acceleration. Only when not moving.
 				 */
-				bool SetCurrent(EAxisValueType avt, double);
+				bool setCurrent(EAxisValueType avt, double val);
+
 				/**
 				 * @brief Returns the accuracy for velocity and position.
 				 */
-				double GetAccuracy() const;
+				double getAccuracy() const;
+
 				/**
 				 * @brief Returns the resolution of the axis.
 				 */
-				double GetResolution() const;
+				double getResolution() const;
+
 				/**
 				 * @brief Gets the current extremes from this axis.
 				 */
-				double GetMinMax(EAxisMinMax amm) const;
+				double getMinMax(EAxisMinMax amm) const;
+
 				/**
 				 * @brief Set the position offset.
 				 */
-				bool SetOffset(double ofs);
+				bool setOffset(double ofs);
+
 				/**
 				 * @brief Get the position offset.
 				 */
-				double GetOffset() const;
+				double setOffset() const;
+
 				/**
 				 * @brief Returns the current velocity.
 				 */
-				double GetTarget(EAxisValueType avt) const;
+				double getTarget(EAxisValueType avt) const;
+
 				/**
 				 * @brief Sets the current velocity.
 				 */
-				bool SetTarget(EAxisValueType avt, double);
+				bool setTarget(EAxisValueType avt, double val);
+
 				/**
 				 * @brief Sets the current position.
 				 */
-				bool SetPosition(double);
+				bool setPosition(double value);
+
 				/**
-				 * @brief Normalize the passed position for all unlimited rotation axes.
+				 * @brief normalize the passed position for all unlimited rotation axes.
 				 * Uses accuracy to find the actual position to normalize.
 				 * The passed value is also returned.
 				 */
-				double Normalized(double pos) const;
+				double normalized(double pos) const;
+
 				/**
 				 * @brief Sets the axis mode for operation. Returns false on failure.
 				 */
-				bool SetMode(EAxisMode);
+				bool setMode(EAxisMode mode);
+
 				/**
 				 * @brief Returns the mode of operation.
 				 */
-				EAxisMode GetMode() const;
+				EAxisMode getMode() const;
+
 				/**
 				 * @brief Returns true if the mode can be changed.
 				 */
-				bool CanModeChange(EAxisMode cur_mode, EAxisMode new_mode, bool pos_cmplt, bool vel_cmplt, bool con_cmplt);
+				bool canModeChange(EAxisMode cur_mode, EAxisMode new_mode, bool pos_cmplt, bool vel_cmplt, bool con_cmplt);
+
 				/**
 				 * @brief Easy to use vector for an array of Axis pointers.
 				 */
-				typedef TVector<TAxis*> TPtrVector;
-				/**
-				 * @brief Easy to use vector for an iterator for array of Axis pointers.
-				 */
-				typedef TIterator<TAxis*> TPtrIterator;
+				typedef TVector<Axis*> PtrVector;
 
 			protected:
 				/**
 				 * @brief Constructor that registers itself at the passed controller.
 				 */
-				TAxis(TController* mc, EAxisLocation);
+				Axis(Controller* mc, EAxisLocation);
+
 				/**
 				 * @brief Virtual destructor for possible derived destructors.
 				 */
-				virtual ~TAxis();
+				virtual ~Axis();
+
 				/**
 				 * @brief Holds the possible movements.
 				 */
-				AxisMovements FMovements;
+				AxisMovements _movements;
 
 			private:
 				/**
 				 * @brief Holds the controller this axis belongs to.
 				 */
-				TController& FController;
+				Controller& _controller;
 				/**
 				 * @brief Holds the location of the axis in the constellation of axes.
 				 */
-				EAxisLocation FLocation;
+				EAxisLocation _location;
 
-				friend TController;
+				friend Controller;
 		};
 
 		/**
 		 * @brief Start homing procedure and returns true when successfully started.
 		 * When skip has been passed the implementation tries to skip homing.
 		 */
-		bool HomeAxes(bool skip);
+		bool homeAxes(bool skip);
+
 		/**
 		 * @brief Enables or disables the joystick mode of the controller.
 		 * @returns True when the transition was successful.
 		 */
-		bool SetJoystick(EJoystickCmd jsc);
+		bool setJoystick(EJoystickCmd jsc);
+
 		/**
 		 * @brief Returns the joystick state. Off=0, Stop=1 and On=2.
 		 */
-		EJoystickCmd GetJoystick() const;
+		EJoystickCmd getJoystick() const;
+
 		/**
 		 * @brief Returns the current selected axis on the joystick control.
 		 * This does not mean it is enabled.
 		 */
-		EAxisLocation GetJoystickAxis() const;
+		EAxisLocation getJoystickAxis() const;
+
 		/**
 		 * @brief Sets the selected axis for the joystick enabled or not.
 		 */
-		bool SetJoystickAxis(EAxisLocation al);
+		bool setJoystickAxis(EAxisLocation axis_loc);
+
 		/**
 		 * @brief Returns the current selected axis on the pop event source.
 		 */
-		EAxisLocation GetPopAxis() const;
+		EAxisLocation getPopAxis() const;
+
 		/**
 		 * @brief Sets the selected axis for the pop event source.
 		 */
-		bool SetPopAxis(EAxisLocation al);
+		bool setPopAxis(EAxisLocation al);
+
 		/**
 		 * @brief Sets the trigger enable.
 		 */
-		bool SetTriggerEnable(bool enable);
+		bool setTriggerEnable(bool enable);
+
 		/**
-		 * @brief Returns the trigger enable status.
+		 * @brief Gets the trigger enable status.
 		 */
-		bool GetTriggerEnable() const;
+		bool getTriggerEnable() const;
+
 		/**
 		 * @brief Sets the trigger internal frequency generator and returns the clipped or rounded value.
 		 * @return On error -1
 		 */
-		double SetTriggerFreq(double freq);
+		double setTriggerFreq(double freq);
+
 		/**
 		 * @brief Returns the trigger internal frequency generator.
 		 * @return On error -1.
 		 */
-		double GetTriggerFreq() const;
+		double getTriggerFreq() const;
 
 		//
 		// Movement execution related functions and properties.
@@ -231,60 +267,71 @@ class _GMI_CLASS TController
 
 		/**
 		 * @brief Executes a passed move position command.
-		 * @return True on succes and false on failure and see #GetLastErrorText() function for more information.
+		 * @return True on succes and false on failure and see #getLastErrorText() function for more information.
 		 */
-		bool SetMovePos(EMovePosCmd mpc);
+		bool setMovePos(EMovePosCmd mpc);
+
 		/**
 		 * @brief Returns the current active position command. When moving position the command returned will eventually become mcSTOP.
 		 */
-		EMovePosCmd GetMovePos() const;
+		EMovePosCmd getMovePos() const;
+
 		/**
 		 * @brief Executes a passed move velocity command.
 		 */
-		bool SetMoveVel(EMoveVelCmd mvc);
+		bool setMoveVel(EMoveVelCmd mvc);
+
 		/**
 		 * @brief Returns the current active velocity command.
 		 */
-		EMoveVelCmd GetMoveVel() const;
+		EMoveVelCmd getMoveVel() const;
+
 		/**
 		 * @brief Executes a passed move continuous command.
 		 */
-		bool SetMoveCon(EMoveConCmd mcc);
+		bool setMoveCon(EMoveConCmd mcc);
+
 		/**
 		 * @brief Returns the current active velocity command.
 		 * @return
 		 */
-		EMoveConCmd GetMoveCon() const;
+		EMoveConCmd getMoveCon() const;
+
 		/**
 		 * @brief Gets a reference to the axis at the specified location.
 		 */
-		TAxis& GetAxis(int axis_loc);
+		Axis& getAxis(int axis_loc);
+
 		/**
 		 * @brief Gets a const reference to the axis at the specified location.
 		 */
-		const TAxis& GetAxis(int axis_loc) const;
+		const Axis& getAxis(int axis_loc) const;
+
 		/**
 		 * @brief Returns the physical axis location of the passed axis number.
 		 */
-		TAxis& GetPhysAxis(int axis_num);
+		Axis& getPhysicalAxis(int axis_num);
+
 		/**
 		 * @brief Adds controller specific property pages to the passed sheet.
 		 */
-		virtual void AddPropertyPages(PropertySheetDialog* sheet);
+		virtual void addPropertyPages(PropertySheetDialog* sheet);
+
 		/**
 		 * @brief Gets the current axes values.
 		 * @param avt Axis value type.
 		 * @param coord Axes coordinate containing the values.
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
-		bool GetCurrent(EAxisValueType avt, TAxesCoord& ac) const;
+		bool getCurrent(EAxisValueType avt, AxesCoord& ac) const;
+
 		/**
 		 * @brief Sets the current axes values.
 		 * @param avt Axis value type.
 		 * @param coord Axes coordinate containing the values.
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
-		bool SetCurrent(EAxisValueType avt, const TAxesCoord& coord);
+		bool setCurrent(EAxisValueType avt, const AxesCoord& coord);
 
 		/**
 		 * @brief Gets the target set for this axis.
@@ -292,14 +339,16 @@ class _GMI_CLASS TController
 		 * @param coord Axes coordinate containing the values.
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
-		bool GetTarget(EAxisValueType avt, TAxesCoord& coord) const;
+		bool getTarget(EAxisValueType avt, AxesCoord& coord) const;
+
 		/**
 		 * @brief Set the target value type.
 		 * @param avt Axis value type.
 		 * @param coord Axes coordinate containing the values.
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
-		bool SetTarget(EAxisValueType avt, const TAxesCoord& coord);
+		bool setTarget(EAxisValueType avt, const AxesCoord& coord);
+
 		/**
 		 * @brief Set the target
 		 * @param avt Axis value type.
@@ -308,7 +357,8 @@ class _GMI_CLASS TController
 		 * @param linear
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
-		bool SetTarget(const TAxesCoord& pos, const TAxesCoord& vel, const TAxesCoord& acc, bool linear);
+		bool setTarget(const AxesCoord& pos, const AxesCoord& vel, const AxesCoord& acc, bool linear);
+
 		/**
 		 * @brief Sets the mode according the in the coord specified axes.
 		 * @param am Axis mode.
@@ -316,90 +366,108 @@ class _GMI_CLASS TController
 		 * @param amdef Default value for the axes when not specified.
 		 * @return False on failure.
 		 */
-		bool SetMode(EAxisMode am, const TAxesCoord& ac, EAxisMode amdef = amDISABLED);
+		bool setMode(EAxisMode am, const AxesCoord& ac, EAxisMode amdef = amDISABLED);
+
 		/**
 		 * @brief Sets the axis which pulses are used to derive the trigger pulses.
 		 * @returns True on success.
 		 */
-		bool SetTriggerAxis(EAxisLocation al);
+		bool setTriggerAxis(EAxisLocation al);
+
 		/**
 		 * @brief Gets the current selected trigger axis.
 		 * @return The triggering axis.
 		 */
-		EAxisLocation GetTriggerAxis() const;
+		EAxisLocation getTriggerAxis() const;
+
 		/**
 		 * @brief Gets the density of measurements in radians or meters depending on selected axis.
 		 */
-		double GetTriggerDensity() const;
+		double getTriggerDensity() const;
+
 		/**
 		 * @brief Sets the density of measurements in rads or m depending on selected axis.
 		 */
-		bool SetTriggerDensity(double td);
+		bool setTriggerDensity(double td);
+
 		/**
 		 * @brief Sets Trigger mode.
 		 */
-		bool SetTriggerMode(bool intern);
+		bool setTriggerMode(bool intern);
+
 		/**
 		 * @brief Gets the trigger mode.
 		 */
-		bool GetTriggerMode() const;
+		bool getTriggerMode() const;
+
 		/**
 		 * @brief Sets chuck-jaw state.
 		 */
-		bool SetChuckJaw(EChuckJaw cj);
+		bool setChuckJaw(EChuckJaw cj);
+
 		/**
 		 * @brief Gets chuck-jaw state.
 		 */
-		EChuckJaw GetChuckJaw() const;
+		EChuckJaw getChuckJaw() const;
+
 		/**
 		 * @brief Returns true if the last position move is completed.
 		 */
-		bool IsMovePosCompleted() const;
+		bool isMovePosCompleted() const;
+
 		/**
 		 * @brief Returns true if the velocity move is completed.
 		 */
-		bool IsMoveVelCompleted() const;
+		bool isMoveVelCompleted() const;
+
 		/**
 		 * @brief Returns true if the contineous move is completed.
 		 */
-		bool IsMoveConCompleted() const;
+		bool isMoveConCompleted() const;
+
 		/**
 		 * @brief Function testing for movement of position and velocity mode.
 		 * When there is an abort state of-any-of the motion groups the axis is considered as not moving.
 		 */
-		bool IsMoving() const;
+		bool isMoving() const;
+
 		/**
 		 * @brief Sets the current position of single axis.
 		 */
-		bool SetPosition(EAxisLocation al, double);
+		bool setPosition(EAxisLocation al, double value);
+
 		/**
 		 * @brief Sets the current position of all axis.
 		 */
-		bool SetPosition(const TAxesCoord& ac);
+		bool setPosition(const AxesCoord& ac);
+
 		/**
-		 * @brief Normalize the passed position for all unlimited rotation axes.
+		 * @brief normalize the passed position for all unlimited rotation axes.
 		 * Uses accuracy to find the actual position to normalize.
 		 * The passed value is also returned.
 		 * @param pos Axes coordinate to modify.
 		 * @return The reference to the passed axes coordinate.
 		 */
-		TAxesCoord& Normalize(TAxesCoord& pos) const;
+		AxesCoord& normalize(AxesCoord& pos) const;
+
 		/**
-		 * @brief Normalize the passed position for all unlimited rotation axes.
+		 * @brief normalize the passed position for all unlimited rotation axes.
 		 * Uses accuracy to find the actual position to normalize.
 		 * The passed value is also returned.
 		 * @param pos Axes coordinate to modify.
 		 * @return The modified axes coordinate.
 		 */
-		TAxesCoord Normalized(const TAxesCoord& dist) const;
+		AxesCoord normalized(const AxesCoord& dist) const;
+
 		/**
 		 * @brief Gets a bitmap set of radial unlimited axis locations.
 		 */
-		AxisLocations GetRadialUnlimted() const;
+		AxisLocations getRadialUnlimited() const;
+
 		/**
-		 * @brief Opens a debugger dialog for the motioncontroller.
+		 * @brief Opens a debugger dialog for the motion controller if any.
 		 */
-		virtual void OpenDebugger() {}
+		virtual void openDebugger() {}
 
 		// Information retrieval functions.
 		/**
@@ -420,34 +488,41 @@ class _GMI_CLASS TController
 			/** @brief Is ready for action. */
 			csREADY,
 		};
+
 		/**
 		 * @brief Returns true if the current status is READY.
 		 */
-		inline bool IsReady() const;
+		inline bool isReady() const;
+
 		/**
-		 * @brief Return the name of the axis.
+		 * @brief Gets the name of the axis.
 		 */
-		static const char* GetAxisName(int axis_loc);
+		static const char* getAxisName(int axis_loc);
+
 		/**
-		 * @brief Return the description of the axis.
+		 * @brief Gets the description of the axis.
 		 */
-		static const char* GetAxisDescription(int axis_loc);
+		static const char* getAxisDescription(int axis_loc);
+
 		/**
-		 * @brief Returns the status name of the current status.
+		 * @brief Gets the status name of the current status.
 		 */
-		static const char* GetStatusName(EStatus status);
+		static const char* getStatusName(EStatus status);
+
 		/**
-		 * @brief Returns the current status as a name.
+		 * @brief Gets the current status as a name.
 		 */
-		const char* GetStatusName() const;
+		const char* getStatusName() const;
+
 		/**
-		 * @brief Returns the amount real implemented axes.
+		 * @brief Gets the amount real implemented axes.
 		 */
-		unsigned GetAxisCount() const;
+		unsigned getAxisCount() const;
+
 		/**
-		 * @brief Returns the last  error if there is one.
+		 * @brief Gets the last error if there is one.
 		 */
-		std::string GetLastErrorText() const;
+		std::string getLastErrorText() const;
 
 		//
 		// Parameter manipulation and retrieval functions.
@@ -456,318 +531,350 @@ class _GMI_CLASS TController
 		/**
 		 * @brief Retrieve information about the passed param id.
 		 */
-		bool GetParamInfo(int id, TParamInfo& info) const;
+		bool getParamInfo(IdType id, ParamInfo& info) const;
+
 		/**
 		 * @brief Returns the value of the specified parameter id.
 		 * When the ID does not exist it returns false.
 		 */
-		bool GetParam(int id, Value& value) const;
+		bool getParam(IdType id, Value& value) const;
+
 		/**
 		 * @brief Sets an interface parameter and notifies hooked user when skip_event is false.
 		 */
-		bool SetParam(int id, const Value& value, bool skip_event);
+		bool setParam(IdType id, const Value& value, bool skip_event);
+
 		/**
-		 * @brief Sets and immediately gets the same value again clipped or not. When skip event is true the CallParamHook is not called.
+		 * @brief Sets and immediately gets the same value again clipped or not. When skip event is true the callParamHook is not called.
 		 */
-		bool SetGetParam(int id, Value& value, bool skip_event);
+		bool setGetParam(IdType id, Value& value, bool skip_event);
+
 		/**
 		 * @brief This function must be overloaded to handle the interface parameters.
 		 * When info in non-null the parameter info must be filled in.
 		 * When the set or get value is non-null the value is set and/or retrieved.
 		 */
-		virtual bool HandleParam(int id, TParamInfo* info, const Value* setval, Value* getval) = 0;
+		virtual bool handleParam(IdType id, ParamInfo* info, const Value* setval, Value* getval) = 0;
+
 		/**
 		 * @brief Gets the ID of the parameter for the specified gate.
-		 * Value  std::numeric_limits<unsigned int>::max() tells the implementation to ignore the parameter.
+		 * Value  std::numeric_limits<int>::max() tells the implementation to ignore the parameter.
 		 */
-		virtual int GetParamId(EParam param, unsigned int axis = std::numeric_limits<unsigned int>::max()) const = 0;
+		virtual IdType getParamId(EParam param, int axis = std::numeric_limits<int>::max()) const = 0;
+
 		/**
 		 * @brief Enumerate interface parameters ids.
 		 */
-		virtual bool EnumParamIds(TIdList& ids) const = 0;
+		virtual bool enumParamIds(IdList& ids) const = 0;
+
 		/**
 		 * @brief Sets a procedure hook for the interface implementation to be called when the value changes as a result of the implementation itself.
 		 */
-		void SetParamHook(TNotifyProc proc, void* data);
+		void setParamHook(NotifyProc proc, void* data);
+
 		/**
 		 * @brief Sets a procedure hook for the interface implementation to be called when there ias data result has data.
 		 */
-		void SetResultHook(TNotifyProc proc, void* data);
+		void setResultHook(NotifyProc proc, void* data);
+
 		/**
 		 * @brief Gets the ID of the result for the specified gate.
-		 * Value std::numeric_limits<unsigned int>::max() tells the implementation to ignore the result.
+		 * Value std::numeric_limits<int>::max() tells the implementation to ignore the result.
 		 */
-		virtual int GetResultId(EResult result, unsigned int axis = std::numeric_limits<unsigned int>::max()) const = 0;
+		virtual IdType getResultId(EResult result, int axis = std::numeric_limits<int>::max()) const = 0;
+
 		/**
 		 * @brief Enumerate interface results ids.
 		 */
-		virtual bool EnumResultIds(TIdList& ids) const = 0;
+		virtual bool enumResultIds(IdList& ids) const = 0;
+
 		/**
-		 * @brief Retrieve information about the passed id.
+		 * @brief Retrieve information about the passed result id.
 		 */
-		bool GetResultInfo(int id, TResultInfo& info) const;
+		bool getResultInfo(IdType id, ResultInfo& info) const;
+
 		/**
-		 * @brief Retrieve information about the passed id.
+		 * @brief This function must be overloaded to handle the interface results.
 		 */
-		virtual bool HandleResult(int id, TResultInfo* info, TBufferInfo* bufinfo) = 0;
+		virtual bool handleResult(IdType id, ResultInfo* info, BufferInfo* buf_info) = 0;
+
 		/**
 		 * @brief Gets the result buffer associated with the result ID passed in the result hook at the time of the call.
 		 * @return True on succes.
 		 */
-		bool GetResultBuffer(int id, TBufferInfo& buf_info);
+		bool getResultBuffer(IdType id, BufferInfo& buf_info);
+
 		/**
-		 * @brief Returns the accuracy of positions of the implementation for a coords compare.
+		 * @brief Gets the accuracy of positions of the implementation for a coords compare.
 		 */
-		bool GetAccuracy(TAxesCoord& accuracy) const;
+		bool getAccuracy(AxesCoord& accuracy) const;
+
 		/**
-		 * @brief Returns the resolution on all axis for the implementation.
+		 * @brief Gets the resolution on all axis for the implementation.
 		 */
-		bool GetResolution(TAxesCoord& resolution) const;
+		bool getResolution(AxesCoord& resolution) const;
+
 		/**
-		 * @brief Returns the current extremes.
+		 * @brief Gets the current axes extremes.
 		 */
-		bool GetMinMax(EAxisMinMax amm, TAxesCoord& coord) const;
+		bool getMinMax(EAxisMinMax amm, AxesCoord& coord) const;
+
 		/**
-		 * @brief Sets the position offset for all postion related parameters of all axes.
+		 * @brief Sets the position offset for all position related parameters of all axes.
 		 */
-		bool SetOffset(const TAxesCoord& coord);
+		bool setOffset(const AxesCoord& coord);
+
 		/**
 		 * @brief Returns the current offset for all axes.
 		 */
-		bool GetOffset(TAxesCoord& coord) const;
+		bool getOffset(AxesCoord& coord) const;
+
 		/**
 		 * @brief Returns the configuration profile path of this implementation.
 		 */
-		std::string GetProfilePath() const;
+		std::string getProfilePath() const;
 
 	protected:
 		/**
 		 * @brief Initialization function which must be overloaded by a derived class.
 		 * Should check the hardware configuration.
 		 */
-		virtual bool DoInitialize(bool) = 0;
+		virtual bool doInitialize(bool) = 0;
+
 		/**
 		 * @brief Can be overloaded by a derived class.
 		 * Sets the current position.
 		 */
-		virtual bool DoSetPosition(EAxisLocation al, double);
+		virtual bool doSetPosition(EAxisLocation al, double);
+
 		/**
 		 * @brief Does the real execution of the home function and must be overloaded.
 		 * When skip has been passed the implementation tries to skip homing.
 		 */
-		virtual bool DoHomeAxes(bool skip);
+		virtual bool doHomeAxes(bool skip);
+
 		/**
 		 * @brief Derived classes can set the error text for the function.
 		 */
-		void SetLastErrorText(const char* text);
+		void setLastErrorText(const char* text);
+
 		/**
 		 * @brief Used by derived classes to set the controllers status.
 		 */
-		void SetStatus(EStatus status);
+		void setStatus(EStatus status);
+
 		/**
 		 * @brief Gets the status value.
 		 */
-		EStatus GetStatus() const;
+		EStatus getStatus() const;
+
 		/**
 		 * @brief Calls the hooked function if it exists.
 		 * Passing the set data pointer and the ID of the effected parameter.
 		 */
-		void CallParamHook(int id);
+		void callParamHook(IdType id);
+
 		/**
 		 * @brief Calls the hooked function if it exists.
 		 * Passing the set data pointer and the ID of the effected result.
 		 */
-		void CallResultHook(int id);
+		void callResultHook(IdType id);
+
 		/**
 		 * @brief Sends a POP event to the hooked event handlers.
 		 * Is to be called by the implementation to signal that a new rotation has begun.
 		 */
-		void SendPopEvent();
+		void sendPopEvent();
 
 	private:
 		/**
 		 * @brief Sends an event to the hooked event handlers.
 		 */
-		void SendEvent(EControllerEvent ce);
+		void sendEvent(EControllerEvent ce);
+
 		/**
 		 * @brief This functions only use by this base class to intercept changes.
 		 * When the axis number is std::numeric_limits<unsigned int>::max()) no axis is selected.
 		 */
-		bool SetParam(EParam param, unsigned int axis, const Value& value, bool skip_event);
+		bool setParam(EParam param, int axis, const Value& value, bool skip_event);
+
 		/**
 		 * @brief Returns the value of the specified parameter id.
 		 * @returns False when the ID does not exist.
 		 */
-		bool GetParam(EParam param, unsigned int axis, Value& value) const;
+		bool getParam(EParam param, int axis, Value& value) const;
+
 		/**
 		 * @brief Function to be called when an implementation creates an axis which is added to the motion control.
 		 * @returns False when this addition is faulty. (e.g. twice the same axis...)
 		 */
-		void Attach(TAxis* axis);
+		void attach(Axis* axis);
+
 		/**
-		 * @brief Returns the pointer the axis property.
+		 * @brief Gets the pointer to the axis instance of the passed axis location.
 		 */
-		TAxis* GetAxisPtr(int axis_loc);
+		Axis* getAxisPtr(int axis_loc);
+
 		/**
 		 * @brief Flag indication the controller is being destroyed.
 		 */
-		bool FlagDestroying;
+		bool _flagDestroying;
 		/**
 		 * @brief Holds all pointer to existing axes.
 		 */
-		TAxis::TPtrVector FAxes;
+		Axis::PtrVector _axes;
 		/**
 		 * @brief Holds the axis map.
 		 */
-		TAxis* FAxesMap[alLAST_ENTRY];
+		Axis* _axesMap[alLAST_ENTRY];
 		/**
 		 * @brief Axis to return when there is actually none available.
 		 */
-		TAxis FNullAxis;
+		Axis _nullAxis;
 		/**
 		 * @brief Holds the last error text.
 		 */
-		std::string FLastErrorText;
+		std::string _lastErrorText;
 		/**
 		 * @brief Holds the current status.
 		 */
-		EStatus FStatus;
+		EStatus _status;
 		/**
 		 * @brief Holds the pointer to the parameter change procedure.
 		 */
-		TNotifyProc ParamNotifyProc;
+		NotifyProc _paramNotifyProc;
 		/**
 		 * @brief Holds the pointer to the result change procedure.
 		 */
-		TNotifyProc ResultNotifyProc;
+		NotifyProc _resultNotifyProc;
 		/**
 		 * @brief Holds the data set with the hook.
 		 */
-		void* ParamNotifyData;
+		void* _paramNotifyData;
 		/**
 		 * @brief Holds the data set with the hook.
 		 */
-		void* ResultNotifyData;
+		void* _resultNotifyData;
 		/**
-		 * @brief Is set by SetGetParam so that hooked users of the interface are not notified.
+		 * @brief Is set by setGetParam so that hooked users of the interface are not notified.
 		 */
-		bool FNoEventGeneration;
-		/**
-		 * @brief Holds the registered event handlers.
-		 */
-		typedef TVector<TControllerEvent> TEventList;
+		bool _noEventGeneration;
 		/**
 		 * @brief Holds the registered event handlers.
 		 */
-		TEventList FMotionEventList;
+		typedef TVector<ControllerEvent> EventList;
+		/**
+		 * @brief Holds the registered event handlers.
+		 */
+		EventList _motionEventList;
+
+		friend Axis;
 
 		// Declarations of static functions and data members to be able to create registered RSA implementations.
-		SF_DECL_IFACE(TController, TController::Parameters, Interface)
-		//
-		friend TAxis;
+		SF_DECL_IFACE(Controller, Controller::Parameters, Interface)
 };
 
-inline bool TController::IsReady() const
+inline bool Controller::isReady() const
 {
-	return FStatus == csREADY;
+	return _status == csREADY;
 }
 
-inline bool TController::GetResultInfo(int id, TResultInfo& info) const
+inline bool Controller::getResultInfo(IdType id, ResultInfo& info) const
 {
-	return const_cast<TController*>(this)->HandleResult(id, &info, NULL);
+	return const_cast<Controller*>(this)->handleResult(id, &info, NULL);
 }
 
-inline bool TController::GetResultBuffer(int id, TBufferInfo& bi)
+inline bool Controller::getResultBuffer(IdType id, BufferInfo& buf_info)
 {
-	return HandleResult(id, nullptr, &bi);
+	return handleResult(id, nullptr, &buf_info);
 }
 
-inline bool TController::GetParamInfo(int id, TParamInfo& info) const
+inline bool Controller::getParamInfo(IdType id, ParamInfo& info) const
 {
-	return const_cast<TController*>(this)->HandleParam(id, &info, NULL, NULL);
+	return const_cast<Controller*>(this)->handleParam(id, &info, NULL, NULL);
 }
 
-inline bool TController::GetParam(int id, Value& value) const
+inline bool Controller::getParam(IdType id, Value& value) const
 {
-	return const_cast<TController*>(this)->HandleParam(id, NULL, NULL, &value);
+	return const_cast<Controller*>(this)->handleParam(id, NULL, NULL, &value);
 }
 
-inline void TController::SendPopEvent()
+inline void Controller::sendPopEvent()
 {
-	SendEvent(cePOPEVENT);
+	sendEvent(cePOPEVENT);
 }
 
-inline void TController::SetParamHook(TNotifyProc proc, void* data)
+inline void Controller::setParamHook(NotifyProc proc, void* data)
 {
-	ParamNotifyProc = proc;
-	ParamNotifyData = data;
+	_paramNotifyProc = proc;
+	_paramNotifyData = data;
 }
 
-inline void TController::SetResultHook(TNotifyProc proc, void* data)
+inline void Controller::setResultHook(NotifyProc proc, void* data)
 {
-	ResultNotifyProc = proc;
-	ResultNotifyData = data;
+	_resultNotifyProc = proc;
+	_resultNotifyData = data;
 }
 
-inline bool TController::IsMovePosCompleted() const
+inline bool Controller::isMovePosCompleted() const
 {
-	return GetMovePos() == mpcCOMPLETE;
+	return getMovePos() == mpcCOMPLETE;
 }
 
-inline bool TController::IsMoveVelCompleted() const
+inline bool Controller::isMoveVelCompleted() const
 {
-	return GetMoveVel() == mvcCOMPLETE;
+	return getMoveVel() == mvcCOMPLETE;
 }
 
-inline bool TController::IsMoveConCompleted() const
+inline bool Controller::isMoveConCompleted() const
 {
-	return GetMoveCon() == mccCOMPLETE;
+	return getMoveCon() == mccCOMPLETE;
 }
 
-inline unsigned TController::GetAxisCount() const
+inline unsigned Controller::getAxisCount() const
 {
-	return FAxes.count();
+	return _axes.count();
 }
 
-inline TController::TAxis* TController::GetAxisPtr(int axis_loc)
+inline Controller::Axis* Controller::getAxisPtr(int axis_loc)
 {
-	return &GetAxis(axis_loc);
+	return &getAxis(axis_loc);
 }
 
-inline TController::EStatus TController::GetStatus() const
+inline Controller::EStatus Controller::getStatus() const
 {
-	return FStatus;
+	return _status;
 }
 
-inline std::string TController::GetLastErrorText() const
+inline std::string Controller::getLastErrorText() const
 {
-	return FLastErrorText;
+	return _lastErrorText;
 }
 
-inline void TController::SetLastErrorText(const char* text)
+inline void Controller::setLastErrorText(const char* text)
 {
-	FLastErrorText = text;
+	_lastErrorText = text;
 }
 
-inline const char* TController::GetStatusName() const
+inline const char* Controller::getStatusName() const
 {
-	return GetStatusName(FStatus);
+	return getStatusName(_status);
 }
 
-inline TAxesCoord TController::Normalized(const TAxesCoord& dist) const
+inline AxesCoord Controller::normalized(const AxesCoord& dist) const
 {
-	TAxesCoord ac(dist);
-	return Normalize(ac);
+	AxesCoord ac(dist);
+	return normalize(ac);
 }
 
-inline EAxisLocation TController::TAxis::GetLocation() const
+inline EAxisLocation Controller::Axis::getLocation() const
 {
-	return FLocation;
+	return _location;
 }
 
-inline AxisMovements TController::TAxis::GetMovements() const
+inline AxisMovements Controller::Axis::getMovements() const
 {
-	return FMovements;
+	return _movements;
 }
 
 }// namespace sf::gmi

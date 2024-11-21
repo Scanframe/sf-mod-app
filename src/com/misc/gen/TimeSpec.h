@@ -10,7 +10,7 @@ namespace sf
 /**
  * @brief Class wrapper for timespec structure to modify.
  */
-struct _MISC_CLASS TimeSpec :public timespec
+struct _MISC_CLASS TimeSpec : public timespec
 {
 	public:
 		/**
@@ -364,7 +364,7 @@ inline TimeSpec TimeSpec::operator-(const timespec& t) const
 	return TimeSpec(*this).sub(t);
 }
 
-} // namespace sf
+}// namespace sf
 
 /**
  * @brief Addition operator for std::timespec types which also work for #sf::TimeSpec.

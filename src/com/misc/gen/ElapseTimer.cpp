@@ -88,4 +88,4 @@ TimeSpec ElapseTimer::getTimeOver(const timespec& t) const
 	}
 	return {};
 }
-} // namespace sf
+}// namespace sf

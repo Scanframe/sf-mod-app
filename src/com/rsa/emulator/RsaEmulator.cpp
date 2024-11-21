@@ -258,7 +258,7 @@ RsaTypes::IdType AcquisitionEmulator::getParamId(
 ) const
 {
 	// Form the id on basis of the masks in the param.
-	int id = MAKE_ID(
+	IdType id = MAKE_ID(
 		((param & apChannel_Mask) | (param & apGate_Mask)) ? channel : NO_CHANNEL,
 		(param & apGate_Mask) ? gate : NO_GATE,
 		param & ~(apChannel_Mask | apGate_Mask)

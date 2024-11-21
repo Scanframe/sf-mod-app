@@ -9,7 +9,17 @@
 namespace sf::gmi
 {
 
-/*
+/**
+ * @brief Type for gathering parameter ID's.
+ */
+typedef unsigned long long IdType;
+
+/**
+* @brief Type for gathering parameter ID's.
+*/
+typedef TVector<IdType> IdList;
+
+/**
  * @brief List of axis coordinate types.
  */
 enum EAxisValueType : unsigned int
@@ -125,7 +135,7 @@ typedef TSet<EAxisLocation> AxisLocations;
 /**
  * Returns the name of the axis location.
  */
-_GMI_FUNC const char* GetAxisName(int loc);
+_GMI_FUNC const char* getAxisName(int loc);
 
 /**
  * @brief Gets the default axis unit.
@@ -133,20 +143,20 @@ _GMI_FUNC const char* GetAxisName(int loc);
  * @param type Axis type of value.
  * @return unit
  */
-_GMI_FUNC const char* GetAxisUnit(int al, EAxisValueType type);
+_GMI_FUNC const char* getAxisUnit(int al, EAxisValueType type);
 
 /**
- * @brief Gets the axis units based on the movements of the axis.
+ * @brief Gets the axis unit based on the movements of the axis.
  * @param ams
  * @param type
  * @return Axis units based on the movements of the axis.
  */
-_GMI_FUNC const char* GetMovementsUnit(AxisMovements ams, EAxisValueType type);
+_GMI_FUNC const char* getMovementsUnit(AxisMovements ams, EAxisValueType type);
 
 /**
  * @brief Single position, speed or acceleration value of a specific axis.
  */
-class _GMI_CLASS TAxisValue
+class _GMI_CLASS AxisValue
 {
 	public:
 		/**
@@ -154,35 +164,35 @@ class _GMI_CLASS TAxisValue
 		 * @param location Axis location as #EAxisLocation.
 		 * @param value
 		 */
-		TAxisValue(int location, double value);
+		AxisValue(int location, double value);
 		/**
 		 * @brief Initializing constructor using #sf::Value as arguments.
 		 * @param location
 		 * @param value
 		 */
-		TAxisValue(const Value& location, const Value& value);
+		AxisValue(const Value& location, const Value& value);
 		/**
 		 * @brief Default constructor.
 		 */
-		TAxisValue() = default;
+		AxisValue() = default;
 		/**
 		 * @brief Holds the location of the axis.
 		 */
-		EAxisLocation location{alNA};
+		EAxisLocation _location{alNA};
 		/**
 		 * @brief Holds the value of the axis.
 		 */
-		double value{0.0};
+		double _value{0.0};
 };
 
-inline TAxisValue::TAxisValue(int location, double value)
-	: value(value)
-	, location(static_cast<EAxisLocation>(location))
+inline AxisValue::AxisValue(int location, double value)
+	: _value(value)
+	, _location(static_cast<EAxisLocation>(location))
 {}
 
-inline TAxisValue::TAxisValue(const Value& location, const Value& value)
-	: value(value.getFloat())
-	, location(static_cast<EAxisLocation>(location.getInteger()))
+inline AxisValue::AxisValue(const Value& location, const Value& value)
+	: _value(value.getFloat())
+	, _location(static_cast<EAxisLocation>(location.getInteger()))
 {}
 
 }// namespace sf::gmi

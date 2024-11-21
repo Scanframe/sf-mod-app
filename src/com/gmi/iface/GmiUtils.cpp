@@ -13,7 +13,7 @@ bool getTargetTime(double dist, double vel, double acc, double& time)
 	{
 		return false;
 	}
-	if ((acc * dist) > (vel * vel))
+	if (acc * dist > vel * vel)
 	{
 		time = dist / vel + vel / acc;
 	}
@@ -34,7 +34,7 @@ bool getAccelerationTime(double dist, double vel, double acc, double& time)
 		return false;
 	}
 	// Make a decision on how to calculate.
-	if ((acc * dist) > (vel * vel))
+	if (acc * dist > vel * vel)
 	{
 		time = vel / acc;
 	}
@@ -48,14 +48,14 @@ bool getAccelerationTime(double dist, double vel, double acc, double& time)
 bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, double& cur_pos, double& cur_vel)
 {
 	// Check if the distance is negative to be able to correct the return value.
-	bool negative = dist < 0;
+	const bool negative = dist < 0;
 	// Make all values positive.
 	dist = std::fabs(dist);
 	vel = std::fabs(vel);
 	acc = std::fabs(acc);
 	cur_tm = std::fabs(cur_tm);
-	double trg_time = 0.0;
 	double acc_time = 0.0;
+	double trg_time = 0.0;
 	// Get acceleration and target time.
 	if (getTargetAccelerationTime(dist, vel, acc, trg_time, acc_time))
 	{
@@ -73,9 +73,9 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 			// Check if the current time is past acceleration area.
 			if (cur_tm > acc_time)
 			{// Check if the current time is before the deceleration area.
-				if (cur_tm < (trg_time - acc_time))
+				if (cur_tm < trg_time - acc_time)
 				{
-					// Constant time here so no calulations for the velocity.
+					// Constant time here so no calculations for the velocity.
 					cur_vel = vel;
 					// Calculate the distance for acceleration.
 					cur_pos = acc * acc_time * acc_time * 0.5;
@@ -84,11 +84,12 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 					// Correct sign of return value.
 					if (negative)
 						cur_pos *= -1.0;
-					//NOTIFY(DO_DEFAULT, "Const: " << curtm << "  Pos: " << curpos << "  Vel: " << curvel);
+					//NOTIFY(DO_DEFAULT, "Const: " << cur_tm << "  Pos: " << cur_pos << "  Vel: " << cur_vel);
 				}
 				else
-				{// Current time is in the deceleration area.
-					double tm = (trg_time - cur_tm);
+				{
+					// Current time is in the deceleration area.
+					const double tm = trg_time - cur_tm;
 					cur_vel = acc * tm;
 					cur_pos = dist - acc * tm * tm * 0.5;
 					// Correct sign of return value.
@@ -96,7 +97,7 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 					{
 						cur_pos *= -1.0;
 					}
-					//NOTIFY(DO_DEFAULT, "Dec: " << curtm << "  Pos: " << curpos << "  Vel: " << curvel);
+					//NOTIFY(DO_DEFAULT, "Dec: " << cur_tm << "  Pos: " << cur_pos << "  Vel: " << cur_vel);
 				}
 			}
 			else
@@ -109,7 +110,7 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 				{
 					cur_pos *= -1.0;
 				}
-				//NOTIFY(DO_DEFAULT, "Acc: " << curtm << "  Pos: " << curpos << "  Vel: " << curvel);
+				//NOTIFY(DO_DEFAULT, "Acc: " << cur_tm << "  Pos: " << cur_pos << "  Vel: " << cur_vel);
 			}
 		}
 	}
@@ -130,7 +131,7 @@ bool getTargetAccelerationTime(double dist, double vel, double acc, double& trg_
 	vel = std::fabs(vel);
 	acc = std::fabs(acc);
 	// Make a decision on how to calculate.
-	if ((acc * dist) > (vel * vel))
+	if (acc * dist > vel * vel)
 	{
 		if (isZero(vel + acc_time))
 		{
@@ -153,12 +154,12 @@ bool getTargetAccelerationTime(double dist, double vel, double acc, double& trg_
 	return true;
 }
 
-bool getTargetTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_time)
+bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time)
 {
 	// Clear return values first.
 	trg_time.Clear();
 	// Get the bit map of set position values of the coordinate.
-	int map = dist.GetMap();
+	const int map = dist.GetMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
 	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
@@ -172,10 +173,10 @@ bool getTargetTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxe
 	{
 		// Calculate the time which is needed for the current selected axis to
 		// move the distance.
-		if (map & (1 << i))
+		if (map & 1 << i)
 		{
 			double tm;
-			if (getTargetTime(dist[i].value, max_vel[i].value, max_acc[i].value, tm))
+			if (getTargetTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
 				trg_time.Set(i, tm);
 			else
 			{
@@ -187,12 +188,12 @@ bool getTargetTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxe
 	return true;
 }
 
-bool getAccelerationTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_time)
+bool getAccelerationTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time)
 {
 	// Clear return values first.
 	trg_time.Clear();
 	// Get the bit map of set position values of the coordinate.
-	int map = dist.GetMap();
+	const int map = dist.GetMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
 	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
@@ -205,10 +206,10 @@ bool getAccelerationTime(const TAxesCoord& dist, const TAxesCoord& max_vel, cons
 	for (unsigned int i = alFirst; i < alLAST_ENTRY; i++)
 	{
 		// Calculate the time which is needed for the current selected axis to accelerate.
-		if (map & (1 << i))
+		if (map & 1 << i)
 		{
 			double tm;
-			if (getAccelerationTime(dist[i].value, max_vel[i].value, max_acc[i].value, tm))
+			if (getAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
 				trg_time.Set(i, tm);
 			else
 			{
@@ -220,13 +221,13 @@ bool getAccelerationTime(const TAxesCoord& dist, const TAxesCoord& max_vel, cons
 	return true;
 }
 
-bool getLinearValues(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_vel, TAxesCoord& trg_acc, double& trg_time)
+bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_vel, AxesCoord& trg_acc, double& trg_time)
 {
 	// Clear return values first.
 	trg_vel.Clear();
 	trg_acc.Clear();
 	// Get the bit map of set position values of the coordinate.
-	int map = dist.GetMap();
+	const int map = dist.GetMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
 	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
@@ -236,39 +237,39 @@ bool getLinearValues(const TAxesCoord& dist, const TAxesCoord& max_vel, const TA
 		return false;
 	}
 	// Initialize the times.
-	double trgtm = 0.0;
-	double acctm = 0.0;
+	double trg_tm = 0.0;
+	double acc_tm = 0.0;
 	int axis = -1;
 	// Iterate through the bitmap of set values.
 	for (int i = alFirst; i < alLAST_ENTRY; i++)
 	{
-		if (map & (1 << i))
+		if (map & 1 << i)
 		{
 			double ttm;
 			double atm;
 			// Calculate the time which is needed for the current selected axis to accelerate.
-			if (!getTargetAccelerationTime(dist[i].value, max_vel[i].value, max_acc[i].value, ttm, atm))
+			if (!getTargetAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, ttm, atm))
 				return false;
 			// When the calculated time is larger than last largest time update the value and axis.
-			if (trgtm < ttm || axis == -1)
+			if (trg_tm < ttm || axis == -1)
 			{
-				trgtm = ttm;
-				acctm = atm;
+				trg_tm = ttm;
+				acc_tm = atm;
 				axis = i;
 			}
 		}
 	}
-	// Check if there is anything that needs to be calculated.
+	// Check if there is anything requiring calculation.
 	if (axis != -1)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "getLinearValues() Dominant axis = " << GetAxisName(axis) << "-Axis");
-		calcLinearValues(dist, trgtm, acctm, trg_vel, trg_acc);
-		trg_time = trgtm;
+		SF_NORM_NOTIFY(DO_DEFAULT, "getLinearValues() Dominant axis = " << getAxisName(axis) << "-Axis");
+		calcLinearValues(dist, trg_tm, acc_tm, trg_vel, trg_acc);
+		trg_time = trg_tm;
 	}
 	return true;
 }
 
-bool calcLinearValues(const TAxesCoord& dist, double trg_time, double acc_time, TAxesCoord& vel, TAxesCoord& acc)
+bool calcLinearValues(const AxesCoord& dist, double trg_time, double acc_time, AxesCoord& vel, AxesCoord& acc)
 {
 	// Iterate through the bitmap of set values.
 	for (unsigned int i = alFirst; i < alLAST_ENTRY; i++)
@@ -277,14 +278,14 @@ bool calcLinearValues(const TAxesCoord& dist, double trg_time, double acc_time, 
 		{
 			// Calculate the time which is needed for the current selected axis to
 			// move the distance.
-			double _vel;
-			double _acc;
-			if (!calcLinearValue(dist[i].value, trg_time, acc_time, _vel, _acc))
+			double d_vel;
+			double d_acc;
+			if (!calcLinearValue(dist[i]._value, trg_time, acc_time, d_vel, d_acc))
 				return false;
 			// Set the coord velocity return value.
-			vel.Set(i, _vel);
+			vel.Set(i, d_vel);
 			// Set the coord acceleration return value.
-			acc.Set(i, _acc);
+			acc.Set(i, d_acc);
 		}
 	}
 	return true;
@@ -328,4 +329,4 @@ int compareValue(double v1, double v2, double tolerance, bool rad_unlimited)
 	return 1;
 }
 
-}
+}// namespace sf::gmi

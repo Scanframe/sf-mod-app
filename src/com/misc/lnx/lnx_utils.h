@@ -138,7 +138,7 @@ typedef struct passwd passwd_type;
  * @brief Extends struct passwd and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct passwd_t :public passwd_type
+struct passwd_t : public passwd_type
 {
 	public:
 		/**
@@ -152,10 +152,9 @@ struct passwd_t :public passwd_type
 		~passwd_t();
 
 		//
-		explicit operator bool() const { return valid; }
+		explicit inline operator bool() const { return valid; }
 
 	private:
-
 		/**
 		 * Clears the passwd_type part only.
 		 */
@@ -214,7 +213,7 @@ typedef struct group group_type;
  * Extends struct group and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct group_t :public group_type
+struct group_t : public group_type
 {
 	public:
 		/**

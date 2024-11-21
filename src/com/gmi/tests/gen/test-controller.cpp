@@ -2,9 +2,8 @@
 #include <cstddef>
 #include <gmi/iface/Controller.h>
 #include <memory>
-#include <test/catch.h>
 #include <misc/gen/file.h>
-
+#include <test/catch.h>
 
 TEST_CASE("sf::gmi", "[utils]")
 {
@@ -20,7 +19,7 @@ SCENARIO("sf::gmi::Controller", "[controller]")
 	GIVEN("Controller")
 	{
 		// Smart pointer when out of scope delete content.
-		std::unique_ptr<sf::gmi::TController> controller;
+		std::unique_ptr<sf::gmi::Controller> controller;
 		std::string plugin_dir = sf::getExecutableDirectory() + sf::getDirectorySeparator() + "lib";
 		std::cout << "Plugins at: " << plugin_dir << std::endl;
 		// Check if the directory exists.
@@ -28,48 +27,45 @@ SCENARIO("sf::gmi::Controller", "[controller]")
 
 		THEN("No implementations")
 		{
-			REQUIRE(sf::gmi::TController::Interface().size() == 0);
-			REQUIRE(sf::gmi::TController::Interface().indexOf("emulator") == sf::gmi::TController::Interface().npos);
+			REQUIRE(sf::gmi::Controller::Interface().size() == 0);
+			REQUIRE(sf::gmi::Controller::Interface().indexOf("emulator") == sf::gmi::Controller::Interface().npos);
 		}
 
 		// Validate one use case for the GIVEN object
 		WHEN("Load Module")
 		{
-			auto plugin = plugin_dir  + sf::getDirectorySeparator() + "libsf-gmi-emulator";
+			auto plugin = plugin_dir + sf::getDirectorySeparator() + "libsf-gmi-emulator";
 			// Append the appropriate extension.
 #if IS_WIN
-				plugin += ".dll";
+			plugin += ".dll";
 #else
-				plugin += ".so";
+			plugin += ".so";
 #endif
 			REQUIRE(sf::loadDynamicLibrary(plugin));
 
 			THEN("Implementations are available")
 			{
 				// Need at least one controller implementation.
-				REQUIRE(sf::gmi::TController::Interface().size() > 0);
-				REQUIRE(sf::gmi::TController::Interface().indexOf("emulator") != sf::gmi::TController::Interface().npos);
+				REQUIRE(sf::gmi::Controller::Interface().size() > 0);
+				REQUIRE(sf::gmi::Controller::Interface().indexOf("emulator") != sf::gmi::Controller::Interface().npos);
 			}
 
 			THEN("Create emulator implementation from name")
 			{
 				// Need at least one controller implementation.
-				controller.reset(sf::gmi::TController::Interface().create("emulator"));
+				controller.reset(sf::gmi::Controller::Interface().create("emulator"));
 				REQUIRE(controller);
 				WHEN("")
 				{
-
 				}
 			}
-
 		}
 
-/*
+		/*
 		// Need at least one controller implementation.
 		controller = std::unique_ptr<sf::gmi::TController>(sf::gmi::TController::Interface().create("emulator", sf::gmi::TController::Parameters(0)));
 		// Check if the controller was created.
 		REQUIRE(controller);
 */
-
 	}
 }

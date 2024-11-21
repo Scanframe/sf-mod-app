@@ -8,8 +8,8 @@ SF_DL_INFORMATION("Motion Controller Emulator", R"(Emulator of a motion controll
 
 // Register this derived class.
 SF_REG_CLASS(
-	gmi::TController, gmi::TController::Parameters, Interface,
-	MotionEmulator,
+	gmi::Controller, gmi::Controller::Parameters, Interface,
+	GmiEmulator,
 	"emulator", "Editor for UI layout files."
 )
 

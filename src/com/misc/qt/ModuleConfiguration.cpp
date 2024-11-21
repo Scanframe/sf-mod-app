@@ -1,16 +1,15 @@
-#include <QDir>
-#include <QCoreApplication>
-#include <QLibrary>
-#include "../gen/TClassRegistration.h"
 #include "ModuleConfiguration.h"
-#include "ModuleConfigurationDialog.h"
+#include "../gen/TClassRegistration.h"
 #include "Globals.h"
+#include "ModuleConfigurationDialog.h"
+#include <QCoreApplication>
+#include <QDir>
+#include <QLibrary>
 
 namespace sf
 {
 
-inline
-static QString getGroupName()
+inline static QString getGroupName()
 {
 #if IS_WIN
 	return QStringLiteral("AppModules.Windows");
@@ -20,9 +19,9 @@ static QString getGroupName()
 }
 
 ModuleConfiguration::ModuleConfiguration(QSettings* settings, QObject* parent)
-	:QObject(parent)
-	 , _dialog(nullptr)
-	 , _settings(settings)
+	: QObject(parent)
+	, _dialog(nullptr)
+	, _settings(settings)
 {
 }
 
@@ -38,8 +37,7 @@ void ModuleConfiguration::openDialog(QWidget* parent)
 	{
 		_dialog = new ModuleConfigurationDialog(this, parent);
 		// On close null the pointer.
-		QObject::connect(_dialog, &ModuleConfigurationDialog::finished, [&](int) -> void
-		{
+		QObject::connect(_dialog, &ModuleConfigurationDialog::finished, [&](int) -> void {
 			delete _dialog;
 			_dialog = nullptr;
 		});
@@ -127,4 +125,4 @@ void ModuleConfiguration::save(const ModuleConfiguration::ModuleListType& list)
 	}
 }
 
-}
+}// namespace sf

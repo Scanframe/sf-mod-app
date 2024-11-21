@@ -7,106 +7,106 @@ namespace sf::gmi
 {
 
 // Implementations of static functions and data members to be able to create registered stars implementations.
-SF_IMPL_IFACE(TController, TController::Parameters, Interface)
+SF_IMPL_IFACE(Controller, Controller::Parameters, Interface)
 
 //
 // Motion controller class 'TController'
 //
-TController::TController(const Parameters&)
-	: FNullAxis(this, alNA)
-	, FStatus(csUNINIT)
-	, FlagDestroying(false)
-	, ParamNotifyProc(nullptr)
-	, ResultNotifyProc(nullptr)
+Controller::Controller(const Parameters&)
+	: _nullAxis(this, alNA)
+	, _status(csUNINIT)
+	, _flagDestroying(false)
+	, _paramNotifyProc(nullptr)
+	, _resultNotifyProc(nullptr)
 {
 	// Initialize the axes map member using the NullAxis.
-	for (int i = 0; i < std::size(FAxesMap); i++)
+	for (int i = 0; i < std::size(_axesMap); i++)
 	{
-		FAxesMap[i] = &FNullAxis;
+		_axesMap[i] = &_nullAxis;
 	}
 }
 
-TController::~TController()
+Controller::~Controller()
 {
 }
 
-void TController::Attach(TAxis* axis)
+void Controller::attach(Axis* axis)
 {
 	// Ignore the null axis.
-	if (axis != &FNullAxis)
+	if (axis != &_nullAxis)
 	{
 		// Add the axis to the vector of axes.
-		FAxes.add(axis);
+		_axes.add(axis);
 		// Get the location.
-		EAxisLocation al = axis->GetLocation();
+		EAxisLocation al = axis->getLocation();
 		// Check if the current instance is not set yet.
-		if (FAxesMap[al] != &FNullAxis)
+		if (_axesMap[al] != &_nullAxis)
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Axis location '" << GetAxisName(al) << "' already in use!")
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Axis location '" << getAxisName(al) << "' already in use!")
 		}
 		else
 		{
 			// Map the axis pointer in the array.
-			FAxesMap[al] = axis;
+			_axesMap[al] = axis;
 		}
 	}
 }
 
-void TController::Destroy()
+void Controller::destroy()
 {
 	// Send the unhook signal.
-	SendEvent(ceUNHOOKED);
+	sendEvent(ceUNHOOKED);
 	// Flush all the hooked events.
-	FMotionEventList.flush();
+	_motionEventList.flush();
 	// Uninitialize first the controller.
-	Uninitialize();
+	uninitialize();
 	// Set the destroy flag so no the TAxis implementations destruct errorless.
-	FlagDestroying = true;
+	_flagDestroying = true;
 }
 
-void TController::HookEventHandler(TControllerEvent handler)
+void Controller::hookEventHandler(ControllerEvent handler)
 {
 	// Cannot attach the handlers when destroying or when it is NULL.
-	if (!handler || FlagDestroying)
+	if (!handler || _flagDestroying)
 		return;
 	// Check if the handler already was assigned.
-	if (FMotionEventList.find(handler) == UINT_MAX)
+	if (_motionEventList.find(handler) == UINT_MAX)
 	{
-		FMotionEventList.add(handler);
+		_motionEventList.add(handler);
 		handler(this, ceHOOKED);
 	}
 	else
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Handler was already assigned!")
 }
 
-void TController::UnhookEventHandler(TControllerEvent handler)
+void Controller::unhookEventHandler(ControllerEvent handler)
 {
-	if (!FMotionEventList.detach(handler))
+	if (!_motionEventList.detach(handler))
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Handler was not hooked!")
 	else
 		handler(this, ceUNHOOKED);
 }
 
-void TController::SendEvent(EControllerEvent ce)
+void Controller::sendEvent(EControllerEvent ce)
 {
 	// Make a local copy of the event list so that handled events can not disturb content of the list.
-	TEventList el = FMotionEventList;
+	EventList el = _motionEventList;
 	for (unsigned i = 0; i < el.count(); i++)
 		el[i](this, ce);
 }
 
-void TController::CallParamHook(int id)
+void Controller::callParamHook(IdType id)
 {
-	if (ParamNotifyProc)
-		ParamNotifyProc(ParamNotifyData, id);
-	if (id == GetParamId(mpMOVEPOS) && IsMovePosCompleted())
-		SendEvent(ceCOMPLETE);
+	if (_paramNotifyProc)
+		_paramNotifyProc(_paramNotifyData, id);
+	if (id == getParamId(mpMOVEPOS) && isMovePosCompleted())
+		sendEvent(ceCOMPLETE);
 }
 
-void TController::CallResultHook(int id)
+void Controller::callResultHook(IdType id)
 {
-	if (ResultNotifyProc)
-		ResultNotifyProc(ResultNotifyData, id);
+	if (_resultNotifyProc)
+		_resultNotifyProc(_resultNotifyData, id);
 }
 
 struct
@@ -130,27 +130,27 @@ struct
 		{"AUX4", "Auxiiary axis 4 has no location in the constallation of axes"},
 };
 
-const char* TController::GetAxisName(int axis_loc)
+const char* Controller::getAxisName(int axis_loc)
 {
 	size_t index = axis_loc + 1;
 	if (index >= std::size(ReferenceTable))
 	{
-		throw std::range_error(SF_RTTI_NAME(TController) + "::" + __FUNCTION__ + "() invalid axis location!");
+		throw std::range_error(SF_RTTI_NAME(Controller) + "::" + __FUNCTION__ + "() invalid axis location!");
 	}
 	return ReferenceTable[index].Name;
 }
 
-const char* TController::GetAxisDescription(int axis_loc)
+const char* Controller::getAxisDescription(int axis_loc)
 {
 	size_t index = axis_loc + 1;
 	if (index >= std::size(ReferenceTable))
 	{
-		throw std::range_error(SF_RTTI_NAME(TController) + "::" + __FUNCTION__ + "() invalid axis location!");
+		throw std::range_error(SF_RTTI_NAME(Controller) + "::" + __FUNCTION__ + "() invalid axis location!");
 	}
 	return ReferenceTable[index].Name;
 }
 
-const char* TController::GetStatusName(EStatus status)
+const char* Controller::getStatusName(EStatus status)
 {
 	switch (status)
 	{
@@ -169,37 +169,37 @@ const char* TController::GetStatusName(EStatus status)
 	}
 }
 
-void TController::AddPropertyPages(PropertySheetDialog* sheet)
+void Controller::addPropertyPages(PropertySheetDialog* sheet)
 {
 	auto pp = new PropertyPage(sheet);
 	sheet->addPage(pp);
 }
 
-bool TController::Uninitialize()
+bool Controller::uninitialize()
 {
 	// Uninitialize the hardware.
-	if (DoInitialize(false))
+	if (doInitialize(false))
 	{
 		// Can only go back to the status not initialized when
 		// the status is larger than the state initialized.
-		if (FStatus >= csINIT)
-			SetStatus(csUNINIT);
+		if (_status >= csINIT)
+			setStatus(csUNINIT);
 		return true;
 	}
 	return false;
 }
 
-bool TController::Initialize()
+bool Controller::initialize()
 {// Prevent initialize from being called twice.
-	if (FStatus == csUNINIT)
+	if (_status == csUNINIT)
 	{
 		// Try to initialize the hardware driver.
-		if (DoInitialize(true))
+		if (doInitialize(true))
 		{
 			// Update the status to initialize.
-			SetStatus(csINIT);
+			setStatus(csINIT);
 			// Read the implementation driver settings from profile.
-			if (ReadWriteSettings(true))
+			if (settingsReadWrite(true))
 			{
 				// Signal succes of initialization.
 				return true;
@@ -209,35 +209,35 @@ bool TController::Initialize()
 	return false;
 }
 
-void TController::SetStatus(EStatus status)
+void Controller::setStatus(EStatus status)
 {
-	if (FStatus != status)
+	if (_status != status)
 	{
-		FStatus = status;
+		_status = status;
 		// Send the status change event to all hooked handlers.
-		SendEvent(ceSTATUS);
+		sendEvent(ceSTATUS);
 	}
 	// Make the attached interface check changes of the state.
-	CallParamHook(0);
+	callParamHook(0);
 }
 
-bool TController::HomeAxes(bool skip)
+bool Controller::homeAxes(bool skip)
 {// Check if with the current status the axes can be homed.
-	if (FStatus >= csINIT)
+	if (_status >= csINIT)
 	{
 		// Call the implemented home function which should set the status to ready.
 		// or at a later stage.
-		if (DoHomeAxes(skip))
+		if (doHomeAxes(skip))
 			// Return success of starting homing function.
 			return true;
 
 		// When homing failed check the current status.
-		if (FStatus == csERROR)
+		if (_status == csERROR)
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "Homing function resulted in error!")
 		}
 		else
-			SetStatus(csUNHOMED);
+			setStatus(csUNHOMED);
 		// Signal failure.
 		return false;
 	}
@@ -246,92 +246,92 @@ bool TController::HomeAxes(bool skip)
 	return false;
 }
 
-bool TController::DoHomeAxes(bool)
+bool Controller::doHomeAxes(bool)
 {
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Homing procedure not implemented!")
 	return false;
 }
 
-bool TController::SetParam(int id, const Value& value, bool skip_event)
+bool Controller::setParam(IdType id, const Value& value, bool skip_event)
 {
 	// When skip event is true simple handling.
-	bool rv = HandleParam(id, nullptr, &value, nullptr);
+	bool rv = handleParam(id, nullptr, &value, nullptr);
 	// Call the hook interface handler when the parameter was set successfully.
 	if (!skip_event && rv)
-		CallParamHook(id);
+		callParamHook(id);
 	//
 	return rv;
 }
 
-bool TController::SetParam(
+bool Controller::setParam(
 	EParam param,
-	unsigned axis,
+	int axis,
 	const Value& value,
 	bool skip_event
 )
 {
 	// Get the local ID of the default parameter.
-	int id = GetParamId(param, axis);
+	IdType id = getParamId(param, axis);
 	// Check the ID for non-existence.
 	if (id)
-		return SetParam(id, value, skip_event);
+		return setParam(id, value, skip_event);
 	// Signal ID failure.
-	SF_RTTI_NOTIFY(DO_DEFAULT, "SetParam: param" << param << " of axis: " << GetAxisName(axis) << " is not present!")
+	SF_RTTI_NOTIFY(DO_DEFAULT, "setParam: param" << param << " of axis: " << getAxisName(axis) << " is not present!")
 	return false;
 }
 
-bool TController::GetParam(EParam param, unsigned axis, Value& value) const
+bool Controller::getParam(EParam param, int axis, Value& value) const
 {
 	// Get the local ID of the default parameter.
-	int id = GetParamId(param, axis);
+	IdType id = getParamId(param, axis);
 	// Check the ID for non-existence.
 	if (id)
-		return GetParam(id, value);
-	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of axis: " << GetAxisName(axis) << " is not present!")
+		return getParam(id, value);
+	SF_RTTI_NOTIFY(DO_DEFAULT, "getParam: param" << param << " of axis: " << getAxisName(axis) << " is not present!")
 	return false;
 }
 
-bool TController::SetGetParam(int id, Value& value, bool skip_event)
+bool Controller::setGetParam(IdType id, Value& value, bool skip_event)
 {
 	// When skip event is true simple handling.
-	if (HandleParam(id, nullptr, &value, &value))
+	if (handleParam(id, nullptr, &value, &value))
 	{
 		// Call the hook interface handler when the parameter was set successfully.
 		if (!skip_event)
-			CallParamHook(id);
+			callParamHook(id);
 		// Signal succes.
 		return true;
 	}
-	SF_RTTI_NOTIFY(DO_DEFAULT, "SetGetParam: Setting the param " << id << " failed!")
+	SF_RTTI_NOTIFY(DO_DEFAULT, "setGetParam: Setting the param " << id << " failed!")
 	// On failure to set the parameter retrieve the current value.
-	HandleParam(id, NULL, NULL, &value);
+	handleParam(id, NULL, NULL, &value);
 	// Signal failure.
 	return false;
 }
 
-bool TController::GetCurrent(EAxisValueType avt, TAxesCoord& coord) const
+bool Controller::getCurrent(EAxisValueType avt, AxesCoord& ac) const
 {
 	// Clear all values ins the passed coordinate.
-	coord.Clear();
+	ac.Clear();
 	// Iterate through the implemented axes.
-	for (size_t i = 0; i < FAxes.count(); i++)
-		coord << TAxisValue(FAxes[i]->GetLocation(), FAxes[i]->GetCurrent(avt));
+	for (size_t i = 0; i < _axes.count(); i++)
+		ac << AxisValue(_axes[i]->getLocation(), _axes[i]->getCurrent(avt));
 	// Signal success.
 	return true;
 }
 
-bool TController::SetCurrent(EAxisValueType avt, const TAxesCoord& coord)
+bool Controller::setCurrent(EAxisValueType avt, const AxesCoord& coord)
 {
 	// Initialize return value.
 	bool rv = true;
 	// Iterate through the implemented axes.
-	for (size_t i = 0; i < FAxes.count(); i++)
+	for (size_t i = 0; i < _axes.count(); i++)
 	{// Get the axis location.
-		int loc = FAxes[i]->FLocation;
+		int loc = _axes[i]->_location;
 		// Ignore unset locations.
 		if (coord.IsSet(loc))
 		{// Set the axis value.
-			if (!FAxes[i]->SetTarget(avt, coord[loc].value))
+			if (!_axes[i]->setTarget(avt, coord[loc]._value))
 				rv = false;
 		}
 	}
@@ -339,7 +339,7 @@ bool TController::SetCurrent(EAxisValueType avt, const TAxesCoord& coord)
 	return rv;
 }
 
-bool TController::GetAccuracy(TAxesCoord& accuracy) const
+bool Controller::getAccuracy(AxesCoord& accuracy) const
 {
 	accuracy.Clear();
 	// Initialize return value.
@@ -347,12 +347,12 @@ bool TController::GetAccuracy(TAxesCoord& accuracy) const
 	// Temp value for storage.
 	Value value;
 	// Iterate through the implemented axes.
-	for (size_t i = 0; i < FAxes.count(); i++)
+	for (size_t i = 0; i < _axes.count(); i++)
 	{
 		// Get the axis location.
-		EAxisLocation loc = FAxes[i]->FLocation;
+		EAxisLocation loc = _axes[i]->_location;
 		// Check if the parameter is available.
-		if (GetParam(mpAXIS_ACCURACY, loc, value))
+		if (getParam(mpAXIS_ACCURACY, loc, value))
 		{
 			// Set the axis value.
 			accuracy.Set(loc, value.getFloat());
@@ -367,7 +367,7 @@ bool TController::GetAccuracy(TAxesCoord& accuracy) const
 	return rv;
 }
 
-bool TController::GetResolution(TAxesCoord& resolution) const
+bool Controller::getResolution(AxesCoord& resolution) const
 {
 	resolution.Clear();
 	// Initialize return value.
@@ -375,12 +375,12 @@ bool TController::GetResolution(TAxesCoord& resolution) const
 	// Temp value for storage.
 	Value value;
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
+	for (unsigned i = 0; i < _axes.count(); i++)
 	{
 		// Get the axis location.
-		unsigned int loc = FAxes[i]->FLocation;
+		unsigned int loc = _axes[i]->_location;
 		// Check if the parameter is available.
-		if (GetParam(mpAXIS_ACCURACY, loc, value))
+		if (getParam(mpAXIS_ACCURACY, loc, value))
 			// Set the axis value.
 			resolution.Set(loc, value.getFloat());
 		else
@@ -391,40 +391,40 @@ bool TController::GetResolution(TAxesCoord& resolution) const
 	return rv;
 }
 
-bool TController::GetTarget(EAxisValueType avt, TAxesCoord& coord) const
+bool Controller::getTarget(EAxisValueType avt, AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
 	coord.Clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
-		coord << TAxisValue(FAxes[i]->GetLocation(), FAxes[i]->GetTarget(avt));
+	for (unsigned i = 0; i < _axes.count(); i++)
+		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getTarget(avt));
 	// Signal success.
 	return true;
 }
 
-bool TController::GetMinMax(EAxisMinMax amm, TAxesCoord& coord) const
+bool Controller::getMinMax(EAxisMinMax amm, AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
 	coord.Clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
-		coord << TAxisValue(FAxes[i]->GetLocation(), FAxes[i]->GetMinMax(amm));
+	for (unsigned i = 0; i < _axes.count(); i++)
+		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getMinMax(amm));
 	// Signal success.
 	return true;
 }
 
-bool TController::SetTarget(EAxisValueType avt, const TAxesCoord& coord)
+bool Controller::setTarget(EAxisValueType avt, const AxesCoord& coord)
 {
 	// Initialize return value.
 	bool rv = true;
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
+	for (unsigned i = 0; i < _axes.count(); i++)
 	{// Get the axis location.
-		int loc = FAxes[i]->FLocation;
+		int loc = _axes[i]->_location;
 		// Ignore unset locations.
 		if (coord.IsSet(loc))
 		{// Set the axis value.
-			if (!FAxes[i]->SetTarget(avt, coord[loc].value))
+			if (!_axes[i]->setTarget(avt, coord[loc]._value))
 				rv = false;
 		}
 	}
@@ -432,10 +432,10 @@ bool TController::SetTarget(EAxisValueType avt, const TAxesCoord& coord)
 	return rv;
 }
 
-bool TController::SetTarget(
-	const TAxesCoord& pos,
-	const TAxesCoord& vel,
-	const TAxesCoord& acc,
+bool Controller::setTarget(
+	const AxesCoord& pos,
+	const AxesCoord& vel,
+	const AxesCoord& acc,
 	bool linear
 )
 {
@@ -443,9 +443,9 @@ bool TController::SetTarget(
 	if (linear)
 	{
 		double trgtime = 0;
-		TAxesCoord dist, trgvel, trgacc;
+		AxesCoord dist, trgvel, trgacc;
 		// Get current position for linear calculations.
-		rv &= GetCurrent(avtPOSITION, dist);
+		rv &= getCurrent(avtPOSITION, dist);
 		// Check if getting the current position was successful.
 		if (rv)
 		{
@@ -459,7 +459,7 @@ bool TController::SetTarget(
 			{
 				if (std::fabs(vel.Value(i)) < std::numeric_limits<double>::min())
 					dist.Unset(i);
-				if (dist.IsSet(i) && fabs(dist.Value(i)) < GetAxis(i).GetAccuracy())
+				if (dist.IsSet(i) && fabs(dist.Value(i)) < getAxis(i).getAccuracy())
 					dist.Unset(i);
 			}
 			// Get values for a linear profile.
@@ -474,36 +474,36 @@ bool TController::SetTarget(
 						trgacc << acc[i];
 					}
 				// Set the targets for linear movement.
-				rv &= SetTarget(avtVELOCITY, trgvel);
-				rv &= SetTarget(avtACCELERATION, trgacc);
-				rv &= SetTarget(avtPOSITION, pos);
+				rv &= setTarget(avtVELOCITY, trgvel);
+				rv &= setTarget(avtACCELERATION, trgacc);
+				rv &= setTarget(avtPOSITION, pos);
 				return rv;
 			}
 		}
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Linear calculation failed switching to regular!")
 	}
 	// On failure to calculate linear positions or by default.
-	rv &= SetTarget(avtVELOCITY, vel);
-	rv &= SetTarget(avtACCELERATION, acc);
-	rv &= SetTarget(avtPOSITION, pos);
+	rv &= setTarget(avtVELOCITY, vel);
+	rv &= setTarget(avtACCELERATION, acc);
+	rv &= setTarget(avtPOSITION, pos);
 	// Position is the same for both cases.
 	return rv;
 }
 
-bool TController::SetOffset(const TAxesCoord& coord)
+bool Controller::setOffset(const AxesCoord& coord)
 {
 	// Initialize return value.
 	bool rv = true;
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
+	for (unsigned i = 0; i < _axes.count(); i++)
 	{
 		// Get the axis location.
-		int loc = FAxes[i]->FLocation;
+		int loc = _axes[i]->_location;
 		// Ignore unset locations.
 		if (coord.IsSet(loc))
 		{
 			// Set the axis value.
-			if (!FAxes[i]->SetOffset(coord[loc].value))
+			if (!_axes[i]->setOffset(coord[loc]._value))
 				rv = false;
 		}
 	}
@@ -511,24 +511,24 @@ bool TController::SetOffset(const TAxesCoord& coord)
 	return rv;
 }
 
-bool TController::GetOffset(TAxesCoord& coord) const
+bool Controller::getOffset(AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
 	coord.Clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < FAxes.count(); i++)
-		coord << TAxisValue(FAxes[i]->GetLocation(), FAxes[i]->GetOffset());
+	for (unsigned i = 0; i < _axes.count(); i++)
+		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->setOffset());
 	// Signal success.
 	return true;
 }
 
-bool TController::SetMode(EAxisMode am, const TAxesCoord& ac, EAxisMode amdef)
+bool Controller::setMode(EAxisMode am, const AxesCoord& ac, EAxisMode amdef)
 {
 	bool rv = true;
-	for (size_t i = 0; i < FAxes.count(); i++)
+	for (size_t i = 0; i < _axes.count(); i++)
 	{
 		// When an implemented axis does not exist in the coord it set to the default.
-		if (!FAxes[i]->SetMode(ac.IsSet(FAxes[i]->FLocation) ? am : amdef))
+		if (!_axes[i]->setMode(ac.IsSet(_axes[i]->_location) ? am : amdef))
 		{
 			// On failure set the return value to false.
 			rv = false;
@@ -538,18 +538,18 @@ bool TController::SetMode(EAxisMode am, const TAxesCoord& ac, EAxisMode amdef)
 	return rv;
 }
 
-bool TController::SetMovePos(EMovePosCmd mpc)
+bool Controller::setMovePos(EMovePosCmd mpc)
 {
 	// Cannot complete by user of interface.
-	if (mpc == mpcCOMPLETE || (!IsReady() && mpc != mpcABORT))
+	if (mpc == mpcCOMPLETE || (!isReady() && mpc != mpcABORT))
 	{
 		return false;
 	}
 	// Get the motion parameter id.
-	auto id = GetParamId(mpMOVEPOS);
+	auto id = getParamId(mpMOVEPOS);
 	Value value(mpc);
 	// Check if the parameter is available.
-	if (!SetGetParam(id, value, false))
+	if (!setGetParam(id, value, false))
 		return false;
 	else
 	{// It could be that the controller is already on
@@ -563,18 +563,18 @@ bool TController::SetMovePos(EMovePosCmd mpc)
 	return true;
 }
 
-bool TController::SetMoveVel(EMoveVelCmd mvc)
+bool Controller::setMoveVel(EMoveVelCmd mvc)
 {
 	// Cannot switch to off by user of interface.
-	if (mvc == mvcCOMPLETE || !IsReady())
+	if (mvc == mvcCOMPLETE || !isReady())
 	{
 		return false;
 	}
 	// Get the motion parameter id.
-	int id = GetParamId(mpMOVEVEL);
+	IdType id = getParamId(mpMOVEVEL);
 	Value value(mvc);
 	// Check if the parameter is available.
-	if (!SetGetParam(id, value, false))
+	if (!setGetParam(id, value, false))
 	{
 		return false;
 	}
@@ -585,18 +585,18 @@ bool TController::SetMoveVel(EMoveVelCmd mvc)
 	return true;
 }
 
-bool TController::SetMoveCon(EMoveConCmd mcc)
+bool Controller::setMoveCon(EMoveConCmd mcc)
 {
 	// Cannot switch to off by user of interface.
-	if (mcc == mccCOMPLETE || !IsReady())
+	if (mcc == mccCOMPLETE || !isReady())
 	{
 		return false;
 	}
 	// Get the motion parameter id.
-	int id = GetParamId(mpMOVECON);
+	IdType id = getParamId(mpMOVECON);
 	Value value(mcc);
 	// Check if the parameter is available.
-	if (!SetGetParam(id, value, false))
+	if (!setGetParam(id, value, false))
 	{
 		return false;
 	}
@@ -607,77 +607,77 @@ bool TController::SetMoveCon(EMoveConCmd mcc)
 	return true;
 }
 
-EMovePosCmd TController::GetMovePos() const
+EMovePosCmd Controller::getMovePos() const
 {
 	Value value;
 	// Check if the parameter is available.
-	if (!GetParam(mpMOVEPOS, UINT_MAX, value))
+	if (!getParam(mpMOVEPOS, UINT_MAX, value))
 	{
 		return mpcABORT;
 	}
 	return (EMovePosCmd) value.getInteger();
 }
 
-EMoveVelCmd TController::GetMoveVel() const
+EMoveVelCmd Controller::getMoveVel() const
 {
 	Value value;
 	// Check if the parameter is available.
-	if (!GetParam(mpMOVEVEL, UINT_MAX, value))
+	if (!getParam(mpMOVEVEL, UINT_MAX, value))
 	{
 		return mvcABORT;
 	}
 	return (EMoveVelCmd) value.getInteger();
 }
 
-EMoveConCmd TController::GetMoveCon() const
+EMoveConCmd Controller::getMoveCon() const
 {
 	Value value;
 	// Check if the parameter is available.
-	if (!GetParam(mpMOVECON, UINT_MAX, value))
+	if (!getParam(mpMOVECON, UINT_MAX, value))
 	{
 		return mccABORT;
 	}
 	return (EMoveConCmd) value.getInteger();
 }
 
-bool TController::SetJoystick(EJoystickCmd jsc)
+bool Controller::setJoystick(EJoystickCmd jsc)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(jsc);
-		if (SetParam(mpJOYSTICK, UINT_MAX, value, false))
+		if (setParam(mpJOYSTICK, UINT_MAX, value, false))
 		{
-			if (GetParam(mpJOYSTICK, UINT_MAX, value))
+			if (getParam(mpJOYSTICK, UINT_MAX, value))
 				return jsc == (EJoystickCmd) value.getInteger();
 		}
 	}
 	return false;
 }
 
-bool TController::SetJoystickAxis(EAxisLocation al)
+bool Controller::setJoystickAxis(EAxisLocation axis_loc)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
-		Value value(al);
-		if (SetParam(mpJOYSTICK_AXIS, UINT_MAX, value, false))
+		Value value(axis_loc);
+		if (setParam(mpJOYSTICK_AXIS, UINT_MAX, value, false))
 		{
-			if (GetParam(mpJOYSTICK_AXIS, UINT_MAX, value))
-				return value.getInteger() == al;
+			if (getParam(mpJOYSTICK_AXIS, UINT_MAX, value))
+				return value.getInteger() == axis_loc;
 		}
 	}
 	return false;
 }
 
-bool TController::SetPopAxis(EAxisLocation al)
+bool Controller::setPopAxis(EAxisLocation al)
 {// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(al);
-		if (SetParam(mpPOP_AXIS, UINT_MAX, value, false))
+		if (setParam(mpPOP_AXIS, UINT_MAX, value, false))
 		{
-			if (GetParam(mpPOP_AXIS, UINT_MAX, value))
+			if (getParam(mpPOP_AXIS, UINT_MAX, value))
 			{
 				return value.getInteger() == al;
 			}
@@ -686,14 +686,14 @@ bool TController::SetPopAxis(EAxisLocation al)
 	return false;
 }
 
-bool TController::SetTriggerEnable(bool enable)
+bool Controller::setTriggerEnable(bool enable)
 {// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(enable);
-		if (SetParam(mpTRIGGER_ENABLE, UINT_MAX, value, false))
+		if (setParam(mpTRIGGER_ENABLE, UINT_MAX, value, false))
 		{
-			if (GetParam(mpTRIGGER_ENABLE, UINT_MAX, value))
+			if (getParam(mpTRIGGER_ENABLE, UINT_MAX, value))
 			{
 				return value.getInteger() == enable;
 			}
@@ -702,15 +702,15 @@ bool TController::SetTriggerEnable(bool enable)
 	return false;
 }
 
-double TController::SetTriggerFreq(double freq)
+double Controller::setTriggerFreq(double freq)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(freq);
-		if (SetParam(mpTRIGGER_FREQ, UINT_MAX, value, false))
+		if (setParam(mpTRIGGER_FREQ, UINT_MAX, value, false))
 		{
-			if (GetParam(mpTRIGGER_FREQ, UINT_MAX, value))
+			if (getParam(mpTRIGGER_FREQ, UINT_MAX, value))
 			{
 				return value.getFloat();
 			}
@@ -719,15 +719,15 @@ double TController::SetTriggerFreq(double freq)
 	return -1.0;
 }
 
-bool TController::SetTriggerAxis(EAxisLocation al)
+bool Controller::setTriggerAxis(EAxisLocation al)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(al);
-		if (SetParam(mpTRIGGER_AXIS, UINT_MAX, value, false))
+		if (setParam(mpTRIGGER_AXIS, UINT_MAX, value, false))
 		{
-			if (GetParam(mpTRIGGER_AXIS, UINT_MAX, value))
+			if (getParam(mpTRIGGER_AXIS, UINT_MAX, value))
 			{
 				return (value.getInteger() == al);
 			}
@@ -736,13 +736,13 @@ bool TController::SetTriggerAxis(EAxisLocation al)
 	return false;
 }
 
-EAxisLocation TController::GetTriggerAxis() const
+EAxisLocation Controller::getTriggerAxis() const
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value;
-		if (GetParam(mpTRIGGER_AXIS, UINT_MAX, value))
+		if (getParam(mpTRIGGER_AXIS, UINT_MAX, value))
 		{
 			return (EAxisLocation) value.getInteger();
 		}
@@ -750,13 +750,13 @@ EAxisLocation TController::GetTriggerAxis() const
 	return alNA;
 }
 
-bool TController::SetTriggerDensity(double td)
+bool Controller::setTriggerDensity(double td)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(td);
-		if (SetParam(mpTRIGGER_DENSITY, UINT_MAX, value, false))
+		if (setParam(mpTRIGGER_DENSITY, UINT_MAX, value, false))
 		{
 			return true;
 		}
@@ -764,13 +764,13 @@ bool TController::SetTriggerDensity(double td)
 	return false;
 }
 
-double TController::GetTriggerDensity() const
+double Controller::getTriggerDensity() const
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value;
-		if (GetParam(mpTRIGGER_DENSITY, UINT_MAX, value))
+		if (getParam(mpTRIGGER_DENSITY, UINT_MAX, value))
 		{
 			return value.getFloat();
 		}
@@ -778,13 +778,13 @@ double TController::GetTriggerDensity() const
 	return 0.0;
 }
 
-bool TController::SetTriggerMode(bool intern)
+bool Controller::setTriggerMode(bool intern)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(intern);
-		if (SetParam(mpTRIGGER_MODE, UINT_MAX, value, false))
+		if (setParam(mpTRIGGER_MODE, UINT_MAX, value, false))
 		{
 			return true;
 		}
@@ -792,13 +792,13 @@ bool TController::SetTriggerMode(bool intern)
 	return false;
 }
 
-bool TController::GetTriggerMode() const
+bool Controller::getTriggerMode() const
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value;
-		if (GetParam(mpTRIGGER_MODE, UINT_MAX, value))
+		if (getParam(mpTRIGGER_MODE, UINT_MAX, value))
 		{
 			return value.getInteger();
 		}
@@ -806,13 +806,13 @@ bool TController::GetTriggerMode() const
 	return false;
 }
 
-bool TController::SetChuckJaw(EChuckJaw cj)
+bool Controller::setChuckJaw(EChuckJaw cj)
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value(cj);
-		if (SetParam(mpCHUCKJAW, UINT_MAX, value, false))
+		if (setParam(mpCHUCKJAW, UINT_MAX, value, false))
 		{
 			return true;
 		}
@@ -820,13 +820,13 @@ bool TController::SetChuckJaw(EChuckJaw cj)
 	return false;
 }
 
-EChuckJaw TController::GetChuckJaw() const
+EChuckJaw Controller::getChuckJaw() const
 {
 	// Any status above un init is okay.
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		Value value;
-		if (GetParam(mpCHUCKJAW, UINT_MAX, value))
+		if (getParam(mpCHUCKJAW, UINT_MAX, value))
 		{
 			return (EChuckJaw) value.getInteger();
 		}
@@ -834,70 +834,70 @@ EChuckJaw TController::GetChuckJaw() const
 	return cjOFF;
 }
 
-EJoystickCmd TController::GetJoystick() const
+EJoystickCmd Controller::getJoystick() const
 {
 	Value value(jscOFF);
-	if (GetParam(mpJOYSTICK, UINT_MAX, value))
+	if (getParam(mpJOYSTICK, UINT_MAX, value))
 	{
 		return (EJoystickCmd) value.getInteger();
 	}
 	return jscOFF;
 }
 
-EAxisLocation TController::GetJoystickAxis() const
+EAxisLocation Controller::getJoystickAxis() const
 {
 	Value value(-1);
-	if (GetParam(mpJOYSTICK_AXIS, UINT_MAX, value))
+	if (getParam(mpJOYSTICK_AXIS, UINT_MAX, value))
 	{
 		return (EAxisLocation) value.getInteger();
 	}
 	return alNA;
 }
 
-EAxisLocation TController::GetPopAxis() const
+EAxisLocation Controller::getPopAxis() const
 {
 	Value value(-1);
-	if (GetParam(mpPOP_AXIS, UINT_MAX, value))
+	if (getParam(mpPOP_AXIS, UINT_MAX, value))
 	{
 		return (EAxisLocation) value.getInteger();
 	}
 	return alNA;
 }
 
-bool TController::GetTriggerEnable() const
+bool Controller::getTriggerEnable() const
 {
 	Value value(-1);
-	if (GetParam(mpTRIGGER_ENABLE, UINT_MAX, value))
+	if (getParam(mpTRIGGER_ENABLE, UINT_MAX, value))
 	{
 		return value.getInteger();
 	}
 	return true;
 }
 
-double TController::GetTriggerFreq() const
+double Controller::getTriggerFreq() const
 {
 	Value value(-1.0);
-	if (GetParam(mpTRIGGER_FREQ, UINT_MAX, value))
+	if (getParam(mpTRIGGER_FREQ, UINT_MAX, value))
 	{
 		return value.getFloat();
 	}
 	return -1.0;
 }
 
-std::string TController::GetProfilePath() const
+std::string Controller::getProfilePath() const
 {
 	return getConfigLocation({}, true) + "gmi-iface.cfg";
 }
 
-bool TController::SetPosition(EAxisLocation al, double value)
+bool Controller::setPosition(EAxisLocation al, double value)
 {
 	// Any status above uninitialized is okay.
-	if (FStatus > csUNINIT && al != alNA)
+	if (_status > csUNINIT && al != alNA)
 	{
-		if (DoSetPosition(al, value))
+		if (doSetPosition(al, value))
 		{
 			// Write the new home offset along with all other system settings.
-			if (!ReadWriteSettings(false))
+			if (!settingsReadWrite(false))
 			{
 				SF_RTTI_NOTIFY(DO_DEFAULT, "Could not save home offset!")
 			}
@@ -907,21 +907,21 @@ bool TController::SetPosition(EAxisLocation al, double value)
 	return false;
 }
 
-bool TController::SetPosition(const TAxesCoord& ac)
+bool Controller::setPosition(const AxesCoord& ac)
 {
 	// Initialize return value.
 	bool rv = true;
-	if (FStatus > csUNINIT)
+	if (_status > csUNINIT)
 	{
 		// Iterate through the implemented axes.
-		for (unsigned i = 0; i < FAxes.count(); i++)
+		for (unsigned i = 0; i < _axes.count(); i++)
 		{
 			// Get the axis location.
-			int loc = FAxes[i]->FLocation;
+			int loc = _axes[i]->_location;
 			// Ignore unset locations.
 			if (ac.IsSet(loc))
 			{// Set the axis value.
-				if (!FAxes[i]->SetPosition(ac[loc].value))
+				if (!_axes[i]->setPosition(ac[loc]._value))
 					rv = false;
 			}
 		}
@@ -930,7 +930,7 @@ bool TController::SetPosition(const TAxesCoord& ac)
 	if (rv)
 	{
 		// Write the new home offset along with all other system settings.
-		if (!ReadWriteSettings(false))
+		if (!settingsReadWrite(false))
 		{
 			SF_RTTI_NOTIFY(DO_DEFAULT, "Could not save home offset!")
 		}
@@ -939,53 +939,53 @@ bool TController::SetPosition(const TAxesCoord& ac)
 	return rv;
 }
 
-bool TController::DoSetPosition(EAxisLocation, double)
+bool Controller::doSetPosition(EAxisLocation al, double)
 {
-	SF_RTTI_NOTIFY(DO_DEFAULT, "DoSetPosition is not implemented!")
+	SF_RTTI_NOTIFY(DO_DEFAULT, "doSetPosition is not implemented!")
 	return false;
 }
 
-TAxesCoord& TController::Normalize(TAxesCoord& pos) const
+AxesCoord& Controller::normalize(AxesCoord& pos) const
 {
 	// For all set axis normalize the passed position.
 	for (int i = alFirst; i < alLAST_ENTRY; i++)
 		if (pos.IsSet(i))
-			pos.Value(i) = GetAxis(i).Normalized(pos.Value(i));
+			pos.Value(i) = getAxis(i).normalized(pos.Value(i));
 	return pos;
 }
 
-AxisLocations TController::GetRadialUnlimted() const
+AxisLocations Controller::getRadialUnlimited() const
 {
 	AxisLocations als;
 	AxisMovements am;
 	am << amRADIAL;
 	for (int i = alFirst; i < alLAST_ENTRY; i++)
-		if (GetAxis(i).FMovements == am)
+		if (getAxis(i)._movements == am)
 			als << static_cast<EAxisLocation>(i);
 	return als;
 }
 
-bool TController::ReadWriteSettings(bool rd)
+bool Controller::settingsReadWrite(bool rd)
 {
-	IniProfile profile("", GetProfilePath().c_str());
-	TIdList ids;
+	IniProfile profile("", getProfilePath().c_str());
+	IdList ids;
 	// Get the list of valid ID's.
-	bool retval = EnumParamIds(ids);
+	bool retval = enumParamIds(ids);
 	// Iterate through the list twice when reading parameters.
 	// This is to be shure the order of parameters being set is not a real problem.1
 	//  for (unsigned n = 0; n < (rd ? 2 : 1); n++)
 	for (unsigned i = 0; i < ids.count(); i++)
 	{
-		TParamInfo info;
+		ParamInfo info;
 		// Get the parameter info.
-		if (GetParamInfo(ids[i], info))
+		if (getParamInfo(ids[i], info))
 		{
 			// Check if the variable is a system setting parameter.
 			if (info.Flags & pfSYSTEM)
 			{
 				// Set the section based on the axis.
 				if (info.Flags & pfAXIS)
-					profile.setSection(stringf("%s-Axis", GetAxisName(info.Axis)).c_str());
+					profile.setSection(stringf("%s-Axis", getAxisName(info.Axis)).c_str());
 				else
 					profile.setSection("General");
 				// If no name exists use the ID.
@@ -996,7 +996,7 @@ bool TController::ReadWriteSettings(bool rd)
 					// Read the value info value class.
 					Value val(profile.getString(info.Name.c_str(), info.Default.getString().c_str()));
 					// Write the parameter to the interface.
-					if (!SetParam(ids[i], val, false))
+					if (!setParam(ids[i], val, false))
 						retval = false;
 				}
 				else
@@ -1004,7 +1004,7 @@ bool TController::ReadWriteSettings(bool rd)
 					// Temporary value for storage.
 					Value val;
 					// Get the parameter.
-					if (GetParam(ids[i], val))
+					if (getParam(ids[i], val))
 						// Write it to the parameter value to the profile.
 						profile.setString(info.Name.c_str(), val.getString().c_str());
 					else
@@ -1021,27 +1021,27 @@ bool TController::ReadWriteSettings(bool rd)
 // Controller::Axis methods.
 //
 
-TController::TAxis::TAxis(TController* mc, EAxisLocation al)
-	: FController(*mc)
-	, FLocation(al)
+Controller::Axis::Axis(Controller* mc, EAxisLocation al)
+	: _controller(*mc)
+	, _location(al)
 {
 	// Register the axis at the controller.
-	mc->Attach(this);
+	mc->attach(this);
 }
 
-TController::TAxis::~TAxis()
+Controller::Axis::~Axis()
 {
 	if (std::uncaught_exceptions() == 0)
 	{
 		// Major error. Cannot destruct an TAxis instance out side the controller.
-		assert(FController.FlagDestroying);
+		assert(_controller._flagDestroying);
 	}
 }
 
-double TController::TAxis::GetCurrent(EAxisValueType avt) const
+double Controller::Axis::getCurrent(EAxisValueType avt) const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		static EParam mps[] = {mpNONE, mpAXIS_CUR_POS, mpAXIS_CUR_VEL};
 		// When out of range return 0.0;
@@ -1049,7 +1049,7 @@ double TController::TAxis::GetCurrent(EAxisValueType avt) const
 		{// Temp value to store it in.
 			Value value;
 			// Check if the parameter is available.
-			if (FController.GetParam(mps[avt], FLocation, value))
+			if (_controller.getParam(mps[avt], _location, value))
 			{
 				return value.getFloat();
 			}
@@ -1058,17 +1058,17 @@ double TController::TAxis::GetCurrent(EAxisValueType avt) const
 	return 0.0;
 }
 
-bool TController::TAxis::SetCurrent(EAxisValueType avt, double val)
+bool Controller::Axis::setCurrent(EAxisValueType avt, double val)
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		static EParam mps[] = {mpNONE, mpAXIS_CUR_POS, mpAXIS_CUR_VEL};
 		// When out of range return 0.0;
 		if (avt < std::size(mps))
 		{
 			// Check if the parameter is available.
-			if (FController.SetParam(mps[avt], FLocation, Value(val), false))
+			if (_controller.setParam(mps[avt], _location, Value(val), false))
 			{
 				// Return the retrieved value.
 				return true;
@@ -1078,10 +1078,10 @@ bool TController::TAxis::SetCurrent(EAxisValueType avt, double val)
 	return false;
 }
 
-double TController::TAxis::GetMinMax(EAxisMinMax amm) const
+double Controller::Axis::getMinMax(EAxisMinMax amm) const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		static EParam mps[] =
 			{
@@ -1096,17 +1096,17 @@ double TController::TAxis::GetMinMax(EAxisMinMax amm) const
 			// Temp value for storage.
 			Value value;
 			// Check if the parameter is available.
-			if (FController.GetParam(mps[amm], FLocation, value))
+			if (_controller.getParam(mps[amm], _location, value))
 				return value.getFloat();
 		}
 	}
 	return 0.0;
 }
 
-double TController::TAxis::GetTarget(EAxisValueType avt) const
+double Controller::Axis::getTarget(EAxisValueType avt) const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		static EParam mps[] = {mpNONE, mpAXIS_TRG_POS, mpAXIS_TRG_VEL, mpAXIS_TRG_ACC};
 		// When out of range return 0.0;
@@ -1115,81 +1115,81 @@ double TController::TAxis::GetTarget(EAxisValueType avt) const
 			// Temp value for storage.
 			Value value;
 			// Check if the parameter is available.
-			if (FController.GetParam(mps[avt], FLocation, value))
+			if (_controller.getParam(mps[avt], _location, value))
 				return value.getFloat();
 		}
 	}
 	return 0.0;
 }
 
-bool TController::TAxis::SetTarget(EAxisValueType avt, double val)
+bool Controller::Axis::setTarget(EAxisValueType avt, double val)
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		static EParam mps[] = {mpNONE, mpAXIS_TRG_POS, mpAXIS_TRG_VEL, mpAXIS_TRG_ACC};
 		// When out of range return 0.0;
 		if (avt < std::size(mps))
 		{
 			// Set the parameter.
-			return FController.SetParam(mps[avt], FLocation, Value(val), false);
+			return _controller.setParam(mps[avt], _location, Value(val), false);
 		}
 	}
 	return false;
 }
 
-bool TController::TAxis::SetOffset(double ofs)
+bool Controller::Axis::setOffset(double ofs)
 {
 	// Set the parameter.
-	return FController.SetParam(mpAXIS_OFS_POS, FLocation, Value(ofs), false);
+	return _controller.setParam(mpAXIS_OFS_POS, _location, Value(ofs), false);
 }
 
-double TController::TAxis::GetOffset() const
+double Controller::Axis::setOffset() const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (FController.GetParam(mpAXIS_OFS_POS, FLocation, value))
+		if (_controller.getParam(mpAXIS_OFS_POS, _location, value))
 			return value.getFloat();
 	}
 	return 0.0;
 }
 
-double TController::TAxis::GetAccuracy() const
+double Controller::Axis::getAccuracy() const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (FController.GetParam(mpAXIS_ACCURACY, FLocation, value))
+		if (_controller.getParam(mpAXIS_ACCURACY, _location, value))
 			return value.getFloat();
 	}
 	return 0.0;
 }
 
-double TController::TAxis::GetResolution() const
+double Controller::Axis::getResolution() const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (FController.GetParam(mpAXIS_RESOLUTION, FLocation, value))
+		if (_controller.getParam(mpAXIS_RESOLUTION, _location, value))
 			return value.getFloat();
 	}
 	return 1.0;
 }
 
-bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool pos_cmplt, bool vel_cmplt, bool con_cmplt)
+bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, bool pos_cmplt, bool vel_cmplt, bool con_cmplt)
 {
 	// Check what the new mode will be and if is allowed to change.
-	switch (mode)
+	switch (new_mode)
 	{
 		default:
 			return false;
@@ -1201,7 +1201,7 @@ bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool p
 			return true;
 
 		case amDISABLED:
-			switch (curmode)
+			switch (cur_mode)
 			{
 				default:
 					return false;
@@ -1224,7 +1224,7 @@ bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool p
 			break;
 
 		case amPOSITION:
-			switch (curmode)
+			switch (cur_mode)
 			{
 				default:
 					return false;
@@ -1249,7 +1249,7 @@ bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool p
 			break;
 
 		case amVELOCITY:
-			switch (curmode)
+			switch (cur_mode)
 			{
 				default:
 					return false;
@@ -1273,7 +1273,7 @@ bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool p
 			break;
 
 		case amCONTINUE:
-			switch (curmode)
+			switch (cur_mode)
 			{
 				default:
 					return false;
@@ -1299,14 +1299,14 @@ bool TController::TAxis::CanModeChange(EAxisMode curmode, EAxisMode mode, bool p
 	return true;
 }
 
-bool TController::TAxis::SetMode(EAxisMode mode)
+bool Controller::Axis::setMode(EAxisMode mode)
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		Value value(0);
 		// Get the parameter to see if it needs changing.
-		if (FController.GetParam(mpAXIS_MODE, FLocation, value))
+		if (_controller.getParam(mpAXIS_MODE, _location, value))
 		{
 			// Get the current mode.
 			EAxisMode cur_mode = static_cast<EAxisMode>(value.getInteger());
@@ -1314,22 +1314,22 @@ bool TController::TAxis::SetMode(EAxisMode mode)
 			if (cur_mode != mode)
 			{
 				// Check if a change is allowed.
-				bool ok = CanModeChange(
+				bool ok = canModeChange(
 					cur_mode, mode,
-					FController.IsMovePosCompleted(),
-					FController.IsMoveVelCompleted(),
-					FController.IsMoveConCompleted()
+					_controller.isMovePosCompleted(),
+					_controller.isMoveVelCompleted(),
+					_controller.isMoveConCompleted()
 				);
 				//
 				if (!ok)
 				{
-					SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to change axis " << GetName() << " mode to [" << mode << "] during move!")
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to change axis " << getName() << " mode to [" << mode << "] during move!")
 					return false;
 				}
 				// Assign the mode to the value so it can be assigned.
 				value.set(mode);
 				// Check if the parameter is available.
-				return FController.SetParam(mpAXIS_MODE, FLocation, value, false);
+				return _controller.setParam(mpAXIS_MODE, _location, value, false);
 			}
 			// Signal success because there is no need for changing.
 			return true;
@@ -1339,14 +1339,14 @@ bool TController::TAxis::SetMode(EAxisMode mode)
 	return false;
 }
 
-EAxisMode TController::TAxis::GetMode() const
+EAxisMode Controller::Axis::getMode() const
 {
 	// Test if the axis is a valid one.
-	if (FLocation != alNA)
+	if (_location != alNA)
 	{
 		Value value(0);
 		// Check if the parameter is available.
-		FController.GetParam(mpAXIS_MODE, FLocation, value);
+		_controller.getParam(mpAXIS_MODE, _location, value);
 		//
 		return static_cast<EAxisMode>(value.getInteger());
 	}
@@ -1354,20 +1354,20 @@ EAxisMode TController::TAxis::GetMode() const
 	return amDISABLED;
 }
 
-bool TController::TAxis::SetPosition(double value)
+bool Controller::Axis::setPosition(double value)
 {
 	// Pass to controller.
-	return FController.SetPosition(FLocation, value);
+	return _controller.setPosition(_location, value);
 }
 
-double TController::TAxis::Normalized(double pos) const
+double Controller::Axis::normalized(double pos) const
 {
 	// Is the axis radial and unlimited.
-	if (FMovements == (AxisMovements() << amRADIAL))
+	if (_movements == (AxisMovements() << amRADIAL))
 	{// Bring the angle in range of 0..360 degree.
 		pos = fmod(pos, sf::numbers::pi_v<Value::flt_type> * 2.0);
 		// All angle near zero are zeroed.
-		if (fabs(pos) >= sf::numbers::pi_v<Value::flt_type> * 2.0 - GetAccuracy())
+		if (fabs(pos) >= sf::numbers::pi_v<Value::flt_type> * 2.0 - getAccuracy())
 			pos = 0.0;
 		// Make the angle positive.
 		if (pos < 0.0)
@@ -1376,61 +1376,61 @@ double TController::TAxis::Normalized(double pos) const
 	return pos;
 }
 
-const char* TController::TAxis::GetName() const
+const char* Controller::Axis::getName() const
 {
-	return FController.GetAxisName(FLocation);
+	return _controller.getAxisName(_location);
 }
 
-const char* TController::TAxis::GetDescription() const
+const char* Controller::Axis::getDescription() const
 {
-	return FController.GetAxisDescription(FLocation);
+	return _controller.getAxisDescription(_location);
 }
 
-bool TController::IsMoving() const
+bool Controller::isMoving() const
 {
-	EMovePosCmd mpc = GetMovePos();
-	EMoveVelCmd mvc = GetMoveVel();
-	EMoveConCmd mcc = GetMoveCon();
+	EMovePosCmd mpc = getMovePos();
+	EMoveVelCmd mvc = getMoveVel();
+	EMoveConCmd mcc = getMoveCon();
 	// When one axis has the abort state motion has stopped for shure.
 	if (mpc == mpcABORT || mvc == mvcABORT || mcc == mccABORT)
-		return GetJoystick() > jscOFF;
+		return getJoystick() > jscOFF;
 	// All axes have to be completed before no movement is assumed.
 	if (mpc == mpcCOMPLETE && mvc == mvcCOMPLETE && mcc == mccCOMPLETE)
-		return GetJoystick() > jscOFF;
+		return getJoystick() > jscOFF;
 	return true;
 }
 
-TController::TAxis& TController::GetAxis(int axis_loc)
+Controller::Axis& Controller::getAxis(int axis_loc)
 {
 	// Check if location index is in range.
 	if (axis_loc >= alFirst && axis_loc < alLAST_ENTRY)
 	{
-		return *FAxesMap[axis_loc];
+		return *_axesMap[axis_loc];
 	}
 	// Return default the null axis.
-	return FNullAxis;
+	return _nullAxis;
 }
 
-const TController::TAxis& TController::GetAxis(int axis_loc) const
+const Controller::Axis& Controller::getAxis(int axis_loc) const
 {
 	// Check if location index is in range.
 	if (axis_loc >= alFirst && axis_loc < alLAST_ENTRY)
 	{
-		return *FAxesMap[axis_loc];
+		return *_axesMap[axis_loc];
 	}
 	// Return default the null axis.
-	return FNullAxis;
+	return _nullAxis;
 }
 
-TController::TAxis& TController::GetPhysAxis(int axis_num)
+Controller::Axis& Controller::getPhysicalAxis(int axis_num)
 {
 	// Check if location index is in range.
-	if (axis_num >= 0 && axis_num < static_cast<int>(FAxes.count()))
+	if (axis_num >= 0 && axis_num < static_cast<int>(_axes.count()))
 	{
-		return *FAxes[axis_num];
+		return *_axes[axis_num];
 	}
 	// Return default the null axis.
-	return FNullAxis;
+	return _nullAxis;
 }
 
 }// namespace sf::gmi

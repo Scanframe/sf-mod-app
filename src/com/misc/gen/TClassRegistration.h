@@ -153,7 +153,7 @@ class TClassRegistration
 		/**
 		 * @brief Index value for when not found.
 		 */
-		 static auto constexpr npos = std::numeric_limits<size_t>::max();
+		static auto constexpr npos = std::numeric_limits<size_t>::max();
 
 		/**
 		 * @brief Constructor for the base class.

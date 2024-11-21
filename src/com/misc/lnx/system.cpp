@@ -19,7 +19,6 @@ __attribute__((constructor)) void initializeStartTime()
 
 }// namespace
 
-
 timespec getTimeRunning()
 {
 	return TimeSpec(getTime()).sub(startTime);

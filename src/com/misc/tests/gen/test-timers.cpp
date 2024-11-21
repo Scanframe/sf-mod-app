@@ -144,7 +144,7 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 		// Sleep one second.
 		::usleep(1000000);
 		// Check the time over the targeted time is about 0.5 seconds.
-		CHECK(et.getTimeOver().toDouble()  == Approx(0.5).margin(0.01));
+		CHECK(et.getTimeOver().toDouble() == Approx(0.5).margin(0.01));
 		CHECK(et.isActive());
 	}
 

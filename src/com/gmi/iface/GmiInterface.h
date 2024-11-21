@@ -1,6 +1,8 @@
 #pragma once
-#include "GmiTypes.h"
+
 #include "AxesCoord.h"
+#include "GmiTypes.h"
+#include "global.h"
 #include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
 
@@ -10,46 +12,43 @@ namespace sf::gmi
 /**
  * @brief Forward declarations of TController.
  */
-class _GMI_CLASS TController;
-
-/**
- * @brief Forward declarations of TAxis.
- */
-class _GMI_CLASS TAxis;
-
+class _GMI_CLASS Controller;
 
 /**
  * @brief Structure to hold a single state
  */
-struct _GMI_CLASS TParamState
+class _GMI_CLASS ParamState
 {
-		TParamState(const TParamState& ps);
-		TParamState(const std::string& name, Value value);
-		bool operator==(const TParamState& ps) const;
-		// Holds the name of the state.
+	public:
+		/**
+		 * @brief Copy constructor.
+		 */
+		ParamState(const ParamState& ps);
+
+		/**
+		* @brief Copy constructor.
+		*/
+		ParamState(const std::string& name, Value value);
+
+		/**
+		 * @brief Compare equal operator.
+		 */
+		bool operator==(const ParamState& ps) const;
+
+		/**
+		 * @brief Holds the name of the state.
+		 */
 		std::string _name;
+		/**
+		 * @brief Holds the value of the state.
+		 */
 		Value _value;
+
+		/**
+		 * @brief Vector holding param-state instances.
+		 */
+		typedef TVector<ParamState> Vector;
 };
-
-inline TParamState::TParamState(const TParamState& ps)
-	: _name(ps._name)
-	, _value(ps._value)
-{}
-
-inline TParamState::TParamState(const std::string& name, Value value)
-	: _name(name)
-	, _value(value)
-{}
-
-inline bool TParamState::operator==(const TParamState& ps) const
-{
-	return _name == ps._name;
-}
-
-/**
- * @brief Vector holding param-state instances.
- */
-typedef TVector<TParamState> TParamStates;
 
 /**
  * @brief Parameter flags for defining parameter behaviour.
@@ -105,34 +104,35 @@ enum EResultFlag
 /**
  * @brief Structure to hold parameter information.
  */
-struct _GMI_CLASS TParamInfo
+struct _GMI_CLASS ParamInfo
 {
 		/**
-		 * @brief Default constructor.
-		 */
-		TParamInfo() = default;
+	 * @brief Default constructor.
+	 */
+		ParamInfo() = default;
+
 		/**
-		 * @brief Copy constructor.
-		 * @param pi
-		 */
-		TParamInfo(const TParamInfo& pi)
+	 * @brief Copy constructor.
+	 * @param pi
+	 */
+		ParamInfo(const ParamInfo& pi)
 		{
 			copyFrom(pi);
 		}
 
 		/**
-		 * @brief Assignment operator.
-		 * @param pi
-		 * @return
-		 */
-		TParamInfo& operator=(const TParamInfo& pi)
+	 * @brief Assignment operator.
+	 * @param pi
+	 * @return
+	 */
+		ParamInfo& operator=(const ParamInfo& pi)
 		{
 			return copyFrom(pi);
 		}
 
 		/**
-		 * @brief Initialize/reset the instance as when it was constructed.
-		 */
+	 * @brief initialize/reset the instance as when it was constructed.
+	 */
 		void Init()
 		{
 			Id = 0;
@@ -150,9 +150,9 @@ struct _GMI_CLASS TParamInfo
 		}
 
 		/**
-		 * @brief Sets the e instance as when it was constructed.
-		 */
-		TParamInfo& copyFrom(const TParamInfo& pi)
+	 * @brief Sets the e instance as when it was constructed.
+	 */
+		ParamInfo& copyFrom(const ParamInfo& pi)
 		{
 			Id = pi.Id;
 			Flags = pi.Flags;
@@ -170,8 +170,8 @@ struct _GMI_CLASS TParamInfo
 			return *this;
 		}
 
-		/** @brief Holds an unique id for the current situation. */
-		int Id{0};
+		/** @brief Holds a unique id for the current situation. */
+		IdType Id{0};
 		/** @brief  Holds the controller instance number. */
 		int Controller{0};
 		/** @brief  Holds the gate number this gate belongs to. When Axis is UINT_MAX the param is not an axis related param. */
@@ -193,7 +193,7 @@ struct _GMI_CLASS TParamInfo
 		/** @brief  Maximum allowed value. */
 		Value Maximum{Value::vitUndefined};
 		/** @brief  Number of specified states for this. */
-		TParamStates States;
+		ParamState::Vector States;
 		/** @brief  Parameter is readonly. */
 		int Flags{0};
 };
@@ -201,11 +201,13 @@ struct _GMI_CLASS TParamInfo
 /**
  * @brief  Structure to hold parameter information
  */
-struct _GMI_CLASS TResultInfo
+struct _GMI_CLASS ResultInfo
 {
-		TResultInfo() = default;
-		TResultInfo(const TResultInfo& pi) { Copy(pi); }
-		TResultInfo& operator=(const TResultInfo& pi) { return Copy(pi); }
+		ResultInfo() = default;
+
+		ResultInfo(const ResultInfo& pi) { Copy(pi); }
+
+		ResultInfo& operator=(const ResultInfo& pi) { return Copy(pi); }
 
 		void Init()
 		{
@@ -220,7 +222,7 @@ struct _GMI_CLASS TResultInfo
 			Bits = 0;
 		}
 
-		TResultInfo& Copy(const TResultInfo& pi)
+		ResultInfo& Copy(const ResultInfo& pi)
 		{
 			Id = pi.Id;
 			Flags = pi.Flags;
@@ -234,80 +236,82 @@ struct _GMI_CLASS TResultInfo
 		}
 
 		/**
-		 * @brief Holds an unique id for the current situation.
-		 */
-		int Id{0};
+	 * @brief Holds a unique id for the current situation.
+	 */
+		IdType Id{0};
 		/**
-		 * @brief Flags
-		 */
+	 * @brief Flags
+	 */
 		int Flags{0};
 		/**
-		 * @brief  Holds the gate number this gate belongs to.
-		 * When gate is UINT_MAX the param is not a gate related param.
-		 */
+	 * @brief  Holds the gate number this gate belongs to.
+	 * When gate is UINT_MAX the param is not a gate related param.
+	 */
 		unsigned Axis{0};
 		/**
-		 * @brief Param index in the hierarchy of the gate or non gate params.
-		 */
+	 * @brief Param index in the hierarchy of the gate or non gate params.
+	 */
 		unsigned Index{0};
 		/**
-		 * @brief  Name of the parameter.
-		 */
+	 * @brief  Name of the parameter.
+	 */
 		std::string Name;
 		/**
-		 * @brief Usage off the parameter of the parameter.
-		 */
+	 * @brief Usage off the parameter of the parameter.
+	 */
 		std::string Description;
 		/**
-		 * @brief Amount of Bits used to store the actual value.
-		 */
+	 * @brief Amount of Bits used to store the actual value.
+	 */
 		unsigned Bits{0};
 		/**
-		 * @brief  Amount of bytes 1, 2 or 4 (later 8) used for storing a single value.
-		 */
+	 * @brief  Amount of bytes 1, 2 or 4 (later 8) used for storing a single value.
+	 */
 		unsigned WordSize{0};
 		/**
-		 * @brief  Amount of values in an array for an arrayed value.
-		 */
+	 * @brief  Amount of values in an array for an arrayed value.
+	 */
 		unsigned ArraySize{0};
 };
 
 /**
  * @brief Structure to hold data update information.
  */
-struct TBufferInfo
+struct BufferInfo
 {
 		/**
-		 * @brief Initializing constructor.
-		 */
-		TBufferInfo() = default;
+	 * @brief Initializing constructor.
+	 */
+		BufferInfo() = default;
+
 		/**
-		 * @brief Clears all members.
-		 */
+	 * @brief Clears all members.
+	 */
 		void Clear();
+
 		/**
-		 * @brief Holds the ID of the result which is responsible for this data.
-		 */
-		int Id{0};
+	 * @brief Holds the ID of the result which is responsible for this data.
+	 */
+		IdType Id{0};
 		/**
-		 * @brief Holds the buffer pointer.
-		 */
+	 * @brief Holds the buffer pointer.
+	 */
 		void* Buffer{nullptr};
 		/**
-		 * @brief Holds the size of the buffer.
-		 */
+	 * @brief Holds the size of the buffer.
+	 */
 		unsigned Size{0};
 		/**
-		 * @brief Holds the remaining size to store.
-		 */
+	 * @brief Holds the remaining size to store.
+	 */
 		unsigned Remain{0};
 		/**
-		 * @brief Holds the counter value of the amount of measurements since the last reset of the implementation.
-		 */
+	 * @brief Holds the counter value of the amount of measurements since the last reset of the implementation.
+	 */
 		unsigned Counter{0};
 };
 
-inline void TBufferInfo::Clear()
+inline void BufferInfo::Clear()
 {
 	Id = 0;
 	Buffer = nullptr;
@@ -317,15 +321,10 @@ inline void TBufferInfo::Clear()
 }
 
 /**
- * @brief Identifier list type.
- */
-typedef TVector<int> TIdList;
-
-/**
  * @brief Function type for the function type which is called when a parameter
  * changes as a result of changes in the interface itself.
  */
-typedef void (*TNotifyProc)(void* data, int id);
+typedef void (*NotifyProc)(void* data, IdType id);
 
 /**
  * @brief Motion default parameters.
@@ -651,7 +650,7 @@ enum EAxisMode
 /**
  * @brief Enumerate for retrieving axis extremes.
  */
-enum EAxisMinMax: unsigned int
+enum EAxisMinMax : unsigned int
 {
 	/**
 	 * @brief Axis minimum position.
@@ -719,6 +718,6 @@ enum EControllerEvent
 /**
  * @brief Handler type for motion event handling.
  */
-typedef void (*TControllerEvent)(TController* ctrl, EControllerEvent event);
+typedef void (*ControllerEvent)(Controller* ctrl, EControllerEvent event);
 
 }// namespace sf::gmi

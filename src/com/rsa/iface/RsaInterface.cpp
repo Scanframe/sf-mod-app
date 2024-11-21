@@ -1,7 +1,6 @@
 #include <misc/gen/ConfigLocation.h>
 #include <misc/gen/Exception.h>
 #include <misc/gen/IniProfile.h>
-#include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
 #include <misc/gen/dbgutils.h>
 
@@ -137,7 +136,7 @@ bool RsaInterface::paramSetGet(IdType id, Value& value, bool skip_event)
 		// Signal success.
 		return true;
 	}
-	SF_RTTI_NOTIFY(DO_DEFAULT, "SetGetParam: Setting the param " << id << " failed!");
+	SF_RTTI_NOTIFY(DO_DEFAULT, "setGetParam: Setting the param " << id << " failed!")
 	// On failure to set the parameter retrieve the current value.
 	handleParam(id, nullptr, nullptr, &value);
 	// Signal failure.
@@ -175,7 +174,7 @@ bool RsaInterface::getParam(
 		return getParam(id, value);
 	}
 	//
-	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!");
+	SF_RTTI_NOTIFY(DO_DEFAULT, "getParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!")
 	return false;
 }
 
@@ -195,7 +194,7 @@ bool RsaInterface::setParam(
 		return setParam(id, value, skip_event);
 	}
 	// Signal ID failure.
-	SF_RTTI_NOTIFY(DO_DEFAULT, "GetParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!");
+	SF_RTTI_NOTIFY(DO_DEFAULT, "getParam: param" << param << " of channel, gate: " << ch << ", " << gate << " is not present!")
 	return false;
 }
 
@@ -351,7 +350,7 @@ bool RsaInterface::settingsReadWrite(bool rd)
 	}// try
 	catch (std::exception& ex)
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, "ReadWriteSettings() Exception: " << ex.what() << "!");
+		SF_RTTI_NOTIFY(DO_DEFAULT, "settingsReadWrite() Exception: " << ex.what() << "!")
 		return false;
 	}
 }

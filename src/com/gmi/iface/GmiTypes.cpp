@@ -26,7 +26,7 @@ static struct
 		{"Aux4", "m", "m/s", "m/s\xB2"}
 };
 
-_GMI_FUNC const char* GetAxisName(int axis_loc)
+_GMI_FUNC const char* getAxisName(int axis_loc)
 {
 	// Correct the index by 1.
 	size_t index = axis_loc + 1;
@@ -37,13 +37,13 @@ _GMI_FUNC const char* GetAxisName(int axis_loc)
 	return AxisInformation[index].Name;
 }
 
-_GMI_FUNC const char* GetMovementsUnit(AxisMovements ams, EAxisValueType type)
+_GMI_FUNC const char* getMovementsUnit(AxisMovements ams, EAxisValueType type)
 {
 	// Differ between to known axes.
-	return GetAxisUnit(ams.has(amRADIAL) ? alC : alX, type);
+	return getAxisUnit(ams.has(amRADIAL) ? alC : alX, type);
 }
 
-_GMI_FUNC const char* GetAxisUnit(int axis_loc, EAxisValueType type)
+_GMI_FUNC const char* getAxisUnit(int axis_loc, EAxisValueType type)
 {
 	// Correct the index by 1.
 	size_t index = axis_loc + 1;

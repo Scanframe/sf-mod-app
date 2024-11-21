@@ -42,13 +42,13 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		virtual ~RsaInterface();
 
 		/**
-		 * @brief Initializes the implementation for operation. Calls DoInitialize.
+		 * @brief Initializes the implementation for operation. Calls doInitialize.
 		 * @return True on success.
 		 */
 		bool initialize();
 
 		/**
-		 * @brief Un-initializes the implementation. Calls DoInitialize.
+		 * @brief Un-initializes the implementation. Calls doInitialize.
 		 * @return True on success.
 		 */
 		bool uninitialize();

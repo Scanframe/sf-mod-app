@@ -7,6 +7,7 @@
 namespace sf
 {
 
+using gmi::Controller;
 using gmi::EAxisLocation;
 using gmi::EAxisMode;
 using gmi::EMoveConCmd;
@@ -14,25 +15,22 @@ using gmi::EMovePosCmd;
 using gmi::EMoveVelCmd;
 using gmi::EParam;
 using gmi::EResult;
-using gmi::TBufferInfo;
-using gmi::TController;
-using gmi::TIdList;
-using gmi::TParamInfo;
-using gmi::TResultInfo;
+using gmi::IdList;
+using gmi::ParamInfo;
 
-class MotionEmulator : public TController
+class GmiEmulator : public Controller
 {
 	public:
-		typedef TController TInherited;
+		typedef Controller TInherited;
 		/**
 		 * @brief  Axis type of this implementation.
 		 */
-		class TAxis : public TController::TAxis
+		class TAxis : public Controller::Axis
 		{
 			public:
-				typedef TController::TAxis TInherited;
+				typedef Controller::Axis TInherited;
 				// Constructor.
-				TAxis(MotionEmulator* me, EAxisLocation al);
+				TAxis(GmiEmulator* me, EAxisLocation al);
 				// Destructor.
 				~TAxis();
 				//
@@ -76,91 +74,90 @@ class MotionEmulator : public TController
 				// Holds the mode set.
 				EAxisMode Mode;
 				//
-				MotionEmulator* Controller;
+				GmiEmulator* _Controller;
 
-				friend MotionEmulator;
+				friend GmiEmulator;
 		};
 		// Constructor.
-		MotionEmulator(const Parameters&);
+		GmiEmulator(const Parameters&);
 		// Destructor.
-		~MotionEmulator() override;
+		~GmiEmulator() override;
 		// Overloaded from base class.
-		bool DoInitialize(bool) override;
+		bool doInitialize(bool) override;
 		// Overloaded from base class.
-		virtual bool DoHomeAxes(bool skip) override;
+		bool doHomeAxes(bool skip) override;
 		// Overloaded from base class.
-		virtual void AddPropertyPages(PropertySheetDialog* sheet) override;
+		void addPropertyPages(PropertySheetDialog* sheet) override;
 		// Overloaded from base class.
-		virtual bool EnumParamIds(TIdList& ids) const override;
+		bool enumParamIds(IdList& ids) const override;
 		// Overloaded from base class.
-		virtual int GetParamId(EParam param, unsigned axis = std::numeric_limits<unsigned>::max()) const override;
+		gmi::IdType getParamId(EParam param, int axis = std::numeric_limits<unsigned>::max()) const override;
 		// Overloaded from base class.
-		virtual bool HandleParam(int id, TParamInfo* info, const Value* setval, Value* getval) override;
+		bool handleParam(gmi::IdType id, ParamInfo* info, const Value* setval, Value* getval) override;
 		// Overloaded from base class.
-		virtual int GetResultId(EResult result, unsigned axis = UINT_MAX) const override;
+		gmi::IdType getResultId(EResult result, int axis = std::numeric_limits<int>::max()) const override;
 		// Overloaded from base class.
-		virtual bool EnumResultIds(TIdList& ids) const override;
+		bool enumResultIds(IdList& ids) const override;
 		// Overloaded from base class.
-		virtual bool HandleResult(int id, TResultInfo* info, TBufferInfo* bufinfo) override;
+		bool handleResult(gmi::IdType id, gmi::ResultInfo* info, gmi::BufferInfo* buf_info) override;
+		//
+		void doMovePos(EMovePosCmd mpc);
+		//
+		void doMoveVel(EMoveVelCmd mvc);
+		//
+		void doMoveCon(EMoveConCmd mcc);
+
 		//
 		TVector<TAxis*> AxisList;
 		// Axis
-		TAxis X_Axis;// Lineair and moves in [m].
-		TAxis Y_Axis;// Lineair and moves in [m].
-		TAxis Z_Axis;// Lineair and moves in [m].
-		TAxis A_Axis;// Angular Gimble and moves [rad].
-		TAxis B_Axis;// Angular Swiffel and moves [rad].
-		TAxis C_Axis;// Angular Turntable and moves [rad and/or Hz].
-		//TAxis D_Axis;  // Tool Angular and moves [rad].
-		TAxis E_Axis;// Tool Lineair and moves in [m].
+		TAxis _axisX;// Lineair and moves in [m].
+		TAxis _axisY;// Lineair and moves in [m].
+		TAxis _axisZ;// Lineair and moves in [m].
+		TAxis _axisA;// Angular Gimble and moves [rad].
+		TAxis _axisB;// Angular Swiffel and moves [rad].
+		TAxis _axisC;// Angular Turntable and moves [rad and/or Hz].
+		//TAxis _axisD;  // Tool Angular and moves [rad].
+		TAxis _axisE;// Tool Lineair and moves in [m].
 		// Holds the axis initialization status.
-		bool FlagInitialized;
+		bool _flagInitialized;
 		// Holds the joystick mode flag.
-		int FJoystickState;
+		int _joystickState;
 		// Holds the axis responsible for triggering the measurement.
-		int FTriggerAxis;
+		int _triggerAxis;
 		// Holds the axis trigger mode. (intern/extern)
-		int FTriggerMode;
+		int _triggerMode;
 		// Holds the select pop axis.
-		int FPopAxis;
+		int _popAxis;
 		//
-		double FTriggerDensity;
+		double _triggerDensity;
 		//
-		double FTriggerFreq;
+		double _triggerFrequency;
 		//
-		bool FTriggerEnable;
+		bool _triggerEnable;
 		// Holds the current position state.
-		EMovePosCmd FCurMovePos;
+		EMovePosCmd _curMovePos;
 		// Holds the current velocity state.
-		EMoveVelCmd FCurMoveVel;
+		EMoveVelCmd _curMoveVel;
 		// Holds the current continuous state.
-		EMoveConCmd FCurMoveCon;
-		//
-		void DoMovePos(EMovePosCmd mpc);
-		//
-		void DoMoveVel(EMoveVelCmd mvc);
-		//
-		void DoMoveCon(EMoveConCmd mcc);
-
+		EMoveConCmd _curMoveCon;
 		// Hook to the sustain interface.
-		TSustain<MotionEmulator> FSustainEntry;
+		TSustain<GmiEmulator> _sustainEntry;
 		//
-		bool Sustain(const timespec& t);
-
+		bool sustain(const timespec& t);
 		// Hold the reported firmware revision.
-		std::string FFirmwareRevision;
-		// Arteficial homing delay.
-		ElapseTimer FHomingDelay;
+		std::string _firmwareRevision;
+		// Artificial homing delay.
+		ElapseTimer _homingDelay;
 		// Holds the error status.
-		int FError;
+		int _error;
 		//
-		int FChuckJaw;
+		int _chuckJaw;
 		// Holds the last pop event count.
-		int FPopEventCount;
+		int _popEventCount;
 		//
-		int FDebug;
+		int _debug;
 
-		friend MotionEmulator::TAxis;
+		friend GmiEmulator::TAxis;
 };
 
 }// namespace sf

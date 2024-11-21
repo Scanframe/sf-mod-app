@@ -18,12 +18,12 @@ _GMI_FUNC bool getTargetTime(double dist, double vel, double acc, double& time);
 /**
  * @brief  Calculates the time needed to move over the distance for all axes in the AxisCoord.
  * @param dist distance to travel.
- * @param vel Maximum velocity.
- * @param acc Maximum acceleration.
+ * @param max_vel Maximum velocity.
+ * @param max_acc Maximum acceleration.
  * @param trg_time Returned target time.
  * @return True on success to calculate.
  */
-_GMI_FUNC bool getTargetTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_time);
+_GMI_FUNC bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time);
 
 /**
  * @brief Calculates the time needed to move over the distance.
@@ -38,12 +38,12 @@ _GMI_FUNC bool getAccelerationTime(double dist, double vel, double acc, double& 
 /**
  * @brief Calculates the time needed to move over the distance for all axes in the AxisCoord.
  * @param dist distance to travel.
- * @param vel Maximum velocity.
- * @param acc Maximum acceleration.
- * @param time Returned acceleration time.
+ * @param max_vel Maximum velocity.
+ * @param max_acc Maximum acceleration.
+ * @param trg_time Returned acceleration time.
  * @return True on success to calculate.
  */
-_GMI_FUNC bool getAccelerationTime(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_time);
+_GMI_FUNC bool getAccelerationTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time);
 
 /**
  * @brief Calculates the time and acceleration needed to move over the distance.
@@ -77,7 +77,7 @@ _GMI_FUNC bool getPositionVelocity(double dist, double vel, double acc, double c
  * @param acc Acceleration needed to reach the previous velocity.
  * @return True on success to calculate.
  */
-_GMI_FUNC bool calcLinearValue(double dist, double trg_time,	double acc_time,	double& vel, double& acc);
+_GMI_FUNC bool calcLinearValue(double dist, double trg_time, double acc_time, double& vel, double& acc);
 
 /**
  * @brief ???
@@ -88,7 +88,7 @@ _GMI_FUNC bool calcLinearValue(double dist, double trg_time,	double acc_time,	do
  * @param acc Acceleration needed to reach the previous velocity.
  * @return True when calculations are successful.
  */
-_GMI_FUNC bool calcLinearValues(const TAxesCoord& dist,	double trg_time, double acc_time, TAxesCoord& vel, TAxesCoord& acc);
+_GMI_FUNC bool calcLinearValues(const AxesCoord& dist, double trg_time, double acc_time, AxesCoord& vel, AxesCoord& acc);
 
 /**
  * @brief Calculates the velocity and acceleration needed to move a distance in a linear manner. Returns
@@ -100,7 +100,7 @@ _GMI_FUNC bool calcLinearValues(const TAxesCoord& dist,	double trg_time, double 
  * @param trg_time Time needed to reach target.
  * @return True when the function was able to make the calculation.
  */
-_GMI_FUNC bool getLinearValues(const TAxesCoord& dist, const TAxesCoord& max_vel, const TAxesCoord& max_acc, TAxesCoord& trg_vel, TAxesCoord& trg_acc, double& trg_time);
+_GMI_FUNC bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_vel, AxesCoord& trg_acc, double& trg_time);
 
 /**
  * @brief Compares the passed values v1 and v2.
@@ -114,5 +114,4 @@ _GMI_FUNC bool getLinearValues(const TAxesCoord& dist, const TAxesCoord& max_vel
  */
 _GMI_FUNC int compareValue(double v1, double v2, double tolerance, bool rad_unlimited);
 
-
-}
+}// namespace sf::gmi

@@ -9,29 +9,29 @@ namespace sf::gmi
 /**
  * @brief All axis values in one structure
  */
-class _GMI_CLASS TAxesCoord
+class _GMI_CLASS AxesCoord
 {
 	public:
 		/**
 		 * @brief Default constructor.
 		 */
-		TAxesCoord();
+		AxesCoord();
 		/**
 		 * @brief copyFrom constructor.
 		 * @param ac
 		 */
-		TAxesCoord(const TAxesCoord& ac);
+		AxesCoord(const AxesCoord& ac);
 		/**
 		 * @brief Assignment operator.
 		 * @param ac
 		 * @return
 		 */
-		TAxesCoord& operator=(const TAxesCoord& ac);
+		AxesCoord& operator=(const AxesCoord& ac);
 		/**
 		 * @brief Constructor using a string containing the axis values.
 		 * @param s
 		 */
-		TAxesCoord(std::string s);
+		AxesCoord(std::string s);
 		/**
 		 * @brief Clears all values in the coordinate.
 		 */
@@ -91,41 +91,41 @@ class _GMI_CLASS TAxesCoord
 		 * @param av
 		 * @return
 		 */
-		TAxesCoord& operator<<(const TAxisValue& av);
-		TAxesCoord& operator=(const TAxisValue& av);
-		TAxesCoord& operator-=(const TAxisValue& av);
-		TAxesCoord& operator+=(const TAxisValue& av);
+		AxesCoord& operator<<(const AxisValue& av);
+		AxesCoord& operator=(const AxisValue& av);
+		AxesCoord& operator-=(const AxisValue& av);
+		AxesCoord& operator+=(const AxisValue& av);
 		/**
 		 * @brief Compare operators for exact binary comparison.
 		 * @param ac
 		 * @return
 		 */
-		bool operator==(const TAxesCoord& ac) const;
-		bool operator!=(const TAxesCoord& ac) const;
+		bool operator==(const AxesCoord& ac) const;
+		bool operator!=(const AxesCoord& ac) const;
 		/**
 		 * @brief Operator which add the axes not yet set in this instance.
 		 * @param ac
 		 * @return
 		 */
-		TAxesCoord& operator|=(const TAxesCoord& ac);
+		AxesCoord& operator|=(const AxesCoord& ac);
 		/**
 		 * @brief Operator which sets the axes already set in this instance.
 		 * @param ac
 		 * @return
 		 */
-		TAxesCoord& operator&=(const TAxesCoord& ac);
+		AxesCoord& operator&=(const AxesCoord& ac);
 		/**
 		 * @brief Subtracts only axis values form axes set in this instance.
 		 * @param ac
 		 * @return
 		 */
-		TAxesCoord& operator-=(const TAxesCoord& ac);
+		AxesCoord& operator-=(const AxesCoord& ac);
 		/**
 		 * @brief Adds only axis values form axes set in this instance.
 		 * @param ac
 		 * @return
 		 */
-		TAxesCoord& operator+=(const TAxesCoord& ac);
+		AxesCoord& operator+=(const AxesCoord& ac);
 		/**
 		 * @brief Result of the compare function.
 		 */
@@ -157,7 +157,7 @@ class _GMI_CLASS TAxesCoord
 		 * @param tolerance Axes values containing accuracy of the comparison.
 		 * @return True when the two values do not exceed the maximum difference.
 		 */
-		ECompare Compare(const TAxesCoord& ac, const TAxesCoord& tolerance) const;
+		ECompare Compare(const AxesCoord& ac, const AxesCoord& tolerance) const;
 		/**
 		 * @brief Same as above except the radial unlimited axes can be specified.
 		 * @param ac Axes coord being compared.
@@ -165,19 +165,19 @@ class _GMI_CLASS TAxesCoord
 		 * @param radunlim Set of radial unlimited axis.
 		 * @return
 		 */
-		ECompare Compare(const TAxesCoord& ac, const TAxesCoord& tolerance, const AxisLocations rad_unlimited) const;
+		ECompare Compare(const AxesCoord& ac, const AxesCoord& tolerance, const AxisLocations rad_unlimited) const;
 		/**
 		 * @brief Unsets a axis value.
 		 * @param axis_loc Axis location to remove.
 		 * @return This instance reference.
 		 */
-		TAxesCoord& operator>>(unsigned int axis_loc);
+		AxesCoord& operator>>(unsigned int axis_loc);
 		/**
 		 * @brief Assigns a specific axis value to this structure.
 		 * @param axis_loc
 		 * @return This instance reference.
 		 */
-		TAxisValue operator[](size_t axis_loc) const;
+		AxisValue operator[](size_t axis_loc) const;
 		/**
 		 * @brief Gets the 3D vector formed by the XYZ axis.
 		 * @return The 3D -vector.
@@ -188,19 +188,19 @@ class _GMI_CLASS TAxesCoord
 		 * @param v 3D vector.
 		 * @return This instance as reference.
 		 */
-		TAxesCoord& SetVector(const Vector3D& v);
+		AxesCoord& SetVector(const Vector3D& v);
 		/**
 		 * @brief Adds an offset to the existing coordinate.
 		 * @param ofs 3D vector offset.
 		 * @return This instance reference.
 		 */
-		TAxesCoord& Offset(const Vector3D& ofs);
+		AxesCoord& Offset(const Vector3D& ofs);
 		/**
 		 * @brief Adds an offset to the coordinate and returns the new formed coord.
 		 * @param ofs
 		 * @return Offset copy of this instance reference.
 		 */
-		TAxesCoord OffsetBy(const Vector3D& ofs) const;
+		AxesCoord OffsetBy(const Vector3D& ofs) const;
 
 	private:
 		/**
@@ -216,7 +216,7 @@ class _GMI_CLASS TAxesCoord
 /**
  * @brief Type definition.
  */
-typedef TVector<TAxesCoord> TAxesCoords;
+typedef TVector<AxesCoord> TAxesCoords;
 
 }// namespace sf::gmi
 
@@ -226,7 +226,7 @@ typedef TVector<TAxesCoord> TAxesCoords;
  * @param ac Axes coordinate  to stream.
  * @return The passed output stream.
  */
-_GMI_FUNC std::ostream& operator<<(std::ostream& os, const sf::gmi::TAxesCoord& ac);
+_GMI_FUNC std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac);
 
 /**
  * @brief Operator for reading the #sf::gmi::TAxesCoord from an input stream.
@@ -234,7 +234,7 @@ _GMI_FUNC std::ostream& operator<<(std::ostream& os, const sf::gmi::TAxesCoord& 
  * @param ac Axes coordinate  to stream.
  * @return The passed input stream.
  */
-_GMI_FUNC std::istream& operator>>(std::istream& is, sf::gmi::TAxesCoord& ac);
+_GMI_FUNC std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac);
 
 namespace sf
 {
@@ -242,7 +242,7 @@ namespace sf
 /**
  * @brief Inlined operator to allow streaming of the class possible in 'sf' namespace .
  */
-inline std::ostream& operator<<(std::ostream& os, const sf::gmi::TAxesCoord& ac)
+inline std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac)
 {
 	return ::operator<<(os, ac);
 }
@@ -250,7 +250,7 @@ inline std::ostream& operator<<(std::ostream& os, const sf::gmi::TAxesCoord& ac)
 /**
  * @brief Inlined operator to allow streaming of the class possible in 'sf' namespace.
  */
-inline std::istream& operator>>(std::istream& is, sf::gmi::TAxesCoord& ac)
+inline std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac)
 {
 	return ::operator>>(is, ac);
 }

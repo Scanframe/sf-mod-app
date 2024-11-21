@@ -1,6 +1,5 @@
-#include <misc/gen/IniProfile.h>
-#include <gii/gen/GiiUtils.h>
 #include "IniProfileSettings.h"
+#include <gii/gen/GiiUtils.h>
 
 namespace sf
 {
@@ -21,4 +20,5 @@ const std::string& IniProfileSettings::getSettingsFileSuffix() const
 {
 	return _settingsFileSuffix;
 }
-}
+
+}// namespace sf

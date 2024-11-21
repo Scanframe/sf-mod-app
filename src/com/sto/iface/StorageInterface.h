@@ -39,13 +39,13 @@ class _STO_CLASS StorageInterface
 		virtual ~StorageInterface();
 
 		/**
-		 * @brief Initializes the implementation for operation. Calls DoInitialize.
+		 * @brief Initializes the implementation for operation. Calls doInitialize.
 		 * @return True on success.
 		 */
 		bool initialize();
 
 		/**
-		 * @brief Uninitializes the implementation. Calls DoInitialize.
+		 * @brief Uninitializes the implementation. Calls doInitialize.
 		 * @return True on success.
 		 */
 		bool uinitialize();

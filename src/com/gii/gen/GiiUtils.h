@@ -1,7 +1,7 @@
 #pragma once
 
-#include <misc/gen/IniProfile.h>
 #include "../global.h"
+#include <misc/gen/IniProfile.h>
 
 namespace sf
 {
@@ -20,4 +20,4 @@ bool _GII_FUNC saveVariableValues(IniProfile& profile);
  */
 bool _GII_FUNC loadVariableValues(IniProfile& profile);
 
-}
+}// namespace sf
