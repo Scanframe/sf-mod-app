@@ -8,13 +8,13 @@ namespace sf
 bool IniProfileSettings::load(const std::string& filepath)
 {
 	IniProfile ini(filepath);
-	return LoadVariableValues(ini);
+	return loadVariableValues(ini);
 }
 
 bool IniProfileSettings::read(const std::string& filepath)
 {
 	IniProfile ini(filepath);
-	return SaveVariableValues(ini);
+	return saveVariableValues(ini);
 }
 
 const std::string& IniProfileSettings::getSettingsFileSuffix() const

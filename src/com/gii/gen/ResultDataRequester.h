@@ -7,14 +7,13 @@
 
 namespace sf
 {
-
 /**
  * @brief Handles requests and events for indexed data sources.
  *
  * #sf::ResultData instances can be attached to this type of instance to handle
  * request on multiple results for when all data must be available at a time for processing.
  */
-class _GII_CLASS ResultDataRequester : public ResultDataTypes
+class _GII_CLASS ResultDataRequester :public ResultDataTypes
 {
 	public:
 		/**
@@ -71,7 +70,7 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		 * @brief Requests a range of the data using a single index range.
 		 * @return True on success.
 		 */
-		inline bool requestIndex(size_type index);
+		bool requestIndex(size_type index);
 
 		/**
 		 * @brief Requests a range of the data using multiple index ranges.
@@ -91,7 +90,7 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		 * @brief Sets the time-out in ms in which a request is allowed too take before it is timed out.
 		 * A value of zero. makes it wait indefinitely.
 		 */
-		inline void setTimeout(const TimeSpec& timeout);
+		void setTimeout(const TimeSpec& timeout);
 
 		/**
 		 * @brief Called when results are attached or detached and when a time-out occurred.
@@ -102,12 +101,12 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		/**
 		 * @brief Gets the index range the requester is working on or has done.
 		 */
-		[[nodiscard]] inline const Range& getIndexRange() const;
+		[[nodiscard]] const Range& getIndexRange() const;
 
 		/**
 		 * @brief Gets the data range the requester is working on or has done.
 		 */
-		[[nodiscard]] inline const Range& getDataRange() const;
+		[[nodiscard]] const Range& getDataRange() const;
 
 		/**
 		 * @brief Sets an event handler for this instance to which all result events are rerouted after it handled its own stuff.
@@ -119,7 +118,7 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		/**
 		 * @brief Returns the linked handler hook object.
 		 */
-		[[nodiscard]] inline const ResultDataHandler* getHandler() const;
+		[[nodiscard]] const ResultDataHandler* getHandler() const;
 
 		/**
 		 * @brief Enumerate for states.
@@ -155,7 +154,7 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		/**
 		 * Gets the current state from the requester.
 		 */
-		[[nodiscard]] inline EState getState() const;
+		[[nodiscard]] EState getState() const;
 
 		/**
 		 * @brief For debugging purposes only it writes the status to the output stream.
@@ -245,47 +244,47 @@ class _GII_CLASS ResultDataRequester : public ResultDataTypes
 		 */
 		struct WorkData
 		{
-				/**
-			 * @brief Default constructor.
-			 */
-				WorkData()
-				{
-					clear();
-				}
+			/**
+		 * @brief Default constructor.
+		 */
+			WorkData()
+			{
+				clear();
+			}
 
-				/**
-			 * @brief Clears all dat members to their initial state.
-			 */
-				void clear()
-				{
-					_indexRequest = false;
-					_dataRequest._bits = 0;
-					_range.clear();
-					_index.clear();
-					_dataRequest._bits = 0;
-					_dataAccess._bits = 0;
-				}
+			/**
+		 * @brief Clears all dat members to their initial state.
+		 */
+			void clear()
+			{
+				_indexRequest = false;
+				_dataRequest._bits = 0;
+				_range.clear();
+				_index.clear();
+				_dataRequest._bits = 0;
+				_dataAccess._bits = 0;
+			}
 
-				/**
-			 * @brief Data range of a request.
-			 */
-				Range _range;
-				/**
-			 * @brief Index range of a request.
-			 */
-				Range _index;
-				/**
-			 * @brief True when a request index was made.
-			 */
-				bool _indexRequest{};
-				/**
-			 * @brief True when a request data was made and it must be waited for.
-			 */
-				TSet<int> _dataRequest;
-				/**
-			 * @brief True when it must wait for results to catch up with the index result.
-			 */
-				TSet<int> _dataAccess;
+			/**
+		 * @brief Data range of a request.
+		 */
+			Range _range;
+			/**
+		 * @brief Index range of a request.
+		 */
+			Range _index;
+			/**
+		 * @brief True when a request index was made.
+		 */
+			bool _indexRequest{};
+			/**
+		 * @brief True when a request data was made and it must be waited for.
+		 */
+			TSet<int> _dataRequest;
+			/**
+		 * @brief True when it must wait for results to catch up with the index result.
+		 */
+			TSet<int> _dataAccess;
 		};
 
 		/**
@@ -331,5 +330,4 @@ inline const Range& ResultDataRequester::getDataRange() const
 {
 	return _work._range;
 }
-
-}// namespace sf
+} // namespace sf

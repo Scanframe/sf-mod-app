@@ -11,13 +11,13 @@ namespace sf
  *
  * Which variable values are saved is determined by its flags.
  */
-bool _GII_FUNC SaveVariableValues(IniProfile& profile);
+bool _GII_FUNC saveVariableValues(IniProfile& profile);
 
 /**
  * Loads variable settings from the passed profile instance.
  *
  * Which variable values are loaded is determined by its flags.
  */
-bool _GII_FUNC LoadVariableValues(IniProfile& profile);
+bool _GII_FUNC loadVariableValues(IniProfile& profile);
 
 }

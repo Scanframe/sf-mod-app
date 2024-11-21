@@ -12,29 +12,35 @@ namespace sf
 _MISC_FUNC std::string getLine(std::istream& is);
 
 /**
- * Checks if the passed path exist (by doing a access() using F_OK).
+ * @brief Checks if the passed path exist (by doing an access() using F_OK).
  */
 _MISC_FUNC bool fileExists(const char* path);
 
+/**
+ * @brief Checks if the passed path exist (by doing an access() using F_OK).
+ */
 inline bool fileExists(const std::string& path)
 {
 	return fileExists(path.c_str());
 }
 
 /**
- * Same as basename() but using a std::string.
+ * @brief Same as basename() but using a std::string.
  */
 _MISC_FUNC std::string fileBaseName(const std::string& path);
+
 /**
- * Same as dirname() but using a std::string.
+ * @brief Same as dirname() but using a std::string.
  */
 _MISC_FUNC std::string fileDirName(const std::string& path);
+
 /**
- * Same as unlink() but using a std::string.
+ * @brief Same as unlink() but using a std::string.
  */
 _MISC_FUNC bool fileUnlink(const std::string& path);
+
 /**
- * Same as rename() but using a std::string.
+ * @brief Same as rename() but using a std::string.
  */
 _MISC_FUNC bool fileRename(const std::string& old_path, const std::string& new_path);
 

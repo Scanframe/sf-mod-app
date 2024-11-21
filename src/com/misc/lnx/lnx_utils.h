@@ -15,6 +15,7 @@ namespace sf
 * Checks if a keyboard key pas pressed.
 */
 _MISC_FUNC bool kb_hit();
+
 /**
  * Add missing gettid() system call.
  */
@@ -26,15 +27,36 @@ _MISC_FUNC pid_t gettid() noexcept;
 _MISC_FUNC bool getFiles(strings& files, std::string directory, std::string wildcard);
 
 /**
- * Writes a buffer to a file.
+ * @brief Writes a buffer to a filepath.
+ * @param path Filepath.
+ * @param buf Pointer to the character buffer.
+ * @param sz Size of the buffer.
+ * @param append When true it appends the buffer to the file.
+ * @return
  */
 _MISC_FUNC bool file_write(const char* path, const void* buf, size_t sz, bool append = false);
 
+/**
+ * @brief Writes a character buffer to file.
+ * @param path Filepath.
+ * @param buf Pointer to the character buffer.
+ * @param sz Size of the buffer.
+ * @param append When true it appends the buffer to the file.
+* @return True on success.
+ */
 inline bool file_write(const std::string& path, const void* buf, size_t sz, bool append = false)
 {
 	return file_write(path.c_str(), buf, sz, append);
 }
 
+/**
+ * @brief Writes a std::string to file.
+ * @param path File path.
+ * @param s String to be written to the file.
+ * @param sz Size of the buffer.
+ * @param append When true it appends the buffer to the file.
+ * @return True on success.
+ */
 inline bool file_write(const std::string& path, const std::string& s, bool append = false)
 {
 	return file_write(path.c_str(), s.c_str(), s.length(), append);
@@ -48,39 +70,60 @@ inline bool file_write(const std::string& path, const std::string& s, bool appen
 _MISC_FUNC std::filesystem::path file_fd_path(int fd);
 
 /**
- * Easier typename.
+ * @brief Easier typename for 'struct stat'.
  */
 typedef struct stat stat_t;
-/**
- * Same as stat() but using an std::string.
- */
-_MISC_FUNC bool file_stat(const std::string& path, stat_t& _stat);
-/**
- * Formats the time to the given format.
- * When the format is NULL the XML format is used.
- * When the timeinfo is NULL the current local time is used.
- */
-_MISC_FUNC std::string time_format(const struct tm* timeinfo, const char* format = nullptr);
-/**
- * When time -1 the current time is used.
- */
-_MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullptr, bool gmtime = false);
-/**
- * Returns the unix time from the passed string in the format that was passed.
- * When the format is NULL the XML format is used.
- * When gmtime is true GMT is used otherwise the local time.
- */
-_MISC_FUNC time_t time_str2time(const std::string& str, const char* format = nullptr, bool gmtime = false);
-/**
- * Same as mktime() only GMT is the result value not the localtime when gmtime is true.
- */
-_MISC_FUNC time_t time_mktime(struct tm* tm, bool gmtime = false);
 
 /**
- * Makes all directories recursively in the path.
+ * @brief Same as stat() but using a std::string.
+ */
+_MISC_FUNC bool file_stat(const std::string& path, stat_t& _stat);
+
+/**
+ * @brief Formats the time to the given format.
+ * @param time_info When NULL the current local time is used.
+ * @param format When NULL the XML format is used.
+ * @return Formatted time string.
+ */
+_MISC_FUNC std::string time_format(const struct tm* time_info, const char* format = nullptr);
+
+/**
+ * @brief Formats the time to the given format.
+ * @param time When -1 the current time is used.
+ * @return Formatted time string.
+ */
+_MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullptr, bool gm_time = false);
+
+/**
+ * @brief Gets the unix time from the passed string in the format that was passed.
+ * @param format When NULL the XML format is used.
+ * @param gm_time When is true GMT is used otherwise the local time.
+ * @return Time structure.
+ */
+_MISC_FUNC time_t time_str2time(const std::string& str, const char* format = nullptr, bool gm_time = false);
+
+/**
+ * @brief Same as ::mktime().
+ * @param tm Time
+ * @param gm_time When true GMT is the result value not the localtime.
+ * @return Time as time_t.
+ */
+_MISC_FUNC time_t time_mktime(struct tm* tm, bool gm_time = false);
+
+/**
+ * @brief Makes all directories recursively in the path.
+ * @param path Directory path to make.
+ * @param mode Mode of each created directory.
+ * @return True on success.
  */
 _MISC_FUNC bool file_mkdir(const char* path, __mode_t mode = 0755);
 
+/**
+ * @brief Makes all directories recursively in the path.
+ * @param path Directory path to make.
+ * @param mode Mode of each created directory.
+ * @return True on success.
+ */
 inline bool file_mkdir(const std::string& path, __mode_t mode = 0755)
 {
 	return file_mkdir(path.c_str(), mode);
@@ -92,10 +135,10 @@ inline bool file_mkdir(const std::string& path, __mode_t mode = 0755)
 typedef struct passwd passwd_type;
 
 /**
- * Extends struct passwd and auto allocates needed memory.
+ * @brief Extends struct passwd and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct passwd_t : passwd_type
+struct passwd_t :public passwd_type
 {
 	public:
 		/**
@@ -112,6 +155,7 @@ struct passwd_t : passwd_type
 		explicit operator bool() const { return valid; }
 
 	private:
+
 		/**
 		 * Clears the passwd_type part only.
 		 */
@@ -145,7 +189,7 @@ bool proc_getpwnam(std::string name, passwd_t& pwd);
 /**
  * Wrapper for getpwuid_r() but simplified using passwd_t.
  * Returns true when an entry was found.
- * Incase of an error it throws en exception.
+ * In case of an error it throws en exception.
  */
 bool proc_getpwuid(uid_t uid, passwd_t& pwd);
 
@@ -170,7 +214,7 @@ typedef struct group group_type;
  * Extends struct group and auto allocates needed memory.
  * Used as a result type with auto memory cleanup .
  */
-struct group_t : group_type
+struct group_t :public group_type
 {
 	public:
 		/**

@@ -80,7 +80,7 @@ UnitConversionPropertyPage::~UnitConversionPropertyPage()
 
 QString UnitConversionPropertyPage::getPageName() const
 {
-	return tr("unit Conversion");
+	return tr("Unit Conversion");
 }
 
 QString UnitConversionPropertyPage::getPageDescription() const

@@ -443,7 +443,7 @@ TEST_CASE("sf::Variable", "[variable]")
 																			}});
 	}
 
-	SECTION("unit Conversion")
+	SECTION("Unit Conversion")
 	{
 		std::istringstream is(IniContent);
 		sf::UnitConversionServer ucs;

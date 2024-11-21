@@ -190,7 +190,7 @@ class TMatrix22
 };
 
 /**
- * @brief Operator for writing the matrix to an output-stream.
+ * @brief Operator for writing the #sf::TMatrix22 to an output-stream.
  * @tparam T Base floating point type.
  * @param os Output stream.
  * @param mtx Matrix to stream out.
@@ -203,9 +203,9 @@ inline std::ostream& operator<<(std::ostream& os, const TMatrix22<T>& mtx)
 }
 
 /**
- * @brief Operator for reading the matrix from an input stream.
+ * @brief Operator for reading the #sf::TMatrix22 from an input stream.
  * @tparam T Base floating point type.
- * @param os Input stream.
+ * @param is Input stream.
  * @param mtx Matrix to stream.
  * @return The passed input stream.
  */

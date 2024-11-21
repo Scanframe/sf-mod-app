@@ -19,7 +19,7 @@ class _MISC_CLASS ElapseTimer
 		/**
 		 * @brief Initializing constructor setting the elapse time using a timespec struct.
 		 */
-		explicit inline ElapseTimer(const timespec& t);
+		explicit ElapseTimer(const timespec& t);
 
 		/**
 		 * @brief Initializing constructor setting the elapse time in usec.
@@ -39,22 +39,22 @@ class _MISC_CLASS ElapseTimer
 		/**
 		 * @brief Sets the timer up to elapse again.
 		 */
-		inline void reset();
+		void reset();
 
 		/**
 		 * @brief Disables timer so Active does not return non-zero any more.
 		 */
-		inline void disable();
+		void disable();
 
 		/**
 		 * @brief Enables timer so without resetting the elapse time.
 		 */
-		inline void enable();
+		void enable();
 
 		/**
 		 * @brief Returns non-zero is the timer is enabled.
 		 */
-		[[nodiscard]] inline bool isEnabled() const;
+		[[nodiscard]] bool isEnabled() const;
 
 		/**
 		 * @brief Returns true if the time has elapsed and enabled.
@@ -64,7 +64,7 @@ class _MISC_CLASS ElapseTimer
 		/**
 		 * @brief Returns the elapse time set or initialized by the constructor.
 		 */
-		[[nodiscard]] inline TimeSpec getElapseTime() const;
+		[[nodiscard]] TimeSpec getElapseTime() const;
 
 		/**
 		 * @brief Returns the time left before the timer elapses.
@@ -77,9 +77,19 @@ class _MISC_CLASS ElapseTimer
 		[[nodiscard]] TimeSpec getTimeLeft(const timespec&) const;
 
 		/**
+		 * @brief Returns the time over after the timer elapsed.
+		 */
+		[[nodiscard]] TimeSpec getTimeOver() const;
+
+		/**
+		 * @brief Returns the time over after the timer elapsed.
+		 */
+		[[nodiscard]] TimeSpec getTimeOver(const timespec&) const;
+
+		/**
 		 * @brief Test if timer is active or not.
 		 */
-		explicit inline operator bool() const;
+		explicit operator bool() const;
 
 		/**
 		 * @brief This operator is used to minimize clock() calls.

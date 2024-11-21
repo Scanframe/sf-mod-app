@@ -19,7 +19,7 @@ TimeSpec& TimeSpec::setTimeOfDay()
 TimeSpec& TimeSpec::assign(double sec)
 {
 	tv_sec = floor(sec);
-	tv_nsec = floor((sec - (double) tv_sec) * 1e9);
+	tv_nsec = floor((sec - static_cast<double>(tv_sec)) * 1e9);
 	return *this;
 }
 
@@ -32,8 +32,12 @@ TimeSpec& TimeSpec::assign(const timespec& ts)
 
 TimeSpec& TimeSpec::randomize(double factor)
 {
+	// Seed generator.
+	std::random_device rd;
+	// Mersenne Twister PRNG
+	std::mt19937 gen(rd());
 	// Randomize a float between 0.0 and 1.0
-	double value = (double) rand() / (double) RAND_MAX;
+	double value = std::uniform_real_distribution<double>(0, 1.0)(gen);
 	// Modify so the number is between -0.5 and +0.5
 	value -= 0.5;
 	// Modify so the number is between -1.0 and +1.0
@@ -76,7 +80,7 @@ TimeSpec& TimeSpec::assign(time_t sec, nsec_type nsec)
 
 double TimeSpec::toDouble() const
 {
-	return double(tv_sec) + double(tv_nsec) / 1000000000l;
+	return static_cast<double>(tv_sec) + static_cast<double>(tv_nsec) / 1000000000l;
 }
 
 time_t TimeSpec::toMilliSecs() const
@@ -87,7 +91,7 @@ time_t TimeSpec::toMilliSecs() const
 
 std::string TimeSpec::toString() const
 {
-	return stringf("%lgs", toDouble());
+	return sf::toString(toDouble()) + 's';
 }
 
 TimeSpec& TimeSpec::add(const timespec& ts)

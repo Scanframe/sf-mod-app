@@ -2,13 +2,9 @@
 #include "MainWindowPropertyPage.h"
 #include <QPlainTextEdit>
 #include <QtWidgets>
-#include <ami/iface/AppModuleInterface.h>
 #include <misc/gen/pointer.h>
 #include <misc/qt/Globals.h>
-#include <misc/qt/ModuleConfiguration.h>
-#include <misc/qt/PropertySheetDialog.h>
 #include <misc/qt/Resource.h>
-#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
@@ -25,10 +21,9 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	// Set the parent that can be used for floating windows created from script functions.
 	setGlobalParent(this);
 	//
-	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]()// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-					{
-						setWindowTitle(QApplication::applicationDisplayName());
-					});
+	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() {
+		setWindowTitle(QApplication::applicationDisplayName());
+	});
 	//
 	_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);

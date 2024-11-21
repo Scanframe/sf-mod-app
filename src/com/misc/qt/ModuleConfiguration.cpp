@@ -75,10 +75,12 @@ size_t ModuleConfiguration::load(bool startup)
 	// Get the list of to be loaded modules.
 	auto list = getList();
 	// Load each dynamic library in the list when not loaded yet.
-	for (auto it = list.begin(); it != list.constEnd(); ++it)
+	for (auto it = list.begin(); it != list.end(); ++it)
 	{
 		auto name = QDir(getModuleDir()).filePath(it.key());
 		QLibrary lib(name);
+		// Prevent unloading since this unwanted.
+		lib.setLoadHints(QLibrary::PreventUnloadHint);
 		// Only load when not loaded yet.
 		if (!lib.isLoaded())
 		{

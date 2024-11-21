@@ -15,7 +15,7 @@ Sf_SetOutputDirs("bin")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Include Scanframe misc library.
+# Include misc library.
 set(LIBRARIES sf-misc)
 
 # Generic sources.
@@ -46,61 +46,54 @@ set(SOURCES
 	LibMain.cpp)
 
 if (NOT WIN32)
-
-set(SOURCES_LNX
-	)
-list(APPEND SOURCES ${SOURCES_LNX})
-
+	set(SOURCES_LNX)
+	list(APPEND SOURCES ${SOURCES_LNX})
 else (NOT WIN32)
-
-set(SOURCES_WIN
-	)
-list(APPEND SOURCES ${SOURCES_WIN})
-
+	set(SOURCES_WIN)
+	list(APPEND SOURCES ${SOURCES_WIN})
 endif (NOT WIN32)
 
 # When SF_BUILD_QT is Set link the Qt libraries.
 if (SF_BUILD_QT)
 
-# Find the needed packages.
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
+	# Find the needed packages.
+	find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+	find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Designer REQUIRED)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTOUIC ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
 
-# Qt dependent sources.
-set(SOURCES_QT
-	qt/res/icons.qrc
-	qt/Namespace.h
-	qt/Macros.h
-	qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h	qt/VariableWidgetBasePrivate.h
-	qt/InformationSelectDialog.cpp qt/InformationSelectDialog.h qt/InformationSelectDialog.ui
-	qt/VariableEdit.cpp qt/VariableEdit.h
-	qt/InformationIdEdit.cpp qt/InformationIdEdit.h
-	qt/InformationIdEditPlugin.cpp qt/InformationIdEditPlugin.h
-	qt/VariableEdit.cpp qt/VariableEdit.h
-	qt/VariableEditPlugin.cpp qt/VariableEditPlugin.h
-	qt/VariableComboBox.cpp qt/VariableComboBox.h
-	qt/VariableComboBoxPlugin.cpp qt/VariableComboBoxPlugin.h
-	qt/VariableCheckBox.cpp qt/VariableCheckBox.h
-	qt/VariableCheckBoxPlugin.cpp qt/VariableCheckBoxPlugin.h
-	qt/VariableBar.cpp qt/VariableBar.h
-	qt/VariableBarPlugin.cpp qt/VariableBarPlugin.h
-	qt/InformationItemModel.cpp qt/InformationItemModel.h
-	qt/LayoutData.cpp qt/LayoutData.h
-	qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
-	qt/IdPropertyList.cpp qt/IdPropertyList.h
-	qt/InformationMonitor.cpp qt/InformationMonitor.h qt/InformationMonitor.ui
-	qt/VariableIdPropertyPage.cpp qt/VariableIdPropertyPage.h qt/VariableIdPropertyPage.ui
+	# Qt dependent sources.
+	set(SOURCES_QT
+		qt/res/icons.qrc
+		qt/Namespace.h
+		qt/Macros.h
+		qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h qt/VariableWidgetBasePrivate.h
+		qt/InformationSelectDialog.cpp qt/InformationSelectDialog.h qt/InformationSelectDialog.ui
+		qt/VariableEdit.cpp qt/VariableEdit.h
+		qt/InformationIdEdit.cpp qt/InformationIdEdit.h
+		qt/InformationIdEditPlugin.cpp qt/InformationIdEditPlugin.h
+		qt/VariableEdit.cpp qt/VariableEdit.h
+		qt/VariableEditPlugin.cpp qt/VariableEditPlugin.h
+		qt/VariableComboBox.cpp qt/VariableComboBox.h
+		qt/VariableComboBoxPlugin.cpp qt/VariableComboBoxPlugin.h
+		qt/VariableCheckBox.cpp qt/VariableCheckBox.h
+		qt/VariableCheckBoxPlugin.cpp qt/VariableCheckBoxPlugin.h
+		qt/VariableBar.cpp qt/VariableBar.h
+		qt/VariableBarPlugin.cpp qt/VariableBarPlugin.h
+		qt/InformationItemModel.cpp qt/InformationItemModel.h
+		qt/LayoutData.cpp qt/LayoutData.h
+		qt/GiiCustomWidgets.cpp qt/GiiCustomWidgets.h
+		qt/IdPropertyList.cpp qt/IdPropertyList.h
+		qt/InformationMonitor.cpp qt/InformationMonitor.h qt/InformationMonitor.ui
+		qt/VariableIdPropertyPage.cpp qt/VariableIdPropertyPage.h qt/VariableIdPropertyPage.ui
 	)
 
-list(APPEND SOURCES ${SOURCES_QT})
-list(APPEND LIBRARIES Qt::Widgets Qt::Designer)
+	list(APPEND SOURCES ${SOURCES_QT})
+	list(APPEND LIBRARIES Qt::Widgets Qt::Designer)
 
 endif (SF_BUILD_QT)
-
 
 # Generic sources.
 list(APPEND SOURCES)
@@ -119,13 +112,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
+	# Tell the compiled code a dynamic library (DL) is being build.
+	target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
 endif (SF_BUILD_QT)
 
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)
-
-# Tell the compiled code a dynamic library (DL) is being build.
-target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
 
 # Tell the code the 'sf-gii' library is used as an archive. (So no imports or exports)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE _GII_ARC)

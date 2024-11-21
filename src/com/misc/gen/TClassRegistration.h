@@ -140,8 +140,20 @@ class TClassRegistration
 		typedef TClassRegistration<T, P> self_t;
 		typedef TClosure<T*, const P&> callback_t;
 		struct entry_t;
+		/**
+		 * @brief Vector type to register implementations in.
+		 */
 		typedef std::vector<entry_t> entries_t;
+
+		/**
+		 * @brief Type used to report the list of implementations in.
+		 */
 		typedef TVector<std::string> strings_t;
+
+		/**
+		 * @brief Index value for when not found.
+		 */
+		 static auto constexpr npos = std::numeric_limits<size_t>::max();
 
 		/**
 		 * @brief Constructor for the base class.
@@ -182,6 +194,7 @@ class TClassRegistration
 
 		/**
 		 * @brief Find a registered class structure index.
+		 * When not found it returns
 		 *
 		 * @param name Registered name of the class.
 		 * @return Nonzero index/position of the class in the registration list where Zero means not found.
@@ -195,7 +208,7 @@ class TClassRegistration
 		 * @param params Parameter type instance for the constructor.
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
-		inline T* create(const std::string& name, const P& params) const;
+		inline T* create(const std::string& name, const P& params = P{}) const;
 
 		/**
 		 * @brief Function create registered class by index.
@@ -204,7 +217,7 @@ class TClassRegistration
 		 * @param params Parameter structure.
 		 * @return nullptr on failure on success a new instance of the registered class.
 		 */
-		inline T* create(size_t index, const P& params) const;
+		inline T* create(size_t index, const P& params = P{}) const;
 
 		/**
 		 * @brief Returns the amount of registered entries.
@@ -249,11 +262,12 @@ class TClassRegistration
 		/**
 		 * @brief Type of registered entry in the list.
 		 */
-		struct entry_t
+		class entry_t
 		{
+			public:
 				/**
-			 * @brief Constructor.
-			 */
+				 * @brief Constructor.
+				 */
 				inline entry_t(const char* name, const char* description, const callback_t& callback)
 					: _name(name)
 					, _description(description)
@@ -261,8 +275,8 @@ class TClassRegistration
 				{}
 
 				/**
-			 * @brief Copy constructor.
-			 */
+				 * @brief Copy constructor.
+				 */
 				inline entry_t(const entry_t& e)
 					: _name(e._name)
 					, _description(e._description)
@@ -270,16 +284,16 @@ class TClassRegistration
 				{}
 
 				/**
-			 * @brief Holds registered name.
-			 */
+				 * @brief Holds registered name.
+				 */
 				const char* _name;
 				/**
-			 * @brief Holds registered description.
-			 */
+				 * @brief Holds registered description.
+				 */
 				const char* _description;
 				/**
-			 * @brief Holds the passed callback function.
-			 */
+				 * @brief Holds the passed callback function.
+				 */
 				callback_t _callback;
 		};
 
@@ -303,130 +317,6 @@ class TClassRegistration
 		typename entries_t::const_iterator lookup(const std::string& name) const;
 };
 
-template<typename T, typename P>
-TClassRegistration<T, P>::TClassRegistration(entries_t& entries)
-	: _entries(&entries)
-{}
-
-template<typename T, typename P>
-TClassRegistration<T, P>::TClassRegistration(const TClassRegistration<T, P>& inst)
-	: _entries(inst._entries)
-{}
-
-template<typename T, typename P>
-TClassRegistration<T, P>::TClassRegistration(TClassRegistration<T, P>&& inst)
-	: _entries(inst._entries)
-{}
-
-template<typename T, typename P>
-size_t TClassRegistration<T, P>::size() const
-{
-	return _entries->size();
-}
-
-template<typename T, typename P>
-size_t TClassRegistration<T, P>::registerClass(const char* name, const char* description, const typename TClassRegistration<T, P>::callback_t& callback)
-{
-	// Sanity check on existing entry.
-	if (find(name))
-	{
-		std::clog << __FUNCTION__ << ": Entry with the name '" << name << "' is already registered!" << std::endl;
-		typename entries_t::const_iterator begin = _entries->begin();
-		return std::distance(begin, lookup(name));
-		//throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
-	}
-	return std::distance(_entries->begin(), _entries->insert(_entries->end(), entry_t(name, description, callback)));
-}
-
-template<typename T, typename P>
-typename TClassRegistration<T, P>::entries_t::const_iterator
-TClassRegistration<T, P>::lookup(const std::string& name) const
-{
-	// Sanity check.
-	if (!name.empty() && !_entries->empty())
-	{
-		// Iterate through the list.
-		for (typename entries_t::const_iterator it = _entries->begin(); it != _entries->end(); ++it)
-		{
-			// Compare the name and return it when found.
-			if (name.compare(it->_name) == 0)
-			{
-				return it;
-			}
-		}
-	}
-	// Signal not found.
-	return _entries->end();
-}
-
-template<typename T, typename P>
-size_t TClassRegistration<T, P>::indexOf(const std::string& name) const
-{
-	auto it = lookup(name);
-	// When not found
-	if (it == _entries->end())
-	{
-		return 0;
-	}
-	// Return the mount on instances between begin and the looked up one with the passed name.
-	// Add one because zero means not found.
-	return std::distance(const_cast<const entries_t*>(_entries)->begin(), it) + 1;
-}
-
-template<typename T, typename P>
-const typename TClassRegistration<T, P>::entry_t* TClassRegistration<T, P>::find(const std::string& name) const
-{
-	auto it = lookup(name);
-	// When the lookup points to the end the entry is not found.
-	if (it == _entries->end())
-	{
-		return nullptr;
-	}
-	// Convert iterator to entry pointer. (calls a dereferenced operator first).
-	return &(*it);
-}
-
-template<typename T, typename P>
-T* TClassRegistration<T, P>::create(const std::string& name, const P& params) const
-{
-	auto entry = find(name);
-	if (entry == nullptr)
-	{
-		return nullptr;
-	}
-	return const_cast<entry_t*>(entry)->_callback(params);
-}
-
-template<typename T, typename P>
-T* TClassRegistration<T, P>::create(size_t index, const P& params) const
-{
-	return _entries->at(index)._callback(params);
-}
-
-template<typename T, typename P>
-const char* TClassRegistration<T, P>::getName(size_t index) const
-{
-	return _entries->at(index)._name;
-}
-
-template<typename T, typename P>
-typename TClassRegistration<T, P>::strings_t TClassRegistration<T, P>::getNames() const
-{
-	strings_t rv;
-	if (_entries)
-	{
-		for (entry_t& i: *_entries)
-		{
-			rv.add(i._name);
-		}
-	}
-	return rv;
-}
-
-template<typename T, typename P>
-const char* TClassRegistration<T, P>::getDescription(size_t index) const
-{
-	return _entries->at(index)._description;
-}
-
 }// namespace sf
+
+#include "TClassRegistration.hpp"

@@ -2,7 +2,6 @@
 
 namespace sf
 {
-
 ElapseTimer::ElapseTimer()
 	: _target(getTime())
 {
@@ -76,4 +75,17 @@ TimeSpec ElapseTimer::getTimeLeft(const timespec& t) const
 	return ct;
 }
 
-}// namespace sf
+TimeSpec ElapseTimer::getTimeOver() const
+{
+	return getTimeLeft(getTime());
+}
+
+TimeSpec ElapseTimer::getTimeOver(const timespec& t) const
+{
+	if (_enabled)
+	{
+		return t - _target;
+	}
+	return {};
+}
+} // namespace sf

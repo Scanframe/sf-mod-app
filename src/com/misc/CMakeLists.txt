@@ -28,7 +28,7 @@ set(SOURCES
 	gen/target.h
 	gen/pointer.h
 	gen/file.cpp gen/file.h
-	gen/system.cpp gen/system.h
+	gen/system.h
 	gen/string.cpp gen/string.h
 	gen/math.cpp gen/math.h
 	gen/time.cpp gen/time.h
@@ -61,7 +61,7 @@ set(SOURCES
 	gen/ThreadClosure.h
 	gen/ThreadRelay.cpp gen/ThreadRelay.h
 	gen/IFileMapper.cpp gen/IFileMapper.h
-	gen/TClassRegistration.h
+	gen/TClassRegistration.hpp gen/TClassRegistration.h
 	gen/TDynamicBuffer.h
 	gen/TDynamicArray.h
 	gen/TVector.h
@@ -85,6 +85,7 @@ if (NOT WIN32)
 		lnx/File.h lnx/File.cpp
 		lnx/FileMapper.h lnx/FileMapper.cpp
 		lnx/SegmentFaultHandler.h lnx/SegmentFaultHandler.cpp
+		lnx/system.cpp
 	)
 
 	list(APPEND SOURCES ${SOURCES_LNX})
@@ -97,6 +98,7 @@ else (NOT WIN32)
 		win/win_utils.cpp win/win_utils.h
 		win/WinTimer.cpp win/WinTimer.h
 		win/FileMapper.h win/FileMapper.cpp
+		win/system.cpp
 	)
 	list(APPEND SOURCES ${SOURCES_WIN})
 

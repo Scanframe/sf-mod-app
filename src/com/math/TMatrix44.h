@@ -435,7 +435,7 @@ inline std::ostream& operator<<(std::ostream& os, const TMatrix44<T>& mtx)
 /**
  * @brief Operator for reading the matrix from an input stream.
  * @tparam T Base floating point type.
- * @param os Input stream.
+ * @param is Input stream.
  * @param mtx Matrix to stream.
  * @return The passed input stream.
  */

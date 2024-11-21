@@ -436,11 +436,11 @@ TQuaternion<T> operator*(T c, const TQuaternion<T>& quat)
 }
 
 /**
- * @brief Operator for writing the quaternion to an output-stream.
+ * @brief Operator for writing the #sf::TQuaternion to an output-stream.
  * Calls #TQuaternion<T>::toString() for the operator.
  * @tparam T Base floating point type.
  * @param os Output stream.
- * @param mtx Matrix to stream out.
+ * @param quat Matrix to stream out.
  * @return The passed output stream.
  */
 template<typename T>
@@ -450,11 +450,11 @@ inline std::ostream& operator<<(std::ostream& os, const TQuaternion<T>& quat)
 }
 
 /**
- * @brief Operator for reading the quaternion from an input stream.
+ * @brief Operator for reading the #sf::TQuaternion from an input stream.
  * Calls #TQuaternion<T>::fromString() to perform this operator.
  * @tparam T Base floating point type.
- * @param os Input stream.
- * @param mtx Matrix to stream.
+ * @param is Input stream.
+ * @param quat Matrix to stream.
  * @return The passed input stream.
  */
 template<typename T>

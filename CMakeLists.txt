@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.27)
 
 # Make it so our own packages are found and also the ones in the sub-module library.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
+list(APPEND CMAKE_PREFIX_PATH "cmake" "cmake/lib")
 
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)

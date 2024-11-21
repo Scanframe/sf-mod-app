@@ -19,6 +19,9 @@ class PropertySheetDialog;
 class _RSA_CLASS RsaInterface : public RsaTypes
 {
 	public:
+		/**
+		 * @brief Parameters structure passed to an RSA implementation class.
+		 */
 		struct Parameters
 		{
 				explicit Parameters(int mode)

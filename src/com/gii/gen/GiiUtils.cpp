@@ -41,7 +41,7 @@ bool shouldBeLoaded(const Variable& var)
 	return yesno;
 }
 
-bool SaveVariableValues(IniProfile& profile)
+bool saveVariableValues(IniProfile& profile)
 {
 	// Preset the section.
 	profile.setSection(SEC_SYSPARAMS);
@@ -67,7 +67,7 @@ bool SaveVariableValues(IniProfile& profile)
 	return true;
 }
 
-bool LoadVariableValues(IniProfile& profile)
+bool loadVariableValues(IniProfile& profile)
 {
 	// Preset the section.
 	profile.setSection(SEC_SYSPARAMS);

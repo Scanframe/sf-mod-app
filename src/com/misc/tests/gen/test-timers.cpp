@@ -11,7 +11,6 @@
 
 TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
 {
-
 	SECTION("Construct(double)", "Constructing from 'double' type")
 	{
 		sf::TimeSpec ts(123.456);
@@ -26,20 +25,40 @@ TEST_CASE("sf::TimeSpec", "[con][generic][timers]")
 		REQUIRE(ts.toString() == "123.456s");
 	}
 
-	SECTION("Add", "Add time to the TimeSpec class")
+	SECTION("Add", "Add and Subtract")
 	{
-		sf::TimeSpec ts(123, 550000000);
-		ts.add(0, 550000000);
-		REQUIRE(ts.tv_sec == 124);
-		REQUIRE(ts.tv_nsec == 100000000);
+		sf::TimeSpec ts1(123, 550000000);
+		ts1.add(0, 550000000);
+		REQUIRE(ts1.tv_sec == 124);
+		REQUIRE(ts1.tv_nsec == 100000000);
+
+		sf::TimeSpec ts2(124, 100000000);
+		ts2.sub({0, 550000000});
+		REQUIRE(ts2.tv_sec == 123);
+		REQUIRE(ts2.tv_nsec == 550000000);
 	}
 
-	SECTION("Subtract", "Subtract time from the TimeSpec class")
+	SECTION("Subtract", "Operators")
 	{
-		sf::TimeSpec ts(124, 100000000);
-		ts.sub({0, 550000000});
-		REQUIRE(ts.tv_sec == 123);
-		REQUIRE(ts.tv_nsec == 550000000);
+		sf::TimeSpec ts0(123, 550000000);
+		auto rt0 = ts0 + timespec{0, 550000000};
+		REQUIRE(rt0.tv_sec == 124);
+		REQUIRE(rt0.tv_nsec == 100000000);
+
+		timespec ts1{123, 550000000};
+		auto rt1 = ts1 + timespec{0, 550000000};
+		REQUIRE(rt1.tv_sec == 124);
+		REQUIRE(rt1.tv_nsec == 100000000);
+
+		sf::TimeSpec ts2(124, 100000000);
+		auto rt2 = ts2 - timespec{0, 550000000};
+		REQUIRE(rt2.tv_sec == 123);
+		REQUIRE(rt2.tv_nsec == 550000000);
+
+		timespec ts3{124, 100000000};
+		auto rt3 = ts3 - timespec{0, 550000000};
+		REQUIRE(rt3.tv_sec == 123);
+		REQUIRE(rt3.tv_nsec == 550000000);
 	}
 
 	SECTION("Compare", "Compare instances")
@@ -119,6 +138,14 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 #endif
 		// Check if the timer is disabled.
 		CHECK_FALSE(et.isEnabled());
+		// Set timer for 0.5 seconds.
+		et.set(sf::TimeSpec(0.5));
+		CHECK(et.isEnabled());
+		// Sleep one second.
+		::usleep(1000000);
+		// Check the time over the targeted time is about 0.5 seconds.
+		CHECK(et.getTimeOver().toDouble()  == Approx(0.5).margin(0.01));
+		CHECK(et.isActive());
 	}
 
 	SECTION("IntervalTimer", "Individual class only")
@@ -147,8 +174,6 @@ TEST_CASE("sf::Timers", "[generic][timers]")
 				count++;
 			}
 		}
-		//std::cout << "TimeLeft: " << it.getTimeLeft() << std::endl;
-		//CHECK(count == 5)
 		CHECK_THAT(count, Catch::Matchers::Predicate<int>([](int const& val) -> bool { return val == 4 || val == 5; }, "Count should be 4 or 5"));
 		CHECK(pt.elapse().toDouble() == Approx(1.1).margin(0.3));
 	}

@@ -3,6 +3,7 @@
 #include "../global.h"
 #include <cstddef>
 #include <ctime>
+#include <string>
 
 namespace sf
 {
@@ -18,5 +19,12 @@ _MISC_FUNC size_t getThreadCount();
  * Is used in combination with getTime(false) to get the time since the start of the application.
  */
 _MISC_FUNC timespec getTimeRunning();
+
+/**
+ * @brief Loads a dynamic library from the given path.
+ * @param path Path to the library.
+ * @return True when library loading was successful.
+ */
+_MISC_FUNC bool loadDynamicLibrary(const std::string& path);
 
 }// namespace sf
