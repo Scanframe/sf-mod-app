@@ -1,11 +1,10 @@
 #pragma once
-
-#include "ColorTable.h"
-#include "Persistent.h"
-#include "global.h"
 #include <misc/gen/TClassRegistration.h>
 #include <misc/gen/TClosure.h>
 #include <misc/gen/Value.h>
+#include <pal/iface/ColorTable.h>
+#include <pal/iface/Persistent.h>
+#include <pal/iface/global.h>
 #include <utility>
 
 namespace sf

@@ -1,14 +1,18 @@
+#include <ami/script/ScriptManager.h>
 #include <misc/qt/PropertyPage.h>
-#include "ScriptManager.h"
 
-namespace Ui {class ScriptManagerPropertyPage;}
+namespace Ui
+{
+class ScriptManagerPropertyPage;
+}
 
 namespace sf
 {
 
-class ScriptManagerPropertyPage :public PropertyPage
+class ScriptManagerPropertyPage
+	: public PropertyPage
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		explicit ScriptManagerPropertyPage(ScriptManager* manager, PropertySheetDialog* parent = nullptr);
@@ -42,7 +46,6 @@ class ScriptManagerPropertyPage :public PropertyPage
 		QAction* _actionEdit{nullptr};
 		QAction* _actionAdd{nullptr};
 		QAction* _actionRemove{nullptr};
-
 };
 
-}
+}// namespace sf

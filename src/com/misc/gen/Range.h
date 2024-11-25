@@ -1,9 +1,8 @@
 #pragma once
-
-#include "../global.h"
-#include "TVector.h"
 #include <iostream>
 #include <limits>
+#include <misc/gen/TVector.h>
+#include <misc/global.h>
 
 namespace sf
 {

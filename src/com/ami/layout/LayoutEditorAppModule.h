@@ -1,17 +1,16 @@
 #pragma once
-
 #include <QTreeView>
 #include <ami/iface/AppModuleInterface.h>
 #include <ami/iface/MultiDocInterface.h>
-#include "HierarchyViewer.h"
+#include <ami/layout/HierarchyViewer.h>
 
 namespace sf
 {
 
-class [[maybe_unused]] LayoutEditorAppModule :public AppModuleInterface
+class [[maybe_unused]] LayoutEditorAppModule
+	: public AppModuleInterface
 {
 	public:
-
 		explicit LayoutEditorAppModule(const Parameters& params);
 
 		void initialize(InitializeStage stage) override;
@@ -45,4 +44,4 @@ class [[maybe_unused]] LayoutEditorAppModule :public AppModuleInterface
 		bool _readOnly = true;
 };
 
-}
+}// namespace sf

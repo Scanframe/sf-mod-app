@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QWidget>
-#include "global.h"
+#include <ami/iface/global.h>
 
 namespace sf
 {
@@ -13,14 +13,14 @@ class AppModuleInterface;
 
 /**
  * @brief Class to connect signals to the clients of a document.
- *
  * Since the class #sf::MultiDocInterface cannot inheriting QObject because of Qt not
  * allowing multiple inheritance of a QObject derived class.
  * So this class is an intermediate.
  */
-class _AMI_CLASS MultiDocInterfaceSignals :public QObject
+class _AMI_CLASS MultiDocInterfaceSignals
+	: public QObject
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	Q_SIGNALS:
 		/*
@@ -41,7 +41,6 @@ class _AMI_CLASS MultiDocInterfaceSignals :public QObject
 class _AMI_CLASS MultiDocInterface
 {
 	public:
-
 		/**
 		 * @brief Default constructor.
 		 */
@@ -184,4 +183,4 @@ class _AMI_CLASS MultiDocInterface
 		friend AppModuleInterface;
 };
 
-}
+}// namespace sf

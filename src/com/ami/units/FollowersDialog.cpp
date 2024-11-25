@@ -4,7 +4,6 @@
 #include <QPushButton>
 #include <QTimer>
 #include <misc/qt/Resource.h>
-#include <qt/InformationSelectDialog.h>
 
 namespace sf
 {

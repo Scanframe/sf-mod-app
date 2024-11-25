@@ -1,22 +1,24 @@
 #pragma once
-
-#include "../qt/InformationItemModel.h"
-#include "Namespace.h"
-#include <QDialog>
 #include <QAbstractButton>
-#include <QTreeView>
+#include <QDialog>
 #include <QSettings>
 #include <QSortFilterProxyModel>
+#include <QTreeView>
+#include <gii/qt/InformationItemModel.h>
+#include <gii/qt/Namespace.h>
 
 namespace sf
 {
 
-namespace Ui {class InformationSelectDialog;}
+namespace Ui
+{
+class InformationSelectDialog;
+}
 
-class _GII_CLASS InformationSelectDialog :public QDialog
+class _GII_CLASS InformationSelectDialog
+	: public QDialog
 {
 	public:
-
 		explicit InformationSelectDialog(QWidget* parent = nullptr);
 
 		InformationTypes::IdVector execute(Gii::SelectionMode mode = Gii::Single, Gii::TypeId idType = Gii::Variable, QSettings* settings = nullptr);
@@ -24,7 +26,6 @@ class _GII_CLASS InformationSelectDialog :public QDialog
 		[[nodiscard]] InformationTypes::IdVector getSelectedIds() const;
 
 	private:
-
 		void childrenExpandCollapse(bool expand, const QModelIndex& index = {});
 
 		void stateSaveRestore(bool save);
@@ -48,4 +49,4 @@ class _GII_CLASS InformationSelectDialog :public QDialog
 		Gii::IdType _selectedId{0};
 };
 
-}
+}// namespace sf

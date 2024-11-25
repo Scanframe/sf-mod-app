@@ -1,7 +1,6 @@
 #pragma once
-
-#include "TSet.h"
 #include <climits>
+#include <misc/gen/TSet.h>
 
 namespace sf
 {

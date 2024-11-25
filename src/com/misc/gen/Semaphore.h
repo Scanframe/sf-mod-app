@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
-#include "TimeSpec.h"
+#include <misc/gen/TimeSpec.h>
+#include <misc/global.h>
 #include <semaphore.h>
 
 namespace sf
@@ -41,11 +40,13 @@ class _MISC_CLASS Semaphore
 		class _MISC_CLASS Lock
 		{
 			public:
-				// Default constructor which sees to it that it is released.
+				/**
+				 * @brief Default constructor which sees to it that it is released.
+				 */
 				inline Lock();
 
 				/**
-				 * @brief Constructor @see acquire()
+				 * @brief Constructor see #acquire() function.
 				 * @param semaphore Semaphore to lock.
 				 * @param timeout Timeout to wait for a lock.
 				 */

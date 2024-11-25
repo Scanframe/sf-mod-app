@@ -1,17 +1,19 @@
 #pragma once
-#include "ClientConnection.h"
-#include <misc/gen/Sync.h>
-#include <misc/gen/Condition.h>
-#include "misc/qt/QtSync.h"
-#include <QThread>
 #include <QAbstractSocket>
 #include <QMutex>
+#include <QThread>
 #include <QWaitCondition>
+#include <ami/service/ClientConnection.h>
+#include <misc/gen/Condition.h>
+#include <misc/gen/Sync.h>
+#include <misc/qt/QtSync.h>
 
 namespace sf
 {
 
-class SocketClient :public QThread, protected QtSync
+class SocketClient
+	: public QThread
+	, protected QtSync
 {
 	public:
 		explicit SocketClient(QObject* parent);
@@ -21,7 +23,6 @@ class SocketClient :public QThread, protected QtSync
 		void connectHost(const QString& hostName, int portNumber);
 
 	private:
-
 		void run() override;
 
 		void handleError(QAbstractSocket::SocketError socketError) const;
@@ -39,8 +40,8 @@ class SocketClient :public QThread, protected QtSync
 		//
 		ClientConnection* _connection;
 
-	// LLDB Crashes and GDB freezes when this MACRO is in top of the class.
-	Q_OBJECT
+		// LLDB Crashes and GDB freezes when this MACRO is in top of the class.
+		Q_OBJECT
 };
 
-}
+}// namespace sf

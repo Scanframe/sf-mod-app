@@ -1,11 +1,9 @@
 #pragma once
-
-#include <QObject>
 #include <QAction>
-#include <QKeySequence>
 #include <QIcon>
-
-#include "global.h"
+#include <QKeySequence>
+#include <QObject>
+#include <ami/iface/global.h>
 
 namespace sf
 {
@@ -16,21 +14,20 @@ class AppModuleActions;
 /**
  * @brief Holds a single application module action.
  */
-class _AMI_CLASS AppModuleAction :public QObject
+class _AMI_CLASS AppModuleAction
+	: public QObject
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
 		 * @brief Constructor.
-		 *
 		 * @param parent Owning parent.
 		 */
 		explicit AppModuleAction(AppModuleActions* parent);
 
 		/**
 		 * @brief Gets a new created action entry from this instance.
-		 *
 		 * @return New formed action.
 		 */
 		QAction getAction(QObject* parent) const;
@@ -69,4 +66,4 @@ class _AMI_CLASS AppModuleAction :public QObject
 		QKeySequence _keySequence;
 };
 
-}
+}// namespace sf

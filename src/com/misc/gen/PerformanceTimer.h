@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../gen/TimeSpec.h"
+#include <misc/gen/TimeSpec.h>
 
 namespace sf
 {

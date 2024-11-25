@@ -2,22 +2,18 @@
 
 #include <QPlainTextEdit>
 #include <ami/iface/MultiDocInterface.h>
-#include "global.h"
+#include <ami/iface/global.h>
 
 class QPaintEvent;
-
 class QResizeEvent;
-
 class QSize;
-
 class QWidget;
-
 class QSettings;
 
 namespace sf
 {
 
-class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
+class _AMI_CLASS PlainTextEditMdi : public MultiDocInterface
 {
 	public:
 		/**
@@ -93,7 +89,6 @@ class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
 		void redo() override;
 
 	private:
-
 		void documentWasModified();
 
 		void setCurrentFile(const QString& fileName);
@@ -109,4 +104,4 @@ class _AMI_CLASS PlainTextEditMdi :public MultiDocInterface
 		QWidget* _container{nullptr};
 };
 
-}
+}// namespace sf

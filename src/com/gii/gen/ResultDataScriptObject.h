@@ -1,7 +1,6 @@
 #pragma once
-
+#include <gii/gen/ResultData.h>
 #include <misc/gen/ScriptObject.h>
-#include "ResultData.h"
 
 namespace sf
 {
@@ -9,7 +8,9 @@ namespace sf
 /**
  * @brief Script object for exporting GII parameters to a script object.
  */
-class ResultDataScriptObject :public ScriptObject, public ResultData, private ResultDataHandler
+class ResultDataScriptObject : public ScriptObject
+	, public ResultData
+	, private ResultDataHandler
 {
 	public:
 		explicit ResultDataScriptObject(const Parameters& params);
@@ -17,7 +18,6 @@ class ResultDataScriptObject :public ScriptObject, public ResultData, private Re
 		std::string getStatusText() override;
 
 	protected:
-
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 
 		void destroyObject(bool& should_delete) override
@@ -43,4 +43,4 @@ class ResultDataScriptObject :public ScriptObject, public ResultData, private Re
 		static ScriptObject::IdInfo _info[];
 };
 
-}
+}// namespace sf

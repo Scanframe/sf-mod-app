@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../global.h"
+#include <gii/global.h>
 #include <iostream>
 #include <misc/gen/IFileMapper.h>
 #include <misc/gen/TVector.h>

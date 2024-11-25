@@ -1,12 +1,10 @@
 #pragma once
-
-#include "../global.h"
-#include "DynamicLibraryInfo.h"
-#include "Exception.h"
-#include "TClosure.h"
-#include "TVector.h"
-#include "dbgutils.h"
-#include <vector>
+#include <misc/gen/DynamicLibraryInfo.h>
+#include <misc/gen/Exception.h>
+#include <misc/gen/TClosure.h>
+#include <misc/gen/TVector.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/global.h>
 
 /**
  * @brief Name of the function to resolve from a library to be able to set the library filename when dynamically loaded.
@@ -319,4 +317,4 @@ class TClassRegistration
 
 }// namespace sf
 
-#include "TClassRegistration.hpp"
+#include <misc/gen/TClassRegistration.hpp>

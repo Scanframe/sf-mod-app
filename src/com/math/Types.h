@@ -1,11 +1,10 @@
 #pragma once
-
-#include "TMatrix22.h"
-#include "TMatrix44.h"
-#include "TQuaternion.h"
-#include "TRectangle2D.h"
-#include "TVector2D.h"
-#include "TVector3D.h"
+#include <math/TMatrix22.h>
+#include <math/TMatrix44.h>
+#include <math/TQuaternion.h>
+#include <math/TRectangle2D.h>
+#include <math/TVector2D.h>
+#include <math/TVector3D.h>
 
 namespace sf
 {

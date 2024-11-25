@@ -1,7 +1,6 @@
 #pragma once
-
-#include "VariableWidgetBase.h"
-#include "../global.h"
+#include <gii/global.h>
+#include <gii/qt/VariableWidgetBase.h>
 
 namespace sf
 {
@@ -9,9 +8,10 @@ namespace sf
 /**
  * @brief Widget for editing #sf::Variable value types integer, floating point and single line string.
  */
-class QDESIGNER_WIDGET_EXPORT VariableComboBox :public VariableWidgetBase
+class QDESIGNER_WIDGET_EXPORT VariableComboBox
+	: public VariableWidgetBase
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(bool focusFrame READ hasFocusFrame WRITE setFocusFrame)
 		Q_PROPERTY(int nameLevel READ nameLevel WRITE setNameLevel)
 
@@ -54,14 +54,12 @@ class QDESIGNER_WIDGET_EXPORT VariableComboBox :public VariableWidgetBase
 		void applyReadOnly(bool yn) override;
 
 	private:
-
-	/**
+		/**
 	 * @brief Forward definition of private implemented class to prevent interfaces exposure.
 	 */
 		struct Private;
 
 		Q_DISABLE_COPY(VariableComboBox)
-
 };
 
-}
+}// namespace sf

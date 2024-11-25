@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../global.h"
+#include <gii/global.h>
 #include <misc/gen/IniProfile.h>
 
 namespace sf

@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
 #include <QMutexLocker>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -48,8 +47,8 @@ class _MISC_CLASS QtSync
 				 * @brief Locks the QMutex object in the QSync object.
 				 */
 				explicit Lock(QtSync* sync, bool tryLock = false, int timeout = -1)
-					:_mutex(sync->_mutex)
-					 , _locked(false)
+					: _mutex(sync->_mutex)
+					, _locked(false)
 				{
 					_locked = lock(tryLock, timeout);
 				}
@@ -107,4 +106,4 @@ class _MISC_CLASS QtSync
 		QMutex _mutex;
 };
 
-}
+}// namespace sf

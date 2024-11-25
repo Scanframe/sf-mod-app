@@ -1,5 +1,4 @@
 #pragma once
-
 #include <gii/gen/ResultData.h>
 #include <gii/gen/Variable.h>
 #include <gii/gen/VariableIdList.h>
@@ -8,15 +7,15 @@
 #include <misc/gen/TBitSet.h>
 #include <misc/gen/TClosure.h>
 #include <misc/qt/Graph.h>
-
-#include "AcquisitionControl.h"
+#include <wgt/acq-ctrl/AcquisitionControl.h>
 
 namespace sf
 {
 
 class HintWindow;
 
-struct AcquisitionControl::Private : QObject
+struct AcquisitionControl::Private
+	: QObject
 	, InformationTypes
 {
 		explicit Private(AcquisitionControl* widget);

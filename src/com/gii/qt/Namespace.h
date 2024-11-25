@@ -1,10 +1,9 @@
 #pragma once
-
-#include "../global.h"
-#include "../gen/InformationBase.h"
+#include <QMetaObject>
 #include <QtCore/qglobal.h>
 #include <QtCore/qtmetamacros.h>
-#include <QMetaObject>
+#include <gii/gen/InformationBase.h>
+#include <gii/global.h>
 
 namespace sf::Gii
 {
@@ -40,4 +39,4 @@ enum SelectionMode
 };
 Q_ENUM_NS(SelectionMode)
 
-}
+}// namespace sf::Gii

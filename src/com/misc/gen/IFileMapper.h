@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
 #include <cstddef>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -37,7 +36,6 @@ class _MISC_CLASS IFileMapper
 
 		/**
 		 * @brief Locks a pointer in memory which can be unlocked using #unmapView().
-		 *
 		 * @return True on success.
 		 */
 		virtual bool mapView() = 0;

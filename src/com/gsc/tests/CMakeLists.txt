@@ -17,7 +17,7 @@ file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 list(APPEND TEST_LIBRARIES Qt::Widgets)
 
 # Tests need to be added as executables first
-add_executable("${TEST_TARGET}")
+Sf_AddExecutable("${TEST_TARGET}")
 
 target_sources("${TEST_TARGET}" PRIVATE main.cpp "${TEST_SOURCES}")
 
@@ -38,11 +38,8 @@ endif (SF_BUILD_QT)
 target_link_libraries("${TEST_TARGET}" PRIVATE ${TEST_LIBRARIES})
 
 #[[
-# If you register a test, then ctest and make test will run it.
-# You can also run examples and check the output, as well.
-# Command can be a target
-add_test(NAME "${TEST_TARGET}"
-	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,$<IF:$<BOOL:${SF_CROSS_WINDOWS}>,win-exec.sh,win-exec.cmd>,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_TARGET}>")
+# Add this application as a test for all possible builds.
+Sf_AddTest(${TEST_APP_TARGET} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/..")
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_TARGET}")

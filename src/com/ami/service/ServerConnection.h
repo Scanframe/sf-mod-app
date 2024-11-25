@@ -1,7 +1,7 @@
 #pragma once
-#include "InformationPacket.h"
-#include "VariableCollector.h"
 #include <QIODevice>
+#include <ami/service/InformationPacket.h>
+#include <ami/service/VariableCollector.h>
 #include <gii/gen/ResultDataTypes.h>
 #include <gii/gen/VariableTypes.h>
 #include <misc/gen/ThreadRelay.h>
@@ -12,7 +12,8 @@ namespace sf
 /**
  * @brief Class handling the connection exchanging data using a QIODevice.
  */
-class ServerConnection : public QObject
+class ServerConnection
+	: public QObject
 	, protected InformationTypes
 {
 	public:

@@ -1,8 +1,8 @@
 #pragma once
+#include <gii/gen/ResultData.h>
+#include <gii/gen/Variable.h>
+#include <gii/global.h>
 #include <misc/gen/ScriptInterpreter.h>
-#include "Variable.h"
-#include "ResultData.h"
-#include "../global.h"
 
 namespace sf
 {
@@ -10,7 +10,8 @@ namespace sf
 /**
  * @brief Script extending and linking the script to the generic information interface elements.
  */
-class _GII_CLASS GiiScriptInterpreter :public ScriptInterpreter
+class _GII_CLASS GiiScriptInterpreter
+	: public ScriptInterpreter
 {
 	public:
 		/**
@@ -29,7 +30,6 @@ class _GII_CLASS GiiScriptInterpreter :public ScriptInterpreter
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 
 	protected:
-
 		/**
 		 * @brief Gets and sets a value using a returned TInfo structure.
 		 *
@@ -44,4 +44,4 @@ class _GII_CLASS GiiScriptInterpreter :public ScriptInterpreter
 		static IdInfo _infoList[];
 };
 
-}
+}// namespace sf

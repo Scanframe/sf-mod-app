@@ -1,11 +1,11 @@
 #pragma once
-#include "BscanGraph.h"
 #include <gii/gen/ResultData.h>
 #include <gii/gen/ResultDataRequester.h>
 #include <gii/gen/Variable.h>
 #include <misc/gen/TDynamicBuffer.h>
 #include <misc/qt/Graph.h>
 #include <pal/iface/PaletteServer.h>
+#include <wgt/bscan/BscanGraph.h>
 
 namespace sf
 {

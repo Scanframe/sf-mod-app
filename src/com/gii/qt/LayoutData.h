@@ -1,20 +1,20 @@
 #pragma once
-
-#include <QWidget>
 #include <QDir>
+#include <QWidget>
+#include <gii/global.h>
+#include <gii/qt/Namespace.h>
 #include <misc/qt/PropertySheetDialog.h>
-#include "Namespace.h"
-#include "../global.h"
 
 namespace sf
 {
 
 /**
- * Base class for loading Widgets from a ui-file when used in an editor for example.
+ * Base class for loading Widgets from an ui-file when used in an editor for example.
  */
-class _GII_CLASS LayoutData :public QObject
+class _GII_CLASS LayoutData
+	: public QObject
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
@@ -36,7 +36,7 @@ class _GII_CLASS LayoutData :public QObject
 		 * @brief Executes a popup from .
 		 *
 		 * @param target Object targeted in the editor.
-		 * @param pos Global position to popup the menu.
+		 * @param pos Global position to pop up the menu.
 		 */
 		virtual void popupContextMenu(QObject* target, const QPoint& pos);
 
@@ -66,7 +66,7 @@ class _GII_CLASS LayoutData :public QObject
 		/**
 		 * @brief Gets the directory of the loaded layout file.
 		 */
-		 [[nodiscard]] virtual QDir getDirectory() const;
+		[[nodiscard]] virtual QDir getDirectory() const;
 
 		/**
 		 * @brief Gets the directory of the loaded layout file.
@@ -89,13 +89,11 @@ class _GII_CLASS LayoutData :public QObject
 		 * @brief Sets id offset for all Gii widgets.
 		 * Only applied when a layout is loaded.
 		 */
-	void setIdOffset(Gii::IdType idOffset) const;
+		void setIdOffset(Gii::IdType idOffset) const;
 
 	private:
-
 		struct Private;
 		Private* _p{nullptr};
 };
 
-}
-
+}// namespace sf

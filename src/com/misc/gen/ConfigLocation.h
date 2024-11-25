@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
-#include "TClosure.h"
+#include <misc/gen/TClosure.h>
+#include <misc/global.h>
 #include <string>
 
 namespace sf

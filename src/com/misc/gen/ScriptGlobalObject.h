@@ -1,13 +1,16 @@
 #pragma once
-
-#include "../global.h"
-#include "ScriptObject.h"
-#include "Value.h"
+#include <misc/gen/ScriptObject.h>
+#include <misc/gen/Value.h>
+#include <misc/global.h>
 
 namespace sf
 {
 
-class _MISC_CLASS ScriptGlobalObject : public ScriptObject
+/**
+ * @brief Base class for a script to implementing
+ */
+class _MISC_CLASS ScriptGlobalObject
+	: public ScriptObject
 {
 	public:
 		explicit ScriptGlobalObject(const Parameters&);
@@ -17,13 +20,12 @@ class _MISC_CLASS ScriptGlobalObject : public ScriptObject
 		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
 	protected:
-		void destroyObject(bool& should_delete) override
-		{
-			should_delete = true;
-		}
+		void destroyObject(bool& should_delete) override;
 
 	private:
-		// Dynamic function table entry TInfo instance.
+		/**
+		 * @brief Dynamic function table entry instance.
+		 */
 		IdInfo _globalIdInfo{};
 
 		static IdInfo _objectInfo[];

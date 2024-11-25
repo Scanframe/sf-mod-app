@@ -2,9 +2,8 @@
 #include "AscanPropertyPage.h"
 #include <QStyleOptionFrame>
 #include <QStylePainter>
-#include <gen/InformationBase.h>
-#include <gen/ResultData.h>
-#include <gen/Variable.h>
+#include <gii/gen/ResultData.h>
+#include <gii/gen/Variable.h>
 #include <misc/gen/TDynamicBuffer.h>
 #include <misc/qt/Draw.h>
 #include <misc/qt/Graph.h>

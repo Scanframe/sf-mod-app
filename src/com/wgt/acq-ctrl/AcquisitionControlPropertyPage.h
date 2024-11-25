@@ -1,16 +1,20 @@
 #pragma once
-
+#include <gii/qt/IdPropertyList.h>
 #include <misc/qt/PropertyPage.h>
-#include <qt/IdPropertyList.h>
-#include "AcquisitionControl.h"
+#include <wgt/acq-ctrl/AcquisitionControl.h>
 
 namespace sf
 {
-namespace Ui {class AcquisitionControlPropertyPage;}
 
-class AcquisitionControlPropertyPage :public PropertyPage
+namespace Ui
 {
-	Q_OBJECT
+class AcquisitionControlPropertyPage;
+}
+
+class AcquisitionControlPropertyPage
+	: public PropertyPage
+{
+		Q_OBJECT
 
 	public:
 		explicit AcquisitionControlPropertyPage(AcquisitionControl* target, QWidget* parent = nullptr);
@@ -33,5 +37,4 @@ class AcquisitionControlPropertyPage :public PropertyPage
 		IdPropertyList _idPropertyList;
 };
 
-}
-
+}// namespace sf

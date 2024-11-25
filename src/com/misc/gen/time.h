@@ -1,17 +1,14 @@
 #pragma once
-
-#include "../global.h"
 #include <cstring>
+#include <misc/global.h>
 #include <ostream>
 
 namespace sf
 {
 
 /**
- * @brief Compares the 2 ::timespec times.
- *
+ * @brief Compares the 2 ::timespec time structures.
  * Helper function.
- *
  * @return -1, 0, 1 respectively for smaller, equal en larger.
  */
 _MISC_FUNC int timespecCompare(const timespec& ts1, const timespec& ts2);

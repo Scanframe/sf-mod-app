@@ -1,14 +1,13 @@
 #pragma once
-#pragma once
-
-#include "Variable.h"
-#include "ResultData.h"
-#include "../global.h"
+#include <gii/gen/ResultData.h>
+#include <gii/gen/Variable.h>
+#include <gii/global.h>
 
 namespace sf
 {
 
-class _GII_CLASS InformationServer :public InformationTypes
+class _GII_CLASS InformationServer
+	: public InformationTypes
 {
 	public:
 		/**
@@ -244,4 +243,4 @@ class _GII_CLASS InformationServer :public InformationTypes
 		TVariableHandler<InformationServer> _variableHandler;
 };
 
-}
+}// namespace sf

@@ -1,18 +1,17 @@
 #pragma once
-
-#include "global.h"
 #include <misc/gen/Value.h>
+#include <rsa/iface/global.h>
 
 namespace sf
 {
 
 /**
- * Names used for method identification.
+ * @brief Names used for method identification.
  */
 constexpr const char* US_METHOD_PEAK = "Peak";
 
 /**
- * Method for generating sample copy results in array's of Amplitude values.
+ * @brief Method for generating sample copy results in array's of Amplitude values.
  */
 constexpr const char* US_METHOD_COPY = "Copy";
 

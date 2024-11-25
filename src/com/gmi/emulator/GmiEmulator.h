@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controller.h"
+#include <gmi/iface/Controller.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Sustain.h>
 

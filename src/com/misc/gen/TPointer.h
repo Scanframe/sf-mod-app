@@ -1,4 +1,5 @@
-#pragmna once
+#pragma once
+#include <stddef.h>
 
 namespace sf
 {

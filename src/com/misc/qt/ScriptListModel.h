@@ -1,7 +1,6 @@
-#include <QAbstractListModel>
-#include "../gen/ScriptInterpreter.h"
-
 #pragma once
+#include <QAbstractListModel>
+#include <misc/gen/ScriptInterpreter.h>
 
 namespace sf
 {
@@ -9,7 +8,8 @@ namespace sf
 /**
  * @brief Provides a model list for instructions and variables of a script.
  */
-class _MISC_CLASS ScriptListModel :public QAbstractListModel
+class _MISC_CLASS ScriptListModel
+	: public QAbstractListModel
 {
 	public:
 		/**
@@ -77,4 +77,4 @@ class _MISC_CLASS ScriptListModel :public QAbstractListModel
 		EMode _mode{mInstructions};
 };
 
-}
+}// namespace sf

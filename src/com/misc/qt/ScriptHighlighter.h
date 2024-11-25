@@ -1,10 +1,9 @@
 #pragma once
-
+#include <QRegularExpression>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
-#include <QRegularExpression>
-#include "../gen/ScriptInterpreter.h"
-#include "../global.h"
+#include <misc/gen/ScriptInterpreter.h>
+#include <misc/global.h>
 
 class QTextDocument;
 
@@ -16,12 +15,12 @@ namespace sf
  *
  * Highlights the document according the passed script interpreter.
  */
-class _MISC_CLASS ScriptHighlighter :public QSyntaxHighlighter
+class _MISC_CLASS ScriptHighlighter
+	: public QSyntaxHighlighter
 {
 	public:
 		/**
 		 * @brief Constructor.
-		 *
 		 * @param script Script interpreter derived class.
 		 * @param document Document from a edit widget for example.
 		 */
@@ -31,13 +30,12 @@ class _MISC_CLASS ScriptHighlighter :public QSyntaxHighlighter
 		void highlightBlock(const QString& text) override;
 
 	private:
-
 		void highlightCurrentLine();
 
 		struct HighlightingRule
 		{
-			QRegularExpression pattern;
-			QTextCharFormat format;
+				QRegularExpression pattern;
+				QTextCharFormat format;
 		};
 
 		QVector<HighlightingRule> _rules;
@@ -45,4 +43,4 @@ class _MISC_CLASS ScriptHighlighter :public QSyntaxHighlighter
 		QColor _curLineColor;
 };
 
-}
+}// namespace sf

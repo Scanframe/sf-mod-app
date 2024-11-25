@@ -1,20 +1,17 @@
 #pragma once
-
+#include <ipj/global.h>
 #include <rsa/iface/RsaServer.h>
 #include <sto/iface/StorageServer.h>
-#include "global.h"
 
 namespace sf
 {
 
 class RsaServer;
-
 class PropertySheetDialog;
 
 class _IPJ_CLASS ProjectConfig
 {
 	public:
-
 		class _IPJ_CLASS Settings
 		{
 			public:
@@ -40,12 +37,10 @@ class _IPJ_CLASS ProjectConfig
 		void addPropertyPages(PropertySheetDialog* sheet);
 
 	private:
-
 		Settings* _settings{nullptr};
 		RsaServer* _serverAcquisitionUt{nullptr};
 		RsaServer* _serverAcquisitionEt{nullptr};
 		StorageServer* _serverStorage{nullptr};
-
 };
 
-}
+}// namespace sf

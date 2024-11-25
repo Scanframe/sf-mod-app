@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../global.h"
-#include "ScriptObject.h"
-#include "Value.h"
+#include <misc/gen/ScriptObject.h>
+#include <misc/gen/Value.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -20,7 +20,6 @@ class _MISC_CLASS ScriptGlobalEntry
 
 		/**
 		 * @brief Default Constructor adding itself to the global mapped entries.
-		 *
 		 * @param name Name of the function.
 		 * @param description Description of the function.
 		 * @param argumentCount Amount of arguments needed.
@@ -29,7 +28,6 @@ class _MISC_CLASS ScriptGlobalEntry
 
 		/**
 		 * @brief Destructor.
-		 *
 		 * Removes itself from the mapped entries.
 		 */
 		virtual ~ScriptGlobalEntry();
@@ -86,7 +84,6 @@ class _MISC_CLASS ScriptGlobalEntry
 		/**
 		 * @brief Finds the function with name 'name' and returns true when the function was found passing the correct amount of parameters.
 		 * When found the function is also executed.
-		 *
 		 * @param name Name of the entry.
 		 * @param arguments Required arguments.
 		 * @param result Result from the call.

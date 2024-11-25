@@ -1,7 +1,7 @@
 #pragma once
 
-#include "global.h"
-#include "math/Types.h"
+#include <gmi/iface/global.h>
+#include <math/Types.h>
 #include <misc/gen/TSet.h>
 #include <misc/gen/Value.h>
 #include <misc/gen/string.h>

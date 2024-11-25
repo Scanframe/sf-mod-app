@@ -1,13 +1,17 @@
 #pragma once
+#include <ami/layout/LayoutEditorAppModule.h>
 #include <misc/qt/PropertyPage.h>
-#include "LayoutEditorAppModule.h"
 
 namespace sf
 {
 
-namespace Ui {class LayoutEditorPropertyPage;}
+namespace Ui
+{
+class LayoutEditorPropertyPage;
+}
 
-class LayoutEditorPropertyPage :public PropertyPage
+class LayoutEditorPropertyPage
+	: public PropertyPage
 {
 		Q_OBJECT
 
@@ -38,4 +42,4 @@ class LayoutEditorPropertyPage :public PropertyPage
 		LayoutEditorAppModule& _lem;
 };
 
-}
+}// namespace sf

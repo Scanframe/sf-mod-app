@@ -1,16 +1,20 @@
 #pragma once
-
+#include <gii/qt/IdPropertyList.h>
 #include <misc/qt/PropertyPage.h>
-#include <qt/IdPropertyList.h>
-#include "AscanGraph.h"
+#include <wgt/ascan/AscanGraph.h>
 
 namespace sf
 {
-namespace Ui {class AscanPropertyPage;}
 
-class AscanPropertyPage :public PropertyPage
+namespace Ui
 {
-	Q_OBJECT
+class AscanPropertyPage;
+}
+
+class AscanPropertyPage
+	: public PropertyPage
+{
+		Q_OBJECT
 
 	public:
 		explicit AscanPropertyPage(AscanGraph* target, QWidget* parent = nullptr);
@@ -31,5 +35,4 @@ class AscanPropertyPage :public PropertyPage
 		IdPropertyList _idPropertyList;
 };
 
-}
-
+}// namespace sf

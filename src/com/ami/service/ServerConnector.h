@@ -1,12 +1,13 @@
 #pragma once
-#include "VariableCollector.h"
-#include "ServerConnection.h"
-#include "misc/qt/QtThreadClosure.h"
+#include <ami/service/ServerConnection.h>
+#include <ami/service/VariableCollector.h>
+#include <misc/qt/QtThreadClosure.h>
 
 namespace sf
 {
 
-class ServerConnector :QObject
+class ServerConnector
+	: public QObject
 {
 	public:
 		explicit ServerConnector(QObject* parent);
@@ -18,8 +19,4 @@ class ServerConnector :QObject
 		QtThreadClosure _threadClosure;
 };
 
-}
-
-
-
-
+}// namespace sf

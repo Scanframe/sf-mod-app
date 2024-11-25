@@ -1,8 +1,8 @@
 #pragma once
 
-#include <qt/VariableWidgetBase.h>
-#include <misc/qt/Macros.h>
 #include <QTabWidget>
+#include <gii/qt/VariableWidgetBase.h>
+#include <misc/qt/Macros.h>
 
 namespace sf
 {
@@ -10,9 +10,9 @@ namespace sf
 /**
  * @brief Widget for editing #sf::Variable value types integer, floating point and single line string.
  */
-class QDESIGNER_WIDGET_EXPORT LayoutTabs :public VariableWidgetBase
+class QDESIGNER_WIDGET_EXPORT LayoutTabs : public VariableWidgetBase
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(QStringList tabsConfig READ getTabsConfig WRITE setTabsConfig)
 		Q_PROPERTY(QTabWidget::TabPosition tabPosition READ getTabPosition WRITE setTabPosition)
 		Q_PROPERTY(QTabWidget::TabShape tabShape READ getTabShape WRITE setTabShape)
@@ -55,8 +55,7 @@ class QDESIGNER_WIDGET_EXPORT LayoutTabs :public VariableWidgetBase
 		void applyReadOnly(bool yn) override;
 
 	private:
-
-	/**
+		/**
 	 * @brief Forward definition of private implemented class to prevent interfaces exposure.
 	 */
 		struct Private;
@@ -64,4 +63,4 @@ class QDESIGNER_WIDGET_EXPORT LayoutTabs :public VariableWidgetBase
 		Q_DISABLE_COPY(LayoutTabs)
 };
 
-}
+}// namespace sf

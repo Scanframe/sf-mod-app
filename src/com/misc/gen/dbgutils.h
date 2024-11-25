@@ -44,12 +44,10 @@
 */
 
 #pragma once
-
-#include "../global.h"
-// Include for std::cout, std::cerr ,std::clog and std::ostream.
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <misc/global.h>
 #include <utility>
 
 #if IS_QT

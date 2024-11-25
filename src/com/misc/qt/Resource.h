@@ -1,10 +1,8 @@
 #pragma once
-
-#include <QIcon>
 #include <QFile>
+#include <QIcon>
 #include <QPalette>
-
-#include "../global.h"
+#include <misc/global.h>
 
 namespace sf
 {
@@ -17,58 +15,57 @@ class _MISC_CLASS Resource
 		/**
 		 * @brief List of available icons which is easy wen using auto complete.
 		 */
-		enum Icon: int
+		enum Icon : int
 		{
-				Clear,
-				Reload,
-				Submit,
-				New,
-				Open,
-				Cut,
-				Copy,
-				Paste,
-				Undo,
-				Redo,
-				Save,
-				Cancel,
-				Close,
-				Check,
-				Okay,
-				Exit,
-				CloseWindow,
-				CloseWindows,
-				Configuration,
-				Settings,
-				Application,
-				Development,
-				Compile,
-				Initialize,
-				Step,
-				Run,
-				Start,
-				Stop,
-				Edit,
-				Add,
-				Remove,
-				Folder,
-				Collapse,
-				Expand,
-				OpenFolder,
-				Hand,
-				Search,
-				Form,
-				Container,
-				Widget,
-				Palette,
-				Position,
-				Location,
-				Tools,
-				Graph,
+			Clear,
+			Reload,
+			Submit,
+			New,
+			Open,
+			Cut,
+			Copy,
+			Paste,
+			Undo,
+			Redo,
+			Save,
+			Cancel,
+			Close,
+			Check,
+			Okay,
+			Exit,
+			CloseWindow,
+			CloseWindows,
+			Configuration,
+			Settings,
+			Application,
+			Development,
+			Compile,
+			Initialize,
+			Step,
+			Run,
+			Start,
+			Stop,
+			Edit,
+			Add,
+			Remove,
+			Folder,
+			Collapse,
+			Expand,
+			OpenFolder,
+			Hand,
+			Search,
+			Form,
+			Container,
+			Widget,
+			Palette,
+			Position,
+			Location,
+			Tools,
+			Graph,
 		};
 
 		/**
-		 * @brief Gets an svg icon resource location from the pass enumerate value.
-		 *
+		 * @brief Gets an SVG-type icon resource location from the pass enumerate value.
 		 * @param icon Enumerate color value.
 		 * @return Resource location
 		 */
@@ -76,30 +73,27 @@ class _MISC_CLASS Resource
 
 		/**
 		 * @brief Retrieves resource in a byte array.
-		 *
 		 * @param resource location in the resource tree or file.
 		 * @return Resource file content.
 		 */
 		static QByteArray getByteArray(const QString& resource);
 
 		/**
-		 * @brief Gets a SVG using the passed color as the main color set in the 'svg' tags attribute.
-		 *
+		 * @brief Gets an SVG using the passed color as the main color set in the 'svg' tags attribute.
 		 * @param file File instance.
-		 * @param color HTML formed color string. Default is non valid color.
+		 * @param color HTML formed color string. Default is non-valid color.
 		 * @param size Size of the square icon where when -1 the svg size is not set and thus not restricted (default).
 		 * @return The SVG data on success and zero length on failure.
 		 */
 		static QByteArray getSvg(QFile& file, const QColor& color = QColor(), const QSize& size = QSize());
 
 		/**
-		 * @brief Gets a SVG using the passed color as the main color set in the 'svg' tags attribute.
-		 *
+		 * @brief Gets an SVG using the passed color as the main color set in the 'svg' tags attribute.
 		 * When the color's alpha channel has been set to total image is made transparent since Qt does not support
 		 * rgba(...) colors when rendering.
 		 *
 		 * @param resource Location of the image.
-		 * @param color HTML formed color string. Default is non valid color.
+		 * @param color HTML formed color string. Default is non-valid color.
 		 * @param size Size of the square icon where when -1 the svg size is not set and thus not restricted (default).
 		 * @return SVG image on success or the default warning PNG image.
 		 */
@@ -138,10 +132,8 @@ class _MISC_CLASS Resource
 		static QIcon getSvgIcon(const QString& resource, QPalette::ColorRole role, QSize size = QSize());
 
 	private:
-
 		/**
 		 * @brief Gets the passed color in a different brightness.
-		 *
 		 * @param color Base color.
 		 * @param brightness Multiplier for HSV V value.
 		 * @return Changed color.
@@ -149,8 +141,7 @@ class _MISC_CLASS Resource
 		static QColor getColor(const QColor& color, float brightness = 1.0);
 
 		/**
-		 * Gets the luminance of the passed color. Could be used for determining dark or light mode.
-		 *
+		 * @brief Gets the luminance of the passed color. Could be used for determining dark or light mode.
 		 * The threshold for dark or light mode could be 0.5.
 		 * @param color Color value.
 		 * @return Floating point value between 0 and 1.
@@ -172,4 +163,4 @@ class _MISC_CLASS Resource
 		static int _defaultIconSize;
 };
 
-} // namespace
+}// namespace sf

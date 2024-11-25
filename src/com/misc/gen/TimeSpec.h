@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../global.h"
-#include "time.h"
-#include <ctime>
-#include <string>
+#include <misc/gen/time.h>
+#include <misc/global.h>
 
 namespace sf
 {

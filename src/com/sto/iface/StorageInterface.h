@@ -1,11 +1,9 @@
 #pragma once
-
-#include <utility>
-
-#include "global.h"
 #include <misc/gen/TClassRegistration.h>
 #include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
+#include <sto/iface/global.h>
+#include <utility>
 
 namespace sf
 {
@@ -29,7 +27,7 @@ class _STO_CLASS StorageInterface
 		};
 
 		/**
-		 * @brief Constructor for passing general structure for derived classes.
+		 * @sbrief Constructor for passing general structure for derived classes.
 		 */
 		explicit StorageInterface(const Parameters&);
 

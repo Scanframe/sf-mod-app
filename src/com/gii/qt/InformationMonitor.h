@@ -1,7 +1,7 @@
 #pragma once
 #include <QDialog>
-#include <qt/Namespace.h>
-#include "../global.h"
+#include <gii/global.h>
+#include <gii/qt/Namespace.h>
 
 namespace sf
 {
@@ -10,9 +10,10 @@ namespace sf
  *
  * Instance is automatically delete on close.
  */
-class _GII_CLASS InformationMonitor :public QDialog
+class _GII_CLASS InformationMonitor
+	: public QDialog
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
@@ -49,4 +50,4 @@ class _GII_CLASS InformationMonitor :public QDialog
 		Private* _p;
 };
 
-}
+}// namespace sf

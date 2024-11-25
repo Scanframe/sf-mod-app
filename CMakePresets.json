@@ -161,6 +161,12 @@
 			"inherits": [
 				".cfg-lnx"
 			],
+			"cacheVariables": {
+				"SF_BUILD_GUI_TESTING": {
+					"type": "BOOL",
+					"value": "ON"
+				}
+			},
 			"binaryDir": "${sourceDir}/cmake-build/gnu-debug"
 		},
 		{

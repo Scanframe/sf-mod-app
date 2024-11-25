@@ -1,8 +1,7 @@
 #pragma once
-
-#include "../global.h"
-#include "Exception.h"
-#include "Mutex.h"
+#include <misc/gen/Exception.h>
+#include <misc/gen/Mutex.h>
+#include <misc/global.h>
 
 namespace sf
 {

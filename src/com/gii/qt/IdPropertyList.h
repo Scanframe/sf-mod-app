@@ -1,8 +1,8 @@
 #pragma once
-#include <QObject>
 #include <QList>
-#include "InformationIdEdit.h"
-#include "../global.h"
+#include <QObject>
+#include <gii/global.h>
+#include <gii/qt/InformationIdEdit.h>
 
 namespace sf
 {
@@ -10,19 +10,17 @@ namespace sf
 /**
  * @brief Class making checking of widgets Information ID's easier.
  */
-class _GII_CLASS  IdPropertyList
+class _GII_CLASS IdPropertyList
 {
 	public:
 		/**
 		 * @brief Constructor.
-		 *
 		 * @param target Targeted object having the properties.
 		 */
 		explicit IdPropertyList(QObject* target);
 
 		/**
 		 * @brief Adds a property name and corresponding ID edit widget.
-		 *
 		 * @param name Name of the property.
 		 * @param iie Pointer of the ID edit widget.
 		 */
@@ -49,7 +47,7 @@ class _GII_CLASS  IdPropertyList
 		/**
 		 * @brief Container type for name and id edit widget.
 		 */
-		typedef QList <QPair<QByteArray, InformationIdEdit*>> ListType;
+		typedef QList<QPair<QByteArray, InformationIdEdit*>> ListType;
 		/**
 		 * @brief Holds the target object having the properties containing ID's.
 		 */
@@ -60,4 +58,4 @@ class _GII_CLASS  IdPropertyList
 		ListType _list;
 };
 
-}
+}// namespace sf

@@ -1,7 +1,6 @@
 #pragma once
-
-#include "target.h"
 #include <cstring>
+#include <misc/gen/target.h>
 
 #ifdef __cplusplus
 	#define SF_CONSTRUCTOR_COMPAT_FUNC(f) \

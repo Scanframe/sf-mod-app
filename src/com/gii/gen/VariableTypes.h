@@ -1,32 +1,29 @@
 #pragma once
-
-#include <utility>
-
+#include <gii/gen/InformationBase.h>
 #include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
-
-#include "InformationBase.h"
+#include <utility>
 
 namespace sf
 {
 
 /**
- * Forward declaration.
+ * @brief Forward declaration.
  */
 class VariableReference;
 
 /**
- * Forward declaration.
+ * @brief Forward declaration.
  */
 class Variable;
 
 /**
  * @brief This base class contains all local types of used in the Variable class.
- *
  * Multiple inheritance makes these types local for other classes as well.
  * Making code more readable and also prevents name space problems.
  */
-class VariableTypes : public InformationTypes
+class VariableTypes
+	: public InformationTypes
 {
 	public:
 		/**
@@ -49,41 +46,42 @@ class VariableTypes : public InformationTypes
 		 */
 		struct State
 		{
+			public:
 				/**
-			 * @brief Default constructor.
-			 */
+				 * @brief Default constructor.
+				 */
 				State()
 					: _name(Value::_invalidStr)
 				{}
 
 				/**
-			 * @brief Initialization constructor.
-			 */
+				 * @brief Initialization constructor.
+				 */
 				State(std::string name, const Value& value)
 					: _name(std::move(name))
 					, _value(value)
 				{}
 
 				/**
-			 * @brief Copy constructor.
-			 */
+				 * @brief Copy constructor.
+				 */
 				State(const State& s)
 				{
 					assign(s);
 				}
 
 				/**
-			 * @brief Name of the contained value.
-			 */
+				 * @brief Name of the contained value.
+				 */
 				std::string _name;
 				/**
-			 * @brief Value which belongs to the name.
-			 */
+				 * @brief Value which belongs to the name.
+				 */
 				Value _value;
 
 				/**
-			 * @brief Assignment function for save copying of the structure.
-			 */
+				 * @brief Assignment function for save copying of the structure.
+				 */
 				State& assign(const State& s)
 				{
 					_name = s._name;
@@ -92,8 +90,8 @@ class VariableTypes : public InformationTypes
 				}
 
 				/**
-			 * @brief Assignment operator for save copying of the structure.
-			 */
+				 * @brief Assignment operator for save copying of the structure.
+				 */
 				State& operator=(const State& s)
 				{
 					assign(s);
@@ -101,24 +99,24 @@ class VariableTypes : public InformationTypes
 				}
 
 				/**
-			 * @brief Compare equal operator.
-			 */
+				 * @brief Compare equal operator.
+				 */
 				bool operator==(const State& s) const
 				{
 					return (_name == s._name) && (_value == s._value);
 				}
 
 				/**
-			 * @brief Compare unequal operator.
-			 */
+				 * @brief Compare unequal operator.
+				 */
 				bool operator!=(const State& s) const
 				{
 					return (_name != s._name) || (_value != s._value);
 				}
 
 				/**
-			 * @brief Vector class to be able to create a state list.
-			 */
+				 * @brief Vector class to be able to create a state list.
+				 */
 				typedef TVector<State> Vector;
 		};
 
@@ -264,69 +262,70 @@ class VariableTypes : public InformationTypes
 			stPath,
 			/** The string contains a complete directory an drive letter.*/
 			stDirectory,
-			/** The string contains a a file name.*/
+			/** The string contains a file name.*/
 			stFilename,
-			/** The string contains a subdirectory having an ending back slash and no drive letter or starting back slash.*/
+			/** The string contains a subdirectory having an ending backslash and no drive letter or starting backslash.*/
 			stSubdirectory
 		};
 		/**
-		 * Structure used to setup a variable.
+		 * Structure used to set up a variable.
 		 */
 		struct Definition
 		{
+			public:
 				/**
-			 * @brief Flag indicating this structure is valid.
-			 */
+				 * @brief Flag indicating this structure is valid.
+				 */
 				bool _valid{false};
 				/**
-			 * @brief Id of the new global instance.
-			 */
+				 * @brief The id of the new global instance.
+				 */
 				id_type _id{0};
 				/**
-			 * @brief Name path separated using '|' characters.
-			 */
+				 * @brief Name path separated using '|' characters.
+				 */
 				std::string _name;
 				/**
-			 * @brief Combination of EFlag flags.
-			 */
+				 * @brief Combination of EFlag flags.
+				 */
 				flags_type _flags{0};
 				/**
-			 * @brief Description of the instance without comma's.
-			 */
+				 * @brief Description of the instance without comma's.
+				 */
 				std::string _description;
 				/**
-			 * @brief unit preferably in SI units so conversion and calculations are simple.<br>
-			 * Also used to Set the string filter type.
-			 */
+				 * @brief unit preferably in SI units so conversion and calculations are simple.<br>
+				 * Also used to Set the string filter type.
+				 */
 				std::string _unit;
 				/**
-			 * @brief Additional option used during conversion. (not used yet)
-			 */
+				 * @brief Additional option used during conversion. (not used yet)
+				 */
 				std::string _convertOption;
 				/**
-			 * @brief Internal type of the instance.
-			 */
+				 * @brief Internal type of the instance.
+				 */
 				Value::EType _type;
 				/**
-			 * @brief Rounding value. The value is a multiple of this value.
-			 */
+				 * @brief Rounding value. The value is a multiple of this value.
+				 */
 				Value _roundValue;
 				/**
-			 * @brief This is the value this instance starts with.
-			 */
+				 * @brief This is the value this instance starts with.
+				 */
 				Value _defaultValue;
 				/**
-			 * @brief Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
-			 */
+				 * @brief Minimum limit of this instance.<br>When the min and max limits are zero no limits are applied.
+				 */
 				Value _minValue;
 				/**
-			 * @brief Maximum limit of this instance.<br>
-			 * When the min and max limits are zero no limits are applied.
-			 */
+				 * @brief Maximum limit of this instance.<br>
+				 * When the min and max limits are zero no limits are applied.
+				 */
 				Value _maxValue;
 				/**
-			 * @brief A vector of VariableTypes::State` instances.
-			 */
+				 * @brief A vector of VariableTypes::State` instances.
+				 */
 				State::Vector _states;
 		};
 };

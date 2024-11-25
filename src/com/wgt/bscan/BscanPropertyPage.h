@@ -1,17 +1,20 @@
 #pragma once
-
-#include "BscanGraph.h"
-#include <qt/IdPropertyList.h>
+#include <gii/qt/IdPropertyList.h>
 #include <misc/qt/PropertyPage.h>
+#include <wgt/bscan/BscanGraph.h>
 
 namespace sf
 {
 
-namespace Ui {class BscanPropertyPage;}
-
-class BscanPropertyPage :public PropertyPage
+namespace Ui
 {
-	Q_OBJECT
+class BscanPropertyPage;
+}
+
+class BscanPropertyPage
+	: public PropertyPage
+{
+		Q_OBJECT
 
 	public:
 		explicit BscanPropertyPage(BscanGraph* target, QWidget* parent = nullptr);
@@ -34,4 +37,4 @@ class BscanPropertyPage :public PropertyPage
 		IdPropertyList _idPropertyList;
 };
 
-}
+}// namespace sf

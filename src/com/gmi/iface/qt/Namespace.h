@@ -1,9 +1,8 @@
 #pragma once
-
-#include "../global.h"
 #include <QMetaObject>
 #include <QtCore/qglobal.h>
 #include <QtCore/qtmetamacros.h>
+#include <gmi/iface/global.h>
 
 namespace sf::Gii
 {

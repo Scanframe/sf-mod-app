@@ -1,10 +1,9 @@
 #pragma once
-
-#include "../global.h"
-#include <gii/gen/InformationBase.h>
-#include "Namespace.h"
-#include <QIcon>
 #include <QAbstractItemModel>
+#include <QIcon>
+#include <gii/gen/InformationBase.h>
+#include <gii/global.h>
+#include <gii/qt/Namespace.h>
 
 namespace sf
 {
@@ -12,7 +11,7 @@ namespace sf
 /**
  * @brief Item model for viewing Variables in a tree view.
  */
-class _GII_CLASS InformationItemModel :public QAbstractItemModel
+class _GII_CLASS InformationItemModel : public QAbstractItemModel
 {
 	public:
 		/**
@@ -85,51 +84,50 @@ class _GII_CLASS InformationItemModel :public QAbstractItemModel
 		void updateList();
 
 	private:
-
 		/**
 		 * @brief Entries in the list.
 		 */
 		struct TreeItem
 		{
 
-			explicit TreeItem(TreeItem* parent, QString name);
+				explicit TreeItem(TreeItem* parent, QString name);
 
-			~TreeItem();
+				~TreeItem();
 
-			/**
+				/**
 			 * @brief TYpe of entry
 			 */
-			enum DataType
-			{
-				dtVariable,
-				dtResultData,
-				dtFolder
-			} _type{dtFolder};
+				enum DataType
+				{
+					dtVariable,
+					dtResultData,
+					dtFolder
+				} _type{dtFolder};
 
-			/**
+				/**
 			 * @brief Holds the selected status.
 			 */
-			bool _selected{false};
-			/**
+				bool _selected{false};
+				/**
 			 * @brief Hold the ID of the variable or result when the type is not dtFolder.
 			 */
-			Gii::IdType _id{0};
-			/**
+				Gii::IdType _id{0};
+				/**
 			 * @brief Holds the display name of the item.
 			 */
-			QString _name;
-			/**
+				QString _name;
+				/**
 			 * @brief Holds the parent element.
 			 */
-			TreeItem* _parentItem{nullptr};
-			/**
+				TreeItem* _parentItem{nullptr};
+				/**
 			 * @brief Holds the child elements.
 			 */
-			QList<TreeItem*> _childItems;
-			/**
+				QList<TreeItem*> _childItems;
+				/**
 			 * @brief Gets the name path of the current item.
 			 */
-			[[nodiscard]] QStringList getNamePath() const;
+				[[nodiscard]] QStringList getNamePath() const;
 		};
 
 		/**
@@ -154,4 +152,4 @@ class _GII_CLASS InformationItemModel :public QAbstractItemModel
 		QIcon _icons[3];
 };
 
-}
+}// namespace sf

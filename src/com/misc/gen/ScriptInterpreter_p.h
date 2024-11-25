@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ScriptInterpreter.h"
+#include <misc/gen/ScriptInterpreter.h>
 
 namespace sf
 {
@@ -8,8 +8,10 @@ namespace sf
 /**
  * @brief Structure to link a Value to an IdInfo structure.
  */
-struct ScriptInterpreter::VariableInfo : IdInfo
+struct ScriptInterpreter::VariableInfo
+	: IdInfo
 {
+	public:
 		// Default constructor
 		VariableInfo(const char* name, Value::EType type, int index = 0)
 			: _value(type)
@@ -40,11 +42,13 @@ struct ScriptInterpreter::VariableInfo : IdInfo
 /**
  * @brief Structure to link a labels to Info.
  */
-struct ScriptInterpreter::LabelInfo : IdInfo
+struct ScriptInterpreter::LabelInfo
+	: IdInfo
 {
+	public:
 		/**
-	 * Initializing constructor.
-	 */
+		 * @brief Initializing constructor.
+		 */
 		LabelInfo(const char* name, int index, ip_type ip)
 		{
 #if IS_WIN
@@ -60,18 +64,17 @@ struct ScriptInterpreter::LabelInfo : IdInfo
 		}
 
 		/**
-	 * Destructor cleaning up the duplicated name.
-	 */
+		 * @brief Destructor cleaning up the duplicated name.
+		 */
 		~LabelInfo()
 		{
 			free((char*) _name);
 		}
 
 		/**
-	 * @brief Cast function of DataPtr member to ip_type.
-	 *
-	 * @return Reference to instruction pointer member.
-	 */
+		 * @brief Cast function of DataPtr member to ip_type.
+		 * @return Reference to instruction pointer member.
+		 */
 		ip_type& instructionPtr()
 		{
 			return *(ip_type*) &_data;

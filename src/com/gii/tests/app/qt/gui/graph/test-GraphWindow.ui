@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab1">
       <attribute name="title">
@@ -135,7 +135,7 @@
             <number>20</number>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksAbove</enum>
+            <enum>QSlider::TickPosition::TicksAbove</enum>
            </property>
            <property name="tickInterval">
             <number>4</number>

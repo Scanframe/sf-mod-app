@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../global.h"
+#include <misc/global.h>
 #include <utility>
 
 namespace sf
@@ -23,7 +22,7 @@ inline void delete_null(T& p)
 }
 
 /**
- * @brief Template function deleting an array previous allocated by 'new[]' when the pointer is non-null and also nulls the passed pointer.
+ * @brief Deletes an array previous allocated by 'new[]' when the pointer is non-null and also nulls the passed pointer.
  */
 template<typename T>
 inline void delete_anull(T& p)

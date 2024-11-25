@@ -1,6 +1,6 @@
 #pragma once
-#include "../global.h"
 #include <QPainter>
+#include <misc/global.h>
 
 namespace sf
 {

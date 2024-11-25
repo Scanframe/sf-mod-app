@@ -1,9 +1,8 @@
 #pragma once
-
-#include "../gen/Mutex.h"
-#include "../gen/TimeSpec.h"
-#include "../global.h"
 #include <atomic>
+#include <misc/gen/Mutex.h>
+#include <misc/gen/TimeSpec.h>
+#include <misc/global.h>
 
 namespace sf
 {

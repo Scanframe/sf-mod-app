@@ -1,8 +1,7 @@
 #pragma once
-
-#include "TVector3D.h"
 #include <complex>
 #include <istream>
+#include <math/TVector3D.h>
 #include <misc/gen/dbgutils.h>
 
 namespace sf
@@ -469,4 +468,4 @@ inline std::istream& operator>>(std::istream& is, TQuaternion<T>& quat) noexcept
 
 }// namespace sf
 
-#include "TQuaternion.hpp"
+#include <math/TQuaternion.hpp>

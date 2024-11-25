@@ -1,7 +1,6 @@
 #pragma once
-
+#include <gii/gen/Variable.h>
 #include <misc/gen/ScriptObject.h>
-#include "Variable.h"
 
 namespace sf
 {
@@ -9,22 +8,36 @@ namespace sf
 /**
  * @brief Script object for exporting GII parameters to a script object.
  */
-class VariableScriptObject :public ScriptObject, public Variable, private VariableHandler
+class VariableScriptObject
+	: public ScriptObject
+	, public Variable
+	, private VariableHandler
 {
 	public:
 		explicit VariableScriptObject(const Parameters& params);
 
+		/**
+		 * @brief Overloaded from base class.
+		 */
 		std::string getStatusText() override;
 
 	protected:
+		/**
+		 * @brief Overloaded from base class.
+		 */
 		[[nodiscard]] const IdInfo* getInfo(const std::string& name) const override;
 
+		/**
+		 * @brief Overloaded from base class.
+		 */
 		void destroyObject(bool& should_delete) override
 		{
 			should_delete = true;
 		}
 
-		// Overloaded from base class.
+		/**
+		 * @brief Overloaded from base class.
+		 */
 		bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) override;
 
 	private:
@@ -42,4 +55,4 @@ class VariableScriptObject :public ScriptObject, public Variable, private Variab
 		static ScriptObject::IdInfo _info[];
 };
 
-}
+}// namespace sf

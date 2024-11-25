@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QDir>
 #include <QTimer>
-#include <misc/gen/gen_utils.h>
 #include <misc/qt/qt_utils.h>
 #include <test-ScriptWindow.h>
 #if IS_WIN

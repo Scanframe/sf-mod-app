@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ResultData.h"
+#include <gii/gen/ResultData.h>
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Sustain.h>
 #include <misc/gen/TBitSet.h>

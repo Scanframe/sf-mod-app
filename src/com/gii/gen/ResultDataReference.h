@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ResultDataTypes.h"
+#include <gii/gen/ResultDataTypes.h>
 #include <misc/gen/RangeManager.h>
 
 namespace sf

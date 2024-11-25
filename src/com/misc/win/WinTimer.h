@@ -1,6 +1,5 @@
 #pragma once
-
-#include "global.h"
+#include <misc/global.h>
 #include <windows.h>
 
 // Just to satisfy the IDE.

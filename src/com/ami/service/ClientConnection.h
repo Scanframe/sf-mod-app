@@ -1,9 +1,9 @@
 #pragma once
-#include "InformationPacket.h"
-#include "BufferChopper.h"
-#include <gii/gen/VariableTypes.h>
-#include <gii/gen/ResultDataTypes.h>
 #include <QIODevice>
+#include <ami/service/BufferChopper.h>
+#include <ami/service/InformationPacket.h>
+#include <gii/gen/ResultDataTypes.h>
+#include <gii/gen/VariableTypes.h>
 
 namespace sf
 {
@@ -11,10 +11,11 @@ namespace sf
 /**
  * @brief Class handling the connection exchanging data using a QIODevice.
  */
-class ClientConnection :public QObject, protected InformationTypes
+class ClientConnection
+	: public QObject
+	, protected InformationTypes
 {
 	public:
-
 		enum EState
 		{
 			sError = -1,
@@ -61,7 +62,6 @@ class ClientConnection :public QObject, protected InformationTypes
 		DynamicBuffer _bufferWrite;
 		//
 		BufferChopper bufChopper{16};
-
 };
 
-}
+}// namespace sf

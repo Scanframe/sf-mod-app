@@ -1,18 +1,20 @@
 #pragma once
-
 #include <misc/qt/PropertySheetDialog.h>
-#include "PaletteServer.h"
+#include <pal/iface/PaletteServer.h>
 
 namespace sf
 {
 
-namespace Ui {class PaletteServerPropertyPage;}
+namespace Ui
+{
+class PaletteServerPropertyPage;
+}
 
 class PaletteServer;
 
-class PaletteServerPropertyPage :public PropertyPage
+class PaletteServerPropertyPage : public PropertyPage
 {
-	Q_GADGET
+		Q_GADGET
 	public:
 		explicit PaletteServerPropertyPage(PaletteServer* mainWindow, PropertySheetDialog* parent = nullptr);
 
@@ -38,4 +40,4 @@ class PaletteServerPropertyPage :public PropertyPage
 		bool _propChange;
 };
 
-}
+}// namespace sf

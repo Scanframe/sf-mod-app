@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
 #include <cmath>
+#include <misc/global.h>
 #include <random>
 
 namespace sf
@@ -70,7 +69,7 @@ inline S calculateOffset(T value, T min, T max, S len, bool clip)
 }
 
 /**
- * @brief Return clipped value of v between a and b where a < b.
+ * @brief Clips the given value of v between a and b where a < b.
  */
 template<typename T>
 T clip(const T v, const T a, const T b)
@@ -90,7 +89,7 @@ T random(T start, T stop)
 }
 
 /**
- * @brief Modulo function.
+ * @brief Modulo template function.
  * @tparam T Arithmetic scalar type of the template.
  * @param k Is the dividend.
  * @param n Is the divisor.
@@ -120,7 +119,7 @@ T modulo(T k, T n)
 }
 
 /**
- * Gets the absolute value of a passed scalar value.
+ * @brief Gets the absolute value of a passed scalar value.
  * @tparam T Scalar type only.
  * @param v Scalar value.
  * @return Absolute value.

@@ -1,17 +1,16 @@
 #pragma once
-
 #include <ami/iface/AppModuleInterface.h>
-#include "InformationService.h"
+#include <ami/service/InformationService.h>
 
 namespace sf
 {
 
-class ServiceAppModule :public AppModuleInterface
+class ServiceAppModule
+	: public AppModuleInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
-
 		explicit ServiceAppModule(const Parameters& params);
 
 		~ServiceAppModule() override;
@@ -35,4 +34,4 @@ class ServiceAppModule :public AppModuleInterface
 		InformationService* _informationService;
 };
 
-}
+}// namespace sf

@@ -1,11 +1,10 @@
 #pragma once
-
-#include "../gen/TStrings.h"
-#include "../gen/system.h"
-#include "../global.h"
 #include <fcntl.h>
 #include <filesystem>
 #include <grp.h>
+#include <misc/gen/TStrings.h>
+#include <misc/gen/system.h>
+#include <misc/global.h>
 #include <pwd.h>
 
 namespace sf

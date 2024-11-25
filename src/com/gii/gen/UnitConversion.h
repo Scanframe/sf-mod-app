@@ -1,11 +1,8 @@
 #pragma once
-
-#include <utility>
-
+#include <gii/global.h>
 #include <misc/gen/TClosure.h>
 #include <misc/gen/TVector.h>
-
-#include "../global.h"
+#include <utility>
 
 namespace sf
 {

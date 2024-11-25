@@ -1,8 +1,7 @@
 #pragma once
-
-#include "TVector2D.h"
 #include <iostream>
 #include <limits>
+#include <math/TVector2D.h>
 
 namespace sf
 {
@@ -92,14 +91,14 @@ class TRectangle2D
 		void clear();
 
 		/**
-		 * @brief Tests if all values are near zero according the tolerance value.
+		 * @brief Tests if all values are near zero according the #tolerance value.
 		 * @see tolerance
 		 * @return True when empty.
 		 */
 		bool isEmpty() const;
 
 		/**
-		 * @brief Compare passes rectangle with this instance taking the tolerance value in to account.
+		 * @brief Compare passes rectangle with this instance taking the #tolerance value in to account.
 		 * @see tolerance
 		 * @return True when equal.
 		 */
@@ -275,14 +274,13 @@ class TRectangle2D
 
 		/**
 		 * @brief Tolerance for when comparing in the equal operator.
-		 *
 		 * Used as: std::fabs(x1 - x2) < tolerance
 		 */
 		static constexpr auto tolerance = TVector2D<T>::tolerance;
 
 	protected:
 		/**
-		 * Use the same point type as the one of the 2D vector.
+		 * @brief Use the same point type as the one of the 2D vector.
 		 */
 		typedef typename TVector2D<T>::data_type::point_type point_type;
 		/**
@@ -316,4 +314,4 @@ std::ostream& operator<<(std::ostream& os, const TRectangle2D<T>&);
 
 }// namespace sf
 
-#include "TRectangle2D.hpp"
+#include <math/TRectangle2D.hpp>

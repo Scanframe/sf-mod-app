@@ -1,10 +1,9 @@
 #pragma once
 
-#include "VariableTypes.h"
-#include "VariableHandler.h"
-#include "Variable.h"
-
-#include "global.h"
+#include <gii/gen/Variable.h>
+#include <gii/gen/VariableHandler.h>
+#include <gii/gen/VariableTypes.h>
+#include <gii/global.h>
 
 namespace sf
 {
@@ -12,7 +11,8 @@ namespace sf
 /**
  * @brief Base class of the #sf::Variable having all global static data members.
  */
-class _GII_DATA VariableStatic :public VariableTypes
+class _GII_DATA VariableStatic
+	: public VariableTypes
 {
 	public:
 		/**
@@ -27,7 +27,7 @@ class _GII_DATA VariableStatic :public VariableTypes
 
 	private:
 		/**
-		 * @brief Holds the first created instance and place holder with ID zero.
+		 * @brief Holds the first created instance and placeholder with id zero.
 		 */
 		static Variable* _zero;
 		/**
@@ -54,13 +54,12 @@ class _GII_DATA VariableStatic :public VariableTypes
 		 */
 		struct FlagLetters
 		{
-			char _letter;
-			int _flag;
+				char _letter;
+				int _flag;
 		} static _flagLetters[9];
 
 		friend class Variable;
-
 		friend class VariableReference;
 };
 
-}
+}// namespace sf

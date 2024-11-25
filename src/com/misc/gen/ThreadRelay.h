@@ -1,12 +1,11 @@
 #pragma once
-
-#include "../global.h"
-#include "Condition.h"
-#include "Semaphore.h"
-#include "Sync.h"
-#include "Thread.h"
 #include <atomic>
 #include <functional>
+#include <misc/gen/Condition.h>
+#include <misc/gen/Semaphore.h>
+#include <misc/gen/Sync.h>
+#include <misc/gen/Thread.h>
+#include <misc/global.h>
 
 namespace sf
 {

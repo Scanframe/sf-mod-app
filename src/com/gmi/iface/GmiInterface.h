@@ -1,8 +1,7 @@
 #pragma once
-
-#include "AxesCoord.h"
-#include "GmiTypes.h"
-#include "global.h"
+#include <gmi/iface/AxesCoord.h>
+#include <gmi/iface/GmiTypes.h>
+#include <gmi/iface/global.h>
 #include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
 

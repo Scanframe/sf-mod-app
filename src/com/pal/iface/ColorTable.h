@@ -1,10 +1,9 @@
 #pragma once
-
-#include "global.h"
 #include <QColor>
 #include <QList>
 #include <QRgb>
 #include <misc/gen/TClosure.h>
+#include <pal/iface/global.h>
 
 namespace sf
 {

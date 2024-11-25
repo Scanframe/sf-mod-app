@@ -1,7 +1,6 @@
 #pragma once
-
 #include <QObject>
-#include <qt/Namespace.h>
+#include <gii/qt/Namespace.h>
 
 namespace sf
 {
@@ -9,7 +8,7 @@ namespace sf
 /**
  * @brief Implements a connection between to application exporting and importing generic information.
  */
-class InformationService :public QObject
+class InformationService : public QObject
 {
 	public:
 		explicit InformationService(QObject* parent = nullptr);
@@ -54,4 +53,4 @@ class InformationService :public QObject
 		Private* _p;
 };
 
-}
+}// namespace sf

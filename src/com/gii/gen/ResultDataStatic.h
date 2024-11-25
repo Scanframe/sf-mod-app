@@ -1,8 +1,7 @@
 #pragma once
-
-#include "ResultDataTypes.h"
-#include "ResultDataHandler.h"
-#include "ResultData.h"
+#include <gii/gen/ResultData.h>
+#include <gii/gen/ResultDataHandler.h>
+#include <gii/gen/ResultDataTypes.h>
 
 namespace sf
 {
@@ -10,7 +9,8 @@ namespace sf
 /**
  * @brief Base class of the #sf::ResultData having all global static data members.
  */
-class _GII_CLASS ResultDataStatic :public ResultDataTypes
+class _GII_CLASS ResultDataStatic
+	: public ResultDataTypes
 {
 	public:
 		/**
@@ -44,8 +44,8 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		 */
 		struct TTypeInfo
 		{
-			const char* Name;
-			long Size;
+				const char* Name;
+				long Size;
 		};
 		/**
 		 * @brief Static list to hold all references.
@@ -85,8 +85,8 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		 */
 		struct FlagLetters
 		{
-			char _letter;
-			int _flag;
+				char _letter;
+				int _flag;
 		} static _flagLetters[9];
 
 		friend class ResultData;
@@ -94,4 +94,4 @@ class _GII_CLASS ResultDataStatic :public ResultDataTypes
 		friend class ResultDataReference;
 };
 
-}
+}// namespace sf

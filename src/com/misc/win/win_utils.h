@@ -1,8 +1,7 @@
 #pragma once
-
-#include "../gen/system.h"
-#include "../global.h"
 #include <cstddef>
+#include <misc/gen/system.h>
+#include <misc/global.h>
 #include <string>
 #if IS_WIN
 	#if IS_GNU

@@ -15,7 +15,7 @@ EventCounter::~EventCounter()
 	destroy();
 }
 
-void EventCounter::create(unsigned int initval, bool countdown, bool blocking)
+void EventCounter::create(unsigned int init_val, bool countdown, bool blocking)
 {
 	Lock lock(this);
 	// Destroy any existing descriptor.
