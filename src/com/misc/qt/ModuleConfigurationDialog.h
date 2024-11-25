@@ -1,11 +1,12 @@
 #pragma once
-
 #include <QDialog>
 #include <QSettings>
+#include <misc/global.h>
 
-#include "../global.h"
-
-namespace Ui {class ModuleConfigurationDialog;}
+namespace Ui
+{
+class ModuleConfigurationDialog;
+}
 
 namespace sf
 {
@@ -16,12 +17,12 @@ class ModuleConfiguration;
 // Forward definition.
 class AppModuleList;
 
-class _MISC_CLASS ModuleConfigurationDialog :public QDialog
+class _MISC_CLASS ModuleConfigurationDialog
+	: public QDialog
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
-
 		explicit ModuleConfigurationDialog(ModuleConfiguration* config, QWidget* parent = nullptr);
 
 		void stateSaveRestore(bool save);
@@ -37,4 +38,4 @@ class _MISC_CLASS ModuleConfigurationDialog :public QDialog
 		ModuleConfiguration* _config;
 };
 
-}
+}// namespace sf

@@ -8,9 +8,11 @@ namespace sf
 /**
  * @brief Interface class to create a #sf::VariableEdit custom widget.
  */
-class VariableCheckBoxPlugin :public QObject, public QDesignerCustomWidgetInterface
+class VariableCheckBoxPlugin
+	: public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +80,4 @@ class VariableCheckBoxPlugin :public QObject, public QDesignerCustomWidgetInterf
 		bool initialized = false;
 };
 
-}
+}// namespace sf

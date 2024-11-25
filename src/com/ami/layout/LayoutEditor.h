@@ -1,17 +1,17 @@
 #pragma once
-
-#include "ObjectHierarchyModel.h"
 #include <QDir>
 #include <QMenu>
 #include <QScrollArea>
 #include <QSettings>
 #include <QWidget>
 #include <ami/iface/MultiDocInterface.h>
+#include <ami/layout/ObjectHierarchyModel.h>
 
 namespace sf
 {
 
-class LayoutEditor : public QWidget
+class LayoutEditor
+	: public QWidget
 	, public MultiDocInterface
 {
 		Q_OBJECT

@@ -1,9 +1,8 @@
 #pragma once
-
-#include "../global.h"
-#include "ElapseTimer.h"
-#include "ScriptEngine.h"
-#include "TListener.h"
+#include <misc/gen/ElapseTimer.h>
+#include <misc/gen/ScriptEngine.h>
+#include <misc/gen/TListener.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -11,7 +10,8 @@ namespace sf
 /**
  * @brief Script interpreter for running a loaded script.
  */
-class _MISC_CLASS ScriptInterpreter : public ScriptEngine
+class _MISC_CLASS ScriptInterpreter
+	: public ScriptEngine
 {
 	public:
 		/**

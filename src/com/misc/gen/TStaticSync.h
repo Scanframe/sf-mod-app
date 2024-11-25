@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../global.h"
-#include "Exception.h"
-#include "Sync.h"
+#include <misc/gen/Exception.h>
+#include <misc/gen/Sync.h>
+#include <misc/global.h>
 
 namespace sf
 {

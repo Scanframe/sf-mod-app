@@ -1,14 +1,14 @@
 #pragma once
-
-#include "ServerConnection.h"
-#include "ServerConnector.h"
-#include <QtNetwork/QTcpServer>
 #include <QMutex>
+#include <QtNetwork/QTcpServer>
+#include <ami/service/ServerConnection.h>
+#include <ami/service/ServerConnector.h>
 
 namespace sf
 {
 
-class SocketServer :public QTcpServer
+class SocketServer
+	: public QTcpServer
 {
 	public:
 		/**
@@ -47,4 +47,4 @@ class SocketServer :public QTcpServer
 		QMutex _mutexList;
 };
 
-}
+}// namespace sf

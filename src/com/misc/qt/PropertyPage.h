@@ -1,8 +1,7 @@
 #pragma once
-
-#include <QWidget>
 #include <QSettings>
-#include "../global.h"
+#include <QWidget>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -13,28 +12,26 @@ class PropertySheetDialog;
 /**
  * @brief Widget to create a page in a PropertySheet dialog.
  */
-class _MISC_CLASS PropertyPage :public QWidget
+class _MISC_CLASS PropertyPage
+	: public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
 		 * @brief Constructor.
-		 *
 		 * @param parent Myst be a PropertySheetDialog pointer or derived one.
 		 */
 		explicit PropertyPage(QWidget* parent);
 
 		/**
 		 * @brief Gets the name of the page for displaying in the list view.
-		 *
 		 * When not reimplemented this method returns the Resource settings icon.
 		 */
 		[[nodiscard]] virtual QIcon getPageIcon() const;
 
 		/**
 		 * @brief Gets the name of the page for displaying in the list view.
-		 *
 		 * When reimplemented the QObject's name is returned.
 		 */
 		[[nodiscard]] virtual QString getPageName() const;
@@ -71,7 +68,6 @@ class _MISC_CLASS PropertyPage :public QWidget
 
 		/**
 		 * @brief Called when all pages are applied.
-		 *
 		 * Method can be overridden by a derived class to update control widgets
 		 * that were changed because of other pages being applied.
 		 * @param was_modified True when this page was modified.
@@ -79,13 +75,12 @@ class _MISC_CLASS PropertyPage :public QWidget
 		virtual void afterPageApply(bool was_modified);
 
 		/**
-		 * @brief Gets the parent sheet of this page. (also the parent but casted.)
+		 * @brief Gets the parent sheet of this page. (also the parent but cast.)
 		 */
-		PropertySheetDialog* getSheet(){return _sheet;};
+		PropertySheetDialog* getSheet();
 
 		/**
 		 * @brief Called by sheet to save the state of the page.
-		 *
 		 * A call to QSettings::beginGroup() is not needed since it is done by the parent sheet already.
 		 */
 		virtual void stateSaveRestore(QSettings& settings, bool save);
@@ -93,8 +88,7 @@ class _MISC_CLASS PropertyPage :public QWidget
 	protected:
 		/**
 		 * @brief Connects all known controls change signals to a handler which enables or disables buttons.
-		 *
-		 * A derived class should call this method when the is setup and controls are updated.
+		 * A derived class should call this method when the is set up and controls are updated.
 		 * @return List of not connected control widgets.
 		 */
 		virtual QWidgetList connectControls();
@@ -107,4 +101,9 @@ class _MISC_CLASS PropertyPage :public QWidget
 		friend PropertySheetDialog;
 };
 
+inline PropertySheetDialog* PropertyPage::getSheet()
+{
+	return _sheet;
 }
+
+}// namespace sf

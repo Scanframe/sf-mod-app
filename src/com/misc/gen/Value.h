@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../global.h"
-#include "TVector.h"
+#include <misc/gen/TVector.h>
+#include <misc/global.h>
 #if IS_QT
 	#include <QString>
 #endif
@@ -67,14 +67,12 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Copy constructor.
-		 *
 		 * Copies the content and type of the passed instance.
 		 */
 		Value(const Value& v);
 
 		/**
 		 * @brief Reference constructor.
-		 *
 		 * Creates an alias instance to reference the instance passed by pointer.
 		 * @param v Instance pointer to reference to.
 		 */
@@ -82,21 +80,18 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Constructs an empty but typed value.
-		 *
 		 * @param type
 		 */
 		explicit Value(EType type);
 
 		/**
 		 * @brief Floating point type constructor for implicit vitFloat.
-		 *
 		 * @param v The floating point value.
 		 */
 		explicit Value(flt_type v);
 
 		/**
 		 * @brief Double type constructor for implicit vitString.
-		 *
 		 * @param v The string value.
 		 */
 		explicit Value(const char* v);
@@ -119,14 +114,12 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Boolean type constructor for implicit vitInteger.
-		 *
 		 * @param v The boolean value.
 		 */
 		explicit Value(bool v);
 
 		/**
 		 * @brief 32bit integer type constructor for implicit vitInteger.
-		 *
 		 * @param v The boolean value.
 		 */
 		explicit Value(int v);
@@ -143,21 +136,18 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief 32-bit unsigned integer type constructor for implicit vitInteger.
-		 *
 		 * @param v The unsigned int value.
 		 */
 		explicit Value(unsigned v);
 
 		/**
 		 * @brief # 64bit int_type type constructor for implicit vitInteger.
-		 *
 		 * @param v The int_type value.
 		 */
 		explicit Value(int_type v);
 
 		/**
 		 * @brief Binary type constructor for implicit vitBinary.
-		 *
 		 * @param v The raw value.
 		 * @param size Size of the raw value.
 		 */
@@ -165,7 +155,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief  Specific type constructor.
-		 *
 		 * @param type Type
 		 * @param content Content to store in this instance.
 		 * @param size Only specified when not of type vitInteger or vitFloat
@@ -174,14 +163,12 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Destructor.
-		 *
 		 * Frees the allocated memory if some was allocated.
 		 */
 		~Value();
 
 		/**
 		 * @brief Set this instance to references to the instance passed here as pointer.
-		 *
 		 * Makes this instance an alias for another instance.
 		 * @param v The instance pointer to reference to.
 		 * @return Itself.
@@ -190,7 +177,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Copies the content and type of the passed value.
-		 *
 		 * An existing reference type is undone.
 		 * @param v
 		 * @return Itself.
@@ -199,7 +185,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -208,7 +193,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -229,7 +213,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -238,7 +221,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -247,7 +229,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -256,7 +237,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -265,7 +245,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -276,7 +255,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type and content.
-		 *
 		 * An existing type is undone.
 		 * @param v value.
 		 * @return Itself.
@@ -287,7 +265,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the instance type and content.
-		 *
 		 * Called by constructors and all #set functions.
 		 * @param type Type of the new content.
 		 * @param content Pointer to the raw content.
@@ -298,7 +275,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Sets the type implicitly to vitBinary.
-		 *
 		 * An existing type is undone.
 		 * @param v Raw data pointer.
 		 * @param size Size of the raw data.
@@ -316,7 +292,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Assigns a boolean value but not changing the current type.
-		 *
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -325,7 +300,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Assigns an integer value but not changing the current type.
-		 *
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -334,7 +308,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Assigns an unsigned integer value but not changing the current type.
-
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -354,7 +327,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Assigns a floating point value but not changing the current type.
-		 *
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -362,8 +334,7 @@ class _MISC_CLASS Value
 		inline Value& assign(flt_type v);
 
 		/**
-		 * @brief a string value but not changing the current type.
-		 *
+		 * @brief Assigns a string value but not changing the current type.
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -371,8 +342,7 @@ class _MISC_CLASS Value
 		inline Value& assign(const char* v);
 
 		/**
-		 * @brief a string value but not changing the current type.
-		 *
+		 * @brief Assigns a string value but not changing the current type.
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -382,8 +352,7 @@ class _MISC_CLASS Value
 #if IS_QT
 
 		/**
-		 * @brief a Qt string value but not changing the current type.
-		 *
+		 * @brief Assigns a Qt string value but not changing the current type.
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @return Itself
@@ -393,8 +362,7 @@ class _MISC_CLASS Value
 #endif
 
 		/**
-		 * @brief raw binary data but not changing the current type.
-		 *
+		 * @brief Assigns raw binary data but not changing the current type.
 		 * Except for #vitUndefined and #vitInvalid type.
 		 * @param v The new value.
 		 * @param size Size of the raw value.
@@ -403,23 +371,20 @@ class _MISC_CLASS Value
 		inline Value& assign(const void* v, size_t size);
 
 		/**
-		 * @brief the current type for this instance.
-		 *
+		 * @brief Gets the current type for this instance.
 		 * @return The current type.
 		 */
 		[[nodiscard]] inline EType getType() const;
 
 		/**
-		 * @brief the type corresponding to the passed type string.
-		 *
+		 * @brief Gets the type corresponding to the passed type string.
 		 * @param type Name of the type.
 		 * @return Enumeration value.
 		 */
 		[[nodiscard]] static EType getType(const char* type);
 
 		/**
-		 * @brief the type string of the passed type enumeration value.
-		 *
+		 * @brief Gets the type string of the passed type enumeration value.
 		 * @param type The type.
 		 * @return Name of the type.
 		 */
@@ -427,66 +392,60 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Convert the instance to the passed type.
-		 *
 		 * @param type New type.
 		 * @return False on error during conversion.
 		 */
 		bool setType(EType type);
 
 		/**
-		 * @brief	Checks if the instance is valid. If the type is equals vitInvalid.
-		 *
+		 * @brief Checks if the instance is valid. If the type is equals vitInvalid.
 		 * @return True when the instance is valid.
 		 */
 		[[nodiscard]] inline bool isValid() const;
 
 		/**
-		 * @brief	Checks if this is a numeric type (#vitFloat or #vitInteger) of instance.
-		 *
+		 * @brief Checks if this is a numeric type (#vitFloat or #vitInteger) of instance.
 		 * @return True if the type is numerical.
 		 */
 		[[nodiscard]] inline bool isNumber() const;
 
 		/**
 		 * @brief	Returns a floating point value of the current value if possible.
-		 *
 		 * When the current type is a string the 'cnv_err' is Set to
 		 * the error position and is zero on success.
 		 */
 		flt_type getFloat(int* cnv_err) const;
 
 		/**
-		 * @brief	Returns a floating point value of the current value if possible.
+		 * @brief Gets a floating point value of the current value if possible.
 		 */
 		[[nodiscard]] inline flt_type getFloat() const;
 
 		/**
-		 * @brief	Returns an integer value of the current value if possible.
+		 * @brief Gets an integer value of the current value if possible.
 		 * if the current type is a string the 'cnv_err' is Set to
 		 * the error position and is zero on success.
 		 */
 		int_type getInteger(int* cnv_err) const;
 
 		/**
-		 * @brief	Returns an integer value of the current value if possible.
+		 * @brief Returns an integer value of the current value if possible.
 		 */
 		[[nodiscard]] inline int_type getInteger() const;
 
 		/**
-		 * @brief	Returns size of the occupied space.
+		 * @brief Gets the size of the occupied space.
 		 */
 		[[nodiscard]] inline size_t getSize() const;
 
 		/**
-		 * @brief	Returns the pointer to the binary buffer if #vitBinary.
-		 *
+		 * @brief Gets the pointer to the binary buffer if #vitBinary.
 		 * @return Pointer to raw data or nullptr when invalid.
 		 */
 		[[nodiscard]] const void* getBinary() const;
 
 		/**
-		 * @brief	Returns pointer to the data.
-		 *
+		 * @brief Gets pointer to the data.
 		 * Only when the type is  #vitString, vitBinary or vitCustom.
 		 */
 		[[nodiscard]] const char* getData() const;
@@ -518,7 +477,6 @@ class _MISC_CLASS Value
 
 		/**
 		 * @brief Returns if the instance is type is zero.
-		 *
 		 * For non-numeric values this is when the data length is zero.<br>
 		 * For numerical values this is when the value itself is zero.<br>
 		 * For floating point value a special approach is taken because floating point values are approximations by default.<br>
@@ -530,7 +488,7 @@ class _MISC_CLASS Value
 #if IS_QT
 
 		/**
-		 * @brief operator for the QString class.
+		 * @brief Assignment operator for the QString class.
 		 * @return True when equal
 		 */
 		inline Value& operator=(const QString& v);
@@ -739,17 +697,11 @@ class _MISC_CLASS Value
 		typedef TVector<Value> vector_type;
 
 		friend Value operator*(const Value& v1, const Value& v2);
-
 		friend Value operator/(const Value& v1, const Value& v2);
-
 		friend Value operator%(const Value& v1, const Value& v2);
-
 		friend Value operator+(const Value& v1, const Value& v2);
-
 		friend Value operator-(const Value& v1, const Value& v2);
-
 		friend std::ostream& operator<<(std::ostream& os, const Value& v);
-
 		friend std::istream& operator>>(std::istream& is, Value& v);
 };
 
@@ -1027,12 +979,12 @@ inline Value operator-(const Value& v1, const Value& v2)
 }
 
 /**
- * stl output stream operator.
+ * @brief Value class output stream operator.
  */
 _MISC_FUNC std::ostream& operator<<(std::ostream& os, const Value& v);
 
 /**
- * stl input stream operator.
+ * @brief Value class input stream operator.
  */
 _MISC_FUNC std::istream& operator>>(std::istream& is, Value& v);
 

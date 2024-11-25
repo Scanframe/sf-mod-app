@@ -2,17 +2,21 @@
 
 #include <QDialog>
 #include <QSettings>
-#include "AppModuleInterface.h"
-#include "global.h"
+#include <ami/iface/AppModuleInterface.h>
+#include <ami/iface/global.h>
 
 namespace sf
 {
 
-namespace Ui {class SelectImplementationDialog;}
-
-class _AMI_CLASS SelectImplementationDialog :public QDialog
+namespace Ui
 {
-	Q_OBJECT
+class SelectImplementationDialog;
+}
+
+class _AMI_CLASS SelectImplementationDialog
+	: public QDialog
+{
+		Q_OBJECT
 
 	public:
 		explicit SelectImplementationDialog(QSettings* settings, bool file_only, QWidget* parent);
@@ -24,7 +28,6 @@ class _AMI_CLASS SelectImplementationDialog :public QDialog
 		static AppModuleInterface* execute(QSettings* settings, bool file_only, QWidget* parent);
 
 	private:
-
 		void stateSaveRestore(bool save);
 
 		Ui::SelectImplementationDialog* ui;
@@ -34,6 +37,4 @@ class _AMI_CLASS SelectImplementationDialog :public QDialog
 		AppModuleInterface* _selected{nullptr};
 };
 
-}
-
-
+}// namespace sf

@@ -1,7 +1,6 @@
 #pragma once
-
 #include <QtUiPlugin/QDesignerExportWidget>
-#include "VariableWidgetBase.h"
+#include <gii/qt/VariableWidgetBase.h>
 
 namespace sf
 {
@@ -9,9 +8,9 @@ namespace sf
 /**
  * @brief Widget for showing #sf::Variable value types integer and floating point having a minimum and maximum value.
  */
-class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
+class QDESIGNER_WIDGET_EXPORT VariableBar : public VariableWidgetBase
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(int nameLevel READ nameLevel WRITE setNameLevel)
 
 	public:
@@ -57,12 +56,11 @@ class QDESIGNER_WIDGET_EXPORT VariableBar :public VariableWidgetBase
 		void paintEvent(QPaintEvent* event) override;
 
 	private:
-
-		void initStyleOption(QStyleOptionFrame *option) const;
+		void initStyleOption(QStyleOptionFrame* option) const;
 
 		struct Private;
 
 		Q_DISABLE_COPY(VariableBar)
 };
 
-}
+}// namespace sf

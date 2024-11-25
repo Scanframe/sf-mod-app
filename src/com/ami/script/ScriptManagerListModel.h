@@ -1,8 +1,7 @@
 #pragma once
-
-#include <QAbstractListModel>
 #include <QAbstractItemView>
-#include "ScriptManager.h"
+#include <QAbstractListModel>
+#include <ami/script/ScriptManager.h>
 
 namespace sf
 {
@@ -10,7 +9,8 @@ namespace sf
 /**
  * @brief List model for manipulating the passed script manager.
  */
-class ScriptManagerListModel :public QAbstractListModel
+class ScriptManagerListModel
+	: public QAbstractListModel
 {
 	public:
 		/**
@@ -62,7 +62,6 @@ class ScriptManagerListModel :public QAbstractListModel
 
 		/**
 		 * @brief Removes an entry at specified index.
-		 *
 		 * @param index Position in the list.
 		 */
 		void remove(QModelIndex index);
@@ -89,4 +88,4 @@ class ScriptManagerListModel :public QAbstractListModel
 		ScriptManager* _manager{nullptr};
 };
 
-}
+}// namespace sf

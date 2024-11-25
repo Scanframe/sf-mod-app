@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 namespace sf
@@ -8,9 +7,10 @@ namespace sf
 /**
  * @brief Interface class to create a #sf::VariableComboBox custom widget.
  */
-class VariableComboBoxPlugin :public QObject, public QDesignerCustomWidgetInterface
+class VariableComboBoxPlugin : public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +78,4 @@ class VariableComboBoxPlugin :public QObject, public QDesignerCustomWidgetInterf
 		bool initialized = false;
 };
 
-}
+}// namespace sf

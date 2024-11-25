@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ResultDataTypes.h"
+#include <gii/gen/ResultDataTypes.h>
 #include <misc/gen/Range.h>
 
 namespace sf
@@ -9,7 +8,8 @@ namespace sf
 /**
  * @brief Class used to give a ResultData instance access to virtual method of a derived class.
  */
-class _GII_CLASS ResultDataHandler : public ResultDataTypes
+class _GII_CLASS ResultDataHandler
+	: public ResultDataTypes
 {
 	public:
 		/**

@@ -1,10 +1,9 @@
 #pragma once
-
-#include "../global.h"
-#include "string.h"
 #include <cxxabi.h>
 #include <exception>
 #include <memory>
+#include <misc/gen/string.h>
+#include <misc/global.h>
 #include <string.h>
 #include <string>
 
@@ -15,7 +14,8 @@ namespace sf
  * @brief Exception implementation inherited from std::exception.
  */
 template<typename T>
-class ExceptionBase : public std::exception
+class ExceptionBase
+	: public std::exception
 {
 	public:
 		/**
@@ -142,7 +142,6 @@ class _MISC_CLASS Exception : public ExceptionBase<Exception>
 
 /**
  * @brief Exception implementation for system calls failing within a wrapper class.
- *
  * @code
  * throw ExceptionSystemCall("pthread_mutex_lock", error, typeid(*this).name(), __FUNCTION__);
  * @endcode

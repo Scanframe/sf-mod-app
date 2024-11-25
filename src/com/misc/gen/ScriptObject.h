@@ -1,9 +1,8 @@
 #pragma once
-
-#include "../global.h"
-#include "TClassRegistration.h"
-#include "Value.h"
 #include <cstring>
+#include <misc/gen/TClassRegistration.h>
+#include <misc/gen/Value.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -102,7 +101,7 @@ class _MISC_CLASS ScriptObject
 		 */
 		virtual std::string getStatusText();
 		/**
-		 * @brief Gets or sets the a passed data member. Must be overloaded in derived class.
+		 * @brief Gets or sets the passed data member. Must be overloaded in derived class.
 		 */
 		virtual bool getSetValue(const IdInfo* info, Value* value, Value::vector_type* params, bool flag_set) = 0;
 

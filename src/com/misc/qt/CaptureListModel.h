@@ -1,11 +1,9 @@
 #pragma once
-
 #include <QAbstractListModel>
 #include <QMenu>
-
 #include <iostream>
-#include "../gen/LineBuffer.h"
-#include "../global.h"
+#include <misc/gen/LineBuffer.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -13,9 +11,10 @@ namespace sf
 /**
  * @brief List model implementation on captured output stream data.
  */
-class _MISC_CLASS CaptureListModel :public QAbstractListModel
+class _MISC_CLASS CaptureListModel
+	: public QAbstractListModel
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
@@ -36,7 +35,7 @@ class _MISC_CLASS CaptureListModel :public QAbstractListModel
 		/**
 		 * @brief Stream sources to capture.
 		 */
-		enum StreamSource :unsigned
+		enum StreamSource : unsigned
 		{
 			/** Captures the std::cout stream.*/
 			ssCout = 1u << 0u,
@@ -60,12 +59,12 @@ class _MISC_CLASS CaptureListModel :public QAbstractListModel
 		 * @brief Overridden from base class.
 		 */
 		[[nodiscard]] QVariant
-		headerData(int section, Qt::Orientation orientation, int role/* = Qt::DisplayRole*/) const override;
+		headerData(int section, Qt::Orientation orientation, int role /* = Qt::DisplayRole*/) const override;
 
 		/**
 		 * @brief Overridden from base class.
 		 */
-		[[nodiscard]] int rowCount(const QModelIndex& parent/* = QModelIndex()*/) const override;
+		[[nodiscard]] int rowCount(const QModelIndex& parent /* = QModelIndex()*/) const override;
 
 		/**
 		 * @brief Overridden from base class.
@@ -96,4 +95,4 @@ class _MISC_CLASS CaptureListModel :public QAbstractListModel
 		void contextMenuRequested(QPoint);
 };
 
-} // namespace
+}// namespace sf

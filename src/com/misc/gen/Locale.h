@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
 #include <locale>
+#include <misc/global.h>
 
 namespace sf
 {

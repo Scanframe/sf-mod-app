@@ -1,8 +1,7 @@
 #pragma once
-
-#include "Variable.h"
-#include "gii/gen/UnitConversionServer.h"
-#include "gii/global.h"
+#include <gii/gen/UnitConversionServer.h>
+#include <gii/gen/Variable.h>
+#include <gii/global.h>
 #include <memory>
 
 namespace sf
@@ -11,7 +10,8 @@ namespace sf
 /**
  * @brief Extended #UnitConversionServer with master and slaved variables.
  */
-class _GII_CLASS UnitConversionServerEx : public UnitConversionServer
+class _GII_CLASS UnitConversionServerEx
+	: public UnitConversionServer
 	, private VariableHandler
 {
 	public:

@@ -1,11 +1,11 @@
 #pragma once
-#include <QtUiPlugin/QDesignerExportWidget>
 #include <QLineEdit>
-#include <misc/qt/ObjectExtension.h>
+#include <QtUiPlugin/QDesignerExportWidget>
 #include <gii/gen/InformationBase.h>
+#include <gii/global.h>
 #include <gii/qt/InformationSelectDialog.h>
-#include "Namespace.h"
-#include "../global.h"
+#include <gii/qt/Namespace.h>
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
@@ -13,11 +13,13 @@ namespace sf
 /**
  * @brief Line edit having a button
  */
-class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT InformationIdEdit
+	: public QLineEdit
+	, public ObjectExtension
 {
 	public:
 		// Declarations in these macros are made private.
-	Q_OBJECT
+		Q_OBJECT
 		// Need full namespace for this property macro.
 		Q_PROPERTY(sf::Gii::TypeId typeId READ getTypeId WRITE setTypeId)
 
@@ -48,7 +50,7 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public Object
 		/**
 		 * @brief Overridden from base class  #sf::ObjectExtension
 		 */
-		bool isRequiredProperty(const QString& name) override {return true;};
+		bool isRequiredProperty(const QString& name) override { return true; };
 
 		/**
 		 * @brief Set the type of id set with #setId().
@@ -83,4 +85,4 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit :public QLineEdit, public Object
 		Gii::TypeId _typeId;
 };
 
-}
+}// namespace sf

@@ -1,10 +1,8 @@
 #pragma once
-
 #include <iostream>
-
-#include "../global.h"
-#include "TClosure.h"
-#include "TFifoClass.h"
+#include <misc/gen/TClosure.h>
+#include <misc/gen/TFifoClass.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -12,7 +10,8 @@ namespace sf
 /**
  *  @brief Special std::streambuf class for capturing lines.
  */
-class _MISC_CLASS LineBuffer : public std::streambuf
+class _MISC_CLASS LineBuffer
+	: public std::streambuf
 {
 	public:
 		/**
@@ -59,7 +58,7 @@ class _MISC_CLASS LineBuffer : public std::streambuf
 
 	private:
 		/**
-		 * @brief Virtual overloaded function of the 'std::streambuf' class.
+		 * @brief Overloaded function of the 'std::streambuf' class.
 		 */
 		int overflow(int c /*=EOF*/) override;
 		/**

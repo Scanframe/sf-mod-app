@@ -1,10 +1,9 @@
 #pragma once
-
-#include "../gen/TDynamicBuffer.h"
-#include "../global.h"
 #include <fcntl.h>
 #include <filesystem>
 #include <ftw.h>
+#include <misc/gen/TDynamicBuffer.h>
+#include <misc/global.h>
 
 namespace sf::lnx
 {
@@ -307,7 +306,7 @@ inline bool File::isOpen() const
 }
 
 /**
- * Out stream operator for the TFile class.
+ * @brief File class out stream operator.
  */
 _MISC_FUNC std::ostream& operator<<(std::ostream& stream, const File& file);
 

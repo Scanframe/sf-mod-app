@@ -1,8 +1,7 @@
 #pragma once
-
-#include "../global.h"
-#include "ScriptObject.h"
-#include "TStrings.h"
+#include <misc/gen/ScriptObject.h>
+#include <misc/gen/TStrings.h>
+#include <misc/global.h>
 
 namespace sf
 {
@@ -10,7 +9,8 @@ namespace sf
 /**
  * @brief Simple script engine able.
  */
-class _MISC_CLASS ScriptEngine : public ScriptObject
+class _MISC_CLASS ScriptEngine
+	: public ScriptObject
 {
 	public:
 		/**

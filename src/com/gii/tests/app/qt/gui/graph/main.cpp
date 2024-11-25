@@ -1,11 +1,12 @@
-#include <test-GraphWindow.h>
-#include <gii/gen/Variable.h>
-#include <misc/qt/qt_utils.h>
 #include <QApplication>
-#include <QTimer>
 #include <QDir>
+#include <QTimer>
+#include <gii/gen/Variable.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/qt_utils.h>
+#include <test-GraphWindow.h>
 #if IS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 int main(int argc, char* argv[])
@@ -31,8 +32,7 @@ int main(int argc, char* argv[])
 	//
 	QWidget* win{nullptr};
 	//
-	QTimer::singleShot(0, [&]
-	{
+	QTimer::singleShot(0, [&] {
 		win = new GraphWindow();
 		settings.restoreWindowRect("MainWindow", win);
 		win->show();
@@ -44,8 +44,7 @@ int main(int argc, char* argv[])
 	//
 	sf::delete_null(win);
 	//
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 	//
 	return rv;
 }
-

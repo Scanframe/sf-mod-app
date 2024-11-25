@@ -1,6 +1,5 @@
 #pragma once
-
-#include "GmiInterface.h"
+#include <gmi/iface/GmiInterface.h>
 #include <misc/gen/TClassRegistration.h>
 #include <misc/qt/PropertySheetDialog.h>
 

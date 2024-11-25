@@ -1,11 +1,10 @@
 #pragma once
-
-#include "../global.h"
-#include "TStrings.h"
-#include "TVector.h"
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <misc/gen/TStrings.h>
+#include <misc/gen/TVector.h>
+#include <misc/global.h>
 #include <string>
 
 namespace sf
@@ -18,7 +17,6 @@ class _MISC_CLASS IniProfile
 {
 	protected:
 		class Entry;
-
 		class Section;
 
 	public:
@@ -154,7 +152,7 @@ class _MISC_CLASS IniProfile
 		 * @brief Returns whether the passed section exist in the profile.
 		 *
 		 * @param section Section name.
-		 * @return True when it exist.
+		 * @return True when it exists.
 		 */
 		[[nodiscard]] bool sectionExists(const std::string& section) const
 		{
@@ -165,7 +163,7 @@ class _MISC_CLASS IniProfile
 		 * @brief Returns whether the passed key exist in the current selected in the section of the profile.
 		 *
 		 * @param key Key name.
-		 * @return True when it exist.
+		 * @return True when it exists.
 		 */
 		[[nodiscard]] bool keyExists(const std::string& key) const
 		{
@@ -212,7 +210,6 @@ class _MISC_CLASS IniProfile
 
 		/**
 		 * @brief Gets the keys of the current section or of the passed section index.
-
 		 * @param section Section index where #npos indicates the current selected one.
 		 * @return Vector of std::string of keys.
 		 */
@@ -225,7 +222,6 @@ class _MISC_CLASS IniProfile
 
 		/**
 		 * @brief Gets the key value map from the current selected section by default or the section provided.
-		 *
 		 * @param section Index of the section (default 'npos' = current)
 		 * @return Map of keys and values.
 		 */
@@ -262,7 +258,7 @@ class _MISC_CLASS IniProfile
 		[[nodiscard]] const std::string& getFilepath() const;
 
 		/**
-		 * @brief Set the write on dirty flag so changes are written on destruction.
+		 * @brief Set the write-on-dirty flag so changes are written on destruction.
 		 * The default is true.
 		 * @see #write()
 		 * @param enable
@@ -286,7 +282,7 @@ class _MISC_CLASS IniProfile
 		virtual std::ostream& write(std::ostream& os) const;
 
 		/**
-		 * @brief read current section to a 'ostream'.
+		 * @brief read current section to an 'ostream'.
 		 */
 		std::ostream& writeSection(std::ostream& os) const;
 
@@ -364,7 +360,6 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Finds an entry by key value.
-				 *
 				 * @param key Name of the key
 				 * @return #npos if not found.
 				 */
@@ -372,7 +367,6 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Sets sections value by key name.
-				 *
 				 * @param key Name of the key
 				 * @param value String value.
 				 * @return -1 on failure and 1 on change and 0 on no change.
@@ -382,15 +376,13 @@ class _MISC_CLASS IniProfile
 				/**
 				 * @brief Gets an entry string and returns a default when it does not exist.
 				 * @param key Key name.
-				 *
 				 * @param defValue Default string value.
 				 * @return Found value or default when not found.
 				 */
 				std::string getEntry(const std::string& key, const std::string& defValue);
 
 				/**
-				 * @brief Removes an entry from a index position.
-				 *
+				 * @brief Removes an entry from an index position.
 				 * @param index Position of the entry.
 				 * @return True on success.
 				 */
@@ -398,7 +390,6 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Adds comment to before entry specified by the key.
-				 *
 				 * @param key Key name
 				 * @param comment Comment added before the name entry.
 				 * @return True when successful.
@@ -407,7 +398,6 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Streams section to an output stream.
-				 *
 				 * @param os Output stream.
 				 * @return The passed output stream.
 				 */
@@ -415,7 +405,6 @@ class _MISC_CLASS IniProfile
 
 				/**
 				 * @brief Read section from an input stream.
-				 *
 				 * @param is Input stream.
 				 * @return True on success.
 				 */
@@ -433,41 +422,41 @@ class _MISC_CLASS IniProfile
 		};
 
 		/**
-		 * Internally used type.
+		 * @brief Internally used type.
 		 */
 		typedef TVector<Section*> SectionVector;
 
 		/**
-		 * Returns nullptr if not exist.
+		 * @brief Gets nullptr if not exist.
 		 */
 		Entry* getEntry(EntryVector::size_type p);
 
 		/**
-		 * Vector holding all sections.
+		 * @brief Vector holding all sections.
 		 */
 		SectionVector _sections;
 		/**
-		 * current index to section.
+		 * @brief Current index to section.
 		 */
 		SectionVector::size_type _sectionIndex{npos};
 		/**
-		 * Path to file if it was created with one otherwise 'length' is zero
+		 * @brief Path to file if it was created with one otherwise 'length' is zero
 		 */
 		std::string _path;
 		/**
-		 * Is Set to true if an entry has been changed.
+		 * @brief Is Set to true if an entry has been changed.
 		 */
 		bool _dirty{false};
 		/**
-		 * If this flag is Set all fields read with 'ReadType' will be cleared
+		 * @brief If this flag is Set all fields read with 'ReadType' will be cleared
 		 */
 		bool _flagClearOnRead{true};
 		/**
-		 * When true the profile is written to the file path that was used to read it.
+		 * @brief When true the profile is written to the file path that was used to read it.
 		 */
 		bool _writeOnDirty{true};
 		/**
-		 * Holds the prefix for all entered 'key's'.
+		 * H@brief olds the prefix for all entered 'key's'.
 		 */
 		std::string _prefix;
 };

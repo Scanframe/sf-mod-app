@@ -111,6 +111,7 @@ list(APPEND _CoverageDirs
 	"src/com/gii/gen"
 	"src/com/gii/qt"
 	"src/com/math"
+	"src/com/gmi/iface"
 )
 Sf_AddTestCoverageReport("coverage-report" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov" "--cleanup --html nested" "${_CoverageDirs}")
 

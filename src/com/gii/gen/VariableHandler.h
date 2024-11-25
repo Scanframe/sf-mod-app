@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VariableTypes.h"
+#include <gii/gen/VariableTypes.h>
 
 namespace sf
 {
@@ -10,7 +10,8 @@ namespace sf
  * of a derived class. This class is not used directly and is used a base class
  * for the TVariableHandler<T> template class.
  */
-struct _GII_CLASS VariableHandler : public VariableTypes
+struct _GII_CLASS VariableHandler
+	: public VariableTypes
 {
 		/**
 	 * @brief Pure virtual function which must be implemented when used in a polymorphic setting.
@@ -35,11 +36,11 @@ struct _GII_CLASS VariableHandler : public VariableTypes
 
 /**
  * @brief Template for linking pointers of member function to Variable instances.
- *
  * @tparam T
  */
 template<typename T>
-class TVariableHandler : public VariableHandler
+class TVariableHandler
+	: public VariableHandler
 {
 	public:
 		/**

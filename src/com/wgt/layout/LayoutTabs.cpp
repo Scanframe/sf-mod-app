@@ -8,14 +8,14 @@
 #include <gii/qt/LayoutData.h>
 #include <gii/qt/VariableWidgetBasePrivate.h>
 #include <misc/gen/ScriptEngine.h>
-#include <misc/gen/dbgutils.h>
 #include <misc/qt/Globals.h>
 #include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
-struct LayoutTabs::Private : QObject
+struct LayoutTabs::Private
+	: QObject
 	, VariableWidgetBase::PrivateBase
 {
 		struct TabWidget : QTabWidget

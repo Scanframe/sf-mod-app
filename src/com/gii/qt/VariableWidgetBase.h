@@ -1,25 +1,26 @@
 #pragma once
-
-#include <QObject>
 #include <QFrame>
+#include <QObject>
 #include <QtUiPlugin/QDesignerExportWidget>
+#include <gii/qt/Namespace.h>
 #include <misc/qt/ObjectExtension.h>
-#include "Namespace.h"
 
 namespace sf
 {
 
 /**
- * Forward definition of private implemented class to prevent interfaces exposure.
+ * @brief Forward definition of private implemented class to prevent interfaces exposure.
  */
 class Variable;
 
 /**
  * @brief Base class for #sf::Variable based widgets.
  */
-class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT VariableWidgetBase
+	: public QWidget
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(qulonglong idVariable READ getId WRITE setId)
 		Q_PROPERTY(bool converted READ getConverted WRITE setConverted)
 		Q_PROPERTY(bool readOnly READ getReadOnly WRITE setReadOnly)
@@ -35,6 +36,9 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		 */
 		~VariableWidgetBase() override;
 
+		/**
+		 * @brief Overriden from base class #sf::ObjectExtension::addPropertyPages().
+		 */
 		void addPropertyPages(sf::PropertySheetDialog* sheet) override;
 
 		/**
@@ -85,13 +89,15 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		static const char* propertyNameEditorObject();
 
 	protected:
-
 		/**
 		 * To handle a request for read only behavior of the widget.
 		 * @param yn
 		 */
 		virtual void applyReadOnly(bool yn) = 0;
 
+		/**
+		 * @brief forward declaration of a private data class.
+		 */
 		struct PrivateBase;
 		/**
 		 * @brief Holds the private object or a derived one.
@@ -99,8 +105,7 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase :public QWidget, public ObjectE
 		PrivateBase* _p{nullptr};
 
 	private:
-
 		typedef QWidget base_type;
 };
 
-}
+}// namespace sf

@@ -1,6 +1,5 @@
 #pragma once
-
-#include "VariableHandler.h"
+#include <gii/gen/VariableHandler.h>
 #include <misc/gen/pointer.h>
 
 namespace sf

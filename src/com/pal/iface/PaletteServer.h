@@ -1,10 +1,9 @@
 #pragma once
-
-#include "PaletteInterface.h"
-#include "ColorTable.h"
-#include <misc/qt/PropertySheetDialog.h>
-#include <misc/qt/Macros.h>
 #include <QPainter>
+#include <misc/qt/Macros.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <pal/iface/ColorTable.h>
+#include <pal/iface/PaletteInterface.h>
 
 namespace sf
 {
@@ -12,12 +11,12 @@ namespace sf
 /**
  * @brief Server for color palettes used in images for coloring on basis of index.
  */
-class _PAL_CLASS PaletteServer :public QObject
+class _PAL_CLASS PaletteServer
+	: public QObject
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
-
 		/**
 		 * @brief Constructor.
 		 */
@@ -111,4 +110,4 @@ class _PAL_CLASS PaletteServer :public QObject
 		friend class PaletteServerPropertyPage;
 };
 
-}
+}// namespace sf

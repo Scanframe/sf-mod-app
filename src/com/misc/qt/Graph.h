@@ -1,17 +1,15 @@
 #pragma once
-
-#include "../gen/pointer.h"
-#include "../global.h"
-#include "Draw.h"
 #include <QPainter>
 #include <QPalette>
+#include <misc/gen/pointer.h>
+#include <misc/global.h>
+#include <misc/qt/Draw.h>
 
 namespace sf
 {
 
 /**
  * @brief Class for drawing a graph having optional rulers and grid.
- *
  * This class uses `sf::Draw` class for drawing a graph rulers and grid.
  * @image html "doc/Graph.png"
  *
@@ -21,7 +19,7 @@ class _MISC_CLASS Graph
 {
 	public:
 		/**
-		 * Constructor passing a palette.
+		 * @brief Constructor passing a palette.
 		 */
 		explicit Graph(const QPalette& palette = {});
 
@@ -37,7 +35,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Enables grid painting in the graph.
-		 *
 		 * When painting this enables drawing grid for the passed orientation using
 		 * the information of the passed ruler orientation.
 		 * @param go Grid orientation
@@ -47,7 +44,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Sets the bounding rectangle for the graph for painting in.
-		 *
 		 * Paints the graph passing the passed boundaries and the optional region when handling an event.
 		 * @param fontMetrics For calculating the ruler widths and heights.
 		 * @param bounds Boundary to paint in.
@@ -56,7 +52,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Paints the graph.
-		 *
 		 * Paints the graph passing the passed boundaries and the optional region when handling an event.
 		 * @param painter Painter instance.
 		 * @param bounds Boundaries to paint in.
@@ -68,7 +63,6 @@ class _MISC_CLASS Graph
 		/**
 		 * @brief Paints a cross with text in the plot area.
 		 * Used when a plot can not be painted.
-		 *
 		 * @param painter Painter instance.
 		 * @param text Text to paint in the middle in a rectangle.
 		 */
@@ -76,14 +70,12 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Gets the remaining area to plot the graph after rulers and grid have been painted.
-		 *
 		 * @return area rectangle to plot the actual graphic.
 		 */
 		[[nodiscard]] const QRect& getPlotArea() const;
 
 		/**
 		 * @brief Colors enumeration of colors in the graph.
-		 *
 		 * Used by `setColor` function.
 		 */
 		enum EColor
@@ -104,7 +96,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Allows setting of individual indexed colors for the graph.
-		 *
 		 * @param index Index of the color which is set.
 		 * @param color The specified color.
 		 */
@@ -123,7 +114,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Holds information on the rulers.
-		 *
 		 * Holds set and calculated information.
 		 */
 		struct RulerInfo
@@ -170,7 +160,6 @@ class _MISC_CLASS Graph
 
 		/**
 		 * @brief Gets the ruler information by orientation.
-		 *
 		 * @param ro ruler orientation.
 		 * @return ruler information structure.
 		 */

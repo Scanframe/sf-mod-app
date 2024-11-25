@@ -1,14 +1,8 @@
-/*
-_type defining of virtual allocation template class for dynamic buffering class.
- Implements template TDynamicBuffer and TDynamicArray
-*/
-
 #pragma once
-
-#include "../global.h"
-#include "dbgutils.h"
 #include <cassert>
 #include <malloc.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/global.h>
 
 namespace sf
 {

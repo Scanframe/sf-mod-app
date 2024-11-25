@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AxesCoord.h"
+#include <gmi/iface/AxesCoord.h>
 
 namespace sf::gmi
 {

@@ -1,7 +1,6 @@
 #pragma once
-
 #include <QAbstractListModel>
-#include "../global.h"
+#include <misc/global.h>
 
 namespace sf
 {
@@ -9,9 +8,11 @@ namespace sf
 /**
  * @brief List model for QObject properties.
  */
-class _MISC_CLASS ObjectPropertyModel :public QAbstractListModel
+class _MISC_CLASS ObjectPropertyModel
+	: public QAbstractListModel
 {
-	Q_OBJECT
+		Q_OBJECT
+
 	public:
 		/**
 		 * @brief Constructor.
@@ -88,13 +89,14 @@ class _MISC_CLASS ObjectPropertyModel :public QAbstractListModel
 
 		struct Entry
 		{
-			inline
-			Entry(QObject* obj, int index, bool dynamic)
-				:_obj(obj), _index(index), _dynamic(dynamic) {};
+				inline Entry(QObject* obj, int index, bool dynamic)
+					: _obj(obj)
+					, _index(index)
+					, _dynamic(dynamic) {};
 
-			QObject* _obj;
-			int _index;
-			bool _dynamic;
+				QObject* _obj;
+				int _index;
+				bool _dynamic;
 		};
 
 		/**
@@ -103,4 +105,4 @@ class _MISC_CLASS ObjectPropertyModel :public QAbstractListModel
 		QList<Entry> _indices;
 };
 
-}
+}// namespace sf

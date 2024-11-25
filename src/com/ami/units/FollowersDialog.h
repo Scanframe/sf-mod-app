@@ -1,16 +1,19 @@
 #pragma once
-
 #include <QDialog>
-#include "FollowersListModel.h"
+#include <ami/units/FollowersListModel.h>
 
 namespace sf
 {
 
-namespace Ui {class FollowersDialog;}
-
-class FollowersDialog :public QDialog
+namespace Ui
 {
-	Q_OBJECT
+class FollowersDialog;
+}
+
+class FollowersDialog
+	: public QDialog
+{
+		Q_OBJECT
 
 	public:
 		explicit FollowersDialog(QWidget* parent = nullptr);
@@ -31,4 +34,4 @@ class FollowersDialog :public QDialog
 		QAction* _actionRemove{nullptr};
 };
 
-}
+}// namespace sf

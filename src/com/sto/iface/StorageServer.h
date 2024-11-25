@@ -1,7 +1,6 @@
 #pragma once
-
 #include <gii/gen/InformationBase.h>
-#include "global.h"
+#include <sto/iface/global.h>
 
 namespace sf
 {
@@ -11,7 +10,7 @@ class StorageInterface;
 /**
  * @brief Storage server
  */
-class _STO_CLASS StorageServer :public InformationTypes
+class _STO_CLASS StorageServer : public InformationTypes
 {
 	public:
 		/**
@@ -20,12 +19,12 @@ class _STO_CLASS StorageServer :public InformationTypes
 		explicit StorageServer(id_type deviceNumber, const std::string& serverName = {});
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~StorageServer();
 
 		/**
-		 * Gets the name given at the constructor.
+		 * @brief Gets the name given at the constructor.
 		 */
 		[[nodiscard]] std::string getServerName() const;
 
@@ -50,13 +49,11 @@ class _STO_CLASS StorageServer :public InformationTypes
 		/**
 		 * @brief Gets a pointer to the current acquisition implementation.
 		 */
-		StorageInterface* getImplementation() {return _implementation;}
+		StorageInterface* getImplementation();
 
 	protected:
-
 		/**
 		 * @brief Creates the implementation of index on the registered implementations.
-		 *
 		 * @return True on success.
 		 */
 		bool createImplementation(int index);
@@ -75,16 +72,19 @@ class _STO_CLASS StorageServer :public InformationTypes
 		 * @brief Holds the implementation.
 		 */
 		StorageInterface* _implementation{nullptr};
-
 		/**
 		 * @brief Holds the device number passed at the constructor.
 		 */
 		id_type _deviceNumber{0};
-
 		/**
 		 * @brief Holds the device name for creating the variable names.
 		 */
 		std::string _serverName;
 };
 
+inline StorageInterface* StorageServer::getImplementation()
+{
+	return _implementation;
 }
+
+}// namespace sf

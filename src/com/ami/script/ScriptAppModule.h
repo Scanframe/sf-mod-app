@@ -1,18 +1,17 @@
 #pragma once
-
 #include <QMap>
 #include <ami/iface/AppModuleInterface.h>
-#include <misc/qt/PropertySheetDialog.h>
+#include <ami/script/ScriptManager.h>
 #include <misc/qt/Editor.h>
-#include "ScriptManager.h"
+#include <misc/qt/PropertySheetDialog.h>
 
 namespace sf
 {
 
-class [[maybe_unused]] ScriptAppModule :public AppModuleInterface
+class [[maybe_unused]] ScriptAppModule
+	: public AppModuleInterface
 {
 	public:
-
 		explicit ScriptAppModule(const Parameters& params);
 
 		void initialize(InitializeStage stage) override;
@@ -37,4 +36,4 @@ class [[maybe_unused]] ScriptAppModule :public AppModuleInterface
 		Editor::Configuration _configuration;
 };
 
-}
+}// namespace sf

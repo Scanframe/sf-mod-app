@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Thread.h"
+#include <misc/gen/Thread.h>
 
 namespace sf
 {

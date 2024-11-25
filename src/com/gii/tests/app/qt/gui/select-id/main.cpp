@@ -1,16 +1,17 @@
 #include <QApplication>
-#include <QTimer>
 #include <QDir>
 #include <QSettings>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/Globals.h>
-#include <misc/gen/IniProfile.h>
-#include <gii/qt/InformationSelectDialog.h>
-#include <gii/qt/InformationIdEdit.h>
-#include <gii/gen/Variable.h>
+#include <QTimer>
 #include <gii/gen/ResultData.h>
+#include <gii/gen/Variable.h>
+#include <gii/qt/InformationIdEdit.h>
+#include <gii/qt/InformationSelectDialog.h>
+#include <misc/gen/IniProfile.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/qt_utils.h>
 #if IS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 #include "test-ini-content.h"
 
@@ -78,7 +79,7 @@ void loadFromIni(InformationTypes::Vector& rv)
 	}
 }
 
-}
+}// namespace sf
 
 int main(int argc, char* argv[])
 {
@@ -128,13 +129,12 @@ int main(int argc, char* argv[])
 		auto ids = isd.execute(sf::Gii::Multiple);
 		qDebug() << ids;
 	}
-	// Remove all entries before deinitializing.
+	// Remove all entries before uninitializing.
 	qDeleteAll(list);
 	list.clear();
 	//
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 	//
 	sf::setGlobalSettings(nullptr);
 	return 0;
 }
-

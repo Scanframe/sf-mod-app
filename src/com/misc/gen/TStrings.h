@@ -1,6 +1,5 @@
 #pragma once
-
-#include "TVector.h"
+#include <misc/gen/TVector.h>
 
 namespace sf
 {

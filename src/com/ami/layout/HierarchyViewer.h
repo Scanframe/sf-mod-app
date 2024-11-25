@@ -1,18 +1,21 @@
 #pragma once
-
-#include <QWidget>
 #include <QSortFilterProxyModel>
-#include "ObjectHierarchyModel.h"
-#include "LayoutEditor.h"
+#include <QWidget>
+#include <ami/layout/LayoutEditor.h>
+#include <ami/layout/ObjectHierarchyModel.h>
 
 namespace sf
 {
 
-namespace Ui {class HierarchyViewer;}
-
-class HierarchyViewer :public QWidget
+namespace Ui
 {
-	Q_OBJECT
+class HierarchyViewer;
+}
+
+class HierarchyViewer
+	: public QWidget
+{
+		Q_OBJECT
 
 	public:
 		explicit HierarchyViewer(QWidget* parent = nullptr);
@@ -24,18 +27,17 @@ class HierarchyViewer :public QWidget
 		void selectObject(QObject* obj);
 
 		/**
-		 * When an layout editor is present it will call its documentModified().
+		 * @brief When a layout editor is present it will call its documentModified().
 		 */
 		void documentModified();
 
 	Q_SIGNALS:
 		/**
-		 * @brief Signal emitted when a the selected object has changed.
+		 * @brief Signal emitted when the selected object has changed.
 		 */
 		void objectSelectChange(QObject* obj);
 
 	private:
-
 		void editObject();
 
 		void addObject();
@@ -45,11 +47,11 @@ class HierarchyViewer :public QWidget
 		void editorDisconnect(QObject* obj);
 
 		/**
-		 * @brief Returns the object selected.
+		 * @brief Gets the object selected.
 		 * @param index
-		 * @return Not null when a object is selected.
+		 * @return Not NULL when an object is selected.
 		 */
-		QObject* objectSelected(const QModelIndex &index = {});
+		QObject* objectSelected(const QModelIndex& index = {});
 
 		Ui::HierarchyViewer* ui;
 
@@ -63,4 +65,4 @@ class HierarchyViewer :public QWidget
 		LayoutEditor* _layoutEditor{nullptr};
 };
 
-}
+}// namespace sf

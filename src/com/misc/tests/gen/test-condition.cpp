@@ -22,13 +22,13 @@ class TestAutoCleanup
 		{
 			if (std::uncaught_exceptions())
 			{
-				SF_RTTI_NOTIFY(DO_COUT, "Exception cleanup in progress.");
+				SF_RTTI_NOTIFY(DO_COUT, "Exception cleanup in progress.")
 				// Signal destructor called in exception cleanup.
 				_flag = 1;
 			}
 			else
 			{
-				SF_RTTI_NOTIFY(DO_COUT, "Normal cleanup.");
+				SF_RTTI_NOTIFY(DO_COUT, "Normal cleanup.")
 				// Signal destructor called in normal cleanup.
 				_flag = 0;
 			}
@@ -44,7 +44,7 @@ TEST_CASE("sf::Condition", "[con][generic][thread]")
 	main_thread.setDebug(true);
 	sf::Mutex mutex;
 	sf::Condition condition;
-	int cleanup_flag;
+	int cleanup_flag{0};
 	sf::ThreadClosure tc(sf::ThreadClosure::func_type([&](sf::Thread& thread) -> int {
 		// Class for testing destructor cleanup.
 		TestAutoCleanup cleanup(cleanup_flag);
@@ -63,14 +63,14 @@ TEST_CASE("sf::Condition", "[con][generic][thread]")
 		// Start the thread.
 		tc.start();
 		// Status should be running at all times.
-		CHECK(tc.getStatus() == sf::Thread::tsRunning);
+		REQUIRE(tc.getStatus() == sf::Thread::tsRunning);
 		// Signal the locked thread.
 		condition.notifyOne();
 		// When thread is not finished wait for it.
 		if (tc.getStatus() != sf::Thread::tsFinished)
 		{
 			// Allow some time for the thread to process.
-			main_thread.sleep(sf::TimeSpec(0.02));
+			main_thread.sleep(sf::TimeSpec(0.2));
 		}
 		// Request termination of the thread and wait for it.
 		tc.terminateAndWait();

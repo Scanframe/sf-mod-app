@@ -1,26 +1,25 @@
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
 #include "LayoutEditorPropertyPage.h"
-#include <misc/qt/PropertySheetDialog.h>
-#include <misc/qt/qt_utils.h>
-#include <misc/gen/ConfigLocation.h>
-#include <misc/qt/Globals.h>
-#include <misc/qt/Resource.h>
-#include <gii/qt/LayoutData.h>
-#include <misc/qt/ObjectPropertyModel.h>
-#include <qt/InformationSelectDialog.h>
-#include <QTreeView>
+#include <QCoreApplication>
 #include <QFocusEvent>
 #include <QLineEdit>
-#include <QCoreApplication>
+#include <QTreeView>
 #include <QUiLoader>
+#include <gii/qt/InformationSelectDialog.h>
+#include <gii/qt/LayoutData.h>
+#include <misc/gen/ConfigLocation.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/ObjectPropertyModel.h>
+#include <misc/qt/Resource.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameters& params)
-	:AppModuleInterface(params)
-	 , _settings(params._settings)
+	: AppModuleInterface(params)
+	, _settings(params._settings)
 {
 	addFileType(tr("UI Layout File"), LayoutData::getFileSuffix());
 	//
@@ -59,8 +58,7 @@ MultiDocInterface* LayoutEditorAppModule::createWidget(QWidget* parent) const
 {
 	auto le = new LayoutEditor(getSettings(), parent);
 	le->setReadOnly(_readOnly);
-	connect(le, &LayoutEditor::objectSelected, [&](QObject* obj)
-	{
+	connect(le, &LayoutEditor::objectSelected, [&](QObject* obj) {
 		if (_hierarchyViewer)
 		{
 			_hierarchyViewer->selectObject(obj);
@@ -96,7 +94,6 @@ void LayoutEditorAppModule::settingsReadWrite(bool save)
 		_settings->setValue(keyReadOnly, _readOnly);
 	}
 	_settings->endGroup();
-
 }
 
 void LayoutEditorAppModule::initialize(InitializeStage stage)
@@ -113,8 +110,7 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		dock->setObjectName("layoutHierarchy");
 		dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 		_hierarchyViewer = new HierarchyViewer(dock);
-		connect(_hierarchyViewer, &HierarchyViewer::objectSelectChange, [&](QObject* obj)
-		{
+		connect(_hierarchyViewer, &HierarchyViewer::objectSelectChange, [&](QObject* obj) {
 			if (_tvProperties)
 			{
 				if (auto m = dynamic_cast<ObjectPropertyModel*>(_tvProperties->model()))
@@ -135,15 +131,14 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		model->setDelegates(_tvProperties);
 		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);
 		// Make the qulonglong type QProperties have actions.
-		connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic)
-		{
+		connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) {
 			for (auto isType: {Gii::ResultData, Gii::Variable})
 			{
 				auto action = lineEdit->addAction(
 					Resource::getSvgIcon(isType == Gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
-					QLineEdit::TrailingPosition);
-				connect(action, &QAction::triggered, [action, isType]()
-				{
+					QLineEdit::TrailingPosition
+				);
+				connect(action, &QAction::triggered, [action, isType]() {
 					if (auto le = qobject_cast<QLineEdit*>(action->parent()))
 					{
 						InformationSelectDialog dlg(le);
@@ -175,4 +170,4 @@ void LayoutEditorAppModule::documentActivated(MultiDocInterface* interface, bool
 	}
 }
 
-}
+}// namespace sf

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../global.h"
-#include "TimeSpec.h"
+#include <misc/gen/TimeSpec.h>
+#include <misc/global.h>
 
 namespace sf
 {

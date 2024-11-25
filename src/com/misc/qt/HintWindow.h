@@ -1,14 +1,14 @@
 #pragma once
-
 #include <QLabel>
-#include "../global.h"
+#include <misc/global.h>
 
 namespace sf
 {
 /**
  * @brief Floating window like tool tip available to the script engine as well.
  */
-class _MISC_CLASS HintWindow :public QLabel
+class _MISC_CLASS HintWindow
+	: public QLabel
 {
 	public:
 		/**
@@ -43,4 +43,4 @@ class _MISC_CLASS HintWindow :public QLabel
 		QPoint _offset{0, 0};
 };
 
-}
+}// namespace sf

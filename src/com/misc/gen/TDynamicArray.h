@@ -1,15 +1,12 @@
 #pragma once
-
-#include "TDynamicBuffer.h"
+#include <misc/gen/TDynamicBuffer.h>
 
 namespace sf
 {
 
 /**
  * @brief A dynamic buffer as typed array.
- *
- * has range check on any index.
- *
+ * Has range check on any index.
  * @see ::sf::TDynamicBuffer
  */
 template<typename T, typename Alloc = Allocator>

@@ -1,10 +1,11 @@
 #pragma once
-#include "ProjectConfig.h"
+#include <ipj/ProjectConfig.h>
 
 namespace sf
 {
 
-class IniProfileSettings :public ProjectConfig::Settings
+class IniProfileSettings
+	: public ProjectConfig::Settings
 {
 	public:
 		bool load(const std::string& filepath) override;
@@ -15,7 +16,6 @@ class IniProfileSettings :public ProjectConfig::Settings
 
 	private:
 		std::string _settingsFileSuffix{"gisf"};
-
 };
 
-}
+}// namespace sf

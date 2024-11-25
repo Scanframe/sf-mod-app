@@ -1,8 +1,7 @@
 #pragma once
-
-#include "pointer.h"
 #include <functional>
 #include <memory>
+#include <misc/gen/pointer.h>
 
 namespace sf
 {
@@ -132,7 +131,8 @@ class ListenerList
  * @tparam Args
  */
 template<typename... Args>
-class TListener : private ListenerList::base_type
+class TListener
+	: private ListenerList::base_type
 {
 	public:
 		/**

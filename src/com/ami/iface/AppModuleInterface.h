@@ -1,16 +1,16 @@
 #pragma once
 
-#include <bitset>
-#include <QObject>
-#include <QMimeType>
 #include <QAbstractItemModel>
-#include <QSettings>
 #include <QDockWidget>
+#include <QMimeType>
+#include <QObject>
+#include <QSettings>
+#include <ami/iface/AppModuleFileType.h>
+#include <ami/iface/MultiDocInterface.h>
+#include <ami/iface/global.h>
+#include <bitset>
 #include <misc/gen/TClassRegistration.h>
 #include <misc/qt/PropertySheetDialog.h>
-#include "MultiDocInterface.h"
-#include "AppModuleFileType.h"
-#include "global.h"
 
 class QMainWindow;
 
@@ -22,7 +22,8 @@ namespace sf
  *
  * This class should provide functionality for loading libraries dynamically and creating implementations
  */
-class _AMI_CLASS AppModuleInterface :public QObject
+class _AMI_CLASS AppModuleInterface
+	: public QObject
 {
 	public:
 		/**
@@ -30,18 +31,19 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		 */
 		struct Parameters
 		{
-			explicit Parameters(QSettings* settings, QObject* parent)
-				:_settings(settings)
-				 , _parent(parent) {}
+				explicit Parameters(QSettings* settings, QObject* parent)
+					: _settings(settings)
+					, _parent(parent)
+				{}
 
-			/**
+				/**
 			 * @brief Settings of application.
 			 */
-			QSettings* _settings;
-			/**
+				QSettings* _settings;
+				/**
 			 * @brief Parent object.
 			 */
-			QObject* _parent;
+				QObject* _parent;
 		};
 
 		/**
@@ -242,7 +244,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		/**
 		 * @brief Gets a list model from the available instances.
 		 *
-		 * @param file_only True when only Modules handling files are to listed.
+		 * @param file_only True when only Modules handling files are to be listed.
 		 * @param parent Owning object.
 		 * @return The list model.
 		 */
@@ -315,8 +317,7 @@ class _AMI_CLASS AppModuleInterface :public QObject
 		static Map _map;
 
 		// Declarations of static functions and data members to be able to create implementations.
-	SF_DECL_IFACE(AppModuleInterface, AppModuleInterface::Parameters, Interface)
-
+		SF_DECL_IFACE(AppModuleInterface, AppModuleInterface::Parameters, Interface)
 };
 
-}
+}// namespace sf

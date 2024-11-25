@@ -1,12 +1,11 @@
 #pragma once
-
-#include "../global.h"
-#include "Locale.h"
-#include "math.h"
 #include <cstring>
 #include <cxxabi.h>
 #include <limits>
 #include <memory>
+#include <misc/gen/Locale.h>
+#include <misc/gen/math.h>
+#include <misc/global.h>
 #include <string>
 
 namespace sf

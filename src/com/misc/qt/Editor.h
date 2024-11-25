@@ -1,25 +1,22 @@
 #pragma once
-
 #include <QPlainTextEdit>
-#include "ObjectExtension.h"
-#include "../global.h"
+#include <misc/global.h>
+#include <misc/qt/ObjectExtension.h>
 
 class QPaintEvent;
-
 class QResizeEvent;
-
 class QSize;
-
 class QWidget;
-
 class QSettings;
 
 namespace sf
 {
 
-class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
+class _MISC_CLASS Editor
+	: public QPlainTextEdit
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		class _MISC_CLASS Configuration
@@ -56,24 +53,23 @@ class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
 
 		/**
 		 * @brief Called on a close event. To prevent losing changes made to the document.
-		 *
 		 * @return True when it can be closed.
 		 */
 		virtual bool canClose();
 
 		/**
-		 * Overridden from base class ObjectExtension.
+		 * @brief Overridden from base class ObjectExtension.
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
 	protected:
 		/**
-		 * Overridden from base class QPlainTextEdit.
+		 * @brief Overridden from base class QPlainTextEdit.
 		 */
 		void resizeEvent(QResizeEvent* event) override;
 
 		/**
-		 * Overridden from base class QPlainTextEdit.
+		 * @brief Overridden from base class QPlainTextEdit.
 		 */
 		void closeEvent(QCloseEvent* event) override;
 
@@ -91,4 +87,4 @@ class _MISC_CLASS Editor :public QPlainTextEdit, public ObjectExtension
 		Private& _p;
 };
 
-}
+}// namespace sf

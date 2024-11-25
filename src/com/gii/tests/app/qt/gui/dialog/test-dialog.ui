@@ -95,7 +95,7 @@
       </sizepolicy>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
+      <enum>QFrame::Shadow::Plain</enum>
      </property>
      <layout class="QHBoxLayout">
       <property name="leftMargin">
@@ -196,7 +196,6 @@
  </tabstops>
  <resources>
   <include location="test-resource.qrc"/>
-  <include location="../../../misc/qt/res/resource.qrc"/>
  </resources>
  <connections/>
 </ui>

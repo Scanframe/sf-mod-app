@@ -1,13 +1,17 @@
 #pragma once
+#include <ami/project/ProjectAppModule.h>
 #include <misc/qt/PropertyPage.h>
-#include "ProjectAppModule.h"
 
 namespace sf
 {
 
-namespace Ui {class ProjectPropertyPage;}
+namespace Ui
+{
+class ProjectPropertyPage;
+}
 
-class ProjectPropertyPage :public PropertyPage
+class ProjectPropertyPage
+	: public PropertyPage
 {
 		Q_OBJECT
 
@@ -36,4 +40,4 @@ class ProjectPropertyPage :public PropertyPage
 		ProjectAppModule& _am;
 };
 
-}
+}// namespace sf

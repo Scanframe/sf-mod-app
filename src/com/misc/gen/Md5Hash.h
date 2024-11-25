@@ -1,10 +1,9 @@
 #pragma once
-
-#include "../global.h"
 #include <cstdio>
 #include <cstring>
 #include <inttypes.h>
 #include <iostream>
+#include <misc/global.h>
 
 namespace sf
 {

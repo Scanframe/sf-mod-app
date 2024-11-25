@@ -1,7 +1,6 @@
 #pragma once
-
-#include "GmiTypes.h"
-#include "global.h"
+#include <gmi/iface/GmiTypes.h>
+#include <gmi/iface/global.h>
 
 namespace sf::gmi
 {
@@ -31,7 +30,7 @@ class _GMI_CLASS AxesCoord
 		 * @brief Constructor using a string containing the axis values.
 		 * @param s
 		 */
-		AxesCoord(std::string s);
+		explicit AxesCoord(std::string s);
 		/**
 		 * @brief Clears all values in the coordinate.
 		 */

@@ -1,13 +1,14 @@
 #pragma once
-
-#include <misc/qt/Editor.h>
+#include <ami/editor/CodeEditor.h>
 #include <ami/iface/PlainTextEditMdi.h>
-#include "CodeEditor.h"
+#include <misc/qt/Editor.h>
 
 namespace sf
 {
 
-class CodeEditor :public Editor, public PlainTextEditMdi
+class CodeEditor
+	: public Editor
+	, public PlainTextEditMdi
 {
 	public:
 		CodeEditor(QWidget* parent);
@@ -15,4 +16,4 @@ class CodeEditor :public Editor, public PlainTextEditMdi
 		bool canClose() override;
 };
 
-}
+}// namespace sf

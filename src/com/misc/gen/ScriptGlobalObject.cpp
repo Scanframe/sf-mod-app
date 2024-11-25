@@ -14,6 +14,11 @@ ScriptGlobalObject::ScriptGlobalObject(const Parameters& params)
 {
 }
 
+void ScriptGlobalObject::destroyObject(bool& should_delete)
+{
+	should_delete = true;
+}
+
 // Speed index.
 enum : int
 {
@@ -43,6 +48,7 @@ const ScriptObject::IdInfo* ScriptGlobalObject::getInfo(const std::string& name)
 		auto& info = const_cast<IdInfo&>(_globalIdInfo);
 		info._index = sidEntry;
 		info._id = idFunction;
+		// TODO: This is risky to assign this pointer.
 		info._name = gse->getName().c_str();
 		info._paramCount = gse->getArgumentCount();
 		info._data = gse;
@@ -59,7 +65,7 @@ bool ScriptGlobalObject::getSetValue(const ScriptObject::IdInfo* info, Value* va
 			return false;
 
 		case sidExist:
-			value->set(!!ScriptGlobalEntry::getEntry((*params)[0].getString()));
+			value->set(ScriptGlobalEntry::getEntry((*params)[0].getString()) != nullptr);
 			break;
 
 		case sidEntry: {

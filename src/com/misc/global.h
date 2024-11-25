@@ -16,7 +16,7 @@ Add compiler definition flags:
 #pragma once
 
 // Import of defines for this target.
-#include "gen/target.h"
+#include <misc/gen/target.h>
 
 // When DL target and the misc PKG is not used the misc DL is being build.
 #if IS_DL_TARGET && defined(_MISC_PKG)

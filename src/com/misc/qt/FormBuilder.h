@@ -1,8 +1,6 @@
 #pragma once
-
 #include <QtDesigner/QFormBuilder>
-
-#include "../global.h"
+#include <misc/global.h>
 
 // Forward definition.
 class QDomDocument;
@@ -12,7 +10,8 @@ namespace sf
 /**
  * @brief Derived class to be able to prevent some properties to be stored when written to file.
  */
-class _MISC_CLASS FormBuilder :public ::QFormBuilder
+class _MISC_CLASS FormBuilder
+	: public ::QFormBuilder
 {
 	public:
 		/**
@@ -42,5 +41,4 @@ class _MISC_CLASS FormBuilder :public ::QFormBuilder
 		void fixLoadingProperties(QWidget* widget, QDomDocument& dom);
 };
 
-}
-
+}// namespace sf

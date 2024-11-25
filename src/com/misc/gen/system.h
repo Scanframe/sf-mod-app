@@ -1,8 +1,7 @@
 #pragma once
-
-#include "../global.h"
 #include <cstddef>
 #include <ctime>
+#include <misc/global.h>
 #include <string>
 
 namespace sf

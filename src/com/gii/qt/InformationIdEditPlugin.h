@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 namespace sf
@@ -8,9 +7,11 @@ namespace sf
 /**
  * @brief Interface class to create a #sf::VariableEdit custom widget.
  */
-class InformationIdEditPlugin :public QObject, public QDesignerCustomWidgetInterface
+class InformationIdEditPlugin
+	: public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +79,4 @@ class InformationIdEditPlugin :public QObject, public QDesignerCustomWidgetInter
 		bool initialized = false;
 };
 
-}
+}// namespace sf

@@ -1,13 +1,17 @@
 #pragma once
-#include "ServiceAppModule.h"
+#include <ami/service/ServiceAppModule.h>
 #include <misc/qt/PropertyPage.h>
 
 namespace sf
 {
 
-namespace Ui {class ServicePropertyPage;}
+namespace Ui
+{
+class ServicePropertyPage;
+}
 
-class ServicePropertyPage :public PropertyPage
+class ServicePropertyPage
+	: public PropertyPage
 {
 	public:
 		explicit ServicePropertyPage(ServiceAppModule& ucm, QWidget* parent);
@@ -33,8 +37,8 @@ class ServicePropertyPage :public PropertyPage
 
 		ServiceAppModule& _ism;
 
-	// LLDB Crashes and GDB freezes when this MACRO is in top of the class.
-	Q_OBJECT
+		// LLDB Crashes and GDB freezes when this MACRO is in top of the class.
+		Q_OBJECT
 };
 
-}
+}// namespace sf

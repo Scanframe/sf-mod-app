@@ -1,7 +1,6 @@
 #pragma once
-
-#include "FileMappedStorage.h"
-#include "InformationBase.h"
+#include <gii/gen/FileMappedStorage.h>
+#include <gii/gen/InformationBase.h>
 #include <misc/gen/TVector.h>
 
 namespace sf
@@ -22,7 +21,8 @@ class ResultData;
  * Multiple inheritance makes these types local for other classes as well.<br>
  * Making code more readable and also prevents name space problems.<br>
  */
-class _GII_CLASS ResultDataTypes : public InformationTypes
+class _GII_CLASS ResultDataTypes
+	: public InformationTypes
 {
 	public:
 		/**
@@ -195,7 +195,7 @@ class _GII_CLASS ResultDataTypes : public InformationTypes
 			 */
 				std::string _description;
 				/**
-			 * @brief Type of a single the element.
+			 * @brief Type of single element.
 			 */
 				EType _type{rtInvalid};
 				/**

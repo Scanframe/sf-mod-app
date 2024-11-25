@@ -1,16 +1,20 @@
 #pragma once
+#include <ami/units/UnitConversionAppModule.h>
 #include <misc/qt/PropertyPage.h>
-#include "UnitConversionAppModule.h"
 
 namespace sf
 {
 
-namespace Ui {class UnitConversionPropertyPage;}
+namespace Ui
+{
+class UnitConversionPropertyPage;
+}
 
 class ConversionListModel;
 class FollowersListModel;
 
-class UnitConversionPropertyPage :public PropertyPage
+class UnitConversionPropertyPage
+	: public PropertyPage
 {
 		Q_OBJECT
 
@@ -51,4 +55,4 @@ class UnitConversionPropertyPage :public PropertyPage
 		FollowersListModel* _lmFollowers{nullptr};
 };
 
-}
+}// namespace sf

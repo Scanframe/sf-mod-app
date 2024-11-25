@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 namespace sf
@@ -221,4 +220,4 @@ inline std::istream& operator>>(std::istream& is, TMatrix22<T>& mtx) noexcept(fa
 
 }// namespace sf
 
-#include "TMatrix22.hpp"
+#include <math/TMatrix22.hpp>

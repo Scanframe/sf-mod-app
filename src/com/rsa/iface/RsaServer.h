@@ -1,8 +1,7 @@
 #pragma once
-
 #include <gii/gen/InformationServer.h>
-#include "RsaTypes.h"
-#include "global.h"
+#include <rsa/iface/RsaTypes.h>
+#include <rsa/iface/global.h>
 
 namespace sf
 {
@@ -11,12 +10,12 @@ class RsaInterface;
 /**
  * @brief RSA implementation of a information server.
  */
-class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
+class _RSA_CLASS RsaServer : public InformationServer
+	, public RsaTypes
 {
 	public:
 		/**
 		 * @brief Constructor.
-		 *
 		 * @param compatible Compatibility switch. 1=Strip-chart 0=Current 2=Nerason
 		 * @param deviceNumber The device number used for creating an implementation. (default is UT)
 		 * @param serverName Server name added to the settings and results. (Default is 'Acquisition')
@@ -24,12 +23,12 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		explicit RsaServer(int compatible, id_type deviceNumber, const std::string& serverName = {});
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~RsaServer() override;
 
 		/**
-		 * Gets the name given at the constructor.
+		 * @brief Gets the name given at the constructor.
 		 */
 		[[nodiscard]] std::string getServerName() const;
 
@@ -54,12 +53,12 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Gets a pointer to the current acquisition implementation.
 		 */
-		RsaInterface* getAcquisition() {return _acquisition;}
+		RsaInterface* getAcquisition() { return _acquisition; }
 
 		/**
 		 * @brief Returns true whe all parameters are locked.
 		 */
-		[[nodiscard]] bool isLocked() const {return _lock;}
+		[[nodiscard]] bool isLocked() const { return _lock; }
 
 		/**
 		 * @brief Locks the variables by making them all read only.
@@ -136,7 +135,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Creates a setup string from the passed result info structure.
 		 */
-		std::string createSetupString(const RsaTypes::ResultInfo& info,long vid);
+		std::string createSetupString(const RsaTypes::ResultInfo& info, long vid);
 
 		/**
 		 * @brief Evaluate results after the configuration has changed.
@@ -158,14 +157,14 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		 */
 		struct ExtraInfo
 		{
-			/** Holds the channel number. */
-			unsigned _channel;
-			/** Holds the interface id. */
-			IdType _id;
-			/** Holds the last setup-string for comparison. */
-			std::string _setupString;
-			/** Flags copied from the ParamInfo structure. */
-			int _flags;
+				/** Holds the channel number. */
+				unsigned _channel;
+				/** Holds the interface id. */
+				IdType _id;
+				/** Holds the last setup-string for comparison. */
+				std::string _setupString;
+				/** Flags copied from the ParamInfo structure. */
+				int _flags;
 		};
 
 		/**
@@ -239,7 +238,7 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		/**
 		 * @brief Event handler for results.
 		 */
-		void serverResultDataHandler(ResultData::EEvent event,const ResultData& caller,ResultData& link,const Range& rng,bool same_inst);
+		void serverResultDataHandler(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool same_inst);
 		/**
 		 * @brief Holds all created results for this instance.
 		 */
@@ -270,4 +269,4 @@ class _RSA_CLASS RsaServer :public InformationServer, public RsaTypes
 		IdType _handledParamId;
 };
 
-}
+}// namespace sf

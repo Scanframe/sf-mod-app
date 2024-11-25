@@ -65,4 +65,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG_LEVEL=1)
 target_compile_definitions(${PROJECT_NAME} PRIVATE _AMI_PKG)
 
 # Set the include directory for this library when it is imported by another sub project.
-#set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/")
+#[[
+target_include_directories("${PROJECT_NAME}"
+	INTERFACE "${CMAKE_CURRENT_LIST_DIR}/.."
+	PRIVATE "${CMAKE_CURRENT_LIST_DIR}/.."
+)
+]]

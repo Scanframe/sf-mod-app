@@ -1,70 +1,69 @@
 #pragma once
-
-#include "../gen/IFileMapper.h"
-#include "../global.h"
-#include "File.h"
 #include <cstddef>
+#include <misc/gen/IFileMapper.h>
+#include <misc/global.h>
+#include <misc/lnx/File.h>
 
 namespace sf::lnx
 {
 
 /**
- * Wrapper for the linux mmap.
+ * @brief Wrapper for the linux mmap.
  */
-class _MISC_CLASS FileMapper : public IFileMapper
+class _MISC_CLASS FileMapper
+	: public IFileMapper
 {
 	public:
 		/**
-		 * Default constructor.
+		 * @brief Default constructor.
 		 */
 		FileMapper();
 
 		/**
-		 * Initializing constructor.
+		 * @brief Initializing constructor.
 		 */
 		explicit FileMapper(const std::string& filepath, size_t ofs = 0, size_t sz = 0);
 
 		/**
-		 * Use temporary files to map.
+		 * @brief Use temporary files to map.
 		 */
 		void initialize() override;
 
 		/**
-		 * Destructor.
+		 * @brief Destructor.
 		 */
 		~FileMapper() override;
 
 		/**
-		 * Initializes the mapper passing a file instance.
+		 * @brief Initializes the mapper passing a file instance.
 		 */
 		void initialize(const std::string& filepath, size_t ofs = 0, size_t sz = 0);
 
 		/**
-		 * Sets the size of the file to be mapped.
+		 * @brief Sets the size of the file to be mapped.
  		*/
 		void createView(size_t size) override;
 
 		/**
-		 * Sets the part of the file to be mapped.
+		 * @brief Sets the part of the file to be mapped.
 		 */
 		void setView(size_t ofs, size_t sz);
 
 		/**
-		 * Unlocks the locked file and removes the file reference.
+		 * @brief Unlocks the locked file and removes the file reference.
 		 */
 		void reset();
 
 		/**
-		 * Returns the pointer of the mapped area.
+		 * @brief Gets the pointer of the mapped area.
 		 */
 		void* getPtr() override;
 
 		/**
-		 * Locks the set area.
-		 * Returns NULL on failure.
+		 * @brief Locks the set area.
 		 * @tparam T Type of the pointer
 		 * @param readonly Flag making the resulting pointer readonly.
-		 * @return Pointer of specified type.
+		 * @return NULL on failure otherwise pointer of specified type.
 		 */
 		template<typename T>
 		T* lock(bool readonly = false)

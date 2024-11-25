@@ -1,14 +1,13 @@
 #pragma once
-
-#include "../global.h"
-#include "IntervalTimer.h"
-#include "TVector.h"
-#include "target.h"
+#include <misc/gen/IntervalTimer.h>
+#include <misc/gen/TVector.h>
+#include <misc/gen/target.h>
+#include <misc/global.h>
 
 namespace sf
 {
 
-/*
+/**
  * @brief Base class for template `TSustain` which enables repetitive calls from the main thread with a set frequency.
  *
  * Purpose:
@@ -60,7 +59,6 @@ class _MISC_CLASS SustainBase
 	protected:
 		/**
 		 * @brief Default Constructor adding itself to the passed vector.
-		 *
 		 * If the passed vector is NULL the default vector is selected.
 		 * @param vector
 		 * @param priority
@@ -80,61 +78,39 @@ class _MISC_CLASS SustainBase
 
 		/**
 		 * @brief Sets the interval at which the hooked function is called.
-		 *
 		 * This is only valid when the priority for this entry is #spTimer.
 		 * @param interval In milliseconds.
 		 */
-		void setInterval(const timespec& interval)
-		{
-			_timer.set(interval);
-		}
+		void setInterval(const timespec& interval);
 
 		/**
 		 * @brief Gets the interval at which the hooked function is called.
-		 *
 		 * @return Interval in milliseconds.
 		 */
-		[[nodiscard]] const timespec& getInterval() const
-		{
-			return _timer.getInterval();
-		}
+		[[nodiscard]] const timespec& getInterval() const;
 
 		/**
 		 * @brief Enables this entry.
 		 */
-		void enable()
-		{
-			_timer.enable();
-		}
+		void enable();
 
 		/**
 		 * @brief Disables this entry.
 		 */
-		void disable()
-		{
-			_timer.disable();
-		}
+		void disable();
 
 		/**
 		 * @brief  Returns if the entry is enabled or not.
-		 *
 		 * @return True when enabled.
 		 */
-		[[nodiscard]] bool isEnabled() const
-		{
-			return _timer.isEnabled();
-		}
+		[[nodiscard]] bool isEnabled() const;
 
 		/**
 		 * @brief Must be overloaded to be able to call the sustain member function.
-		 *
 		 * @param time
-		 * @return
+		 * @return When False is returned the sustain entry is disabled.
 		 */
-		virtual inline bool call(const timespec& time)
-		{
-			return false;
-		}
+		virtual inline bool call(const timespec& time);
 
 		/**
 		 * @brief Flushes the vector and clears all Vector member of all entries first.
@@ -142,19 +118,17 @@ class _MISC_CLASS SustainBase
 		static void flushVector(PtrVector* vector);
 
 		/**
-		 * @brief Calls all sustain table entry functions in the passed vector.
-		 *
+		 * @brief Calls all sustain table entry functions in the vector passed.
 		 * The default is the static default vector.
 		 * @param vector
 		 */
 		static void callSustain(PtrVector* vector = nullptr);
 
+	protected:
 		/**
 		 * @brief Pointer to the default vector which is automatically created when
 		 */
 		static PtrVector* _defaultVector;
-
-	protected:
 		/**
 		 * @brief Data member holing priority.
 		 */
@@ -168,6 +142,36 @@ class _MISC_CLASS SustainBase
 		 */
 		IntervalTimer _timer;
 };
+
+inline void SustainBase::setInterval(const timespec& interval)
+{
+	_timer.set(interval);
+}
+
+inline const timespec& SustainBase::getInterval() const
+{
+	return _timer.getInterval();
+}
+
+inline void SustainBase::enable()
+{
+	_timer.enable();
+}
+
+inline void SustainBase::disable()
+{
+	_timer.disable();
+}
+
+inline bool SustainBase::isEnabled() const
+{
+	return _timer.isEnabled();
+}
+
+inline bool SustainBase::call(const timespec& time)
+{
+	return false;
+}
 
 /**
  * @brief Template to make the sustain system call a class method regularly.
@@ -185,7 +189,6 @@ class TSustain : public SustainBase
 
 		/**
 		 * @brief One and only initializing constructor.
-		 *
 		 * @param self This pointer.
 		 * @param pmf Pointer to member function.
 		 * @param priority The priority.
@@ -234,7 +237,7 @@ TSustain<T>::TSustain(T* self, Pmf pmf, int priority, PtrVector* vector)
 }
 
 /**
- * @brief
+ * @brief Implements a class to hook a static function to the global main thread sustain call.
  */
 class _MISC_CLASS StaticSustain : public SustainBase
 {
@@ -285,8 +288,7 @@ inline bool StaticSustain::call(const timespec& time)
 
 /**
  * @brief This function will enable a timer that call all Sustain functions in the
- * DefaultVector member of the 'TSustain' template class.
- *
+ * _defaultVector member of the 'TSustain' template class.
  * Passing the repetition rate in milliseconds.
  * if the passed time is zero the timer stops.
  * Returns true if it was successful.
@@ -295,7 +297,7 @@ inline bool StaticSustain::call(const timespec& time)
 _MISC_FUNC bool setSustainTimer(int msec);
 
 /**
- * @brief Gets the current sustain timer interval in milli-seconds.
+ * @brief Gets the current sustain timer interval in milliseconds.
  *
  * @return Interval in milliseconds.
  */

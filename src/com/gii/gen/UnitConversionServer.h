@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
 #include <gii/gen/UnitConversion.h>
+#include <gii/global.h>
 #include <iostream>
 #include <misc/gen/IniProfile.h>
 #include <string>
@@ -11,9 +10,7 @@ namespace sf
 
 /**
  * @brief Implementation of a unit conversion server using an ini-file.
- *
  * This conversion class installs a handler using #setUnitConversionHandler() using a #UnitConversionServerClosure type of function.
- *
  */
 class _GII_CLASS UnitConversionServer
 {
@@ -30,7 +27,6 @@ class _GII_CLASS UnitConversionServer
 
 		/**
 		 * @brief Loads the conversion settings.
-		 *
 		 * @param is Input stream.
 		 */
 		virtual bool load(std::istream& is);
@@ -44,7 +40,6 @@ class _GII_CLASS UnitConversionServer
 
 		/**
 		 * @brief Gets the dirty status of the configuration.
-		 *
 		 * @return True when the config has been changed.
 		 */
 		[[nodiscard]] bool isDirty() const;
@@ -104,7 +99,6 @@ class _GII_CLASS UnitConversionServer
 
 		/**
 		 * @brief Gets the section name of the passed enumerate.
-		 *
 		 * @param us unit system enumerate.
 		 * @return Name of the system.
 		 */

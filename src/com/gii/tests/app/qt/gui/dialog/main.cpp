@@ -1,12 +1,14 @@
-#include <gii/gen/Variable.h>
-#include <gii/gen/UnitConversionServer.h>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/FormDialog.h>
+#include "misc/qt/Globals.h"
 #include <QApplication>
-#include <QTimer>
 #include <QDir>
+#include <QTimer>
+#include <gii/gen/UnitConversionServer.h>
+#include <gii/gen/Variable.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/FormDialog.h>
+#include <misc/qt/qt_utils.h>
 #if IS_WIN
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 int main(int argc, char* argv[])
@@ -30,6 +32,8 @@ int main(int argc, char* argv[])
 	sf::ApplicationSettings settings;
 	// Set the file path to the settings instance and make it watch changes.
 	settings.setFilepath(fi.absoluteFilePath(), true);
+	// Set the plugin/module directory. For now not configurable.
+	sf::setPluginDir(QCoreApplication::applicationDirPath() + QDir::separator() + "lib");
 	//
 	sf::Variable::initialize();
 	//
@@ -64,7 +68,7 @@ m/s,2="/s,39.37007874015748031496062992126,0,2
 		dlg.exec();
 	}
 	//
-	sf::Variable::deinitialize();
+	sf::Variable::uninitialize();
 	//
 	return 0;
 }

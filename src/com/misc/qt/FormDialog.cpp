@@ -2,7 +2,6 @@
 #include "Globals.h"
 #include "gen/pointer.h"
 #include "qt_utils.h"
-#include <QCoreApplication>
 #include <QDebug>
 #include <QFormBuilder>
 #include <QLayout>

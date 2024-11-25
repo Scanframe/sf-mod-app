@@ -1,15 +1,21 @@
 #pragma once
 
-#include <misc/qt/PropertyPage.h>
 #include <gii/qt/VariableWidgetBase.h>
+#include <misc/qt/PropertyPage.h>
 
 namespace sf
 {
-namespace Ui {class VariableIdPropertyPage;}
 
-class VariableIdPropertyPage :public PropertyPage
+namespace Ui
 {
-	Q_OBJECT
+
+class VariableIdPropertyPage;
+
+}
+
+class VariableIdPropertyPage : public PropertyPage
+{
+		Q_OBJECT
 
 	public:
 		explicit VariableIdPropertyPage(VariableWidgetBase* target, QWidget* parent = nullptr);
@@ -30,5 +36,4 @@ class VariableIdPropertyPage :public PropertyPage
 		bool _hasNameLevel{false};
 };
 
-}
-
+}// namespace sf

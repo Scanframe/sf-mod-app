@@ -1,13 +1,18 @@
-#include "PropertyPage.h"
-#include "Editor.h"
-#include "../global.h"
+#pragma once
+#include <misc/global.h>
+#include <misc/qt/Editor.h>
+#include <misc/qt/PropertyPage.h>
 
-namespace Ui {class EditorPropertyPage;}
+namespace Ui
+{
+class EditorPropertyPage;
+}
 
 namespace sf
 {
 
-class _MISC_CLASS EditorPropertyPage :public PropertyPage
+class _MISC_CLASS EditorPropertyPage
+	: public PropertyPage
 {
 		Q_OBJECT
 
@@ -35,4 +40,4 @@ class _MISC_CLASS EditorPropertyPage :public PropertyPage
 		Editor::Configuration& _configuration;
 };
 
-}
+}// namespace sf

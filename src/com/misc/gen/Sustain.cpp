@@ -107,7 +107,8 @@ void SustainBase::callSustain(SustainBase::PtrVector* vector)
 			// Check if entry was disabled. This may look strange but the timers
 			// enable disable is also used for non timer entries.
 			if (entry->_timer.isEnabled())
-			{// IF the hooked function returns false disable this entry.
+			{
+				// If the hooked function returns false disable this entry.
 				if (!entry->call(time))
 				{
 					entry->disable();

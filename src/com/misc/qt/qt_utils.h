@@ -1,29 +1,26 @@
 #pragma once
-
-#include <QString>
-#include <QFileInfo>
-#include <QDataStream>
-#include <QPoint>
-#include <QSize>
-#include <QRect>
-#include <QFileSystemWatcher>
-#include <QPalette>
-#include <QFileDialog>
-#include <QLayout>
-#include <QTreeView>
-#include <QMetaEnum>
-#include <QMessageBox>
-#include <QComboBox>
-#include <QFormLayout>
 #include <QAbstractProxyModel>
-
-#include "../global.h"
+#include <QComboBox>
+#include <QDataStream>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFileSystemWatcher>
+#include <QFormLayout>
+#include <QLayout>
+#include <QMessageBox>
+#include <QMetaEnum>
+#include <QPalette>
+#include <QPoint>
+#include <QRect>
+#include <QSize>
+#include <QString>
+#include <QTreeView>
+#include <misc/global.h>
 
 /**
  * @brief Operator stream a QString instance to ans std ostream.
  */
-inline
-std::ostream& operator<<(std::ostream& os, const QString& qs)
+inline std::ostream& operator<<(std::ostream& os, const QString& qs)
 {
 	return os << qs.toStdString();
 }
@@ -31,8 +28,7 @@ std::ostream& operator<<(std::ostream& os, const QString& qs)
 /**
  * @brief Allows moving a QPoint using a QSize.
  */
-inline
-QPoint operator-(const QPoint& pt, const QSize& sz)
+inline QPoint operator-(const QPoint& pt, const QSize& sz)
 {
 	return {pt.x() - sz.width(), pt.y() - sz.height()};
 }
@@ -40,8 +36,7 @@ QPoint operator-(const QPoint& pt, const QSize& sz)
 /**
  * @brief Allows moving a QPoint using a QSize.
  */
-inline
-QPoint operator+(const QPoint& pt, const QSize& sz)
+inline QPoint operator+(const QPoint& pt, const QSize& sz)
 {
 	return {pt.x() + sz.width(), pt.y() + sz.height()};
 }
@@ -49,8 +44,7 @@ QPoint operator+(const QPoint& pt, const QSize& sz)
 /**
  * @brief Allows adjusting the QRect size using a QSize.
  */
-inline
-QRect operator+(const QRect& rc, const QSize& sz)
+inline QRect operator+(const QRect& rc, const QSize& sz)
 {
 	return {rc.topLeft(), rc.size() + sz};
 }
@@ -58,8 +52,7 @@ QRect operator+(const QRect& rc, const QSize& sz)
 /**
  * @brief Allows adjusting the QRect size using a QSize.
  */
-inline
-QRect operator-(const QRect& rc, const QSize& sz)
+inline QRect operator-(const QRect& rc, const QSize& sz)
 {
 	return {rc.topLeft(), rc.size() - sz};
 }
@@ -67,8 +60,7 @@ QRect operator-(const QRect& rc, const QSize& sz)
 /**
  * @brief Allows adjusting the QRect position using a QPoint.
  */
-inline
-QRect operator+(const QRect& rc, const QPoint& pt)
+inline QRect operator+(const QRect& rc, const QPoint& pt)
 {
 	return {rc.topLeft() + pt, rc.size()};
 }
@@ -76,8 +68,7 @@ QRect operator+(const QRect& rc, const QPoint& pt)
 /**
  * @brief Allows adjusting the QRect position using a QPoint.
  */
-inline
-QRect operator+=(QRect& rc, const QPoint& pt)
+inline QRect operator+=(QRect& rc, const QPoint& pt)
 {
 	rc = {rc.topLeft() + pt, rc.size()};
 	return rc;
@@ -86,8 +77,7 @@ QRect operator+=(QRect& rc, const QPoint& pt)
 /**
  * @brief Allows adjusting the QRect position using a QPoint.
  */
-inline
-QRect operator-(const QRect& rc, const QPoint& pt)
+inline QRect operator-(const QRect& rc, const QPoint& pt)
 {
 	return {rc.topLeft() - pt, rc.size()};
 }
@@ -95,8 +85,7 @@ QRect operator-(const QRect& rc, const QPoint& pt)
 /**
  * @brief Allows adjusting the QRect position using a QPoint.
  */
-inline
-QRect operator-=(QRect& rc, const QPoint& pt)
+inline QRect operator-=(QRect& rc, const QPoint& pt)
 {
 	rc = {rc.topLeft() - pt, rc.size()};
 	return rc;
@@ -105,8 +94,7 @@ QRect operator-=(QRect& rc, const QPoint& pt)
 /**
  * @brief Inflates the passed rect on all sides using an integer.
  */
-inline
-QRect& inflate(QRect& r, int sz)
+inline QRect& inflate(QRect& r, int sz)
 {
 	r.adjust(-sz, -sz, sz, sz);
 	return r;
@@ -115,14 +103,12 @@ QRect& inflate(QRect& r, int sz)
 /**
  * @brief Inflates a copy the rectangle an integer and returns it.
  */
-inline
-constexpr QRect inflated(const QRect& r, int sz)
+inline constexpr QRect inflated(const QRect& r, int sz)
 {
 	return r.adjusted(-sz, -sz, sz, sz);
 }
 
-inline
-QSize asQSize(const QPoint& pt)
+inline QSize asQSize(const QPoint& pt)
 {
 	return {pt.x(), pt.y()};
 }
@@ -132,14 +118,12 @@ namespace sf
 
 _MISC_FUNC QRect moveRectWithinRect(const QRect& outer, const QRect& inner);
 
-
 /**
  * @brief Type to hold palette colors.
  */
 class _MISC_CLASS PaletteColors
 {
 	public:
-
 		explicit PaletteColors() = default;
 
 		explicit PaletteColors(const QPalette& palette);
@@ -163,9 +147,9 @@ class _MISC_CLASS PaletteColors
  * Sets the styling and the color from an ini file.
  * Used to quickly create test applications.
  */
-class _MISC_CLASS ApplicationSettings :public QObject
+class _MISC_CLASS ApplicationSettings : public QObject
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		/**
@@ -256,15 +240,14 @@ class _MISC_CLASS ApplicationSettings :public QObject
  * @param ct Connection Type.
  * @return Connection object.
  */
-_MISC_FUNC QMetaObject::Connection connectByName
-	(
-		const QWidget* widget,
-		const QString& sender_name,
-		const char* signal_name,
-		const QObject* receiver,
-		const char* method_name,
-		Qt::ConnectionType ct = Qt::AutoConnection
-	);
+_MISC_FUNC QMetaObject::Connection connectByName(
+	const QWidget* widget,
+	const QString& sender_name,
+	const char* signal_name,
+	const QObject* receiver,
+	const char* method_name,
+	Qt::ConnectionType ct = Qt::AutoConnection
+);
 
 /**
  * @brief Gets all the parent names from the object's parent in a string list.
@@ -353,8 +336,7 @@ _MISC_FUNC int getLayoutIndex(QBoxLayout* layout, QObject* target);
  * @brief Resizes all columns to content of a tree view except the last column.
  * @param treeView
  */
-inline
-void resizeColumnsToContents(QTreeView* treeView)
+inline void resizeColumnsToContents(QTreeView* treeView)
 {
 	auto count = treeView->model()->columnCount({}) - 1;
 	for (int i = 0; i < count; i++)
@@ -375,7 +357,7 @@ _MISC_FUNC void dumpObjectProperties(QObject* obj);
  * @param am Pointer to model.
  * @return Non-null when found.
  */
-template <typename T>
+template<typename T>
 T* getSourceModel(const QAbstractItemModel* am)
 {
 	// First check if the passed abstract model is the model we look for.
@@ -412,4 +394,4 @@ _MISC_FUNC void expandTreeView(QTreeView* tv, bool expand = true, const QModelIn
  * @return True when a GUI application.
  */
 _MISC_FUNC bool isGuiApplication();
-}
+}// namespace sf

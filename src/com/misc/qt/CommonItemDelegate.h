@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QStyledItemDelegate>
-#include "../global.h"
+#include <misc/global.h>
 
 namespace sf
 {
@@ -9,12 +9,12 @@ namespace sf
 /**
  * @brief Allows a list model to determine the editor for a field.
  */
-class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
+class _MISC_CLASS CommonItemDelegate
+	: public QStyledItemDelegate
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
-
 		/**
 		 * @brief Type for the named options available in case of a dropdown.
 		 */
@@ -89,4 +89,4 @@ class _MISC_CLASS CommonItemDelegate :public QStyledItemDelegate
 		void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 
-}
+}// namespace sf

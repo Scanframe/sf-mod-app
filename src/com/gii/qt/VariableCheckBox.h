@@ -1,7 +1,6 @@
 #pragma once
-
-#include "VariableWidgetBase.h"
-#include "../global.h"
+#include <gii/global.h>
+#include <gii/qt/VariableWidgetBase.h>
 
 namespace sf
 {
@@ -9,9 +8,9 @@ namespace sf
 /**
  * @brief Widget for editing #sf::Variable value types integer, floating point and single line string.
  */
-class QDESIGNER_WIDGET_EXPORT VariableCheckBox :public VariableWidgetBase
+class QDESIGNER_WIDGET_EXPORT VariableCheckBox : public VariableWidgetBase
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(int nameLevel READ nameLevel WRITE setNameLevel)
 
 	public:
@@ -41,14 +40,12 @@ class QDESIGNER_WIDGET_EXPORT VariableCheckBox :public VariableWidgetBase
 		void applyReadOnly(bool yn) override;
 
 	private:
-
-	/**
+		/**
 	 * @brief Forward definition of private implemented class to prevent interfaces exposure.
 	 */
 		struct Private;
 
 		Q_DISABLE_COPY(VariableCheckBox)
-
 };
 
-}
+}// namespace sf

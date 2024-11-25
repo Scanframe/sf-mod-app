@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../global.h"
-#include "TStrings.h"
+#include <misc/gen/TStrings.h>
+#include <misc/global.h>
 
 namespace sf
 {

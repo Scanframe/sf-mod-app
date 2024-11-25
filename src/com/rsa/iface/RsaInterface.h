@@ -1,10 +1,9 @@
 #pragma once
-
-#include "RsaTypes.h"
-#include "global.h"
 #include <misc/gen/TClassRegistration.h>
 #include <misc/gen/TVector.h>
 #include <misc/gen/Value.h>
+#include <rsa/iface/RsaTypes.h>
+#include <rsa/iface/global.h>
 #include <utility>
 
 namespace sf
@@ -16,7 +15,8 @@ class PropertySheetDialog;
 /**
  * @brief Base class for the repetitive signal acquisition interface.
  */
-class _RSA_CLASS RsaInterface : public RsaTypes
+class _RSA_CLASS RsaInterface
+	: public RsaTypes
 {
 	public:
 		/**
@@ -78,7 +78,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Gets the amount of gates for this channels' implementation.
-		 *
 		 * @param channel Channel number.
 		 * @return Channel count
 		 */
@@ -86,7 +85,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Gets the name of the passed gate and channel.
-		 *
 		 * @param gate Gate number
 		 * @param channel Channel number.
 		 * @return Name of the gate.
@@ -95,7 +93,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Sets the pop manual state for a channel.
-		 *
 		 * @param channel Channel number.
 		 * @param pm Manual pop mode.
 		 * @return True on success.
@@ -120,7 +117,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		/**
 		 * @brief Gets the value of the specified parameter id.
 		 * When the ID does not exist it returns false.
-		 *
 		 * @param id Parameter identifier.
 		 * @param value Returned value.
 		 * @return True on success.
@@ -130,7 +126,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		/**
 		 * @brief Sets the value of the specified parameter id.
 		 * When the ID does not exist it returns false.
-		 *
 		 * @param id Parameter identifier.
 		 * @param value Set value.
 		 * @param skip_event
@@ -139,7 +134,7 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		bool setParam(IdType id, const Value& value, bool skip_event);
 
 		/**
-		 * Sets and immediately gets the same value again clipped or not.
+		 * @brief Sets and immediately gets the same value again clipped or not.
 		 * @param id Parameter identifier.
 		 * @param value Set, get value.
 		 * @param skip_event
@@ -152,7 +147,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		 * This method handles the interface parameters.
 		 * When info in non-null the parameter info must be filled in.
 		 * When the set or get value is non-null the value is set and/or retrieved.
-		 *
 		 * @param id
 		 * @param info
 		 * @param setval
@@ -186,7 +180,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Gets the ID of the parameter for the specified gate.
-		 *
 		 * @param param Type of default parameter.
 		 * @param gate Gate number and when UINT_MAX  it is ignored.
 		 * @param channel Channel number and when UINT_MAX  it is ignored.
@@ -215,7 +208,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Returns the ID of the result for the specified gate.
-		 *
 		 * @param result Default result type.
 		 * @param gate Gate number and when UINT_MAX tels the argument is ignored.
 		 * @param channel Channel number and when UINT_MAX tels the argument is ignored.
@@ -226,7 +218,6 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 
 		/**
 		 * @brief Gets interface results ids.
-		 *
 		 * @param ids List of identifiers
 		 * @return True on success.
 		 */
@@ -243,7 +234,7 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		virtual bool handleResult(IdType id, ResultInfo* info, BufferInfo* bufInfo) = 0;
 
 		/**
-		 * @brief Gets the result buffer associated with the result ID passed in the result hook at the time of the call.
+		 * @brief Gets the result buffer associated with the result id passed in the result hook at the time of the call.
 		 * @return True on success.
 		 */
 		bool getResultBuffer(IdType id, BufferInfo& bufInfo);
@@ -252,7 +243,7 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		 * @brief For testing initialization by the implementation.
 		 * @return True on success.
 		 */
-		[[nodiscard]] bool isInitialized() const { return _initialized; }
+		[[nodiscard]] bool isInitialized() const;
 
 		/**
 		 * @brief Returns the path of the static configuration of the driver.
@@ -261,7 +252,7 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		[[nodiscard]] std::string getProfilePath() const;
 
 		/**
-		 * Adds controller specific property pages to the passed sheet.
+		 * @brief Adds controller specific property pages to the passed sheet.
 		 * @param sheet
 		 */
 		virtual void addPropertyPages(PropertySheetDialog* sheet);
@@ -294,7 +285,7 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		 * @brief Sets the implementation type of the implementation used by the server side.
 		 * Only allowed before and during initialization.
 		 * By default, the type is ultrasonic.
-		 * @param at
+		 * @param at The acquisition type.
 		 * @return True on success.
 		 */
 		bool setType(EAcquisitionType at);
@@ -316,5 +307,10 @@ class _RSA_CLASS RsaInterface : public RsaTypes
 		// Declarations of static functions and data members to be able to create registered RSA implementations.
 		SF_DECL_IFACE(RsaInterface, RsaInterface::Parameters, Interface)
 };
+
+inline bool RsaInterface::isInitialized() const
+{
+	return _initialized;
+}
 
 }// namespace sf

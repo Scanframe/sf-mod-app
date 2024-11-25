@@ -1,12 +1,11 @@
 #pragma once
-
-#include "../global.h"
-#include "Condition.h"
-#include "Exception.h"
-#include "Mutex.h"
-#include "TClosure.h"
-#include "TimeSpec.h"
-#include "target.h"
+#include <misc/gen/Condition.h>
+#include <misc/gen/Exception.h>
+#include <misc/gen/Mutex.h>
+#include <misc/gen/TClosure.h>
+#include <misc/gen/TimeSpec.h>
+#include <misc/gen/target.h>
+#include <misc/global.h>
 #include <pthread.h>
 #include <string>
 #include <unistd.h>
@@ -21,8 +20,7 @@ namespace sf
 {
 
 /**
-* @brief Thread wrapper class to be used for attachment to an existing thread or a new to be created thread.
- *
+ * @brief Thread wrapper class to be used for attachment to an existing thread or a new to be created thread.
  * This class can only be used to derive from since the constructor #Thread() is protected by design.
  * at least the #run() function must be overridden.
  */
@@ -307,7 +305,6 @@ class _MISC_CLASS Thread
 
 		/**
 		 * @brief Alternative to returning from then run() method.
-		 *
 		 * Called from within the thread that wants to exit early.
 		 * It save-guarded from other threads calling it.
 		 * @see #run()
@@ -315,7 +312,7 @@ class _MISC_CLASS Thread
 		void exit(int code);
 
 		/**
-		 * Enables debug logging.
+		 * @brief Enables debug logging.
 		 * @param yn True for debug output.
 		 */
 		inline void setDebug(bool yn);
@@ -328,10 +325,11 @@ class _MISC_CLASS Thread
 		static bool yieldToOther();
 
 		/**
-		 * Thread exception.
+		 * @brief Thread exception.
 		 * @see #::sf::ExceptionBase
 		 */
-		class ThreadException : public ExceptionBase<ThreadException>
+		class ThreadException
+			: public ExceptionBase<ThreadException>
 		{
 			public:
 				/**
@@ -567,7 +565,7 @@ class _MISC_CLASS ThreadMain : public Thread
 		 */
 		ThreadMain();
 		/**
-		 * Overrides run function but does nothing since it is the main thread.
+		 * @brief Overrides run function but does nothing since it is the main thread.
 		 */
 		int run() override;
 };
