@@ -8,7 +8,7 @@ project("sf-misc"
 )
 
 # Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "../cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../cmake/lib")
 # Make sure builds do not wind up in the source directory.
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfMacros CONFIG REQUIRED)

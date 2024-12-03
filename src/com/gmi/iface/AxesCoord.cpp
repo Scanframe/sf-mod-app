@@ -6,9 +6,9 @@ namespace sf::gmi
 {
 
 AxesCoord::AxesCoord(const AxesCoord& ac)
+	: FMap(ac.FMap)
 {
-	FMap = ac.FMap;
-	std::memcpy(&FData, &ac.FData, sizeof(FData));
+	std::memcpy(FData, ac.FData, sizeof(FData));
 }
 
 AxesCoord& AxesCoord::operator=(const AxesCoord& ac)
@@ -340,12 +340,15 @@ bool AxesCoord::SetString(std::string str)
 
 }// namespace sf::gmi
 
-std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac)
+namespace sf
+{
+
+std::ostream& operator<<(std::ostream& os, const gmi::AxesCoord& ac)
 {
 	return (os << '(' << ac.GetString() << ')');
 }
 
-std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac)
+std::istream& operator>>(std::istream& is, gmi::AxesCoord& ac)
 {
 	char c;
 	std::string s;
@@ -358,3 +361,5 @@ std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac)
 		ac.SetString(s);
 	return is;
 }
+
+}// namespace sf

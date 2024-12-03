@@ -201,6 +201,11 @@ class _GMI_CLASS AxesCoord
 		 */
 		AxesCoord OffsetBy(const Vector3D& ofs) const;
 
+		/**
+		 * @brief Type definition.
+		 */
+		typedef TVector<AxesCoord> Vector;
+
 	private:
 		/**
 		 * @brief Integer used as map for valid entries.
@@ -212,12 +217,10 @@ class _GMI_CLASS AxesCoord
 		double FData[alLAST_ENTRY];
 };
 
-/**
- * @brief Type definition.
- */
-typedef TVector<AxesCoord> TAxesCoords;
-
 }// namespace sf::gmi
+
+namespace sf
+{
 
 /**
  * @brief Operator for writing the #sf::gmi::TAxesCoord to an output-stream.
@@ -225,7 +228,7 @@ typedef TVector<AxesCoord> TAxesCoords;
  * @param ac Axes coordinate  to stream.
  * @return The passed output stream.
  */
-_GMI_FUNC std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac);
+_GMI_FUNC std::ostream& operator<<(std::ostream& os, const gmi::AxesCoord& ac);
 
 /**
  * @brief Operator for reading the #sf::gmi::TAxesCoord from an input stream.
@@ -233,25 +236,6 @@ _GMI_FUNC std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& a
  * @param ac Axes coordinate  to stream.
  * @return The passed input stream.
  */
-_GMI_FUNC std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac);
-
-namespace sf
-{
-
-/**
- * @brief Inlined operator to allow streaming of the class possible in 'sf' namespace .
- */
-inline std::ostream& operator<<(std::ostream& os, const sf::gmi::AxesCoord& ac)
-{
-	return ::operator<<(os, ac);
-}
-
-/**
- * @brief Inlined operator to allow streaming of the class possible in 'sf' namespace.
- */
-inline std::istream& operator>>(std::istream& is, sf::gmi::AxesCoord& ac)
-{
-	return ::operator>>(is, ac);
-}
+_GMI_FUNC std::istream& operator>>(std::istream& is, gmi::AxesCoord& ac);
 
 }// namespace sf

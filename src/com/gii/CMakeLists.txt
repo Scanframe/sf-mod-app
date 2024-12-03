@@ -71,6 +71,7 @@ if (SF_BUILD_QT)
 		qt/Macros.h
 		qt/VariableWidgetBase.cpp qt/VariableWidgetBase.h qt/VariableWidgetBasePrivate.h
 		qt/InformationSelectDialog.cpp qt/InformationSelectDialog.h qt/InformationSelectDialog.ui
+		qt/VariableListModel.cpp qt/VariableListModel.h
 		qt/VariableEdit.cpp qt/VariableEdit.h
 		qt/InformationIdEdit.cpp qt/InformationIdEdit.h
 		qt/InformationIdEditPlugin.cpp qt/InformationIdEditPlugin.h

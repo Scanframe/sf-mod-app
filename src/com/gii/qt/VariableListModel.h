@@ -1,7 +1,7 @@
-#pragma once
-#include <QAbstractItemView>
+	#pragma once
 #include <QAbstractListModel>
-#include <misc/global.h>
+#include <QAbstractItemView>
+#include <gii/global.h>
 
 namespace sf
 {
@@ -9,7 +9,7 @@ namespace sf
 /**
  * @brief List model for QObject properties.
  */
-class _MISC_CLASS ObjectPropertyModel
+class _GII_CLASS VariableListModel
 	: public QAbstractListModel
 {
 		Q_OBJECT
@@ -18,7 +18,7 @@ class _MISC_CLASS ObjectPropertyModel
 		/**
 		 * @brief Constructor.
 		 */
-		explicit ObjectPropertyModel(QObject* parent = nullptr);
+		explicit VariableListModel(QObject* parent = nullptr);
 
 		/**
 		 * @brief ???

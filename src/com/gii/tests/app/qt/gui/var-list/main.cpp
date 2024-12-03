@@ -1,18 +1,18 @@
 #include <QApplication>
 #include <QDir>
-#include <QSettings>
 #include <QTimer>
-#include <gii/gen/ResultData.h>
-#include <gii/gen/Variable.h>
-#include <gii/qt/InformationIdEdit.h>
-#include <gii/qt/InformationSelectDialog.h>
-#include <misc/gen/IniProfile.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/qt/Globals.h>
 #include <misc/qt/qt_utils.h>
+#include <gii/qt/VariableListModel.h>
 #if IS_WIN
 	#include <windows.h>
 #endif
+
+#include "gii/gen/InformationBase.h"
+#include "gii/gen/Variable.h"
+#include "misc/gen/IniProfile.h"
+#include "misc/gen/string.h"
 #include "test-ini-content.h"
 
 namespace sf
@@ -22,7 +22,6 @@ void loadFromIni(InformationTypes::Vector& rv)
 {
 	std::istringstream is(IniContent);
 	sf::IniProfile ini(is);
-	TVector<ResultData*> results;
 	TVector<Variable*> variables;
 	if (ini.selectSection("GenericParamInfo"))
 	{
@@ -40,25 +39,6 @@ void loadFromIni(InformationTypes::Vector& rv)
 				auto v = new Variable(def);
 				variables.add(v);
 				rv.append(v);
-			}
-		}
-	}
-	if (ini.selectSection("GenericResultInfo"))
-	{
-		int count = ini.getInt("Entries");
-		for (int i = 0; i < count; i++)
-		{
-			auto sd = ini.getString(std::to_string(i));
-			if (sd.empty())
-			{
-				continue;
-			}
-			auto def = ResultData::getDefinition(sd);
-			if (def._valid)
-			{
-				auto r = new ResultData(def);
-				results.add(r);
-				rv.append(r);
 			}
 		}
 	}
@@ -81,6 +61,7 @@ void loadFromIni(InformationTypes::Vector& rv)
 
 }// namespace sf
 
+
 int main(int argc, char* argv[])
 {
 #if IS_WIN
@@ -92,49 +73,35 @@ int main(int argc, char* argv[])
 #endif
 	// Ignore desktop settings because it gives the wrong icon colors.
 	QApplication::setDesktopSettingsAware(false);
-	//
 	QApplication app(argc, argv);
 	// Initialize base using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());
 	// Set the instance to change the extension only.
 	fi.setFile(fi.absolutePath() + QDir::separator() + "config", fi.completeBaseName() + ".ini");
 	// Create instance to handle settings.
-	sf::ApplicationSettings appSettings;
+	sf::ApplicationSettings settings;
 	// Set the file path to the settings instance and make it watch changes.
-	appSettings.setFilepath(fi.absoluteFilePath(), true);
+	settings.setFilepath(fi.absoluteFilePath(), true);
+	// Set the plugin/module directory. For now not configurable.
+	sf::setPluginDir(QCoreApplication::applicationDirPath() + QDir::separator() + "lib");
 	//
-	auto settings = new QSettings(fi.absoluteFilePath(), QSettings::Format::IniFormat, &app);
-	//
-	sf::setGlobalSettings(settings);
-	//
-	sf::Variable::initialize();
-
 	sf::InformationTypes::Vector list;
 	sf::loadFromIni(list);
-	// Just any argument will trigger a different.
-	if (argc > 1)
-	{
-		QDialog dlg;
-		appSettings.restoreWindowRect("Dialog", &dlg);
-		dlg.setLayout(new QVBoxLayout(&dlg));
-		auto edit = new sf::InformationIdEdit(&dlg);
-		edit->setTypeId(sf::Gii::ResultData);
-		dlg.layout()->addWidget(edit);
-		dlg.exec();
-		appSettings.saveWindowRect("Dialog", &dlg);
-	}
-	else
-	{
-		sf::InformationSelectDialog isd;
-		auto ids = isd.execute(sf::Gii::Multiple);
-		qDebug() << ids;
-	}
+	//
+	QDialog dlg;
+	settings.restoreWindowRect("Dialog", &dlg);
+	dlg.setLayout(new QVBoxLayout(&dlg));
+	auto tv = new QTreeView(&dlg);
+	auto vlm = new sf::VariableListModel(&dlg);
+	tv->setModel(vlm);
+	tv->setAlternatingRowColors(true);
+	dlg.layout()->addWidget(tv);
+	dlg.exec();
+	//
+	settings.saveWindowRect("Dialog", &dlg);
 	// Remove all entries before uninitializing.
 	qDeleteAll(list);
+	// Clear the list.
 	list.clear();
-	//
-	sf::Variable::uninitialize();
-	//
-	sf::setGlobalSettings(nullptr);
 	return 0;
 }

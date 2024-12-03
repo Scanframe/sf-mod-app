@@ -5,6 +5,8 @@ namespace sf
 
 /**
  * @brief Template class for managing bit maks preferably when bits are defined as enumerate values.
+ * @tparam T Integer type for setting the bits.
+ * @tparam S Integer type for containing the bits.
  */
 template<typename T = int, typename S = int>
 struct TSet

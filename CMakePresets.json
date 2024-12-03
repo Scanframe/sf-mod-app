@@ -48,6 +48,10 @@
 					"type": "BOOL",
 					"value": "OFF"
 				},
+				"SF_OUTPUT_DIR_SUFFIX": {
+					"type": "STRING",
+					"value": ""
+				},
 				"Vulkan_INCLUDE_DIR": {
 					"type": "STRING",
 					"value": "${sourceDir}"
