@@ -1,11 +1,11 @@
-#include <bitset>
-#include <QMetaEnum>
-#include <QAbstractItemView>
-#include <QLineEdit>
-#include <QFormLayout>
-#include "CommonItemDelegate.h"
 #include "ObjectPropertyModel.h"
+#include "CommonItemDelegate.h"
 #include "ObjectExtension.h"
+#include <QAbstractItemView>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QMetaEnum>
+#include <bitset>
 
 namespace sf
 {
@@ -51,7 +51,7 @@ const char* ignoreList[] = {
 
 bool ignored(const char* name)
 {
-	for (auto n: ignoreList) // NOLINT(readability-use-anyofallof)
+	for (auto n: ignoreList)// NOLINT(readability-use-anyofallof)
 	{
 		if (std::strcmp(name, n) == 0)
 		{
@@ -166,10 +166,10 @@ CommonItemDelegate::OptionsType getEnumFlagsOptions(const QMetaEnum& me)
 	return rv;
 }
 
-}
+}// namespace
 
 ObjectPropertyModel::ObjectPropertyModel(QObject* parent)
-	:QAbstractListModel(parent)
+	: QAbstractListModel(parent)
 {
 }
 
@@ -183,8 +183,7 @@ void ObjectPropertyModel::setTarget(QObject* target)
 	_target = target;
 	_indices.clear();
 	//
-	auto addProps = [this](QObject* obj)
-	{
+	auto addProps = [this](QObject* obj) {
 		auto mo = obj->metaObject();
 		do
 		{
@@ -199,8 +198,7 @@ void ObjectPropertyModel::setTarget(QObject* target)
 					};
 				}
 			}
-		}
-		while ((mo = mo->superClass()));
+		} while ((mo = mo->superClass()));
 		// Add the dynamic indices.
 		auto names = obj->dynamicPropertyNames();
 		for (int ni = 0; ni < names.count(); ni++)
@@ -236,8 +234,7 @@ void ObjectPropertyModel::setDelegates(QAbstractItemView* view)
 {
 	auto cid = new CommonItemDelegate(view);
 	// Propagate the signal.
-	QObject::connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index)
-	{
+	QObject::connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index) {
 		auto propIdx = _indices.at(index.row());
 		Q_EMIT addLineEditActions(lineEdit, propIdx._obj, propIdx._index, propIdx._dynamic);
 	});
@@ -331,8 +328,7 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				}
 				return meta->property(propIdx._index).typeName();
 
-			case cValue:
-			{
+			case cValue: {
 				// Negative index indicates a dynamic property.
 				if (propIdx._dynamic)
 				{
@@ -509,7 +505,7 @@ bool ObjectPropertyModel::setData(const QModelIndex& index, const QVariant& valu
 					{
 						v[i] = sl[i].toInt();
 					}
-					propIdx._obj->setProperty(propName, QVariant::fromValue<QSize>({v[0],v[1]}));
+					propIdx._obj->setProperty(propName, QVariant::fromValue<QSize>({v[0], v[1]}));
 				}
 			}
 			else
@@ -528,4 +524,4 @@ bool ObjectPropertyModel::setData(const QModelIndex& index, const QVariant& valu
 	return false;
 }
 
-}
+}// namespace sf

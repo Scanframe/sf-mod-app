@@ -173,7 +173,7 @@ class _MISC_CLASS Value
 		 * @param v The instance pointer to reference to.
 		 * @return Itself.
 		 */
-		inline Value& set(Value* v);
+		Value& set(Value* v);
 
 		/**
 		 * @brief Copies the content and type of the passed value.
@@ -189,7 +189,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(bool v);
+		Value& set(bool v);
 
 		/**
 		 * @brief Sets the type and content.
@@ -197,7 +197,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(int v);
+		Value& set(int v);
 
 #if IS_WIN
 		/**
@@ -208,7 +208,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(long v);
+		Value& set(long v);
 #endif
 
 		/**
@@ -217,7 +217,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(unsigned v);
+		Value& set(unsigned v);
 
 		/**
 		 * @brief Sets the type and content.
@@ -225,7 +225,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(int_type v);
+		Value& set(int_type v);
 
 		/**
 		 * @brief Sets the type and content.
@@ -233,7 +233,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(flt_type v);
+		Value& set(flt_type v);
 
 		/**
 		 * @brief Sets the type and content.
@@ -241,7 +241,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(const char* v);
+		Value& set(const char* v);
 
 		/**
 		 * @brief Sets the type and content.
@@ -249,7 +249,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(const std::string& v);
+		Value& set(const std::string& v);
 
 #if IS_QT
 
@@ -259,7 +259,7 @@ class _MISC_CLASS Value
 		 * @param v value.
 		 * @return Itself.
 		 */
-		inline Value& set(const QString& as);
+		Value& set(const QString& as);
 
 #endif
 
@@ -280,7 +280,7 @@ class _MISC_CLASS Value
 		 * @param size Size of the raw data.
 		 * @return Itself.
 		 */
-		inline Value& set(const void* v, size_t size);
+		Value& set(const void* v, size_t size);
 
 		/**
 		 * @brief Assigns a value of an instance but not changing the current type.
@@ -296,7 +296,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(bool v);
+		Value& assign(bool v);
 
 		/**
 		 * @brief Assigns an integer value but not changing the current type.
@@ -304,7 +304,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(int v);
+		Value& assign(int v);
 
 		/**
 		 * @brief Assigns an unsigned integer value but not changing the current type.
@@ -312,7 +312,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(unsigned v);
+		Value& assign(unsigned v);
 
 #if IS_WIN
 		/**
@@ -322,7 +322,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(const long v);
+		Value& assign(const long v);
 #endif
 
 		/**
@@ -331,7 +331,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(flt_type v);
+		Value& assign(flt_type v);
 
 		/**
 		 * @brief Assigns a string value but not changing the current type.
@@ -339,7 +339,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(const char* v);
+		Value& assign(const char* v);
 
 		/**
 		 * @brief Assigns a string value but not changing the current type.
@@ -347,7 +347,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(const std::string& v);
+		Value& assign(const std::string& v);
 
 #if IS_QT
 
@@ -357,7 +357,7 @@ class _MISC_CLASS Value
 		 * @param v The new value.
 		 * @return Itself
 		 */
-		inline Value& assign(const QString& s);
+		Value& assign(const QString& s);
 
 #endif
 
@@ -368,13 +368,13 @@ class _MISC_CLASS Value
 		 * @param size Size of the raw value.
 		 * @return Itself
 		 */
-		inline Value& assign(const void* v, size_t size);
+		Value& assign(const void* v, size_t size);
 
 		/**
 		 * @brief Gets the current type for this instance.
 		 * @return The current type.
 		 */
-		[[nodiscard]] inline EType getType() const;
+		[[nodiscard]] EType getType() const;
 
 		/**
 		 * @brief Gets the type corresponding to the passed type string.
@@ -401,13 +401,13 @@ class _MISC_CLASS Value
 		 * @brief Checks if the instance is valid. If the type is equals vitInvalid.
 		 * @return True when the instance is valid.
 		 */
-		[[nodiscard]] inline bool isValid() const;
+		[[nodiscard]] bool isValid() const;
 
 		/**
 		 * @brief Checks if this is a numeric type (#vitFloat or #vitInteger) of instance.
 		 * @return True if the type is numerical.
 		 */
-		[[nodiscard]] inline bool isNumber() const;
+		[[nodiscard]] bool isNumber() const;
 
 		/**
 		 * @brief	Returns a floating point value of the current value if possible.
@@ -419,7 +419,7 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Gets a floating point value of the current value if possible.
 		 */
-		[[nodiscard]] inline flt_type getFloat() const;
+		[[nodiscard]] flt_type getFloat() const;
 
 		/**
 		 * @brief Gets an integer value of the current value if possible.
@@ -431,12 +431,12 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Returns an integer value of the current value if possible.
 		 */
-		[[nodiscard]] inline int_type getInteger() const;
+		[[nodiscard]] int_type getInteger() const;
 
 		/**
 		 * @brief Gets the size of the occupied space.
 		 */
-		[[nodiscard]] inline size_t getSize() const;
+		[[nodiscard]] size_t getSize() const;
 
 		/**
 		 * @brief Gets the pointer to the binary buffer if #vitBinary.
@@ -464,7 +464,7 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Easy conversion to QString.
 		 */
-		[[nodiscard]] inline QString getQString(int precision = std::numeric_limits<int>::max()) const;
+		[[nodiscard]] QString getQString(int precision = std::numeric_limits<int>::max()) const;
 
 #endif
 
@@ -491,7 +491,7 @@ class _MISC_CLASS Value
 		 * @brief Assignment operator for the QString class.
 		 * @return True when equal
 		 */
-		inline Value& operator=(const QString& v);
+		Value& operator=(const QString& v);
 
 		/**
 		 * @brief Conversion operator for QString class.
@@ -503,87 +503,87 @@ class _MISC_CLASS Value
 		/**
 		 * @brief Type operator returning a string.
 		 */
-		explicit inline operator std::string() const;
+		explicit operator std::string() const;
 
 		/**
 		 * @brief Type operator returning a boolean.
 		 */
-		explicit inline operator bool() const;
+		explicit operator bool() const;
 
 		/**
 		 * @brief Boolean invert operator.
 		 */
-		inline bool operator!() const;
+		bool operator!() const;
 
 		/**
 		 * @brief Equal operator.
 		 */
-		inline int operator==(const Value& v) const;
+		int operator==(const Value& v) const;
 
 		/**
 		 * @brief Not equal operator.
 		 */
-		inline int operator!=(const Value& v) const;
+		int operator!=(const Value& v) const;
 
 		/**
 		 * @brief Larger than operator.
 		 */
-		inline int operator>(const Value& v) const;
+		int operator>(const Value& v) const;
 
 		/**
 		 * @brief Larger than or equal operator.
 		 */
-		inline int operator>=(const Value& v) const;
+		int operator>=(const Value& v) const;
 
 		/**
 		 * @brief Less than operator.
 		 */
-		inline int operator<(const Value& v) const;
+		int operator<(const Value& v) const;
 
 		/**
 		 * @brief Less than or equal operator.
 		 */
-		inline int operator<=(const Value& v) const;
+		int operator<=(const Value& v) const;
 
 		/**
 		 * @brief Multiply by operator.
 		 */
-		inline Value& operator*=(const Value& v);
+		Value& operator*=(const Value& v);
 
 		/**
 		 * @brief Divide by operator.
 		 */
-		inline Value& operator/=(const Value& v);
+		Value& operator/=(const Value& v);
 
 		/**
 		 * @brief Modulus operator.
 		 */
-		inline Value& operator%=(const Value& v);
+		Value& operator%=(const Value& v);
 
 		/**
 		 * @brief Add operator.
 		 */
-		inline Value& operator+=(const Value& v);
+		Value& operator+=(const Value& v);
 
 		/**
 		 * @brief Subtract operator.
 		 */
-		inline Value& operator-=(const Value& v);
+		Value& operator-=(const Value& v);
 
 		/**
 		 * @brief Assignment operator that only change the contents. Calls actually #assign()
 		 */
-		inline Value& operator=(const Value& v);
+		Value& operator=(const Value& v);
 
 		/**
 		 * @brief Assignment operator that only change the contents.
 		 */
-		inline Value& operator=(const std::string& v);
+		Value& operator=(const std::string& v);
 
 		/**
 		 * @brief Assignment operator setting this instance to references the past instance pointer.
 		 */
-		inline Value& operator=(Value* v);
+		Value& operator=(Value* v);
 
 		/**
 		* @brief Calculates the offset for a given range and set point.

@@ -1,19 +1,17 @@
-#include <QApplication>
-#include <QDir>
-#include <QTimer>
-#include <misc/gen/dbgutils.h>
-#include <misc/qt/Globals.h>
-#include <misc/qt/qt_utils.h>
-#include <gii/qt/VariableListModel.h>
-#if IS_WIN
-	#include <windows.h>
-#endif
-
-#include "gii/gen/InformationBase.h"
-#include "gii/gen/Variable.h"
 #include "misc/gen/IniProfile.h"
 #include "misc/gen/string.h"
 #include "test-ini-content.h"
+#include <QApplication>
+#include <QDir>
+#include <QHeaderView>
+#include <QTimer>
+#include <gii/qt/VariableListModel.h>
+#include <misc/gen/dbgutils.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/qt_utils.h>
+#if IS_WIN
+	#include <windows.h>
+#endif
 
 namespace sf
 {
@@ -59,8 +57,35 @@ void loadFromIni(InformationTypes::Vector& rv)
 	}
 }
 
-}// namespace sf
+struct VarHandler : sf::VariableHandler
+{
 
+		void variableEventHandler(sf::Variable::EEvent event, const sf::Variable& call_var, sf::Variable& link_var, bool same_inst) override
+		{
+			switch (event)
+			{
+				case veValueChange:
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Change of '" << sf::stringf("0x%llX", link_var.getId()) << "' to: " << link_var.getCurString());
+					break;
+					/*
+
+				case veFlagsChange:
+					break;
+
+				case veDesiredId:
+					break;
+
+				case veConverted:
+					break;
+
+*/
+				default:
+					break;
+			}
+		}
+};
+
+}// namespace sf
 
 int main(int argc, char* argv[])
 {
@@ -87,19 +112,42 @@ int main(int argc, char* argv[])
 	//
 	sf::InformationTypes::Vector list;
 	sf::loadFromIni(list);
+	sf::VarHandler handler;
+	//
+	for (auto ib: list)
+	{
+		auto var = dynamic_cast<sf::Variable*>(ib);
+		if (var)
+		{
+			var->setHandler(&handler);
+		}
+	}
+
 	//
 	QDialog dlg;
+	// Set an icon on the window.
+	dlg.setWindowIcon(QIcon(":logo/ico/scanframe"));
 	settings.restoreWindowRect("Dialog", &dlg);
 	dlg.setLayout(new QVBoxLayout(&dlg));
 	auto tv = new QTreeView(&dlg);
+	//tv->setSelectionBehavior(QAbstractItemView::SelectRows);
+	tv->setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+	tv->setIndentation(0);
+	//tv->header()->hide();
 	auto vlm = new sf::VariableListModel(&dlg);
+	vlm->addVariables(list);
 	tv->setModel(vlm);
+	// Only can set the column width after the model has been set to the tree view.
+	settings.restoreTreeViewColumns("VarList", tv);
+	// Set the delegates of the model onto the view for editing.
+	vlm->setDelegates(tv);
 	tv->setAlternatingRowColors(true);
 	dlg.layout()->addWidget(tv);
 	dlg.exec();
 	//
 	settings.saveWindowRect("Dialog", &dlg);
-	// Remove all entries before uninitializing.
+	settings.saveTreeViewColumns("VarList", tv);
+	// Remove all entries before un-initializing.
 	qDeleteAll(list);
 	// Clear the list.
 	list.clear();

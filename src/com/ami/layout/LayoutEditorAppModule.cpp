@@ -127,6 +127,8 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 		dock->setObjectName("layoutObjectProperties");
 		_tvProperties = new QTreeView(dock);
+		// Remove the indentation
+		_tvProperties->setIndentation(0);
 		auto model = new ObjectPropertyModel();
 		model->setDelegates(_tvProperties);
 		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);

@@ -101,13 +101,13 @@ endforeach ()
 if (WIN32)
 	# Do not include the import libraries.
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
-		LIBRARY DESTINATION ./
+		RUNTIME DESTINATION .
+		LIBRARY DESTINATION .
 		#CONFIGURATIONS Debug
 	)
 else ()
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
+		RUNTIME DESTINATION .
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION arc
 		#CONFIGURATIONS Debug

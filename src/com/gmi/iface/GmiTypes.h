@@ -78,7 +78,7 @@ enum EAxisLocation : int
 	/**
 	 * @brief First axis used for iterations to alLAST_ENTRY.
 	 */
-	alFirst = 0,
+	alFIRST_ENTRY = 0,
 	/**
 	 * @brief Lineair and moves in [m].
 	 */

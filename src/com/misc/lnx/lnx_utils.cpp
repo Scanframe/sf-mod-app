@@ -4,6 +4,7 @@
 #include "gen/file.h"
 #include <csignal>
 #include <fcntl.h>
+#include <fstream>
 #include <sys/fsuid.h>
 #include <sys/mman.h>
 #include <sys/select.h>
@@ -20,28 +21,44 @@ pid_t gettid() noexcept
 	return (pid_t)::syscall(SYS_gettid);
 }
 
-size_t getThreadCount()
+int getThreadCount()
 {
-	char buf[512];
-	auto fd = open("/proc/self/stat", O_RDONLY);
+	// Buffer to capture the whole process status text.
+	char buffer[4096];
+	int fd;
+	int bytes_read;
+	int thread_count{-1};
+	fd = open("/proc/self/status", O_RDONLY);
+	// Check if opening the file failed.
 	if (fd == -1)
 	{
-		return 0;
+		return -1;
 	}
-	size_t count = 0;
-	if (read(fd, buf, sizeof(buf)) > 0)
+	// Read the file content into the buffer leaving a character to terminate the string.
+	bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+	// Check for failure.
+	if (bytes_read == -1)
 	{
-		char* s = strchr(buf, ')');
-		if (s != nullptr)
-		{
-			// Read 18th integer field after the command name
-			for (int field = 0; *s != ' ' || ++field < 18; s++) {
-			}
-			count = atoi(s + 1);
-		}
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Failed reading '/proc/self/status' !")
+		close(fd);
+		return -1;
 	}
+	// Null-terminate the buffer.
+	buffer[bytes_read] = '\0';
+	// Close the file.
 	close(fd);
-	return count;
+	// Search for the 'Threads:' in the line.
+	const char* needle = "Threads:";
+	char* line = strstr(buffer, needle);
+	if (line)
+	{
+		thread_count = atoi(line + strlen(needle));
+	}
+	else
+	{
+		SF_FUNC_NOTIFY(DO_DEFAULT, "'Threads:' not found in '/proc/self/status' !")
+	}
+	return thread_count;
 }
 
 bool kb_hit()
@@ -54,12 +71,12 @@ bool kb_hit()
 	/* must be done first to Initialize read_fd */
 	FD_ZERO(&read_fd);
 	/* makes select() ask if input is ready :
-	* 0 is the file descriptor for stdin
-	*/
+		* 0 is the file descriptor for stdin
+		*/
 	FD_SET(0, &read_fd);
 	/* the first parameter is the number of the
-	* largest file descriptor to check + 1.
-	*/
+		* largest file descriptor to check + 1.
+		*/
 	if (select(
 				1,
 				&read_fd,
@@ -71,9 +88,9 @@ bool kb_hit()
 		return false;
 	} /* An error occurred	*/
 	/* read_fd now holds a bitmap of files that are
-	* readable. We test the entry for the standard
-	* input (file 0).
-	*/
+		* readable. We test the entry for the standard
+		* input (file 0).
+		*/
 	if (FD_ISSET(0, &read_fd))
 	{
 		/* character pending on stdin */
@@ -376,7 +393,7 @@ bool file_write(const char* path, const void* buf, size_t sz, bool append)
 	int fd = ::open(path, O_CREAT | O_WRONLY | (append ? O_APPEND : O_TRUNC), mode);// NOLINT(hicpp-signed-bitwise)
 	if (fd == -1)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n"
+		SF_FUNC_NOTIFY(DO_DEFAULT, "'" << path << "' failed!\n"
 																	 << strerror(errno))
 		return false;
 	}
@@ -462,7 +479,7 @@ bool file_mkdir(const char* path, __mode_t mode)
 				// Create the subdirectory.
 				if (::mkdir(tmp.c_str(), mode))
 				{
-					SF_NORM_NOTIFY(DO_DEFAULT, "Creating directory '" << tmp << "' failed!\n"
+					SF_FUNC_NOTIFY(DO_DEFAULT, "Creating directory '" << tmp << "' failed!\n"
 																														<< strerror(errno))
 					// return false in case of an error.
 					return false;

@@ -18,6 +18,9 @@ class ScriptManagerListModel
 		 */
 		explicit ScriptManagerListModel(ScriptManager* manager, QObject* parent = nullptr);
 
+		/**
+		 * @brief ???
+		 */
 		void setDelegates(QAbstractItemView* view);
 
 		/**

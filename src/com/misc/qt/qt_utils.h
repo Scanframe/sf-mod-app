@@ -186,6 +186,10 @@ class _MISC_CLASS ApplicationSettings : public QObject
 		 */
 		void saveWindowRect(const QString& win_name, QWidget* window);
 
+		void restoreTreeViewColumns(const QString& name, QTreeView* tv);
+
+		void saveTreeViewColumns(const QString& name, QTreeView* tv);
+
 	private Q_SLOTS:
 
 		/**
@@ -199,6 +203,7 @@ class _MISC_CLASS ApplicationSettings : public QObject
 		 * @param watch
 		 */
 		void doStyleApplication(bool readOnly, bool watch);
+
 		/**
 		 * Save and restores the window state of the passed widget.
 		 * @param name Name of the window widget.
@@ -206,6 +211,14 @@ class _MISC_CLASS ApplicationSettings : public QObject
 		 * @param save True for saving and false for restoring.
 		 */
 		void windowState(const QString& name, QWidget* widget, bool save);
+
+		/**
+		 * Save and restores the columns width of the passed treeview.
+		 * @param name Name of the tree view.
+		 * @param tv The tree view.
+		 * @param save True for saving and false for restoring.
+		 */
+		void treeViewColumns(const QString& name, QTreeView* tv, bool save);
 
 		/**
 		 * @brief File watcher instance.

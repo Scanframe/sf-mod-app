@@ -80,7 +80,7 @@ QString AxesCoordEditPlugin::domXml() const
    <string>A frame containing an edit.</string>
   </property>
   <property name="whatsThis" >
-   <string>Special edit having name and unit label.</string>
+   <string>Axes coordinates edit control.</string>
   </property>
   <property name="idVariable">
    <uLongLong>0</uLongLong>

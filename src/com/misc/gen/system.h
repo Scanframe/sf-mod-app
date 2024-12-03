@@ -8,9 +8,10 @@ namespace sf
 {
 
 /**
- * @brief Returns the thread count from the current process.
+ * @brief Gets the thread count from the current process.
+ * @return On failure -1 else the actual thread count.
  */
-_MISC_FUNC size_t getThreadCount();
+_MISC_FUNC int getThreadCount();
 
 /**
  * @brief Gets the time this application is running.

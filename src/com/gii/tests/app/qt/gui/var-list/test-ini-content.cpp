@@ -6,7 +6,7 @@ const char* IniContent = R"(
 [GenericParamInfo]
 Entries=258
 0=0x43C01,Motion|Galil 21x2 - NIP|Version,,RAS,Version of hardware and driver,STRING,,60,,,
-1=0x43C11,Motion|Galil 21x2 - NIP|Trigger|Time Unit,s,RAS,Time in seconds that is used for the time dependant results.,FLOAT,,1e-06,0.01,1e-06,100000000
+1=0x43C11,Motion|Galil 21x2 - NIP|Trigger|Time Unit,s,AS,Time in seconds that is used for the time dependant results.,FLOAT,,1e-06,1e-06,1e-06,100000000
 2=0x43E02,Motion|Galil 21x2 - NIP|System|Firmware Revision,,RAS,Identification of revision of embedded application,STRING,,60,R1.2 2005/01/04 18:45:51,,
 3=0xE0001,Storage|Filename,F,ASP,Name for the file to be stored. This is without extension.,STRING,,256,Unknown,,
 4=0xE0009,Storage|Sub Directory,S,ASP,Sub directory name for the file to be stored.,STRING,,256,,,
@@ -18,38 +18,6 @@ Entries=258
 10=0xBF201,Uspc2100|Error,!,RASE,Errorcode,INTEGER,,1,0,0,1,No errors=0,Failure=1
 11=0xBF096,Uspc2100|Pulser|Rep.Rate,Hz,ASEW,Pulser Repetition Rate,INTEGER,,1,500,1,10000
 12=0xBF221,Uspc2100|Time Unit,s,RASE,Time unit of the digitiser sample rate.,FLOAT,,1e-08,1e-08,1e-08,1e-08
-13=0xB0110,Uspc2100|Receiver|TCG|Gain|00,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-14=0xB0100,Uspc2100|Receiver|TCG|Time|00,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,0,0,320
-15=0xB0111,Uspc2100|Receiver|TCG|Gain|01,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-16=0xB0101,Uspc2100|Receiver|TCG|Time|01,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,5,0,320
-17=0xB0112,Uspc2100|Receiver|TCG|Gain|02,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-18=0xB0102,Uspc2100|Receiver|TCG|Time|02,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,10,0,320
-19=0xB0113,Uspc2100|Receiver|TCG|Gain|03,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-20=0xB0103,Uspc2100|Receiver|TCG|Time|03,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,15,0,320
-21=0xB0114,Uspc2100|Receiver|TCG|Gain|04,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-22=0xB0104,Uspc2100|Receiver|TCG|Time|04,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,20,0,320
-23=0xB0115,Uspc2100|Receiver|TCG|Gain|05,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-24=0xB0105,Uspc2100|Receiver|TCG|Time|05,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,25,0,320
-25=0xB0116,Uspc2100|Receiver|TCG|Gain|06,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-26=0xB0106,Uspc2100|Receiver|TCG|Time|06,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,30,0,320
-27=0xB0117,Uspc2100|Receiver|TCG|Gain|07,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-28=0xB0107,Uspc2100|Receiver|TCG|Time|07,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,35,0,320
-29=0xB0118,Uspc2100|Receiver|TCG|Gain|08,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-30=0xB0108,Uspc2100|Receiver|TCG|Time|08,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,40,0,320
-31=0xB0119,Uspc2100|Receiver|TCG|Gain|09,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-32=0xB0109,Uspc2100|Receiver|TCG|Time|09,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,45,0,320
-33=0xB011A,Uspc2100|Receiver|TCG|Gain|10,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-34=0xB010A,Uspc2100|Receiver|TCG|Time|10,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,50,0,320
-35=0xB011B,Uspc2100|Receiver|TCG|Gain|11,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-36=0xB010B,Uspc2100|Receiver|TCG|Time|11,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,55,0,320
-37=0xB011C,Uspc2100|Receiver|TCG|Gain|12,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-38=0xB010C,Uspc2100|Receiver|TCG|Time|12,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,60,0,320
-39=0xB011D,Uspc2100|Receiver|TCG|Gain|13,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-40=0xB010D,Uspc2100|Receiver|TCG|Time|13,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,65,0,320
-41=0xB011E,Uspc2100|Receiver|TCG|Gain|14,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-42=0xB010E,Uspc2100|Receiver|TCG|Time|14,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,70,0,320
-43=0xB011F,Uspc2100|Receiver|TCG|Gain|15,dB,ASEW,Receiver TCG point gain.,FLOAT,,0.1,0,0,35
-44=0xB010F,Uspc2100|Receiver|TCG|Time|15,us,ASEW,Receiver TCG point time.,FLOAT,,0.05,75,0,320
 45=0xB0000,Uspc2100|A-scan|Start Mode,,ASEW,Source of start trigger for A-scan display,INTEGER,,1,0,0,2,Initial Pulse=0,Artificial=1,Interface=2
 46=0xB0001,Uspc2100|A-scan|Delay,us,ASEW,Delay in us,FLOAT,FLOAT,0.01,202.1,-10,310
 47=0xB0002,Uspc2100|A-scan|Range,us,ASEW,Range in us,FLOAT,FLOAT,0.01,20.8,1,321
@@ -130,7 +98,7 @@ Entries=258
 122=0x3052C,Eddy Current|Channel|X|Amplitude|Unit,,RAS,Eddy Current X Translates one unit of amplitude to a value.,FLOAT,,1e-99,0.00122100122100122,1e-99,1000000000000
 123=0x3052D,Eddy Current|Channel|X|Amplitude|Unit Select,,ASP,Eddy Current X Selectes Amplitude Unit.,INTEGER,,1,0,0,3,Default=0,Percentage=1,Volts=2,Meter=3
 124=0x30505,Eddy Current|Channel|X|Enable,!,ASP,Eddy Current X Result Enabler.,INTEGER,,1,1,0,1,Off=0,On=1
-125=0x30622,Eddy Current|Channel|Y|Attenuator,,AS,Eddy Current Y Input sensitivity ╠,INTEGER,,1,1,0,4,╠10.0V=0,╠5.0V=1,╠2.5mV=2,╠1.25V=3
+125=0x30622,Eddy Current|Channel|Y|Attenuator,,AS,Eddy Current Y Input sensitivity ±,INTEGER,,1,1,0,4,±10.0V=0,±5.0V=1,±2.5mV=2,±1.25V=3
 126=0x30626,Eddy Current|Channel|Y|Rectifier,!,AS,Eddy Current Y Rectifier,INTEGER,,1,0,0,3,RF=0,FULL=1,1/2 POS=2,1/2 NEG=3
 127=0x30620,Eddy Current|Channel|Y|Calibration|Invert,!,AS,Eddy Current Y Calibration inverter,INTEGER,,1,0,0,1,Non invert=0,Invert=1
 128=0x30624,Eddy Current|Channel|Y|Calibration|Offset,,AS,Eddy Current Y Calibration offset.,FLOAT,,1,0,-2.5,2.5
@@ -160,36 +128,6 @@ Entries=258
 152=0x9E707,Ultrasonic|Receiver|Gain|TCG Corr|Active,,AS,Ultrasonic receiver TCG Receiver TCG Gain Correction Scanning gain active.,INTEGER,,1,0,0,1,Off=0,On=1
 153=0x9E708,Ultrasonic|Receiver|Gain|Main,dB,ASP,Ultrasonic receiver TCG Receiver Gain value before correction with scanning gain.,FLOAT,,0.1,70,0,110
 154=0x9E701,Ultrasonic|Receiver|Gain|Target Amplitude,%,ASP,Ultrasonic receiver TCG target amplitude.,INTEGER,,1,80,0,128
-155=0x9E711,Ultrasonic|Receiver|TCG|Point  1|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 1 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-156=0x9E721,Ultrasonic|Receiver|TCG|Point  2|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 2 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-157=0x9E731,Ultrasonic|Receiver|TCG|Point  3|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 3 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-158=0x9E741,Ultrasonic|Receiver|TCG|Point  4|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 4 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-159=0x9E751,Ultrasonic|Receiver|TCG|Point  5|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 5 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-160=0x9E761,Ultrasonic|Receiver|TCG|Point  6|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 6 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-161=0x9E771,Ultrasonic|Receiver|TCG|Point  7|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 7 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-162=0x9E781,Ultrasonic|Receiver|TCG|Point  8|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 8 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-163=0x9E791,Ultrasonic|Receiver|TCG|Point  9|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 9 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-164=0x9E7A1,Ultrasonic|Receiver|TCG|Point 10|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 10 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-165=0x9E7B1,Ultrasonic|Receiver|TCG|Point 11|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 11 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-166=0x9E7C1,Ultrasonic|Receiver|TCG|Point 12|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 12 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-167=0x9E7D1,Ultrasonic|Receiver|TCG|Point 13|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 13 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-168=0x9E7E1,Ultrasonic|Receiver|TCG|Point 14|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 14 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-169=0x9E7F1,Ultrasonic|Receiver|TCG|Point 15|L-Gain,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 15 Local Gain value (before correction).,FLOAT,,0.1,0,0,35
-170=0x9E712,Ultrasonic|Receiver|TCG|Point  1|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 1 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-171=0x9E722,Ultrasonic|Receiver|TCG|Point  2|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 2 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-172=0x9E732,Ultrasonic|Receiver|TCG|Point  3|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 3 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-173=0x9E742,Ultrasonic|Receiver|TCG|Point  4|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 4 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-174=0x9E752,Ultrasonic|Receiver|TCG|Point  5|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 5 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-175=0x9E762,Ultrasonic|Receiver|TCG|Point  6|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 6 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-176=0x9E772,Ultrasonic|Receiver|TCG|Point  7|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 7 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-177=0x9E782,Ultrasonic|Receiver|TCG|Point  8|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 8 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-178=0x9E792,Ultrasonic|Receiver|TCG|Point  9|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 9 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-179=0x9E7A2,Ultrasonic|Receiver|TCG|Point 10|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 10 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-180=0x9E7B2,Ultrasonic|Receiver|TCG|Point 11|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 11 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-181=0x9E7C2,Ultrasonic|Receiver|TCG|Point 12|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 12 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-182=0x9E7D2,Ultrasonic|Receiver|TCG|Point 13|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 13 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-183=0x9E7E2,Ultrasonic|Receiver|TCG|Point 14|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 14 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
-184=0x9E7F2,Ultrasonic|Receiver|TCG|Point 15|Corr,dB,ASP,Ultrasonic receiver TCG Receiver Tcg Point 15 Local Gain Correction value.,FLOAT,,0.1,0,-12,35
 185=0x57001,Project|Binder|Medium Velocity,m/s,ASE,Sound velocity of the medium.,FLOAT,,1,3020,100,10000
 186=0x50005,Project|Project,N,RAE,Reference name of the loaded project.,STRING,,256,,,
 187=0x50006,Project|Inspection,N,RAE,Reference name of the current inspection.,STRING,,256,,,
@@ -291,70 +229,6 @@ Entries=258
 0xBF096=1
 ; 'Uspc2100|Time Unit' in 's'
 0xBF221=1e-08
-; 'Uspc2100|Receiver|TCG|Gain|00' in 'dB'
-0xB0110=0
-; 'Uspc2100|Receiver|TCG|Time|00' in 'us'
-0xB0100=2.35
-; 'Uspc2100|Receiver|TCG|Gain|01' in 'dB'
-0xB0111=0
-; 'Uspc2100|Receiver|TCG|Time|01' in 'us'
-0xB0101=17.7
-; 'Uspc2100|Receiver|TCG|Gain|02' in 'dB'
-0xB0112=0
-; 'Uspc2100|Receiver|TCG|Time|02' in 'us'
-0xB0102=0
-; 'Uspc2100|Receiver|TCG|Gain|03' in 'dB'
-0xB0113=0
-; 'Uspc2100|Receiver|TCG|Time|03' in 'us'
-0xB0103=4
-; 'Uspc2100|Receiver|TCG|Gain|04' in 'dB'
-0xB0114=0
-; 'Uspc2100|Receiver|TCG|Time|04' in 'us'
-0xB0104=0
-; 'Uspc2100|Receiver|TCG|Gain|05' in 'dB'
-0xB0115=0
-; 'Uspc2100|Receiver|TCG|Time|05' in 'us'
-0xB0105=0
-; 'Uspc2100|Receiver|TCG|Gain|06' in 'dB'
-0xB0116=0
-; 'Uspc2100|Receiver|TCG|Time|06' in 'us'
-0xB0106=0
-; 'Uspc2100|Receiver|TCG|Gain|07' in 'dB'
-0xB0117=0
-; 'Uspc2100|Receiver|TCG|Time|07' in 'us'
-0xB0107=8
-; 'Uspc2100|Receiver|TCG|Gain|08' in 'dB'
-0xB0118=0
-; 'Uspc2100|Receiver|TCG|Time|08' in 'us'
-0xB0108=0
-; 'Uspc2100|Receiver|TCG|Gain|09' in 'dB'
-0xB0119=0
-; 'Uspc2100|Receiver|TCG|Time|09' in 'us'
-0xB0109=10
-; 'Uspc2100|Receiver|TCG|Gain|10' in 'dB'
-0xB011A=0
-; 'Uspc2100|Receiver|TCG|Time|10' in 'us'
-0xB010A=0
-; 'Uspc2100|Receiver|TCG|Gain|11' in 'dB'
-0xB011B=0
-; 'Uspc2100|Receiver|TCG|Time|11' in 'us'
-0xB010B=0
-; 'Uspc2100|Receiver|TCG|Gain|12' in 'dB'
-0xB011C=0
-; 'Uspc2100|Receiver|TCG|Time|12' in 'us'
-0xB010C=0
-; 'Uspc2100|Receiver|TCG|Gain|13' in 'dB'
-0xB011D=0
-; 'Uspc2100|Receiver|TCG|Time|13' in 'us'
-0xB010D=0
-; 'Uspc2100|Receiver|TCG|Gain|14' in 'dB'
-0xB011E=0
-; 'Uspc2100|Receiver|TCG|Time|14' in 'us'
-0xB010E=0
-; 'Uspc2100|Receiver|TCG|Gain|15' in 'dB'
-0xB011F=0
-; 'Uspc2100|Receiver|TCG|Time|15' in 'us'
-0xB010F=0
 ; 'Uspc2100|A-scan|Start Mode' in ''
 0xB0000=0
 ; 'Uspc2100|A-scan|Delay' in 'us'
@@ -574,67 +448,6 @@ Entries=258
 ; 'Ultrasonic|Receiver|Gain|Main' in 'dB'
 0x9E708=70
 ; 'Ultrasonic|Receiver|Gain|Target Amplitude' in '%'
-0x9E701=80
-; 'Ultrasonic|Receiver|TCG|Point  1|L-Gain' in 'dB'
-0x9E711=0
-; 'Ultrasonic|Receiver|TCG|Point  2|L-Gain' in 'dB'
-0x9E721=0
-; 'Ultrasonic|Receiver|TCG|Point  3|L-Gain' in 'dB'
-0x9E731=0
-; 'Ultrasonic|Receiver|TCG|Point  4|L-Gain' in 'dB'
-0x9E741=0
-; 'Ultrasonic|Receiver|TCG|Point  5|L-Gain' in 'dB'
-0x9E751=0
-; 'Ultrasonic|Receiver|TCG|Point  6|L-Gain' in 'dB'
-0x9E761=0
-; 'Ultrasonic|Receiver|TCG|Point  7|L-Gain' in 'dB'
-0x9E771=0
-; 'Ultrasonic|Receiver|TCG|Point  8|L-Gain' in 'dB'
-0x9E781=0
-; 'Ultrasonic|Receiver|TCG|Point  9|L-Gain' in 'dB'
-0x9E791=0
-; 'Ultrasonic|Receiver|TCG|Point 10|L-Gain' in 'dB'
-0x9E7A1=0
-; 'Ultrasonic|Receiver|TCG|Point 11|L-Gain' in 'dB'
-0x9E7B1=0
-; 'Ultrasonic|Receiver|TCG|Point 12|L-Gain' in 'dB'
-0x9E7C1=0
-; 'Ultrasonic|Receiver|TCG|Point 13|L-Gain' in 'dB'
-0x9E7D1=0
-; 'Ultrasonic|Receiver|TCG|Point 14|L-Gain' in 'dB'
-0x9E7E1=0
-; 'Ultrasonic|Receiver|TCG|Point 15|L-Gain' in 'dB'
-0x9E7F1=0
-; 'Ultrasonic|Receiver|TCG|Point  1|Corr' in 'dB'
-0x9E712=0
-; 'Ultrasonic|Receiver|TCG|Point  2|Corr' in 'dB'
-0x9E722=0
-; 'Ultrasonic|Receiver|TCG|Point  3|Corr' in 'dB'
-0x9E732=0
-; 'Ultrasonic|Receiver|TCG|Point  4|Corr' in 'dB'
-0x9E742=0
-; 'Ultrasonic|Receiver|TCG|Point  5|Corr' in 'dB'
-0x9E752=0
-; 'Ultrasonic|Receiver|TCG|Point  6|Corr' in 'dB'
-0x9E762=0
-; 'Ultrasonic|Receiver|TCG|Point  7|Corr' in 'dB'
-0x9E772=0
-; 'Ultrasonic|Receiver|TCG|Point  8|Corr' in 'dB'
-0x9E782=0
-; 'Ultrasonic|Receiver|TCG|Point  9|Corr' in 'dB'
-0x9E792=0
-; 'Ultrasonic|Receiver|TCG|Point 10|Corr' in 'dB'
-0x9E7A2=0
-; 'Ultrasonic|Receiver|TCG|Point 11|Corr' in 'dB'
-0x9E7B2=0
-; 'Ultrasonic|Receiver|TCG|Point 12|Corr' in 'dB'
-0x9E7C2=0
-; 'Ultrasonic|Receiver|TCG|Point 13|Corr' in 'dB'
-0x9E7D2=0
-; 'Ultrasonic|Receiver|TCG|Point 14|Corr' in 'dB'
-0x9E7E2=0
-; 'Ultrasonic|Receiver|TCG|Point 15|Corr' in 'dB'
-0x9E7F2=0
 ; 'Project|Binder|Medium Velocity' in 'm/s'
 0x57001=1491
 ; 'Project|Project' in 'Normal'

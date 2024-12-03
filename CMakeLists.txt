@@ -9,8 +9,6 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT
 find_package(SfBase CONFIG REQUIRED)
 # Package needed for adding function Sf_SetToolChain().
 find_package(SfToolChain CONFIG REQUIRED)
-# Install tool chain for Linux or Windows.
-Sf_SetToolChain()
 
 # Get the Git versions from the repository of this files directory.
 Sf_GetGitTagVersion(_Versions "${CMAKE_CURRENT_LIST_DIR}")
@@ -27,6 +25,11 @@ project("qt-concepts"
 	DESCRIPTION "Scanframe Modular Application"
 	HOMEPAGE_URL "https://git.scanframe.com/shared/qt-concepts"
 )
+
+# Check if the cmake is available and include it to maybe overrule CMakePresets.json cache variables.
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/user.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/user.cmake")
+endif ()
 
 # Add top target for displaying info on the compiled targets where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
@@ -45,6 +48,10 @@ endif ()
 # Make sure builds do not wind up in the source directory.
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
+if (SF_BUILD_QT)
+	# Install/fetch the Qt Libraries when ENV{QT_VER_DIR} is not set.
+	find_package(SfQtLibrary 6.7.2 CONFIG REQUIRED)
+endif ()
 
 # Set the C++ standard to 17 for all projects to allow building with
 # Ubuntu 22.04 and the Qt provided 'libstdc++-6.dll'.

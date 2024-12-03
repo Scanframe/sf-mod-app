@@ -38,6 +38,7 @@ QStringList InformationItemModel::TreeItem::getNamePath() const
 
 namespace
 {
+
 enum
 {
 	vcName,
@@ -61,6 +62,7 @@ enum
 	rcDescription,
 	rcColumnCount
 };
+
 }// namespace
 
 InformationItemModel::InformationItemModel(Gii::SelectionMode mode, Gii::TypeId idType, QObject* parent)
@@ -333,13 +335,17 @@ Qt::ItemFlags InformationItemModel::flags(const QModelIndex& index) const
 		return QAbstractItemModel::flags(index);
 	}
 	//
-	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled;
-	//
 	auto item = static_cast<TreeItem*>(index.internalPointer());
 	//
-	if (item->_type != TreeItem::dtFolder)
+	Qt::ItemFlags flags{};
+	// Treat folder rows different from item rows.
+	if (item->_type == TreeItem::dtFolder)
 	{
-		flags |= Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
+		flags = Qt::ItemIsSelectable | Qt::ItemFlag::ItemIsEnabled;
+	}
+	else
+	{
+		flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
 		if (_mode == Gii::Multiple)
 		{
 			flags |= Qt::ItemIsUserCheckable;

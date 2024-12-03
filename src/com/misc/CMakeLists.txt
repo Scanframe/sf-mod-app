@@ -77,8 +77,6 @@ set(SOURCES
 
 if (NOT WIN32)
 
-	find_package(OpenSSL REQUIRED)
-
 	set(SOURCES_LNX
 		lnx/lnx_utils.h lnx/lnx_utils.cpp
 		lnx/EventCounter.h lnx/EventCounter.cpp

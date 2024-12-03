@@ -21,13 +21,21 @@ class _MISC_CLASS CommonItemDelegate
 		typedef QList<QPair<QVariant, QString>> OptionsType;
 		//
 		/**
-		 * @brief extension on the Qt::ItemDataRole enumerate for retrieving the type of editor from the model.
+		 * @brief Extension on the Qt::ItemDataRole enumerate.
 		 */
-		static constexpr int TypeRole = Qt::ItemDataRole::UserRole;
-		/**
-		 * @brief extension on the Qt::ItemDataRole enumerate for retrieving the options list.
-		 */
-		static constexpr int OptionsRole = Qt::ItemDataRole::UserRole + 1;
+		enum EItemDataRole : int
+		{
+			/** Type of editor from the model. */
+			TypeRole = Qt::ItemDataRole::UserRole,
+			/** For retrieving the options list for a dropdown edit. */
+			OptionsRole,
+			/** Minimum for scalar value e.g. a spin box. */
+			MinimumRole,
+			/** Maximum for scalar value e.g. a spin box. */
+			MaximumRole,
+			/** Increment for scalar value e.g. a spin box. */
+			IncrementRole,
+		};
 
 		/**
 		 * @brief Possible inline editors for a column in the list model.
@@ -43,6 +51,7 @@ class _MISC_CLASS CommonItemDelegate
 			etDropDownFlags,
 			etShortcut,
 			etSpinBox,
+			etDoubleSpinBox,
 			etULongLong,
 			etColorEdit,
 			etStringList

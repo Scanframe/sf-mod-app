@@ -6,183 +6,210 @@ namespace sf::gmi
 {
 
 AxesCoord::AxesCoord(const AxesCoord& ac)
-	: FMap(ac.FMap)
+	: _map(ac._map)
 {
-	std::memcpy(FData, ac.FData, sizeof(FData));
+	std::memcpy(_data, ac._data, sizeof(_data));
 }
 
 AxesCoord& AxesCoord::operator=(const AxesCoord& ac)
 {
-	FMap = ac.FMap;
-	std::memcpy(&FData, &ac.FData, sizeof(FData));
+	_map = ac._map;
+	std::memcpy(&_data, &ac._data, sizeof(_data));
 	return *this;
 }
 
-void AxesCoord::Clear()
+void AxesCoord::clear()
 {
-	FMap._bits = 0;
-	memset(&FData, 0, sizeof(FData));
+	_map._bits = 0;
+	memset(&_data, 0, sizeof(_data));
 }
 
 AxesCoord::AxesCoord()
 {
-	Clear();
+	clear();
 }
 
 AxesCoord::AxesCoord(std::string s)
 {
-	Clear();
-	SetString(s);
+	clear();
+	setString(s);
 }
 
-double& AxesCoord::Value(unsigned int axis_loc)
+double& AxesCoord::getValue(int axis_loc)
 {
-	return FData[axis_loc % alLAST_ENTRY];
+	return _data[std::abs(axis_loc) % alLAST_ENTRY];
 }
 
-double AxesCoord::Value(unsigned int axis_loc) const
+double AxesCoord::getValue(int axis_loc) const
 {
-	return FData[axis_loc % alLAST_ENTRY];
+	return _data[std::abs(axis_loc) % alLAST_ENTRY];
 }
 
 AxisValue AxesCoord::operator[](size_t al) const
 {
-	return FMap.contains(al) ? AxisValue(EAxisLocation(al), FData[al]) : AxisValue();
+	return _map.contains(al) ? AxisValue(EAxisLocation(al), _data[al]) : AxisValue();
 }
 
-bool AxesCoord::IsSet(int axis_loc) const
+bool AxesCoord::isSet(int axis_loc) const
 {
-	return FMap.contains(axis_loc);
+	return _map.contains(axis_loc);
 }
 
-void AxesCoord::Set(unsigned int axis_loc, double value)
+void AxesCoord::set(int axis_loc, double value)
 {
-	FMap << axis_loc;
-	FData[axis_loc] = value;
+	if (axis_loc < alFIRST_ENTRY || axis_loc >= alLAST_ENTRY)
+	{
+		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() Axis location out of scope!");
+	}
+	_map << axis_loc;
+	_data[axis_loc] = value;
 }
 
-void AxesCoord::Unset(int axis_loc)
+void AxesCoord::unset(int axis_loc)
 {
-	FMap >> axis_loc;
+	if (axis_loc < alFIRST_ENTRY || axis_loc >= alLAST_ENTRY)
+	{
+		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() Axis location out of scope!");
+	}
+	_map >> axis_loc;
 }
 
 AxesCoord& AxesCoord::operator<<(const AxisValue& av)
 {
-	FMap << av._location;
-	if (av._location >= 0)
-		FData[av._location] = av._value;
+	if (av._location >= alFIRST_ENTRY && av._location < alLAST_ENTRY)
+	{
+		_map << av._location;
+		_data[av._location] = av._value;
+	}
 	return *this;
 }
 
 AxesCoord& AxesCoord::operator=(const AxisValue& av)
 {
-	FMap << av._location;
-	if (av._location >= 0)
+	if (av._location >= alFIRST_ENTRY && av._location < alLAST_ENTRY)
 	{
-		FData[av._location] = av._value;
+		_map << av._location;
+		_data[av._location] = av._value;
 	}
 	return *this;
 }
 
 AxesCoord& AxesCoord::operator-=(const AxisValue& av)
 {
-	if (FMap.contains(av._location))
+	if (_map.contains(av._location))
 	{
-		FData[av._location] -= av._value;
+		_data[av._location] -= av._value;
 	}
 	return *this;
 }
 
 AxesCoord& AxesCoord::operator+=(const AxisValue& av)
 {
-	if (FMap.contains(av._location))
+	if (_map.contains(av._location))
 	{
-		FData[av._location] += av._value;
+		_data[av._location] += av._value;
 	}
 	return *this;
 }
 
-AxesCoord& AxesCoord::operator>>(unsigned int axis_loc)
+AxesCoord& AxesCoord::operator>>(int axis_loc)
 {
-	FMap >> axis_loc;
-	if (axis_loc >= 0)
+	if (axis_loc < alFIRST_ENTRY || axis_loc >= alLAST_ENTRY)
 	{
-		FData[axis_loc] = 0.0;
+		throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() Axis location out of scope!");
 	}
+	_map >> axis_loc;
+	_data[axis_loc] = 0.0;
 	return *this;
 }
 
 bool AxesCoord::operator==(const AxesCoord& ac) const
 {
-	int cmp = std::memcmp(this, &ac, sizeof(ac));
-	return cmp ? false : true;
+	return std::memcmp(this, &ac, sizeof(ac)) == 0;
 }
 
 bool AxesCoord::operator!=(const AxesCoord& ac) const
 {
-	int cmp = std::memcmp(this, &ac, sizeof(ac));
-	return cmp ? true : false;
+	return std::memcmp(this, &ac, sizeof(ac)) != 0;
 }
 
-int AxesCoord::GetMap() const
+int AxesCoord::getMap() const
 {
-	return FMap._bits;
+	return _map._bits;
 }
 
-void AxesCoord::SetMap(int map)
+void AxesCoord::setMap(int map)
 {
-	FMap._bits = map;
+	_map._bits = map;
 }
 
-AxesCoord& AxesCoord::Offset(const Vector3D& ofs)
+AxesCoord& AxesCoord::offset(const Vector3D& ofs)
 {
-	if (IsSet(alX))
-		Value(alX) += ofs.x();
-	if (IsSet(alY))
-		Value(alY) += ofs.y();
-	if (IsSet(alZ))
-		Value(alZ) += ofs.z();
+	if (isSet(alX))
+	{
+		getValue(alX) += ofs.x();
+	}
+	if (isSet(alY))
+	{
+		getValue(alY) += ofs.y();
+	}
+	if (isSet(alZ))
+	{
+		getValue(alZ) += ofs.z();
+	}
 	return *this;
 }
 
-Vector3D AxesCoord::GetVector() const
+Vector3D AxesCoord::getVector() const
 {
 	Vector3D rv;
-	if (IsSet(alX))
-		rv.x() = Value(alX);
-	if (IsSet(alY))
-		rv.y() = Value(alY);
-	if (IsSet(alZ))
-		rv.z() = Value(alZ);
+	if (isSet(alX))
+	{
+		rv.x() = getValue(alX);
+	}
+	if (isSet(alY))
+	{
+		rv.y() = getValue(alY);
+	}
+	if (isSet(alZ))
+	{
+		rv.z() = getValue(alZ);
+	}
 	return rv;
 }
 
-AxesCoord& AxesCoord::SetVector(const Vector3D& vect)
+AxesCoord& AxesCoord::setVector(const Vector3D& vect)
 {
-	if (IsSet(alX))
-		Value(alX) = vect.x();
-	if (IsSet(alY))
-		Value(alY) = vect.y();
-	if (IsSet(alZ))
-		Value(alZ) = vect.z();
+	if (isSet(alX))
+	{
+		getValue(alX) = vect.x();
+	}
+	if (isSet(alY))
+	{
+		getValue(alY) = vect.y();
+	}
+	if (isSet(alZ))
+	{
+		getValue(alZ) = vect.z();
+	}
 	return *this;
 }
 
-AxesCoord AxesCoord::OffsetBy(const Vector3D& ofs) const
+AxesCoord AxesCoord::offsetBy(const Vector3D& ofs) const
 {
 	AxesCoord ac = *this;
-	return ac.Offset(ofs);
+	return ac.offset(ofs);
 }
 
 AxesCoord& AxesCoord::operator|=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
-	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
+	for (int j = gmi::alFIRST_ENTRY; j < gmi::alLAST_ENTRY; j++)
 	{
 		// When the axis is not yet set, set it if a value is available.
-		if (ac.FMap.contains(j) && !FMap.contains(j))
+		if (ac._map.contains(j) && !_map.contains(j))
 		{
-			Set(j, ac.Value(j));
+			set(j, ac.getValue(j));
 		}
 	}
 	return *this;
@@ -191,12 +218,12 @@ AxesCoord& AxesCoord::operator|=(const AxesCoord& ac)
 AxesCoord& AxesCoord::operator&=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
-	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
+	for (int j = gmi::alFIRST_ENTRY; j < gmi::alLAST_ENTRY; j++)
 	{
 		// When the axis is not yet set, set it if a value is available.
-		if (ac.FMap.contains(j) && FMap.contains(j))
+		if (ac._map.contains(j) && _map.contains(j))
 		{
-			Set(j, ac.Value(j));
+			set(j, ac.getValue(j));
 		}
 	}
 	return *this;
@@ -205,12 +232,12 @@ AxesCoord& AxesCoord::operator&=(const AxesCoord& ac)
 AxesCoord& AxesCoord::operator-=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
-	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
+	for (int j = gmi::alFIRST_ENTRY; j < gmi::alLAST_ENTRY; j++)
 	{
 		// When the axis is not yet set, set it if a value is available.
-		if (FMap.contains(j) && ac.FMap.contains(j))
+		if (_map.contains(j) && ac._map.contains(j))
 		{
-			Set(j, Value(j) - ac.Value(j));
+			set(j, getValue(j) - ac.getValue(j));
 		}
 	}
 	return *this;
@@ -219,55 +246,58 @@ AxesCoord& AxesCoord::operator-=(const AxesCoord& ac)
 AxesCoord& AxesCoord::operator+=(const AxesCoord& ac)
 {
 	// Iterate through the axis values.
-	for (unsigned int j = gmi::alFirst; j < gmi::alLAST_ENTRY; j++)
+	for (int j = gmi::alFIRST_ENTRY; j < gmi::alLAST_ENTRY; j++)
 	{
 		// When the axis is not yet set, set it if a value is available.
-		if (FMap.contains(j) && ac.FMap.contains(j))
+		if (_map.contains(j) && ac._map.contains(j))
 		{
-			Set(j, Value(j) + ac.Value(j));
+			set(j, getValue(j) + ac.getValue(j));
 		}
 	}
 	return *this;
 }
 
-AxesCoord::ECompare AxesCoord::Compare(const AxesCoord& ac, const AxesCoord& tolerance) const
+AxesCoord::ECompare AxesCoord::compare(const AxesCoord& ac, const AxesCoord& tolerance) const
 {
-	return Compare(ac, tolerance, AxisLocations() << alC << alD);
+	return compare(ac, tolerance, AxisLocations() << alC << alD);
 }
 
-AxesCoord::ECompare AxesCoord::Compare(const AxesCoord& ac, const AxesCoord& tolerances, const AxisLocations rad_unlimited) const
+AxesCoord::ECompare
+AxesCoord::compare(const AxesCoord& ac, const AxesCoord& tolerances, const AxisLocations rad_unlimited) const
 {
 	TSet<int> cmp;
 	// Get the mapped values which can be compared.
 	// Bits must be set in both maps.
-	cmp._bits = FMap._bits & ac.FMap._bits;
+	cmp._bits = _map._bits & ac._map._bits;
 	//
-	for (int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{
 		if (cmp.has(i))
 		{
 			// Get the maximum difference for the next compare of values.
-			double tolerance = tolerances.FMap.has(i) ? tolerances.FData[i] : 0.0;
+			double tolerance = tolerances._map.has(i) ? tolerances._data[i] : 0.0;
 			// Do a fuzzy compare.
-			if (compareValue(FData[i], ac.FData[i], tolerance, rad_unlimited.has((EAxisLocation) i)))
+			if (compareValue(_data[i], ac._data[i], tolerance, rad_unlimited.has((EAxisLocation) i)))
+			{
 				// Return immediately when the first value is not equal.
 				return crNOT_EQUAL;
+			}
 		}
 	}
 	// If both maps are equal the two instances are the same.
-	if (FMap._bits == ac.FMap._bits)
+	if (_map._bits == ac._map._bits)
 	{
 		return crEQUAL;
 	}
 	// Test if all the equal tested values were all the values in this instance.
 	// Strip the tested bits from this instance map.
-	if ((FMap._bits & ~cmp._bits) == 0)
+	if ((_map._bits & ~cmp._bits) == 0)
 	// All of this instance values where equal compared to the other.
 	{
 		return crTHIS_EQUAL;
 	}
 	// Strip the tested bits from other instance map.
-	if ((ac.FMap._bits & ~cmp._bits) == 0)
+	if ((ac._map._bits & ~cmp._bits) == 0)
 	{
 		return crOTHER_EQUAL;
 	}
@@ -275,32 +305,36 @@ AxesCoord::ECompare AxesCoord::Compare(const AxesCoord& ac, const AxesCoord& tol
 	return crEQUAL;
 }
 
-std::string AxesCoord::GetString() const
+std::string AxesCoord::getString() const
 {
 	int prec = 10;
 	std::string s;
 	char buf[80];
-	for (int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{
-		if (FMap.has(i))
+		if (_map.has(i))
 		{
 			//int len = sprintf(buf, "%+.*le", prec, FData[i]);
-			int len = sprintf(buf, "%.*lf", prec, FData[i]);
+			int len = sprintf(buf, "%.*lf", prec, _data[i]);
 			// Strip trailing zero's.
 			while (len > 1 && buf[--len] == '0')
+			{
 				buf[len] = 0;
+			}
 			// Append the string.
 			s += buf;
 		}
 		// Append a comma.
 		if (i < (alLAST_ENTRY - 1))
+		{
 			s += ',';
+		}
 	}
 	// Return the resulting string.
 	return s;
 }
 
-bool AxesCoord::SetString(std::string str)
+bool AxesCoord::setString(std::string str)
 {
 	bool rv = true;
 	// Split the string in using a csv format.
@@ -320,19 +354,21 @@ bool AxesCoord::SetString(std::string str)
 		{
 			size_t idx;
 			// Convert the string to a value.
-			FData[i] = sf::toNumber<double>(getField(i), &idx);
+			_data[i] = sf::toNumber<double>(getField(i), &idx);
 			// Set the usage bitmap.
-			FMap.set(i);
+			_map.set(i);
 			// Check if there was a conversion error set the return value to false.
 			if (idx != getField(i).length())
+			{
 				rv = false;
+			}
 		}
 		else
 		{
 			// Unset the usage bitmap.
-			FMap.unset(i);
+			_map.unset(i);
 			// Clear the field
-			FData[i] = 0.0;
+			_data[i] = 0.0;
 		}
 	}
 	return rv;
@@ -345,7 +381,7 @@ namespace sf
 
 std::ostream& operator<<(std::ostream& os, const gmi::AxesCoord& ac)
 {
-	return (os << '(' << ac.GetString() << ')');
+	return (os << '(' << ac.getString() << ')');
 }
 
 std::istream& operator>>(std::istream& is, gmi::AxesCoord& ac)
@@ -358,7 +394,9 @@ std::istream& operator>>(std::istream& is, gmi::AxesCoord& ac)
 	//  ')'
 	is >> c;
 	if (c == ')')
-		ac.SetString(s);
+	{
+		ac.setString(s);
+	}
 	return is;
 }
 

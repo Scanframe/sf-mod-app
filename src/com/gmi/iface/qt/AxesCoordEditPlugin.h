@@ -16,7 +16,7 @@ class AxesCoordEditPlugin : public QObject
 
 	public:
 		/**
-		 * @brief Constructor.
+		 * @brief Qt object constructor.
 		 */
 		explicit AxesCoordEditPlugin(QObject* parent = nullptr);
 

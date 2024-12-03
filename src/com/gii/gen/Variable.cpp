@@ -140,7 +140,7 @@ void Variable::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 {
 	if (VariableStatic::_globalActive)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
 		// Do not free allocated data before end of global event remove
 		VariableStatic::_deleteWaitCache->add(p);
 	}
@@ -1579,7 +1579,7 @@ Value Variable::convert(const Value& value, bool to_org) const
 		// Abort the operation when conversion fails.
 		if (!ret_val.setType(Value::vitFloat))
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Convert" << ret_val << " for passed value failed!")
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Convertion for value " << ret_val << " failed!")
 			return value;
 		}
 		if (to_org)

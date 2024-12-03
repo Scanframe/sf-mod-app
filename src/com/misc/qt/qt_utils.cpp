@@ -1,7 +1,4 @@
 #include "qt_utils.h"
-#if IS_WIN
-	#include "../win/win_utils.h"
-#endif
 #include "../gen/dbgutils.h"
 #include <QApplication>
 #include <QDir>
@@ -9,12 +6,16 @@
 #include <QFileSystemWatcher>
 #include <QFont>
 #include <QFormLayout>
+#include <QHeaderView>
 #include <QLayout>
 #include <QMetaEnum>
 #include <QSettings>
 #include <QStyle>
 #include <QTimer>
 #include <QWidget>
+#if IS_WIN
+	#include "../win/win_utils.h"
+#endif
 
 namespace sf
 {
@@ -121,8 +122,8 @@ QListView, QTreeView
 }
 
 ApplicationSettings::ApplicationSettings(QObject* parent)
-		: QObject(parent)
-		, _watcher(new QFileSystemWatcher(this))
+	: QObject(parent)
+	, _watcher(new QFileSystemWatcher(this))
 {
 	connect(_watcher, &QFileSystemWatcher::fileChanged, this, &ApplicationSettings::onFileChance);
 }
@@ -291,22 +292,19 @@ void ApplicationSettings::doStyleApplication(bool readOnly, bool watch)
 
 void ApplicationSettings::restoreWindowRect(const QString& win_name, QWidget* window)
 {
-	if (window)
-	{
-		windowState(win_name, window, false);
-	}
+	windowState(win_name, window, false);
 }
 
 void ApplicationSettings::saveWindowRect(const QString& win_name, QWidget* window)
 {
-	if (window)
-	{
-		windowState(win_name, window, true);
-	}
+	windowState(win_name, window, true);
 }
 
 void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool save)
 {
+	// No widget set bailout.
+	if (!widget)
+		return;
 	// Form the ini's directory to relate too.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// Create the settings instance.
@@ -333,13 +331,53 @@ void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool
 	settings.endGroup();
 }
 
+void ApplicationSettings::treeViewColumns(const QString& name, QTreeView* tv, bool save)
+{
+	// No tree view set bailout.
+	if (!tv)
+		return;
+	// Form the ini's directory to relate too.
+	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
+	// Create the settings instance.
+	QSettings settings(_fileInfo.absoluteFilePath(), QSettings::IniFormat);
+	// Start the ini section.
+	settings.beginGroup("WindowState");
+	auto* header = tv->header();
+	for (int i = 0; i < header->count(); ++i)
+	{
+		auto key = QString("%1-Col%2Width").arg(name).arg(i);
+		if (save)
+			settings.setValue(key, header->sectionSize(i));
+		else
+		{
+			auto width = settings.value(key);
+			if (width.isValid())
+			{
+				header->resizeSection(i, width.toInt());
+			}
+		}
+	}
+	settings.endGroup();
+}
+
+void ApplicationSettings::restoreTreeViewColumns(const QString& name, QTreeView* tv)
+{
+	treeViewColumns(name, tv, false);
+}
+
+void ApplicationSettings::saveTreeViewColumns(const QString& name, QTreeView* tv)
+{
+	treeViewColumns(name, tv, true);
+}
+
 QMetaObject::Connection connectByName(
 	const QWidget* widget,
 	const QString& sender_name,
 	const char* signal_name,
 	const QObject* receiver,
 	const char* method_name,
-	Qt::ConnectionType ct)
+	Qt::ConnectionType ct
+)
 {
 	auto sender = widget->findChild<QObject*>(sender_name);
 	if (sender)

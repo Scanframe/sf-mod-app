@@ -482,14 +482,18 @@ template<typename T>
 typename TVector<T>::size_type TVector<T>::add(const T& t)
 {
 	// Insert item at the end.
-	return std::distance(base_type::begin(), base_type::insert(base_type::end(), t));
+	base_type::push_back(t);
+	// Index it the size minus one.
+	return base_type::size() - 1;
 }
 
 template<typename T>
 typename TVector<T>::size_type TVector<T>::add(T&& t)
 {
 	// Insert item at the end.
-	return std::distance(base_type::begin(), base_type::insert(base_type::end(), t));
+	base_type::push_back(t);
+	// Index it the size minus one.
+	return base_type::size() - 1;
 }
 
 template<typename T>
@@ -511,8 +515,11 @@ TVector<T>& TVector<T>::append(T&& t)
 template<typename T>
 typename TVector<T>::size_type TVector<T>::add(const TVector<T>& tv)
 {
-	// Insert item at the end.
-	return std::distance(base_type::begin(), base_type::insert(base_type::end(), tv.begin(), tv.end()));
+	// The insertion index is the current size.
+	auto index = base_type::size();
+	// Insert items at the end.
+	base_type::insert(base_type::end(), tv.begin(), tv.end());
+	return index;
 }
 
 template<typename T>

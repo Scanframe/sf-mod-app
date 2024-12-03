@@ -111,10 +111,12 @@ int main(int argc, char* argv[])
 
 	sf::InformationTypes::Vector list;
 	sf::loadFromIni(list);
-	// Just any argument will trigger a different.
+	// Just any argument will trigger a single select dialog.
 	if (argc > 1)
 	{
 		QDialog dlg;
+		// Set an icon on the window.
+		dlg.setWindowIcon(QIcon(":logo/ico/scanframe"));
 		appSettings.restoreWindowRect("Dialog", &dlg);
 		dlg.setLayout(new QVBoxLayout(&dlg));
 		auto edit = new sf::InformationIdEdit(&dlg);

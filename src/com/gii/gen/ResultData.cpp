@@ -42,7 +42,7 @@ void ResultData::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 {
 	if (ResultDataStatic::_globalActive)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Warning: Deleting instance during an event!")
 		// Do not free allocated data before end of global event remove
 		ResultDataStatic::_deleteWaitCache.add(p);
 	}
@@ -1469,12 +1469,12 @@ bool ResultData::create(std::istream& is, PtrVector& list, int& err_line)
 
 		if (is.fail())
 		{
-			SF_NORM_NOTIFY(DO_DEFAULT, "Input stream failure!")
+			SF_FUNC_NOTIFY(DO_DEFAULT, "Input stream failure!")
 			return false;
 		}
 		if (is.bad())
 		{
-			SF_NORM_NOTIFY(DO_DEFAULT, "Bad input stream!")
+			SF_FUNC_NOTIFY(DO_DEFAULT, "Bad input stream!")
 			return false;
 		}
 

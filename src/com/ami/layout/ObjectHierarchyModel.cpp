@@ -1,17 +1,17 @@
-#include <utility>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/Resource.h>
-#include <misc/qt/ObjectExtension.h>
-#include <QSplitter>
 #include "ObjectHierarchyModel.h"
+#include <QSplitter>
+#include <misc/qt/ObjectExtension.h>
+#include <misc/qt/Resource.h>
+#include <misc/qt/qt_utils.h>
+#include <utility>
 
 namespace sf
 {
 
 ObjectHierarchyModel::TreeItem::TreeItem(ObjectHierarchyModel* owner, TreeItem* parent, QObject* obj)
-	:_parentItem(parent)
-	 , _object(obj)
-	 , _owner(owner)
+	: _parentItem(parent)
+	, _object(obj)
+	, _owner(owner)
 {
 	// Add the item to the owners items.
 	_owner->_items.append(this);
@@ -56,11 +56,11 @@ enum
 	cLayout = vcColumnCount
 };
 
-}
+}// namespace
 
 ObjectHierarchyModel::ObjectHierarchyModel(bool multi, QObject* parent)
-	:QAbstractItemModel(parent)
-	 , _multi(multi)
+	: QAbstractItemModel(parent)
+	, _multi(multi)
 {
 	_rootItem = new TreeItem(this, nullptr, nullptr);
 	_iconForm = Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Icon::Form), QPalette::ColorRole::Mid);
@@ -100,7 +100,7 @@ QModelIndex ObjectHierarchyModel::parent(const QModelIndex& child) const
 		return {};
 	}
 	auto row = childItem->_parentItem->_parentItem->_childItems.indexOf(childItem->_parentItem);
-	return createIndex((int)row, 0, parentItem);
+	return createIndex((int) row, 0, parentItem);
 }
 
 QVariant ObjectHierarchyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -172,8 +172,7 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 					}
 					return item->_object->objectName();
 
-				case vcType:
-				{
+				case vcType: {
 					if (!item->_object)
 					{
 						return {};
@@ -232,7 +231,7 @@ Qt::ItemFlags ObjectHierarchyModel::flags(const QModelIndex& index) const
 	return flags;
 }
 
-void ObjectHierarchyModel::addChild(QObject* obj, TreeItem* parent) // NOLINT(misc-no-recursion)
+void ObjectHierarchyModel::addChild(QObject* obj, TreeItem* parent)// NOLINT(misc-no-recursion)
 {
 	// TODO: Ignoring "QSplitterHandle" is not structural coded.
 	// When not an extension derived class.
@@ -329,8 +328,7 @@ void ObjectHierarchyModel::removeItem(const QModelIndex& index)
 
 QModelIndex ObjectHierarchyModel::getObjectIndex(QObject* obj)
 {
-	auto it = std::find_if(_items.begin(), _items.end(), [obj](TreeItem* item)
-	{
+	auto it = std::find_if(_items.begin(), _items.end(), [obj](TreeItem* item) {
 		return item->_object == obj;
 	});
 	// When found.
@@ -341,4 +339,4 @@ QModelIndex ObjectHierarchyModel::getObjectIndex(QObject* obj)
 	return {};
 }
 
-}
+}// namespace sf

@@ -1,31 +1,17 @@
 /**
 	@brief contains debugging macro's that are defined when define DEBUG_LEVEL is defined as non-zero.
 
-	Introduces macro's:
-	===================
-
-	Defines to throw an exception:
-	_NORM_THROW(a)
-	_CLASS_THROW(a)
-	_RTTI_THROW(a)
-	_COND_NORM_THROW(p, a)
-	_COND_CLASS_THROW(p, a)
-	_COND_RTTI_THROW(p, a)
+	Introduces debugging/logging macro's:
+	====================================
 
 	Defines that change on define _DEBUG_LEVEL:
-	_NORM_NOTIFY(flags, text)
-	_CLASS_NOTIFY(flags, text)
-	_RTTI_NOTIFY(flags, text)
-	_COND_NORM_NOTIFY(cond, flags, text)
-	_COND_CLASS_NOTIFY(cond, flags, text)
-	_COND_RTTI_NOTIFY(cond, flags, text)
-
-	Define that are fixed: (Can be removed when _DEBUG_LEVEL is -1)
-	----------------------
-	_NORM_NOTIFY(flags, text)
-	_COND_NOTIFY(cond, flags, text)
-	_CLASS_NOTIFY(flags, text)
-	_COND_CLASS_NOTIFY(cond, flags, text)
+	------------------------------------------
+	NORM_NOTIFY(flags, text)
+	FUNC_NOTIFY(flags, text)
+	RTTI_NOTIFY(flags, text)
+	COND_NORM_NOTIFY(cond, flags, text)
+	COND_FUNC_NOTIFY(cond, flags, text)
+	COND_RTTI_NOTIFY(cond, flags, text)
 
 	Where 'flags' can be one or a combination of the following flags:
 	----------------------------------------------------------------
@@ -38,9 +24,6 @@
 	DO_DBGSTR   Notify through function OutputDebugString.
 	DO_DBGBRK   Call debug break by raising SIGTRAP.
 
-	Remarks
-	-------
-	CLASS_?? notifications use the classes nameOf() function.
 */
 
 #pragma once
@@ -256,10 +239,18 @@ class _MISC_CLASS debug_ostream : public std::ostringstream
 		{                            \
 			sf::debug_ostream(f) << a; \
 		}
-	#define SF_CLASS_NOTIFY(f, a)                                                           \
-		{                                                                                     \
-			sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a; \
-		}
+// Only Clang and GNU have __PRETTY_FUNCTION__ defined.
+	#if defined(__clang__) || defined(__GNUC__)
+		#define SF_FUNC_NOTIFY(f, a)                                 \
+			{                                                          \
+				sf::debug_ostream(f) << __PRETTY_FUNCTION__ << ' ' << a; \
+			}
+	#else
+		#define SF_FUNC_NOTIFY(f, a)                            \
+			{                                                     \
+				sf::debug_ostream(f) << __FUNCTION__ << "() " << a; \
+			}
+	#endif
 	#define SF_RTTI_NOTIFY(f, a)                                                                    \
 		{                                                                                             \
 			sf::debug_ostream(f) << SF_RTTI_TYPENAME << "::" << __FUNCTION__ << SF_CLS_SEP << " " << a; \
@@ -270,11 +261,11 @@ class _MISC_CLASS debug_ostream : public std::ostringstream
 				SF_NORM_NOTIFY(f, a);          \
 			}                                \
 		}
-	#define SF_COND_CLASS_NOTIFY(p, f, a) \
-		{                                   \
-			if (p) {                          \
-				SF_CLASS_NOTIFY(f, a);          \
-			}                                 \
+	#define SF_COND_FUNC_NOTIFY(p, f, a) \
+		{                                  \
+			if (p) {                         \
+				SF_FUNC_NOTIFY(f, a);          \
+			}                                \
 		}
 	#define SF_COND_RTTI_NOTIFY(p, f, a) \
 		{                                  \
@@ -295,13 +286,21 @@ class _MISC_CLASS debug_ostream : public std::ostringstream
 		{                                                                                                     \
 			sf::debug_ostream(f) << __FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
 		}
-	#define _CLASS_NOTIFY(f, a)                                                                                                             \
-		{                                                                                                                                     \
-			sf::debug_ostream(f) << nameOf() << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
-		}
-	#define _RTTI_NOTIFY(f, a)                                                                                                                    \
-		{                                                                                                                                           \
-			sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << _CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+// Only Clang and GNU have __PRETTY_FUNCTION__ defined.
+	#if defined(__clang__) || defined(__GNUC__)
+		#define SF_FUNC_NOTIFY(f, a)                                                                                   \
+			{                                                                                                            \
+				sf::debug_ostream(f) << __PRETTY_FUNCTION__ << ' ' << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+			}
+	#else
+		#define SF_FUNC_NOTIFY(f, a)                                                                              \
+			{                                                                                                       \
+				sf::debug_ostream(f) << __FUNCTION__ << "() " << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
+			}
+	#endif
+	#define _RTTI_NOTIFY(f, a)                                                                                                                      \
+		{                                                                                                                                             \
+			sf::debug_ostream(f) << _RTTI_TYPENAME << "::" << __FUNCTION__ << ' ' << SF_CLS_SEP << __FILENAME__ << ':' << __LINE__ << '@' << '\t' << a; \
 		}
 	#define _COND_NORM_NOTIFY(p, f, a) \
 		{                                \
@@ -309,11 +308,11 @@ class _MISC_CLASS debug_ostream : public std::ostringstream
 				_NORM_NOTIFY(f, a);          \
 			}                              \
 		}
-	#define _COND_CLASS_NOTIFY(p, f, a) \
-		{                                 \
-			if (p) {                        \
-				_CLASS_NOTIFY(f, a);          \
-			}                               \
+	#define _COND_FUNC_NOTIFY(p, f, a) \
+		{                                \
+			if (p) {                       \
+				_FUNC_NOTIFY(f, a);          \
+			}                              \
 		}
 	#define _COND_RTTI_NOTIFY(p, f, a) \
 		{                                \
@@ -332,13 +331,13 @@ class _MISC_CLASS debug_ostream : public std::ostringstream
 
 	#define _NORM_NOTIFY(f, a) \
 		{}
-	#define _CLASS_NOTIFY(f, a) \
+	#define _FUNC_NOTIFY(f, a) \
 		{}
 	#define _RTTI_NOTIFY(f, a) \
 		{}
 	#define _COND_NOTIFY(p, f, a) \
 		{}
-	#define _COND_CLASS_NOTIFY(p, f, a) \
+	#define _COND_FUNC_NOTIFY(p, f, a) \
 		{}
 	#define _COND_RTTI_NOTIFY(p, f, a) \
 		{}

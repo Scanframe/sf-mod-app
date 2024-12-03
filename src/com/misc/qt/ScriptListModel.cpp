@@ -1,6 +1,6 @@
-#include <QObject>
 #include "ScriptListModel.h"
 #include "../gen/ScriptInterpreter_p.h"
+#include <QObject>
 
 namespace sf
 {
@@ -27,10 +27,10 @@ enum EVariableColumn
 	vcMaxColumns
 };
 
-}
+}// namespace
 
 ScriptListModel::ScriptListModel(QObject* parent)
-	:QAbstractListModel(parent)
+	: QAbstractListModel(parent)
 {
 }
 
@@ -42,8 +42,8 @@ void ScriptListModel::setInterpreter(ScriptInterpreter* interpreter, ScriptListM
 
 void ScriptListModel::refresh()
 {
-//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-//	endRemoveRows();
+	//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+	//	endRemoveRows();
 	beginResetModel();
 	endResetModel();
 	int sz = 0;
@@ -177,8 +177,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 	}
 	switch (_mode)
 	{
-		case mInstructions:
-		{
+		case mInstructions: {
 			auto& iis = _interpreter->getInstructions();
 			if (index.row() >= iis.size())
 			{
@@ -192,8 +191,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 						return index.row();
 					case icMnemonic:
 						return QString::fromStdString(iis.at(index.row()).getMnemonic());
-					case icAbsIp:
-					{
+					case icAbsIp: {
 						auto ip = iis.at(index.row()).getJumpIp();
 						if (ip >= 0)
 						{
@@ -215,8 +213,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 			break;
 		}
 
-		case mVariables:
-		{
+		case mVariables: {
 			auto& ids = _interpreter->getVariables();
 			if (index.row() >= ids.size())
 			{
@@ -229,8 +226,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 					case vcName:
 						return QString::fromStdString(ids.at(index.row())->_name);
 
-					case vcType:
-					{
+					case vcType: {
 						auto& value = ids.at(index.row())->_value;
 						// Custom types are script objects.
 						if (value.getType() == Value::EType::vitCustom)
@@ -243,8 +239,7 @@ QVariant ScriptListModel::data(const QModelIndex& index, int role) const
 						return Value::getType(value.getType());
 					}
 
-					case vcValue:
-					{
+					case vcValue: {
 						auto& value = ids.at(index.row())->_value;
 						// Custom types are script objects.
 						if (value.getType() == Value::EType::vitCustom)
@@ -299,4 +294,4 @@ bool ScriptListModel::setData(const QModelIndex& index, const QVariant& value, i
 	return false;
 }
 
-}
+}// namespace sf

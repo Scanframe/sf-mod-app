@@ -29,7 +29,7 @@ bool loadDynamicLibrary(const std::string& path)
 	auto handle = ::dlopen(path.c_str(), RTLD_NODELETE | RTLD_LAZY);
 	if (!handle)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "Could not load dynamic library: " << path);
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Could not load dynamic library: " << path);
 		return false;
 	}
 	return true;

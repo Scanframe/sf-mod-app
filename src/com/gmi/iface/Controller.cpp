@@ -312,7 +312,7 @@ bool Controller::setGetParam(IdType id, Value& value, bool skip_event)
 bool Controller::getCurrent(EAxisValueType avt, AxesCoord& ac) const
 {
 	// Clear all values ins the passed coordinate.
-	ac.Clear();
+	ac.clear();
 	// Iterate through the implemented axes.
 	for (size_t i = 0; i < _axes.count(); i++)
 		ac << AxisValue(_axes[i]->getLocation(), _axes[i]->getCurrent(avt));
@@ -329,7 +329,7 @@ bool Controller::setCurrent(EAxisValueType avt, const AxesCoord& coord)
 	{// Get the axis location.
 		int loc = _axes[i]->_location;
 		// Ignore unset locations.
-		if (coord.IsSet(loc))
+		if (coord.isSet(loc))
 		{// Set the axis value.
 			if (!_axes[i]->setTarget(avt, coord[loc]._value))
 				rv = false;
@@ -341,7 +341,7 @@ bool Controller::setCurrent(EAxisValueType avt, const AxesCoord& coord)
 
 bool Controller::getAccuracy(AxesCoord& accuracy) const
 {
-	accuracy.Clear();
+	accuracy.clear();
 	// Initialize return value.
 	bool rv = true;
 	// Temp value for storage.
@@ -355,7 +355,7 @@ bool Controller::getAccuracy(AxesCoord& accuracy) const
 		if (getParam(mpAXIS_ACCURACY, loc, value))
 		{
 			// Set the axis value.
-			accuracy.Set(loc, value.getFloat());
+			accuracy.set(loc, value.getFloat());
 		}
 		else
 		{
@@ -369,7 +369,7 @@ bool Controller::getAccuracy(AxesCoord& accuracy) const
 
 bool Controller::getResolution(AxesCoord& resolution) const
 {
-	resolution.Clear();
+	resolution.clear();
 	// Initialize return value.
 	bool rv = true;
 	// Temp value for storage.
@@ -382,7 +382,7 @@ bool Controller::getResolution(AxesCoord& resolution) const
 		// Check if the parameter is available.
 		if (getParam(mpAXIS_ACCURACY, loc, value))
 			// Set the axis value.
-			resolution.Set(loc, value.getFloat());
+			resolution.set(loc, value.getFloat());
 		else
 			// Failed to get this parameter.
 			rv = false;
@@ -394,7 +394,7 @@ bool Controller::getResolution(AxesCoord& resolution) const
 bool Controller::getTarget(EAxisValueType avt, AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
-	coord.Clear();
+	coord.clear();
 	// Iterate through the implemented axes.
 	for (unsigned i = 0; i < _axes.count(); i++)
 		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getTarget(avt));
@@ -405,7 +405,7 @@ bool Controller::getTarget(EAxisValueType avt, AxesCoord& coord) const
 bool Controller::getMinMax(EAxisMinMax amm, AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
-	coord.Clear();
+	coord.clear();
 	// Iterate through the implemented axes.
 	for (unsigned i = 0; i < _axes.count(); i++)
 		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getMinMax(amm));
@@ -422,7 +422,7 @@ bool Controller::setTarget(EAxisValueType avt, const AxesCoord& coord)
 	{// Get the axis location.
 		int loc = _axes[i]->_location;
 		// Ignore unset locations.
-		if (coord.IsSet(loc))
+		if (coord.isSet(loc))
 		{// Set the axis value.
 			if (!_axes[i]->setTarget(avt, coord[loc]._value))
 				rv = false;
@@ -450,25 +450,25 @@ bool Controller::setTarget(
 		if (rv)
 		{
 			// Allow only axes specified in pos to be used in calculation.
-			dist.SetMap(pos.GetMap());
+			dist.setMap(pos.getMap());
 			// Subtract the passed position to get the distance for calculation.
 			dist -= pos;
 			// Disable axis on basis of the axis accuracy to prevent no proper calculations.
 			// Also on the velocity must be non-zero.
-			for (int i = alFirst; i < alLAST_ENTRY; i++)
+			for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 			{
-				if (std::fabs(vel.Value(i)) < std::numeric_limits<double>::min())
-					dist.Unset(i);
-				if (dist.IsSet(i) && fabs(dist.Value(i)) < getAxis(i).getAccuracy())
-					dist.Unset(i);
+				if (std::fabs(vel.getValue(i)) < std::numeric_limits<double>::min())
+					dist.unset(i);
+				if (dist.isSet(i) && fabs(dist.getValue(i)) < getAxis(i).getAccuracy())
+					dist.unset(i);
 			}
 			// Get values for a linear profile.
 			if (getLinearValues(dist, vel, acc, trgvel, trgacc, trgtime))
 			{
 				// For all axis that do not move set the passed velocity and acceleration.
 				// This to prevent the controller to stop at all.
-				for (int i = alFirst; i < alLAST_ENTRY; i++)
-					if (pos.IsSet(i) && !dist.IsSet(i))
+				for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
+					if (pos.isSet(i) && !dist.isSet(i))
 					{
 						trgvel << vel[i];
 						trgacc << acc[i];
@@ -500,7 +500,7 @@ bool Controller::setOffset(const AxesCoord& coord)
 		// Get the axis location.
 		int loc = _axes[i]->_location;
 		// Ignore unset locations.
-		if (coord.IsSet(loc))
+		if (coord.isSet(loc))
 		{
 			// Set the axis value.
 			if (!_axes[i]->setOffset(coord[loc]._value))
@@ -514,7 +514,7 @@ bool Controller::setOffset(const AxesCoord& coord)
 bool Controller::getOffset(AxesCoord& coord) const
 {
 	// Clear all values ins the passed coordinate.
-	coord.Clear();
+	coord.clear();
 	// Iterate through the implemented axes.
 	for (unsigned i = 0; i < _axes.count(); i++)
 		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->setOffset());
@@ -528,7 +528,7 @@ bool Controller::setMode(EAxisMode am, const AxesCoord& ac, EAxisMode amdef)
 	for (size_t i = 0; i < _axes.count(); i++)
 	{
 		// When an implemented axis does not exist in the coord it set to the default.
-		if (!_axes[i]->setMode(ac.IsSet(_axes[i]->_location) ? am : amdef))
+		if (!_axes[i]->setMode(ac.isSet(_axes[i]->_location) ? am : amdef))
 		{
 			// On failure set the return value to false.
 			rv = false;
@@ -919,7 +919,7 @@ bool Controller::setPosition(const AxesCoord& ac)
 			// Get the axis location.
 			int loc = _axes[i]->_location;
 			// Ignore unset locations.
-			if (ac.IsSet(loc))
+			if (ac.isSet(loc))
 			{// Set the axis value.
 				if (!_axes[i]->setPosition(ac[loc]._value))
 					rv = false;
@@ -948,9 +948,9 @@ bool Controller::doSetPosition(EAxisLocation al, double)
 AxesCoord& Controller::normalize(AxesCoord& pos) const
 {
 	// For all set axis normalize the passed position.
-	for (int i = alFirst; i < alLAST_ENTRY; i++)
-		if (pos.IsSet(i))
-			pos.Value(i) = getAxis(i).normalized(pos.Value(i));
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
+		if (pos.isSet(i))
+			pos.getValue(i) = getAxis(i).normalized(pos.getValue(i));
 	return pos;
 }
 
@@ -959,7 +959,7 @@ AxisLocations Controller::getRadialUnlimited() const
 	AxisLocations als;
 	AxisMovements am;
 	am << amRADIAL;
-	for (int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 		if (getAxis(i)._movements == am)
 			als << static_cast<EAxisLocation>(i);
 	return als;
@@ -1403,7 +1403,7 @@ bool Controller::isMoving() const
 Controller::Axis& Controller::getAxis(int axis_loc)
 {
 	// Check if location index is in range.
-	if (axis_loc >= alFirst && axis_loc < alLAST_ENTRY)
+	if (axis_loc >= alFIRST_ENTRY && axis_loc < alLAST_ENTRY)
 	{
 		return *_axesMap[axis_loc];
 	}
@@ -1414,7 +1414,7 @@ Controller::Axis& Controller::getAxis(int axis_loc)
 const Controller::Axis& Controller::getAxis(int axis_loc) const
 {
 	// Check if location index is in range.
-	if (axis_loc >= alFirst && axis_loc < alLAST_ENTRY)
+	if (axis_loc >= alFIRST_ENTRY && axis_loc < alLAST_ENTRY)
 	{
 		return *_axesMap[axis_loc];
 	}

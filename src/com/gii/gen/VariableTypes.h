@@ -163,7 +163,7 @@ class VariableTypes
 			veLinked = 16006,
 			/** This instance has lost event handler link.*/
 			veUnlinked = 16007,
-			/** This variable instance was setup.*/
+			/** This variable instance was set up.*/
 			veSetup = 16008,
 			/** Start of user private event ID's.*/
 			veUserPrivate = 16009
@@ -180,11 +180,11 @@ class VariableTypes
 			vfName,
 			/***/
 			vfUnit,
-			/** Single character flags. @see EFlag.*/
+			/** Single character flags, see #EFlag.*/
 			vfFlags,
 			/** Description of the variable.*/
 			vfDescription,
-			/** Type of the contained value. @see Value::EType*/
+			/** Type of the contained value, see #sf::Value::EType.*/
 			vfType,
 			/** Type of the contained value.*/
 			vfConversionType,
@@ -213,7 +213,7 @@ class VariableTypes
 			 */
 			flgArchive = 1 << 1,
 			/**
-			 * Represented by character <b>'S'</b>.<br>Parameter may be exported outside of the application.
+			 * Represented by character <b>'S'</b>.<br>Parameter may be exported outside the application.
 			 * When communicating over a network connection only these variables are exported.
 			 */
 			flgShare = 1 << 2,
@@ -243,7 +243,7 @@ class VariableTypes
 			flgExport = 1 << 7,
 			/**
 			 * Represented by character <b>'W'</b>.<br> Set when a local variable is exported globally and
-			 * may be written to globally.
+			 * may be written globally.
 			 */
 			flgWriteable = 1 << 8
 		};
@@ -254,13 +254,13 @@ class VariableTypes
 		{
 			/** When the instance is not of type string.*/
 			stNoString = -1,
-			/** This is a straight normal string where control characters are not converted to any multi byte translation.*/
+			/** This is a straight normal string where control characters are not converted to any multibyte translation.*/
 			stNormal = 0,
 			/** This is a multi line string with new line control characters.*/
 			stMulti,
 			/** The string contains a complete file path.*/
 			stPath,
-			/** The string contains a complete directory an drive letter.*/
+			/** The string contains a complete directory a drive letter.*/
 			stDirectory,
 			/** The string contains a file name.*/
 			stFilename,

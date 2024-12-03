@@ -37,8 +37,6 @@ set(SOURCES
 
 if (NOT WIN32)
 
-	find_package(OpenSSL REQUIRED)
-
 	set(SOURCES_LNX
 		#GlobalShortcut_mac.cpp
 		GlobalShortcut_x11.cpp
@@ -63,7 +61,7 @@ Sf_AddTargetForCoverage("${PROJECT_NAME}")
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 # Add include directory '~/lib/Qt/<qt-ver>/gcc_64/include/QtGui/<qt-ver>/QtGui'
-target_include_directories(${PROJECT_NAME} PRIVATE "${QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")
+target_include_directories(${PROJECT_NAME} PRIVATE "${SF_QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})

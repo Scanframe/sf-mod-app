@@ -141,7 +141,7 @@ class SustainQtTimer
 				}
 				else
 				{
-					SF_NORM_NOTIFY(DO_DEFAULT, "Skipped: Maximum re-entries reached!")
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Skipped: Maximum re-entries reached!")
 				}
 			});
 		}
@@ -179,7 +179,7 @@ class SustainWinTimer : public WinTimer
 			}
 			else
 			{
-				SF_NORM_NOTIFY(DO_DEFAULT, "SustainTimerProc(): Skipped: Maximum re-entries reached!");
+				SF_RTTI_NOTIFY(DO_DEFAULT, "Skipped: Maximum re-entries reached!");
 			}
 		}
 };

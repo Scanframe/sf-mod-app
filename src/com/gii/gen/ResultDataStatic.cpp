@@ -86,8 +86,8 @@ void sf::ResultDataStatic::initialize(bool init)
 					auto k = _references->at(i);
 					os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 				}
-				SF_NORM_NOTIFY(DO_CERR, "ResulDataStatic::" << __FUNCTION__ << "(false) Unable to perform, (" << (sz - 1) << ") references still remain!" << std::endl
-																										<< '\t' << os.str())
+				SF_FUNC_NOTIFY(DO_CERR, "Unable to perform un-init, (" << (sz - 1) << ") references still remain!" << std::endl
+																															 << '\t' << os.str())
 			}
 			else
 			{

@@ -402,13 +402,12 @@ std::string error_string(int error_num)
 std::string stringf(const char* fmt, ...)
 {
 	const size_t sz = 4096;
-	auto* buf = static_cast<char*>(malloc(sz));
-	scope_free<char> sf(buf);
-	va_list argptr;
-	va_start(argptr, fmt);
-	(void) vsnprintf(buf, sz, fmt, argptr);
-	va_end(argptr);
-	return &buf[0];
+	std::unique_ptr<char> buf(new char[sz]);
+	va_list arg_ptr;
+	va_start(arg_ptr, fmt);
+	vsnprintf(buf.get(), sz, fmt, arg_ptr);
+	va_end(arg_ptr);
+	return buf.get();
 }
 
 size_t strncspn(const char* s, size_t n, const char* reject)
@@ -602,7 +601,7 @@ std::string numberString(double value, int digits, bool sign_on)
 			rv.append(dec - digits, '0');
 		}
 	}
-	// Only add a exponent value when non zero.
+	// Only add a exponent value when non-zero.
 	if (exp)
 	{
 		if (sign_on && exp > 0)

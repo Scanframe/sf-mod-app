@@ -46,7 +46,7 @@ bool fileUnlink(const std::string& path)
 #endif
 	{
 		char buffer[BUFSIZ];
-		SF_NORM_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n"
+		SF_FUNC_NOTIFY(DO_DEFAULT, "of '" << path << "' failed!\n"
 																			<< ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}
@@ -58,7 +58,7 @@ bool fileRename(const std::string& old_path, const std::string& new_path)
 	if (std::rename(old_path.c_str(), new_path.c_str()) == -1)
 	{
 		char buffer[BUFSIZ];
-		SF_NORM_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n"
+		SF_FUNC_NOTIFY(DO_DEFAULT, "from '" << old_path << "' to '" << new_path << "' failed!\n"
 																				<< ::strerror_r(errno, buffer, sizeof(buffer)))
 		return false;
 	}

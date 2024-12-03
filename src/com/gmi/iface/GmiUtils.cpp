@@ -62,7 +62,7 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 		// Check if the current time is beyond the target time.
 		if (cur_tm > trg_time)
 		{
-			SF_NORM_NOTIFY(DO_DEFAULT, "Passed movement: " << cur_tm);
+			SF_FUNC_NOTIFY(DO_DEFAULT, "Passed movement: " << cur_tm);
 			// Position is the target position
 			cur_pos = dist;
 			// There is no movement so the velocity is zero.
@@ -157,19 +157,19 @@ bool getTargetAccelerationTime(double dist, double vel, double acc, double& trg_
 bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time)
 {
 	// Clear return values first.
-	trg_time.Clear();
+	trg_time.clear();
 	// Get the bit map of set position values of the coordinate.
-	const int map = dist.GetMap();
+	const int map = dist.getMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
-	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
+	if ((max_vel.getMap() & map) != map || (max_acc.getMap() & map) != map)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "gmi::getTargetTime(): Improper amount of information!");
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Improper amount of information!");
 		// Signal failure.
 		return false;
 	}
 	// Iterate through the bitmap of set values.
-	for (unsigned int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{
 		// Calculate the time which is needed for the current selected axis to
 		// move the distance.
@@ -177,10 +177,10 @@ bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCo
 		{
 			double tm;
 			if (getTargetTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
-				trg_time.Set(i, tm);
+				trg_time.set(i, tm);
 			else
 			{
-				trg_time.Clear();
+				trg_time.clear();
 				return false;
 			}
 		}
@@ -191,29 +191,29 @@ bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCo
 bool getAccelerationTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_time)
 {
 	// Clear return values first.
-	trg_time.Clear();
+	trg_time.clear();
 	// Get the bit map of set position values of the coordinate.
-	const int map = dist.GetMap();
+	const int map = dist.getMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
-	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
+	if ((max_vel.getMap() & map) != map || (max_acc.getMap() & map) != map)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "gmi::getAccelerationTime(): Improper amount of information!");
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Improper amount of information!");
 		// Signal failure.
 		return false;
 	}
 	// Iterate through the bitmap of set values.
-	for (unsigned int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{
 		// Calculate the time which is needed for the current selected axis to accelerate.
 		if (map & 1 << i)
 		{
 			double tm;
 			if (getAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
-				trg_time.Set(i, tm);
+				trg_time.set(i, tm);
 			else
 			{
-				trg_time.Clear();
+				trg_time.clear();
 				return false;
 			}
 		}
@@ -224,15 +224,15 @@ bool getAccelerationTime(const AxesCoord& dist, const AxesCoord& max_vel, const 
 bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_vel, AxesCoord& trg_acc, double& trg_time)
 {
 	// Clear return values first.
-	trg_vel.Clear();
-	trg_acc.Clear();
+	trg_vel.clear();
+	trg_acc.clear();
 	// Get the bit map of set position values of the coordinate.
-	const int map = dist.GetMap();
+	const int map = dist.getMap();
 	// Check if the velocity and acceleration values are present needed for
 	// the calculation.
-	if ((max_vel.GetMap() & map) != map || (max_acc.GetMap() & map) != map)
+	if ((max_vel.getMap() & map) != map || (max_acc.getMap() & map) != map)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "gmi::getLinearValues(): Improper amount of information!");
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Improper amount of information!");
 		// Signal failure.
 		return false;
 	}
@@ -241,7 +241,7 @@ bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const Axes
 	double acc_tm = 0.0;
 	int axis = -1;
 	// Iterate through the bitmap of set values.
-	for (int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{
 		if (map & 1 << i)
 		{
@@ -262,7 +262,7 @@ bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const Axes
 	// Check if there is anything requiring calculation.
 	if (axis != -1)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "getLinearValues() Dominant axis = " << getAxisName(axis) << "-Axis");
+		SF_FUNC_NOTIFY(DO_DEFAULT, "Dominant axis = " << getAxisName(axis) << "-Axis");
 		calcLinearValues(dist, trg_tm, acc_tm, trg_vel, trg_acc);
 		trg_time = trg_tm;
 	}
@@ -272,9 +272,9 @@ bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const Axes
 bool calcLinearValues(const AxesCoord& dist, double trg_time, double acc_time, AxesCoord& vel, AxesCoord& acc)
 {
 	// Iterate through the bitmap of set values.
-	for (unsigned int i = alFirst; i < alLAST_ENTRY; i++)
+	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 	{// Check for a value in the coord which is set.
-		if (dist.IsSet(i))
+		if (dist.isSet(i))
 		{
 			// Calculate the time which is needed for the current selected axis to
 			// move the distance.
@@ -283,9 +283,9 @@ bool calcLinearValues(const AxesCoord& dist, double trg_time, double acc_time, A
 			if (!calcLinearValue(dist[i]._value, trg_time, acc_time, d_vel, d_acc))
 				return false;
 			// Set the coord velocity return value.
-			vel.Set(i, d_vel);
+			vel.set(i, d_vel);
 			// Set the coord acceleration return value.
-			acc.Set(i, d_acc);
+			acc.set(i, d_acc);
 		}
 	}
 	return true;

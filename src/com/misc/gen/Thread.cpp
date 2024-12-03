@@ -600,7 +600,7 @@ bool Thread::yieldToOther()
 	auto err = ::sched_yield();
 	if (err != 0)
 	{
-		SF_NORM_NOTIFY(DO_DEFAULT, "pthread_yield()" << ::strerror(errno))
+		SF_FUNC_NOTIFY(DO_DEFAULT, "sched_yield()" << ::strerror(errno))
 		return false;
 	}
 	return true;

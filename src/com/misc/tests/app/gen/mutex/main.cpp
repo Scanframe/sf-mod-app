@@ -110,7 +110,7 @@ void has_timed_out(bool flag)
 {
 	if (flag)
 	{
-		SF_NORM_NOTIFY(DO_COUT, "Test timed out.");
+		SF_FUNC_NOTIFY(DO_COUT, "Test timed out.");
 		exit(EXIT_FAILURE);
 	}
 }

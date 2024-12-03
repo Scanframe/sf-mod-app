@@ -1,5 +1,5 @@
-#include <QMetaEnum>
 #include "ScriptManagerListModel.h"
+#include <QMetaEnum>
 #include <misc/qt/CommonItemDelegate.h>
 
 namespace sf
@@ -22,8 +22,8 @@ enum EColumn
 }
 
 ScriptManagerListModel::ScriptManagerListModel(ScriptManager* manager, QObject* parent)
-	:QAbstractListModel(parent)
-	 , _manager(manager)
+	: QAbstractListModel(parent)
+	, _manager(manager)
 {
 }
 
@@ -34,8 +34,8 @@ void ScriptManagerListModel::setDelegates(QAbstractItemView* view)
 
 void ScriptManagerListModel::refresh()
 {
-//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
-//	endRemoveRows();
+	//	beginRemoveRows(QModelIndex(), 0, std::numeric_limits<int>::max());
+	//	endRemoveRows();
 	beginResetModel();
 	endResetModel();
 	beginInsertRows(QModelIndex(), 0, -1);
@@ -167,8 +167,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
-			case cBackground:
-			{
+			case cBackground: {
 				QStringList sl;
 				auto meta = QMetaEnum::fromType<ScriptEntry::EBackgroundMode>();
 				for (auto bm: {ScriptEntry::bmNo, ScriptEntry::bmOnce, ScriptEntry::bmContinuous})
@@ -181,8 +180,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->getKeySequence();
 			case cGlobal:
 				return QStringList({"No", "Yes"});
-			case cFilename:
-			{
+			case cFilename: {
 				QStringList files = _manager->getFilenames();
 				// Add the current file name when not in the list.
 				if (!files.contains(entry->getFilename()))
@@ -272,4 +270,4 @@ void ScriptManagerListModel::remove(QModelIndex index)
 	}
 }
 
-}
+}// namespace sf

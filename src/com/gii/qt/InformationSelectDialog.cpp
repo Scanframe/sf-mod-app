@@ -2,6 +2,8 @@
 #include "ui_InformationSelectDialog.h"
 #include <QAction>
 #include <QDialogButtonBox>
+#include <QKeyEvent>
+#include <QPushButton>
 #include <QTimer>
 #include <misc/gen/pointer.h>
 #include <misc/qt/Globals.h>
@@ -23,6 +25,8 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	_proxyModel->setDynamicSortFilter(false);
 	_proxyModel->setRecursiveFilteringEnabled(true);
 	_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	// Install event filter on the QTreeView.
+	ui->treeView->installEventFilter(this);
 	// Assign the proxy for allowing filtering by name.
 	ui->treeView->setModel(_proxyModel);
 	//
@@ -41,14 +45,19 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	connect(ui->treeView, &QTreeView::expanded, [&]() {
 		resizeColumnsToContents(ui->treeView);
 	});
-	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index) {
+	connect(ui->treeView, &QTreeView::clicked, [&](const QModelIndex& index) {
 		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
 			if (_mode == Gii::Multiple)
 			{
 				m->toggleSelection(getSourceModelIndex(index));
 			}
-			else
+		}
+	});
+	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index) {
+		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
+		{
+			if (_mode != Gii::Multiple)
 			{
 				auto idx = getSourceModelIndex(index);
 				if (!m->isFolder(idx))
@@ -74,6 +83,9 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 		}
 	});
 	connect(ui->leSearch, &QLineEdit::textChanged, this, &InformationSelectDialog::applyFilter, Qt::QueuedConnection);
+	// The default buttons do not have hotkeys so we do it manually.
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 }
 
 void InformationSelectDialog::applyFilter(const QString& filter)
@@ -107,7 +119,6 @@ void InformationSelectDialog::stateSaveRestore(bool save)
 	if (_settings)
 	{
 		_settings->beginGroup(getObjectNamePath(this).join('.').prepend("State."));
-		QString keyState("State");
 		QString keyWidgetRect("WidgetRect");
 		if (save)
 		{
@@ -166,6 +177,25 @@ InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode m
 	stateSaveRestore(true);
 	// Return an empty list to signal.
 	return {};
+}
+
+bool InformationSelectDialog::eventFilter(QObject* watched, QEvent* event)
+{
+	if (_mode == Gii::Multiple && watched == ui->treeView && event->type() == QEvent::KeyPress)
+	{
+		auto keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Space)
+		{
+			if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
+			{
+				m->toggleSelection(getSourceModelIndex(ui->treeView->currentIndex()));
+			}
+			// Event handled, stop further processing.
+			return true;
+		}
+	}
+	// Pass unhandled events.
+	return QDialog::eventFilter(watched, event);
 }
 
 }// namespace sf

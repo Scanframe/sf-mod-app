@@ -99,7 +99,7 @@ bool loadVariableValues(IniProfile& profile)
 		// Abort the loop when no changes have been established.
 		if (!change)
 		{
-			SF_NORM_NOTIFY(DO_DEFAULT, "LoadVariableSettingsFromProfile(): No changes after loading loop [" << j << "].");
+			SF_FUNC_NOTIFY(DO_DEFAULT, "No changes after loading loop [" << j << "].");
 			break;
 		}
 	}

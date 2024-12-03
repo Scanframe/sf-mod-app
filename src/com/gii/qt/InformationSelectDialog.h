@@ -25,6 +25,9 @@ class _GII_CLASS InformationSelectDialog
 
 		[[nodiscard]] InformationTypes::IdVector getSelectedIds() const;
 
+	protected:
+		bool eventFilter(QObject* watched, QEvent* event) override;
+
 	private:
 		void childrenExpandCollapse(bool expand, const QModelIndex& index = {});
 

@@ -1,13 +1,14 @@
-	#pragma once
-#include <QAbstractListModel>
+#pragma once
 #include <QAbstractItemView>
+#include <QAbstractListModel>
+#include <gii/gen/Variable.h>
 #include <gii/global.h>
 
 namespace sf
 {
 
 /**
- * @brief List model for QObject properties.
+ * @brief List model for Variables.
  */
 class _GII_CLASS VariableListModel
 	: public QAbstractListModel
@@ -19,11 +20,6 @@ class _GII_CLASS VariableListModel
 		 * @brief Constructor.
 		 */
 		explicit VariableListModel(QObject* parent = nullptr);
-
-		/**
-		 * @brief ???
-		 */
-		void setTarget(QObject* obj);
 
 		/**
 		 * @brief ???
@@ -61,6 +57,18 @@ class _GII_CLASS VariableListModel
 		[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 		/**
+		 * @brief Adds local or global variable to this instance.
+		 * @param var Variable to add.
+		 */
+		void addVariable(const Variable* var);
+
+		/**
+		 * @brief Adds local or global variables to this instance.
+		 * @param list List of Variables to.
+		 */
+		void addVariables(const InformationTypes::Vector& list);
+
+		/**
 		 * @brief Overridden from base class to provide assignment of an item when edited.
 		 */
 		bool setData(const QModelIndex& index, const QVariant& value, int role) override;
@@ -72,7 +80,7 @@ class _GII_CLASS VariableListModel
 		 * @param propertyIndex Index of the property
 		 * @param dynamic Property is a dynamic one.
 		 */
-		void changed(QObject* obj, int propertyIndex, bool dynamic);
+		void changed(const Variable* var);
 		/**
 		 *
 		 * @param lineEdit Line edit created for this property.
@@ -80,30 +88,15 @@ class _GII_CLASS VariableListModel
 		 * @param propertyIndex Index of the property
 		 * @param dynamic Property is a dynamic one.
 		 */
-		void addLineEditActions(QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) const;
+		void addLineEditActions(QLineEdit* line_edit, const Variable* var) const;
 
 	private:
 		/**
-		 * @brief Holds the target object.
+		 * @brief Holds the list of variables for this instance.
 		 */
-		QObject* _target{nullptr};
+		QList<std::shared_ptr<Variable>> _vars;
 
-		struct Entry
-		{
-				inline Entry(QObject* obj, int index, bool dynamic)
-					: _obj(obj)
-					, _index(index)
-					, _dynamic(dynamic) {};
-
-				QObject* _obj;
-				int _index;
-				bool _dynamic;
-		};
-
-		/**
-		 * @brief Holds the indices of the properties.
-		 */
-		QList<Entry> _indices;
+		int _nameLevels{2};
 };
 
 }// namespace sf
