@@ -238,11 +238,6 @@ class _GMI_CLASS AxesCoord
 			 */
 		typedef TVector<AxesCoord> Vector;
 
-		/**
-		 * @brief Type definition.
-		 */
-		typedef TVector<AxesCoord> Vector;
-
 	private:
 		/**
 			 * @brief Integer used as map for valid entries.

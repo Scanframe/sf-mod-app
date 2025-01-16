@@ -5,7 +5,7 @@ variables:
   # Fixed base directory the source root is mounted to between jobs for each toolchain.
   SF_DIR_MOUNT: "/tmp/binder/${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
   # Default Docker image.
-  SF_DOCKER_IMAGE: "nexus.scanframe.com/gnu-cpp:24.04-6.7.2"
+  SF_DOCKER_IMAGE: "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.7.2"
 
 # Required for trigger pipelines so run always.
 workflow:
