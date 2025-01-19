@@ -1,0 +1,38 @@
+{
+	"name": "Qt Concepts Dev Container",
+	"image": "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.7.2",
+	"runArgs": [
+		"--name", "cpp_builder",
+		"--platform", "linux/amd64",
+		"--rm",
+		"--tty",
+		"--interactive",
+		"--device", "/dev/fuse",
+		"--cap-add", "SYS_ADMIN",
+		"--security-opt", "apparmor:unconfined",
+		"--hostname", "adelaide",
+		"--user", "0:0",
+		"--env", "LOCAL_USER=1000:1000",
+		"--env", "DISPLAY",
+		"--network", "host",
+		"--volume", "${localEnv:HOME}/.Xauthority:/home/user/.Xauthority:ro",
+		"--volume", "${localWorkspaceFolder}/cmake-build/docker-amd64:/mnt/project/qt-concepts/cmake-build:rw",
+		"--volume", "${localEnv:HOME}/tmp/cpp_builder-cache:/home/user/.cache:rw"
+	],
+	"workspaceFolder": "/mnt/project/qt-concepts",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/mnt/project/qt-concepts,type=bind",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-python.python",
+				"ms-vscode.cmake-tools"
+			]
+		}
+	},
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "bash"
+	},
+	"remoteUser": "root",
+	"overrideCommand": false
+}
