@@ -148,7 +148,7 @@
 				}
 			},
 			"environment": {
-				"PATH": "${sourceDir}/lib/qt/w64-x86_64/Tools/mingw1120_64/bin;$penv{PATH}"
+				"PATH_DISABLED": "${sourceDir}/lib/qt/w64-x86_64/Tools/mingw1310_64/bin;$penv{PATH}"
 			}
 		},
 		{

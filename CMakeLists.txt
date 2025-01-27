@@ -7,7 +7,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT
 
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)
-# Package needed for adding function Sf_SetToolChain().
+# Package needed for adding the correct toolchain.
 find_package(SfToolChain CONFIG REQUIRED)
 
 # Get the Git versions from the repository of this files directory.
@@ -50,7 +50,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 if (SF_BUILD_QT)
 	# Install/fetch the Qt Libraries when ENV{QT_VER_DIR} is not set.
-	find_package(SfQtLibrary 6.7.2 CONFIG REQUIRED)
+	find_package(SfQtLibrary 6.8.1 CONFIG REQUIRED)
 endif ()
 
 # Set the C++ standard to 17 for all projects to allow building with
