@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab1">
       <attribute name="title">
@@ -31,7 +31,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayoutTab_3">
        <item>
-        <widget class="sf::AscanGraph" name="ascanGraph">
+        <widget class="sf::AscanGraph" name="ascanGraph" native="true">
          <property name="toolTip">
           <string>A-scan graph</string>
          </property>
@@ -48,7 +48,7 @@
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="sf::DrawWidget" name="drawWidget">
+        <widget class="sf::DrawWidget" name="drawWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>1</horstretch>
@@ -98,7 +98,7 @@
             <string>&amp;Left</string>
            </property>
            <property name="checked">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
          </item>

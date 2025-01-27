@@ -25,6 +25,7 @@ set(LIBRARIES pthread)
 # Generic sources only STL dependent.
 set(SOURCES
 	global.h
+	gen/version.h gen/version.cpp
 	gen/target.h
 	gen/pointer.h
 	gen/file.cpp gen/file.h

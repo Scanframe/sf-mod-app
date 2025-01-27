@@ -102,7 +102,7 @@ Defines these with true (1) or false (0):
 	#if IS_QT
 		#pragma message("Target: QT")
 	#endif
-// Report the target is a dynamically library.
+// Report the target is a dynamic library.
 	#if IS_DL_TARGET
 		#pragma message("Target: Shared Library")
 	#endif

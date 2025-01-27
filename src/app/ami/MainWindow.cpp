@@ -1,5 +1,7 @@
 #include "ApplicationPropertyPage.h"
 #include "MainWindowPropertyPage.h"
+#include "misc/gen/version.h"
+
 #include <QPlainTextEdit>
 #include <QtWidgets>
 #include <misc/gen/pointer.h>
@@ -309,10 +311,15 @@ void MainWindow::redo()
 void MainWindow::about()
 {
 	const char* msg = R"(
-<h3>Scanframe Modular Application</h3>
-Application to build faster.
+<b>Scanframe Modular Application</b><br>
+Qt Build: %1<br/>
+Qt Library: %2<br/>
+Gcc Version: %3<br/>
+C++ Standard: %4<br/>
+OS Version: %5<br/>
+Architecture: %6<br/>
 )";
-	QMessageBox::about(this, tr("About"), tr(msg));
+	QMessageBox::about(this, tr("About"), QString(msg).arg(QT_VERSION_STR).arg(qVersion()).arg(getGCCVersion().data()).arg(getCppStandard().data()).arg(getOSVersion().data()).arg(getCpuArchitecture().data()));
 }
 
 void MainWindow::configModules()

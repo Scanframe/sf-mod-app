@@ -60,8 +60,14 @@ Sf_AddTargetForCoverage("${PROJECT_NAME}")
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
-# Add include directory '~/lib/Qt/<qt-ver>/gcc_64/include/QtGui/<qt-ver>/QtGui'
-target_include_directories(${PROJECT_NAME} PRIVATE "${SF_QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")
+# Add include directory '<qt-ver-lib>/gcc_64/include/QtGui/<qt-ver>/QtGui'
+set(_QtGuiIncDir "${SF_QT_INCLUDE_DIRECTORY}/QtGui/${Qt${QT_VERSION_MAJOR}Widgets_VERSION}/QtGui")
+if (NOT EXISTS "${_QtGuiIncDir}")
+	message(SEND_ERROR "Directory not found!: ${_QtGuiIncDir}")
+else ()
+	target_include_directories(${PROJECT_NAME} PRIVATE "${_QtGuiIncDir}")
+	unset(_QtGuiIncDir)
+endif ()
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})

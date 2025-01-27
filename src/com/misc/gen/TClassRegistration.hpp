@@ -28,12 +28,17 @@ size_t TClassRegistration<T, P>::registerClass(const char* name, const char* des
 	// Sanity check on existing entry.
 	if (find(name))
 	{
-		std::clog << __FUNCTION__ << ": Entry with the name '" << name << "' is already registered!" << std::endl;
+		std::cout << __FUNCTION__ << ": Entry with the name '" << name << "' is already registered!" << std::endl;
 		typename entries_t::const_iterator begin = _entries->begin();
 		return std::distance(begin, lookup(name));
 		//throw Exception("%s: Entry with name '%s' is already registered!", __FUNCTION__, name);
 	}
-	return std::distance(_entries->begin(), _entries->insert(_entries->end(), entry_t(name, description, callback)));
+	// Index of insertion is the current size.
+	auto index = _entries->size();
+	// Add the entry at of the list.
+	_entries->push_back(entry_t(name, description, callback));
+	// Return the insertion index.
+	return index;
 }
 
 template<typename T, typename P>

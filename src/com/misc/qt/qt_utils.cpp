@@ -1,5 +1,7 @@
 #include "qt_utils.h"
 #include "../gen/dbgutils.h"
+#include "gen/math.h"
+#include "gen/string.h"
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -19,6 +21,11 @@
 
 namespace sf
 {
+
+std::string toString(const QRect& rect)
+{
+	return std::string() + '(' + toString(rect.left()) + ',' + toString(rect.bottom()) + ',' + toString(rect.right()) + ',' + toString(rect.top()) + ')';
+}
 
 QRect moveRectWithinRect(const QRect& outer, const QRect& inner)
 {

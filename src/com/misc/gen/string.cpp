@@ -544,7 +544,10 @@ std::string numberString(double value, int digits, bool sign_on)
 	if (rv.length() != digits)
 	{
 		dec += 1;
-		rv.resize(digits);
+		if (rv.size() < digits)
+			rv.append(digits - rv.size(), '0');
+		else
+			rv.resize(digits);
 	}
 	// Exponent to be calculated.
 	int exp{0};

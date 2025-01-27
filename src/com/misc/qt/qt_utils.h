@@ -108,6 +108,11 @@ inline constexpr QRect inflated(const QRect& r, int sz)
 	return r.adjusted(-sz, -sz, sz, sz);
 }
 
+/**
+ * @brief Gets the passed Qt point as a Qt size class.
+ * @param pt Qt point instance.
+ * @return Qt Size instance.
+ */
 inline QSize asQSize(const QPoint& pt)
 {
 	return {pt.x(), pt.y()};
@@ -116,6 +121,19 @@ inline QSize asQSize(const QPoint& pt)
 namespace sf
 {
 
+/**
+ * @brief Converts the passed Qt rectangle into a std string.
+ * @param rect Qt Rectangle.
+ * @return String like '(left, bottom, right, top)'.
+ */
+_MISC_FUNC std::string toString(const QRect& rect);
+
+/**
+ * @brief Moves the inner in to the outer rectangle.
+ * @param outer Bounding rectangle.
+ * @param inner Rectangle to be moved.
+ * @return Modified rectangle.
+ */
 _MISC_FUNC QRect moveRectWithinRect(const QRect& outer, const QRect& inner);
 
 /**
@@ -283,7 +301,7 @@ _MISC_FUNC QLayout* getWidgetLayout(QWidget* widget);
  *
  * @tparam T Enumerate type.
  * @param value Enum value.
- * @return Key name of the enumerate.
+ * @return Key name of the enumerate value.
  */
 template<typename T>
 static const char* enumToKey(const T value)
@@ -407,4 +425,13 @@ _MISC_FUNC void expandTreeView(QTreeView* tv, bool expand = true, const QModelIn
  * @return True when a GUI application.
  */
 _MISC_FUNC bool isGuiApplication();
+
 }// namespace sf
+
+/**
+ * @brief Output stream operator for a QRect class.
+ */
+inline std::ostream& operator<<(std::ostream& os, const QRect& rect)
+{
+	return os << sf::toString(rect);
+}

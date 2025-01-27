@@ -1574,7 +1574,7 @@ Value Variable::convert(const Value& value, bool to_org) const
 {
 	Value ret_val = value;
 	// Check if a conversion must be performed.
-	if (!_reference->_convertUnit.empty() && _reference->_type == Value::vitFloat)
+	if (ret_val.isValid() && !_reference->_convertUnit.empty() && _reference->_type == Value::vitFloat)
 	{
 		// Abort the operation when conversion fails.
 		if (!ret_val.setType(Value::vitFloat))

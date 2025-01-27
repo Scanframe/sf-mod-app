@@ -82,7 +82,8 @@ int main(int argc, char* argv[])
 	};
 #if IS_QT
 	QTimer::singleShot(0, func);
-	return QCoreApplication::instance()->exec();
+	auto rv = QCoreApplication::instance()->exec();
+	return rv;
 #else
 	return func();
 #endif

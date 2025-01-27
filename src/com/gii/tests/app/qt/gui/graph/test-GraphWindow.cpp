@@ -1,33 +1,30 @@
 #include "test-GraphWindow.h"
-#include <iostream>
+#include "ui_test-GraphWindow.h"
 #include <QAbstractButton>
 #include <QPainter>
+#include <iostream>
 #include <misc/qt/CaptureListModel.h>
 #include <misc/qt/Draw.h>
 #include <misc/qt/Graph.h>
-#include "ui_test-GraphWindow.h"
 
 GraphWindow::GraphWindow(QWidget* parent)
-	:QDialog(parent)
-	 , ui(new Ui::GraphWindow)
+	: QDialog(parent)
+	, ui(new Ui::GraphWindow)
 {
 	ui->setupUi(this);
 	// Set an icon on the window.
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	connect(ui->drawWidget, &sf::DrawWidget::paint, this, &GraphWindow::onPaint);
 	connect(ui->slider, &QSlider::valueChanged, this, &GraphWindow::onSlider);
-	connect(ui->leValueStart, &QLineEdit::textChanged, [&]()
-	{
+	connect(ui->leValueStart, &QLineEdit::textChanged, [&]() {
 		ui->drawWidget->update();
 	});
-	connect(ui->leValueStop, &QLineEdit::textChanged, [&]()
-	{
+	connect(ui->leValueStop, &QLineEdit::textChanged, [&]() {
 		ui->drawWidget->update();
 	});
 	for (auto i: {ui->cbDebug, ui->cbLeft, ui->cbRight, ui->cbTop, ui->cbBottom})
 	{
-		connect(i, &QCheckBox::clicked, [&]()
-		{
+		connect(i, &QCheckBox::clicked, [&]() {
 			ui->drawWidget->update();
 		});
 	}
@@ -45,13 +42,14 @@ void GraphWindow::onPaint(QPaintEvent* event)
 	//
 	if (ui->cbLeft->isChecked())
 	{
-		graph.setRuler(sf::Draw::roLeft, 0, 10, 2, "V");
-		//graph.setRuler(sf::Draw::roLeft, 0, 10, 2, "Y1");
+		//graph.setRuler(sf::Draw::roLeft, 0, 10, 2, "V");
+		//graph.setRuler(sf::Draw::roLeft, -21.0, 105.0, 3, "m");
+		graph.setRuler(sf::Draw::roLeft, -180.0, +180.0, 3, "deg");
 	}
 	if (ui->cbRight->isChecked())
 	{
-		graph.setRuler(sf::Draw::roRight, 0, 10, 2, "Y2");
-		//graph.setRuler(sf::Draw::roRight, 10e-2, -20e-2, 3, "sec");
+		//graph.setRuler(sf::Draw::roRight, 0, 10, 2, "Y2");
+		graph.setRuler(sf::Draw::roRight, -0.02, 0.02, 3, "V");
 	}
 	if (ui->cbTop->isChecked())
 	{

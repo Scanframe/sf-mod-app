@@ -104,13 +104,18 @@ TEST_CASE("sf::String", "[con][generic][strings]")
 
 	SECTION("sf::numberString", "Numeric value to std string with set resolution/digits.")
 	{
-		CHECK(sf::requiredDigits(0.0025, 0.01, 0.1) == 3);
-		CHECK(sf::requiredDigits(1, 0, 100) == 3);
+		CHECK(sf::requiredDigits(0.25, -999, 999) == 6);
+		CHECK(sf::requiredDigits(25, -1000, 1000) == 4);
+		CHECK(sf::requiredDigits(10, -0, 99) == 2);
+		CHECK(sf::requiredDigits(10, -100, 100) == 3);
+		CHECK(sf::requiredDigits(0.01, -0.1, 0.1) == 3);
+		CHECK(sf::requiredDigits(0.0025, 0.01, 0.1) == 4);
 
 		CHECK(sf::ipow(29, 0) == 1);
 		CHECK(sf::ipow(27, 1) == 27);
 		CHECK(sf::ipow(24l, 5) == 7962624);
-
+		CHECK(sf::numberString(0.0, 6) == "+00.0000");
+		CHECK(sf::numberString(0.35e+3, 3) == "+350");
 		CHECK(sf::numberString(1234e-18, 6) == "+1.23400e-15");
 		CHECK(sf::numberString(1234e+18, 6) == "+1.23400e+21");
 		CHECK(sf::numberString(123456e-18, 6) == "+123456e-18");

@@ -374,11 +374,11 @@ _MISC_FUNC int magnitude(double value);
  *
  * This function is used in combination with #numberString() to provide the 'digits' argument.
  *
- * @param roundVal Value used for rounding or stepping.
- * @param minVal Minimum value on the scale.
- * @param maxVal Maximum value on the scale.
+ * @param round_val Value used for rounding or stepping.
+ * @param min_val Minimum value on the scale.
+ * @param max_val Maximum value on the scale.
  * @return Amount of digits required.
  */
-_MISC_FUNC int requiredDigits(double roundVal, double minVal, double maxVal);
+_MISC_FUNC int requiredDigits(double round_val, double min_val, double max_val);
 
 }// namespace sf

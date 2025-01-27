@@ -114,7 +114,7 @@ bool Draw::ruler(
 				// Y-point where the last text was drawn.
 				int last_yp = -1;
 				// Iterate through the positions on the screen.
-				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos < end_pos); y_pos += dist)// NOLINT(cert-flp30-c)
+				for (double y_pos = real_start; inverted ? (y_pos > end_pos) : (y_pos < end_pos); y_pos += dist)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -165,7 +165,8 @@ bool Draw::ruler(
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(numberString((abs(y_pos) < abs(units_per_pixel) / 2) ? 0.0 : y_pos, digits, true));
+					tmp = isZero(y_pos, units_per_pixel * 2) ? std::string("0") : numberString(y_pos, digits, true);
+					auto text = QString::fromStdString(tmp);
 					// Get the size of the to be drawn text. Seems it is too narrow, so it is adjusted to fit the text.
 					auto tr = fm.boundingRect(text).adjusted(-1, 0, 1, 0);
 					// Paint the text values.
@@ -180,10 +181,9 @@ bool Draw::ruler(
 					}
 					// Set the text color.
 					p.setPen(p_text);
-					// Check if the text is within bounds.
+					// Check if the text is within the bounds.
 					auto ttr = tr;
 					ttr.moveTo(pt.x() - tr.width() - font_width / 2, pt.y());
-					// Check if the text is within the bounds.
 					if (area_rect.contains(ttr))
 					{
 						// When the text does not intersect with the ruler do not draw it at all.
@@ -274,7 +274,7 @@ bool Draw::ruler(
 				int last_xp = 0;
 				QRect last_tr;
 				// Iterate through the positions on the ruler.
-				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos < end_pos); x_pos += dist)// NOLINT(cert-flp30-c)
+				for (double x_pos = real_start; inverted ? (x_pos > end_pos) : (x_pos < end_pos); x_pos += dist)
 				{
 					// Set the line color.
 					p.setPen(p_line);
@@ -321,7 +321,8 @@ bool Draw::ruler(
 						}
 					}
 					// Get the to be printed value as text and prevent tiny value to be mistaken for zero.
-					auto text = QString::fromStdString(numberString((abs(x_pos) < abs(units_per_pixel) / 2) ? 0.0 : x_pos, digits, true));
+					tmp = isZero(x_pos, units_per_pixel * 2) ? std::string("0") : numberString(x_pos, digits, true);
+					auto text = QString::fromStdString(tmp);
 					// Get the size of the to be drawn text.
 					auto tr = fm.boundingRect(text);
 					tr.setWidth(tr.width() + 2);
@@ -337,7 +338,7 @@ bool Draw::ruler(
 					}
 					// Set the text color.
 					p.setPen(p_text);
-					// Check if the text is within bound.
+					// Check if the text is within bounds.
 					auto ttr = tr;
 					ttr.moveTo(pt.x() - tr.width() / 2, pt.y());
 					if (area_rect.contains(ttr))
@@ -454,11 +455,11 @@ bool Draw::gridLines(
 			// Get the weight of the distance.
 			int dist_weight = std::stoi(tmp.substr(precision + 4));
 			// Convert dist string to a value.
-			auto dist = sf::toNumber<double>(tmp);
+			auto dist = toNumber<double>(tmp);
 			// Remove the comma from the precision part.
 			tmp = tmp.substr(0, precision + 3).erase(2, 1);
 			// Get the value from the list that has a nice dist value.
-			int dist_prec = abs((int) sf::toNumber<double>(tmp));
+			int dist_prec = abs((int) toNumber<double>(tmp));
 			// Pick the nearest from the list.
 			for (auto& i: (go == goHorizontal) ? _tickListVertical : _tickListHorizontal)
 			{
@@ -474,7 +475,7 @@ bool Draw::gridLines(
 			// Determine the end position of the loop.
 			double end_pos = stop + dist;
 			// Iterate through the positions on the screen.
-			for (double pos = real_start; inverted ? (pos > end_pos) : (pos < end_pos); pos += dist)// NOLINT(cert-flp30-c)
+			for (double pos = real_start; inverted ? (pos > end_pos) : (pos < end_pos); pos += dist)
 			{
 				// Draw the line
 				if (go == goHorizontal)

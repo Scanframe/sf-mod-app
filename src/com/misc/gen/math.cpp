@@ -55,21 +55,25 @@ int magnitude(double value)
 	return 0;
 }
 
-int requiredDigits(double roundVal, double minVal, double maxVal)
+int requiredDigits(double round_val, double min_val, double max_val)
 {
 	int rv, dec, sign;
 	std::string s;
 	s.reserve(64);
 	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 	s.resize(std::numeric_limits<double>::max_digits10 + 1, '0');
-	ecvt_r(roundVal, std::numeric_limits<double>::digits10, &dec, &sign, s.data(), s.size());
+	ecvt_r(round_val, std::numeric_limits<double>::digits10, &dec, &sign, s.data(), s.size());
 	s.resize(strlen(s.c_str()), '0');
 	// Determine the amount of actual digits of the step value.
 	rv = static_cast<int>(trimRight(s, "0").length());
-	// Get magnitude of the absolute maximum amount of steps that can be made.
-	rv += magnitude(std::max(std::abs(maxVal), std::abs(minVal)) / roundVal);
+	// Add the magnitude of the absolute maximum amount of steps that can be made.
+	rv += magnitude(std::max(std::abs(max_val), std::abs(min_val)) / round_val);
+	// TODO: Make a correction for smaller then zero rounding values but this is not ideal.
+	if (!isZero(round_val) && round_val < 0.0)
+	{
+		rv++;
+	}
 	//
-	rv += -1;
 	return rv;
 }
 
