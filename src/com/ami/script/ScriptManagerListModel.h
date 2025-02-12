@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief List model for manipulating the passed script manager.
  */
-class ScriptManagerListModel
-	: public QAbstractListModel
+class ScriptManagerListModel : public QAbstractListModel
 {
 	public:
 		/**
@@ -19,9 +18,9 @@ class ScriptManagerListModel
 		explicit ScriptManagerListModel(ScriptManager* manager, QObject* parent = nullptr);
 
 		/**
-		 * @brief ???
+		 * @brief Sets the item delegate on a new CommonItemDelegate instance.
 		 */
-		void setDelegates(QAbstractItemView* view);
+		static void setDelegates(QAbstractItemView* view);
 
 		/**
 		 * @brief Called to refresh the attached viewer.
@@ -61,7 +60,7 @@ class ScriptManagerListModel
 		/**
 		 * @brief Adds a new entry to the end or after specified index of the list.
 		 */
-		void add(QModelIndex index);
+		void add(const QModelIndex& index);
 
 		/**
 		 * @brief Removes an entry at specified index.
@@ -72,17 +71,17 @@ class ScriptManagerListModel
 		/**
 		 * @brief Compiles and initializes all scripts.
 		 */
-		void startAll();
+		void startAll() const;
 
 		/**
 		 * @brief Compiles and initializes the script at the passed index row.
 		 */
-		void start(QModelIndex index);
+		void start(const QModelIndex& index) const;
 
 		/**
 		 * @brief Stops the script from running in the background at the passed index row.
 		 */
-		void stop(QModelIndex index);
+		void stop(const QModelIndex& index) const;
 
 	private:
 		/**

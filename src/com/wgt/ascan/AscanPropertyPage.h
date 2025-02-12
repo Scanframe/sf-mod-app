@@ -11,8 +11,7 @@ namespace Ui
 class AscanPropertyPage;
 }
 
-class AscanPropertyPage
-	: public PropertyPage
+class AscanPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

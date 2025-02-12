@@ -80,8 +80,7 @@ TEST_CASE("sf::Semaphore", "[con][generic][thread]")
 		// Time out.
 		while (!lock2.acquire(sem2, TimeSpec(0.05)))
 		{
-			if (!timer)
-				break;
+			if (!timer) break;
 		}
 		// Allow thread to process.
 		main_thread.sleep(TimeSpec(0.1));

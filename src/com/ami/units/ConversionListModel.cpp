@@ -27,8 +27,7 @@ class ConversionListModel::Adapter
 
 ConversionListModel::Adapter::Adapter()
 	: _ev({}, {}, 0, _multiplier, _offset, _to_unit, _to_precision)
-{
-}
+{}
 
 UnitConversionEvent& ConversionListModel::Adapter::getEvent(const Entry& entry)
 {
@@ -67,7 +66,7 @@ enum EColumn
 	cMaxColumns
 };
 
-}
+}// namespace
 
 ConversionListModel::ConversionListModel(UnitConversionServerEx* ucs, QObject* parent)
 	: QAbstractListModel(parent)
@@ -263,7 +262,10 @@ bool ConversionListModel::edit(QModelIndex index)
 		}
 		if (flag)//(edit ? (it != std::next(_list.begin(), index.row())) : (it != _list.end()))
 		{
-			QMessageBox::information(dynamic_cast<QWidget*>(parent()), tr("unit Conversion"), tr("unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision));
+			QMessageBox::information(
+				dynamic_cast<QWidget*>(parent()), tr("unit Conversion"),
+				tr("unit and precision combination (%1,%2) already exist!").arg(entry._from_unit).arg(entry._from_precision)
+			);
 			continue;
 		}
 		// Set the dirty flag before an event is going to be sent from the list modification.

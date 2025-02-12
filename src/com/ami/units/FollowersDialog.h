@@ -10,8 +10,7 @@ namespace Ui
 class FollowersDialog;
 }
 
-class FollowersDialog
-	: public QDialog
+class FollowersDialog : public QDialog
 {
 		Q_OBJECT
 

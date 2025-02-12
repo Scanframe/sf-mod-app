@@ -223,6 +223,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 			{
 				switch (index.column())
 				{
+					default:
 					case vcId:
 						if (item->_type == TreeItem::dtFolder)
 						{
@@ -259,7 +260,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						{
 							return {};
 						}
-						return Variable::getType(Variable::getInstanceById(item->_id).getType());
+						return QString::fromStdString(Variable::getType(Variable::getInstanceById(item->_id).getType()));
 
 					case vcFlags:
 						if (item->_type == TreeItem::dtFolder)
@@ -273,6 +274,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 			{
 				switch (index.column())
 				{
+					default:
 					case rcId:
 						if (item->_type == TreeItem::dtFolder)
 						{
@@ -288,7 +290,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						{
 							return {};
 						}
-						return ResultData::getType(ResultData::getInstanceById(item->_id).getType());
+						return QString::fromStdString(ResultData::getType(ResultData::getInstanceById(item->_id).getType()));
 
 					case rcTypeSize:
 						if (item->_type == TreeItem::dtFolder)
@@ -419,9 +421,7 @@ void InformationItemModel::updateList()
 	if (_idType == Gii::Variable)
 	{
 		auto vl = Variable::getList();
-		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool {
-			return v1->getName() < v2->getName();
-		});
+		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool { return v1->getName() < v2->getName(); });
 		for (auto v: vl)
 		{
 			QStringList namePath;
@@ -440,9 +440,7 @@ void InformationItemModel::updateList()
 	else if (_idType == Gii::ResultData)
 	{
 		auto rl = ResultData::getList();
-		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool {
-			return r1->getName() < r2->getName();
-		});
+		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool { return r1->getName() < r2->getName(); });
 		for (auto r: rl)
 		{
 			QStringList namePath;

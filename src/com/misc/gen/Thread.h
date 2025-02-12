@@ -21,7 +21,7 @@ namespace sf
 
 /**
  * @brief Thread wrapper class to be used for attachment to an existing thread or a new to be created thread.
- * This class can only be used to derive from since the constructor #Thread() is protected by design.
+ * This class can only be used to derive from since the constructor #Thread::Thread() is protected by design.
  * at least the #run() function must be overridden.
  */
 class _MISC_CLASS Thread
@@ -328,8 +328,7 @@ class _MISC_CLASS Thread
 		 * @brief Thread exception.
 		 * @see #::sf::ExceptionBase
 		 */
-		class ThreadException
-			: public ExceptionBase<ThreadException>
+		class ThreadException : public ExceptionBase<ThreadException>
 		{
 			public:
 				/**

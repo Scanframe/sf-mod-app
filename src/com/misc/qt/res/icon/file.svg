@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg
+	version="1.1"
+	color="darkcyan"
+	height="100px" width="100px"
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 1000 1000"
+	xml:space="preserve"
+>
+<g fill="currentColor" transform="translate(180,1) scale(0.22,.22)">
+<path stroke="none" d="M 529,3096 L 529,2817 2054,2817 2054,3096 529,3096 529,3096 Z"/>
+	<path stroke="none" d="M 529,1979 L 529,1699 2562,1699 2562,1979 529,1979 529,1979 Z"/>
+	<path stroke="none" d="M 529,2537 L 529,2258 2562,2258 2562,2537 529,2537 529,2537 Z"/>
+	<path stroke="none" d="M 2360,22 L 20,22 20,4494 3070,4494 3070,803 2360,22 Z M 2763,861 L 2307,861 2307,360 2763,861
+Z M 274,4214 L 274,302 2054,302 2054,1140 2816,1140 2816,4214 274,4214 Z"/>
+</g></svg>

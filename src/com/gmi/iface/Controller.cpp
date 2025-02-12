@@ -26,9 +26,7 @@ Controller::Controller(const Parameters&)
 	}
 }
 
-Controller::~Controller()
-{
-}
+Controller::~Controller() {}
 
 void Controller::attach(Axis* axis)
 {
@@ -67,8 +65,7 @@ void Controller::destroy()
 void Controller::hookEventHandler(ControllerEvent handler)
 {
 	// Cannot attach the handlers when destroying or when it is NULL.
-	if (!handler || _flagDestroying)
-		return;
+	if (!handler || _flagDestroying) return;
 	// Check if the handler already was assigned.
 	if (_motionEventList.find(handler) == UINT_MAX)
 	{
@@ -81,8 +78,7 @@ void Controller::hookEventHandler(ControllerEvent handler)
 
 void Controller::unhookEventHandler(ControllerEvent handler)
 {
-	if (!_motionEventList.detach(handler))
-		SF_RTTI_NOTIFY(DO_DEFAULT, "Handler was not hooked!")
+	if (!_motionEventList.detach(handler)) SF_RTTI_NOTIFY(DO_DEFAULT, "Handler was not hooked!")
 	else
 		handler(this, ceUNHOOKED);
 }
@@ -91,43 +87,38 @@ void Controller::sendEvent(EControllerEvent ce)
 {
 	// Make a local copy of the event list so that handled events can not disturb content of the list.
 	EventList el = _motionEventList;
-	for (unsigned i = 0; i < el.count(); i++)
-		el[i](this, ce);
+	for (unsigned i = 0; i < el.count(); i++) el[i](this, ce);
 }
 
 void Controller::callParamHook(IdType id)
 {
-	if (_paramNotifyProc)
-		_paramNotifyProc(_paramNotifyData, id);
-	if (id == getParamId(mpMOVEPOS) && isMovePosCompleted())
-		sendEvent(ceCOMPLETE);
+	if (_paramNotifyProc) _paramNotifyProc(_paramNotifyData, id);
+	if (id == getParamId(mpMOVEPOS) && isMovePosCompleted()) sendEvent(ceCOMPLETE);
 }
 
 void Controller::callResultHook(IdType id)
 {
-	if (_resultNotifyProc)
-		_resultNotifyProc(_resultNotifyData, id);
+	if (_resultNotifyProc) _resultNotifyProc(_resultNotifyData, id);
 }
 
 struct
 {
 		const char* Name;
 		const char* Description;
-} ReferenceTable[] =
-	{
-		{"N/A", "Axis is not available at the driver impementation"},
-		{"X", "Lineair and moves in [m]"},
-		{"Y", "Lineair and moves in [m]"},
-		{"Z", "Lineair and moves in [m]"},
-		{"A", "Angular Gimble and moves [rad]"},
-		{"B", "Angular Swiffel and moves [rad]"},
-		{"C", "Angular Turntable and moves [rad and/or Hz]"},
-		{"D", "Tool Angular and moves [rad]"},
-		{"E", "Tool Lineair and moves in [m]"},
-		{"AUX1", "Auxiiary axis 1 has no location in the constallation of axes"},
-		{"AUX2", "Auxiiary axis 2 has no location in the constallation of axes"},
-		{"AUX3", "Auxiiary axis 3 has no location in the constallation of axes"},
-		{"AUX4", "Auxiiary axis 4 has no location in the constallation of axes"},
+} ReferenceTable[] = {
+	{"N/A", "Axis is not available at the driver impementation"},
+	{"X", "Lineair and moves in [m]"},
+	{"Y", "Lineair and moves in [m]"},
+	{"Z", "Lineair and moves in [m]"},
+	{"A", "Angular Gimble and moves [rad]"},
+	{"B", "Angular Swiffel and moves [rad]"},
+	{"C", "Angular Turntable and moves [rad and/or Hz]"},
+	{"D", "Tool Angular and moves [rad]"},
+	{"E", "Tool Lineair and moves in [m]"},
+	{"AUX1", "Auxiiary axis 1 has no location in the constallation of axes"},
+	{"AUX2", "Auxiiary axis 2 has no location in the constallation of axes"},
+	{"AUX3", "Auxiiary axis 3 has no location in the constallation of axes"},
+	{"AUX4", "Auxiiary axis 4 has no location in the constallation of axes"},
 };
 
 const char* Controller::getAxisName(int axis_loc)
@@ -171,8 +162,10 @@ const char* Controller::getStatusName(EStatus status)
 
 void Controller::addPropertyPages(PropertySheetDialog* sheet)
 {
+#if IS_QT
 	auto pp = new PropertyPage(sheet);
 	sheet->addPage(pp);
+#endif
 }
 
 bool Controller::uninitialize()
@@ -182,8 +175,7 @@ bool Controller::uninitialize()
 	{
 		// Can only go back to the status not initialized when
 		// the status is larger than the state initialized.
-		if (_status >= csINIT)
-			setStatus(csUNINIT);
+		if (_status >= csINIT) setStatus(csUNINIT);
 		return true;
 	}
 	return false;
@@ -257,24 +249,17 @@ bool Controller::setParam(IdType id, const Value& value, bool skip_event)
 	// When skip event is true simple handling.
 	bool rv = handleParam(id, nullptr, &value, nullptr);
 	// Call the hook interface handler when the parameter was set successfully.
-	if (!skip_event && rv)
-		callParamHook(id);
+	if (!skip_event && rv) callParamHook(id);
 	//
 	return rv;
 }
 
-bool Controller::setParam(
-	EParam param,
-	int axis,
-	const Value& value,
-	bool skip_event
-)
+bool Controller::setParam(EParam param, int axis, const Value& value, bool skip_event)
 {
 	// Get the local ID of the default parameter.
 	IdType id = getParamId(param, axis);
 	// Check the ID for non-existence.
-	if (id)
-		return setParam(id, value, skip_event);
+	if (id) return setParam(id, value, skip_event);
 	// Signal ID failure.
 	SF_RTTI_NOTIFY(DO_DEFAULT, "setParam: param" << param << " of axis: " << getAxisName(axis) << " is not present!")
 	return false;
@@ -285,8 +270,7 @@ bool Controller::getParam(EParam param, int axis, Value& value) const
 	// Get the local ID of the default parameter.
 	IdType id = getParamId(param, axis);
 	// Check the ID for non-existence.
-	if (id)
-		return getParam(id, value);
+	if (id) return getParam(id, value);
 	SF_RTTI_NOTIFY(DO_DEFAULT, "getParam: param" << param << " of axis: " << getAxisName(axis) << " is not present!")
 	return false;
 }
@@ -297,8 +281,7 @@ bool Controller::setGetParam(IdType id, Value& value, bool skip_event)
 	if (handleParam(id, nullptr, &value, &value))
 	{
 		// Call the hook interface handler when the parameter was set successfully.
-		if (!skip_event)
-			callParamHook(id);
+		if (!skip_event) callParamHook(id);
 		// Signal succes.
 		return true;
 	}
@@ -314,8 +297,7 @@ bool Controller::getCurrent(EAxisValueType avt, AxesCoord& ac) const
 	// Clear all values ins the passed coordinate.
 	ac.clear();
 	// Iterate through the implemented axes.
-	for (size_t i = 0; i < _axes.count(); i++)
-		ac << AxisValue(_axes[i]->getLocation(), _axes[i]->getCurrent(avt));
+	for (size_t i = 0; i < _axes.count(); i++) ac << AxisValue(_axes[i]->getLocation(), _axes[i]->getCurrent(avt));
 	// Signal success.
 	return true;
 }
@@ -331,8 +313,7 @@ bool Controller::setCurrent(EAxisValueType avt, const AxesCoord& coord)
 		// Ignore unset locations.
 		if (coord.isSet(loc))
 		{// Set the axis value.
-			if (!_axes[i]->setTarget(avt, coord[loc]._value))
-				rv = false;
+			if (!_axes[i]->setTarget(avt, coord[loc]._value)) rv = false;
 		}
 	}
 	// Signal success or failure.
@@ -396,8 +377,7 @@ bool Controller::getTarget(EAxisValueType avt, AxesCoord& coord) const
 	// Clear all values ins the passed coordinate.
 	coord.clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < _axes.count(); i++)
-		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getTarget(avt));
+	for (unsigned i = 0; i < _axes.count(); i++) coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getTarget(avt));
 	// Signal success.
 	return true;
 }
@@ -407,8 +387,7 @@ bool Controller::getMinMax(EAxisMinMax amm, AxesCoord& coord) const
 	// Clear all values ins the passed coordinate.
 	coord.clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < _axes.count(); i++)
-		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getMinMax(amm));
+	for (unsigned i = 0; i < _axes.count(); i++) coord << AxisValue(_axes[i]->getLocation(), _axes[i]->getMinMax(amm));
 	// Signal success.
 	return true;
 }
@@ -424,20 +403,14 @@ bool Controller::setTarget(EAxisValueType avt, const AxesCoord& coord)
 		// Ignore unset locations.
 		if (coord.isSet(loc))
 		{// Set the axis value.
-			if (!_axes[i]->setTarget(avt, coord[loc]._value))
-				rv = false;
+			if (!_axes[i]->setTarget(avt, coord[loc]._value)) rv = false;
 		}
 	}
 	// Signal success or failure.
 	return rv;
 }
 
-bool Controller::setTarget(
-	const AxesCoord& pos,
-	const AxesCoord& vel,
-	const AxesCoord& acc,
-	bool linear
-)
+bool Controller::setTarget(const AxesCoord& pos, const AxesCoord& vel, const AxesCoord& acc, bool linear)
 {
 	bool rv = true;
 	if (linear)
@@ -457,10 +430,8 @@ bool Controller::setTarget(
 			// Also on the velocity must be non-zero.
 			for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
 			{
-				if (std::fabs(vel.getValue(i)) < std::numeric_limits<double>::min())
-					dist.unset(i);
-				if (dist.isSet(i) && fabs(dist.getValue(i)) < getAxis(i).getAccuracy())
-					dist.unset(i);
+				if (std::fabs(vel.getValue(i)) < std::numeric_limits<double>::min()) dist.unset(i);
+				if (dist.isSet(i) && fabs(dist.getValue(i)) < getAxis(i).getAccuracy()) dist.unset(i);
 			}
 			// Get values for a linear profile.
 			if (getLinearValues(dist, vel, acc, trgvel, trgacc, trgtime))
@@ -503,8 +474,7 @@ bool Controller::setOffset(const AxesCoord& coord)
 		if (coord.isSet(loc))
 		{
 			// Set the axis value.
-			if (!_axes[i]->setOffset(coord[loc]._value))
-				rv = false;
+			if (!_axes[i]->setOffset(coord[loc]._value)) rv = false;
 		}
 	}
 	// Signal success or failure.
@@ -516,8 +486,7 @@ bool Controller::getOffset(AxesCoord& coord) const
 	// Clear all values ins the passed coordinate.
 	coord.clear();
 	// Iterate through the implemented axes.
-	for (unsigned i = 0; i < _axes.count(); i++)
-		coord << AxisValue(_axes[i]->getLocation(), _axes[i]->setOffset());
+	for (unsigned i = 0; i < _axes.count(); i++) coord << AxisValue(_axes[i]->getLocation(), _axes[i]->setOffset());
 	// Signal success.
 	return true;
 }
@@ -549,8 +518,7 @@ bool Controller::setMovePos(EMovePosCmd mpc)
 	auto id = getParamId(mpMOVEPOS);
 	Value value(mpc);
 	// Check if the parameter is available.
-	if (!setGetParam(id, value, false))
-		return false;
+	if (!setGetParam(id, value, false)) return false;
 	else
 	{// It could be that the controller is already on
 		// its target and the gotten value is equal to Complete.
@@ -648,8 +616,7 @@ bool Controller::setJoystick(EJoystickCmd jsc)
 		Value value(jsc);
 		if (setParam(mpJOYSTICK, UINT_MAX, value, false))
 		{
-			if (getParam(mpJOYSTICK, UINT_MAX, value))
-				return jsc == (EJoystickCmd) value.getInteger();
+			if (getParam(mpJOYSTICK, UINT_MAX, value)) return jsc == (EJoystickCmd) value.getInteger();
 		}
 	}
 	return false;
@@ -663,8 +630,7 @@ bool Controller::setJoystickAxis(EAxisLocation axis_loc)
 		Value value(axis_loc);
 		if (setParam(mpJOYSTICK_AXIS, UINT_MAX, value, false))
 		{
-			if (getParam(mpJOYSTICK_AXIS, UINT_MAX, value))
-				return value.getInteger() == axis_loc;
+			if (getParam(mpJOYSTICK_AXIS, UINT_MAX, value)) return value.getInteger() == axis_loc;
 		}
 	}
 	return false;
@@ -921,8 +887,7 @@ bool Controller::setPosition(const AxesCoord& ac)
 			// Ignore unset locations.
 			if (ac.isSet(loc))
 			{// Set the axis value.
-				if (!_axes[i]->setPosition(ac[loc]._value))
-					rv = false;
+				if (!_axes[i]->setPosition(ac[loc]._value)) rv = false;
 			}
 		}
 	}
@@ -949,8 +914,7 @@ AxesCoord& Controller::normalize(AxesCoord& pos) const
 {
 	// For all set axis normalize the passed position.
 	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
-		if (pos.isSet(i))
-			pos.getValue(i) = getAxis(i).normalized(pos.getValue(i));
+		if (pos.isSet(i)) pos.getValue(i) = getAxis(i).normalized(pos.getValue(i));
 	return pos;
 }
 
@@ -960,8 +924,7 @@ AxisLocations Controller::getRadialUnlimited() const
 	AxisMovements am;
 	am << amRADIAL;
 	for (int i = alFIRST_ENTRY; i < alLAST_ENTRY; i++)
-		if (getAxis(i)._movements == am)
-			als << static_cast<EAxisLocation>(i);
+		if (getAxis(i)._movements == am) als << static_cast<EAxisLocation>(i);
 	return als;
 }
 
@@ -984,20 +947,17 @@ bool Controller::settingsReadWrite(bool rd)
 			if (info.Flags & pfSYSTEM)
 			{
 				// Set the section based on the axis.
-				if (info.Flags & pfAXIS)
-					profile.setSection(stringf("%s-Axis", getAxisName(info.Axis)).c_str());
+				if (info.Flags & pfAXIS) profile.setSection(stringf("%s-Axis", getAxisName(info.Axis)).c_str());
 				else
 					profile.setSection("General");
 				// If no name exists use the ID.
-				if (!info.Name.length())
-					info.Name = stringf("0x%X", info.Id);
+				if (!info.Name.length()) info.Name = stringf("0x%X", info.Id);
 				if (rd)
 				{
 					// Read the value info value class.
 					Value val(profile.getString(info.Name.c_str(), info.Default.getString().c_str()));
 					// Write the parameter to the interface.
-					if (!setParam(ids[i], val, false))
-						retval = false;
+					if (!setParam(ids[i], val, false)) retval = false;
 				}
 				else
 				{
@@ -1083,21 +1043,19 @@ double Controller::Axis::getMinMax(EAxisMinMax amm) const
 	// Test if the axis is a valid one.
 	if (_location != alNA)
 	{
-		static EParam mps[] =
-			{
-				mpAXIS_MIN_POS,
-				mpAXIS_MAX_POS,
-				mpAXIS_MAX_VEL,
-				mpAXIS_MAX_ACC,
-			};
+		static EParam mps[] = {
+			mpAXIS_MIN_POS,
+			mpAXIS_MAX_POS,
+			mpAXIS_MAX_VEL,
+			mpAXIS_MAX_ACC,
+		};
 		// When out of range return 0.0;
 		if (amm < std::size(mps))
 		{
 			// Temp value for storage.
 			Value value;
 			// Check if the parameter is available.
-			if (_controller.getParam(mps[amm], _location, value))
-				return value.getFloat();
+			if (_controller.getParam(mps[amm], _location, value)) return value.getFloat();
 		}
 	}
 	return 0.0;
@@ -1115,8 +1073,7 @@ double Controller::Axis::getTarget(EAxisValueType avt) const
 			// Temp value for storage.
 			Value value;
 			// Check if the parameter is available.
-			if (_controller.getParam(mps[avt], _location, value))
-				return value.getFloat();
+			if (_controller.getParam(mps[avt], _location, value)) return value.getFloat();
 		}
 	}
 	return 0.0;
@@ -1152,8 +1109,7 @@ double Controller::Axis::setOffset() const
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (_controller.getParam(mpAXIS_OFS_POS, _location, value))
-			return value.getFloat();
+		if (_controller.getParam(mpAXIS_OFS_POS, _location, value)) return value.getFloat();
 	}
 	return 0.0;
 }
@@ -1166,8 +1122,7 @@ double Controller::Axis::getAccuracy() const
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (_controller.getParam(mpAXIS_ACCURACY, _location, value))
-			return value.getFloat();
+		if (_controller.getParam(mpAXIS_ACCURACY, _location, value)) return value.getFloat();
 	}
 	return 0.0;
 }
@@ -1180,8 +1135,7 @@ double Controller::Axis::getResolution() const
 		// Temp value for storage.
 		Value value;
 		// Check if the parameter is available.
-		if (_controller.getParam(mpAXIS_RESOLUTION, _location, value))
-			return value.getFloat();
+		if (_controller.getParam(mpAXIS_RESOLUTION, _location, value)) return value.getFloat();
 	}
 	return 1.0;
 }
@@ -1196,8 +1150,7 @@ bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, boo
 
 		case amHOME:
 			// All axis must be not moving before a mode can be changed.
-			if (!pos_cmplt || !vel_cmplt || !con_cmplt)
-				return false;
+			if (!pos_cmplt || !vel_cmplt || !con_cmplt) return false;
 			return true;
 
 		case amDISABLED:
@@ -1207,18 +1160,15 @@ bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, boo
 					return false;
 				case amPOSITION:
 				case amHOME:
-					if (!pos_cmplt)
-						return false;
+					if (!pos_cmplt) return false;
 					break;
 				case amVELOCITY:
 					// Only when velocity mode is complete.
-					if (!vel_cmplt)
-						return false;
+					if (!vel_cmplt) return false;
 					break;
 				case amCONTINUE:
 					// Only when velocity mode is complete.
-					if (!con_cmplt)
-						return false;
+					if (!con_cmplt) return false;
 					break;
 			}
 			break;
@@ -1231,19 +1181,16 @@ bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, boo
 				case amDISABLED:
 				case amHOME:
 					// Only when position move is complete.
-					if (!pos_cmplt)
-						return false;
+					if (!pos_cmplt) return false;
 					break;
 				case amVELOCITY:
 					// Only when not moving at all can be switched from
 					// velocity to position mode.
-					if (!pos_cmplt || !vel_cmplt)
-						return false;
+					if (!pos_cmplt || !vel_cmplt) return false;
 					break;
 				case amCONTINUE:
 					// Only when velocity mode is complete.
-					if (!pos_cmplt || !con_cmplt)
-						return false;
+					if (!pos_cmplt || !con_cmplt) return false;
 					break;
 			}
 			break;
@@ -1255,19 +1202,16 @@ bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, boo
 					return false;
 				case amDISABLED:
 					// Only when not moving in velocity mode.
-					if (!vel_cmplt)
-						return false;
+					if (!vel_cmplt) return false;
 					break;
 				case amPOSITION:
 				case amHOME:
 					// Only when not moving at all.
-					if (!pos_cmplt || !vel_cmplt)
-						return false;
+					if (!pos_cmplt || !vel_cmplt) return false;
 					break;
 				case amCONTINUE:
 					// Only when velocity mode is complete.
-					if (!con_cmplt || !vel_cmplt)
-						return false;
+					if (!con_cmplt || !vel_cmplt) return false;
 					break;
 			}
 			break;
@@ -1279,19 +1223,16 @@ bool Controller::Axis::canModeChange(EAxisMode cur_mode, EAxisMode new_mode, boo
 					return false;
 				case amDISABLED:
 					// Only when not moving in velocity mode.
-					if (!con_cmplt)
-						return false;
+					if (!con_cmplt) return false;
 					break;
 				case amPOSITION:
 				case amHOME:
 					// Only when not moving at all.
-					if (!pos_cmplt || !con_cmplt)
-						return false;
+					if (!pos_cmplt || !con_cmplt) return false;
 					break;
 				case amVELOCITY:
 					// Only when velocity mode is complete.
-					if (!vel_cmplt || !con_cmplt)
-						return false;
+					if (!vel_cmplt || !con_cmplt) return false;
 					break;
 			}
 			break;
@@ -1314,12 +1255,7 @@ bool Controller::Axis::setMode(EAxisMode mode)
 			if (cur_mode != mode)
 			{
 				// Check if a change is allowed.
-				bool ok = canModeChange(
-					cur_mode, mode,
-					_controller.isMovePosCompleted(),
-					_controller.isMoveVelCompleted(),
-					_controller.isMoveConCompleted()
-				);
+				bool ok = canModeChange(cur_mode, mode, _controller.isMovePosCompleted(), _controller.isMoveVelCompleted(), _controller.isMoveConCompleted());
 				//
 				if (!ok)
 				{
@@ -1367,11 +1303,9 @@ double Controller::Axis::normalized(double pos) const
 	{// Bring the angle in range of 0..360 degree.
 		pos = fmod(pos, sf::numbers::pi_v<Value::flt_type> * 2.0);
 		// All angle near zero are zeroed.
-		if (fabs(pos) >= sf::numbers::pi_v<Value::flt_type> * 2.0 - getAccuracy())
-			pos = 0.0;
+		if (fabs(pos) >= sf::numbers::pi_v<Value::flt_type> * 2.0 - getAccuracy()) pos = 0.0;
 		// Make the angle positive.
-		if (pos < 0.0)
-			pos += sf::numbers::pi_v<Value::flt_type> * 2.0;
+		if (pos < 0.0) pos += sf::numbers::pi_v<Value::flt_type> * 2.0;
 	}
 	return pos;
 }
@@ -1392,11 +1326,9 @@ bool Controller::isMoving() const
 	EMoveVelCmd mvc = getMoveVel();
 	EMoveConCmd mcc = getMoveCon();
 	// When one axis has the abort state motion has stopped for shure.
-	if (mpc == mpcABORT || mvc == mvcABORT || mcc == mccABORT)
-		return getJoystick() > jscOFF;
+	if (mpc == mpcABORT || mvc == mvcABORT || mcc == mccABORT) return getJoystick() > jscOFF;
 	// All axes have to be completed before no movement is assumed.
-	if (mpc == mpcCOMPLETE && mvc == mvcCOMPLETE && mcc == mccCOMPLETE)
-		return getJoystick() > jscOFF;
+	if (mpc == mpcCOMPLETE && mvc == mvcCOMPLETE && mcc == mccCOMPLETE) return getJoystick() > jscOFF;
 	return true;
 }
 

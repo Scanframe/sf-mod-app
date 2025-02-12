@@ -15,9 +15,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 		// Value passed to lambda function.
 		int abc = 456;
 		// Construct closure with lambda function.
-		my_closure_type closure([abc](const char* fmt, int value) -> std::string {
-			return sf::string_format(fmt, value + abc);
-		});
+		my_closure_type closure([abc](const char* fmt, int value) -> std::string { return sf::string_format(fmt, value + abc); });
 		// Closure assignment check.
 		REQUIRE(closure.isAssigned());
 		//
@@ -37,9 +35,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 	SECTION("sf::Closure Copy")
 	{
 		// Construct closure with lambda function.
-		my_closure_type closure([](const char* fmt, int value) -> std::string {
-			return sf::string_format(fmt, value);
-		});
+		my_closure_type closure([](const char* fmt, int value) -> std::string { return sf::string_format(fmt, value); });
 		//
 		REQUIRE_THAT(my_closure_type(closure)("format (%d)", 123), Equals("format (123)"));
 
@@ -51,9 +47,7 @@ TEST_CASE("sf::Closure", "[con][generic]")
 	SECTION("sf::Closure Assignment Lambda")
 	{
 		// Construct closure with lambda function.
-		auto fn = [](const char* fmt, int value) -> std::string {
-			return sf::string_format(fmt, value);
-		};
+		auto fn = [](const char* fmt, int value) -> std::string { return sf::string_format(fmt, value); };
 		//
 		my_closure_type c1, c2;
 		//

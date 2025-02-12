@@ -14,8 +14,7 @@ std::string getOSVersion()
 	OSVERSIONINFO versionInfo = {sizeof(OSVERSIONINFO)};
 	if (GetVersionEx(&versionInfo))
 	{
-		return std::string(isRunningWine() ? "Wine " : "Windows ") + std::to_string(versionInfo.dwMajorVersion) + "." +
-			std::to_string(versionInfo.dwMinorVersion);
+		return std::string(isRunningWine() ? "Wine " : "Windows ") + std::to_string(versionInfo.dwMajorVersion) + "." + std::to_string(versionInfo.dwMinorVersion);
 	}
 	return "Unknown Windows Version";
 }
@@ -24,7 +23,8 @@ std::string getOSVersion()
 std::string getOSVersion()
 {
 	struct utsname sysInfo;
-	if (uname(&sysInfo) == 0) {
+	if (uname(&sysInfo) == 0)
+	{
 		return std::string("macOS ") + sysInfo.release;
 	}
 	return "Unknown macOS Version";
@@ -34,7 +34,8 @@ std::string getOSVersion()
 std::string getOSVersion()
 {
 	struct utsname sysInfo;
-	if (uname(&sysInfo) == 0) {
+	if (uname(&sysInfo) == 0)
+	{
 		return std::string("Linux ") + sysInfo.release;
 	}
 	return "Unknown Linux Version";

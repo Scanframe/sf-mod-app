@@ -10,8 +10,7 @@ namespace sf
 /**
  * @brief Script extending and linking the script to the generic information interface elements.
  */
-class _GII_CLASS GiiScriptInterpreter
-	: public ScriptInterpreter
+class _GII_CLASS GiiScriptInterpreter : public ScriptInterpreter
 {
 	public:
 		/**

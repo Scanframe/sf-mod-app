@@ -10,7 +10,8 @@ class RsaInterface;
 /**
  * @brief RSA implementation of a information server.
  */
-class _RSA_CLASS RsaServer : public InformationServer
+class _RSA_CLASS RsaServer
+	: public InformationServer
 	, public RsaTypes
 {
 	public:
@@ -53,12 +54,18 @@ class _RSA_CLASS RsaServer : public InformationServer
 		/**
 		 * @brief Gets a pointer to the current acquisition implementation.
 		 */
-		RsaInterface* getAcquisition() { return _acquisition; }
+		RsaInterface* getAcquisition()
+		{
+			return _acquisition;
+		}
 
 		/**
 		 * @brief Returns true whe all parameters are locked.
 		 */
-		[[nodiscard]] bool isLocked() const { return _lock; }
+		[[nodiscard]] bool isLocked() const
+		{
+			return _lock;
+		}
 
 		/**
 		 * @brief Locks the variables by making them all read only.

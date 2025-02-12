@@ -24,9 +24,7 @@ FormDialog::FormDialog(QWidget* parent, Qt::WindowFlags f)
 	_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	//scrollArea->setSizeAdjustPolicy(QScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow);
 	// Connect the resizing signal from the FormDialog to the scroll area.
-	connect(this, &FormDialog::resizing, [&](QResizeEvent* event) -> void {
-		_scrollArea->setGeometry(QRect(QPoint(), event->size()));
-	});
+	connect(this, &FormDialog::resizing, [&](QResizeEvent* event) -> void { _scrollArea->setGeometry(QRect(QPoint(), event->size())); });
 }
 
 void FormDialog::resizeEvent(QResizeEvent* event)

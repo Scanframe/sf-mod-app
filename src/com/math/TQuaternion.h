@@ -179,8 +179,8 @@ class TQuaternion
 		TQuaternion normalized() const;
 
 		/**
-		 * @briew Gets the squared magnitude which is used in computations and the #magnitude() method for the actual magnitude.
-		 * @return
+		 * @brief Gets the squared magnitude which is used in computations and the #magnitude() method for the actual magnitude.
+		 * @return Square root of the magnitude.
 		 */
 		T magnitudeSqr() const;
 
@@ -436,7 +436,7 @@ TQuaternion<T> operator*(T c, const TQuaternion<T>& quat)
 
 /**
  * @brief Operator for writing the #sf::TQuaternion to an output-stream.
- * Calls #TQuaternion<T>::toString() for the operator.
+ * Calls #TQuaternion::toString() for the operator.
  * @tparam T Base floating point type.
  * @param os Output stream.
  * @param quat Matrix to stream out.

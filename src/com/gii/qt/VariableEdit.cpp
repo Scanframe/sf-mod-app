@@ -14,7 +14,8 @@
 namespace sf
 {
 
-struct VariableEdit::Private : QObject
+struct VariableEdit::Private
+	: QObject
 	, VariableWidgetBase::PrivateBase
 {
 		VariableEdit* _widget{nullptr};
@@ -116,12 +117,7 @@ struct VariableEdit::Private : QObject
 			delete _labelUnit;
 		}
 
-		void variableEventHandler(
-			EEvent event,
-			const Variable& call_var,
-			Variable& link_var,
-			bool same_inst
-		) override
+		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, Variable::getEventName(event));
 			switch (event)

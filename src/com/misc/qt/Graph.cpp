@@ -22,8 +22,7 @@ Graph::Graph(const QPalette& palette)
 			 palette.color(QPalette::ColorRole::Text)
 			}
 		)
-{
-}
+{}
 
 Graph::RulerInfo* Graph::getRulerInfo(Draw::ERulerOrientation ro)
 {
@@ -75,12 +74,8 @@ void Graph::setBounds(const QFontMetrics& fm, const QRect& bounds)
 	_right.size = fm.averageCharWidth() * 10 + _right.digits;
 	_top.size = _bottom.size = fm.height() * 3 * 6 / 7;
 	// Calculate the graph area.
-	_plotArea = bounds.adjusted(
-		_left.enabled ? _left.size : 0,
-		_top.enabled ? _top.size : 0,
-		_right.enabled ? -_right.size : 0,
-		_bottom.enabled ? -_bottom.size : 0
-	);
+	_plotArea =
+		bounds.adjusted(_left.enabled ? _left.size : 0, _top.enabled ? _top.size : 0, _right.enabled ? -_right.size : 0, _bottom.enabled ? -_bottom.size : 0);
 }
 
 const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion& region)
@@ -208,7 +203,9 @@ const QRect& Graph::paint(QPainter& painter, const QRect& bounds, const QRegion&
 		// Draw the actual ruler elements.
 		if (!_debug && region.intersects(area))
 		{
-			draw.ruler(painter, Draw::roBottom, _colors[cRulerLine], _colors[cRulerText], _bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit);
+			draw.ruler(
+				painter, Draw::roBottom, _colors[cRulerLine], _colors[cRulerText], _bottom.rect, area, _bottom.start, _bottom.stop, _bottom.digits, _bottom.unit
+			);
 		}
 	}
 	// Only draw when in the region.

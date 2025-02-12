@@ -310,8 +310,7 @@ void ApplicationSettings::saveWindowRect(const QString& win_name, QWidget* windo
 void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool save)
 {
 	// No widget set bailout.
-	if (!widget)
-		return;
+	if (!widget) return;
 	// Form the ini's directory to relate too.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// Create the settings instance.
@@ -341,8 +340,7 @@ void ApplicationSettings::windowState(const QString& name, QWidget* widget, bool
 void ApplicationSettings::treeViewColumns(const QString& name, QTreeView* tv, bool save)
 {
 	// No tree view set bailout.
-	if (!tv)
-		return;
+	if (!tv) return;
 	// Form the ini's directory to relate too.
 	QString dir = _fileInfo.absoluteDir().absolutePath() + QDir::separator();
 	// Create the settings instance.
@@ -353,8 +351,7 @@ void ApplicationSettings::treeViewColumns(const QString& name, QTreeView* tv, bo
 	for (int i = 0; i < header->count(); ++i)
 	{
 		auto key = QString("%1-Col%2Width").arg(name).arg(i);
-		if (save)
-			settings.setValue(key, header->sectionSize(i));
+		if (save) settings.setValue(key, header->sectionSize(i));
 		else
 		{
 			auto width = settings.value(key);
@@ -378,12 +375,7 @@ void ApplicationSettings::saveTreeViewColumns(const QString& name, QTreeView* tv
 }
 
 QMetaObject::Connection connectByName(
-	const QWidget* widget,
-	const QString& sender_name,
-	const char* signal_name,
-	const QObject* receiver,
-	const char* method_name,
-	Qt::ConnectionType ct
+	const QWidget* widget, const QString& sender_name, const char* signal_name, const QObject* receiver, const char* method_name, Qt::ConnectionType ct
 )
 {
 	auto sender = widget->findChild<QObject*>(sender_name);

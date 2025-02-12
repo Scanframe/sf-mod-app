@@ -45,12 +45,7 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK(mtx[3][2] == 0);
 		CHECK(mtx[3][3] == 1);
 		// Check the initialization constructor.
-		sf::Matrix44 m0(
-			1, 2, 3, 4,
-			11, 12, 13, 14,
-			21, 22, 23, 24,
-			31, 32, 33, 34
-		);
+		sf::Matrix44 m0(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34);
 		m0.copyTo(mtx);
 		CHECK(mtx[0][0] == 1);
 		CHECK(mtx[0][1] == 2);
@@ -105,12 +100,7 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK(cptr[14] == 33);
 		CHECK(cptr[15] == 34);
 		// Check the Initializer list constructor.
-		sf::Matrix44 m1 = {
-			1, 2, 3, 4,
-			11, 12, 13, 14,
-			21, 22, 23, 24,
-			31, 32, 33, 34
-		};
+		sf::Matrix44 m1 = {1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34};
 		m1.copyTo(mtx);
 		CHECK(mtx[0][0] == 1);
 		CHECK(mtx[0][1] == 2);
@@ -137,12 +127,7 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK(mtx[0][3] == 4);
 		// Move operator.
 		sf::Matrix44 m3;
-		m3 = sf::Matrix44(
-			1, 2, 3, 4,
-			11, 12, 13, 14,
-			21, 22, 23, 24,
-			31, 32, 33, 34
-		);
+		m3 = sf::Matrix44(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34);
 		m3.copyTo(mtx);
 		CHECK(mtx[0][0] == 1);
 		CHECK(mtx[0][1] == 2);
@@ -231,7 +216,10 @@ TEST_CASE("sf::Matrix44", "[con][generic][vector]")
 		CHECK((sf::Matrix44(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)) * sf::Vector3D(1, 2, 3)) == sf::Vector3D(1, 3, -2));
 		CHECK(sf::Matrix44(sf::toRadians(90.0), sf::toRadians(90.0), sf::toRadians(90.0)).determinant() == Approx(1.0).margin(sf::Matrix44::tolerance));
 		// Check Transpose a matrix
-		CHECK(sf::Matrix44(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34).transposed() == sf::Matrix44(1, 11, 21, 31, 2, 12, 22, 32, 3, 13, 23, 33, 4, 14, 24, 34));
+		CHECK(
+			sf::Matrix44(1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34).transposed() ==
+			sf::Matrix44(1, 11, 21, 31, 2, 12, 22, 32, 3, 13, 23, 33, 4, 14, 24, 34)
+		);
 		// Check if the rotation and translation are applied to the vector.
 		sf::Matrix44 mtx(0, 0, sf::toRadians(-90.0));
 		mtx.setTranslation(10, 10, 10);

@@ -29,12 +29,12 @@ class TVector3D
 		/**
 		 * @brief Copy constructor.
 		 */
-		TVector3D(const TVector3D<T>& v);
+		TVector3D(const TVector3D& v);
 
 		/**
 		 * @brief Move constructor.
 		 */
-		TVector3D(TVector3D<T>&&) noexcept = default;
+		TVector3D(TVector3D&&) noexcept;
 
 		/**
 		 * @brief Initializing constructor.
@@ -48,79 +48,77 @@ class TVector3D
 		 * @brief Assignment of new coordinate values.
 		 * @param xp X-axis value.
 		 * @param yp Y-axis value.
-		 * @param xp Y-axis value.
+		 * @param zp Y-axis value.
 		 * @return Itself.
 		 */
-		TVector3D<T>& assign(T xp, T yp, T zp);
+		TVector3D& assign(T xp, T yp, T zp);
 
 		/**
 		 * @brief Assignment of vector instance.
-		 * @param x X-axis value.
-		 * @param y Y-axis value.
-		 * @param z Z-axis value.
+		 * @param v Vector value.
 		 * @return Itself.
 		 */
-		TVector3D<T>& assign(const TVector3D<T>& v);
+		TVector3D& assign(const TVector3D& v);
 
 		/**
 		 * @brief Assignment operator.
 		 */
-		TVector3D<T>& operator=(TVector3D<T>& v) noexcept;
+		TVector3D& operator=(TVector3D& v) noexcept;
 
 		/**
 		 * @brief Assignment move operator.
 		 */
-		TVector3D<T>& operator=(TVector3D<T>&& v) noexcept;
+		TVector3D& operator=(TVector3D&& v) noexcept;
 
 		/**
 		 * @brief Matrix transform assignment operator.
 		 */
-		TVector3D<T>& operator*=(const TMatrix44<T>& mtx);
+		TVector3D& operator*=(const TMatrix44<T>& mtx);
 
 		/**
 		 * @brief Matrix transform operator.
 		 */
-		TVector3D<T> operator*(const TMatrix44<T>& mtx);
+		TVector3D operator*(const TMatrix44<T>& mtx);
 
 		/**
 		 * @brief Inversion math operator inverting the vector.
 		 */
-		TVector3D<T> operator-() const;
+		TVector3D operator-() const;
 
 		/**
 		 * @brief Compound addition operator.
 		 */
-		TVector3D<T>& operator+=(const TVector3D<T>&);
+		TVector3D& operator+=(const TVector3D&);
 
 		/**
 		 * @brief Compound subtraction operator.
 		 */
-		TVector3D<T>& operator-=(const TVector3D<T>&);
+		TVector3D& operator-=(const TVector3D&);
 
 		/**
 		 * @brief Compound multiplier operator.
 		 */
-		TVector3D<T>& operator*=(T c);
+		TVector3D& operator*=(T c);
 
 		/**
 		 * @brief Compound division operator.
 		 */
-		TVector3D<T>& operator/=(T);
+		TVector3D& operator/=(T);
 
 		/**
 		 * @brief Addition operator.
 		 */
-		TVector3D<T> operator+(const TVector3D<T>&) const;
+		TVector3D operator+(const TVector3D&) const;
 
 		/**
 		 * @brief Subtraction operator.
 		 */
-		TVector3D<T> operator-(const TVector3D<T>&) const;
+		TVector3D operator-(const TVector3D&) const;
 
 		/**
 		 * @brief Division operator.
 		 */
-		TVector3D<T> operator/(T c) const;
+		TVector3D operator/(T c) const;
 
 		/**
 		 * @brief Compares the passed vector within the set tolerance.
@@ -133,12 +131,12 @@ class TVector3D
 		/**
 		 * @brief Equality operator.
 		 */
-		bool operator==(const TVector3D<T>&) const;
+		bool operator==(const TVector3D&) const;
 
 		/**
 		 * @brief Inequality operator.
 		 */
-		bool operator!=(const TVector3D<T>&) const;
+		bool operator!=(const TVector3D&) const;
 
 		/**
 		 * @brief Access like an array.
@@ -224,58 +222,58 @@ class TVector3D
 		 * @brief Normalizes the vector also called a unit-vector, set to length 1.
 		 * @return normalized vector.
 		 */
-		TVector3D<T>& normalize();
+		TVector3D& normalize();
 
 		/**
 		 * @brief Gets a normalized vector also called a unit-vector, made of length 1.
 		 * @return normalized vector.
 		 */
-		TVector3D<T> normalized() const;
+		TVector3D normalized() const;
 
 		/**
 		 * @brief Scales the vector by multiplying all axis with the passed factor.
 		 * @return This scaled vector.
 		 */
-		TVector3D<T>& scale(T factor);
+		TVector3D& scale(T factor);
 
 		/**
 		 * @brief Scales the vector by multiplying all axis with the passed factor.
 		 * @return A scaled vector.
 		 */
-		TVector3D<T> scaled(T factor) const;
+		TVector3D scaled(T factor) const;
 
 		/**
 		 * @brief Gets the cross (out) product of 2 vectors.
 		 * @return Cross product of 2 vectors.
 		 */
-		TVector3D<T> crossProduct(const TVector3D<T>&) const;
+		TVector3D crossProduct(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the dot (in) product of 2 vectors.
 		 * @return Dot (in) product of 2 vectors.
 		 */
-		T dotProduct(const TVector3D<T>&) const;
+		T dotProduct(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the dot (in) product of 2 vectors for only the X and Y axis.
 		 * @return Dot (in) product of 2 vectors.
 		 */
-		T dotProduct2D(const TVector3D<T>&) const;
+		T dotProduct2D(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the cross (out) product of 2 vectors.
 		 * @return Cross product of 2 vectors.
 		 */
-		TVector3D<T> operator*(const TVector3D<T>& v) const;
+		TVector3D operator*(const TVector3D& v) const;
 
 		/**
 		 * @brief Gets the angle between the two vectors.
 		 * @return angle between the two vectors.
 		 */
-		T angle(const TVector3D<T>&) const;
+		T angle(const TVector3D&) const;
 
 		/**
-		 * @brief Returns a normalized positive angle of function @Angle().
+		 * @brief Returns a normalized positive angle of function #angle().
 		 * @return normalized positive angle.
 		 */
 		T angleNormalized() const;
@@ -285,14 +283,14 @@ class TVector3D
 		 * Note that this has to return a double because it uses the sqrt() function.
 		 * @return distance to another vector.
 		 */
-		T distance(const TVector3D<T>&) const;
+		T distance(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the distance between this and the passed vector for only the X and Y axis.
 		 * Note that this has to return a double because it uses the sqrt() function.
 		 * @return distance to another vector.
 		 */
-		T distance2D(const TVector3D<T>&) const;
+		T distance2D(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the squared distance between 2 given points.
@@ -300,7 +298,7 @@ class TVector3D
 		 * Useful when comparing different distances.
 		 * @return squared distance between 2 given points
 		 */
-		T distanceSqr(const TVector3D<T>&) const;
+		T distanceSqr(const TVector3D&) const;
 
 		/**
 		 * @brief Gets the squared distance between 2 given points in 2D only (z is ignored).
@@ -308,19 +306,19 @@ class TVector3D
 		 * Useful when comparing different distances.
 		 * @return squared distance between 2 given points
 		 */
-		T distanceSqr2D(const TVector3D<T>&) const;
+		T distanceSqr2D(const TVector3D&) const;
 
 		/**
 		 * @brief Copy only those values of x,y or z which are smaller.
 		 * @param vertex
 		 */
-		void updateMin(const TVector3D<T>& vertex);
+		void updateMin(const TVector3D& vertex);
 
 		/**
 		 * @brief Copy only those values of x,y or z which are larger.
 		 * @param vertex
 		 */
-		void updateMax(const TVector3D<T>& vertex);
+		void updateMax(const TVector3D& vertex);
 
 		/**
 		 * @brief Gets the string representation of the 2D vector formed like '(1.23,4.56)'.
@@ -332,7 +330,7 @@ class TVector3D
 		 * Throws an exception when the string is not in the correct format.
 		 * @throw std::invalid_argument
 		 */
-		TVector3D<T>& fromString(const std::string& s) noexcept(false);
+		TVector3D& fromString(const std::string& s) noexcept(false);
 
 		/**
 		 * @brief Gets the dominant axis where x=0, y=1 and z=2.
@@ -396,7 +394,7 @@ template<typename T>
 std::istream& operator>>(std::istream& is, TVector3D<T>& v) noexcept(false)
 {
 	std::string s;
-	auto delimiter = ')';
+	const auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	v.fromString(s.append(1, delimiter));
 	return is;

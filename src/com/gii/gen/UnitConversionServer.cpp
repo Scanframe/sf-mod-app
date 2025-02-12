@@ -41,7 +41,11 @@ void UnitConversionServer::setConversion(UnitConversionEvent& ev)
 		if (_profile.setSection(getUnitSystemName(_unitSystem)))
 		{
 			auto key = std::string(ev._from_unit).append(",").append(itostr(ev._from_precision));
-			auto value = std::string(ev._to_unit).append(",").append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), ".")).append(",").append(trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
+			auto value = std::string(ev._to_unit)
+										 .append(",")
+										 .append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), "."))
+										 .append(",")
+										 .append(trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
 			_profile.setString(key, value);
 		}
 	}
@@ -126,9 +130,7 @@ const std::vector<std::pair<UnitConversionServer::EUnitSystem, const char*>>& Un
 const char* UnitConversionServer::getUnitSystemName(int us)
 {
 	auto& names = getUnitSystemNames();
-	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool {
-		return usp.first == us;
-	});
+	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool { return usp.first == us; });
 	if (it == names.end())
 	{
 		it = names.begin();

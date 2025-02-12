@@ -112,29 +112,28 @@ std::string doEscaping(const std::string& str, bool reverse = false, char delimi
 	{
 			char code;
 			char ch;
-	} table[] =
-		{
-			// single quote
-			{'\'', '\''},
-			// double quote
-			{'\"', '"'},
-			// bell
-			{'\a', 'a'},
-			// backspace
-			{'\b', 'b'},
-			// form feed / new page
-			{'\f', 'f'},
-			// new line / line feed
-			{'\n', 'n'},
-			// carriage return
-			{'\r', 'r'},
-			// horizontal tab
-			{'\t', 't'},
-			// vertical tab
-			{'\v', 'v'},
-			// '\' character
-			{'\\', '\\'},
-		};
+	} table[] = {
+		// single quote
+		{'\'', '\''},
+		// double quote
+		{'\"', '"'},
+		// bell
+		{'\a', 'a'},
+		// backspace
+		{'\b', 'b'},
+		// form feed / new page
+		{'\f', 'f'},
+		// new line / line feed
+		{'\n', 'n'},
+		// carriage return
+		{'\r', 'r'},
+		// horizontal tab
+		{'\t', 't'},
+		// vertical tab
+		{'\v', 'v'},
+		// '\' character
+		{'\\', '\\'},
+	};
 	// When escaping.
 	if (!reverse)
 	{
@@ -474,8 +473,7 @@ char* decimal_separator_fix(char* buffer, size_t len)
 	for (size_t i = 0; i < len; i++)
 	{
 		char& c(buffer[i]);
-		if (c == 0)
-			break;
+		if (c == 0) break;
 		if (c == ',')
 		{
 			c = '.';
@@ -544,8 +542,7 @@ std::string numberString(double value, int digits, bool sign_on)
 	if (rv.length() != digits)
 	{
 		dec += 1;
-		if (rv.size() < digits)
-			rv.append(digits - rv.size(), '0');
+		if (rv.size() < digits) rv.append(digits - rv.size(), '0');
 		else
 			rv.resize(digits);
 	}
@@ -581,8 +578,7 @@ std::string numberString(double value, int digits, bool sign_on)
 			// Increment of decimal point placement.
 			auto inc = (digits / 3) * 3;
 			// Prevent an exponent part when not needed when there are enough digits.
-			if (exp > 0 && exp < inc)
-				inc = exp;
+			if (exp > 0 && exp < inc) inc = exp;
 			dec += inc;
 			exp -= inc;
 		}
@@ -607,8 +603,7 @@ std::string numberString(double value, int digits, bool sign_on)
 	// Only add a exponent value when non-zero.
 	if (exp)
 	{
-		if (sign_on && exp > 0)
-			rv.append("e+").append(itostr(exp));
+		if (sign_on && exp > 0) rv.append("e+").append(itostr(exp));
 		else
 			rv.append("e").append(itostr(exp));
 	}

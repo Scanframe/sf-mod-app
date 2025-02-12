@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief Base class of the #sf::ResultData having all global static data members.
  */
-class _GII_CLASS ResultDataStatic
-	: public ResultDataTypes
+class _GII_CLASS ResultDataStatic : public ResultDataTypes
 {
 	public:
 		/**
@@ -25,7 +24,7 @@ class _GII_CLASS ResultDataStatic
 		/**
 		 * @brief Gets the enumerate type from the passed type string.
 		 */
-		static EType getType(const char* type);
+		static EType getType(std::string_view type);
 
 		/**
 		 * Gets a number which is unique because it is incremented at each call.

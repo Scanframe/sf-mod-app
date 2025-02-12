@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief List model for QObject properties.
  */
-class _MISC_CLASS ObjectPropertyModel
-	: public QAbstractListModel
+class _MISC_CLASS ObjectPropertyModel : public QAbstractListModel
 {
 		Q_OBJECT
 

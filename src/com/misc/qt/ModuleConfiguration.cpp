@@ -22,8 +22,7 @@ ModuleConfiguration::ModuleConfiguration(QSettings* settings, QObject* parent)
 	: QObject(parent)
 	, _dialog(nullptr)
 	, _settings(settings)
-{
-}
+{}
 
 ModuleConfiguration::~ModuleConfiguration()
 {

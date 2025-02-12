@@ -7,7 +7,7 @@ namespace sf
 
 /**
  * @brief This class manages range requests made by clients identified by ID's in the ranges.<br>
- * @image html "doc/RangeManager-1.svg"
+ * @image html "RangeManager-1.svg"
  *
  * A server sets the range which is managed.<br>
  * Multiple clients make requests for ranges passing a unique ID (Range::setId).<br>
@@ -39,7 +39,7 @@ class _MISC_CLASS RangeManager
 		 * @brief Checks if flushing has any effect.
 		 * @return True on having effect.
 		 */
-		bool isFlushable();
+		bool isFlushable() const;
 
 		/**
 		 * @brief Flushes all ranges and range list as if it were initialized.

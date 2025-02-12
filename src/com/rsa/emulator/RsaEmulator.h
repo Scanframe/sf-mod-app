@@ -102,7 +102,10 @@ class AcquisitionEmulator : public RsaInterface
 				TChannelInfo()
 					: GateInfo(new TGateInfo[8])
 				{}
-				~TChannelInfo() { delete[] GateInfo; }
+				~TChannelInfo()
+				{
+					delete[] GateInfo;
+				}
 
 				// Holds the time offset when the RepRate was changed on the fly.
 				double SyncTimeOffset{0.0};

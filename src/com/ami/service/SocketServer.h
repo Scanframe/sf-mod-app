@@ -7,8 +7,7 @@
 namespace sf
 {
 
-class SocketServer
-	: public QTcpServer
+class SocketServer : public QTcpServer
 {
 	public:
 		/**

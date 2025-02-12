@@ -17,8 +17,7 @@ class AppModuleInterface;
  * allowing multiple inheritance of a QObject derived class.
  * So this class is an intermediate.
  */
-class _AMI_CLASS MultiDocInterfaceSignals
-	: public QObject
+class _AMI_CLASS MultiDocInterfaceSignals : public QObject
 {
 		Q_OBJECT
 

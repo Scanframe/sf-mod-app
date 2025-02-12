@@ -6,8 +6,7 @@
 namespace sf
 {
 
-class _GII_CLASS InformationServer
-	: public InformationTypes
+class _GII_CLASS InformationServer : public InformationTypes
 {
 	public:
 		/**

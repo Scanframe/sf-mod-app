@@ -42,8 +42,7 @@ size_t TClassRegistration<T, P>::registerClass(const char* name, const char* des
 }
 
 template<typename T, typename P>
-typename TClassRegistration<T, P>::entries_t::const_iterator
-TClassRegistration<T, P>::lookup(const std::string& name) const
+typename TClassRegistration<T, P>::entries_t::const_iterator TClassRegistration<T, P>::lookup(const std::string& name) const
 {
 	// Sanity check.
 	if (!name.empty() && !_entries->empty())

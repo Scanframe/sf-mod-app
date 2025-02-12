@@ -11,8 +11,7 @@ namespace sf
 /**
  * @brief List model implementation on captured output stream data.
  */
-class _MISC_CLASS CaptureListModel
-	: public QAbstractListModel
+class _MISC_CLASS CaptureListModel : public QAbstractListModel
 {
 		Q_OBJECT
 
@@ -58,8 +57,7 @@ class _MISC_CLASS CaptureListModel
 		/**
 		 * @brief Overridden from base class.
 		 */
-		[[nodiscard]] QVariant
-		headerData(int section, Qt::Orientation orientation, int role /* = Qt::DisplayRole*/) const override;
+		[[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation, int role /* = Qt::DisplayRole*/) const override;
 
 		/**
 		 * @brief Overridden from base class.

@@ -16,7 +16,8 @@ class PropertySheetDialog;
 /**
  * @brief Base class for the interface.
  */
-class _PAL_CLASS PaletteInterface : public QObject
+class _PAL_CLASS PaletteInterface
+	: public QObject
 	, public Persistent
 {
 		Q_OBJECT
@@ -29,8 +30,7 @@ class _PAL_CLASS PaletteInterface : public QObject
 				explicit Parameters(const Callback& callback, QObject* parent = nullptr)
 					: _parent(parent)
 					, _callback(callback)
-				{
-				}
+				{}
 
 				QObject* _parent{};
 				Callback _callback;

@@ -1,9 +1,11 @@
 #include "CommonItemDelegate.h"
 #include "Editor.h"
 #include "Resource.h"
+#include "gen/Locale.h"
 #include "gen/dbgutils.h"
 #include "gen/math.h"
 #include "qt_utils.h"
+
 #include <QAction>
 #include <QColorDialog>
 #include <QComboBox>
@@ -13,17 +15,15 @@
 #include <QPlainTextEdit>
 #include <QSpinBox>
 #include <QStandardItemModel>
-#include <bitset>
 
 namespace sf
 {
 
 CommonItemDelegate::CommonItemDelegate(QObject* parent)
 	: QStyledItemDelegate(parent)
-{
-}
+{}
 
-CommonItemDelegate::EEditorType CommonItemDelegate::getEditorType(const QModelIndex& index) const
+CommonItemDelegate::EEditorType CommonItemDelegate::getEditorType(const QModelIndex& index)
 {
 	return index.model()->data(index, TypeRole).value<EEditorType>();
 }
@@ -44,13 +44,22 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 			return new QKeySequenceEdit(parent);
 
 		case etSpinBox:
-			return new QSpinBox(parent);
+		{
+			const auto sb = new QSpinBox(parent);
+			sb->setLocale(QLocale::c());
+			return sb;
+		}
 
 		case etDoubleSpinBox:
-			return new QDoubleSpinBox(parent);
+		{
+			const auto sb = new QDoubleSpinBox(parent);
+			sb->setLocale(QLocale::c());
+			return sb;
+		}
 
-		case etStringList: {
-			auto pte = new Editor(parent);
+		case etStringList:
+		{
+			const auto pte = new Editor(parent);
 			/*
 			auto sp = pte->sizePolicy();
 			sp.setVerticalPolicy(QSizePolicy::Maximum);
@@ -58,13 +67,14 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 			pte->setMinimumHeight(pte->fontMetrics().xHeight() * 5);
 			pte->setContentsMargins(0, 0, 0, 0);
 			pte->resize(-1, );
-*/
+			*/
 			pte->setMinimumSize(0, pte->fontMetrics().height() * 7);
 			return pte;
 		}
 
-		case etULongLong: {
-			auto lineEdit = new QLineEdit(parent);
+		case etULongLong:
+		{
+			const auto lineEdit = new QLineEdit(parent);
 			// Remove the focus border so the looks the same as the default editor.
 			lineEdit->setStyleSheet(QString("%1 {border: 0;}").arg(lineEdit->metaObject()->className()));
 			// Allow setting some actions for this edit.
@@ -72,14 +82,27 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 			return lineEdit;
 		}
 
-		case etColorEdit: {
-			auto lineEdit = new QLineEdit(parent);
+		case etString:
+		{
+			const auto lineEdit = new QLineEdit(parent);
+			// Remove the focus border so the looks the same as the default editor.
+			lineEdit->setStyleSheet(QString("%1 {border: 0;}").arg(lineEdit->metaObject()->className()));
+			// Allow setting some actions for this edit.
+			Q_EMIT addLineEditActions(lineEdit, index);
+			return lineEdit;
+		}
+
+		case etColorEdit:
+		{
+			const auto lineEdit = new QLineEdit(parent);
 			// Remove the focus border so the looks the same as the default editor.
 			lineEdit->setStyleSheet(QString("%1 {border: 0;}").arg(lineEdit->metaObject()->className()));
 			//
-			auto action = lineEdit->addAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Edit), lineEdit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
-			connect(action, &QAction::triggered, [action]() {
-				if (auto le = qobject_cast<QLineEdit*>(action->parent()))
+			auto action = lineEdit->addAction(
+				Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Edit), lineEdit->palette(), QPalette::Text), QLineEdit::TrailingPosition
+			);
+			connect(action, &QAction::triggered, [action] {
+				if (const auto le = qobject_cast<QLineEdit*>(action->parent()))
 				{
 					QColorDialog dlg(QColor(le->text()), le);
 					dlg.setOption(QColorDialog::ShowAlphaChannel);
@@ -104,17 +127,19 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 	// The user role is assigned to the type of delegate editor.
 	switch (getEditorType(index))
 	{
-		case etDropDown: {
+		case etDropDown:
+		{
 			auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
 			auto sl = index.model()->data(index, OptionsRole).toStringList();
 			auto v = index.model()->data(index, Qt::EditRole);
 			cb->addItems(sl);
-			cb->setCurrentIndex((int) sl.indexOf(v.toString()));
+			cb->setCurrentIndex(static_cast<int>(sl.indexOf(v.toString())));
 			return;
 		}
 
-		case etDropDownIndex: {
+		case etDropDownIndex:
+		{
 			auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
 			auto d = index.model()->data(index, OptionsRole);
@@ -134,12 +159,13 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 				auto sl = d.toStringList();
 				auto v = index.model()->data(index, Qt::EditRole);
 				cb->addItems(sl);
-				cb->setCurrentIndex((int) sl.indexOf(v.toString()));
+				cb->setCurrentIndex(static_cast<int>(sl.indexOf(v.toString())));
 			}
 			return;
 		}
 
-		case etDropDownFlags: {
+		case etDropDownFlags:
+		{
 			auto lv = dynamic_cast<QListView*>(editor);
 			Q_ASSERT(lv);
 			auto d = index.model()->data(index, OptionsRole);
@@ -157,54 +183,58 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 					model->appendRow(item);
 				}
 				lv->setModel(model);
-				const int maxItems = 6;
+				constexpr int maxItems = 6;
 				int nToShow = maxItems < model->rowCount() ? maxItems : model->rowCount();
 				lv->setMinimumSize(lv->width(), nToShow * lv->sizeHintForRow(0) + lv->lineWidth() * 2);
 			}
 			break;
 		}
 
-		case etShortcut: {
+		case etShortcut:
+		{
 			auto kse = dynamic_cast<QKeySequenceEdit*>(editor);
 			Q_ASSERT(kse);
 			kse->setKeySequence(index.model()->data(index, Qt::EditRole).value<QKeySequence>());
 			return;
 		}
 
-		case etSpinBox: {
+		case etSpinBox:
+		{
 			auto sb = dynamic_cast<QSpinBox*>(editor);
 			Q_ASSERT(sb);
+			// Remove the focus border so the looks the same as the default editor.
+			sb->setStyleSheet(QString("%1 {border: 0;}").arg(sb->metaObject()->className()));
 			QVariant val;
-			val = index.model()->data(index, EItemDataRole::IncrementRole);
-			if (!val.isNull())
-				sb->setSingleStep(val.toInt());
-			val = index.model()->data(index, EItemDataRole::MinimumRole);
-			if (!val.isNull())
-				sb->setMinimum(val.toInt());
-			val = index.model()->data(index, EItemDataRole::MaximumRole);
-			if (!val.isNull())
-				sb->setMaximum(val.toInt());
+			val = index.model()->data(index, IncrementRole);
+			if (!val.isNull()) sb->setSingleStep(val.toInt());
+			val = index.model()->data(index, MinimumRole);
+			if (!val.isNull()) sb->setMinimum(val.toInt());
+			val = index.model()->data(index, MaximumRole);
+			if (!val.isNull()) sb->setMaximum(val.toInt());
 			sb->setValue(index.model()->data(index, Qt::EditRole).toInt());
 			return;
 		}
 
-		case etDoubleSpinBox: {
+		case etDoubleSpinBox:
+		{
 			auto sb = dynamic_cast<QDoubleSpinBox*>(editor);
 			Q_ASSERT(sb);
+			// Remove the focus border so the looks the same as the default editor.
+			sb->setStyleSheet(QString("%1 {border: 0;}").arg(sb->metaObject()->className()));
 			QVariant val;
-			val = index.model()->data(index, EItemDataRole::IncrementRole);
+			val = index.model()->data(index, IncrementRole);
 			if (!val.isNull())
 			{
 				sb->setSingleStep(val.toDouble());
 				// Set the mount of decimals/digits needed for the rounding value.
 				sb->setDecimals(digits(val.toDouble()));
 			}
-			val = index.model()->data(index, EItemDataRole::MinimumRole);
+			val = index.model()->data(index, MinimumRole);
 			if (!val.isNull())
 			{
 				sb->setMinimum(val.toDouble());
 			}
-			val = index.model()->data(index, EItemDataRole::MaximumRole);
+			val = index.model()->data(index, MaximumRole);
 			if (!val.isNull())
 			{
 				sb->setMaximum(val.toDouble());
@@ -213,14 +243,16 @@ void CommonItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 			return;
 		}
 
-		case etStringList: {
+		case etStringList:
+		{
 			auto pte = dynamic_cast<QPlainTextEdit*>(editor);
 			Q_ASSERT(pte);
 			pte->setPlainText(index.model()->data(index, Qt::EditRole).toStringList().join('\n'));
 			return;
 		}
 
-		case etULongLong: {
+		case etULongLong:
+		{
 			auto le = dynamic_cast<QLineEdit*>(editor);
 			Q_ASSERT(le);
 			le->setText(QString("0x%1").arg(index.model()->data(index, Qt::EditRole).value<qulonglong>(), 0, 16));
@@ -238,29 +270,32 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 	// The user role is assigned to the type of delegate editor.
 	switch (getEditorType(index))
 	{
-		case etDropDown: {
-			auto cb = dynamic_cast<QComboBox*>(editor);
+		case etDropDown:
+		{
+			const auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
 			model->setData(index, cb->currentText(), Qt::EditRole);
 			return;
 		}
 
-		case etDropDownIndex: {
-			auto cb = dynamic_cast<QComboBox*>(editor);
+		case etDropDownIndex:
+		{
+			const auto cb = dynamic_cast<QComboBox*>(editor);
 			Q_ASSERT(cb);
 			model->setData(index, cb->currentIndex(), Qt::EditRole);
 			return;
 		}
 
-		case etDropDownFlags: {
-			auto lv = dynamic_cast<QListView*>(editor);
+		case etDropDownFlags:
+		{
+			const auto lv = dynamic_cast<QListView*>(editor);
 			Q_ASSERT(lv);
 			int flags = 0;
-			if (auto m = dynamic_cast<QStandardItemModel*>(lv->model()))
+			if (const auto m = dynamic_cast<QStandardItemModel*>(lv->model()))
 			{
 				for (int row = 0; row < m->rowCount(); row++)
 				{
-					auto item = m->item(row);
+					const auto item = m->item(row);
 					if (item->data(Qt::CheckStateRole) == Qt::Checked)
 					{
 						flags |= item->data().toInt();
@@ -271,29 +306,33 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			break;
 		}
 
-		case etShortcut: {
-			auto kse = dynamic_cast<QKeySequenceEdit*>(editor);
+		case etShortcut:
+		{
+			const auto kse = dynamic_cast<QKeySequenceEdit*>(editor);
 			Q_ASSERT(kse);
 			model->setData(index, kse->keySequence(), Qt::EditRole);
 			return;
 		}
 
-		case etSpinBox: {
-			auto sb = dynamic_cast<QSpinBox*>(editor);
+		case etSpinBox:
+		{
+			const auto sb = dynamic_cast<QSpinBox*>(editor);
 			Q_ASSERT(sb);
 			model->setData(index, sb->value(), Qt::EditRole);
 			return;
 		}
 
-		case etStringList: {
-			auto pte = dynamic_cast<QPlainTextEdit*>(editor);
+		case etStringList:
+		{
+			const auto pte = dynamic_cast<QPlainTextEdit*>(editor);
 			Q_ASSERT(pte);
 			model->setData(index, pte->toPlainText().split('\n'), Qt::EditRole);
 			return;
 		}
 
-		case etULongLong: {
-			auto le = dynamic_cast<QLineEdit*>(editor);
+		case etULongLong:
+		{
+			const auto le = dynamic_cast<QLineEdit*>(editor);
 			Q_ASSERT(le);
 			model->setData(index, le->text().toULongLong(nullptr, 0), Qt::EditRole);
 			return;

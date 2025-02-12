@@ -40,8 +40,7 @@ class ThreadClosure
 		ThreadClosure(const std::string& name = "")
 			: Thread(name)
 			, TClosure<int, Thread&>()
-		{
-		}
+		{}
 
 		/**
 		 * @brief Thread run function assigment constructor.
@@ -51,8 +50,7 @@ class ThreadClosure
 		explicit ThreadClosure(const func_type& func, const std::string& name = "")
 			: Thread(name)
 			, TClosure<int, Thread&>(func)
-		{
-		}
+		{}
 
 	protected:
 		/**

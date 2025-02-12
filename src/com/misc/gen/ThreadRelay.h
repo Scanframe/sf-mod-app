@@ -115,7 +115,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret(ClassType::*)()) _mtd)();
+					_ret = ((*_cls).*(Ret (ClassType::*)()) _mtd)();
 				}
 
 				ClassType* _cls;
@@ -141,7 +141,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret(ClassType::*)(Arg1)) _mtd)(_arg1);
+					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1)) _mtd)(_arg1);
 				}
 
 				ClassType* _cls;
@@ -169,7 +169,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret(ClassType::*)(Arg1, Arg2)) _mtd)(_arg1, _arg2);
+					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2)) _mtd)(_arg1, _arg2);
 				}
 
 				ClassType* _cls;
@@ -199,7 +199,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret(ClassType::*)(Arg1, Arg2, Arg3)) _mtd)(_arg1, _arg2, _arg3);
+					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2, Arg3)) _mtd)(_arg1, _arg2, _arg3);
 				}
 
 				ClassType* _cls;
@@ -231,7 +231,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret(ClassType::*)(Arg1, Arg2, Arg3, Arg4)) _mtd)(_arg1, _arg2, _arg3, _arg4);
+					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2, Arg3, Arg4)) _mtd)(_arg1, _arg2, _arg3, _arg4);
 				}
 
 				ClassType* _cls;
@@ -252,7 +252,6 @@ class _MISC_CLASS ThreadRelay : public Sync
 
 inline ThreadRelay::RelayBase::RelayBase(ThreadRelay& tr)
 	: _tr(tr)
-{
-}
+{}
 
 }// namespace sf

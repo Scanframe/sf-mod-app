@@ -51,16 +51,8 @@ class _MISC_CLASS Draw
 		 * @return True on success false in case of an exception.
 		 */
 		bool ruler(
-			QPainter& painter,
-			ERulerOrientation ro,
-			const QColor& color,
-			const QColor& font_color,
-			const QRect& bounds,
-			const QRect& area,
-			double start,
-			double stop,
-			int digits,
-			const QString& unit
+			QPainter& painter, ERulerOrientation ro, const QColor& color, const QColor& font_color, const QRect& bounds, const QRect& area, double start, double stop,
+			int digits, const QString& unit
 		) const;
 
 		/**
@@ -86,15 +78,7 @@ class _MISC_CLASS Draw
 		 * @param digits To make the grid correspond with the ruler when vertical.
 		 * @return True on success false in case of an exception.
 		 */
-		bool gridLines(
-			QPainter& painter,
-			EGridOrientation go,
-			const QColor& color,
-			const QRect& bounds,
-			double start,
-			double stop,
-			unsigned digits
-		) const;
+		bool gridLines(QPainter& painter, EGridOrientation go, const QColor& color, const QRect& bounds, double start, double stop, unsigned digits) const;
 
 		/**
 		 * @brief Draws a cross with text rectangle in the middle.

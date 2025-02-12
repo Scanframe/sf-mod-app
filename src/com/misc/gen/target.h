@@ -1,14 +1,17 @@
-/*
-Making it easier to build libraries for the various targets and platforms.
-Defines these with true (1) or false (0):
+/**
+ * @file misc/gen/target.h
+ * @hideincludedbygraph
+ * <pre>
+ * Making it easier to build libraries for the various targets and platforms.
+ * Defines these with true (1) or false (0):
  * IS_GCC > GNU compiler detected.
  * IS_QT > QT compile target is detected.
  * IS_WIN > Windows compile target is detected.
-
  * IS_AB_TARGET > An application binary is the current target.
  * IS_DL_TARGET > A dynamic library is the current target.
  * IS_SL_TARGET > A static library is the current target.
-*/
+ * </pre>
+ */
 
 #pragma once
 

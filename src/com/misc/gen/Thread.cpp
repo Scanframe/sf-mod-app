@@ -149,13 +149,18 @@ Thread::handle_type Thread::start(const Thread::Attributes& attr)
 		// Allow thread creation function modify members.
 		//lock.release();
 		// Create the actual thread.
-		auto error = ::pthread_create(&_handle, attr, +[](void* self) -> void* {
-		intptr_t ec(static_cast<Thread*>(self)->create());
-		// Windows does not return the exit code through pthread_join().
-		// Besides, when the thread terminates by itself pthread_join() is never called.
-		static_cast<Thread*>(self)->_exitCode.Code = ec;
-		// Return the integer exit code as pointer.
-		return (void*) ec; }, this);
+		auto error = ::pthread_create(
+			&_handle, attr,
+			+[](void* self) -> void* {
+				intptr_t ec(static_cast<Thread*>(self)->create());
+				// Windows does not return the exit code through pthread_join().
+				// Besides, when the thread terminates by itself pthread_join() is never called.
+				static_cast<Thread*>(self)->_exitCode.Code = ec;
+				// Return the integer exit code as pointer.
+				return (void*) ec;
+			},
+			this
+		);
 		// Reacquire the lock to access data members.
 		//lock.acquire();
 		// On error thread creating throw an exception.
@@ -511,14 +516,7 @@ void Thread::exit(int code)
 
 const char* Thread::getStatusText(Thread::EStatus status) const
 {
-	static const char* names[] =
-		{
-			"Invalid",
-			"Created",
-			"Running",
-			"Finished",
-			"Terminated"
-		};
+	static const char* names[] = {"Invalid", "Created", "Running", "Finished", "Terminated"};
 	if (status < 0)
 	{
 		status = getStatus();

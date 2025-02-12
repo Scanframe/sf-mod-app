@@ -9,19 +9,16 @@
 namespace sf
 {
 
-class _GII_CLASS VariableIdList
-	: private InformationTypes
+class _GII_CLASS VariableIdList : private InformationTypes
 {
 	public:
 		explicit VariableIdList(const Variable::PtrVector& list)
 			: _ptrList(&list)
-		{
-		}
+		{}
 
 		explicit VariableIdList(const Variable::Vector& list)
 			: _list(&list)
-		{
-		}
+		{}
 
 		void setIds(const std::string& ids);
 

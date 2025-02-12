@@ -180,10 +180,7 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 	}
 	if ((ofs + sz) > getBlockCount())
 	{
-		SF_RTTI_NOTIFY(
-			DO_DEFAULT,
-			(rd ? "load(" : "read(") << ofs << ',' << sz << ") out of scope!"
-		)
+		SF_RTTI_NOTIFY(DO_DEFAULT, (rd ? "load(" : "read(") << ofs << ',' << sz << ") out of scope!")
 		SF_RTTI_NOTIFY(DO_DEFAULT, "getBlockCount() = " << getBlockCount())
 		return false;
 	}
@@ -204,9 +201,8 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 			cacheSegment(seg_i);
 			// Calculate the amount of blocks to write for write in loop.
 			// Calculate the amount of blocks to write for first write in loop.
-			size_type blocks = (offset)
-				? (_reference->_segmentSize - offset) > count ? count : (_reference->_segmentSize - offset)
-				: (count < _reference->_segmentSize) ? count
+			size_type blocks = (offset)            ? (_reference->_segmentSize - offset) > count ? count : (_reference->_segmentSize - offset)
+									 : (count < _reference->_segmentSize) ? count
 																						 : _reference->_segmentSize;
 			// Check iterator scope.
 			if (seg_i >= (int) _reference->_segmentList.count())
@@ -214,9 +210,8 @@ bool FileMappedStorage::blockReadWrite(bool rd, FileMappedStorage::size_type ofs
 				throw std::out_of_range(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() block iterator out of scope!");
 			}
 			// Abort loop when a read/write fails.
-			if (rd
-						? !_reference->_segmentList[seg_i]->read(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
-						: !_reference->_segmentList[seg_i]->write(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp))
+			if (rd ? !_reference->_segmentList[seg_i]->read(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp)
+						 : !_reference->_segmentList[seg_i]->write(offset * _reference->_blockSize, blocks * _reference->_blockSize, rwp))
 			{
 				SF_RTTI_NOTIFY(DO_DEFAULT, "Block" << (rd ? "load" : "read") << " Failed!")
 				// Return false indicating failure.
@@ -295,12 +290,11 @@ FileMappedStorage::size_type FileMappedStorage::getSegmentLocks() const
 
 std::ostream& FileMappedStorage::writeStatus(std::ostream& os) const
 {
-	return os
-		<< "Total Allocated Bytes: " << this->getSize() << std::endl
-		<< "Segment Size: " << this->getSegmentSize() << std::endl
-		<< "Block Size: " << this->getBlockSize() << std::endl
-		<< "Segment Count: " << this->getSegmentCount() << std::endl
-		<< "Block Count: " << this->getBlockCount() << std::endl;
+	return os << "Total Allocated Bytes: " << this->getSize() << std::endl
+						<< "Segment Size: " << this->getSegmentSize() << std::endl
+						<< "Block Size: " << this->getBlockSize() << std::endl
+						<< "Segment Count: " << this->getSegmentCount() << std::endl
+						<< "Block Count: " << this->getBlockCount() << std::endl;
 }
 
 FileMappedStorage::Segment::Segment(FileMappedStorage::size_type sz)

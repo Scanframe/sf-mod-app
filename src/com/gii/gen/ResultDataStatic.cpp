@@ -20,23 +20,16 @@ ResultDataTypes::size_type ResultDataStatic::_recycleSize{2};
  * Array used for conversion.
  * Follows enumerate EType
  */
-const ResultDataStatic::TTypeInfo ResultDataStatic::_typeInfoArray[] =
-	{
-		{"INVALID", 1},// rtInvalid = 0,
-		{"STRING", 1},// rtString
-		{"INT8", 1},// rtInt8
-		{"INT16", 2},// rtInt16
-		{"INT32", 4},// rtInt32
-		{"INT64", 8},// rtInt64
+const ResultDataStatic::TTypeInfo ResultDataStatic::_typeInfoArray[] = {
+	{"INVALID", 1},// rtInvalid = 0,
+	{"STRING", 1},// rtString
+	{"INT8", 1},// rtInt8
+	{"INT16", 2},// rtInt16
+	{"INT32", 4},// rtInt32
+	{"INT64", 8},// rtInt64
 };
 
-ResultDataStatic::FlagLetters ResultDataStatic::_flagLetters[] =
-	{
-		{'A', flgArchive},
-		{'S', flgShare},
-		{'H', flgHidden},
-		{'R', flgRecycle}
-};
+ResultDataStatic::FlagLetters ResultDataStatic::_flagLetters[] = {{'A', flgArchive}, {'S', flgShare}, {'H', flgHidden}, {'R', flgRecycle}};
 
 int ResultDataStatic::_globalActive = 0;
 
@@ -53,18 +46,18 @@ ResultData& ResultDataStatic::zero()
 
 ResultDataStatic::size_type ResultDataStatic::getUniqueId()
 {
-	return ++ResultDataStatic::_uniqueIdCounter;
+	return ++_uniqueIdCounter;
 }
 
-void sf::ResultDataStatic::initialize(bool init)
+void ResultDataStatic::initialize(bool init)
 {
 	if (init)
 	{
-		if (!ResultDataStatic::_zero)
+		if (!_zero)
 		{
 			// Reset the sequence ID counter.
-			ResultDataStatic::_uniqueIdCounter = 0;
-			_references = new ResultDataTypes::ReferenceVector;
+			_uniqueIdCounter = 0;
+			_references = new ReferenceVector;
 			// Call special private constructor to create the Zero instance.
 			new ResultData(nullptr, nullptr);
 		}
@@ -72,10 +65,10 @@ void sf::ResultDataStatic::initialize(bool init)
 	else
 	{
 		// Variable zero is also the sentry.
-		if (ResultDataStatic::_zero)
+		if (_zero)
 		{
 			// Get the amount of references that still exist.
-			auto sz = _references->size();
+			const auto sz = _references->size();
 			// Prevent deletion of zero before all other instances.
 			if (sz > 1)
 			{
@@ -83,15 +76,14 @@ void sf::ResultDataStatic::initialize(bool init)
 				// Skip the first one which is zero variable.
 				for (ReferenceVector::size_type i = 1; i < sz; i++)
 				{
-					auto k = _references->at(i);
+					const auto k = _references->at(i);
 					os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 				}
-				SF_FUNC_NOTIFY(DO_CERR, "Unable to perform un-init, (" << (sz - 1) << ") references still remain!" << std::endl
-																															 << '\t' << os.str())
+				SF_FUNC_NOTIFY(DO_CERR, "Unable to perform un-init, (" << sz - 1 << ") references still remain!" << std::endl << '\t' << os.str())
 			}
 			else
 			{
-				delete ResultDataStatic::_zero;
+				delete _zero;
 				// Delete the reference vector.
 				delete_null(_references);
 			}
@@ -99,14 +91,14 @@ void sf::ResultDataStatic::initialize(bool init)
 	}
 }
 
-ResultDataTypes::EType ResultDataStatic::getType(const char* type)
+ResultDataTypes::EType ResultDataStatic::getType(std::string_view type)
 {
 	int i = 0;
 	for (auto n: _typeInfoArray)
 	{
-		if (!std::strcmp(type, n.Name))
+		if (!std::strcmp(type.data(), n.Name))
 		{
-			return (EType) i;
+			return static_cast<EType>(i);
 		}
 		i++;
 	}

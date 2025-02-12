@@ -19,8 +19,7 @@ RsaInterface::RsaInterface(const RsaInterface::Parameters&)
 	, _resultNotifyData(nullptr)
 	, _initialized(false)
 	, _acquisitionType(atUltrasonic)
-{
-}
+{}
 
 RsaInterface::~RsaInterface()
 {
@@ -159,12 +158,7 @@ void RsaInterface::callResultHook(IdType id)
 	}
 }
 
-bool RsaInterface::getParam(
-	EDefaultParam param,
-	unsigned gate,
-	unsigned ch,
-	Value& value
-) const
+bool RsaInterface::getParam(EDefaultParam param, unsigned gate, unsigned ch, Value& value) const
 {
 	// Get the local ID of the default parameter.
 	auto id = getParamId(param, gate, ch);
@@ -178,13 +172,7 @@ bool RsaInterface::getParam(
 	return false;
 }
 
-bool RsaInterface::setParam(
-	EDefaultParam param,
-	unsigned gate,
-	unsigned ch,
-	const Value& value,
-	bool skip_event
-)
+bool RsaInterface::setParam(EDefaultParam param, unsigned gate, unsigned ch, const Value& value, bool skip_event)
 {
 	// Get the local ID of the default parameter.
 	auto id = getParamId(param, gate, ch);

@@ -3,7 +3,6 @@
 #include <QFrame>
 #include <QObject>
 #include <QtUiPlugin/QDesignerExportWidget>
-#include <gmi/iface/global.h>
 #include <misc/qt/ObjectExtension.h>
 
 namespace sf

@@ -172,7 +172,8 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 					}
 					return item->_object->objectName();
 
-				case vcType: {
+				case vcType:
+				{
 					if (!item->_object)
 					{
 						return {};
@@ -328,9 +329,7 @@ void ObjectHierarchyModel::removeItem(const QModelIndex& index)
 
 QModelIndex ObjectHierarchyModel::getObjectIndex(QObject* obj)
 {
-	auto it = std::find_if(_items.begin(), _items.end(), [obj](TreeItem* item) {
-		return item->_object == obj;
-	});
+	auto it = std::find_if(_items.begin(), _items.end(), [obj](TreeItem* item) { return item->_object == obj; });
 	// When found.
 	if (it != _items.end())
 	{

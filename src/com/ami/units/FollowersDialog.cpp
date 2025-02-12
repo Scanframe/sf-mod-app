@@ -33,11 +33,7 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 				 {ui->tbRemove, _actionRemove, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
 			 })
 	{
-		std::get<1>(t) = new QAction(
-			Resource::getSvgIcon(Resource::getSvgIconResource(std::get<2>(t)), QPalette::ButtonText),
-			std::get<3>(t),
-			this
-		);
+		std::get<1>(t) = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(std::get<2>(t)), QPalette::ButtonText), std::get<3>(t), this);
 		std::get<1>(t)->setToolTip(std::get<4>(t));
 		std::get<0>(t)->setDefaultAction(std::get<1>(t));
 		//std::get<0>(t)->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonIconOnly);
@@ -83,9 +79,7 @@ bool FollowersDialog::checkContent()
 	{
 		ui->lblMessage->setText("unit cannot be empty!");
 		ui->lblMessage->setVisible(true);
-		QTimer::singleShot(5000, [&]() {
-			ui->lblMessage->setVisible(false);
-		});
+		QTimer::singleShot(5000, [&]() { ui->lblMessage->setVisible(false); });
 		return false;
 	}
 	return true;

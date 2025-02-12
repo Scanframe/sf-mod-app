@@ -23,9 +23,7 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	// Set the parent that can be used for floating windows created from script functions.
 	setGlobalParent(this);
 	//
-	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() {
-		setWindowTitle(QApplication::applicationDisplayName());
-	});
+	connect(qApp, &QApplication::applicationDisplayNameChanged, [&]() { setWindowTitle(QApplication::applicationDisplayName()); });
 	//
 	_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 	_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
@@ -36,9 +34,7 @@ MainWindow::MainWindow(QSettings* settings, Application* application)
 	setCentralWidget(_mdiArea);
 	connect(_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::mdiSubActivated);
 	//
-	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface* {
-		return openFile(filename);
-	};
+	AppModuleInterface::callbackOpenFile = [&](const QString& filename, AppModuleInterface* ami) -> MultiDocInterface* { return openFile(filename); };
 	//
 	createActions();
 	createStatusBar();
@@ -319,7 +315,16 @@ C++ Standard: %4<br/>
 OS Version: %5<br/>
 Architecture: %6<br/>
 )";
-	QMessageBox::about(this, tr("About"), QString(msg).arg(QT_VERSION_STR).arg(qVersion()).arg(getGCCVersion().data()).arg(getCppStandard().data()).arg(getOSVersion().data()).arg(getCpuArchitecture().data()));
+	QMessageBox::about(
+		this, tr("About"),
+		QString(msg)
+			.arg(QT_VERSION_STR)
+			.arg(qVersion())
+			.arg(getGCCVersion().data())
+			.arg(getCppStandard().data())
+			.arg(getOSVersion().data())
+			.arg(getCpuArchitecture().data())
+	);
 }
 
 void MainWindow::configModules()
@@ -371,9 +376,7 @@ void MainWindow::updateWindowMenu()
 		{
 			text = tr("%1 %2").arg(i + 1).arg(child->userFriendlyCurrentFile());
 		}
-		QAction* action = _menuWindow->addAction(text, mdiSubWindow, [this, mdiSubWindow]() {
-			_mdiArea->setActiveSubWindow(mdiSubWindow);
-		});
+		QAction* action = _menuWindow->addAction(text, mdiSubWindow, [this, mdiSubWindow]() { _mdiArea->setActiveSubWindow(mdiSubWindow); });
 		action->setCheckable(true);
 		action->setChecked(child == activeMdiChild());
 	}
@@ -652,7 +655,9 @@ void MainWindow::settingsReadWrite(bool save)
 	else
 	{
 		QApplication::setApplicationDisplayName(_settings->value(keyDisplayName, QApplication::applicationDisplayName()).toString());
-		_mdiArea->setViewMode(clip(qvariant_cast<QMdiArea::ViewMode>(_settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView, QMdiArea::ViewMode::TabbedView));
+		_mdiArea->setViewMode(
+			clip(qvariant_cast<QMdiArea::ViewMode>(_settings->value(keyViewMode)), QMdiArea::ViewMode::SubWindowView, QMdiArea::ViewMode::TabbedView)
+		);
 	}
 	_settings->endGroup();
 }
@@ -691,7 +696,14 @@ MultiDocInterface* MainWindow::createMdiChild(const QString& filename)
 			// Restore the state of the child after it got its actual parent.
 			child->stateSaveRestore(false);
 			//
-			sw->setWindowIcon(Resource::getSvgIcon(entry->getSvgIconResource(), QApplication::palette().color(_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ? QPalette::ColorRole::ButtonText : QPalette::ColorRole::WindowText)));
+			sw->setWindowIcon(
+				Resource::getSvgIcon(
+					entry->getSvgIconResource(),
+					QApplication::palette().color(
+						_mdiArea->viewMode() == QMdiArea::ViewMode::TabbedView ? QPalette::ColorRole::ButtonText : QPalette::ColorRole::WindowText
+					)
+				)
+			);
 			// Connect the MDI actions to the
 			connect(&child->mdiSignals, &MultiDocInterfaceSignals::modificationChanged, _actionSave, &QAction::setEnabled);
 			connect(&child->mdiSignals, &MultiDocInterfaceSignals::copyAvailable, _actionCut, &QAction::setEnabled);

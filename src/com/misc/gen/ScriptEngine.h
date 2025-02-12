@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief Simple script engine able.
  */
-class _MISC_CLASS ScriptEngine
-	: public ScriptObject
+class _MISC_CLASS ScriptEngine : public ScriptObject
 {
 	public:
 		/**

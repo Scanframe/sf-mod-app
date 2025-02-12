@@ -10,8 +10,7 @@ namespace Ui
 class LayoutEditorPropertyPage;
 }
 
-class LayoutEditorPropertyPage
-	: public PropertyPage
+class LayoutEditorPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

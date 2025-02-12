@@ -2,7 +2,6 @@
 #include <QDialog>
 #include <QFile>
 #include <QScrollArea>
-#include <gmi/iface/global.h>
 
 namespace sf
 {

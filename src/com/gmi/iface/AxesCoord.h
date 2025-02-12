@@ -255,7 +255,7 @@ namespace sf
 {
 
 /**
- * @brief Operator for writing the #sf::gmi::TAxesCoord to an output-stream.
+ * @brief Operator for writing the #sf::gmi::AxesCoord to an output-stream.
  * @param os Output stream.
  * @param ac Axes coordinate  to stream.
  * @return The passed output stream.
@@ -263,7 +263,7 @@ namespace sf
 _GMI_FUNC std::ostream& operator<<(std::ostream& os, const gmi::AxesCoord& ac);
 
 /**
- * @brief Operator for reading the #sf::gmi::TAxesCoord from an input stream.
+ * @brief Operator for reading the #sf::gmi::AxesCoord from an input stream.
  * @param is Input stream.
  * @param ac Axes coordinate  to stream.
  * @return The passed input stream.

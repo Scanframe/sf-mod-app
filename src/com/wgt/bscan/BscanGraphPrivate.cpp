@@ -9,18 +9,9 @@
 namespace sf
 {
 
-constexpr Qt::KeyboardModifier ModifierList[] = {
-	Qt::MetaModifier,
-	Qt::ShiftModifier,
-	Qt::ControlModifier,
-	Qt::AltModifier
-};
+constexpr Qt::KeyboardModifier ModifierList[] = {Qt::MetaModifier, Qt::ShiftModifier, Qt::ControlModifier, Qt::AltModifier};
 
-constexpr Qt::MouseButton MouseButtonList[] = {
-	Qt::LeftButton,
-	Qt::RightButton,
-	Qt::MiddleButton
-};
+constexpr Qt::MouseButton MouseButtonList[] = {Qt::LeftButton, Qt::RightButton, Qt::MiddleButton};
 
 Value::int_type toBitMask(Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons, bool buttonDown)
 {
@@ -226,7 +217,8 @@ void BscanGraph::Private::handlerVariable(VariableTypes::EEvent event, const Var
 
 		case Variable::veIdChanged:
 		case Variable::veValueChange:
-		case Variable::veConverted: {
+		case Variable::veConverted:
+		{
 			setRulerBottom();
 			// Redraw the ruler by updating the whole area.
 			_w->update(_area);
@@ -243,13 +235,15 @@ void BscanGraph::Private::handlerResultData(ResultDataTypes::EEvent event, const
 		default:
 			break;
 
-		case ResultData::reIdChanged: {
+		case ResultData::reIdChanged:
+		{
 			// Check if drawing is possible.
 			setCanDraw();
 			break;
 		}
 
-		case ResultData::reClear: {
+		case ResultData::reClear:
+		{
 			// Makes sure that no new data is drawn until an access change event has passed.
 			_rangeNext.clear();
 			reinitialize(true);
@@ -276,7 +270,8 @@ void BscanGraph::Private::handlerResultData(ResultDataTypes::EEvent event, const
 			}
 			break;
 
-		case (ResultData::EEvent) ResultDataRequester::reDataValid: {
+		case (ResultData::EEvent) ResultDataRequester::reDataValid:
+		{
 			//SF_RTTI_NOTIFY(DO_CLOG, "Event reDataValid " << range);
 			// The requested index range is passed in 'rng' and is assigned to the new plot range.
 			_rangeNext = range;
@@ -360,7 +355,10 @@ bool BscanGraph::Private::generateData(const Range& range)
 	// Adjust the data buffer size to hold the image data.
 	_imageData.grow(_rData.getBlockSize() * (rng.getSize() + 1));
 	// Create new image.
-	QImage img(static_cast<const uchar*>(_imageData.data()), static_cast<int>(_rData.getBlockSize()), static_cast<int>(rng.getSize()), static_cast<qsizetype>(_rData.getBlockSize()), QImage::Format_Grayscale8);
+	QImage img(
+		static_cast<const uchar*>(_imageData.data()), static_cast<int>(_rData.getBlockSize()), static_cast<int>(rng.getSize()),
+		static_cast<qsizetype>(_rData.getBlockSize()), QImage::Format_Grayscale8
+	);
 	// Swap the old with the new image.
 	_image.swap(img);
 	// Fill the dib data buffer at the specified position.
@@ -436,7 +434,8 @@ void BscanGraph::Private::handlerMarkVariable(Variable::EEvent event, const Vari
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veValueChange: {
+		case Variable::veValueChange:
+		{
 			// Prevent looping when even came from within.
 			if (!sameInst)
 			{
@@ -628,7 +627,8 @@ void BscanGraph::Private::handlerScanVariable(Variable::EEvent event, const Vari
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veValueChange: {
+		case Variable::veValueChange:
+		{
 			// ScanDelay has changed
 			if (&link == &_scan.VDelay)
 			{
@@ -778,7 +778,8 @@ bool BscanGraph::Private::calculatePosIndexAt(BscanGraph::Private::Marker& mark)
 	// Update pop index variable.
 	_cursor.VPopIndex.setCur(Value(_cursor.PopIndex), true);
 	// Get the Actual data Index of this position
-	_cursor.Index = static_cast<Value::int_type>(_dataRange.getStart() + static_cast<Range::size_type>(_cursor.Fraction * static_cast<Value::flt_type>(_dataRange.getSize())));
+	_cursor.Index =
+		static_cast<Value::int_type>(_dataRange.getStart() + static_cast<Range::size_type>(_cursor.Fraction * static_cast<Value::flt_type>(_dataRange.getSize())));
 	// Update ClickIndex value.
 	_cursor.VIndex.setCur(Value(_cursor.Index), true);
 	// Clear update flag because it has been updated one way or the other.

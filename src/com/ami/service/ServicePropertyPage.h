@@ -10,8 +10,7 @@ namespace Ui
 class ServicePropertyPage;
 }
 
-class ServicePropertyPage
-	: public PropertyPage
+class ServicePropertyPage : public PropertyPage
 {
 	public:
 		explicit ServicePropertyPage(ServiceAppModule& ucm, QWidget* parent);

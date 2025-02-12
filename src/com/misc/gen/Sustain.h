@@ -74,7 +74,10 @@ class _MISC_CLASS SustainBase
 		/**
 		 * @brief Gets the priority value of this instance;
 		 */
-		[[nodiscard]] int getPriority() const { return _priority; }
+		[[nodiscard]] int getPriority() const
+		{
+			return _priority;
+		}
 
 		/**
 		 * @brief Sets the interval at which the hooked function is called.
@@ -233,8 +236,7 @@ TSustain<T>::TSustain(T* self, Pmf pmf, int priority, PtrVector* vector)
 	: SustainBase(vector, priority)
 	, _self(self)
 	, _pmf(pmf)
-{
-}
+{}
 
 /**
  * @brief Implements a class to hook a static function to the global main thread sustain call.

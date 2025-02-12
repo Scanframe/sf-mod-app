@@ -10,8 +10,7 @@ namespace sf
 template<typename T>
 TQuaternion<T>::TQuaternion(const TQuaternion& quat)
 	: _data(quat._data)
-{
-}
+{}
 
 template<typename T>
 TQuaternion<T>::TQuaternion(T real, const TVector3D<T>& imag)
@@ -197,10 +196,7 @@ TQuaternion<T> TQuaternion<T>::normalized() const
 template<typename T>
 T TQuaternion<T>::magnitudeSqr() const
 {
-	return _data.q.x * _data.q.x +
-		_data.q.y * _data.q.y +
-		_data.q.z * _data.q.z +
-		_data.q.w * _data.q.w;
+	return _data.q.x * _data.q.x + _data.q.y * _data.q.y + _data.q.z * _data.q.z + _data.q.w * _data.q.w;
 }
 
 template<typename T>
@@ -305,9 +301,7 @@ TQuaternion<T> TQuaternion<T>::operator/(T c) const
 template<typename T>
 bool TQuaternion<T>::isEqual(const TQuaternion& quat, T tol) const
 {
-	return sf::isEqual<T>(_data.q.w, quat._data.q.w, tol) &&
-		sf::isEqual<T>(_data.q.x, quat._data.q.x, tol) &&
-		sf::isEqual<T>(_data.q.y, quat._data.q.y, tol) &&
+	return sf::isEqual<T>(_data.q.w, quat._data.q.w, tol) && sf::isEqual<T>(_data.q.x, quat._data.q.x, tol) && sf::isEqual<T>(_data.q.y, quat._data.q.y, tol) &&
 		sf::isEqual<T>(_data.q.z, quat._data.q.z, tol);
 }
 
@@ -539,10 +533,8 @@ TVector3D<T> TQuaternion<T>::transform(TVector3D<T> v) const
 template<typename T>
 std::string TQuaternion<T>::toString() const
 {
-	return '(' + sf::toString<T>(isZero(_data.q.w, tolerance) ? T(0) : _data.q.w) + ',' +
-		sf::toString<T>(isZero(_data.q.x, tolerance) ? T(0) : _data.q.x) + ',' +
-		sf::toString<T>(isZero(_data.q.y, tolerance) ? T(0) : _data.q.y) + ',' +
-		sf::toString<T>(isZero(_data.q.z, tolerance) ? T(0) : _data.q.z) + ')';
+	return '(' + sf::toString<T>(isZero(_data.q.w, tolerance) ? T(0) : _data.q.w) + ',' + sf::toString<T>(isZero(_data.q.x, tolerance) ? T(0) : _data.q.x) + ',' +
+		sf::toString<T>(isZero(_data.q.y, tolerance) ? T(0) : _data.q.y) + ',' + sf::toString<T>(isZero(_data.q.z, tolerance) ? T(0) : _data.q.z) + ')';
 }
 
 template<typename T>

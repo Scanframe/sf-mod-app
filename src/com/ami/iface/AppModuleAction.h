@@ -14,8 +14,7 @@ class AppModuleActions;
 /**
  * @brief Holds a single application module action.
  */
-class _AMI_CLASS AppModuleAction
-	: public QObject
+class _AMI_CLASS AppModuleAction : public QObject
 {
 		Q_OBJECT
 

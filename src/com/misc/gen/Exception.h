@@ -14,8 +14,7 @@ namespace sf
  * @brief Exception implementation inherited from std::exception.
  */
 template<typename T>
-class ExceptionBase
-	: public std::exception
+class ExceptionBase : public std::exception
 {
 	public:
 		/**
@@ -40,8 +39,7 @@ class ExceptionBase
 		 */
 		ExceptionBase(const ExceptionBase&& ex) noexcept
 			: _msg(std::move(ex._msg))
-		{
-		}
+		{}
 
 		/**
 		 * @brief Overloaded from base class 'std::exception'.

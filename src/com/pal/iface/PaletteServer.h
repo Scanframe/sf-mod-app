@@ -11,8 +11,7 @@ namespace sf
 /**
  * @brief Server for color palettes used in images for coloring on basis of index.
  */
-class _PAL_CLASS PaletteServer
-	: public QObject
+class _PAL_CLASS PaletteServer : public QObject
 {
 		Q_OBJECT
 

@@ -8,8 +8,7 @@
 namespace sf
 {
 
-class [[maybe_unused]] ScriptAppModule
-	: public AppModuleInterface
+class [[maybe_unused]] ScriptAppModule : public AppModuleInterface
 {
 	public:
 		explicit ScriptAppModule(const Parameters& params);

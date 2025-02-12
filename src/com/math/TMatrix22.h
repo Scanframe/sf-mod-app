@@ -28,12 +28,12 @@ class TMatrix22
 		/**
 		 * @brief Copy constructor.
 		 */
-		TMatrix22(const TMatrix22<T>& m);
+		TMatrix22(const TMatrix22& m);
 
 		/**
 		 * @brief Move constructor.
 		 */
-		TMatrix22(TMatrix22<T>&&);
+		TMatrix22(TMatrix22&&) noexcept;
 
 		/**
 		 * @brief Initializer list constructor.
@@ -61,36 +61,36 @@ class TMatrix22
 		 * A transposed rotation matrix inverts the rotation.
 		 * @return Transposed matrix.
 		 */
-		TMatrix22<T> transposed() const;
+		TMatrix22 transposed() const;
 
 		/**
 		 * @brief Assignment using a 2 by 2 array.
 		 * @return The matrix itself.
 		 */
-		TMatrix22<T>& assign(const T[2][2]);
+		TMatrix22& assign(const T[2][2]);
 
 		/**
 		 * @brief Assignment using 4 separate values.
 		 * @return The matrix itself.
 		 */
-		TMatrix22<T>& assign(value_type m00, value_type m01, value_type m10, value_type m11);
+		TMatrix22& assign(value_type m00, value_type m01, value_type m10, value_type m11);
 
 		/**
 		 * @brief Assignment operator.
 		 * @return Matrix itself.
 		 */
-		TMatrix22<T>& operator=(const TMatrix22<T>& m);
+		TMatrix22& operator=(const TMatrix22& m);
 
 		/**
 		 * @brief Assignment move operator.
 		 */
-		TMatrix22<T>& operator=(TMatrix22<T>&& m) noexcept;
+		TMatrix22& operator=(TMatrix22&& m) noexcept;
 
 		/**
 		 * @brief Vector transformation operator.
 		 * @return Matrix itself.
 		 */
-		TMatrix22<T>& operator*=(const TMatrix22<T>& m);
+		TMatrix22& operator*=(const TMatrix22& m);
 
 		/**
 		 * @brief Vector transformation method.
@@ -126,30 +126,29 @@ class TMatrix22
 		 * @brief Compare equal operator using the #tolerance for comparing.
 		 * @return True when equal.
 		 */
-		bool operator==(const TMatrix22<T>&) const;
+		bool operator==(const TMatrix22&) const;
 
 		/**
 		 * @brief Compare unequal operator using the #tolerance for comparing.
 		 * @return True when unequal.
 		 */
-		bool operator!=(const TMatrix22<T>&) const;
+		bool operator!=(const TMatrix22&) const;
 
 		/**
 		 * @brief Reset the matrix to the so-called 'identity' matrix where a vector
 		 * is not changed during transformation.
 		 * @return Matrix itself.
 		 */
-		TMatrix22<T>& resetOrientation();
+		TMatrix22& resetOrientation();
 
 		/**
-		 * Sets the rotation for the matrix.
+		 * @brief Sets the rotation for the matrix.
 		 * @param angle Angle in radians.
 		 */
 		void setRotation(T angle);
 
 		/**
-		 * Gets the rotation of the matrix when it is a square matrix.
-		 * @param angle Angle in radians.
+		 * @brief Gets the rotation of the matrix when it is a square matrix.
 		 */
 		T getRotation() const;
 
@@ -163,7 +162,7 @@ class TMatrix22
 		 * Throws an exception when the string is not in the correct format.
 		 * @throw std::invalid_argument
 		 */
-		TMatrix22<T>& fromString(const std::string& s) noexcept(false);
+		TMatrix22& fromString(const std::string& s) noexcept(false);
 
 		/**
 		 * @brief Copy to matrix to 2 by 2 value_type array.

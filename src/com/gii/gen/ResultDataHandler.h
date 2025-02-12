@@ -8,20 +8,13 @@ namespace sf
 /**
  * @brief Class used to give a ResultData instance access to virtual method of a derived class.
  */
-class _GII_CLASS ResultDataHandler
-	: public ResultDataTypes
+class _GII_CLASS ResultDataHandler : public ResultDataTypes
 {
 	public:
 		/**
 		 * @brief Pure virtual function which must be overloaded in a derived class.
 		 */
-		virtual void resultDataEventHandler(
-			ResultDataTypes::EEvent event,
-			const ResultData& caller,
-			ResultData& link,
-			const Range& range,
-			bool sameInst
-		) = 0;
+		virtual void resultDataEventHandler(ResultDataTypes::EEvent event, const ResultData& caller, ResultData& link, const Range& range, bool sameInst) = 0;
 
 		/**
 		 * @brief Destructor
@@ -42,13 +35,7 @@ class TResultDataHandler : public ResultDataHandler
 		/**
 		 * @brief Required event handler type.
 		 */
-		typedef void (T::*TPmf)(
-			EEvent event,
-			const ResultData& caller,
-			ResultData& link,
-			const Range& rng,
-			bool sameInst
-		);
+		typedef void (T::*TPmf)(EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst);
 
 		/**
 		 * @brief One and only template constructor.
@@ -83,13 +70,7 @@ class TResultDataHandler : public ResultDataHandler
 		/**
 		 * Call the member function through virtual overloaded function from the base class.
 		 */
-		void resultDataEventHandler(
-			EEvent event,
-			const ResultData& caller,
-			ResultData& link,
-			const Range& rng,
-			bool same_inst
-		) override
+		void resultDataEventHandler(EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool same_inst) override
 		{
 			(_self->*_pmf)(event, caller, link, rng, same_inst);
 		}

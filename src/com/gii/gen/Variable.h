@@ -37,7 +37,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Creates an instance having a reference with 'id'.
-		 *
 		 * @param id Identifying number.
 		 * @param set_desired When true the desired id data member is set to the passed id as well.
 		 */
@@ -45,7 +44,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Creates a variable according to the definition std::string passed to it.
-		 *
 		 * The "id" from the definition string is the passed id offset added to form a final id.
 		 * This used when instances are created from resource strings for multiple instances of the same module.
 		 * @param definition Definition string.
@@ -55,7 +53,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Creates a variable using the passed definition structure.
-		 *
 		 * @param def Definition structure.
 		 * @param id_ofs offset for the 'id'.
 		 */
@@ -68,7 +65,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Creates a variable according to the definition std::string passed to it.
-
 		 * The passed identifier offset 'id_ofs' is added to the id in the string.
 		 * This used when instances are created from resource strings for multiple instances of the same module.
 		 * @param definition Comma separated definition string.
@@ -83,7 +79,7 @@ class _GII_CLASS Variable
 		 * @param id_ofs offset for the 'id'.
 		 * @return True on success.
 		 */
-		bool setup(const Definition& definition, Variable::id_type id_ofs = 0);
+		bool setup(const Definition& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Sets reference to other variable.
@@ -91,11 +87,10 @@ class _GII_CLASS Variable
 		 * @param v
 		 * @return
 		 */
-		bool setup(const Variable& v);
+		inline bool setup(const Variable& v);
 
 		/**
 		 * @brief Sets reference to other by id.
-		 *
 		 * The global list of references is searched for the passed id and referenced when found.
 		 * When found event #veIdChanged is emitted.
 		 * When the desired id was set and changed the #veDesiredId event is emitted.
@@ -104,34 +99,31 @@ class _GII_CLASS Variable
 		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
-		bool setup(id_type id, bool set_did = false);
+		inline bool setup(id_type id, bool set_did = false);
 
 		/**
 		 * @brief Only for local non exported owning variables to set the id after setup is called using a string.
-		 *
 		 * The id can not be zero and attached local variables are notify with a #veNewId event.
 		 * @param id Variable identifier
 		 * @param skip_self When false the event to its own handler is skipped to be emitted.
 		 * @return True on success.
 		 */
-		bool setId(id_type id, bool skip_self = false);
+		bool setId(id_type id, bool skip_self = false) const;
 
 		/**
 		 * @brief Checks validity of the attached reference and used after a setup call.
-		 *
 		 * @return True if the variable is valid.
 		 */
 		[[nodiscard]] bool isValid() const;
 
 		/**
-		 * @brief Returns true is the current instance is converting floating point values.
+		 * @brief Checks if the current instance is converting floating point values.
 		 * @return True when converting.
 		 */
 		[[nodiscard]] bool isConverted() const;
 
 		/**
 		 * @brief Enables or disables conversion of floating point values.
-		 *
 		 * If a change was triggered a #veConverted event was emitted.
 		 * @param enable To enable pass 'true'. to disable 'false'.
 		 * @return Value returned by #isConverted().
@@ -139,8 +131,7 @@ class _GII_CLASS Variable
 		bool setConvert(bool enable);
 
 		/**
-		 * @brief Returns whether the value is a number or not.
-		 *
+		 * @brief Checks if the value is a number or not.
 		 * Result is true when the value type is either Value::vitFloat or Value::vitInteger.
 		 * @return True if the current variable value is a number.
 		 */
@@ -148,7 +139,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Makes this instance owner of this variable instance and emits the appropriate events.
-		 *
 		 * When the owner really changes instances the new owner handler receives
 		 * a #veGetOwner event and the previous one #veLostOwner.
 		 */
@@ -156,27 +146,24 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Gets a reference to the owner/server instance of this variable.
-		 *
 		 * @return Owner reference.
 		 */
-		Variable& getOwner();
+		Variable& getOwner() const;
 
 		/**
-		 * @brief Returns if this is the owner of this variable.
+		 * @brief Checks if this instance is the owner of this variable.
 		 * @return True when owner.
 		 */
 		[[nodiscard]] bool isOwner() const;
 
 		/**
-		 * @brief Returns true if this instance is a global variable or not.
-		 *
+		 * @brief Check if this instance is a global variable or not.
 		 * @return True when global.
 		 */
-		[[nodiscard]] bool isGlobal() const;
+		[[nodiscard]] inline bool isGlobal() const;
 
 		/**
 		 * @brief Sets the variable to be global.
-		 *
 		 * This can only happen if it attached to Zero Variable so when the id is zero.
 		 * @param global True when global and False when local.
 		 * @return True on success.
@@ -185,7 +172,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Makes an owning local variable appear globally.
-		 *
 		 * Useful when reading/creating instances from stored files.
 		 * First as local instances and then making them global.
 		 * @param global True to export as global and False to revert it.
@@ -195,7 +181,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Checks if the variable is an exported local variable.
-		 *
 		 * @return True if exported.
 		 */
 		[[nodiscard]] bool isExported() const;
@@ -204,24 +189,22 @@ class _GII_CLASS Variable
 		 * @brief Checks if a temporary is used instead of current actual value.
 		 * @return True when temporary is enabled.
 		 */
-		bool isTemporary();
+		bool isTemporary() const;
 
 		/**
 		 * @brief When true is passed a local temporary value is used instead of current.
-		 *
 		 * @param on_off
 		 */
 		void setTemporary(bool on_off);
 
 		/**
 		 * @brief Applies the temporary value of this instance.
-		 *
 		 * Used mainly in dialogs to apply the changed value to become the actual current one.
 		 * The 'skip_self' flag is set to true by default because an event was already sent using #setCur().
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when the value was actually a change.
 		 */
-		bool applyTemporary(bool skip_self = true);
+		bool applyTemporary(bool skip_self = true) const;
 
 		/**
 		 * @brief Updates the temporary value with the real value.
@@ -234,7 +217,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Check if the temporary value differs from the actual value.
-		 *
 		 * Used mainly in dialogs to enable an apply button.
 		 * @return True when different.
 		 */
@@ -242,41 +224,37 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Only one link is available at a time.
-		 *
 		 * Sets an event handler for this variable, passing NULL wil disable the link.
 		 * @param handler
 		 */
 		void setHandler(VariableHandler* handler);
 
 		/**
-		 * @brief Returns the link Set by setHandler().
-		 *
+		 * @brief Gets the link set by #setHandler().
 		 * @return Link instance pointer
 		 */
 		[[nodiscard]] VariableHandler* getHandler() const;
 
 		/**
 		 * @brief Special handler for converting float variables globally.
-		 *
 		 * Sets an event handler for this variable, passing NULL wil disable the handler
 		 * @param handler Handler from conversion interface.
 		 */
 		static void setConvertHandler(VariableHandler* handler);
 
 		/**
-		 * @brief Returns the link to the global conversion handler.
+		 * @brief Gets the link to the global conversion handler.
 		 */
-		[[nodiscard]] VariableHandler* getConvertHandler() const;
+		[[nodiscard]] static VariableHandler* getConvertHandler();
 
 		/**
 		 * @brief Initiate event for all instances of this variable depending on the event value.
-		 *
 		 * Returns the amount of effected variables by this call.
 		 * @param event
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return Amount of events emitted.
 		 */
-		Variable::size_type emitEvent(EEvent event, bool skip_self = false);
+		size_type emitEvent(EEvent event, bool skip_self = false);
 
 		/**
 		 * @brief Sets the desired id member variable to the current attached reference id.
@@ -285,7 +263,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Sets the desired id member variable to the passed id.
-		 *
 		 * If the passed 'id' is zero the automatic attachment mechanism is disabled.
 		 */
 		void setDesiredId(id_type id);
@@ -294,7 +271,6 @@ class _GII_CLASS Variable
 		 * @brief Sets the data for this instance for user purposes.
 		 * @tparam T Type of the data being set.
 		 * @param data Could be a pointer cast value.
-		 * @param data
 		 */
 		template<typename T>
 		void setData(T data);
@@ -309,7 +285,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Both return true if there was a change and notify all variables of the same variable id through an event.
-		 *
 		 * @param value Sets a new current value.
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when the value was actually changed.
@@ -318,7 +293,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Same as #setCur() but for const instances objects of this instance.
-		 *
 		 * @param value Sets a new current value.
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when the value was actually changed.
@@ -327,7 +301,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Used in settings loading routines which use the owner to Set a new value.
-		 *
 		 * Checks if clients have write access and is global before applying the new value.
 		 * @param value
 		 * @return True on success of making a change.
@@ -335,8 +308,16 @@ class _GII_CLASS Variable
 		[[nodiscard]] bool loadCur(const Value& value) const;
 
 		/**
+		 * @brief Filters the passed string according the given type.
+		 * @param str String to filter.
+		 * @param type String type.
+		 * @param max_len Maximum length of the string when non-zero.
+		 * @return Filtered string.
+		 */
+		static std::string filterString(const std::string& str, EStringType type, size_t max_len);
+
+		/**
 		 * @brief Increase current variable value by step increments also negative values.
-		 *
 		 * Emits event #veValueChange when a change is flags occurred.
 		 * @param steps Amount of increments (>0) or decrements (<0)
 		 * @param skip_self Skip event on this instance.
@@ -346,53 +327,47 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Unsets a flag or multiple flags of the attached VariableReference.
-		 *
 		 * Emits event #veValueChange when a change in flags occurred.
 		 * @param flag Single or multiple values of #EFlag.
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when a change was made.
 		 */
-		bool unsetFlag(flags_type flag, bool skip_self = false);
+		bool unsetFlag(flags_type flag, bool skip_self = false) const;
 
 		/**
 		 * @brief Sets a flag or multiple flags on the reference.
-		 *
 		 * Only for an owner can call this function successful.
 		 * Emits event #veFlagsChange when a change in flags occurred.
 		 * @param flag Single or multiple values of #EFlag.
 		 * @param skip_self Skip event on this instance.
 		 * @return True when a change was made.
 		 */
-		bool setFlag(flags_type flag, bool skip_self = false);
+		bool setFlag(flags_type flag, bool skip_self = false) const;
 
 		/**
 		 * @brief Replaces all flags with the passed flags.
-		 *
 		 * Only for an owner can call this function successful.
 		 * Emits event #veFlagsChange when a change in flags occurred.
 		 * @param flags Single or multiple values of #EFlag.
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when a change was made.
 		 */
-		bool updateFlags(flags_type flags, bool skip_self = false);
+		bool updateFlags(flags_type flags, bool skip_self = false) const;
 
 		/**
-		 * @brief Returns the flags at the time the instance was created.
-		 *
+		 * @brief Gets the flags at the time the instance was created.
 		 * @return Set of #EFlag bits.
 		 */
 		[[nodiscard]] flags_type getFlags() const;
 
 		/**
-		 * @brief Returns the current flags for this instance.
-		 *
+		 * @brief Gets the current flags for this instance.
 		 * @return Set of #EFlag bits.
 		 */
 		[[nodiscard]] flags_type getCurFlags() const;
 
 		/**
 		 * @brief Sets the global conversion values and signals the clients.
-		 *
 		 * Only with owners a call is successful and effective.
 		 * The formula is: <b><i>converted = (current * multiplier) + offset</i></b>
 		 * When successful event #veConverted emitted.
@@ -402,11 +377,10 @@ class _GII_CLASS Variable
 		 * @param digits Significant digits for the new unit.
 		 * @return
 		 */
-		bool setConvertValues(const std::string& unit, const Value& multiplier, const Value& offset, int digits = std::numeric_limits<int>::max());
+		bool setConvertValues(const std::string& unit, const Value& multiplier, const Value& offset, int digits = std::numeric_limits<int>::max()) const;
 
 		/**
 		 * @brief Enables or disables unit conversion.
-		 *
 		 * Only owners can make this call successfully.<br>
 		 * Depending on the globally set handler using #setConvertHandler() this function calls the handler with event
 		 * #veConvert which then should apply the conversion values using #setConvertValues() on the 'call_var' passed.<br>
@@ -417,25 +391,22 @@ class _GII_CLASS Variable
 		 * @param convert When true conversion is enabled and false disabled.
 		 * @return True on success of getting the values.
 		 */
-		bool setConvertValues(bool convert = true);
+		bool setConvertValues(bool convert = true) const;
 
 		/**
-		 * @brief Returns the current attached ID.
-		 *
+		 * @brief Gets the current attached ID.
 		 * @return The id of the current attached variable.
 		 */
 		[[nodiscard]] id_type getId() const;
 
 		/**
-		 * @brief Returns the desired id of this instance.
-		 *
+		 * @brief Gets the desired id of this instance.
 		 * @return Desired id.
 		 */
 		[[nodiscard]] id_type getDesiredId() const;
 
 		/**
 		 * @brief Gets the name or a part of the name of the attached variable.
-		 *
 		 * Returns the variable name which is default (level 0) the full variable path name.
 		 * When levels is 'n' and larger than zero the last 'n' levels are returned.
 		 * When levels is 'n' and smaller than zero the first 'n' levels are omitted.
@@ -445,59 +416,60 @@ class _GII_CLASS Variable
 		[[nodiscard]] std::string getName(int levels = 0) const;
 
 		/**
-		 * @brief Returns the amount of levels of the full name path.
-		 *
+		 * @brief Gets the amount of levels of the full name path.
 		 * @return Total name levels available.
 		 */
 		[[nodiscard]] int getNameLevelCount() const;
 
 		/**
-		 * @brief Returns variable unit
-		 *
-		 * @return unit string.
+		 * @brief Gets the variable unit.
+		 * @return Unit string.
 		 */
 		[[nodiscard]] std::string getUnit() const;
 
 		/**
-		 * @brief Returns variable unit of converted or non-converted value.
-		 *
+		 * @brief Gets variable unit of converted or non-converted value.
 		 * @param converted True when getting the converted value.
-		 * @return unit string.
+		 * @return Unit string.
 		 */
 		[[nodiscard]] std::string getUnit(bool converted) const;
 
 		/**
-		 * @brief Returns the conversion option string.
-		 *
+		 * @brief Gets the conversion option string.
 		 * This string determines how the value is to be converted when exporting.
 		 * @return Option string.
 		 */
 		[[nodiscard]] std::string getConvertOption() const;
 
 		/**
-		 * @brief The type is determined by the character in the unit field of the setup string.
-		 *
+		 * @brief Gets the string type which is determined by the character(s) in the unit field.
+		 * The maximum length is determined by the round value in the setup string.
 		 * @return Enumerate value of #EStringType
 		 */
 		[[nodiscard]] EStringType getStringType() const;
 
 		/**
-		 * @brief Gets the name for passed string type.
-		 *
+		 * @brief Gets the description string for passed string type.
 		 * @param type Enumerate value.
 		 * @return Name of the string type.
 		 */
-		static const char* getStringType(EStringType type);
+		static std::string_view getStringType(EStringType type);
+
+		/**
+		 * @brief Gets the string type value of the passed string.
+		 * @param flags String containing flag(s)
+		 * @return The enumerate type of the string.
+		 */
+		static EStringType getStringType(const std::string& flags);
 
 		/**
 		 * @brief Gets the purpose description of the attached variable.
-		 *
 		 * @return Description string.
 		 */
 		[[nodiscard]] std::string getDescription() const;
 
 		/**
-		 * @brief Returns if a flag or flags has been set.
+		 * @brief Gets if a flag or flags has been set.
 		 *
 		 * @param flag Single value or a multiple of #EFlag values.
 		 * @return True when the flag(s) were set.
@@ -505,22 +477,19 @@ class _GII_CLASS Variable
 		[[nodiscard]] bool isFlag(int flag) const;
 
 		/**
-		 * @brief Returns the current flags in a std::string form.
-		 *
+		 * @brief Gets the current flags in a std::string form.
 		 * @return Flags as a string.
 		 */
 		[[nodiscard]] std::string getCurFlagsString() const;
 
 		/**
-		 * Returns the flags at setup in a std::string form.
-		 *
+		 * @brief Gets the flags at setup in a std::string form.
 		 * @return Flags as a string.
 		 */
 		[[nodiscard]] std::string getFlagsString() const;
 
 		/**
-		 * @brief Returns if variable is allowed to change its value.
-		 *
+		 * @brief Checks if variable is allowed to change its value.
 		 * @return True when readonly.
 		 */
 		[[nodiscard]] bool isReadOnly() const;
@@ -533,7 +502,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Gets the normalized decimal point location for this instance converted or not converted.
-		 *
 		 * @param converted True when needing the converted amount.
 		 * @return Amount of digits.
 		 */
@@ -548,37 +516,32 @@ class _GII_CLASS Variable
 		[[nodiscard]] int getRequiredDigits() const;
 
 		/**
-		 * @brief Return the variable default value.
-		 *
+		 * @brief Gets the variable default value.
 		 * Is converted when converted flag is true.
 		 * @return
 		 */
 		[[nodiscard]] const Value& getDef() const;
 
 		/**
-		 * @brief Return the variable Minimum value.
-		 *
+		 * @brief Gets the variable Minimum value.
 		 * Is converted when converted flag is true.
 		 */
 		[[nodiscard]] const Value& getMin() const;
 
 		/**
-		 * @brief Return the variable Maximum value.
-		 *
+		 * @brief Gets the variable Maximum value.
 		 * Is converted when converted flag is true.
 		 */
 		[[nodiscard]] const Value& getMax() const;
 
 		/**
-		 * @brief Return the variable Rounding value.
-		 *
+		 * @brief Gets the variable Rounding value.
 		 * Converted when converted flag is true.
 		 */
 		[[nodiscard]] const Value& getRnd() const;
 
 		/**
-		 * @brief Return the variable current value.
-		 *
+		 * @brief Gets the variable current value.
 		 * Is converted when converted flag is true.
 		 * @return Temporary value when it is used.
 		 */
@@ -592,8 +555,7 @@ class _GII_CLASS Variable
 		[[nodiscard]] const Value& getDef(bool converted) const;
 
 		/**
-		 * @brief Gets the Minimum value converted or not
-		 * converted independent of the conversion flag.
+		 * @brief Gets the Minimum value converted or not converted independent of the conversion flag.
 		 * @param converted True when getting the converted value.
 		 */
 		[[nodiscard]] const Value& getMin(bool converted) const;
@@ -615,8 +577,7 @@ class _GII_CLASS Variable
 		[[nodiscard]] const Value& getRnd(bool converted) const;
 
 		/**
-		 * @brief Gets the current value converted or not
-		 * converted independent of the conversion flag.
+		 * @brief Gets the current value converted or not converted independent of the conversion flag.
 		 * @param converted True when getting the converted value.
 		 * @return Does not return the temporary value when it is used.
 		 */
@@ -624,25 +585,24 @@ class _GII_CLASS Variable
 		[[nodiscard]] const Value& getCur(bool converted) const;
 
 		/**
-		 * @brief Returns the complete state vector as a reference.
+		 * @brief Gets the complete state vector as a reference.
 		 */
 		[[nodiscard]] const State::Vector& getStates() const;
 
 		/**
-		 * @brief Returns the usage count of this variable reference
+		 * @brief Gets the usage count of this variable reference
 		 * @return
 		 */
 		[[nodiscard]] size_type getUsageCount() const;
 
 		/**
-		 * @brief Returns the state count.
-		 *
+		 * @brief Gets the state count.
 		 * @return Amount of states.
 		 */
 		[[nodiscard]] size_type getStateCount() const;
 
 		/**
-		 * @brief Returns the state index of passed value when it exists.
+		 * @brief Gets the state index of passed value when it exists.
 		 *
 		 * @param v Value to lookup.
 		 * @return Valid index and when it does not exist it returns #npos.
@@ -650,52 +610,47 @@ class _GII_CLASS Variable
 		[[nodiscard]] size_type getState(const Value& v) const;
 
 		/**
-		 * @brief Return the display name of the passed state's index.
-		 *
+		 * @brief Gets the display name of the passed state's index.
 		 * @param state Index of the state.
 		 * @return Display name.
 		 */
 		[[nodiscard]] std::string getStateName(size_type state) const;
 
 		/**
-		 * @brief Return the value of the passed state index.
-		 *
+		 * @brief Gets the value of the passed state index.
 		 * @param state Index of the state.
 		 * @return Value of the passed state index.
 		 */
 		[[nodiscard]] const Value& getStateValue(size_type state) const;
 
 		/**
-		 * @brief Returns enumerate value of the passed string.
-		 *
-		 * @param type
-		 * @return
+		 * @brief Gets enumerate value of the passed string.
+		 * @param type String representing the type.
+		 * @return Enumerate type value.
 		 */
-		static Value::EType getType(const char* type);
+		static Value::EType getType(std::string_view type);
 
 		/**
-		 * @brief Returns type string of given enumerate value.
-		 *
-		 * @param type
-		 * @return
+		 * @brief Gets type string of given enumerate value.
+		 * @param type Enumerate type.
+		 * @return String of the type.
 		 */
-		static const char* getType(Value::EType type);
+		static std::string getType(Value::EType type);
 
 		/**
-		 * @brief Returns type enumerate of this variable instance.
+		 * @brief Gets current type enumerate of this variable instance.
+		 * @return Enumerate type value.
 		 */
 		[[nodiscard]] Value::EType getType() const;
 
 		/**
 		 * @brief Gets the amount of variables having different ID's in the system.
-		 *
 		 * @return Amount of instances.
 		 */
 		static size_type getCount();
 
 		/**
 		 * @brief Gets the total amount of variable instances in the system.
-		 *
 		 * @param global_only When true, count only the global ones.
 		 * @return Amount of instances.
 		 */
@@ -703,7 +658,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Retrieves a list of instances available (global + exported).
-		 *
 		 * Useful in populating a selection dialog.
 		 * @return Vector of instance pointers.
 		 */
@@ -711,12 +665,12 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Gets the name of the passed field enumerate #EField.
+		 * @return Field string.
 		 */
 		static std::string getFieldName(int field);
 
 		/**
-		 * @brief Returns variable with the given id.
-		 *
+		 * @brief Gets variable with the given id.
 		 * When not found it returns the zero variable.
 		 * @param id Variable id to seek.
 		 * @return When not found always zero variable.
@@ -724,8 +678,7 @@ class _GII_CLASS Variable
 		static const Variable& getInstanceById(id_type id);
 
 		/**
-		 * @brief Returns variable with the given id.
-		 *
+		 * @brief Gets variable with the given id.
 		 * When not found it returns the zero variable.
 		 * @param id Variable id to seek.
 		 * @param list Vector to use for lookup.
@@ -734,8 +687,7 @@ class _GII_CLASS Variable
 		static Variable& getInstanceById(id_type id, PtrVector& list);
 
 		/**
-		 * @brief Returns variable with the given id.
-		 *
+		 * @brief Gets variable with the given id.
 		 * When not found it returns the zero variable.
 		 * @param id Variable id to seek.
 		 * @param list Vector to use for lookup.
@@ -754,8 +706,7 @@ class _GII_CLASS Variable
 		int operator==(const Variable& v) const;
 
 		/**
-		 * @brief Returns current converted value in default formatted string or state.
-		 *
+		 * @brief Gets current converted value in default formatted string or state.
 		 * When a temporary value is used that value is returned.
 		 * @param states Determines if a state string name is to be used.
 		 * @return String of the value.
@@ -769,14 +720,12 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Clips the passed value between min and max values.
-		 *
 		 * @param value Value to be clipped.
 		 */
 		void clipRound(Value& value) const;
 
 		/**
-		 * @brief Returns the passed value converted to new units or back again.
-		 *
+		 * @brief Gets the passed value converted to new units or back again.
 		 * @param value Value to be converted.
 		 * @param to_org Direction of conversion.
 		 * @return Converted value.
@@ -790,7 +739,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief load single current value and flags from stream.
-		 *
 		 * If 'list' is other than the default that list is used to seek the according variable instead of the global list.
 		 * @param is
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
@@ -800,7 +748,7 @@ class _GII_CLASS Variable
 		static bool readUpdate(std::istream& is, bool skip_self = false, PtrVector& list = null_ref<PtrVector>());
 
 		/**
-		 * Writes id and current value to the stream.
+		 * @brief Writes id and current value to the stream.
 		 * @param os
 		 * @return
 		 */
@@ -825,39 +773,41 @@ class _GII_CLASS Variable
 		static bool read(std::istream& is, bool skip_self = false, PtrVector& list = null_ref<PtrVector>());
 
 		/**
-		 * Reads multiple variable setup strings from stream separated by newline characters.
-		 * Returns true when no error occurred during the process.
+		 * @brief Reads multiple variable setup strings from stream separated by newline characters.
+		 * Gets true when no error occurred during the process.
 		 * On error returns false and line returns the error line in the stream.
 		 * If 'list' is other than a NULL_REF the created variables are added to that list.
 		 * @param is
 		 * @param list
 		 * @param global
 		 * @param err_line
-		 * @return
+		 * @return True when no errors occurred while reading/creating.
 		 */
 		static bool create(std::istream& is, PtrVector& list = null_ref<PtrVector>(), bool global = true, int& err_line = null_ref<int>());
 
 		/**
-		 * Converts a std::string with flag characters to an integer
+		 * @brief Converts a std::string with flag characters to an integer
 		 * @param flags
 		 * @return
 		 */
-		static Variable::flags_type toFlags(const std::string& flags);
+		static flags_type toFlags(const std::string& flags);
 
 		/**
-		 * Returns the passed flags in a std::string form
+		 * @brief Gets the passed flags in a std::string form
 		 * @param flags
 		 * @return
 		 */
 		static std::string getFlagsString(flags_type flags);
 
 		/**
-		 * Returns the event name to make debugging easier.
+		 * @brief Gets the event name to make debugging easier.
+		 * @param event The event enumerate/number.
+		 * @return Event name.
 		 */
-		static const char* getEventName(EEvent event);
+		static std::string_view getEventName(EEvent event);
 
 		/**
-		 * During events no instances should be deleted.
+		 * @brief During events no instances should be deleted.
 		 * The destructor will be called but the data still exist
 		 */
 		void operator delete(void*);// NOLINT(misc-new-delete-overloads)
@@ -877,12 +827,11 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Updates the original non-converted version of this instance.
-		 *
 		 * @param value
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return True when changed.
 		 */
-		bool updateValue(const Value& value, bool skip_self);
+		bool updateValue(const Value& value, bool skip_self) const;
 
 		/**
 		 * @brief Updates the temporary value of this instance.
@@ -892,21 +841,19 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Initiate event for all instances of this variable if params was Set by setHandler this param is ignored.
-		 *
-		 * @param event
+		 * @param event Event to be handled.
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return Amount of events sent.
 		 */
-		size_type emitLocalEvent(EEvent event, bool skip_self = true);
+		[[maybe_unused]] size_type emitLocalEvent(EEvent event, bool skip_self = true) const;
 
 		/**
 		 * @brief Initiate event for all variable instances if param was Set by setHandler this past param is used
-		 *
 		 * @param event
 		 * @param skip_self When 'true' this instance is skipped in emission of events.
 		 * @return Amount of events sent.
 		 */
-		size_type emitGlobalEvent(EEvent event, bool skip_self = true);
+		[[maybe_unused]] size_type emitGlobalEvent(EEvent event, bool skip_self = true) const;
 
 		/**
 		 * @brief Function which checks the link before calling it.
@@ -919,7 +866,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Get a reference by ID if not exist
-		 *
 		 * @param id
 		 * @return Reference from passed id.
 		 */
@@ -930,11 +876,10 @@ class _GII_CLASS Variable
 		 *
 		 * @param handler
 		 */
-		static void removeHandler(VariableHandler* handler);
+		static void removeHandler(const VariableHandler* handler);
 
 		/**
 		 * @brief Private function to attach variable references.
-		 *
 		 * @param ref
 		 * @return True when successful.
 		 */
@@ -942,10 +887,9 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Attaches all instances that have the desired id Set as this one.
-		 *
 		 * @return Amount of events sent.
 		 */
-		size_type attachDesired();
+		size_type attachDesired() const;
 
 		/**
 		 * @brief Holds the data to the reference caring the common data.
@@ -989,7 +933,7 @@ inline Variable::Variable(const Variable& v)
 	setup(v);
 }
 
-inline Variable::Variable(const Definition& def, id_type id_ofs)
+inline Variable::Variable(const Definition& def, const id_type id_ofs)
 {
 	_global = true;
 	setup(def, id_ofs);
@@ -1047,31 +991,31 @@ inline bool Variable::isGlobal() const
 	return _global;
 }
 
-inline Value::EType Variable::getType(const char* type)
+inline Value::EType Variable::getType(const std::string_view type)
 {
 	return Value::getType(type);
 }
 
-inline const char* Variable::getType(Value::EType type)
+inline std::string Variable::getType(Value::EType type)
 {
-	return Value::getType(type);
+	return std::string(Value::getType(type));
 }
 
 inline const Variable& Variable::getInstanceById(id_type id, const PtrVector& list)
 {
-	return Variable::getInstanceById(id, (PtrVector&) list);
+	return getInstanceById(id, const_cast<PtrVector&>(list));
 }
 
 template<typename T>
-inline void Variable::setData(T data)
+void Variable::setData(T data)
 {
-	_data = (uint64_t) data;
+	_data = toDataType(data);
 }
 
 template<typename T>
-[[nodiscard]] inline T Variable::getData() const
+[[nodiscard]] T Variable::getData() const
 {
-	return (T) _data;
+	return fromDataType<T>(_data);
 }
 
 inline VariableHandler* Variable::getHandler() const

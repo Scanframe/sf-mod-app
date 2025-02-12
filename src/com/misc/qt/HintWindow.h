@@ -7,8 +7,7 @@ namespace sf
 /**
  * @brief Floating window like tool tip available to the script engine as well.
  */
-class _MISC_CLASS HintWindow
-	: public QLabel
+class _MISC_CLASS HintWindow : public QLabel
 {
 	public:
 		/**

@@ -13,7 +13,8 @@
 namespace sf
 {
 
-struct AscanGraph::Private : ResultDataHandler
+struct AscanGraph::Private
+	: ResultDataHandler
 	, VariableHandler
 {
 		AscanGraph* _w;
@@ -38,8 +39,7 @@ struct AscanGraph::Private : ResultDataHandler
 		explicit Private(AscanGraph* widget)
 			: _w(widget)
 			, _graph(widget->palette())
-		{
-		}
+		{}
 
 		void initialize()
 		{
@@ -176,7 +176,8 @@ struct AscanGraph::Private : ResultDataHandler
 
 				case Variable::veIdChanged:
 				case Variable::veValueChange:
-				case Variable::veConverted: {
+				case Variable::veConverted:
+				{
 					if (&link == &_vAmplitudeUnit || &link == &_vAttenuation)
 					{
 						// Set the scale unit to amplitude unit variable unit.
@@ -200,7 +201,8 @@ struct AscanGraph::Private : ResultDataHandler
 				default:
 					break;
 
-				case reInvalid: {
+				case reInvalid:
+				{
 					_lastRange.clear();
 					// Set the flag so that the plot draw function does not use the data.
 					_dataAvail = false;
@@ -209,7 +211,8 @@ struct AscanGraph::Private : ResultDataHandler
 					break;
 				}
 
-				case reIdChanged: {
+				case reIdChanged:
+				{
 					// Size the dynamic array to the needed size.
 					_polygon.resize(static_cast<qsizetype>(link.getBlockSize()));
 					// Set both rulers.
@@ -219,7 +222,8 @@ struct AscanGraph::Private : ResultDataHandler
 					invalidate(false);
 				}
 					// Run into next.
-				case reClear: {
+				case reClear:
+				{
 					_lastRange.clear();
 					// Set the flag so that the plot draw function does not use the data.
 					_dataAvail = false;
@@ -228,7 +232,8 @@ struct AscanGraph::Private : ResultDataHandler
 					break;
 				}
 
-				case reAccessChange: {
+				case reAccessChange:
+				{
 					if (auto blocks = range.getStop())
 					{
 						// Check if the last range is valid.

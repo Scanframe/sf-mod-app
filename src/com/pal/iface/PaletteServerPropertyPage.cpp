@@ -1,19 +1,18 @@
 #include "PaletteServerPropertyPage.h"
 #include "ui_PaletteServerPropertyPage.h"
-#include <pal/iface/PaletteServer.h>
-#include <gii/qt/Macros.h>
-#include <gii/qt/InformationSelectDialog.h>
-#include <misc/qt/Resource.h>
-#include <misc/qt/ObjectPropertyModel.h>
 #include <QLineEdit>
+#include <gii/qt/InformationSelectDialog.h>
+#include <misc/qt/ObjectPropertyModel.h>
+#include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
+#include <pal/iface/PaletteServer.h>
 
 namespace sf
 {
 
 PaletteServerPropertyPage::PaletteServerPropertyPage(PaletteServer* server, PropertySheetDialog* parent)
-	:PropertyPage(parent)
-	 , ui(new Ui::PaletteServerPropertyPage)
+	: PropertyPage(parent)
+	, ui(new Ui::PaletteServerPropertyPage)
 	, _server(server)
 	, _propChange(false)
 {
@@ -22,20 +21,16 @@ PaletteServerPropertyPage::PaletteServerPropertyPage(PaletteServer* server, Prop
 	auto model = new ObjectPropertyModel();
 	model->setDelegates(ui->tvProperties);
 	// When the list view is edited set the change flag.
-	connect(model, &ObjectPropertyModel::changed, [&]()
-	{
-		_propChange |= true;
-	});
+	connect(model, &ObjectPropertyModel::changed, [&]() { _propChange |= true; });
 	// Make the qulonglong type QProperties have actions.
-	connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic)
-	{
+	connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) {
 		for (auto isType: {Gii::ResultData, Gii::Variable})
 		{
 			auto action = lineEdit->addAction(
 				Resource::getSvgIcon(isType == Gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
-				QLineEdit::TrailingPosition);
-			connect(action, &QAction::triggered, [action, isType]()
-			{
+				QLineEdit::TrailingPosition
+			);
+			connect(action, &QAction::triggered, [action, isType]() {
 				if (auto le = qobject_cast<QLineEdit*>(action->parent()))
 				{
 					InformationSelectDialog dlg(le);
@@ -54,7 +49,7 @@ PaletteServerPropertyPage::PaletteServerPropertyPage(PaletteServer* server, Prop
 	// Add no implementation selection item.
 	ui->cbImplementationName->addItem(tr("None"), "");
 	// Iterate through the implementation name descriptions pairs.
-	for(auto& name: _server->getImplementationNames())
+	for (auto& name: _server->getImplementationNames())
 	{
 		ui->cbImplementationName->addItem(QString("%1: %2").arg(name.first).arg(name.second), name.first);
 	}
@@ -109,5 +104,4 @@ void PaletteServerPropertyPage::afterPageApply(bool was_modified)
 	}
 }
 
-}
-
+}// namespace sf

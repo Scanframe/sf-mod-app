@@ -64,9 +64,7 @@ DWORD getMainThreadId()
 	tEntry.dwSize = sizeof(THREADENTRY32);
 	DWORD result = 0;
 	DWORD currentPid = ::GetCurrentProcessId();
-	for (BOOL success = Thread32First(handle, &tEntry);
-			 !result && success && GetLastError() != ERROR_NO_MORE_FILES;
-			 success = Thread32Next(handle, &tEntry))
+	for (BOOL success = Thread32First(handle, &tEntry); !result && success && GetLastError() != ERROR_NO_MORE_FILES; success = Thread32Next(handle, &tEntry))
 	{
 		if (tEntry.th32OwnerProcessID == currentPid)
 		{

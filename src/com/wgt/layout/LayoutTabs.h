@@ -45,12 +45,12 @@ class QDESIGNER_WIDGET_EXPORT LayoutTabs : public VariableWidgetBase
 
 	protected:
 		/**
-		 * @brief Overridden from base class '#ObjectExtension'.
+		 * @brief Overridden from base class '#sf::ObjectExtension'.
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
 		/**
-		 * @brief Overridden from base class '#VariableWidgetBase'.
+		 * @brief Overridden from base class '#sf::VariableWidgetBase'.
 		 */
 		void applyReadOnly(bool yn) override;
 

@@ -34,7 +34,8 @@ void HintWindow::setActive(bool active)
 	setVisible(active);
 }
 
-struct HintWindowScriptObject : HintWindow
+struct HintWindowScriptObject
+	: HintWindow
 	, ScriptObject
 {
 		explicit HintWindowScriptObject(const ScriptObject::Parameters& params)
@@ -155,9 +156,6 @@ void HintWindowScriptObject::destroyObject(bool& should_delete)
 	should_delete = true;
 }
 
-SF_REG_CLASS(
-	ScriptObject, ScriptObject::Parameters, Interface,
-	HintWindowScriptObject, "HintWindow", "Floating hint window."
-)
+SF_REG_CLASS(ScriptObject, ScriptObject::Parameters, Interface, HintWindowScriptObject, "HintWindow", "Floating hint window.")
 
 }// namespace sf

@@ -70,23 +70,35 @@ struct TSet
 		/**
 		 * @brief Toggles a bit in the mask.
 		 */
-		TSet& toggle(T bit) { return has(bit) ? Unset(bit) : Set(bit); }
+		TSet& toggle(T bit)
+		{
+			return has(bit) ? Unset(bit) : Set(bit);
+		}
 
 		/**
 		 * @brief Compare equal operator.
 		 */
-		bool operator==(const TSet& set) const { return _bits == set._bits; }
+		bool operator==(const TSet& set) const
+		{
+			return _bits == set._bits;
+		}
 
 		/**
 		 * @brief Compare unequal operator.
 		 */
-		bool operator!=(const TSet& set) const { return _bits != set._bits; }
+		bool operator!=(const TSet& set) const
+		{
+			return _bits != set._bits;
+		}
 
 		/**
 		 * @brief Operators and functions that are also available in the VCL 'Set' template.
 		 * @return True when bit is in the bit mask.
 		 */
-		bool contains(T bit) const { return has(bit); }
+		bool contains(T bit) const
+		{
+			return has(bit);
+		}
 
 		/**
 		 * @brief Operator for adding bits to the mask.

@@ -57,13 +57,11 @@ inline S calculateOffset(T value, T min, T max, S len, bool clip)
 		// When the len is a negative value.
 		if (len < 0)
 		{
-			return ((temp < len) ? len : (temp > S(0)) ? S(0)
-																								 : temp);
+			return ((temp < len) ? len : (temp > S(0)) ? S(0) : temp);
 		}
 		else
 		{
-			return ((temp > len) ? len : (temp < S(0)) ? S(0)
-																								 : temp);
+			return ((temp > len) ? len : (temp < S(0)) ? S(0) : temp);
 		}
 	}
 	return temp;

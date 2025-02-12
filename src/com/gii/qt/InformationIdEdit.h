@@ -50,7 +50,10 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit
 		/**
 		 * @brief Overridden from base class  #sf::ObjectExtension
 		 */
-		bool isRequiredProperty(const QString& name) override { return true; };
+		bool isRequiredProperty(const QString& name) override
+		{
+			return true;
+		};
 
 		/**
 		 * @brief Set the type of id set with #setId().

@@ -28,7 +28,7 @@ class TEnvelope
 	public:
 		/**
 		 * @brief Constructor for the envelope's letter object.
-		 * @param object
+		 * @param letter Letter to wrap in the envelope.
 		 */
 		explicit TEnvelope(T* letter)
 			: _letter(new TLetter(letter))
@@ -46,26 +46,43 @@ class TEnvelope
 		/**
 		 * @brief Move constructor.
 		 */
-		TEnvelope(const TEnvelope&& src)
+		TEnvelope(const TEnvelope&& src) noexcept
 			: _letter(src._letter)
-		{
-		}
+		{}
 
-		~TEnvelope() { _letter->release(); }
+		~TEnvelope()
+		{
+			_letter->release();
+		}
 
 		TEnvelope& operator=(const TEnvelope& src);
 
 		TEnvelope& operator=(T* letter);
 
-		T* operator->() { return _letter->Object; }
+		T* operator->()
+		{
+			return _letter->Object;
+		}
 
-		T& operator*() { return *_letter->Object; }
+		T& operator*()
+		{
+			return *_letter->Object;
+		}
 
-		T* operator()() { return _letter->Object; }
+		T* operator()()
+		{
+			return _letter->Object;
+		}
 
-		explicit operator T*() { return _letter->Object; }
+		explicit operator T*()
+		{
+			return _letter->Object;
+		}
 
-		[[nodiscard]] int referencedCount() const { return _letter ? _letter->_refCount : 0; }
+		[[nodiscard]] int referencedCount() const
+		{
+			return _letter ? _letter->_refCount : 0;
+		}
 
 	private:
 		struct TLetter
@@ -138,15 +155,24 @@ class TAEnvelope
 			_letter->addRef();
 		}
 
-		~TAEnvelope() { _letter->release(); }
+		~TAEnvelope()
+		{
+			_letter->release();
+		}
 
 		TAEnvelope& operator=(const TAEnvelope& src);
 
 		TAEnvelope& operator=(T array[]);
 
-		T& operator[](int i) { return _letter->_array[i]; }
+		T& operator[](int i)
+		{
+			return _letter->_array[i];
+		}
 
-		T* operator*() { return _letter->_array; }
+		T* operator*()
+		{
+			return _letter->_array;
+		}
 
 	private:
 		struct TLetter
@@ -156,9 +182,15 @@ class TAEnvelope
 					, _refCount(1)
 				{}
 
-				~TLetter() { delete[] _array; }
+				~TLetter()
+				{
+					delete[] _array;
+				}
 
-				void addRef() { _refCount++; }
+				void addRef()
+				{
+					_refCount++;
+				}
 
 				void release()
 				{

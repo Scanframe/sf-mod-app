@@ -99,7 +99,7 @@ if (SF_BUILD_QT)
 endif ()
 
 # Add Doxygen document project when .
-if (NOT WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if (NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
 	add_subdirectory(doc)
 endif ()
 

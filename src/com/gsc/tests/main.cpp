@@ -1,25 +1,25 @@
-#include <ostream>
 #include <QApplication>
-#include <QDialog>
-#include <QTime>
-#include <QShortcut>
-#include <QMouseEvent>
-#include <QTextStream>
-#include <QVBoxLayout>
 #include <QCheckBox>
+#include <QDialog>
+#include <QMouseEvent>
+#include <QShortcut>
+#include <QTextStream>
+#include <QTime>
+#include <QVBoxLayout>
 #include <gsc/GlobalShortcut.h>
+#include <ostream>
 
 QTextStream out(stdout);
 QTextStream err(stderr);
 
-class MyMainWindow :public QDialog
+class MyMainWindow : public QDialog
 {
 	public:
-		explicit MyMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
-		:QDialog(parent, flags)
-		,_shortcut(new QShortcut(this))
-		,_globalShortcut1(new sf::GlobalShortcut(this))
-		,_globalShortcut2(new sf::GlobalShortcut(this))
+		explicit MyMainWindow(QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
+			: QDialog(parent, flags)
+			, _shortcut(new QShortcut(this))
+			, _globalShortcut1(new sf::GlobalShortcut(this))
+			, _globalShortcut2(new sf::GlobalShortcut(this))
 		{
 			auto vbl = new QVBoxLayout(this);
 			setLayout(vbl);
@@ -28,10 +28,7 @@ class MyMainWindow :public QDialog
 			_shortcut->setKey(QKeySequence("Meta+F11"));
 			_shortcut->setEnabled(true);
 			_shortcut->setContext(Qt::ApplicationShortcut);
-			QObject::connect(_shortcut, &QShortcut::activated, [&]()
-			{
-				out << QString("Shortcut %1 pressed!").arg(_shortcut->key().toString()) << Qt::endl;
-			});
+			connect(_shortcut, &QShortcut::activated, [&]() { out << QString("Shortcut %1 pressed!").arg(_shortcut->key().toString()) << Qt::endl; });
 
 			//QKeySequence shortcut("Meta+F12");
 			_globalShortcut1->setSequence(QKeySequence("F1"));
@@ -53,8 +50,7 @@ class MyMainWindow :public QDialog
 			}
 			out << QString("Press shortcut %1 (or CTRL+C to exit)").arg(_globalShortcut2->sequence().toString()) << Qt::endl;
 
-			auto func = [](sf::GlobalShortcut* gsc)
-			{
+			auto func = [](sf::GlobalShortcut* gsc) {
 				out << QString("Shortcut %1 pressed!").arg(gsc->sequence().toString()) << " " << QTime::currentTime().toString(Qt::ISODateWithMs) << Qt::endl;
 				//win.activateWindow();
 				//QApplication::quit();
@@ -67,8 +63,7 @@ class MyMainWindow :public QDialog
 			vbl->addWidget(cb);
 			//layout()->addWidget(cb);
 			cb->setText(QString("Global shortcut (%1)").arg(_globalShortcut1->sequence().toString()));
-			connect(cb, &QCheckBox::stateChanged, [&](int state)
-			{
+			connect(cb, &QCheckBox::checkStateChanged, [&](int state) {
 				_globalShortcut1->setGlobal(!!state);
 				if (!_globalShortcut1->isValid())
 				{
@@ -79,10 +74,7 @@ class MyMainWindow :public QDialog
 			vbl->addWidget(cb);
 			//layout()->addWidget(cb);
 			cb->setText(QString("Auto Repeat"));
-			connect(cb, &QCheckBox::stateChanged, [&](int state)
-			{
-				_globalShortcut1->setAutoRepeat(!!state);
-			});
+			connect(cb, &QCheckBox::checkStateChanged, [&](int state) { _globalShortcut1->setAutoRepeat(!!state); });
 		}
 
 		void mousePressEvent(QMouseEvent* event) override
@@ -108,10 +100,8 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 
-
 	MyMainWindow win;
 	win.show();
 
 	return QApplication::exec();
 }
-

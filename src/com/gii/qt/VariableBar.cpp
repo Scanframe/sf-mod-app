@@ -2,18 +2,15 @@
 #include "VariableWidgetBasePrivate.h"
 #include <QApplication>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QStyle>
-#include <QStyleOption>
 #include <QStylePainter>
 #include <QTimer>
-#include <QVBoxLayout>
 #include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
-struct VariableBar::Private : QObject
+struct VariableBar::Private
+	: QObject
 	, PrivateBase
 {
 		int margin{1};
@@ -42,7 +39,7 @@ struct VariableBar::Private : QObject
 			QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
 		}
 
-		void onDestroyed(QObject* obj = nullptr)// NOLINT(readability-make-member-function-const)
+		void onDestroyed(const QObject* obj = nullptr)// NOLINT(readability-make-member-function-const)
 		{
 			if (_labelNameAlt && _labelNameAlt == obj)
 			{
@@ -71,12 +68,7 @@ struct VariableBar::Private : QObject
 			_variable.setHandler(nullptr);
 		}
 
-		void variableEventHandler(
-			EEvent event,
-			const Variable& call_var,
-			Variable& link_var,
-			bool same_inst
-		) override
+		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override
 		{
 			switch (event)
 			{
@@ -203,7 +195,7 @@ void VariableBar::paintEvent(QPaintEvent* event)
 		// Get variable as a reference.
 		auto& v(p->_variable);
 		text = QString::fromStdString(v.getCurString() + ' ' + v.getUnit());
-		pos = (int) Value::calculateOffset(v.getCur(), v.getMin(), v.getMax(), Value(rc.width()), true).getInteger();
+		pos = static_cast<int>(Value::calculateOffset(v.getCur(), v.getMin(), v.getMax(), Value(rc.width()), true).getInteger());
 	}
 	// First part.
 	sp.setClipRect(QRect(rc.topLeft(), QSize(pos, rc.height())));
@@ -225,10 +217,10 @@ void VariableBar::keyPressEvent(QKeyEvent* event)
 
 int VariableBar::nameLevel() const
 {
-	return VariableBar::Private::cast(_p)->_nameLevel;
+	return Private::cast(_p)->_nameLevel;
 }
 
-void VariableBar::setNameLevel(int level)
+void VariableBar::setNameLevel(int level) const
 {
 	auto p = VariableBar::Private::cast(_p);
 	if (p->_nameLevel != level)

@@ -15,7 +15,9 @@ struct UnitConversionEvent
 		/**
 	 * @brief Constructor.
 	 */
-		UnitConversionEvent(std::string option, std::string from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision)
+		UnitConversionEvent(
+			std::string option, std::string from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision
+		)
 			: _option(std::move(option))
 			, _from_unit(std::move(from_unit))
 			, _from_precision(from_precision)
@@ -74,13 +76,7 @@ _GII_FUNC void setUnitConversionHandler(const UnitConversionServerClosure& closu
  * @return True on success.
  */
 _GII_FUNC bool getUnitConversion(
-	const std::string& option,
-	const std::string& from_unit,
-	int from_precision,
-	double& multiplier,
-	double& offset,
-	std::string& to_unit,
-	int& to_precision
+	const std::string& option, const std::string& from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision
 );
 
 /**

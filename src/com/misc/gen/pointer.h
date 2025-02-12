@@ -69,11 +69,20 @@ template<typename T>
 class scope_delete
 {
 	public:
-		explicit scope_delete(T* p) { P = p; }
+		explicit scope_delete(T* p)
+		{
+			P = p;
+		}
 
-		~scope_delete() { delete_null(P); }
+		~scope_delete()
+		{
+			delete_null(P);
+		}
 
-		inline void disable_delete() { P = nullptr; }
+		inline void disable_delete()
+		{
+			P = nullptr;
+		}
 
 	private:
 		T* P;
@@ -87,11 +96,20 @@ template<typename T>
 class scope_free
 {
 	public:
-		explicit scope_free(T* p) { P = p; }
+		explicit scope_free(T* p)
+		{
+			P = p;
+		}
 
-		~scope_free() { free_null(P); }
+		~scope_free()
+		{
+			free_null(P);
+		}
 
-		inline void disable_free() { P = nullptr; }
+		inline void disable_free()
+		{
+			P = nullptr;
+		}
 
 	private:
 		T* P;

@@ -10,8 +10,7 @@ namespace sf
 /**
  *  @brief Special std::streambuf class for capturing lines.
  */
-class _MISC_CLASS LineBuffer
-	: public std::streambuf
+class _MISC_CLASS LineBuffer : public std::streambuf
 {
 	public:
 		/**
@@ -33,7 +32,10 @@ class _MISC_CLASS LineBuffer
 		/**
 		 * @brief Returns the total lines passed through the fifo buffer.
 		 */
-		[[nodiscard]] int totalLineCount() const { return _totalLineCount; }
+		[[nodiscard]] int totalLineCount() const
+		{
+			return _totalLineCount;
+		}
 		/**
 		 * Clears the current line buffer.
 		 */

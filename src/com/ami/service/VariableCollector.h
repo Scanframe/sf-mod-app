@@ -8,7 +8,8 @@
 namespace sf
 {
 
-class VariableCollector : public VariableHandler
+class VariableCollector
+	: public VariableHandler
 	, protected Sync
 {
 	public:

@@ -41,13 +41,14 @@ std::string GetLastErrorString(DWORD error = 0)
 	// Pointer to be filled in by the calling function
 	LPSTR buffer = nullptr;
 	// Function allocating the buffer which is freed by calling ::LocalFree().
-	DWORD msglen = ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,// DWORD  dwFlags,  // source and processing options
-																	0,// LPCVOID  lpSource,  // address of  message source
-																	error,// DWORD  dwMessageId,  // requested message identifier
-																	MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),// DWORD  dwLanguageId,  // language identifier for requested message
-																	(LPSTR) &buffer,// LPTSTR  lpBuffer,  // address of message buffer
-																	0,// DWORD  Size,  // maximum size of message buffer
-																	0// va_list *  Arguments   // address of array of message inserts
+	DWORD msglen = ::FormatMessageA(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,// DWORD  dwFlags,  // source and processing options
+		0,// LPCVOID  lpSource,  // address of  message source
+		error,// DWORD  dwMessageId,  // requested message identifier
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),// DWORD  dwLanguageId,  // language identifier for requested message
+		(LPSTR) &buffer,// LPTSTR  lpBuffer,  // address of message buffer
+		0,// DWORD  Size,  // maximum size of message buffer
+		0// va_list *  Arguments   // address of array of message inserts
 	);
 	// Form a string containing also the error code.
 	char buf[65];
@@ -125,15 +126,8 @@ bool FileMapper::createMapFile(const char* filename)
 		// Assign the file name to the data member.
 		_data->FileName = filename;
 		// Create the file
-		_data->FileHandle = CreateFileA(
-			_data->FileName.c_str(),
-			GENERIC_READ | GENERIC_WRITE,
-			FILE_SHARE_READ | FILE_SHARE_WRITE,
-			NULL,
-			CREATE_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL,
-			NULL
-		);
+		_data->FileHandle =
+			CreateFileA(_data->FileName.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		// Check for an error.
 		if (_data->FileHandle == INVALID_HANDLE_VALUE)
 		{
@@ -163,14 +157,7 @@ bool FileMapper::createMap(const char* map_name, size_t map_size, bool unique, b
 	{
 		_data->MapSize = map_size;
 		_data->MapName = map_name;
-		_data->MapHandle = ::CreateFileMappingA(
-			_data->FileHandle,
-			NULL,
-			(readonly ? PAGE_READONLY : PAGE_READWRITE),
-			0,
-			_data->MapSize,
-			_data->MapName.c_str()
-		);
+		_data->MapHandle = ::CreateFileMappingA(_data->FileHandle, NULL, (readonly ? PAGE_READONLY : PAGE_READWRITE), 0, _data->MapSize, _data->MapName.c_str());
 
 		// Check for a valid file handle
 		if (_data->MapHandle == nullptr)
@@ -260,13 +247,7 @@ bool FileMapper::mapView()
 			return false;
 		}
 		// Map the view into memory.
-		_data->Data = ::MapViewOfFile(
-			_data->MapHandle,
-			(_data->FlagReadOnlyView ? FILE_MAP_READ : (FILE_MAP_WRITE | FILE_MAP_READ)),
-			0,
-			0,
-			_data->MapSize
-		);
+		_data->Data = ::MapViewOfFile(_data->MapHandle, (_data->FlagReadOnlyView ? FILE_MAP_READ : (FILE_MAP_WRITE | FILE_MAP_READ)), 0, 0, _data->MapSize);
 		// Check if an error occurred.
 		if (_data->Data == nullptr)
 		{

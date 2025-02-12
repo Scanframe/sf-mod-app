@@ -37,13 +37,13 @@ int timespecCompare(const timespec& ts1, const timespec& ts2)
 	return 0;
 }
 
-timespec getTime(bool realTime)
+timespec getTime(bool real_time)
 {
 	timespec ct{};
 #if IS_WIN
-	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC, &ct))
+	if (clock_gettime(real_time ? CLOCK_REALTIME : CLOCK_MONOTONIC, &ct))
 #else
-	if (clock_gettime(realTime ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
+	if (clock_gettime(real_time ? CLOCK_REALTIME : CLOCK_MONOTONIC_COARSE, &ct))
 #endif
 	{
 		throw ExceptionSystemCall("clock_gettime", errno, nullptr, __FUNCTION__);

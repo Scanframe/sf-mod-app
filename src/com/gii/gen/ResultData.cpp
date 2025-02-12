@@ -8,7 +8,7 @@
 namespace sf
 {
 
-void ResultData::setDebug(bool debug)
+void ResultData::setDebug(bool debug) const
 {
 	_reference->_debug = debug;
 	_reference->_rangeManager->setDebug(debug);
@@ -51,12 +51,11 @@ void ResultData::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 		// Call real destructor.
 		::operator delete(p);
 		// If deletion is allowed again delete the wait cache too.
-		TVector<void*>::size_type count = ResultDataStatic::_deleteWaitCache.size();
-		if (count)
+		if (TVector<void*>::size_type count = ResultDataStatic::_deleteWaitCache.size())
 		{
 			while (count--)
 			{
-				delete (char*) ResultDataStatic::_deleteWaitCache[count];
+				delete static_cast<char*>(ResultDataStatic::_deleteWaitCache[count]);
 			}
 			// Flush the entries from the list.
 			ResultDataStatic::_deleteWaitCache.flush();
@@ -129,7 +128,7 @@ ResultData::size_type ResultData::getCount()
 ResultData::size_type ResultData::getTotalReservedSize()
 {
 	size_type rv = 0;
-	for (auto i: *ResultDataStatic::_references)
+	for (const auto i: *ResultDataStatic::_references)
 	{
 		rv += i->_data->getSize();
 	}
@@ -140,7 +139,7 @@ ResultData::size_type ResultData::getInstanceCount()
 {
 	unsigned count = 0;
 	// Iterate through all result references and count the usage count
-	for (auto i: *ResultDataStatic::_references)
+	for (const auto i: *ResultDataStatic::_references)
 	{
 		count += i->_list.count();
 	}
@@ -155,7 +154,7 @@ ResultData::PtrVector ResultData::getList()
 	// Set the vector to reserve the maximum expected size.
 	rv.reserve(ResultDataStatic::_references->size());
 	// Iterate through the references.
-	for (auto ref: *ResultDataStatic::_references)
+	for (const auto ref: *ResultDataStatic::_references)
 	{
 		// Only instance references which has id of zero.
 		if (ref->_id)
@@ -166,11 +165,11 @@ ResultData::PtrVector ResultData::getList()
 	return rv;
 }
 
-ResultDataReference* ResultData::getReferenceById(ResultDataTypes::id_type id)
+ResultDataReference* ResultData::getReferenceById(id_type id)
 {
 	if (id)
 	{
-		for (auto ref: *ResultDataStatic::_references)
+		for (const auto ref: *ResultDataStatic::_references)
 		{
 			if (ref->_id == id && ref != ResultDataStatic::zero()._reference)
 			{
@@ -181,9 +180,9 @@ ResultDataReference* ResultData::getReferenceById(ResultDataTypes::id_type id)
 	return ResultDataStatic::zero()._reference;
 }
 
-const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id, const PtrVector& list)
+const ResultData& ResultData::getInstanceById(id_type id, const PtrVector& list)
 {
-	for (auto rd: list)
+	for (const auto rd: list)
 	{
 		if (rd->getId() == id)
 		{
@@ -193,9 +192,9 @@ const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id, const
 	return ResultDataStatic::zero();
 }
 
-const ResultData& ResultData::getInstanceBySequenceId(ResultData::id_type seq_id, const PtrVector& list)
+const ResultData& ResultData::getInstanceBySequenceId(id_type seq_id, const PtrVector& list)
 {
-	for (auto rd: list)
+	for (const auto rd: list)
 	{
 		if (rd->getSequenceId() == seq_id)
 		{
@@ -277,12 +276,12 @@ bool ResultData::attachRef(ResultDataReference* ref)
 	return rv;
 }
 
-bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type segment_size, ResultData::size_type block_size)
+bool ResultData::createDataStore(ResultDataReference* ref, size_type segment_size, size_type block_size)
 {
 	// Limit the size of the segment.
-	if (segment_size > (10L * 1024L * 1024L) / block_size)
+	if (segment_size > 10L * 1024L * 1024L / block_size)
 	{
-		segment_size = (10L * 1024L * 1024L) / block_size;
+		segment_size = 10L * 1024L * 1024L / block_size;
 	}
 	// Change the segment size for debugging purposes.
 	if (ResultDataStatic::_debugSegmentSize)
@@ -290,7 +289,7 @@ bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type
 		segment_size = ResultDataStatic::_debugSegmentSize;
 	}
 	// When the recycle flag is enabled recycling is used on the data store.
-	size_type recycle = (ref->_flags & flgRecycle) ? ResultDataStatic::_recycleSize : 0;
+	const size_type recycle = ref->_flags & flgRecycle ? ResultDataStatic::_recycleSize : 0;
 	// Setup of the 'Data' member of the reference.
 	// Create a new TDataStore instance for this reference
 	// The block size is the size of the type times the given type instances per block.
@@ -308,7 +307,7 @@ bool ResultData::createDataStore(ResultDataReference* ref, ResultData::size_type
 	return false;
 }
 
-bool ResultData::setup(const ResultData::Definition& definition, const ResultData::id_type id_ofs)
+bool ResultData::setup(const Definition& definition, const id_type id_ofs)
 {
 	// When not valid do not even try.
 	if (!definition._valid)
@@ -323,7 +322,7 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 	// The default return value is true.
 	bool rv = true;
 	// Check if instances other than Zero result have an id of zero.
-	if (_reference != ResultDataStatic::zero()._reference && (definition._id + id_ofs) == 0)
+	if (_reference != ResultDataStatic::zero()._reference && definition._id + id_ofs == 0)
 	{
 		rv = false;
 	}
@@ -335,17 +334,17 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 		// Check if the returned reference pointer is not the zero reference.
 		if (ref != ResultDataStatic::zero()._reference)
 		{
-			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT | DO_MSGBOX, "Tried to create duplicate ID: !\n"
-														<< stringf("0x%lX,%s", definition._id, definition._name.c_str()) << "\nover!\n"
-														<< ref->_name << '!')
+			SF_COND_RTTI_NOTIFY(
+				isDebug(), DO_DEFAULT | DO_MSGBOX,
+				"Tried to create duplicate ID: !\n"
+					<< stringf("0x%lX,%s", definition._id, definition._name.c_str()) << "\nover!\n"
+					<< ref->_name << '!'
+			)
 			// If ref already exist return false.
 			return false;
 		}
-		else
-		{
-			// create new reference for this id
-			ref = new ResultDataReference();
-		}
+		// create new reference for this id
+		ref = new ResultDataReference();
 		// Set the reference valid flag default to true.
 		ref->_valid = true;
 		// Read all std::string field values into the reference fields
@@ -358,7 +357,8 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 		ref->_curFlags = ref->_flags;
 		ref->_description = definition._description;
 		ref->_type = definition._type;
-		ref->_significantBits = sf::clip<size_type>(definition._significantBits ? definition._significantBits : getTypeSize(definition._type) * 8, 1, getTypeSize(definition._type) * 8);
+		ref->_significantBits =
+			sf::clip<size_type>(definition._significantBits ? definition._significantBits : getTypeSize(definition._type) * 8, 1, getTypeSize(definition._type) * 8);
 		ref->_offset = definition._offset;
 		//
 		auto block_size = definition._blockSize;
@@ -367,7 +367,7 @@ bool ResultData::setup(const ResultData::Definition& definition, const ResultDat
 		{
 			block_size = 1;
 		}
-		auto segment_size = definition._segmentSize;
+		const auto segment_size = definition._segmentSize;
 		// Do not allow segment size of zero when not ID is zero.
 		if (ref->_id && !segment_size)
 		{
@@ -407,21 +407,15 @@ ResultData::size_type ResultData::emitEvent(EEvent event, const Range& rng, bool
 	{
 		return emitGlobalEvent(event, rng, skip_self);
 	}
-	else
+	if (event > reFirstPrivate)
 	{
-		if (event > reFirstPrivate)
-		{
-			emitEvent(event, *this, rng);
-			return 1;
-		}
-		else
-		{
-			return emitLocalEvent(event, rng, skip_self);
-		}
+		emitEvent(event, *this, rng);
+		return 1;
 	}
+	return emitLocalEvent(event, rng, skip_self);
 }
 
-ResultData::size_type ResultData::emitLocalEvent(EEvent event, const Range& rng, bool skip_self)
+ResultData::size_type ResultData::emitLocalEvent(EEvent event, const Range& rng, bool skip_self) const
 {
 	// Disable deletion of local instances.
 	ResultDataStatic::_globalActive++;
@@ -436,7 +430,7 @@ ResultData::size_type ResultData::emitLocalEvent(EEvent event, const Range& rng,
 	}
 	// Iterate through the generated list and call the event handler.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto j: ev_list)
+	for (const auto j: ev_list)
 	{
 		// Assign the temporary pointer.
 		// Call the event handler.
@@ -448,14 +442,14 @@ ResultData::size_type ResultData::emitLocalEvent(EEvent event, const Range& rng,
 	return ev_list.count();
 }
 
-ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng, bool skip_self)
+ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng, bool skip_self) const
 {
 	// Disable deletion of instances.
 	ResultDataStatic::_globalActive++;
 	// Declare event list for instance pointers.
 	PtrVector ev_list;
 	// Iterate through all references.
-	for (auto ref: *ResultDataStatic::_references)
+	for (const auto ref: *ResultDataStatic::_references)
 	{
 		// Iterate through all instances attached of the reference.
 		for (auto rd: ref->_list)
@@ -469,7 +463,7 @@ ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng
 	}
 	// Iterate through the generated instance list and call the handler of them.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto k: ev_list)
+	for (const auto k: ev_list)
 	{
 		k->emitEvent(event, *this, rng);
 	}
@@ -479,14 +473,14 @@ ResultData::size_type ResultData::emitGlobalEvent(EEvent event, const Range& rng
 	return ev_list.count();
 }
 
-ResultData::size_type ResultData::attachDesired()
+ResultData::size_type ResultData::attachDesired() const
 {
 	// Disable deletion of instances.
 	ResultDataStatic::_globalActive++;
 	// Signal other event handler functions are called using a global predefined list.
 	PtrVector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
-	for (auto ref: *ResultDataStatic::_references)
+	for (const auto ref: *ResultDataStatic::_references)
 	{
 		// Iterate through all instances of the reference.
 		for (auto res: ref->_list)
@@ -503,7 +497,7 @@ ResultData::size_type ResultData::attachDesired()
 	}
 	// Iterate through the generated list and attach them.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto res: ev_list)
+	for (const auto res: ev_list)
 	{
 		// Compare them again to be sure after Attaching the others.
 		if (res->_desiredId && res->_desiredId == _reference->_id)
@@ -529,7 +523,7 @@ void ResultData::setHandler(ResultDataHandler* handler)
 			_handler = handler;
 			emitEvent(reLinked, *this, _reference->_rangeManager->getManaged());
 			// Use a unique predictable id as transaction id, so it can be checked in a unit test.
-			_transactionId = (Range::id_type) ResultDataStatic::getUniqueId();
+			_transactionId = static_cast<Range::id_type>(ResultDataStatic::getUniqueId());
 		}
 		else
 		{// Notify instance losing event link in the was already a link
@@ -543,7 +537,7 @@ void ResultData::setHandler(ResultDataHandler* handler)
 	}
 }
 
-void ResultData::removeHandler(ResultDataHandler* handler)
+void ResultData::removeHandler(const ResultDataHandler* handler)
 {
 	// Iterate through all result references.
 	for (size_t i = 0; i < ResultDataStatic::_references->count(); i++)
@@ -551,7 +545,7 @@ void ResultData::removeHandler(ResultDataHandler* handler)
 		// Get the current result pointer.
 		ResultDataReference* ref = (*ResultDataStatic::_references)[i];
 		// Get the total amount of results attached to this reference.
-		size_t vrc = ref->_list.count();
+		const size_t vrc = ref->_list.count();
 		// Iterate through the results.
 		for (size_t j = 0; j < vrc; j++)
 		{
@@ -590,18 +584,14 @@ bool ResultData::getSplitRequests(Range::Vector& req_list) const
 	if (isOwner())
 	{
 		// Check if there is anything to get.
-		return Range::split(
-						 _reference->_data->getSegmentSize(),
-						 _reference->_rangeManager->getRequests(),
-						 req_list
-					 ) > 0;
+		return Range::split(_reference->_data->getSegmentSize(), _reference->_rangeManager->getRequests(), req_list) > 0;
 	}
 	return false;
 }
 
 const Range& ResultData::getAccessRange() const
 {
-	return const_cast<Range&>(_reference->_rangeManager->getManaged()).setId((Range::id_type) _reference->_id);
+	return const_cast<Range&>(_reference->_rangeManager->getManaged()).setId(_reference->_id);
 }
 
 bool ResultData::setAccessRange(const Range& rng, bool skip_self)
@@ -609,9 +599,7 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 	if (isOwner())
 	{
 		// Add clipped new range to existing range.
-		Range nr(
-			_reference->_rangeManager->getManaged() + rng & Range(0, npos)
-		);
+		const Range nr(_reference->_rangeManager->getManaged() + rng & Range(0, npos));
 		// Compare the new formed range with the existing one.
 		if (nr != _reference->_rangeManager->getManaged())
 		{
@@ -626,7 +614,7 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 				}
 				// Generate an event to notify users of the change in reserved blocks.
 				// The new value is passed in the 'Stop' Value of the passed 'Range' argument.
-				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(), (Range::id_type) _reference->_id), skip_self);
+				emitLocalEvent(reReserve, Range(0, _reference->_data->getBlockCount(), _reference->_id), skip_self);
 			}
 			// Set the new managed range.
 			_reference->_rangeManager->setManaged(nr);
@@ -640,19 +628,19 @@ bool ResultData::setAccessRange(const Range& rng, bool skip_self)
 	return false;
 }
 
-ResultData::EType ResultData::getType(const char* type)
+ResultData::EType ResultData::getType(std::string_view type)
 {
 	return ResultDataStatic::getType(type);
 }
 
-const char* ResultData::getType(ResultData::EType type)
+std::string ResultData::getType(EType type)
 {
-	return ResultDataStatic::_typeInfoArray[(type < 0 || type >= rtLastEntry) ? rtInvalid : type].Name;
+	return ResultDataStatic::_typeInfoArray[type < 0 || type >= rtLastEntry ? rtInvalid : type].Name;
 }
 
-ResultData::size_type ResultData::getTypeSize(ResultData::EType type)
+ResultData::size_type ResultData::getTypeSize(EType type)
 {
-	return ResultDataStatic::_typeInfoArray[(type >= rtLastEntry || type < 0) ? rtInvalid : type].Size;
+	return ResultDataStatic::_typeInfoArray[type >= rtLastEntry || type < 0 ? rtInvalid : type].Size;
 }
 
 void ResultData::setDesiredId(id_type id)
@@ -670,7 +658,7 @@ std::string ResultData::getName(int levels) const
 {
 	// Return full name path at levels equals zero.
 	std::string rv = _reference->_name;
-	auto len = rv.length();
+	const auto len = rv.length();
 	// Check if levels is none zero.
 	if (levels)
 	{
@@ -711,7 +699,7 @@ std::string ResultData::getName(int levels) const
 					}
 				}
 			}
-			if (p < (unsigned) len)
+			if (p < static_cast<unsigned>(len))
 			{
 				return rv.substr(p, rv.length() - p);
 			}
@@ -728,9 +716,9 @@ int ResultData::getNameLevelCount() const
 ResultData::flags_type ResultData::toFlags(const std::string& flags)
 {
 	flags_type rv{0};
-	for (auto f: flags)
+	for (const auto f: flags)
 	{
-		for (auto fl: ResultDataStatic::_flagLetters)
+		for (const auto fl: ResultDataStatic::_flagLetters)
 		{
 			if (f == fl._letter)
 			{
@@ -741,12 +729,12 @@ ResultData::flags_type ResultData::toFlags(const std::string& flags)
 	return rv;
 }
 
-std::string ResultData::getFlagsString(ResultData::flags_type flag)
+std::string ResultData::getFlagsString(flags_type flags)
 {
 	std::string rv;
-	for (auto fl: ResultDataStatic::_flagLetters)
+	for (const auto fl: ResultDataStatic::_flagLetters)
 	{
-		if (flag & fl._flag)
+		if (flags & fl._flag)
 		{
 			rv.append(1, fl._letter);
 		}
@@ -770,7 +758,7 @@ bool ResultData::setFlag(int flag, bool skip_self)
 			}
 		}
 		// Save the current flags for comparison.
-		auto flags = _reference->_curFlags;
+		const auto flags = _reference->_curFlags;
 		// Set the flag bit.
 		_reference->_curFlags |= flag;
 		// Check for a change in flags.
@@ -801,7 +789,7 @@ bool ResultData::unsetFlag(int flag, bool skip_self)
 			}
 		}
 		// Save the current flags for comparison.
-		auto flags = _reference->_curFlags;
+		const auto flags = _reference->_curFlags;
 		// Unset the flag bit.
 		_reference->_curFlags &= ~flag;
 		// Check for a change in flags.
@@ -822,12 +810,13 @@ bool ResultData::updateFlags(int flags, bool skip_self)
 	bool rv = false;
 	// Only the owner is allowed to set the flags.
 	if (isOwner())
-	{// Initially signal success.
+	{
+		// Initially signal success.
 		rv = true;
 		// Test for a change in the recycle flag.
 		if ((_reference->_curFlags ^ flags) & flgRecycle)
 		{// Establish for enable or disable of mode.
-			bool enable = (_reference->_curFlags & flgRecycle) != 0;
+			const bool enable = (_reference->_curFlags & flgRecycle) != 0;
 			// Enable or disable the recycle mode of the data store.
 			if (!recycleEnable(enable))
 			{// On failure skip change of the flag change.
@@ -889,7 +878,7 @@ bool ResultData::setReservedBlockCount(Range::size_type sz, bool skip_self)
 		}
 		// Generate an event to notify users of the change in reserved blocks.
 		// The new value is put in the Stop Value of the passed Range value.
-		emitLocalEvent(reReserve, {0, (Range::size_type) _reference->_data->getBlockCount()}, skip_self);
+		emitLocalEvent(reReserve, {0, _reference->_data->getBlockCount()}, skip_self);
 	}
 	return true;
 }
@@ -909,7 +898,7 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 		ofs = _reference->_rangeManager->getManaged().getStop();
 	}
 	// Check there are enough blocks reserved to write the data.
-	if (_reference->_data->getBlockCount() < (ofs + sz))
+	if (_reference->_data->getBlockCount() < ofs + sz)
 	{
 		// Check the auto_reserve flag.
 		if (!auto_reserve)
@@ -918,15 +907,12 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 			// Bail out
 			return false;
 		}
-		else
+		// Try to reserve the required blocks.
+		if (!setReservedBlockCount(ofs + sz))
 		{
-			// Try to reserve the required blocks.
-			if (!setReservedBlockCount(ofs + sz))
-			{
-				SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Reserving blocks failed!")
-				// Bail out
-				return false;
-			}
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Reserving blocks failed!")
+			// Bail out
+			return false;
 		}
 	}
 	// If the function succeeds update the accessible range list.
@@ -942,27 +928,27 @@ bool ResultData::blockWrite(Range::size_type ofs, Range::size_type sz, const voi
 	//LocalEvent(reUserLocal, Range(ofs, ofs + sz, FRef->Id), false);
 
 	// Add this range to the 'validate cache' that will be processed when commitValidations() is called for.
-	_reference->_validatedCache.add(Range(ofs, ofs + sz, (Range::id_type) _reference->_id));
+	_reference->_validatedCache.add(Range(ofs, ofs + sz, _reference->_id));
 	return true;
 }
 
-void ResultData::validateRange(Range rng)
+void ResultData::validateRange(Range rng) const
 {
 	// Only the owner can validate ranges.
 	if (isOwner())
 	{
-		_reference->_validatedCache.add(rng.setId((Range::id_type) _reference->_id));
+		_reference->_validatedCache.add(rng.setId(_reference->_id));
 	}
 }
 
-void ResultData::validateRange(const Range::Vector& rl)
+void ResultData::validateRange(const Range::Vector& rl) const
 {
 	// Only the owner can validate ranges.
 	if (isOwner())
 	{
 		for (auto& r: rl)
 		{
-			Range rng(r.getStart(), r.getStop(), (Range::id_type) _reference->_id);
+			Range rng(r.getStart(), r.getStop(), _reference->_id);
 			_reference->_validatedCache.add(rng);
 		}
 	}
@@ -970,7 +956,7 @@ void ResultData::validateRange(const Range::Vector& rl)
 
 ResultData::size_type ResultData::commitValidations(bool skip_self)
 {
-	ResultData::size_type rv{0};
+	size_type rv{0};
 	// Only the owner can call this function.
 	if (isOwner() && _reference->_validatedCache.count())
 	{
@@ -980,7 +966,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 		_reference->_validatedCache.exclude(_reference->_rangeManager->getAccessibles());
 		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Committing reduced vector: " << _reference->_validatedCache)
 		// Retrieve the current extends and compare them later.
-		Range aer = _reference->_rangeManager->getManaged();
+		const Range aer = _reference->_rangeManager->getManaged();
 		// Create a temporary vector to let the function return the resolved.
 		// Requests in.
 		Range::Vector rrl;
@@ -993,7 +979,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 			for (auto& rng: rrl)
 			{
 				// Iterate through the result list and find the one with the same reference as this one.
-				for (auto rd: _reference->_list)
+				for (const auto rd: _reference->_list)
 				{
 					// Check if the pointer is valid Check if the transaction id is
 					// non-zero and equal to the current in the list.
@@ -1022,7 +1008,7 @@ ResultData::size_type ResultData::commitValidations(bool skip_self)
 	return rv;
 }
 
-bool ResultData::clearValidations(bool skip_self)
+bool ResultData::clearValidations(bool skip_self) const
 {
 	// Only the owner can clear validated ranges.
 	if (isOwner())
@@ -1062,7 +1048,7 @@ const Range::Vector& ResultData::getValidatedList() const
 	return _reference->_rangeManager->getAccessibles();
 }
 
-bool ResultData::blockRead(Range::size_type ofs, Range::size_type sz, void* src, bool force) const
+bool ResultData::blockRead(Range::size_type ofs, Range::size_type sz, void* dest, bool force) const
 {
 	// If force is true do not check validity of the range.
 	if (!force && !isRangeValid(ofs, sz))
@@ -1072,7 +1058,7 @@ bool ResultData::blockRead(Range::size_type ofs, Range::size_type sz, void* src,
 		return false;
 	}
 	// BlockRead returns false if the block count is not available.
-	bool ret_val = _reference->_data->blockRead(ofs, sz, src);
+	const bool ret_val = _reference->_data->blockRead(ofs, sz, dest);
 	if (!ret_val)
 	{
 		SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "(" << ofs << "," << sz << ") failed!")
@@ -1080,7 +1066,7 @@ bool ResultData::blockRead(Range::size_type ofs, Range::size_type sz, void* src,
 	return ret_val;
 }
 
-bool ResultData::readIndexRange(Range::size_type ofs, Range& range)
+bool ResultData::readIndexRange(Range::size_type ofs, Range& range) const
 {
 	// TODO: This needs a solution for an index based on 16, 32 and 64 in stead of only 64 bits use getValueU().
 	// Only when the block size is at least that of the range start and stop values.
@@ -1108,7 +1094,7 @@ bool ResultData::readIndexRange(Range::size_type ofs, Range& range)
 	return false;
 }
 
-bool ResultData::readIndexRange(const Range& index, Range& range)
+bool ResultData::readIndexRange(const Range& index, Range& range) const
 {
 	// Only when the block size is at least that of the range start and stop values.
 	if (_reference->_data->getBlockSize() <= sizeof(Range::size_type) && index.getSize())
@@ -1131,9 +1117,9 @@ bool ResultData::readIndexRange(const Range& index, Range& range)
 	return false;
 }
 
-ResultData::sdata_type ResultData::getValue(ResultData::size_type idx, const void* data) const
+ResultData::sdata_type ResultData::getValue(size_type idx, const void* data) const
 {
-	char* p = const_cast<char*>((const char*) data);
+	auto p = static_cast<const char*>(data);
 	// Calculate the new data pointer from the type and passed index.
 	p += getTypeSize(_reference->_type) * idx;
 	// Call the index less version.
@@ -1148,20 +1134,20 @@ ResultData::sdata_type ResultData::getValue(const void* data) const
 	if (_reference->_significantBits < sizeof(mask) * 8)
 	{
 		// Only set those bits in the mask that count.
-		mask = (data_type(1) << _reference->_significantBits) - 1;
+		mask = (static_cast<data_type>(1) << _reference->_significantBits) - 1;
 	}
 	else
 	{
 		// Set all the bits in the mask.
-		mask = (data_type) -1;
+		mask = static_cast<data_type>(-1);
 	}
 	//
-	return (sdata_type) ((*(data_type*) data & mask) - _reference->_offset);
+	return static_cast<sdata_type>((*static_cast<const data_type*>(data) & mask) - _reference->_offset);
 }
 
-ResultData::data_type ResultData::getValueU(ResultData::size_type idx, const void* data) const
+ResultData::data_type ResultData::getValueU(size_type idx, const void* data) const
 {
-	char* p = (char*) data;
+	auto p = static_cast<const char*>(data);
 	// Calculate the new data pointer from the type and passed index.
 	p += getTypeSize(_reference->_type) * idx;
 	// Call the index less version.
@@ -1170,18 +1156,15 @@ ResultData::data_type ResultData::getValueU(ResultData::size_type idx, const voi
 
 ResultData::data_type ResultData::getValueU(const void* data) const
 {
-	data_type mask = (data_type(1) << _reference->_significantBits) - 1;
+	const data_type mask = (static_cast<data_type>(1) << _reference->_significantBits) - 1;
 	if (mask == 0)
 	{
-		return *(ResultData::data_type*) data;
+		return *static_cast<const data_type*>(data);
 	}
-	else
-	{
-		return *(ResultData::data_type*) data & mask;
-	}
+	return *static_cast<const data_type*>(data) & mask;
 }
 
-void ResultData::clearRequests()
+void ResultData::clearRequests() const
 {
 	// Remove all requests of this client.
 	_reference->_rangeManager->flushRequests(_transactionId);
@@ -1201,8 +1184,7 @@ bool ResultData::requestRange(const Range& rng)
 	// Create a range vector for the function to return the real requests in.
 	Range::Vector rrl;
 	// Call the request function of the range manager
-	auto result = _reference->_rangeManager->request(r, rrl);
-	switch (result)
+	switch (_reference->_rangeManager->request(r, rrl))
 	{
 		case RangeManager::rmAccessible:
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request " << rng << " Is accessible!")
@@ -1212,7 +1194,8 @@ bool ResultData::requestRange(const Range& rng)
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request " << rng << " Is out of range!")
 			break;
 
-		case RangeManager::rmInaccessible: {
+		case RangeManager::rmInaccessible:
+		{
 			// Check if the owner of the result reference has an event link.
 			ResultData* rd = _reference->_list[0];
 			if (rd->_handler)
@@ -1221,7 +1204,7 @@ bool ResultData::requestRange(const Range& rng)
 				// Generate an event for each real request for the owner of the result reference.
 				for (auto i: rrl)
 				{
-					ok &= rd->emitEvent(reGetRange, *this, i.setId((Range::id_type) _reference->_id));
+					ok &= rd->emitEvent(reGetRange, *this, i.setId(_reference->_id));
 				}
 				// for debugging purposes.
 				if (!ok)
@@ -1231,10 +1214,7 @@ bool ResultData::requestRange(const Range& rng)
 				// Return true to notify caller success.
 				return true;
 			}
-			else
-			{
-				SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request impossible, unlinked owner!")
-			}
+			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, "Request impossible, unlinked owner!")
 			break;
 		}
 	}
@@ -1242,125 +1222,94 @@ bool ResultData::requestRange(const Range& rng)
 	return false;
 }
 
-bool ResultData::isIndexRangeValid(const Range& r) const
+bool ResultData::isIndexRangeValid(const Range& rng) const
 {
-	RANGE rng{r.getStart(), r.getStop()};
+	RANGE r{rng.getStart(), rng.getStop()};
 	// Apply an offset to the passed index range start because it is an index.
-	if (rng._start > 0)
+	if (r._start > 0)
 	{
-		rng._start -= 1;
+		r._start -= 1;
 	}
-	return _reference->_rangeManager->isAccessible(Range(rng));
+	return _reference->_rangeManager->isAccessible(Range(r));
 }
 
 bool ResultData::requestIndexRange(const Range& rng)
 {
 	// Apply an offset to the passed index range because it is an index.
-	RANGE range{rng.getStart() - 1, rng.getStop()};
+	RANGE r{rng.getStart() - 1, rng.getStop()};
 	// Negative values are not allowed.
-	if (range._start < 0)
+	if (r._start < 0)
 	{
-		range._start = 0;
+		r._start = 0;
 	}
-	return requestRange(Range(rng));
+	return requestRange(Range(r));
 }
 
-const char* ResultData::getEventName(EEvent event)
+std::string_view ResultData::getEventName(const EEvent event)
 {
-	const char* rv = "Unknown";
 	switch (event)
 	{
 		case reNewId:
-			rv = "NewId";
-			break;
+			return "NewId";
 
 		case reDesiredId:
-			rv = "DesiredId";
-			break;
+			return "DesiredId";
 
 		case reFlagsChange:
-			rv = "FlagsChange";
-			break;
+			return "FlagsChange";
 
 		case reAccessChange:
-			rv = "AccessChange";
-			break;
+			return "AccessChange";
 
 		case reReserve:
-			rv = "Reserve";
-			break;
+			return "Reserve";
 
 		case reInvalid:
-			rv = "Invalid";
-			break;
+			return "Invalid";
 
 		case reIdChanged:
-			rv = "IdChanged";
-			break;
+			return "IdChanged";
 
 		case reSetup:
-			rv = "Setup";
-			break;
+			return "Setup";
+
 		case reRemove:
-			rv = "Remove";
-			break;
+			return "Remove";
 
 		case reGetOwner:
-			rv = "GetOwner";
-			break;
+			return "GetOwner";
 
 		case reLostOwner:
-			rv = "LostOwner";
-			break;
+			return "LostOwner";
 
 		case reLinked:
-			rv = "Linked";
-			break;
+			return "Linked";
 
 		case reUnlinked:
-			rv = "Unlinked";
-			break;
+			return "Unlinked";
 
 		case reGotRange:
-			rv = "GotRange";
-			break;
+			return "GotRange";
 
 		case reGetRange:
-			rv = "GetRange";
-			break;
+			return "GetRange";
 
 		case reCommitted:
-			rv = "Committed";
-			break;
+			return "Committed";
 
 		case reClear:
-			rv = "clear";
-			break;
+			return "Clear";
 
 		default:
-			// Check for global event.
-			if (event < 0)
-			{
-				rv = "UserGlobal";
-				break;
-			}
-			else
-			{
-				if (event >= 0 && event < reFirstPrivate)
-				{
-					rv = "UserLocal + ?";
-				}
-				else
-				{
-					if (event >= reUserPrivate)
-					{
-						rv = "UserPrivate + ?";
-					}
-				}
-			}
+			// Check for a global event.
+			if (event < 0) return "UserGlobal";
+			// Check for a normal single instance event.
+			if (event >= 0 && event < reFirstPrivate) return "UserLocal + ?";
+			// Check for a user private event.
+			if (event >= reUserPrivate) return "UserPrivate + ?";
 			break;
 	}
-	return rv;
+	return "Unknown";
 }
 
 bool ResultData::writeUpdate(std::ostream& os) const
@@ -1432,12 +1381,12 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 		// Segment size.
 		def._segmentSize = std::stoull(fields[rfSegmentSize], nullptr, 0);
 		//
-		def._valid &= (def._blockSize > 0);
+		def._valid &= def._blockSize > 0;
 	}
 	else
 	{
 		def._valid = true;
-	};
+	}
 	// SignificantBits clipped to min and max value.
 	if (fields.size() > rfSigBits)
 	{
@@ -1450,8 +1399,7 @@ ResultData::Definition ResultData::getDefinition(const std::string& str)
 		def._offset = std::stoull(fields[rfOffset], nullptr, 0);
 	}
 	// Notify when not valid notify.
-	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n"
-												<< str);
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "ResultData definition not valid!\n" << str);
 	//
 	return def;
 }
@@ -1515,7 +1463,7 @@ bool ResultData::create(std::istream& is, PtrVector& list, int& err_line)
 
 std::string ResultData::getSetupString() const
 {
-	const char sep = ',';
+	constexpr char sep = ',';
 	//  vfeID,
 	std::string rv = "0x" + itostr(getId(), 16) + sep;
 	//  vfeName,
@@ -1537,7 +1485,7 @@ std::string ResultData::getSetupString() const
 	return rv;
 }
 
-ResultData& ResultData::getOwner()
+ResultData& ResultData::getOwner() const
 {
 	return *_reference->_list[0];
 }
@@ -1559,7 +1507,7 @@ ResultData::data_type ResultData::getValueOffset() const
 
 ResultData::data_type ResultData::getValueRange() const
 {
-	data_type max_val = (data_type(1) << _reference->_significantBits) - 1;
+	const data_type max_val = (static_cast<data_type>(1) << _reference->_significantBits) - 1;
 	return max_val ? max_val : std::numeric_limits<data_type>::max();
 }
 
@@ -1625,7 +1573,7 @@ bool ResultData::isFlag(int flag) const
 
 std::string ResultData::getCurFlagsString() const
 {
-	return ResultData::getFlagsString(_reference->_curFlags);
+	return getFlagsString(_reference->_curFlags);
 }
 
 ResultData::flags_type ResultData::getFlags() const
@@ -1653,7 +1601,7 @@ unsigned ResultData::getSignificantBits() const
 	return _reference->_significantBits;
 }
 
-const ResultData& ResultData::getInstanceById(ResultDataTypes::id_type id)
+const ResultData& ResultData::getInstanceById(id_type id)
 {
 	return *getReferenceById(id)->_list[0];
 }
@@ -1673,7 +1621,7 @@ void ResultData::setDesiredId()
 	_desiredId = _reference->_id;
 }
 
-ResultDataTypes::size_type ResultData::getBufferSize(ResultDataTypes::size_type blocks) const
+ResultDataTypes::size_type ResultData::getBufferSize(size_type blocks) const
 {
 	return blocks * _reference->_data->getBlockSize();
 }
@@ -1716,7 +1664,7 @@ std::istream& operator>>(std::istream& is, ResultData& rd)
 	// Get one line.
 	getline(is, st);
 	// Check stream on errors.
-	int rv = (!is.fail() && !is.bad());
+	const int rv = !is.fail() && !is.bad();
 	// Check stream state length and ignore lines starting with character ';'.
 	if (!rv && st.length() > 10 && st[0] != ';')
 	{

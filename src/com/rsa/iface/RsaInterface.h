@@ -15,8 +15,7 @@ class PropertySheetDialog;
 /**
  * @brief Base class for the repetitive signal acquisition interface.
  */
-class _RSA_CLASS RsaInterface
-	: public RsaTypes
+class _RSA_CLASS RsaInterface : public RsaTypes
 {
 	public:
 		/**
@@ -265,7 +264,10 @@ class _RSA_CLASS RsaInterface
 		 * @param init True when initializing.
 		 * @return True on success.
 		 */
-		virtual bool doInitialize(bool init) { return true; }
+		virtual bool doInitialize(bool init)
+		{
+			return true;
+		}
 
 		/**
 		 * @brief Calls the hooked function when it exists.

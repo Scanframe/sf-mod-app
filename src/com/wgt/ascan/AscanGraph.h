@@ -11,7 +11,8 @@ class QStyleOptionFrame;
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT AscanGraph : public QWidget
+class QDESIGNER_WIDGET_EXPORT AscanGraph
+	: public QWidget
 	, public ObjectExtension
 {
 		Q_OBJECT

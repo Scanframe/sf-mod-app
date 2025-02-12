@@ -117,9 +117,7 @@ GmiEmulator::TAxis::TAxis(GmiEmulator* me, EAxisLocation al)
 	MaxAcc = DEF_AXIS_MAX_ACC;
 }
 
-GmiEmulator::TAxis::~TAxis()
-{
-}
+GmiEmulator::TAxis::~TAxis() {}
 
 GmiEmulator::GmiEmulator(const Parameters& params)
 	: Controller(params)
@@ -170,15 +168,13 @@ GmiEmulator::~GmiEmulator()
 
 bool GmiEmulator::doInitialize(bool init)
 {
-	if (init)
-		SF_RTTI_NOTIFY(DO_DEFAULT, "Initialized Perfectly...")
+	if (init) SF_RTTI_NOTIFY(DO_DEFAULT, "Initialized Perfectly...")
 	else
 		SF_RTTI_NOTIFY(DO_DEFAULT, "Uninitialized Perfectly...")
 	// Save of load last positions from profile.
 	IniProfile profile("Last Positions", getProfilePath().c_str());
 	for (unsigned i = 0; i < AxisList.count(); i++)
-		if (init)
-			AxisList[i]->CurPos = toNumber<double>(profile.getString(AxisList[i]->getName(), toString(0.0)));
+		if (init) AxisList[i]->CurPos = toNumber<double>(profile.getString(AxisList[i]->getName(), toString(0.0)));
 		else
 			profile.setString(AxisList[i]->getName(), toString(AxisList[i]->CurPos));
 	return true;
@@ -187,8 +183,7 @@ bool GmiEmulator::doInitialize(bool init)
 bool GmiEmulator::doHomeAxes(bool skip)
 {
 	// When skip is true do not delay for homing.
-	if (skip)
-		setStatus(csREADY);
+	if (skip) setStatus(csREADY);
 	else
 	{
 		// Set status for homing.
@@ -204,12 +199,7 @@ void GmiEmulator::addPropertyPages(PropertySheetDialog* sheet)
 	TInherited::addPropertyPages(sheet);
 }
 
-bool GmiEmulator::handleParam(
-	gmi::IdType id,
-	ParamInfo* info,
-	const Value* setval,
-	Value* getval
-)
+bool GmiEmulator::handleParam(gmi::IdType id, ParamInfo* info, const Value* setval, Value* getval)
 {
 	// Return value for when setting a value.
 	// To prevent return statements which skip getval values from being set.
@@ -240,8 +230,7 @@ bool GmiEmulator::handleParam(
 					return false;
 
 				case PID_VERSION:
-					if (getval)
-						getval->set("XY Emulator 0.01");
+					if (getval) getval->set("XY Emulator 0.01");
 					if (info)
 					{
 						info->Id = id;
@@ -254,10 +243,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_FW_REVISION:
-					if (setval)
-						_firmwareRevision = setval->getString();
-					if (getval)
-						getval->set(_firmwareRevision);
+					if (setval) _firmwareRevision = setval->getString();
+					if (getval) getval->set(_firmwareRevision);
 					if (info)
 					{
 						info->Id = id;
@@ -270,10 +257,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_POPEVENT:
-					if (setval)
-						sendPopEvent();
-					if (getval)
-						getval->set(0);
+					if (setval) sendPopEvent();
+					if (getval) getval->set(0);
 					if (info)
 					{
 						info->Id = id;
@@ -292,10 +277,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_POP_AXIS:
-					if (setval)
-						_popAxis = (EAxisLocation) setval->getInteger();
-					if (getval)
-						getval->set(_popAxis);
+					if (setval) _popAxis = (EAxisLocation) setval->getInteger();
+					if (getval) getval->set(_popAxis);
 					if (info)
 					{
 						info->Id = id;
@@ -309,8 +292,7 @@ bool GmiEmulator::handleParam(
 						for (int loc = gmi::alNA; loc < gmi::alLAST_ENTRY; loc++)
 						{
 							std::string name;
-							if (loc == gmi::alNA)
-								name = "None";
+							if (loc == gmi::alNA) name = "None";
 							else
 								name = getAxis(loc).getName() + std::string("-Axis");
 							info->States.add(ParamState(name, Value(loc)));
@@ -323,14 +305,11 @@ bool GmiEmulator::handleParam(
 				case PID_MOVEPOS:
 					if (setval)
 					{
-						if (_debug)
-							SF_RTTI_NOTIFY(DO_DEFAULT, "Debug capture event!")
+						if (_debug) SF_RTTI_NOTIFY(DO_DEFAULT, "Debug capture event!")
 						EMovePosCmd mpc = (EMovePosCmd) setval->getInteger();
-						if (mpc != _curMovePos)
-							doMovePos(mpc);
+						if (mpc != _curMovePos) doMovePos(mpc);
 					}
-					if (getval)
-						getval->set(_curMovePos);
+					if (getval) getval->set(_curMovePos);
 					if (info)
 					{
 						info->Id = id;
@@ -355,11 +334,9 @@ bool GmiEmulator::handleParam(
 					if (setval)
 					{
 						EMoveVelCmd mvc = (EMoveVelCmd) setval->getInteger();
-						if (mvc != _curMoveVel)
-							doMoveVel(mvc);
+						if (mvc != _curMoveVel) doMoveVel(mvc);
 					}
-					if (getval)
-						getval->set(_curMoveVel);
+					if (getval) getval->set(_curMoveVel);
 					if (info)
 					{
 						info->Id = id;
@@ -383,11 +360,9 @@ bool GmiEmulator::handleParam(
 					if (setval)
 					{
 						EMoveConCmd mcc = (EMoveConCmd) setval->getInteger();
-						if (mcc != _curMoveCon)
-							doMoveCon(mcc);
+						if (mcc != _curMoveCon) doMoveCon(mcc);
 					}
-					if (getval)
-						getval->set(_curMoveCon);
+					if (getval) getval->set(_curMoveCon);
 					if (info)
 					{
 						info->Id = id;
@@ -421,14 +396,12 @@ bool GmiEmulator::handleParam(
 
 								case gmi::jscSTOP:
 									// When already Off do nothing.
-									if (_joystickState != gmi::jscOFF)
-										_joystickState = setval->getInteger();
+									if (_joystickState != gmi::jscOFF) _joystickState = setval->getInteger();
 									break;
 							}
 						}
 					}
-					if (getval)
-						getval->set(_joystickState);
+					if (getval) getval->set(_joystickState);
 					if (info)
 					{
 						info->Id = id;
@@ -448,10 +421,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_TRIGGER_AXIS:
-					if (setval)
-						_triggerAxis = setval->getInteger();
-					if (getval)
-						getval->set(_triggerAxis);
+					if (setval) _triggerAxis = setval->getInteger();
+					if (getval) getval->set(_triggerAxis);
 					if (info)
 					{
 						info->Id = id;
@@ -465,8 +436,7 @@ bool GmiEmulator::handleParam(
 						for (int loc = gmi::alNA; loc < gmi::alLAST_ENTRY; loc++)
 						{
 							std::string name = getAxis(loc).getName();
-							if (loc == gmi::alNA)
-								name = "None";
+							if (loc == gmi::alNA) name = "None";
 							info->States.add(ParamState(name, Value(loc)));
 						}
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEXPORT | gmi::pfEFFECTPARAM;
@@ -474,17 +444,14 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_TRIGGER_DENSITY:
-					if (setval)
-						_triggerDensity = setval->getFloat();
-					if (getval)
-						getval->set(_triggerDensity);
+					if (setval) _triggerDensity = setval->getFloat();
+					if (getval) getval->set(_triggerDensity);
 					if (info)
 					{
 						info->Id = id;
 						info->Name = "Trigger|Density";
 						gmi::AxisMovements mvs = getAxis(_triggerAxis).getMovements();
-						if (mvs.has(gmi::amRADIAL))
-							info->Unit = "rad";
+						if (mvs.has(gmi::amRADIAL)) info->Unit = "rad";
 						else if (mvs.has(gmi::amLINEAR))
 							info->Unit = "m";
 						else
@@ -499,10 +466,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_TRIGGER_MODE:
-					if (setval)
-						_triggerMode = setval->getInteger();
-					if (getval)
-						getval->set(_triggerMode);
+					if (setval) _triggerMode = setval->getInteger();
+					if (getval) getval->set(_triggerMode);
 					if (info)
 					{
 						info->Id = id;
@@ -520,10 +485,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_TRIGGER_ENABLE:
-					if (setval)
-						_triggerEnable = setval->getInteger();
-					if (getval)
-						getval->set(_triggerEnable);
+					if (setval) _triggerEnable = setval->getInteger();
+					if (getval) getval->set(_triggerEnable);
 					if (info)
 					{
 						info->Id = id;
@@ -540,7 +503,8 @@ bool GmiEmulator::handleParam(
 					}
 					break;
 
-				case PID_TRIGGER_FREQ: {
+				case PID_TRIGGER_FREQ:
+				{
 					// Check if the value must be set.
 					if (setval)
 					{
@@ -548,8 +512,7 @@ bool GmiEmulator::handleParam(
 						//CallParamHook(MAKE_ID(NO_AXIS, PID_TIMEUNIT));
 					}
 					// Check if the axis exists in the implementation.
-					if (getval)
-						getval->set(_triggerFrequency);
+					if (getval) getval->set(_triggerFrequency);
 					if (info)
 					{
 						info->Id = id;
@@ -562,13 +525,12 @@ bool GmiEmulator::handleParam(
 						info->Maximum.set(10E3);
 						info->Flags |= gmi::pfEXPORT | gmi::pfWRITEABLE;
 					}
-				} break;
+				}
+				break;
 
 				case PID_CHUCKJAW:
-					if (setval)
-						_chuckJaw = setval->getInteger();
-					if (getval)
-						getval->set(_chuckJaw);
+					if (setval) _chuckJaw = setval->getInteger();
+					if (getval) getval->set(_chuckJaw);
 					if (info)
 					{
 						info->Id = id;
@@ -593,8 +555,7 @@ bool GmiEmulator::handleParam(
 						// Make the client update the error message.
 						callParamHook(MAKE_ID(NO_AXIS, PID_ERROR_MESSAGE));
 					}
-					if (getval)
-						getval->set(_error);
+					if (getval) getval->set(_error);
 					if (info)
 					{
 						info->Id = id;
@@ -617,8 +578,7 @@ bool GmiEmulator::handleParam(
 						if (_error)
 						{
 							std::string errtxt;
-							for (int i = 1; i < 10; i++)
-								errtxt += stringf("Error message line %i\n", i);
+							for (int i = 1; i < 10; i++) errtxt += stringf("Error message line %i\n", i);
 							getval->set(errtxt);
 						}
 						else
@@ -642,8 +602,7 @@ bool GmiEmulator::handleParam(
 						_debug = setval->getInteger();
 						doMovePos(gmi::mpcABORT);
 					}
-					if (getval)
-						getval->set(_debug);
+					if (getval) getval->set(_debug);
 					if (info)
 					{
 						info->Id = id;
@@ -686,12 +645,12 @@ bool GmiEmulator::handleParam(
 					}
 					break;
 
-				case PID_AXIS_OFS_POS: {
+				case PID_AXIS_OFS_POS:
+				{
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon) retval = false;
 						else
 						{
 							axis.OfsPos = setval->getFloat();
@@ -699,8 +658,7 @@ bool GmiEmulator::handleParam(
 							callParamHook(MAKE_ID(GETAXIS(id), PID_AXIS_CUR_POS));
 						}
 					}
-					if (getval)
-						getval->set(axis.OfsPos);
+					if (getval) getval->set(axis.OfsPos);
 					if (info)
 					{
 						info->Id = id;
@@ -713,15 +671,16 @@ bool GmiEmulator::handleParam(
 						info->Maximum.set(10.0);
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEFFECTPARAM | gmi::pfEXPORT;
 					}
-				} break;
+				}
+				break;
 
-				case PID_AXIS_CUR_POS: {
+				case PID_AXIS_CUR_POS:
+				{
 					bool radial = axis.getMovements() == (gmi::AxisMovements() << gmi::amRADIAL);
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon || radial)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon || radial) retval = false;
 						else
 						{
 							axis.OfsPos = setval->getFloat() - axis.CurPos;
@@ -735,8 +694,7 @@ bool GmiEmulator::handleParam(
 						if (radial)
 						{
 							val = fmod(val, 2.0 * numbers::pi_v<double>);
-							if (val < 0.0)
-								val += 2.0 * numbers::pi_v<double>;
+							if (val < 0.0) val += 2.0 * numbers::pi_v<double>;
 						}
 						getval->set(val);
 					}
@@ -762,9 +720,11 @@ bool GmiEmulator::handleParam(
 						}
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEXPORT | gmi::pfALIAS;
 					}
-				} break;
+				}
+				break;
 
-				case PID_AXIS_TRG_POS: {
+				case PID_AXIS_TRG_POS:
+				{
 					bool radial = axis.getMovements() == (gmi::AxisMovements() << gmi::amRADIAL);
 					if (setval)
 					{
@@ -772,20 +732,17 @@ bool GmiEmulator::handleParam(
 						{
 							// Get the angle position from the current axis position.
 							double cur_angle = fmod(axis.CurPos - axis.OfsPos, 2.0 * numbers::pi_v<double>);
-							if (cur_angle < 0.0)
-								cur_angle += 2.0 * numbers::pi_v<double>;
+							if (cur_angle < 0.0) cur_angle += 2.0 * numbers::pi_v<double>;
 							// Accept only positive values.
 							axis.TrgPos = setval->getFloat();
 							axis.TrgPos = fmod(axis.TrgPos, 2.0 * numbers::pi_v<double>);
-							if (axis.TrgPos < 0.0)
-								axis.TrgPos += 2.0 * numbers::pi_v<double>;
+							if (axis.TrgPos < 0.0) axis.TrgPos += 2.0 * numbers::pi_v<double>;
 							// Determine difference between the angles.
 							double dif_angle = fmod(axis.TrgPos - cur_angle, 2.0 * numbers::pi_v<double>);
 							// Calculate the current position of the axis before the change.
 							double trg_pos = axis.CurPos;
 							// Do no accept changes less than the set accuracy.
-							if (std::fabs(dif_angle) > axis.Accuracy)
-								trg_pos += dif_angle;
+							if (std::fabs(dif_angle) > axis.Accuracy) trg_pos += dif_angle;
 							//
 							axis.TrgPos = trg_pos;
 						}
@@ -796,8 +753,7 @@ bool GmiEmulator::handleParam(
 					}
 					if (getval)
 					{
-						if (radial)
-							getval->set(std::fmod(axis.TrgPos - 2.0 * numbers::pi_v<double> + axis.OfsPos, 2.0 * numbers::pi_v<double>));
+						if (radial) getval->set(std::fmod(axis.TrgPos - 2.0 * numbers::pi_v<double> + axis.OfsPos, 2.0 * numbers::pi_v<double>));
 						else
 							getval->set(axis.TrgPos + axis.OfsPos);
 					}
@@ -830,7 +786,8 @@ bool GmiEmulator::handleParam(
 						}
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEXPORT;
 					}
-				} break;
+				}
+				break;
 
 				case PID_AXIS_TRG_VEL:
 					if (setval)
@@ -839,8 +796,7 @@ bool GmiEmulator::handleParam(
 						if (axis.Mode != gmi::amDISABLED)
 						{
 							// Can only set the mode when controller is not moving.
-							if (_curMovePos && axis.Mode == gmi::amPOSITION)
-								retval = false;
+							if (_curMovePos && axis.Mode == gmi::amPOSITION) retval = false;
 						}
 						//
 						if (retval)
@@ -848,14 +804,11 @@ bool GmiEmulator::handleParam(
 							// Set the velocity.
 							axis.TrgVel = setval->getFloat();
 							// When in velocity mode make it accelerate or decelerate.
-							if (_curMoveVel == gmi::mvcON)
-								axis.DoMoveVel(gmi::mvcON);
-							if (_curMoveCon == gmi::mccON)
-								axis.DoMoveCon(gmi::mccON);
+							if (_curMoveVel == gmi::mvcON) axis.DoMoveVel(gmi::mvcON);
+							if (_curMoveCon == gmi::mccON) axis.DoMoveCon(gmi::mccON);
 						}
 					}
-					if (getval)
-						getval->set(axis.TrgVel);
+					if (getval) getval->set(axis.TrgVel);
 					if (info)
 					{
 						info->Id = id;
@@ -877,16 +830,14 @@ bool GmiEmulator::handleParam(
 						if (axis.Mode != gmi::amDISABLED)
 						{
 							// Can only set the mode when controller is not moving.
-							if (_curMovePos && axis.Mode == gmi::amPOSITION)
-								retval = false;
+							if (_curMovePos && axis.Mode == gmi::amPOSITION) retval = false;
 							else if (_curMoveVel && axis.Mode == gmi::amVELOCITY)
 								retval = false;
 						}
 						//
 						axis.TrgAcc = setval->getFloat();
 					}
-					if (getval)
-						getval->set(axis.TrgAcc);
+					if (getval) getval->set(axis.TrgAcc);
 					if (info)
 					{
 						info->Id = id;
@@ -902,10 +853,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_AXIS_CUR_VEL:
-					if (setval)
-						axis.CurVel = setval->getFloat();
-					if (getval)
-						getval->set(axis.CurVel);
+					if (setval) axis.CurVel = setval->getFloat();
+					if (getval) getval->set(axis.CurVel);
 					if (info)
 					{
 						info->Id = id;
@@ -920,17 +869,16 @@ bool GmiEmulator::handleParam(
 					}
 					break;
 
-				case PID_AXIS_MIN_POS: {
+				case PID_AXIS_MIN_POS:
+				{
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon) retval = false;
 						else
 							axis.MinPos = setval->getFloat();
 					}
-					if (getval)
-						getval->set(axis.MinPos);
+					if (getval) getval->set(axis.MinPos);
 					if (info)
 					{
 						info->Id = id;
@@ -943,19 +891,19 @@ bool GmiEmulator::handleParam(
 						info->Maximum.set(10.0);
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEFFECTPARAM | gmi::pfSYSTEM;
 					}
-				} break;
+				}
+				break;
 
-				case PID_AXIS_MAX_POS: {
+				case PID_AXIS_MAX_POS:
+				{
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon) retval = false;
 						else
 							axis.MaxPos = setval->getFloat();
 					}
-					if (getval)
-						getval->set(axis.MaxPos);
+					if (getval) getval->set(axis.MaxPos);
 					if (info)
 					{
 						info->Id = id;
@@ -968,19 +916,18 @@ bool GmiEmulator::handleParam(
 						info->Maximum.set(10.0);
 						info->Flags |= gmi::pfMOVEVEL | gmi::pfMOVEPOS | gmi::pfEFFECTPARAM | gmi::pfSYSTEM;
 					}
-				} break;
+				}
+				break;
 
 				case PID_AXIS_MAX_VEL:
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon) retval = false;
 						else
 							axis.MaxVel = setval->getFloat();
 					}
-					if (getval)
-						getval->set(axis.MaxVel);
+					if (getval) getval->set(axis.MaxVel);
 					if (info)
 					{
 						info->Id = id;
@@ -999,13 +946,11 @@ bool GmiEmulator::handleParam(
 					if (setval)
 					{
 						// Can only set the mode when controller is not moving.
-						if (_curMovePos || _curMoveVel || _curMoveCon)
-							retval = false;
+						if (_curMovePos || _curMoveVel || _curMoveCon) retval = false;
 						else
 							axis.MaxAcc = setval->getFloat();
 					}
-					if (getval)
-						getval->set(axis.MaxAcc);
+					if (getval) getval->set(axis.MaxAcc);
 					if (info)
 					{
 						info->Id = id;
@@ -1021,10 +966,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_AXIS_ACCURACY:
-					if (setval)
-						axis.Accuracy = setval->getFloat();
-					if (getval)
-						getval->set(axis.Accuracy);
+					if (setval) axis.Accuracy = setval->getFloat();
+					if (getval) getval->set(axis.Accuracy);
 					if (info)
 					{
 						info->Id = id;
@@ -1040,10 +983,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_AXIS_RESOLUTION:
-					if (setval)
-						axis.Resolution = setval->getFloat();
-					if (getval)
-						getval->set(axis.Resolution);
+					if (setval) axis.Resolution = setval->getFloat();
+					if (getval) getval->set(axis.Resolution);
 					if (info)
 					{
 						info->Id = id;
@@ -1059,10 +1000,8 @@ bool GmiEmulator::handleParam(
 					break;
 
 				case PID_AXIS_ROUND:
-					if (setval)
-						axis.Round = setval->getFloat();
-					if (getval)
-						getval->set(axis.Round);
+					if (setval) axis.Round = setval->getFloat();
+					if (getval) getval->set(axis.Round);
 					if (info)
 					{
 						info->Id = id;
@@ -1082,13 +1021,11 @@ bool GmiEmulator::handleParam(
 					{
 						EAxisMode newmode = (EAxisMode) setval->getInteger();
 						// Can only set the mode according to some rules.
-						if (!axis.canModeChange(axis.Mode, newmode, !_curMovePos, !_curMoveVel, !_curMoveCon))
-							retval = false;
+						if (!axis.canModeChange(axis.Mode, newmode, !_curMovePos, !_curMoveVel, !_curMoveCon)) retval = false;
 						else
 							axis.Mode = newmode;
 					}
-					if (getval)
-						getval->set(axis.Mode);
+					if (getval) getval->set(axis.Mode);
 					if (info)
 					{
 						info->Id = id;
@@ -1111,8 +1048,7 @@ bool GmiEmulator::handleParam(
 		}
 	}
 	// Check if at least the id is filled in.
-	if (info && info->Id == 0)
-		return false;
+	if (info && info->Id == 0) return false;
 	// Found it so return true.
 	return retval;
 }
@@ -1195,8 +1131,7 @@ bool GmiEmulator::handleResult(gmi::IdType id, gmi::ResultInfo* info, gmi::Buffe
 bool GmiEmulator::TAxis::IsMovePosComplete(timespec clk)
 {
 	// When the timer is disabled the move is complete.
-	if (!MovePosTimer.isEnabled())
-		return true;
+	if (!MovePosTimer.isEnabled()) return true;
 	else
 	{// If timer elapsed.
 		if (MovePosTimer(clk))
@@ -1266,8 +1201,7 @@ bool GmiEmulator::TAxis::IsMoveVelComplete(timespec clk)
 					// Subtract the distances from the distance reached after acceleration.
 					CurPos = TrgDist2;
 					// Subtract the distances from the distance reached after acceleration.
-					if (TrgVel - StartVel > 0)
-						CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
+					if (TrgVel - StartVel > 0) CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					else
 						CurPos += (-0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					// Calculate the speed for the acceleration time from start velocity.
@@ -1292,8 +1226,7 @@ bool GmiEmulator::TAxis::IsMoveVelComplete(timespec clk)
 					// Subtract the distances from the distance reached after acceleration.
 					CurPos = TrgDist2;
 					// Subtract the distances from the distance reached after acceleration.
-					if (TrgVel - StartVel > 0)
-						CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
+					if (TrgVel - StartVel > 0) CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					else
 						CurPos += (-0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					// Calculate the speed for the acceleration time from start velocity.
@@ -1343,8 +1276,7 @@ bool GmiEmulator::TAxis::IsMoveConComplete(timespec clk)
 					// Subtract the distances from the dinstance reached after acceleration.
 					CurPos = TrgDist2;
 					// Subtract the distances from the dinstance reached after acceleration.
-					if (TrgVel - StartVel > 0)
-						CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
+					if (TrgVel - StartVel > 0) CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					else
 						CurPos += (-0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					// Calculate the speed for the acceleration time from start velocity.
@@ -1369,8 +1301,7 @@ bool GmiEmulator::TAxis::IsMoveConComplete(timespec clk)
 					// Subtract the distances from the dinstance reached after acceleration.
 					CurPos = TrgDist2;
 					// Subtract the distances from the dinstance reached after acceleration.
-					if (TrgVel - StartVel > 0)
-						CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
+					if (TrgVel - StartVel > 0) CurPos += (0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					else
 						CurPos += (-0.5 * tmp * tmp * TrgAcc) + tmp * StartVel;
 					// Calculate the speed for the acceleration time from start velocity.
@@ -1424,8 +1355,7 @@ void GmiEmulator::TAxis::DoMovePos(EMovePosCmd mpc)
 					tmp = CurVel / TrgAcc;
 					// Set a new target position for the deceleration.
 					TrgDist = CurPos;
-					if (CurPos < TrgPos)
-						TrgDist += (0.5 * TrgAcc * tmp * tmp);
+					if (CurPos < TrgPos) TrgDist += (0.5 * TrgAcc * tmp * tmp);
 					else
 						TrgDist -= (0.5 * TrgAcc * tmp * tmp);
 					// Reset the time to the time to decelerate.
@@ -1470,8 +1400,7 @@ void GmiEmulator::TAxis::DoMoveVel(EMoveVelCmd mvc)
 				// Set the time to decelerate.
 				double acctime = std::fabs(TrgVel - StartVel) / TrgAcc;
 				// Add the distance from accelerating to the target velocity.
-				if (TrgVel - StartVel > 0)
-					TrgDist += (0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
+				if (TrgVel - StartVel > 0) TrgDist += (0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
 				else
 					TrgDist += (-0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
 				//
@@ -1491,8 +1420,7 @@ void GmiEmulator::TAxis::DoMoveVel(EMoveVelCmd mvc)
 				// Set the time to decelerate.
 				double acctime = std::fabs(StartVel) / TrgAcc;
 				// Add the distance from accelerating to the target velocity.
-				if (StartVel > 0)
-					TrgDist += (0.5 * acctime * acctime * TrgAcc);
+				if (StartVel > 0) TrgDist += (0.5 * acctime * acctime * TrgAcc);
 				else
 					TrgDist += (-0.5 * acctime * acctime * TrgAcc);
 				//
@@ -1505,8 +1433,7 @@ void GmiEmulator::TAxis::DoMoveVel(EMoveVelCmd mvc)
 
 void GmiEmulator::TAxis::DoMoveCon(EMoveConCmd mcc)
 {
-	if (Mode != gmi::amCONTINUE)
-		return;
+	if (Mode != gmi::amCONTINUE) return;
 	//
 	switch (mcc)
 	{
@@ -1529,8 +1456,7 @@ void GmiEmulator::TAxis::DoMoveCon(EMoveConCmd mcc)
 				// Set the time to decelerate.
 				double acctime = std::fabs(TrgVel - StartVel) / TrgAcc;
 				// Add the distance from accelerating to the target velocity.
-				if (TrgVel - StartVel > 0)
-					TrgDist += (0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
+				if (TrgVel - StartVel > 0) TrgDist += (0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
 				else
 					TrgDist += (-0.5 * acctime * acctime * TrgAcc) + acctime * StartVel;
 				//
@@ -1550,8 +1476,7 @@ void GmiEmulator::TAxis::DoMoveCon(EMoveConCmd mcc)
 				// Set the time to decelerate.
 				double acctime = std::fabs(StartVel) / TrgAcc;
 				// Add the distance from accelerating to the target velocity.
-				if (StartVel > 0)
-					TrgDist += (0.5 * acctime * acctime * TrgAcc);
+				if (StartVel > 0) TrgDist += (0.5 * acctime * acctime * TrgAcc);
 				else
 					TrgDist += (-0.5 * acctime * acctime * TrgAcc);
 				//
@@ -1576,8 +1501,7 @@ void GmiEmulator::doMovePos(EMovePosCmd mpc)
 	// Iterate through the axes and signal the new command.
 	for (unsigned i = 0; i < AxisList.count(); i++)
 	{// Only for axes in position mode.
-		if (AxisList[i]->Mode == gmi::amPOSITION)
-			AxisList[i]->DoMovePos(mpc);
+		if (AxisList[i]->Mode == gmi::amPOSITION) AxisList[i]->DoMovePos(mpc);
 	}
 	//
 	if (mpc == gmi::mpcABORT)
@@ -1603,8 +1527,7 @@ void GmiEmulator::doMoveVel(EMoveVelCmd mvc)
 	//
 	for (unsigned i = 0; i < AxisList.count(); i++)
 	{// Only for axes in velocity mode.
-		if (AxisList[i]->Mode == gmi::amVELOCITY)
-			AxisList[i]->DoMoveVel(mvc);
+		if (AxisList[i]->Mode == gmi::amVELOCITY) AxisList[i]->DoMoveVel(mvc);
 	}
 }
 
@@ -1622,8 +1545,7 @@ void GmiEmulator::doMoveCon(EMoveConCmd mcc)
 	for (unsigned i = 0; i < AxisList.count(); i++)
 	{
 		// Only for axes in continuous mode.
-		if (AxisList[i]->Mode == gmi::amCONTINUE)
-			AxisList[i]->DoMoveCon(mcc);
+		if (AxisList[i]->Mode == gmi::amCONTINUE) AxisList[i]->DoMoveCon(mcc);
 	}
 }
 
@@ -1640,8 +1562,7 @@ bool GmiEmulator::sustain(const timespec& t)
 	if (_curMoveVel != gmi::mvcCOMPLETE)
 	{
 		bool completed = true;
-		for (unsigned i = 0; i < AxisList.count(); i++)
-			completed &= AxisList[i]->IsMoveVelComplete(t);
+		for (unsigned i = 0; i < AxisList.count(); i++) completed &= AxisList[i]->IsMoveVelComplete(t);
 		// When the axis are completed.
 		if (completed && _curMoveVel != gmi::mvcABORT)
 		{
@@ -1655,8 +1576,7 @@ bool GmiEmulator::sustain(const timespec& t)
 	if (_curMoveCon != gmi::mccCOMPLETE)
 	{
 		bool completed = true;
-		for (unsigned i = 0; i < AxisList.count(); i++)
-			completed &= AxisList[i]->IsMoveConComplete(t);
+		for (unsigned i = 0; i < AxisList.count(); i++) completed &= AxisList[i]->IsMoveConComplete(t);
 		// When the axis are completed.
 		if (completed && _curMoveCon != gmi::mccABORT)
 		{

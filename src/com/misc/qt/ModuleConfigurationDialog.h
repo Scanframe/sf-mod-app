@@ -17,8 +17,7 @@ class ModuleConfiguration;
 // Forward definition.
 class AppModuleList;
 
-class _MISC_CLASS ModuleConfigurationDialog
-	: public QDialog
+class _MISC_CLASS ModuleConfigurationDialog : public QDialog
 {
 		Q_OBJECT
 

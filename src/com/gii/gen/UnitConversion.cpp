@@ -12,14 +12,15 @@ void setUnitConversionHandler(const UnitConversionServerClosure& closure)
 	UnitConversionClosure.assign(closure);
 }
 
-bool getUnitConversion(const std::string& option, const std::string& from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision)
+bool getUnitConversion(
+	const std::string& option, const std::string& from_unit, int from_precision, double& multiplier, double& offset, std::string& to_unit, int& to_precision
+)
 {
 	// When set call the handler.
 	if (UnitConversionClosure)
 	{
 		UnitConversionEvent ev(option, from_unit, from_precision, multiplier, offset, to_unit, to_precision);
-		if (UnitConversionClosure(ev))
-			return true;
+		if (UnitConversionClosure(ev)) return true;
 	}
 	return false;
 }

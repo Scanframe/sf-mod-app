@@ -1,7 +1,7 @@
 #pragma once
 #include <gmi/iface/GmiInterface.h>
+#include <misc/gen/PropertySheetDialog.h>
 #include <misc/gen/TClassRegistration.h>
-#include <misc/qt/PropertySheetDialog.h>
 
 namespace sf::gmi
 {
@@ -319,7 +319,7 @@ class _GMI_CLASS Controller
 		/**
 		 * @brief Gets the current axes values.
 		 * @param avt Axis value type.
-		 * @param coord Axes coordinate containing the values.
+		 * @param ac Axes coordinate containing the values.
 		 * @return True if successful and False on failure where the last error contains more information.
 		 */
 		bool getCurrent(EAxisValueType avt, AxesCoord& ac) const;
@@ -350,7 +350,7 @@ class _GMI_CLASS Controller
 
 		/**
 		 * @brief Set the target
-		 * @param avt Axis value type.
+		 * @param pos Axes positions.
 		 * @param vel Axes velocities.
 		 * @param acc Axes accelerations.
 		 * @param linear
@@ -453,8 +453,8 @@ class _GMI_CLASS Controller
 		 * @brief normalize the passed position for all unlimited rotation axes.
 		 * Uses accuracy to find the actual position to normalize.
 		 * The passed value is also returned.
-		 * @param pos Axes coordinate to modify.
-		 * @return The modified axes coordinate.
+		 * @param dist Axes distance coordinate to normalize.
+		 * @return The normalized axes coordinate.
 		 */
 		AxesCoord normalized(const AxesCoord& dist) const;
 

@@ -10,8 +10,7 @@ namespace sf
 /**
  * @brief Script interpreter for running a loaded script.
  */
-class _MISC_CLASS ScriptInterpreter
-	: public ScriptEngine
+class _MISC_CLASS ScriptInterpreter : public ScriptEngine
 {
 	public:
 		/**
@@ -269,12 +268,18 @@ class _MISC_CLASS ScriptInterpreter
 		/**
 		 * @brief Gets the instruction text at pointer IP.
 		 */
-		[[nodiscard]] const TVector<Instruction>& getInstructions() const { return _instructions; }
+		[[nodiscard]] const TVector<Instruction>& getInstructions() const
+		{
+			return _instructions;
+		}
 
 		/**
 		 * @brief Gets the current variables declared in the script.
 		 */
-		[[nodiscard]] const TVector<VariableInfo*>& getVariables() const { return _variables; }
+		[[nodiscard]] const TVector<VariableInfo*>& getVariables() const
+		{
+			return _variables;
+		}
 
 		/**
 		 * @brief Gets a list of available identifiers.

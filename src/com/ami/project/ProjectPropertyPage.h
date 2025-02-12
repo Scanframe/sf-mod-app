@@ -10,8 +10,7 @@ namespace Ui
 class ProjectPropertyPage;
 }
 
-class ProjectPropertyPage
-	: public PropertyPage
+class ProjectPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

@@ -7,38 +7,19 @@ namespace sf
 
 Draw::Draw()
 	: _sepFactor(2.2)
-{
-}
+{}
 
 Draw::Tick Draw::_tickListVertical[] = {
-	{10, 5},
-	{20, 4},
-	{25, 5},
-	{40, 4},
-	{50, 5},
-	{100, 5},
+	{10, 5}, {20, 4}, {25, 5}, {40, 4}, {50, 5}, {100, 5},
 };
 
 Draw::Tick Draw::_tickListHorizontal[] = {
-	{10, 10},
-	{20, 8},
-	{25, 10},
-	{40, 8},
-	{50, 10},
-	{100, 10},
+	{10, 10}, {20, 8}, {25, 10}, {40, 8}, {50, 10}, {100, 10},
 };
 
 bool Draw::ruler(
-	QPainter& p,
-	ERulerOrientation ro,
-	const QColor& color,
-	const QColor& font_color,
-	const QRect& bounds,
-	const QRect& area,
-	double start,
-	double stop,
-	int digits,
-	const QString& unit
+	QPainter& p, ERulerOrientation ro, const QColor& color, const QColor& font_color, const QRect& bounds, const QRect& area, double start, double stop,
+	int digits, const QString& unit
 ) const
 {
 	// Initialize the return value.
@@ -404,15 +385,7 @@ bool Draw::ruler(
 	return rv;
 }
 
-bool Draw::gridLines(
-	QPainter& p,
-	EGridOrientation go,
-	const QColor& color,
-	const QRect& bounds,
-	double start,
-	double stop,
-	unsigned digits
-) const
+bool Draw::gridLines(QPainter& p, EGridOrientation go, const QColor& color, const QRect& bounds, double start, double stop, unsigned digits) const
 {
 	// Initialize the return value.
 	bool rv = true;

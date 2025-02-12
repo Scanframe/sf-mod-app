@@ -57,8 +57,7 @@ void sf::VariableStatic::initialize(bool init)
 					auto k = _references->at(i);
 					os << "(0x" << std::hex << k->_id << ") '" << k->_name << (i != sz - 1 ? "', " : "' ");
 				}
-				SF_FUNC_NOTIFY(DO_CERR, "Unable to perform un-init, (" << (sz - 1) << ") references still remain!" << std::endl
-																															 << '\t' << os.str())
+				SF_FUNC_NOTIFY(DO_CERR, "Unable to perform un-init, (" << (sz - 1) << ") references still remain!" << std::endl << '\t' << os.str())
 			}
 			else
 			{
@@ -75,17 +74,9 @@ void sf::VariableStatic::initialize(bool init)
 	}
 }
 
-VariableStatic::FlagLetters VariableStatic::_flagLetters[] =
-	{
-		{'R', flgReadonly},
-		{'A', flgArchive},
-		{'S', flgShare},
-		{'L', flgLink},
-		{'F', flgFunction},
-		{'P', flgParameter},
-		{'H', flgHidden},
-		{'E', flgExport},
-		{'W', flgWriteable},
+VariableStatic::FlagLetters VariableStatic::_flagLetters[] = {
+	{'R', flgReadonly},  {'A', flgArchive}, {'S', flgShare},  {'L', flgLink},      {'F', flgFunction},
+	{'P', flgParameter}, {'H', flgHidden},  {'E', flgExport}, {'W', flgWriteable},
 };
 
 }// namespace sf

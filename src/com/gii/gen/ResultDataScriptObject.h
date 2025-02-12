@@ -8,7 +8,8 @@ namespace sf
 /**
  * @brief Script object for exporting GII parameters to a script object.
  */
-class ResultDataScriptObject : public ScriptObject
+class ResultDataScriptObject
+	: public ScriptObject
 	, public ResultData
 	, private ResultDataHandler
 {

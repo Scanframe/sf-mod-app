@@ -1,10 +1,8 @@
 #pragma once
-
 #include <cmath>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/string.h>
 #include <regex>
-#include <sstream>
 
 namespace sf
 {
@@ -18,9 +16,8 @@ inline TMatrix44<T>::TMatrix44(T tilt, T pan, T roll)
 template<typename T>
 TMatrix44<T>::TMatrix44(const TVector3D<T>& tv)
 {
-	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] =
-		_data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] =
-			_data.mtx[0][2] = _data.mtx[1][2] = _data.mtx[2][3] = 0;
+	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] = _data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] = _data.mtx[0][2] = _data.mtx[1][2] =
+		_data.mtx[2][3] = 0;
 	_data.mtx[3][0] = tv.x;
 	_data.mtx[3][1] = tv.y;
 	_data.mtx[3][2] = tv.z;
@@ -42,7 +39,7 @@ TMatrix44<T>::TMatrix44(const TQuaternion<T>& q)
 }
 
 template<typename T>
-TMatrix44<T>::TMatrix44(TMatrix44&& m)
+TMatrix44<T>::TMatrix44(TMatrix44&& m) noexcept
 {
 	_data = m._data;
 }
@@ -55,19 +52,9 @@ TMatrix44<T>::TMatrix44(const TMatrix44& m)
 }
 
 template<typename T>
-TMatrix44<T>::TMatrix44(
-	T m00, T m01, T m02, T m03,
-	T m10, T m11, T m12, T m13,
-	T m20, T m21, T m22, T m23,
-	T m30, T m31, T m32, T m33
-)
+TMatrix44<T>::TMatrix44(T m00, T m01, T m02, T m03, T m10, T m11, T m12, T m13, T m20, T m21, T m22, T m23, T m30, T m31, T m32, T m33)
 {
-	_data = {
-		m00, m01, m02, m03,
-		m10, m11, m12, m13,
-		m20, m21, m22, m23,
-		m30, m31, m32, m33
-	};
+	_data = {m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33};
 }
 
 template<typename T>
@@ -103,7 +90,7 @@ template<typename T>
 TMatrix44<T>& TMatrix44<T>::invert()
 {
 	int indxc[4], indxr[4], ipiv[4];
-	int i, icol, irow, j, k, l, ll;
+	int i, icol, irow, j, k, l;
 	T big, dum, pivinv;
 	icol = irow = 0;
 	ipiv[0] = ipiv[1] = ipiv[2] = ipiv[3] = 0;
@@ -153,7 +140,7 @@ TMatrix44<T>& TMatrix44<T>::invert()
 		{
 			_data.mtx[icol][l] *= pivinv;
 		}
-		for (ll = 0; ll < 4; ll++)
+		for (int ll = 0; ll < 4; ll++)
 		{
 			if (ll != icol)
 			{
@@ -180,7 +167,7 @@ TMatrix44<T>& TMatrix44<T>::invert()
 }
 
 template<typename T>
-inline TMatrix44<T> TMatrix44<T>::inverse() const
+TMatrix44<T> TMatrix44<T>::inverse() const
 {
 	return TMatrix44(*this).invert();
 }
@@ -188,12 +175,8 @@ inline TMatrix44<T> TMatrix44<T>::inverse() const
 template<typename T>
 TMatrix44<T>& TMatrix44<T>::transpose()
 {
-	_data = {
-		_data.mtx[0][0], _data.mtx[1][0], _data.mtx[2][0], _data.mtx[3][0],
-		_data.mtx[0][1], _data.mtx[1][1], _data.mtx[2][1], _data.mtx[3][1],
-		_data.mtx[0][2], _data.mtx[1][2], _data.mtx[2][2], _data.mtx[3][2],
-		_data.mtx[0][3], _data.mtx[1][3], _data.mtx[2][3], _data.mtx[3][3]
-	};
+	_data = {_data.mtx[0][0], _data.mtx[1][0], _data.mtx[2][0], _data.mtx[3][0], _data.mtx[0][1], _data.mtx[1][1], _data.mtx[2][1], _data.mtx[3][1],
+					 _data.mtx[0][2], _data.mtx[1][2], _data.mtx[2][2], _data.mtx[3][2], _data.mtx[0][3], _data.mtx[1][3], _data.mtx[2][3], _data.mtx[3][3]};
 	return *this;
 }
 
@@ -239,85 +222,37 @@ template<typename T>
 TMatrix44<T>& TMatrix44<T>::multiply(const TMatrix44& m)
 {
 	_data = {
-		_data.mtx[0][0] * m._data.mtx[0][0] +
-			_data.mtx[0][1] * m._data.mtx[1][0] +
-			_data.mtx[0][2] * m._data.mtx[2][0] +
-			_data.mtx[0][3] * m._data.mtx[3][0],
+		_data.mtx[0][0] * m._data.mtx[0][0] + _data.mtx[0][1] * m._data.mtx[1][0] + _data.mtx[0][2] * m._data.mtx[2][0] + _data.mtx[0][3] * m._data.mtx[3][0],
 
-		_data.mtx[0][0] * m._data.mtx[0][1] +
-			_data.mtx[0][1] * m._data.mtx[1][1] +
-			_data.mtx[0][2] * m._data.mtx[2][1] +
-			_data.mtx[0][3] * m._data.mtx[3][1],
+		_data.mtx[0][0] * m._data.mtx[0][1] + _data.mtx[0][1] * m._data.mtx[1][1] + _data.mtx[0][2] * m._data.mtx[2][1] + _data.mtx[0][3] * m._data.mtx[3][1],
 
-		_data.mtx[0][0] * m._data.mtx[0][2] +
-			_data.mtx[0][1] * m._data.mtx[1][2] +
-			_data.mtx[0][2] * m._data.mtx[2][2] +
-			_data.mtx[0][3] * m._data.mtx[3][2],
+		_data.mtx[0][0] * m._data.mtx[0][2] + _data.mtx[0][1] * m._data.mtx[1][2] + _data.mtx[0][2] * m._data.mtx[2][2] + _data.mtx[0][3] * m._data.mtx[3][2],
 
-		_data.mtx[0][0] * m._data.mtx[0][3] +
-			_data.mtx[0][1] * m._data.mtx[1][3] +
-			_data.mtx[0][2] * m._data.mtx[2][3] +
-			_data.mtx[0][3] * m._data.mtx[3][3],
+		_data.mtx[0][0] * m._data.mtx[0][3] + _data.mtx[0][1] * m._data.mtx[1][3] + _data.mtx[0][2] * m._data.mtx[2][3] + _data.mtx[0][3] * m._data.mtx[3][3],
 
-		_data.mtx[1][0] * m._data.mtx[0][0] +
-			_data.mtx[1][1] * m._data.mtx[1][0] +
-			_data.mtx[1][2] * m._data.mtx[2][0] +
-			_data.mtx[1][3] * m._data.mtx[3][0],
+		_data.mtx[1][0] * m._data.mtx[0][0] + _data.mtx[1][1] * m._data.mtx[1][0] + _data.mtx[1][2] * m._data.mtx[2][0] + _data.mtx[1][3] * m._data.mtx[3][0],
 
-		_data.mtx[1][0] * m._data.mtx[0][1] +
-			_data.mtx[1][1] * m._data.mtx[1][1] +
-			_data.mtx[1][2] * m._data.mtx[2][1] +
-			_data.mtx[1][3] * m._data.mtx[3][1],
+		_data.mtx[1][0] * m._data.mtx[0][1] + _data.mtx[1][1] * m._data.mtx[1][1] + _data.mtx[1][2] * m._data.mtx[2][1] + _data.mtx[1][3] * m._data.mtx[3][1],
 
-		_data.mtx[1][0] * m._data.mtx[0][2] +
-			_data.mtx[1][1] * m._data.mtx[1][2] +
-			_data.mtx[1][2] * m._data.mtx[2][2] +
-			_data.mtx[1][3] * m._data.mtx[3][2],
+		_data.mtx[1][0] * m._data.mtx[0][2] + _data.mtx[1][1] * m._data.mtx[1][2] + _data.mtx[1][2] * m._data.mtx[2][2] + _data.mtx[1][3] * m._data.mtx[3][2],
 
-		_data.mtx[1][0] * m._data.mtx[0][3] +
-			_data.mtx[1][1] * m._data.mtx[1][3] +
-			_data.mtx[1][2] * m._data.mtx[2][3] +
-			_data.mtx[1][3] * m._data.mtx[3][3],
+		_data.mtx[1][0] * m._data.mtx[0][3] + _data.mtx[1][1] * m._data.mtx[1][3] + _data.mtx[1][2] * m._data.mtx[2][3] + _data.mtx[1][3] * m._data.mtx[3][3],
 
-		_data.mtx[2][0] * m._data.mtx[0][0] +
-			_data.mtx[2][1] * m._data.mtx[1][0] +
-			_data.mtx[2][2] * m._data.mtx[2][0] +
-			_data.mtx[2][3] * m._data.mtx[3][0],
+		_data.mtx[2][0] * m._data.mtx[0][0] + _data.mtx[2][1] * m._data.mtx[1][0] + _data.mtx[2][2] * m._data.mtx[2][0] + _data.mtx[2][3] * m._data.mtx[3][0],
 
-		_data.mtx[2][0] * m._data.mtx[0][1] +
-			_data.mtx[2][1] * m._data.mtx[1][1] +
-			_data.mtx[2][2] * m._data.mtx[2][1] +
-			_data.mtx[2][3] * m._data.mtx[3][1],
+		_data.mtx[2][0] * m._data.mtx[0][1] + _data.mtx[2][1] * m._data.mtx[1][1] + _data.mtx[2][2] * m._data.mtx[2][1] + _data.mtx[2][3] * m._data.mtx[3][1],
 
-		_data.mtx[2][0] * m._data.mtx[0][2] +
-			_data.mtx[2][1] * m._data.mtx[1][2] +
-			_data.mtx[2][2] * m._data.mtx[2][2] +
-			_data.mtx[2][3] * m._data.mtx[3][2],
+		_data.mtx[2][0] * m._data.mtx[0][2] + _data.mtx[2][1] * m._data.mtx[1][2] + _data.mtx[2][2] * m._data.mtx[2][2] + _data.mtx[2][3] * m._data.mtx[3][2],
 
-		_data.mtx[2][0] * m._data.mtx[0][3] +
-			_data.mtx[2][1] * m._data.mtx[1][3] +
-			_data.mtx[2][2] * m._data.mtx[2][3] +
-			_data.mtx[2][3] * m._data.mtx[3][3],
+		_data.mtx[2][0] * m._data.mtx[0][3] + _data.mtx[2][1] * m._data.mtx[1][3] + _data.mtx[2][2] * m._data.mtx[2][3] + _data.mtx[2][3] * m._data.mtx[3][3],
 
-		_data.mtx[3][0] * m._data.mtx[0][0] +
-			_data.mtx[3][1] * m._data.mtx[1][0] +
-			_data.mtx[3][2] * m._data.mtx[2][0] +
-			_data.mtx[3][3] * m._data.mtx[3][0],
+		_data.mtx[3][0] * m._data.mtx[0][0] + _data.mtx[3][1] * m._data.mtx[1][0] + _data.mtx[3][2] * m._data.mtx[2][0] + _data.mtx[3][3] * m._data.mtx[3][0],
 
-		_data.mtx[3][0] * m._data.mtx[0][1] +
-			_data.mtx[3][1] * m._data.mtx[1][1] +
-			_data.mtx[3][2] * m._data.mtx[2][1] +
-			_data.mtx[3][3] * m._data.mtx[3][1],
+		_data.mtx[3][0] * m._data.mtx[0][1] + _data.mtx[3][1] * m._data.mtx[1][1] + _data.mtx[3][2] * m._data.mtx[2][1] + _data.mtx[3][3] * m._data.mtx[3][1],
 
-		_data.mtx[3][0] * m._data.mtx[0][2] +
-			_data.mtx[3][1] * m._data.mtx[1][2] +
-			_data.mtx[3][2] * m._data.mtx[2][2] +
-			_data.mtx[3][3] * m._data.mtx[3][2],
+		_data.mtx[3][0] * m._data.mtx[0][2] + _data.mtx[3][1] * m._data.mtx[1][2] + _data.mtx[3][2] * m._data.mtx[2][2] + _data.mtx[3][3] * m._data.mtx[3][2],
 
-		_data.mtx[3][0] * m._data.mtx[0][3] +
-			_data.mtx[3][1] * m._data.mtx[1][3] +
-			_data.mtx[3][2] * m._data.mtx[2][3] +
-			_data.mtx[3][3] * m._data.mtx[3][3]
+		_data.mtx[3][0] * m._data.mtx[0][3] + _data.mtx[3][1] * m._data.mtx[1][3] + _data.mtx[3][2] * m._data.mtx[2][3] + _data.mtx[3][3] * m._data.mtx[3][3]
 	};
 	return *this;
 }
@@ -329,14 +264,14 @@ TMatrix44<T>& TMatrix44<T>::operator=(const TMatrix44& m)
 }
 
 template<typename T>
-TMatrix44<T>& TMatrix44<T>::operator=(TMatrix44<T>&& m) noexcept
+TMatrix44<T>& TMatrix44<T>::operator=(TMatrix44&& m) noexcept
 {
 	_data = m._data;
 	return *this;
 }
 
 template<typename T>
-inline TMatrix44<T>& TMatrix44<T>::operator*=(const TMatrix44<T>& lhs)
+TMatrix44<T>& TMatrix44<T>::operator*=(const TMatrix44& lhs)
 {
 	return multiply(lhs);
 }
@@ -360,13 +295,13 @@ TVector3D<T> TMatrix44<T>::operator*(const TVector3D<T>& v) const
 }
 
 template<typename T>
-inline TMatrix44<T>::operator T*()
+TMatrix44<T>::operator T*()
 {
 	return &_data.array[0];
 }
 
 template<typename T>
-inline TMatrix44<T>::operator const T*() const
+TMatrix44<T>::operator const T*() const
 {
 	return &_data.array[0];
 }
@@ -396,7 +331,7 @@ bool TMatrix44<T>::isRotational() const
 		return false;
 	}
 	// Ensure the passed matrix is a valid rotation matrix by checking the matrix inverse multiplication is an identiy matrix.
-	if ((*this) * inverse() != TMatrix44())
+	if (*this * inverse() != TMatrix44())
 	{
 		return false;
 	}
@@ -404,13 +339,13 @@ bool TMatrix44<T>::isRotational() const
 }
 
 template<typename T>
-inline bool TMatrix44<T>::operator==(const TMatrix44& m) const
+bool TMatrix44<T>::operator==(const TMatrix44& m) const
 {
 	return isEqual(m);
 }
 
 template<typename T>
-inline bool TMatrix44<T>::operator!=(const TMatrix44& m) const
+bool TMatrix44<T>::operator!=(const TMatrix44& m) const
 {
 	return !isEqual(m);
 }
@@ -484,19 +419,19 @@ void TMatrix44<T>::getTiltPanRoll(T& tilt, T& pan, T& roll) const
 }
 
 template<typename T>
-inline TMatrix44<T>& TMatrix44<T>::rotate(T x, T y, T z)
+TMatrix44<T>& TMatrix44<T>::rotate(T tilt, T pan, T roll)
 {
-	return multiply(TMatrix44<T>().setTiltPanRoll(x, y, z));
+	return multiply(TMatrix44().setTiltPanRoll(tilt, pan, roll));
 }
 
 template<typename T>
-inline TMatrix44<T>& TMatrix44<T>::setTranslation(const TVector3D<T>& v)
+TMatrix44<T>& TMatrix44<T>::setTranslation(const TVector3D<T>& v)
 {
 	return setTranslation(v.x(), v.y(), v.z());
 }
 
 template<typename T>
-inline TMatrix44<T>& TMatrix44<T>::setTranslation(T x, T y, T z)
+TMatrix44<T>& TMatrix44<T>::setTranslation(T x, T y, T z)
 {
 	_data.mtx[3][0] = x;
 	_data.mtx[3][1] = y;
@@ -507,19 +442,19 @@ inline TMatrix44<T>& TMatrix44<T>::setTranslation(T x, T y, T z)
 // TMatrix44.ClrPos
 //  overrides translation part of matrix to zero.
 template<typename T>
-inline void TMatrix44<T>::clearTranslation()
+void TMatrix44<T>::clearTranslation()
 {
 	_data.mtx[3][0] = _data.mtx[3][1] = _data.mtx[3][2] = 0.0;
 }
 
 template<typename T>
-inline TVector3D<T> TMatrix44<T>::getTranslation(void) const
+TVector3D<T> TMatrix44<T>::getTranslation() const
 {
 	return {_data.mtx[3][0], _data.mtx[3][1], _data.mtx[3][2]};
 }
 
 template<typename T>
-inline TVector3D<T> TMatrix44<T>::getAxis(EAxis axis) const
+TVector3D<T> TMatrix44<T>::getAxis(EAxis axis) const
 {
 	if (axis >= 4)
 	{
@@ -531,17 +466,15 @@ inline TVector3D<T> TMatrix44<T>::getAxis(EAxis axis) const
 template<typename T>
 TMatrix44<T> TMatrix44<T>::orbit(T horizontal, T vertical) const
 {
-	return TMatrix44<T>(TQuaternion<T>(getAxis(axisX), vertical) * TQuaternion<T>(getAxis(axisY), horizontal).normalize());
+	return TMatrix44(TQuaternion<T>(getAxis(axisX), vertical) * TQuaternion<T>(getAxis(axisY), horizontal).normalize());
 }
 
 template<typename T>
 TMatrix44<T> TMatrix44<T>::orientation() const
 {
-	return TMatrix44<T>(
-		_data.mtx[0][0], _data.mtx[0][1], _data.mtx[0][2], 0.0,
-		_data.mtx[1][0], _data.mtx[1][1], _data.mtx[1][2], 0.0,
-		_data.mtx[2][0], _data.mtx[2][1], _data.mtx[2][2], 0.0,
-		0.0, 0.0, 0.0, 1.0
+	return TMatrix44(
+		_data.mtx[0][0], _data.mtx[0][1], _data.mtx[0][2], 0.0, _data.mtx[1][0], _data.mtx[1][1], _data.mtx[1][2], 0.0, _data.mtx[2][0], _data.mtx[2][1],
+		_data.mtx[2][2], 0.0, 0.0, 0.0, 0.0, 1.0
 	);
 }
 
@@ -556,7 +489,7 @@ void TMatrix44<T>::setElement(unsigned int row, unsigned int column, T value)
 }
 
 template<typename T>
-T TMatrix44<T>::element(unsigned int row, unsigned int column, T value) const
+T TMatrix44<T>::element(unsigned int row, unsigned int column) const
 {
 	if (row >= 4 || column >= 4)
 	{
@@ -566,7 +499,7 @@ T TMatrix44<T>::element(unsigned int row, unsigned int column, T value) const
 }
 
 template<typename T>
-T& TMatrix44<T>::element(unsigned int row, unsigned int column, T value)
+T& TMatrix44<T>::element(unsigned int row, unsigned int column)
 {
 	if (row >= 4 || column >= 4)
 	{
@@ -641,10 +574,10 @@ TMatrix44<T>& TMatrix44<T>::setOrientationZY(const TVector3D<T>& z_axis, const T
 template<typename T>
 TMatrix44<T>& TMatrix44<T>::resetOrientation(void)
 {
-	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] =
-		_data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] =
-			_data.mtx[0][2] = _data.mtx[1][2] = _data.mtx[2][3] = 0;
+	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] = _data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] = _data.mtx[0][2] = _data.mtx[1][2] =
+		_data.mtx[2][3] = 0;
 	_data.mtx[0][0] = _data.mtx[1][1] = _data.mtx[2][2] = _data.mtx[3][3] = 1;
+	return *this;
 }
 
 template<typename T>
@@ -673,8 +606,7 @@ std::string TMatrix44<T>::toString() const
 {
 	// Lambda function to get the string of each row.
 	auto row = [this](int row) -> std::string {
-		return std::string() + "{" +
-			sf::toString<T>(isZero(_data.mtx[row][0], tolerance) ? T(0) : _data.mtx[row][0]) + ',' +
+		return std::string() + "{" + sf::toString<T>(isZero(_data.mtx[row][0], tolerance) ? T(0) : _data.mtx[row][0]) + ',' +
 			sf::toString<T>(isZero(_data.mtx[row][1], tolerance) ? T(0) : _data.mtx[row][1]) + ',' +
 			sf::toString<T>(isZero(_data.mtx[row][2], tolerance) ? T(0) : _data.mtx[row][2]) + ',' +
 			sf::toString<T>(isZero(_data.mtx[row][3], tolerance) ? T(0) : _data.mtx[row][3]) + '}';
@@ -693,13 +625,10 @@ TMatrix44<T>& TMatrix44<T>::fromString(const std::string& s) noexcept(false)
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid string '" + s + "' conversion!");
 	}
-	else
+	for (size_t i = 0; i <= 16; i++)
 	{
-		for (size_t i = 0; i <= 16; i++)
-		{
-			// First match is the group so skip it (+1).
-			_data.array[i] = toNumber<T>(match[i + 1].str());
-		}
+		// First match is the group so skip it (+1).
+		_data.array[i] = toNumber<T>(match[i + 1].str());
 	}
 	return *this;
 }

@@ -20,7 +20,7 @@ enum EColumn
 	cMaxColumns
 };
 
-}
+}// namespace
 
 FollowersListModel::FollowersListModel(UnitConversionServerEx* ucs, QObject* parent)
 	: QAbstractListModel(parent)
@@ -139,7 +139,8 @@ QVariant FollowersListModel::data(const QModelIndex& index, int role) const
 			case vcUnit:
 				return entry._unit;
 
-			case cFollowers: {
+			case cFollowers:
+			{
 				QStringList sl;
 				for (auto id: entry._followerIds)
 				{

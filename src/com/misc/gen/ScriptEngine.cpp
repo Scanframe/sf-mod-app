@@ -139,53 +139,51 @@ const char* ScriptEngine::getErrorText(EArithError error_value) const
 #define SID_POW (SID_SCRIPT_START - 54)
 #define SID_SQRT (SID_SCRIPT_START - 55)
 
-ScriptEngine::IdInfo ScriptEngine::_idInfo[] =
-	{
-		// Typedefs.
-		{SID_INT, idTypedef, "int", Value::vitInteger, nullptr},
-		{SID_FLOAT, idTypedef, "float", Value::vitFloat, nullptr},
-		{SID_STRING, idTypedef, "string", Value::vitString, nullptr},
-		{SID_UNDEF, idTypedef, "undef", Value::vitUndefined, nullptr},
-		{SID_OBJECT, idTypedef, "object", Value::vitCustom, nullptr},
-		// Constants
-		{SID_PI, idConstant, "PI", 0, nullptr},
-		// Functions
-		{SID_SIN, idFunction, "sin", 1, nullptr},
-		{SID_COS, idFunction, "cos", 1, nullptr},
-		{SID_TAN, idFunction, "cos", 1, nullptr},
-		{SID_ACOS, idFunction, "acos", 1, nullptr},
-		{SID_ASIN, idFunction, "asin", 1, nullptr},
-		{SID_ATAN, idFunction, "atan", 1, nullptr},
-		{SID_ATAN2, idFunction, "atan2", 2, nullptr},
-		{SID_CMP, idFunction, "cmp", 3, nullptr},
-		{SID_SIN, idFunction, "sin", 1, nullptr},
-		{SID_ABS, idFunction, "abs", 1, nullptr},
-		{SID_LOG, idFunction, "log", 1, nullptr},
-		{SID_EXP, idFunction, "exp", 1, nullptr},
-		{SID_LOGX, idFunction, "logx", 2, nullptr},
-		{SID_LOG10, idFunction, "log10", 1, nullptr},
-		{SID_POW, idFunction, "pow", 2, nullptr},
-		{SID_SQRT, idFunction, "sqrt", 1, nullptr},
-		{SID_CEIL, idFunction, "ceil", 1, nullptr},
-		{SID_FLOOR, idFunction, "floor", 1, nullptr},
-		{SID_ROUND, idFunction, "round", 2, nullptr},
-		{SID_MOD, idFunction, "mod", 2, nullptr},
-		{SID_STR, idFunction, "str", 1, nullptr},
-		{SID_TO_INT, idFunction, "to_int", 1, nullptr},
-		{SID_TO_FLOAT, idFunction, "to_float", 1, nullptr},
-		{SID_SUBSTR, idFunction, "substr", 3, nullptr},
-		{SID_STRLEN, idFunction, "strlen", 1, nullptr},
-		{SID_FINDSTR, idFunction, "findstr", 2, nullptr},
-		{SID_STRIP, idFunction, "strip", 3, nullptr},
-		{SID_TO_UPPER, idFunction, "to_upper", 1, nullptr},
-		{SID_TO_LOWER, idFunction, "to_lower", 1, nullptr},
-		//
+ScriptEngine::IdInfo ScriptEngine::_idInfo[] = {
+	// Typedefs.
+	{SID_INT, idTypedef, "int", Value::vitInteger, nullptr},
+	{SID_FLOAT, idTypedef, "float", Value::vitFloat, nullptr},
+	{SID_STRING, idTypedef, "string", Value::vitString, nullptr},
+	{SID_UNDEF, idTypedef, "undef", Value::vitUndefined, nullptr},
+	{SID_OBJECT, idTypedef, "object", Value::vitCustom, nullptr},
+	// Constants
+	{SID_PI, idConstant, "PI", 0, nullptr},
+	// Functions
+	{SID_SIN, idFunction, "sin", 1, nullptr},
+	{SID_COS, idFunction, "cos", 1, nullptr},
+	{SID_TAN, idFunction, "cos", 1, nullptr},
+	{SID_ACOS, idFunction, "acos", 1, nullptr},
+	{SID_ASIN, idFunction, "asin", 1, nullptr},
+	{SID_ATAN, idFunction, "atan", 1, nullptr},
+	{SID_ATAN2, idFunction, "atan2", 2, nullptr},
+	{SID_CMP, idFunction, "cmp", 3, nullptr},
+	{SID_SIN, idFunction, "sin", 1, nullptr},
+	{SID_ABS, idFunction, "abs", 1, nullptr},
+	{SID_LOG, idFunction, "log", 1, nullptr},
+	{SID_EXP, idFunction, "exp", 1, nullptr},
+	{SID_LOGX, idFunction, "logx", 2, nullptr},
+	{SID_LOG10, idFunction, "log10", 1, nullptr},
+	{SID_POW, idFunction, "pow", 2, nullptr},
+	{SID_SQRT, idFunction, "sqrt", 1, nullptr},
+	{SID_CEIL, idFunction, "ceil", 1, nullptr},
+	{SID_FLOOR, idFunction, "floor", 1, nullptr},
+	{SID_ROUND, idFunction, "round", 2, nullptr},
+	{SID_MOD, idFunction, "mod", 2, nullptr},
+	{SID_STR, idFunction, "str", 1, nullptr},
+	{SID_TO_INT, idFunction, "to_int", 1, nullptr},
+	{SID_TO_FLOAT, idFunction, "to_float", 1, nullptr},
+	{SID_SUBSTR, idFunction, "substr", 3, nullptr},
+	{SID_STRLEN, idFunction, "strlen", 1, nullptr},
+	{SID_FINDSTR, idFunction, "findstr", 2, nullptr},
+	{SID_STRIP, idFunction, "strip", 3, nullptr},
+	{SID_TO_UPPER, idFunction, "to_upper", 1, nullptr},
+	{SID_TO_LOWER, idFunction, "to_lower", 1, nullptr},
+	//
 };
 
 ScriptEngine::ScriptEngine()
 	: ScriptObject("ScriptEngine")
-{
-}
+{}
 
 const ScriptEngine::IdInfo* ScriptEngine::getInfo(const std::string& name) const
 {
@@ -224,12 +222,7 @@ strings ScriptEngine::getInfoNames() const
 	return rv;
 }
 
-bool ScriptEngine::getSetValue(
-	const IdInfo* info,
-	Value* result,
-	Value::vector_type* param,
-	bool flag_set
-)
+bool ScriptEngine::getSetValue(const IdInfo* info, Value* result, Value::vector_type* param, bool flag_set)
 {
 	if (!info)
 	{
@@ -248,7 +241,8 @@ bool ScriptEngine::getSetValue(
 			default:
 				break;
 
-			case idConstant: {
+			case idConstant:
+			{
 				// Check if a constant is assigned or not.
 				if (flag_set)
 				{
@@ -266,9 +260,11 @@ bool ScriptEngine::getSetValue(
 							setError(aeUnknownConstant, info->_name);
 					}
 				}
-			} break;
+			}
+			break;
 
-			case idFunction: {
+			case idFunction:
+			{
 				switch (info->_index)
 				{
 					case SID_ABS:
@@ -343,7 +339,8 @@ bool ScriptEngine::getSetValue(
 						result->set(((*param)[1] <= (*param)[0] && (*param)[2] >= (*param)[0]) ? 1 : 0);
 						break;
 
-					case SID_SUBSTR: {
+					case SID_SUBSTR:
+					{
 						std::string s = (*param)[0].getString();
 						std::string::size_type pos = (*param)[1].getInteger();
 						std::string::size_type len = (*param)[2].getInteger();
@@ -375,13 +372,15 @@ bool ScriptEngine::getSetValue(
 						result->set((int) (*param)[0].getString().length());
 						break;
 
-					case SID_FINDSTR: {
+					case SID_FINDSTR:
+					{
 						auto pos = (*param)[0].getString().find((*param)[1].getString());
 						result->set(Value::int_type((pos == std::string::npos) ? -1 : pos));
 						break;
 					}
 
-					case SID_STRIP: {
+					case SID_STRIP:
+					{
 						if ((*param)[0].getType() == Value::vitString)
 						{
 							// String to strip.
@@ -419,7 +418,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_TO_UPPER: {
+					case SID_TO_UPPER:
+					{
 						std::string s = (*param)[0].getString();
 						for (char& c: s)
 						{
@@ -428,7 +428,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_TO_LOWER: {
+					case SID_TO_LOWER:
+					{
 						std::string s = (*param)[0].getString();
 						for (char& c: s)
 						{
@@ -438,7 +439,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_CEIL: {
+					case SID_CEIL:
+					{
 						if ((*param)[0].getType() == Value::vitFloat)
 						{
 							result->set(ceil((*param)[0].getFloat()));
@@ -450,7 +452,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_FLOOR: {
+					case SID_FLOOR:
+					{
 						if ((*param)[0].getType() == Value::vitFloat)
 						{
 							result->set(floor((*param)[0].getFloat()));
@@ -462,28 +465,32 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_LOG: {
+					case SID_LOG:
+					{
 						double value = (*param)[0].getFloat();
 						value = log(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_EXP: {
+					case SID_EXP:
+					{
 						double value = (*param)[0].getFloat();
 						value = exp(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_LOG10: {
+					case SID_LOG10:
+					{
 						double value = (*param)[0].getFloat();
 						value = log10(value);
 						result->set(value);
 						break;
 					}
 
-					case SID_LOGX: {
+					case SID_LOGX:
+					{
 						double n = (*param)[0].getFloat();
 						double value = (*param)[1].getFloat();
 						value = log(value) / log(n);
@@ -491,7 +498,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_POW: {
+					case SID_POW:
+					{
 						double value = (*param)[0].getFloat();
 						double exp = (*param)[1].getFloat();
 						value = pow(value, exp);
@@ -499,7 +507,8 @@ bool ScriptEngine::getSetValue(
 						break;
 					}
 
-					case SID_SQRT: {
+					case SID_SQRT:
+					{
 						double value = (*param)[0].getFloat();
 						value = sqrt(value);
 						result->set(value);
@@ -516,7 +525,8 @@ bool ScriptEngine::getSetValue(
 				setError(aeUnknownVariable, info->_name);
 				break;
 
-			case idTypedef: {
+			case idTypedef:
+			{
 				switch (info->_index)
 				{
 					case SID_INT:
@@ -638,7 +648,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 	// Do the actual operation
 	switch (oper1)
 	{
-		case '>': {// Check for operator '>='
+		case '>':
+		{// Check for operator '>='
 			if (oper2 == '=')
 			{
 				result.set(result >= tmpres);
@@ -650,7 +661,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '<': {
+		case '<':
+		{
 			switch (oper2)
 			{// check for operator '<='
 				case '=':
@@ -669,7 +681,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '!': {// check for operator '!='
+		case '!':
+		{// check for operator '!='
 			if (oper2 == '=')
 			{
 				result.set(result != tmpres);
@@ -681,7 +694,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '=': {// Check for a compare operator.
+		case '=':
+		{// Check for a compare operator.
 			if (oper2 == '=')
 			{
 				result.set(result == tmpres);
@@ -712,7 +726,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '&': {
+		case '&':
+		{
 			if (oper2 == '&')
 			{
 				result.set((int) (!result.isZero() && !tmpres.isZero()));
@@ -724,7 +739,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '|': {
+		case '|':
+		{
 			if (oper2 == '|')
 			{
 				result.set((int) (!result.isZero() || !tmpres.isZero()));
@@ -737,7 +753,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 		}
 
 			// exclusive 'OR' operator
-		case '^': {
+		case '^':
+		{
 			if (oper2 == '^')
 			{
 				result.set((int) (!result.isZero() ^ !tmpres.isZero()));
@@ -750,12 +767,14 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 		}
 
 			// multiplication operator
-		case '*': {
+		case '*':
+		{
 			result *= tmpres;
 			break;
 		}
 
-		case '/': {
+		case '/':
+		{
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
@@ -768,7 +787,8 @@ bool ScriptEngine::operator_(Value& result, DataCode& left)// NOLINT(misc-no-rec
 			break;
 		}
 
-		case '%': {
+		case '%':
+		{
 			// check for division by zero
 			if (tmpres == Value(0.0))
 			{
@@ -798,7 +818,8 @@ bool ScriptEngine::partial(Value& result)// NOLINT(misc-no-recursion)
 	{
 		return false;
 	}
-	while (operator_(locres, left) && !_errorValue) {
+	while (operator_(locres, left) && !_errorValue)
+	{
 	}
 	if (_errorValue)
 	{
@@ -896,7 +917,8 @@ bool ScriptEngine::arith(Value& result, DataCode& left)// NOLINT(misc-no-recursi
 			//
 			switch (data_code._info->_id)
 			{
-				case idUnknown: {
+				case idUnknown:
+				{
 					setError(aeUnknownSymbol, name);
 					break;
 				}
@@ -948,7 +970,8 @@ bool ScriptEngine::arith(Value& result, DataCode& left)// NOLINT(misc-no-recursi
 					}
 					break;
 
-				case idFunction: {
+				case idFunction:
+				{
 					// Check if the next character is a '(' one
 					if (_cmd[_pos] == '(')
 					{
@@ -1192,7 +1215,10 @@ class ScriptCalcFunction : public ScriptEngine
 			memset(_value, 0, sizeof(_value));
 		}
 
-		void SetValue(int index, double value) { _value[index] = value; }
+		void SetValue(int index, double value)
+		{
+			_value[index] = value;
+		}
 
 	protected:
 		// Gets identifier information.
@@ -1239,12 +1265,7 @@ Value::flt_type calculator(const std::string& script, Value::flt_type def)
 
 const ScriptCalcFunction::IdInfo* ScriptCalcFunction::getInfo(const std::string& name) const
 {
-	static ScriptEngine::IdInfo Info[] =
-		{
-			{1, idConstant, "x", 0, nullptr},
-			{2, idConstant, "y", 0, nullptr},
-			{3, idConstant, "z", 0, nullptr}
-		};
+	static ScriptEngine::IdInfo Info[] = {{1, idConstant, "x", 0, nullptr}, {2, idConstant, "y", 0, nullptr}, {3, idConstant, "z", 0, nullptr}};
 	for (auto& i: Info)
 	{
 		if (i._name == name)

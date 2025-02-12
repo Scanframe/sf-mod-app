@@ -16,15 +16,11 @@ namespace sf
 bool shouldBeSaved(const Variable& var)
 {
 	// Save when variable is global and as the parameter flag set.
-	bool yesno =
-		var.isGlobal() &&
-		var.isFlag(Variable::flgParameter) &&
-		!var.isFlag(Variable::flgExport);
+	bool yesno = var.isGlobal() && var.isFlag(Variable::flgParameter) && !var.isFlag(Variable::flgExport);
 	// If it has currently the readonly flag set test the creation flags.
 	if (yesno && var.isFlag(Variable::flgReadonly))
 	{// When the creation flag was read only doe not save it.
-		if (var.getFlags() & Variable::flgReadonly)
-			yesno = false;
+		if (var.getFlags() & Variable::flgReadonly) yesno = false;
 	}
 	//
 	return yesno;
@@ -34,10 +30,7 @@ bool shouldBeLoaded(const Variable& var)
 {
 	// Load when variable is global and as the parameter flag set and is
 	// not read only.
-	bool yesno = var.isGlobal() &&
-		!var.isFlag(Variable::flgExport) &&
-		var.isFlag(Variable::flgParameter) &&
-		!var.isFlag(Variable::flgReadonly);
+	bool yesno = var.isGlobal() && !var.isFlag(Variable::flgExport) && var.isFlag(Variable::flgParameter) && !var.isFlag(Variable::flgReadonly);
 	return yesno;
 }
 

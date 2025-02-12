@@ -10,9 +10,9 @@ namespace sf
  * of a derived class. This class is not used directly and is used a base class
  * for the TVariableHandler<T> template class.
  */
-struct _GII_CLASS VariableHandler
-	: public VariableTypes
+class _GII_CLASS VariableHandler : public VariableTypes
 {
+	public:
 		/**
 	 * @brief Pure virtual function which must be implemented when used in a polymorphic setting.
 	 *
@@ -21,12 +21,7 @@ struct _GII_CLASS VariableHandler
 	 * @param link Linked variable instance
 	 * @param same_inst
 	 */
-		virtual void variableEventHandler(
-			VariableTypes::EEvent event,
-			const Variable& caller,
-			Variable& link,
-			bool same_inst
-		) = 0;
+		virtual void variableEventHandler(VariableTypes::EEvent event, const Variable& caller, Variable& link, bool same_inst) = 0;
 
 		/**
 	 * @brief Destructor clears the link with variable instances so no errors occur when the link is destructed before the variable is.
@@ -39,8 +34,7 @@ struct _GII_CLASS VariableHandler
  * @tparam T
  */
 template<typename T>
-class TVariableHandler
-	: public VariableHandler
+class TVariableHandler : public VariableHandler
 {
 	public:
 		/**
@@ -81,22 +75,16 @@ class TVariableHandler
 		 * @param link
 		 * @param sameInst
 		 */
-		void variableEventHandler(
-			EEvent event,
-			const Variable& caller,
-			Variable& link,
-			bool sameInst
-		) override
+		void variableEventHandler(EEvent event, const Variable& caller, Variable& link, bool sameInst) override
 		{
 			(_self->*_pmf)(event, caller, link, sameInst);
 		}
 };
 
 template<typename T>
-inline TVariableHandler<T>::TVariableHandler(T* self, TVariableHandler::TPmf pmf)
-	: _self(self)
-	, _pmf(pmf)
-{
-}
+inline TVariableHandler<T>::TVariableHandler(T* self, const TVariableHandler::TPmf pmf)
+	: _pmf(pmf)
+	, _self(self)
+{}
 
 }// namespace sf

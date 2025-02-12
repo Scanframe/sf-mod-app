@@ -914,7 +914,11 @@ bool AcquisitionControl::Private::setError(const QString& txt)// NOLINT(misc-no-
 	// Assign the new state first so that msg boxes can appear.
 	_stateCurrent = psError;
 	// Do some debug printing in case of an error.
-	SF_RTTI_NOTIFY(DO_CLOG, "State Machine ran into an error! " << txt << " SetState(" << getStateName(oldPrevious) << "=>" << getStateName(_statePrevious) << "=>" << getStateName(_stateCurrent) << ")");
+	SF_RTTI_NOTIFY(
+		DO_CLOG,
+		"State Machine ran into an error! " << txt << " SetState(" << getStateName(oldPrevious) << "=>" << getStateName(_statePrevious) << "=>"
+																				<< getStateName(_stateCurrent) << ")"
+	);
 	// Recover from the error.
 	setState(psIdle);
 	// Always return false for being able to use it as a return value.
@@ -942,7 +946,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 		case psError:
 			return false;
 
-		case psGetCopy: {
+		case psGetCopy:
+		{
 			// Set the maximum range to start with.
 			Range rng(0, std::numeric_limits<Range::size_type>::max());
 			//
@@ -1013,7 +1018,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 		}
 
 			// When the data was available we skip waiting and continue to next statement.
-		case psProcessCopy: {
+		case psProcessCopy:
+		{
 			// No index request can be out for the asynchronous results at this stage.
 			if (_work.IndexReq || _work.CopyReq)
 			{
@@ -1037,7 +1043,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 			// Run into next statement.
 		}
 
-		case psTryGate: {
+		case psTryGate:
+		{
 			// The range ID is used here as a flag.
 			Range rng(0, std::numeric_limits<Range::size_type>::max(), 0);
 			// Iterate through the gate results to retrieve a common accessible range.
@@ -1138,7 +1145,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 			// Run into next statement.
 		}
 
-		case psApply: {
+		case psApply:
+		{
 			if (_dynamicGates)
 			{
 				// Iterate through the gate results to retrieve possible range.
@@ -1196,7 +1204,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 			return setState(psReady);
 		}
 
-		case psWait: {
+		case psWait:
+		{
 			// When the wait timer timed out generate an error.
 			if (_timeoutTimer)
 			{
@@ -1254,7 +1263,8 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			invalidate();
 			break;
 
-		case ResultData::reIdChanged: {
+		case ResultData::reIdChanged:
+		{
 			// Set the bottom ruler. It is possible that it is dependent on the block size.
 			if (&link == &_rCopyData)
 			{
@@ -1277,7 +1287,8 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			break;
 		}
 
-		case ResultData::reClear: {
+		case ResultData::reClear:
+		{
 			// Clear the points array so no plot is drawn.
 			_polygon.clear();
 			_lastRange.clear();
@@ -1301,8 +1312,7 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 					setState(psGetCopy);
 				}
 				//
-				if ((!_dynamicGates && &link == &_rCopyData) ||
-						(_dynamicGates && &link == &_rCopyIndex))
+				if ((!_dynamicGates && &link == &_rCopyData) || (_dynamicGates && &link == &_rCopyIndex))
 				{
 					// Trigger the generation of new plot data.
 					if (_stateCurrent == psIdle || _stateCurrent == psReady)
@@ -1313,7 +1323,8 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 			}
 			break;
 
-		case ResultData::reGotRange: {
+		case ResultData::reGotRange:
+		{
 			if (&link == &_rCopyIndex)
 			{// Was a got range event expected?
 				if (_work.IndexReq)
@@ -1378,7 +1389,8 @@ void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, co
 			// TODO: Could call ProcessState here when some conditions are met.
 			break;
 
-		case ResultData::reGotRange: {
+		case ResultData::reGotRange:
+		{
 			if (&link == &gi.RAmp)
 			{
 				// Was a got range event expected?
@@ -1431,7 +1443,8 @@ void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, co
 					SF_RTTI_NOTIFY(DO_DEFAULT, "Did not expect a gotten range!");
 				}
 			}
-		} break;
+		}
+		break;
 	}
 }
 
@@ -1444,7 +1457,8 @@ void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, c
 			break;
 
 		case Variable::veIdChanged:
-		case Variable::veConverted: {
+		case Variable::veConverted:
+		{
 			// Set the FFlagCanDraw if possible.
 			setCanDraw();
 			// Set the bottom ruler depending on the hooked variables.
@@ -1452,7 +1466,8 @@ void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, c
 			break;
 		}
 
-		case Variable::veValueChange: {
+		case Variable::veValueChange:
+		{
 			setBottomRuler();
 			// Recalculate gate positions on screen.
 			_flagGateVerticalPos = true;
@@ -1473,7 +1488,8 @@ void AcquisitionControl::Private::handlerDefaultVariable(Variable::EEvent event,
 			break;
 
 		case Variable::veValueChange:
-		case Variable::veIdChanged: {
+		case Variable::veIdChanged:
+		{
 			if (&link == &_vGateCount)
 			{
 				_gateCount = std::min<int>(MaxGates, (int) _vGateCount.getCur().getInteger());
@@ -1496,7 +1512,8 @@ void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, con
 
 		case Variable::veLinked:
 		case Variable::veIdChanged:
-		case Variable::veValueChange: {
+		case Variable::veValueChange:
+		{
 			//
 			if (&link == &_vTcgSlavedTo)
 			{
@@ -1531,7 +1548,8 @@ void AcquisitionControl::Private::handlerGateVariable(Variable::EEvent event, co
 			break;
 
 		case Variable::veValueChange:
-		case Variable::veIdChanged: {
+		case Variable::veIdChanged:
+		{
 			// Is the slaved to parameter changed.
 			if (&link == &gt->VSlavedTo)
 			{

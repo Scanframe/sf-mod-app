@@ -17,7 +17,7 @@ namespace sf
  * A block is a fixed length array of a certain type (mostly integers).<br>
  * Blocks need to be atomic to for processing later.<br>
  * All functions are block size oriented and multithreading safe and allowing data be processed in other threads.
- * @image html "doc/FileMappedStorage-1.svg"
+ * @image html "FileMappedStorage-1.svg"
  *
  * The embedded #sf::FileMappedStorage::Lock class provides a segment locking mechanism.
  *

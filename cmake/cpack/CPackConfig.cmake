@@ -81,7 +81,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
 
 # Retrieve all targets from this project.
-Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
+Sf_GetAllTargets(_AllTargets "${CMAKE_SOURCE_DIR}" "TRUE")
 # Iterate through all targets
 foreach (_Target ${_AllTargets})
 	get_target_property(_Type "${_Target}" TYPE)
@@ -89,9 +89,9 @@ foreach (_Target ${_AllTargets})
 	if (_Type STREQUAL "EXECUTABLE" OR _Type STREQUAL "SHARED_LIBRARY")
 		# Skip all test targets for packaging.
 		if ("${_Target}" MATCHES "^${SF_TEST_NAME_PREFIX}.*$")
-			message(VERBOSE "Skipping ${_Type} '${_Target}'")
+			message(VERBOSE "Skipping test (${_Type}): ${_Target}")
 		else ()
-			message(VERBOSE "Installing ${_Type} '${_Target}'")
+			message(VERBOSE "Packaging (${_Type}): ${_Target}")
 			list(APPEND _Targets "${_Target}")
 		endif ()
 	endif ()

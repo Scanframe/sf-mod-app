@@ -131,13 +131,7 @@ void ResultDataRequester::detachData(ResultData* rd)
 	}
 }
 
-void ResultDataRequester::resultCallback(
-	ResultDataTypes::EEvent event,
-	const ResultData& caller,
-	ResultData& link,
-	const Range& rng,
-	bool sameInst
-)
+void ResultDataRequester::resultCallback(ResultDataTypes::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
 {
 	// Disable global events to pass beyond here.
 	if (event < reFirstLocal)
@@ -154,7 +148,8 @@ void ResultDataRequester::resultCallback(
 				break;
 
 			case ResultData::reIdChanged:
-			case ResultData::reClear: {
+			case ResultData::reClear:
+			{
 				// When an id changes the state machine must be reset.
 				reset();
 				break;
@@ -224,13 +219,7 @@ void ResultDataRequester::passIndexEvent(ResultDataRequester::EReqEvent event)
 {
 	if (_handler)
 	{
-		_handler->resultDataEventHandler(
-			(ResultData::EEvent) event,
-			*_rdIndex,
-			*_rdIndex,
-			_rdIndex->getId() ? _work._index : _work._range,
-			true
-		);
+		_handler->resultDataEventHandler((ResultData::EEvent) event, *_rdIndex, *_rdIndex, _rdIndex->getId() ? _work._index : _work._range, true);
 	}
 }
 
@@ -304,7 +293,11 @@ bool ResultDataRequester::setError(const std::string& text)
 	// Assign the new state first so that msg boxes can appear.
 	_state = drsError;
 	// Do some debug printing in case of an error.
-	SF_RTTI_NOTIFY(DO_DEFAULT, "State Machine ran into an error '" << text << "'. SetState(" << getStateName(old_prev) << "=>" << getStateName(_statePrevious) << "=>" << getStateName(_state) << ")" << _work._index << _work._range)
+	SF_RTTI_NOTIFY(
+		DO_DEFAULT,
+		"State Machine ran into an error '" << text << "'. SetState(" << getStateName(old_prev) << "=>" << getStateName(_statePrevious) << "=>"
+																				<< getStateName(_state) << ")" << _work._index << _work._range
+	)
 	//
 	SF_RTTI_NOTIFY(DO_DEFAULT, "Resetting the state machine.")
 	// Reset the state machine after each error.
@@ -500,7 +493,8 @@ bool ResultDataRequester::process()// NOLINT(misc-no-recursion)
 			}
 			break;
 
-		case drsWait: {
+		case drsWait:
+		{
 			// When the wait timer timed out generate an error.
 			if (_timeoutTimer)
 			{
@@ -515,7 +509,9 @@ bool ResultDataRequester::process()// NOLINT(misc-no-recursion)
 					}
 					if (_work._dataAccess.has(i))
 					{
-						SF_RTTI_NOTIFY(DO_DEFAULT, "Data Access " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount())
+						SF_RTTI_NOTIFY(
+							DO_DEFAULT, "Data Access " << _work._range << " of result '" << _rdDataList[i]->getName(2) << "' " << _rdDataList[i]->getBlockCount()
+						)
 					}
 				}
 				// Set error state.
@@ -577,7 +573,8 @@ bool ResultDataRequester::process()// NOLINT(misc-no-recursion)
 					// Cannot wait for any other state.
 					return setError("Impossible state to wait for");
 			}
-		} break;
+		}
+		break;
 	}
 	return true;
 }

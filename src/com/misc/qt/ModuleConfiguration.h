@@ -7,8 +7,7 @@
 namespace sf
 {
 
-class _MISC_CLASS ModuleConfiguration
-	: public QObject
+class _MISC_CLASS ModuleConfiguration : public QObject
 {
 		Q_OBJECT
 

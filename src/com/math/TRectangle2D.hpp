@@ -120,45 +120,33 @@ inline bool TRectangle2D<T>::operator!=(const TRectangle2D<T>& rect) const
 template<typename T>
 bool TRectangle2D<T>::isEmpty() const
 {
-	return isZero(_data.rect.left, tolerance) &&
-		isZero(_data.rect.bottom, tolerance) &&
-		isZero(_data.rect.right, tolerance) &&
-		isZero(_data.rect.top, tolerance);
+	return isZero(_data.rect.left, tolerance) && isZero(_data.rect.bottom, tolerance) && isZero(_data.rect.right, tolerance) && isZero(_data.rect.top, tolerance);
 }
 
 template<typename T>
 bool TRectangle2D<T>::isEqual(const TRectangle2D<T>& rect, T tol) const
 {
-	return sf::isEqual(_data.rect.left, rect._data.rect.left, tol) &&
-		sf::isEqual(_data.rect.bottom, rect._data.rect.bottom, tol) &&
-		sf::isEqual(_data.rect.right, rect._data.rect.right, tol) &&
-		sf::isEqual(_data.rect.top, rect._data.rect.top, tol);
+	return sf::isEqual(_data.rect.left, rect._data.rect.left, tol) && sf::isEqual(_data.rect.bottom, rect._data.rect.bottom, tol) &&
+		sf::isEqual(_data.rect.right, rect._data.rect.right, tol) && sf::isEqual(_data.rect.top, rect._data.rect.top, tol);
 }
 
 template<typename T>
 bool TRectangle2D<T>::contains(const TVector2D<T>& point) const
 {
-	return point.x() >= _data.rect.left &&
-		point.x() <= _data.rect.right &&
-		point.y() >= _data.rect.bottom &&
-		point.y() <= _data.rect.top;
+	return point.x() >= _data.rect.left && point.x() <= _data.rect.right && point.y() >= _data.rect.bottom && point.y() <= _data.rect.top;
 }
 
 template<typename T>
 bool TRectangle2D<T>::contains(const TRectangle2D<T>& other) const
 {
-	return other._data.rect.left >= _data.rect.left &&
-		other._data.rect.right <= _data.rect.right &&
-		other._data.rect.bottom >= _data.rect.bottom &&
+	return other._data.rect.left >= _data.rect.left && other._data.rect.right <= _data.rect.right && other._data.rect.bottom >= _data.rect.bottom &&
 		other._data.rect.top <= _data.rect.top;
 }
 
 template<typename T>
 bool TRectangle2D<T>::touches(const TRectangle2D<T>& other) const
 {
-	return other._data.rect.right >= _data.rect.left &&
-		other._data.rect.left <= _data.rect.right &&
-		other._data.rect.top >= _data.rect.bottom &&
+	return other._data.rect.right >= _data.rect.left && other._data.rect.left <= _data.rect.right && other._data.rect.top >= _data.rect.bottom &&
 		other._data.rect.bottom <= _data.rect.top;
 }
 
@@ -234,9 +222,7 @@ template<typename T>
 TRectangle2D<T> TRectangle2D<T>::normalized() const
 {
 	return {
-		std::min(_data.rect.left, _data.rect.right),
-		std::min(_data.rect.bottom, _data.rect.top),
-		std::max(_data.rect.left, _data.rect.right),
+		std::min(_data.rect.left, _data.rect.right), std::min(_data.rect.bottom, _data.rect.top), std::max(_data.rect.left, _data.rect.right),
 		std::max(_data.rect.bottom, _data.rect.top)
 	};
 }
@@ -372,8 +358,7 @@ TRectangle2D<T> TRectangle2D<T>::operator|(const TRectangle2D<T>& other) const
 template<typename T>
 std::string TRectangle2D<T>::toString() const
 {
-	return std::string() + '(' +
-		sf::toString<T>(isZero(_data.rect.left, tolerance) ? T(0) : _data.rect.left) + ',' +
+	return std::string() + '(' + sf::toString<T>(isZero(_data.rect.left, tolerance) ? T(0) : _data.rect.left) + ',' +
 		sf::toString<T>(isZero(_data.rect.bottom, tolerance) ? T(0) : _data.rect.bottom) + ',' +
 		sf::toString<T>(isZero(_data.rect.right, tolerance) ? T(0) : _data.rect.right) + ',' +
 		sf::toString<T>(isZero(_data.rect.top, tolerance) ? T(0) : _data.rect.top) + ')';
@@ -382,7 +367,9 @@ std::string TRectangle2D<T>::toString() const
 template<typename T>
 TRectangle2D<T>& TRectangle2D<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
+	std::regex re(
+		R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase
+	);
 	std::smatch match;
 	// Sanity check on the amount of matches which is required.
 	if (!std::regex_match(s, match, re) || match.size() != sizeof(_data.array) / sizeof(_data.array[0]) + 1)

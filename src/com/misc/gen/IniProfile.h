@@ -289,7 +289,10 @@ class _MISC_CLASS IniProfile
 		/**
 		 * @brief Tells if there write functions are used or not.
 		 */
-		[[nodiscard]] bool isDirty() const { return _dirty; }
+		[[nodiscard]] bool isDirty() const
+		{
+			return _dirty;
+		}
 
 		/**
 		 * @brief Add sections from other std::istream.

@@ -1,18 +1,21 @@
-/*
-This include-file determines the way the classes and functions in the
-library are exported when they are used as a dynamic or as application and static library.
-When building this Dynamic Library then _GII_PKG (package) should be defined.
-
-_list of the declaration modifiers for types:
-	classes:  _GII_CLASS
-	Function: _GII_FUNC
-	Data:     _GII_DATA
-
-Add compiler definition flags:
-	* _GII_PKG when building a dynamic library (package)
-	* _GII_ARC when including in a compile or using it as an archive.
-*/
-
+/**
+ * @file gii/global.h
+ * @hideincludedbygraph
+ * <pre>
+ * This include-file determines the way the classes and functions in the library are exported.
+ * It determines Whether they are used as a dynamic or as application and static library.
+ * When building this Dynamic Library then _MISC_PKG (package) should be defined.
+ *
+ * List of the declaration modifiers for types:
+ * 	classes:  _GII_CLASS
+ * 	Function: _GII_FUNC
+ * 	Data:     _GII_DATA
+ *
+ * 	Add compiler definition flags:
+ * 	_GII_PKG when building a dynamic library (package)
+ * 	_GII_ARC when including it in a compilation or using it as an archive.
+ * </pre>
+ */
 #pragma once
 
 // Import of defines for this target.

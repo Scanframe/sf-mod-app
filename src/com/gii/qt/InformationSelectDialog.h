@@ -15,8 +15,7 @@ namespace Ui
 class InformationSelectDialog;
 }
 
-class _GII_CLASS InformationSelectDialog
-	: public QDialog
+class _GII_CLASS InformationSelectDialog : public QDialog
 {
 	public:
 		explicit InformationSelectDialog(QWidget* parent = nullptr);

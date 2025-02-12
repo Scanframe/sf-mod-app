@@ -30,23 +30,23 @@ class QDESIGNER_WIDGET_EXPORT VariableBar : public VariableWidgetBase
 		[[nodiscard]] QSize minimumSizeHint() const override;
 
 		/**
-		 * Gets the name level shown.
+		 * @brief Gets the name level shown.
 		 */
 		[[nodiscard]] int nameLevel() const;
 
 		/**
-		 * Sets the name level shown.
+		 * @brief Sets the name level shown.
 		 */
-		void setNameLevel(int level = -1);
+		void setNameLevel(int level = -1) const;
 
 	protected:
 		/**
-		 * @brief Overridden from base class '#ObjectExtension'.
+		 * @brief Overridden from base class '#sf::ObjectExtension'.
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
 		/**
-		 * @brief Overridden from base class '#VariableWidgetBase'.
+		 * @brief Overridden from base class '#sf::VariableWidgetBase'.
 		 */
 		void applyReadOnly(bool yn) override;
 

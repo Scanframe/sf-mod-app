@@ -115,7 +115,7 @@ if (SF_BUILD_QT)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
 	# Tell the compiled code a dynamic library (DL) is being build.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE QDESIGNER_EXPORT_WIDGETS)
-endif (SF_BUILD_QT)
+endif ()
 
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)

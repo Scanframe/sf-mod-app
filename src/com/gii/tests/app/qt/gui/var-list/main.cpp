@@ -2,12 +2,13 @@
 #include "misc/gen/string.h"
 #include "test-ini-content.h"
 #include <QApplication>
-#include <QDir>
-#include <QHeaderView>
+#include <QLineEdit>
 #include <QTimer>
+#include <gii/qt/InformationSelectDialog.h>
 #include <gii/qt/VariableListModel.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/qt/Globals.h>
+#include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
 #if IS_WIN
 	#include <windows.h>
@@ -19,7 +20,7 @@ namespace sf
 void loadFromIni(InformationTypes::Vector& rv)
 {
 	std::istringstream is(IniContent);
-	sf::IniProfile ini(is);
+	IniProfile ini(is);
 	TVector<Variable*> variables;
 	if (ini.selectSection("GenericParamInfo"))
 	{
@@ -57,10 +58,9 @@ void loadFromIni(InformationTypes::Vector& rv)
 	}
 }
 
-struct VarHandler : sf::VariableHandler
+struct VarHandler final : VariableHandler
 {
-
-		void variableEventHandler(sf::Variable::EEvent event, const sf::Variable& call_var, sf::Variable& link_var, bool same_inst) override
+		void variableEventHandler(EEvent event, const sf::Variable& call_var, sf::Variable& link_var, bool same_inst) override
 		{
 			switch (event)
 			{
@@ -113,28 +113,26 @@ int main(int argc, char* argv[])
 	sf::InformationTypes::Vector list;
 	sf::loadFromIni(list);
 	sf::VarHandler handler;
-	//
-	for (auto ib: list)
+	// Attach the handler to all variables.
+	for (const auto ib: list)
 	{
-		auto var = dynamic_cast<sf::Variable*>(ib);
-		if (var)
+		if (const auto var = dynamic_cast<sf::Variable*>(ib))
 		{
 			var->setHandler(&handler);
 		}
 	}
-
 	//
 	QDialog dlg;
 	// Set an icon on the window.
 	dlg.setWindowIcon(QIcon(":logo/ico/scanframe"));
 	settings.restoreWindowRect("Dialog", &dlg);
 	dlg.setLayout(new QVBoxLayout(&dlg));
-	auto tv = new QTreeView(&dlg);
+	const auto tv = new QTreeView(&dlg);
 	//tv->setSelectionBehavior(QAbstractItemView::SelectRows);
 	tv->setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
 	tv->setIndentation(0);
 	//tv->header()->hide();
-	auto vlm = new sf::VariableListModel(&dlg);
+	const auto vlm = new sf::VariableListModel(&dlg);
 	vlm->addVariables(list);
 	tv->setModel(vlm);
 	// Only can set the column width after the model has been set to the tree view.

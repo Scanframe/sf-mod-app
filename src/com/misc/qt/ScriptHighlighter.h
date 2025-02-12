@@ -15,8 +15,7 @@ namespace sf
  *
  * Highlights the document according the passed script interpreter.
  */
-class _MISC_CLASS ScriptHighlighter
-	: public QSyntaxHighlighter
+class _MISC_CLASS ScriptHighlighter : public QSyntaxHighlighter
 {
 	public:
 		/**

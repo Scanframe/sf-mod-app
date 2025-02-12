@@ -10,8 +10,7 @@ namespace sf
 /**
  * @brief List model for Variables.
  */
-class _GII_CLASS VariableListModel
-	: public QAbstractListModel
+class _GII_CLASS VariableListModel : public QAbstractListModel
 {
 		Q_OBJECT
 
@@ -75,20 +74,10 @@ class _GII_CLASS VariableListModel
 
 	Q_SIGNALS:
 		/**
-		 * @brief Signals a change of the object's property.
-		 * @param obj Object concerned.
-		 * @param propertyIndex Index of the property
-		 * @param dynamic Property is a dynamic one.
+		 * @brief Signals a change of the Variable's property.
+		 * @param var Variable concerned.
 		 */
 		void changed(const Variable* var);
-		/**
-		 *
-		 * @param lineEdit Line edit created for this property.
-		 * @param obj Object concerned.
-		 * @param propertyIndex Index of the property
-		 * @param dynamic Property is a dynamic one.
-		 */
-		void addLineEditActions(QLineEdit* line_edit, const Variable* var) const;
 
 	private:
 		/**

@@ -10,8 +10,7 @@ namespace sf::lnx
 /**
  * @brief Wrapper for the linux mmap.
  */
-class _MISC_CLASS FileMapper
-	: public IFileMapper
+class _MISC_CLASS FileMapper : public IFileMapper
 {
 	public:
 		/**

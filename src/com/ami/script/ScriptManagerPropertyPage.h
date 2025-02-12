@@ -9,8 +9,7 @@ class ScriptManagerPropertyPage;
 namespace sf
 {
 
-class ScriptManagerPropertyPage
-	: public PropertyPage
+class ScriptManagerPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

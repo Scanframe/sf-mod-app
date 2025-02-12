@@ -48,17 +48,12 @@ class TMatrix44
 		/**
 		 * @brief Initialization constructor for 16 single floating point values.
 		 */
-		TMatrix44(
-			T m00, T m01, T m02, T m03,
-			T m10, T m11, T m12, T m13,
-			T m20, T m21, T m22, T m23,
-			T m30, T m31, T m32, T m33
-		);
+		TMatrix44(T m00, T m01, T m02, T m03, T m10, T m11, T m12, T m13, T m20, T m21, T m22, T m23, T m30, T m31, T m32, T m33);
 
 		/**
 		 * @brief Initialization constructor for 4x4 floating point values.
 		 */
-		explicit TMatrix44(const T mtx[4][4]);
+		explicit TMatrix44(const T arr[4][4]);
 
 		/**
 		 * @brief Construct from a translation vector.
@@ -85,7 +80,7 @@ class TMatrix44
 		/**
 		 * @brief Move constructor.
 		 */
-		TMatrix44(TMatrix44&&);
+		TMatrix44(TMatrix44&&) noexcept;
 
 		/**
 		 * @brief Set or resets this instance as unit/identity matrix.
@@ -153,7 +148,7 @@ class TMatrix44
 		 * @brief Applies passed matrix on the axes of this matrix.
 		 * @return This modified matrix.
 		 */
-		TMatrix44& operator*=(const TMatrix44<T>&);
+		TMatrix44& operator*=(const TMatrix44&);
 
 		/**
 		 * @brief Applies matrix on the passed 3D vector.
@@ -175,11 +170,11 @@ class TMatrix44
 
 		/**
 		 * @brief Compares the passed matrix within the set tolerance.
-		 * @param v Vector to compare with.
+		 * @param m Matrix to compare with.
 		 * @param tol The tolerance when comparing which has a default.
 		 * @return True when equal.
 		 */
-		bool isEqual(const TMatrix44& v, T tol = tolerance) const;
+		bool isEqual(const TMatrix44& m, T tol = tolerance) const;
 
 		/**
 		 * @brief Determines if the matrix is a rotation matrix.
@@ -315,23 +310,24 @@ class TMatrix44
 		/**
 		 * @brief Sets the element specified by the row and column.
 		 * @param row Row number between 0 and 3.
-		 * @param column` Column number between 0 and 3.
+		 * @param column Column number between 0 and 3.
+		 * @param value Element value.
 		 */
 		void setElement(unsigned int row, unsigned int column, T value);
 
 		/**
 		 * @brief Gets the element specified by the row and column.
 		 * @param row Row number between 0 and 3.
-		 * @param column` Column number between 0 and 3.
+		 * @param column Column number between 0 and 3.
 		 */
-		T element(unsigned int row, unsigned int column, T value) const;
+		T element(unsigned int row, unsigned int column) const;
 
 		/**
 		 * @brief Gets the element reference specified by the row and column.
 		 * @param row Row number between 0 and 3.
-		 * @param column` Column number between 0 and 3.
+		 * @param column Column number between 0 and 3.
 		 */
-		T& element(unsigned int row, unsigned int column, T value);
+		T& element(unsigned int row, unsigned int column);
 
 		/**
 		 * @brief Convert rotation matrix part to identity or unit quaternion.
@@ -345,7 +341,7 @@ class TMatrix44
 		 * @brief Resets the orientation and leaves the translation as is.
 		 * @return This instance reference.
 		 */
-		TMatrix44<T>& resetOrientation();
+		TMatrix44& resetOrientation();
 
 		/**
 		 * @brief Set orientation using 2 direction vectors.
@@ -414,7 +410,7 @@ class TMatrix44
  * @return New matrix.
  */
 template<typename T>
-inline TMatrix44<T> operator*(const TMatrix44<T>& lm, const TMatrix44<T>& rm)
+TMatrix44<T> operator*(const TMatrix44<T>& lm, const TMatrix44<T>& rm)
 {
 	return TMatrix44<T>(rm).multiply(lm);
 }
@@ -427,7 +423,7 @@ inline TMatrix44<T> operator*(const TMatrix44<T>& lm, const TMatrix44<T>& rm)
  * @return The passed output stream.
  */
 template<typename T>
-inline std::ostream& operator<<(std::ostream& os, const TMatrix44<T>& mtx)
+std::ostream& operator<<(std::ostream& os, const TMatrix44<T>& mtx)
 {
 	return os << mtx.toString();
 }
@@ -440,10 +436,10 @@ inline std::ostream& operator<<(std::ostream& os, const TMatrix44<T>& mtx)
  * @return The passed input stream.
  */
 template<typename T>
-inline std::istream& operator>>(std::istream& is, TMatrix44<T>& mtx) noexcept(false)
+std::istream& operator>>(std::istream& is, TMatrix44<T>& mtx) noexcept(false)
 {
 	std::string s;
-	auto delimiter = ')';
+	const auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	mtx.fromString(s.append(1, delimiter));
 	return is;

@@ -11,8 +11,7 @@ namespace sf
 /**
  * @brief Base class of the #sf::Variable having all global static data members.
  */
-class _GII_DATA VariableStatic
-	: public VariableTypes
+class _GII_DATA VariableStatic : public VariableTypes
 {
 	public:
 		/**

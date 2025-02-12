@@ -9,22 +9,11 @@ static struct
 		const char* Pos;
 		const char* Vel;
 		const char* Acc;
-} AxisInformation[] =
-	{
-		{"N/A", "N/A", "N/A", "N/A"},
-		{"X", "m", "m/s", "m/s\xB2"},
-		{"Y", "m", "m/s", "m/s\xB2"},
-		{"Z", "m", "m/s", "m/s\xB2"},
-		{"A", "rad", "rad/s", "rad/s\xB2"},
-		{"B", "rad", "rad/s", "rad/s\xB2"},
-		{"C", "rad", "rad/s", "rad/s\xB2"},
-		{"D", "rad", "rad/s", "rad/s\xB2"},
-		{"E", "m", "m/s", "m/s\xB2"},
-		{"Aux1", "m", "m/s", "m/s\xB2"},
-		{"Aux2", "m", "m/s", "m/s\xB2"},
-		{"Aux3", "m", "m/s", "m/s\xB2"},
-		{"Aux4", "m", "m/s", "m/s\xB2"}
-};
+} AxisInformation[] = {{"N/A", "N/A", "N/A", "N/A"},       {"X", "m", "m/s", "m/s\xB2"},       {"Y", "m", "m/s", "m/s\xB2"},
+											 {"Z", "m", "m/s", "m/s\xB2"},       {"A", "rad", "rad/s", "rad/s\xB2"}, {"B", "rad", "rad/s", "rad/s\xB2"},
+											 {"C", "rad", "rad/s", "rad/s\xB2"}, {"D", "rad", "rad/s", "rad/s\xB2"}, {"E", "m", "m/s", "m/s\xB2"},
+											 {"Aux1", "m", "m/s", "m/s\xB2"},    {"Aux2", "m", "m/s", "m/s\xB2"},    {"Aux3", "m", "m/s", "m/s\xB2"},
+											 {"Aux4", "m", "m/s", "m/s\xB2"}};
 
 _GMI_FUNC const char* getAxisName(int axis_loc)
 {

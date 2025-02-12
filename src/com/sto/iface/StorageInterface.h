@@ -27,7 +27,7 @@ class _STO_CLASS StorageInterface
 		};
 
 		/**
-		 * @sbrief Constructor for passing general structure for derived classes.
+		 * @brief Constructor for passing general structure for derived classes.
 		 */
 		explicit StorageInterface(const Parameters&);
 
@@ -62,7 +62,10 @@ class _STO_CLASS StorageInterface
 		 * @param init True when initializing.
 		 * @return True on success.
 		 */
-		virtual bool doInitialize(bool init) { return true; }
+		virtual bool doInitialize(bool init)
+		{
+			return true;
+		}
 
 	private:
 		// Holds flag of implementation initialization.

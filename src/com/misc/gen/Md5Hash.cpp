@@ -162,18 +162,13 @@ void Md5Hash::update(const uint8_t* input, size_t length)
 
 void Md5Hash::update(const char* input, std::size_t length)
 {
-	update((const uint8_t*) input, length);
+	update(reinterpret_cast<const uint8_t*>(input), length);
 }
 
 Md5Hash& Md5Hash::finalize()
 {
-	static uint8_t padding[64] =
-		{
-			0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-		};
+	static uint8_t padding[64] = {0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	if (!_finish)
 	{
 		// Save number of bits

@@ -10,8 +10,7 @@ namespace sf
 /**
  * @brief Derived class to be able to prevent some properties to be stored when written to file.
  */
-class _MISC_CLASS FormBuilder
-	: public ::QFormBuilder
+class _MISC_CLASS FormBuilder : public ::QFormBuilder
 {
 	public:
 		/**

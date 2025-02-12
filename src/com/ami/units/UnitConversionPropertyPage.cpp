@@ -31,11 +31,7 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 				 {ui->tvFollowers, ui->tbRemoveFollower, _actionRemoveFollower, Resource::Remove, tr("Remove"), tr("Remove the selected entry.")},
 			 })
 	{
-		std::get<2>(t) = new QAction(
-			Resource::getSvgIcon(Resource::getSvgIconResource(std::get<3>(t)), QPalette::ButtonText),
-			std::get<4>(t),
-			this
-		);
+		std::get<2>(t) = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(std::get<3>(t)), QPalette::ButtonText), std::get<4>(t), this);
 		std::get<2>(t)->setToolTip(std::get<5>(t));
 		std::get<1>(t)->setDefaultAction(std::get<2>(t));
 		//std::get<1>(t)->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonIconOnly);
@@ -56,13 +52,9 @@ UnitConversionPropertyPage::UnitConversionPropertyPage(UnitConversionAppModule& 
 	resizeColumnsToContents(ui->tvConversions);
 	resizeColumnsToContents(ui->tvFollowers);
 	//
-	connect(ui->tvConversions, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) {
-		_lmConversions->edit(index);
-	});
+	connect(ui->tvConversions, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) { _lmConversions->edit(index); });
 	//
-	connect(ui->tvFollowers, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) {
-		_lmFollowers->edit(index);
-	});
+	connect(ui->tvFollowers, &QAbstractItemView::doubleClicked, [&](const QModelIndex& index) { _lmFollowers->edit(index); });
 	//
 	connect(_actionEditConversion, &QAction::triggered, [&]() { _lmConversions->edit(getIndex(ui->tvConversions)); });
 	connect(_actionAddConversion, &QAction::triggered, [&]() { _lmConversions->add(); });

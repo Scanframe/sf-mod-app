@@ -118,8 +118,7 @@ class _MISC_CLASS Resource
 		 * @param size Size of the icon where when not passed default set to _defaultIconSize (128x128).
 		 * @return On success the colored icon.
 		 */
-		static QIcon
-		getSvgIcon(const QString& resource, const QPalette& palette, QPalette::ColorRole role, QSize size = QSize());
+		static QIcon getSvgIcon(const QString& resource, const QPalette& palette, QPalette::ColorRole role, QSize size = QSize());
 
 		/**
 		 * @brief Gets an SVG QIcon type from a resource location using the application palette and the passed role for color.

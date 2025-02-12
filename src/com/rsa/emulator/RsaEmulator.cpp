@@ -123,16 +123,7 @@ namespace sf
 /**
  * Forward definitions.
  */
-void FillDataBuffer(
-	DynamicBuffer buf,
-	unsigned width,
-	unsigned wordSize,
-	unsigned bits,
-	double gain,
-	int delay1,
-	int delay2,
-	int delay3
-);
+void FillDataBuffer(DynamicBuffer buf, unsigned width, unsigned wordSize, unsigned bits, double gain, int delay1, int delay2, int delay3);
 
 /**
  *
@@ -144,14 +135,7 @@ void FillDataBuffer(
  * @param peakval Value of the peak.
  * @return ??
  */
-bool PeakNormal(
-	int polarity,
-	unsigned threshold,
-	unsigned count,
-	const unsigned char* values,
-	unsigned& peakidx,
-	unsigned& peakval
-);
+bool PeakNormal(int polarity, unsigned threshold, unsigned count, const unsigned char* values, unsigned& peakidx, unsigned& peakval);
 
 AcquisitionEmulator::AcquisitionEmulator(const Parameters& parameters)
 	: RsaInterface(parameters)
@@ -251,31 +235,20 @@ long AcquisitionEmulator::TimeUnits(const TChannelInfo& ci, const Value& value) 
 	return static_cast<long>(round<Value::flt_type>(value.getFloat() / ci.TimeUnits, 1.0));
 }
 
-RsaTypes::IdType AcquisitionEmulator::getParamId(
-	EDefaultParam param,
-	unsigned gate,
-	unsigned channel
-) const
+RsaTypes::IdType AcquisitionEmulator::getParamId(EDefaultParam param, unsigned gate, unsigned channel) const
 {
 	// Form the id on basis of the masks in the param.
 	IdType id = MAKE_ID(
-		((param & apChannel_Mask) | (param & apGate_Mask)) ? channel : NO_CHANNEL,
-		(param & apGate_Mask) ? gate : NO_GATE,
-		param & ~(apChannel_Mask | apGate_Mask)
+		((param & apChannel_Mask) | (param & apGate_Mask)) ? channel : NO_CHANNEL, (param & apGate_Mask) ? gate : NO_GATE, param & ~(apChannel_Mask | apGate_Mask)
 	);
 	return id;
 }
 
-RsaTypes::IdType AcquisitionEmulator::getResultId(
-	EDefaultResult result,
-	unsigned gate,
-	unsigned channel
-) const
+RsaTypes::IdType AcquisitionEmulator::getResultId(EDefaultResult result, unsigned gate, unsigned channel) const
 {
 	// Form the id on basis of the masks in the param.
 	IdType id = MAKE_ID(
-		((result & arChannel_Mask) | (result & arGate_Mask)) ? channel : NO_CHANNEL,
-		(result & arGate_Mask) ? gate : NO_GATE,
+		((result & arChannel_Mask) | (result & arGate_Mask)) ? channel : NO_CHANNEL, (result & arGate_Mask) ? gate : NO_GATE,
 		result & ~(arChannel_Mask | arGate_Mask)
 	);
 	return id;
@@ -290,12 +263,7 @@ void AcquisitionEmulator::TGateInfo::CalculateThreshold()
 	//SF_RTTI_NOTIFY(DO_DEFAULT, "Threshold Level set to : " << val);
 }
 
-bool AcquisitionEmulator::handleParam(
-	IdType id,
-	ParamInfo* info,
-	const Value* setval,
-	Value* getval
-)
+bool AcquisitionEmulator::handleParam(IdType id, ParamInfo* info, const Value* setval, Value* getval)
 {
 	// Check if info must be filled in.
 	if (info)
@@ -462,7 +430,8 @@ bool AcquisitionEmulator::handleParam(
 			case PID_TCG_TIME(12):
 			case PID_TCG_TIME(13):
 			case PID_TCG_TIME(14):
-			case PID_TCG_TIME(15): {
+			case PID_TCG_TIME(15):
+			{
 				// Calculate the point number in the tcg list.
 				int index = pid - PID_TCG_TIME(0);
 				if (setval)
@@ -484,7 +453,8 @@ bool AcquisitionEmulator::handleParam(
 					info->Minimum.set(0.0);
 					info->Maximum.set(326E-6);
 				}
-			} break;
+			}
+			break;
 
 				// Receiver tcg point Gain slope in 0.1dB steps
 			case PID_TCG_GAIN(0):
@@ -502,7 +472,8 @@ bool AcquisitionEmulator::handleParam(
 			case PID_TCG_GAIN(12):
 			case PID_TCG_GAIN(13):
 			case PID_TCG_GAIN(14):
-			case PID_TCG_GAIN(15): {
+			case PID_TCG_GAIN(15):
+			{
 				// Calculate the point number in the tcg list.
 				int index = pid - PID_TCG_GAIN(0);
 				if (setval)
@@ -524,7 +495,8 @@ bool AcquisitionEmulator::handleParam(
 					info->Minimum.set(0.0);
 					info->Maximum.set(80.0);
 				}
-			} break;
+			}
+			break;
 
 			default:
 				// Report the id was not found.
@@ -1087,12 +1059,7 @@ bool AcquisitionEmulator::handleParam(
 					}
 					if (getval)
 					{
-						const char* s[] =
-							{
-								"None",
-								US_METHOD_PEAK,
-								US_METHOD_COPY
-							};
+						const char* s[] = {"None", US_METHOD_PEAK, US_METHOD_COPY};
 						getval->set(s[gi.MethodId]);
 					}
 					if (info)
@@ -1159,7 +1126,8 @@ bool AcquisitionEmulator::handleParam(
 					}
 					break;
 
-				case PID_GATE_AMP: {
+				case PID_GATE_AMP:
+				{
 					if (getval)
 					{// Check if a peak was found at all.
 						if (gi.PeakFound)
@@ -1184,9 +1152,11 @@ bool AcquisitionEmulator::handleParam(
 						info->Flags |= pfReadonly;
 						info->Flags &= ~pfArchive;
 					}
-				} break;
+				}
+				break;
 
-				case PID_GATE_TOF: {
+				case PID_GATE_TOF:
+				{
 					if (getval)
 					{
 						getval->set(ci.TimeUnits * (gi.PeakTof - TOF_OFFSET));
@@ -1204,7 +1174,8 @@ bool AcquisitionEmulator::handleParam(
 						info->Flags |= pfReadonly;
 						info->Flags &= ~pfArchive;
 					}
-				} break;
+				}
+				break;
 
 				case PID_GATE_POLARITY:
 					if (setval)
@@ -1638,14 +1609,8 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 					}
 					//
 					FillDataBuffer(
-						ci.CopyBuf,
-						ci.CopyRange,
-						1,
-						8,
-						pow(10, ci.Gain / 20.0),
-						ci.Sweep[0] - ci.CopyDelay + ci.IfPos + 100.0,
-						ci.Sweep[1] - ci.CopyDelay + ci.IfPos + 250.0,
-						ci.Sweep[2] - ci.CopyDelay + ci.IfPos + 350.0
+						ci.CopyBuf, ci.CopyRange, 1, 8, pow(10, ci.Gain / 20.0), ci.Sweep[0] - ci.CopyDelay + ci.IfPos + 100.0,
+						ci.Sweep[1] - ci.CopyDelay + ci.IfPos + 250.0, ci.Sweep[2] - ci.CopyDelay + ci.IfPos + 350.0
 					);
 					//
 					switch (ci.AscanRectify)
@@ -1712,19 +1677,14 @@ bool AcquisitionEmulator::sustain(const timespec& t)
 						}
 						//
 						FillDataBuffer(
-							gi.CopyBuf,
-							gi.Range,
-							1,
-							8,
-							pow(10, ci.Gain / 20.0),
-							ci.Sweep[0] - delay + ci.IfPos + 100.0,
-							ci.Sweep[1] - delay + ci.IfPos + 250.0,
+							gi.CopyBuf, gi.Range, 1, 8, pow(10, ci.Gain / 20.0), ci.Sweep[0] - delay + ci.IfPos + 100.0, ci.Sweep[1] - delay + ci.IfPos + 250.0,
 							ci.Sweep[2] - delay + ci.IfPos + 350.0
 						);
 						//
 						switch (gi.MethodId)
 						{
-							case MID_PEAK: {
+							case MID_PEAK:
+							{
 								gi.PeakFound = PeakNormal(gi.Polarity, gi.Threshold, gi.Range, (uint8_t*) gi.CopyBuf.data(), gi.PeakTof, gi.PeakAmp);
 								//SF_RTTI_NOTIFY(DO_CLOG, "Gate: " << gate << " Tof: " << gi.PeakTof << " Amp: " << gi.PeakAmp)
 								// Correct found peak with delay and result offset.
@@ -1843,16 +1803,7 @@ double FormWave(
 	return value * -1;
 }
 
-void FillDataBuffer(
-	DynamicBuffer buf,
-	unsigned width,
-	unsigned wordSize,
-	unsigned bits,
-	double gain,
-	int delay1,
-	int delay2,
-	int delay3
-)
+void FillDataBuffer(DynamicBuffer buf, unsigned width, unsigned wordSize, unsigned bits, double gain, int delay1, int delay2, int delay3)
 {
 	uint32_t amplitude = (1 << bits) - 1;
 	buf.resize(wordSize * width);
@@ -1894,11 +1845,7 @@ void FillDataBuffer(
 //
 bool PeakNormal(
 	int polarity,// <0 = neg, 0= full, >0 = pos
-	unsigned threshold,
-	unsigned count,
-	const unsigned char* values,
-	unsigned& _peakidx,
-	unsigned& _peakval
+	unsigned threshold, unsigned count, const unsigned char* values, unsigned& _peakidx, unsigned& _peakval
 )
 {
 	// Set impossible value to detect if a peak was found at the end.

@@ -15,8 +15,7 @@ FileMapper::FileMapper(const std::string& filepath, size_t ofs, size_t sz)
 
 FileMapper::FileMapper()
 	: IFileMapper()
-{
-}
+{}
 
 FileMapper::~FileMapper()
 {

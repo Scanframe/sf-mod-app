@@ -8,8 +8,7 @@ namespace sf
 /**
  * @brief Structure to link a Value to an IdInfo structure.
  */
-struct ScriptInterpreter::VariableInfo
-	: IdInfo
+struct ScriptInterpreter::VariableInfo : IdInfo
 {
 	public:
 		// Default constructor
@@ -42,8 +41,7 @@ struct ScriptInterpreter::VariableInfo
 /**
  * @brief Structure to link a labels to Info.
  */
-struct ScriptInterpreter::LabelInfo
-	: IdInfo
+struct ScriptInterpreter::LabelInfo : IdInfo
 {
 	public:
 		/**

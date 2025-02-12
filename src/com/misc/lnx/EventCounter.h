@@ -9,8 +9,7 @@ namespace sf
 * TEventSemaphore class is build around the system call eventfd().
 * This class has a file descriptor which could be used in an epoll object.
 */
-class EventCounter
-	: private Sync
+class EventCounter : private Sync
 {
 	public:
 		/**
@@ -41,19 +40,18 @@ class EventCounter
 		void destroy();
 
 		/**
-		* Returns the file descriptor to the object.
+		* @brief Gets the file descriptor to the object.
 		*/
 		[[nodiscard]] inline handle_type getHandle() const;
 
 		/**
 		 * @brief Sets a new value by incrementing the existing one.
-		 * @return On failure to do so it returns false.
 		 */
 		void set(unsigned int increment = 1);
 
 		/**
 		 * @brief Gets the counter value and decrements it.
-		 * Returns true when it would block when blocking is disabled.
+		 * @return True when it would block when blocking is disabled.
 		 * When counting down was enabled the returned value is always 1 until
 		 * the internal counter is zero. When not counting down the returned argument value is
 		 * the counter value and the internal counter is reset to zero.

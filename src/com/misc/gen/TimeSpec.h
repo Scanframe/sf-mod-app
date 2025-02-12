@@ -251,13 +251,11 @@ struct _MISC_CLASS TimeSpec : public timespec
 
 inline TimeSpec::TimeSpec()
 	: timespec{0, 0}
-{
-}
+{}
 
 inline TimeSpec::TimeSpec(const TimeSpec& ts)
 	: timespec(ts)
-{
-}
+{}
 
 inline TimeSpec::TimeSpec(const timespec& ts)
 	: timespec()
@@ -273,8 +271,7 @@ inline TimeSpec::TimeSpec(double sec)
 
 inline TimeSpec::TimeSpec(time_t sec, nsec_type nsec)
 	: timespec{sec, nsec}
-{
-}
+{}
 
 inline TimeSpec& TimeSpec::operator=(const timespec& ts)
 {
@@ -388,7 +385,6 @@ inline sf::TimeSpec operator-(const timespec& lhs, const timespec& rhs)
 
 /**
  * @brief Operator for writing the #sf::TimeSpec to an output-stream.
- * Calls #TQuaternion<T>::toString() for the operator.
  * @tparam T Base floating point type.
  * @param os Output stream.
  * @param ts TimeSpec to stream out.

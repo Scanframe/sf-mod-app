@@ -249,7 +249,8 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 		default:
 			break;
 
-		case veConvert: {
+		case veConvert:
+		{
 			// Lookup the variable if it should be converted in a dependency list.
 			if (getUnitSystem() != usPassThrough)
 			{
@@ -258,7 +259,8 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 			break;
 		}
 
-		case veNewId: {
+		case veNewId:
+		{
 			// Let the variable resolve the unit conversion.
 			const_cast<Variable&>(call_var).getOwner().setConvertValues(getUnitSystem() != usPassThrough);
 			break;
@@ -266,7 +268,8 @@ void UnitConversionServerEx::variableEventHandler(VariableTypes::EEvent event, c
 
 		// For variable controlling the enable-status.
 		case veIdChanged:
-		case veValueChange: {
+		case veValueChange:
+		{
 			// Enable or disable conversion lists when there is an ID.
 			if (link_var.getId())
 			{

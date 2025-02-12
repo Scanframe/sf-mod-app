@@ -121,8 +121,7 @@ class _MISC_CLASS Semaphore
 
 inline Semaphore::Lock::Lock()
 	: _semaphore(nullptr)
-{
-}
+{}
 
 inline Semaphore::Lock::Lock(const Semaphore& semaphore, const TimeSpec& timeout)
 	: _semaphore(nullptr)

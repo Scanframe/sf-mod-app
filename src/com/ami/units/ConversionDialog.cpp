@@ -50,9 +50,7 @@ bool ConversionDialog::checkContent()
 	{
 		ui->lblMessage->setText("unit cannot be empty!");
 		ui->lblMessage->setVisible(true);
-		QTimer::singleShot(5000, [&]() {
-			ui->lblMessage->setVisible(false);
-		});
+		QTimer::singleShot(5000, [&]() { ui->lblMessage->setVisible(false); });
 		return false;
 	}
 	return true;

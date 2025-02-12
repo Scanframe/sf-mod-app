@@ -44,9 +44,7 @@ RsaServer::RsaServer(int compatible, id_type deviceNumber, const std::string& se
 			"0x%lX,%s|Implementation,,S,Implementation of acquisition server,"
 			"INTEGER,,"
 			"1,0,0,%i,None=0,",
-			_implementationId,
-			_serverName.c_str(),
-			RsaInterface::Interface().size()
+			_implementationId, _serverName.c_str(), RsaInterface::Interface().size()
 		);
 		// Add the states generated from the registered names.
 		for (size_t i = 0; i < RsaInterface::Interface().size(); i++)
@@ -340,7 +338,8 @@ std::string RsaServer::createSetupString(const ParamInfo& info, long vid)
 	{
 		flags |= Variable::flgArchive;
 		// When not an Alias for another parameter or it is a system parameter it may be used to restore parameters.
-		if (info.Flags & (pfAlias | pfSystem)) {
+		if (info.Flags & (pfAlias | pfSystem))
+		{
 		}
 		else
 		{
@@ -1069,12 +1068,7 @@ void RsaServer::checkReadOnly()
 	}
 }
 
-void RsaServer::serverVariableHandler(
-	Variable::EEvent event,
-	const Variable& caller,
-	Variable& link,
-	bool sameInst
-)
+void RsaServer::serverVariableHandler(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
 {
 	// get ID
 	auto vid = caller.getId();
@@ -1157,9 +1151,7 @@ void RsaServer::serverVariableHandler(
 	}//switch
 }
 
-void RsaServer::serverResultDataHandler(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool)
-{
-}
+void RsaServer::serverResultDataHandler(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool) {}
 
 void RsaServer::paramNotify(id_type id)
 {

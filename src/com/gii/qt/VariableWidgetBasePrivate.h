@@ -7,8 +7,7 @@
 namespace sf
 {
 
-struct VariableWidgetBase::PrivateBase
-	: VariableHandler
+struct VariableWidgetBase::PrivateBase : VariableHandler
 {
 		qulonglong _id{0};
 		Variable _variable{};

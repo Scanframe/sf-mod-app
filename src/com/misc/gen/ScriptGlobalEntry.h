@@ -128,8 +128,7 @@ class TScriptGlobalEntry : public ScriptGlobalEntry
 			: ScriptGlobalEntry(name, description, argumentCount)
 			, _self(self)
 			, _func(func)
-		{
-		}
+		{}
 
 		TScriptGlobalEntry(const TScriptGlobalEntry&) = delete;
 
@@ -156,8 +155,7 @@ class ScriptGlobalStaticEntry : public ScriptGlobalEntry
 		ScriptGlobalStaticEntry(FunctionType func, const std::string& name, const std::string& description, int argumentCount)
 			: ScriptGlobalEntry(name, description, argumentCount)
 			, _func(func)
-		{
-		}
+		{}
 
 		ScriptGlobalStaticEntry(const ScriptGlobalStaticEntry&) = delete;
 

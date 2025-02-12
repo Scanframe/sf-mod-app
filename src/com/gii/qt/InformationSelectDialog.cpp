@@ -42,9 +42,7 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 		std::get<0>(t)->setDefaultAction(std::get<1>(t));
 		ui->treeView->addAction(std::get<1>(t));
 	}
-	connect(ui->treeView, &QTreeView::expanded, [&]() {
-		resizeColumnsToContents(ui->treeView);
-	});
+	connect(ui->treeView, &QTreeView::expanded, [&]() { resizeColumnsToContents(ui->treeView); });
 	connect(ui->treeView, &QTreeView::clicked, [&](const QModelIndex& index) {
 		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
@@ -67,12 +65,8 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 			}
 		}
 	});
-	connect(_actionCollapseAll, &QAction::triggered, [&]() {
-		childrenExpandCollapse(false);
-	});
-	connect(_actionExpandAll, &QAction::triggered, [&]() {
-		childrenExpandCollapse(true);
-	});
+	connect(_actionCollapseAll, &QAction::triggered, [&]() { childrenExpandCollapse(false); });
+	connect(_actionExpandAll, &QAction::triggered, [&]() { childrenExpandCollapse(true); });
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 	connect(this, &QDialog::accepted, [&]() {

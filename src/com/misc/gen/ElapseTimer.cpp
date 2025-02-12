@@ -4,8 +4,7 @@ namespace sf
 {
 ElapseTimer::ElapseTimer()
 	: _target(getTime())
-{
-}
+{}
 
 ElapseTimer::ElapseTimer(unsigned long usec)
 {

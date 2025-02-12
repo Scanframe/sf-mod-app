@@ -1,5 +1,4 @@
 #pragma once
-#include <gii/global.h>
 #include <gii/qt/VariableWidgetBase.h>
 
 namespace sf
@@ -8,8 +7,7 @@ namespace sf
 /**
  * @brief Widget for editing #sf::Variable value types integer, floating point and single line string.
  */
-class QDESIGNER_WIDGET_EXPORT VariableComboBox
-	: public VariableWidgetBase
+class QDESIGNER_WIDGET_EXPORT VariableComboBox : public VariableWidgetBase
 {
 		Q_OBJECT
 		Q_PROPERTY(bool focusFrame READ hasFocusFrame WRITE setFocusFrame)
@@ -22,34 +20,34 @@ class QDESIGNER_WIDGET_EXPORT VariableComboBox
 		explicit VariableComboBox(QWidget* parent = nullptr);
 
 		/**
-		 * Sets the edit frame or no frame property.
+		 * @brief Sets the edit frame or no frame property.
 		 * @param yn True when a focus frame is wanted.
 		 */
 		void setFocusFrame(bool yn);
 
 		/**
-		 * Gets the focus frame status.
+		 * @brief Gets the focus frame status.
 		 * @return True when a focus frame is used.
 		 */
 		[[nodiscard]] bool hasFocusFrame() const;
 
 		/**
-		 * Gets the name level shown.
+		 * @brief Gets the name level shown.
 		 */
 		[[nodiscard]] int nameLevel() const;
 		/**
-		 * Sets the name level shown.
+		 * @brief Sets the name level shown.
 		 */
 		void setNameLevel(int level = -1);
 
 	protected:
 		/**
-		 * @brief Overridden from base class '#ObjectExtension'.
+		 * @brief Overridden from base class '#sf::ObjectExtension'.
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
 		/**
-		 * @brief Overridden from base class '#VariableWidgetBase'.
+		 * @brief Overridden from base class '#sf::VariableWidgetBase'.
 		 */
 		void applyReadOnly(bool yn) override;
 

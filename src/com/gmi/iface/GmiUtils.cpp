@@ -82,8 +82,7 @@ bool getPositionVelocity(double dist, double vel, double acc, double cur_tm, dou
 					// Add the distance for the time the velocity is constant.
 					cur_pos += (cur_tm - acc_time) * vel;
 					// Correct sign of return value.
-					if (negative)
-						cur_pos *= -1.0;
+					if (negative) cur_pos *= -1.0;
 					//NOTIFY(DO_DEFAULT, "Const: " << cur_tm << "  Pos: " << cur_pos << "  Vel: " << cur_vel);
 				}
 				else
@@ -176,8 +175,7 @@ bool getTargetTime(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCo
 		if (map & 1 << i)
 		{
 			double tm;
-			if (getTargetTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
-				trg_time.set(i, tm);
+			if (getTargetTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm)) trg_time.set(i, tm);
 			else
 			{
 				trg_time.clear();
@@ -209,8 +207,7 @@ bool getAccelerationTime(const AxesCoord& dist, const AxesCoord& max_vel, const 
 		if (map & 1 << i)
 		{
 			double tm;
-			if (getAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm))
-				trg_time.set(i, tm);
+			if (getAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, tm)) trg_time.set(i, tm);
 			else
 			{
 				trg_time.clear();
@@ -248,8 +245,7 @@ bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const Axes
 			double ttm;
 			double atm;
 			// Calculate the time which is needed for the current selected axis to accelerate.
-			if (!getTargetAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, ttm, atm))
-				return false;
+			if (!getTargetAccelerationTime(dist[i]._value, max_vel[i]._value, max_acc[i]._value, ttm, atm)) return false;
 			// When the calculated time is larger than last largest time update the value and axis.
 			if (trg_tm < ttm || axis == -1)
 			{
@@ -280,8 +276,7 @@ bool calcLinearValues(const AxesCoord& dist, double trg_time, double acc_time, A
 			// move the distance.
 			double d_vel;
 			double d_acc;
-			if (!calcLinearValue(dist[i]._value, trg_time, acc_time, d_vel, d_acc))
-				return false;
+			if (!calcLinearValue(dist[i]._value, trg_time, acc_time, d_vel, d_acc)) return false;
 			// Set the coord velocity return value.
 			vel.set(i, d_vel);
 			// Set the coord acceleration return value.

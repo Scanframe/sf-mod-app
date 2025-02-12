@@ -8,7 +8,8 @@ namespace sf
 /**
  * @brief Interface class to create a #sf::AxesCoordEdit custom widget.
  */
-class AxesCoordEditPlugin : public QObject
+class AxesCoordEditPlugin
+	: public QObject
 	, public QDesignerCustomWidgetInterface
 {
 		Q_OBJECT

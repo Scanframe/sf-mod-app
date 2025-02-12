@@ -28,7 +28,7 @@ bool RangeManager::isAccessible(const Range& r) const
 	return false;
 }
 
-bool RangeManager::isFlushable()
+bool RangeManager::isFlushable() const
 {
 	// Check if flush has any effect
 	return !_managedRange.isEmpty() || _accessibles.count() || _requests.count() || _actualRequests.count();

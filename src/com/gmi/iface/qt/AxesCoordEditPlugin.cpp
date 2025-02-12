@@ -8,8 +8,7 @@ namespace sf
 
 AxesCoordEditPlugin::AxesCoordEditPlugin(QObject* parent)
 	: QObject(parent)
-{
-}
+{}
 
 void AxesCoordEditPlugin::initialize(QDesignerFormEditorInterface*)
 {

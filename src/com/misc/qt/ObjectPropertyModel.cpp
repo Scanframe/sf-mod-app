@@ -51,7 +51,7 @@ const char* ignoreList[] = {
 
 bool ignored(const char* name)
 {
-	for (auto n: ignoreList)// NOLINT(readability-use-anyofallof)
+	for (const auto n: ignoreList)
 	{
 		if (std::strcmp(name, n) == 0)
 		{
@@ -61,15 +61,15 @@ bool ignored(const char* name)
 	return false;
 }
 
-CommonItemDelegate::EEditorType getEditorType(QObject* obj, int index, bool dynamic)
+CommonItemDelegate::EEditorType getEditorType(const QObject* obj, int index, bool dynamic)
 {
 	// Negative index indicates a dynamic property.
 	if (dynamic)
 	{
 		return CommonItemDelegate::etDefault;
 	}
-	auto meta = obj->metaObject();
-	QMetaType mt(meta->property(index).typeId());
+	const auto meta = obj->metaObject();
+	const QMetaType mt(meta->property(index).typeId());
 	if (meta->property(index).enumerator().isValid())
 	{
 		if (meta->property(index).enumerator().isFlag())
@@ -78,19 +78,19 @@ CommonItemDelegate::EEditorType getEditorType(QObject* obj, int index, bool dyna
 		}
 		return CommonItemDelegate::etDropDownIndex;
 	}
-	else if (mt == QMetaType::fromType<QMargins>() || mt == QMetaType::fromType<QRect>() || mt == QMetaType::fromType<QSize>())
+	if (mt == QMetaType::fromType<QMargins>() || mt == QMetaType::fromType<QRect>() || mt == QMetaType::fromType<QSize>())
 	{
-		return CommonItemDelegate::etEdit;
+		return CommonItemDelegate::etString;
 	}
-	else if (mt == QMetaType::fromType<qulonglong>())
+	if (mt == QMetaType::fromType<qulonglong>())
 	{
 		return CommonItemDelegate::etULongLong;
 	}
-	else if (mt == QMetaType::fromType<QColor>())
+	if (mt == QMetaType::fromType<QColor>())
 	{
 		return CommonItemDelegate::etColorEdit;
 	}
-	else if (mt == QMetaType::fromType<QStringList>())
+	if (mt == QMetaType::fromType<QStringList>())
 	{
 		return CommonItemDelegate::etStringList;
 	}
@@ -106,7 +106,7 @@ enum EColumn
 
 enum EColumnIgnore
 {
-	cIgnored = cMaxColumns,
+	vcIgnored = cMaxColumns,
 	vcType
 };
 
@@ -170,8 +170,7 @@ CommonItemDelegate::OptionsType getEnumFlagsOptions(const QMetaEnum& me)
 
 ObjectPropertyModel::ObjectPropertyModel(QObject* parent)
 	: QAbstractListModel(parent)
-{
-}
+{}
 
 int ObjectPropertyModel::columnCount(const QModelIndex& parent) const
 {
@@ -232,10 +231,10 @@ void ObjectPropertyModel::setTarget(QObject* target)
 
 void ObjectPropertyModel::setDelegates(QAbstractItemView* view)
 {
-	auto cid = new CommonItemDelegate(view);
+	const auto cid = new CommonItemDelegate(view);
 	// Propagate the signal.
-	QObject::connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index) {
-		auto propIdx = _indices.at(index.row());
+	connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index) {
+		const auto propIdx = _indices.at(index.row());
 		Q_EMIT addLineEditActions(lineEdit, propIdx._obj, propIdx._index, propIdx._dynamic);
 	});
 	view->setItemDelegate(cid);
@@ -328,7 +327,8 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				}
 				return meta->property(propIdx._index).typeName();
 
-			case cValue: {
+			case cValue:
+			{
 				// Negative index indicates a dynamic property.
 				if (propIdx._dynamic)
 				{
@@ -371,6 +371,8 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 				// Otherwise, just default.
 				return propIdx._obj->property(mp.name());
 			}
+			default:
+				return QString("?%1?").arg(index.column());
 		}
 	}
 	// Used to initialize the delegate editor.

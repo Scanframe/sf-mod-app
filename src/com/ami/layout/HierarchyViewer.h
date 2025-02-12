@@ -12,8 +12,7 @@ namespace Ui
 class HierarchyViewer;
 }
 
-class HierarchyViewer
-	: public QWidget
+class HierarchyViewer : public QWidget
 {
 		Q_OBJECT
 

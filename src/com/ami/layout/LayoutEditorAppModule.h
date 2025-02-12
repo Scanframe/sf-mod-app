@@ -7,8 +7,7 @@
 namespace sf
 {
 
-class [[maybe_unused]] LayoutEditorAppModule
-	: public AppModuleInterface
+class [[maybe_unused]] LayoutEditorAppModule : public AppModuleInterface
 {
 	public:
 		explicit LayoutEditorAppModule(const Parameters& params);

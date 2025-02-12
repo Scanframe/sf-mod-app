@@ -17,16 +17,7 @@ constexpr size_t Value::_sizeExtra = 1;
 
 const char* Value::_invalidStr = "n/a";
 
-const char* Value::_typeNames[] =
-	{
-		"INVALID",
-		"UNDEF",
-		"INTEGER",
-		"FLOAT",
-		"STRING",
-		"BINARY",
-		"CUSTOM"
-};
+const char* Value::_typeNames[] = {"INVALID", "UNDEF", "INTEGER", "FLOAT", "STRING", "BINARY", "CUSTOM"};
 
 Value& Value::operator=(Value&& v) noexcept
 {
@@ -81,13 +72,13 @@ Value::Value(flt_type v)
 
 Value::Value(bool v)
 {
-	int_type ll = v;
+	const int_type ll = v;
 	set(vitInteger, &ll);
 }
 
 Value::Value(int v)
 {
-	int_type ll = v;
+	const int_type ll = v;
 	set(vitInteger, &ll);
 }
 
@@ -101,7 +92,7 @@ Value::Value(long v)
 
 Value::Value(unsigned v)
 {
-	int_type ll = v;
+	const int_type ll = v;
 	set(vitInteger, &ll);
 }
 
@@ -262,7 +253,7 @@ Value& Value::set(int type, const void* content, size_t size)
 			_type = vitInvalid;
 			return *this;
 	}// switch
-	_type = (EType) type;
+	_type = static_cast<EType>(type);
 	return *this;
 }
 
@@ -275,7 +266,7 @@ Value& Value::assign(const Value& v)
 	else
 	{
 		// Save current type
-		auto type = _type;
+		const auto type = _type;
 		// Set variable using passed value.
 		set(v);
 		// Return to previous type if it wasn't the 'invalid' or 'undefined' type.
@@ -360,8 +351,9 @@ Value::int_type Value::getInteger(int* cnv_err) const
 			rv = _data._int;
 			break;
 
-		case vitFloat: {
-			auto saved_fe = fesetround(FE_TONEAREST);
+		case vitFloat:
+		{
+			const auto saved_fe = fesetround(FE_TONEAREST);
 			rv = std::lround(_data._flt);
 			fesetround(saved_fe);
 			break;
@@ -395,7 +387,7 @@ Value::flt_type Value::getFloat(int* cnv_err) const
 	switch (_type)
 	{
 		case vitInteger:
-			rv = flt_type(_data._int);
+			rv = static_cast<flt_type>(_data._int);
 			break;
 
 		case vitFloat:
@@ -436,7 +428,8 @@ std::string Value::getString(int precision) const
 		case vitUndefined:
 			return "";
 
-		case vitInteger: {
+		case vitInteger:
+		{
 			return toString<int_type>(_data._int);
 		}
 
@@ -445,10 +438,7 @@ std::string Value::getString(int precision) const
 			{
 				return toStringPrecision(_data._flt, precision);
 			}
-			else
-			{
-				return gcvtString(_data._flt, std::numeric_limits<flt_type>::digits10);
-			}
+			return gcvtString(_data._flt, std::numeric_limits<flt_type>::digits10);
 
 		case vitReference:
 			return _data._ref->getString();
@@ -492,31 +482,31 @@ const char* Value::getData() const
 	{
 		return _data._ref->getData();
 	}
-	else if (_type >= vitString)
+	if (_type >= vitString)
 	{
 		return _data._ptr;
 	}
 	return reinterpret_cast<const char*>(&_data);
 }
 
-Value::EType Value::getType(const char* type)
+Value::EType Value::getType(const std::string_view& type)
 {
 	int i = 0;
 	for (const char* n: _typeNames)
 	{
-		if (!std::strcmp(type, n))
+		if (!std::strcmp(type.data(), n))
 		{
-			return (Value::EType) i;
+			return static_cast<EType>(i);
 		}
 		i++;
 	}
 	return vitInvalid;
 }
 
-const char* Value::getType(Value::EType type)
+std::string_view Value::getType(EType type)
 {
-	constexpr auto max = sizeof(_typeNames) / sizeof(_typeNames[0]);
-	return _typeNames[(type >= max || type < 0) ? vitInvalid : type];
+	constexpr auto max = std::size(_typeNames);
+	return _typeNames[type >= max || type < 0 ? vitInvalid : type];
 }
 
 void Value::makeInvalid()
@@ -592,7 +582,7 @@ bool Value::setType(EType type)
 			else
 			{
 				// Copy std::string to temporary std::string buffer
-				std::string tmp = getString();
+				const std::string tmp = getString();
 				// Calculate new size
 				_size = tmp.length() / 2;
 				// Only delete when type has allocated memory.
@@ -604,7 +594,7 @@ bool Value::setType(EType type)
 				// Create new buffer
 				_data._ptr = static_cast<char*>(malloc(_size + _sizeExtra));
 				// Convert hex std::string to binary data
-				if (stringHex(tmp.c_str(), _data._ptr, _size) == size_t(-1))
+				if (stringHex(tmp.c_str(), _data._ptr, _size) == static_cast<size_t>(-1))
 				{
 					// Clear all memory after conversion error
 					std::memset(_data._ptr, '\0', _size);
@@ -653,7 +643,8 @@ Value Value::div(const Value& v) const
 		case vitUndefined:
 			return *this;
 
-		case vitInteger: {
+		case vitInteger:
+		{
 			int_type divider = v.getInteger(nullptr);
 			// Check if the divider is zero.
 			if (!divider)
@@ -663,7 +654,8 @@ Value Value::div(const Value& v) const
 			return Value(_data._int / divider);
 		}
 
-		case vitFloat: {
+		case vitFloat:
+		{
 			flt_type divider = v.getFloat();
 			// Check if the divider is zero.
 			if (abs(divider) == 0.0)
@@ -769,19 +761,21 @@ int Value::compare(const Value& v) const
 {
 	switch (_type)
 	{
-		case vitInteger: {
-			int_type l = v.getInteger(nullptr);
+		case vitInteger:
+		{
+			const int_type l = v.getInteger(nullptr);
 			int rv = _data._int != l;
-			rv *= (l > _data._int) ? -1 : 1;
+			rv *= l > _data._int ? -1 : 1;
 			return rv;
 		}
 
-		case vitFloat: {
+		case vitFloat:
+		{
 			const flt_type& b(_data._flt);
 			// Covert the passed instance to the Float type.
-			flt_type a = v.getFloat();
+			const flt_type a = v.getFloat();
 			// Get a preliminary return value.
-			int rv = (a == b) ? 0 : 1;
+			int rv = a == b ? 0 : 1;
 			// When not equal bit wise check a gain.
 			if (rv)
 			{
@@ -795,11 +789,12 @@ int Value::compare(const Value& v) const
 					rv = 1;
 				}
 			}
-			rv *= (a > b) ? -1 : 1;
+			rv *= a > b ? -1 : 1;
 			return rv;
 		}
 
-		case vitString: {
+		case vitString:
+		{
 			// Case sensitive compare
 			return std::basic_string_view(_data._ptr, _size - 1).compare(v.getString());
 		}
@@ -808,7 +803,8 @@ int Value::compare(const Value& v) const
 			return _data._ref->compare(v);
 
 		case vitBinary:
-		case vitCustom: {// if the sizes aren't the same the compare criteria is the size
+		case vitCustom:
+		{// if the sizes aren't the same the compare criteria is the size
 			if (v._size != _size)
 			{
 				return v._size >= _size;
@@ -818,11 +814,8 @@ int Value::compare(const Value& v) const
 			{
 				return memcmp(_data._ptr, v._data._ptr, _size);
 			}
-			else
-			{
-				// return greater then
-				return 1;
-			}
+			// return greater then
+			return 1;
 		}
 
 		case vitInvalid:
@@ -842,14 +835,16 @@ Value& Value::round(const Value& v)
 	{
 		switch (_type)
 		{
-			case vitInteger: {
+			case vitInteger:
+			{
 				//_data._int = sf::round(_data._int, v.GetInteger(nullptr));
-				int_type iv = v.getInteger(nullptr);
-				_data._int = ((_data._int + (iv / 2L)) / iv) * iv;
+				const int_type iv = v.getInteger(nullptr);
+				_data._int = (_data._int + iv / 2L) / iv * iv;
 				break;
 			}
 
-			case vitFloat: {
+			case vitFloat:
+			{
 				_data._flt = sf::round(_data._flt, v.getFloat(nullptr));
 				break;
 			}
@@ -875,7 +870,7 @@ Value::operator QString() const
 
 std::ostream& operator<<(std::ostream& os, const Value& v)
 {
-	auto delimiter = '"';
+	constexpr auto delimiter = '"';
 	os << '(' << Value::getType(v.getType()) << ',' << delimiter;
 	// Do only std::string conversion when type is STRING.
 	if (v.getType() == Value::vitString)
@@ -900,7 +895,7 @@ std::istream& operator>>(std::istream& is, Value& v)
 	read_to_delimiter(is, content, '"') >> c;
 	is.get(c);
 	// Get the type value from the string.
-	Value::EType t = Value::getType(type.c_str());
+	const Value::EType t = Value::getType(type.c_str());
 	// When it could not.
 	if (t == Value::vitInvalid)
 	{
@@ -929,15 +924,13 @@ Value Value::calculateOffset(Value value, Value min, Value max, const Value& len
 	max.setType(value.getType());
 	max -= min;
 	value -= min;
-	Value temp = (max && value) ? (value * Value(len) / max) : z;
+	Value temp = max && value ? value * Value(len) / max : z;
 	if (clip)
 	{
 		// Check upper boundary.
-		if (temp > len)
-			return len;
+		if (temp > len) return len;
 		// Check lower boundary.
-		if (temp < z)
-			return z;
+		if (temp < z) return z;
 	}
 	return temp;
 }

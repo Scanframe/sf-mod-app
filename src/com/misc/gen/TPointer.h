@@ -14,11 +14,20 @@ template<typename T>
 class TPointerBase
 {
 	public:
-		T& operator*() { return *P; }
+		T& operator*()
+		{
+			return *P;
+		}
 
-		explicit operator T*() { return P; }
+		explicit operator T*()
+		{
+			return P;
+		}
 
-		int operator!() const { return P == 0; }
+		int operator!() const
+		{
+			return P == 0;
+		}
 
 		T* Relinquish()
 		{
@@ -40,7 +49,10 @@ class TPointerBase
 
 	private:
 		// Prohibit use of new
-		void* operator new(size_t) noexcept { return nullptr; }
+		void* operator new(size_t) noexcept
+		{
+			return nullptr;
+		}
 
 		// Delete only sets pointer to null.
 		void operator delete(void* p)
@@ -67,7 +79,10 @@ class TPointer : public TPointerBase<T>
 			: TBase(pointer)
 		{}
 
-		~TPointer() { delete TBase::P; }
+		~TPointer()
+		{
+			delete TBase::P;
+		}
 
 		TPointer<T>& operator=(T* src)
 		{

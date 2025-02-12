@@ -13,8 +13,7 @@ class UnitConversionPropertyPage;
 class ConversionListModel;
 class FollowersListModel;
 
-class UnitConversionPropertyPage
-	: public PropertyPage
+class UnitConversionPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

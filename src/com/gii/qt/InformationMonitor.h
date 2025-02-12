@@ -10,8 +10,7 @@ namespace sf
  *
  * Instance is automatically delete on close.
  */
-class _GII_CLASS InformationMonitor
-	: public QDialog
+class _GII_CLASS InformationMonitor : public QDialog
 {
 		Q_OBJECT
 

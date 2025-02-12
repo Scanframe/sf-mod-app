@@ -38,8 +38,7 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 		CHECK(q1[sf::Quaternion::imagY] == 3.0);
 		CHECK(q1[sf::Quaternion::imagZ] == 4.0);
 		// Check the initializing constructor using a vector and an angle.
-		sf::Quaternion
-			q2({1.0, 1.0, 1.0}, sf::numbers::pi_v<sf::Quaternion::value_type> / 3.0);
+		sf::Quaternion q2({1.0, 1.0, 1.0}, sf::numbers::pi_v<sf::Quaternion::value_type> / 3.0);
 		CHECK(q2.x() == Approx(0.28867513459481287).margin(sf::Quaternion::tolerance));
 		CHECK(q2.y() == Approx(0.28867513459481287).margin(sf::Quaternion::tolerance));
 		CHECK(q2.z() == Approx(0.28867513459481287).margin(sf::Quaternion::tolerance));
@@ -91,7 +90,13 @@ TEST_CASE("sf::Quaterion", "[con][generic][quaterion]")
 	SECTION("Transformations")
 	{
 		// Check the conversion of a quaternion to a matrix.
-		CHECK((sf::Quaternion(1, 2, 3, 4).toMatrix()) == sf::Matrix44(-0.666666666666666, 0.133333333333333, 0.733333333333333, 0.0, 0.666666666666667, -0.333333333333333, 0.666666666666667, 0.0, 0.333333333333333, 0.933333333333333, 0.133333333333334, 0.0, 0.0, 0.0, 0.0, 1.0));
+		CHECK(
+			(sf::Quaternion(1, 2, 3, 4).toMatrix()) ==
+			sf::Matrix44(
+				-0.666666666666666, 0.133333333333333, 0.733333333333333, 0.0, 0.666666666666667, -0.333333333333333, 0.666666666666667, 0.0, 0.333333333333333,
+				0.933333333333333, 0.133333333333334, 0.0, 0.0, 0.0, 0.0, 1.0
+			)
+		);
 		CHECK(sf::Quaternion(std::sqrt(2.0) / 2, std::sqrt(2.0) / 2, 0, 0).toMatrix() == sf::Matrix44(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1));
 		// Transform a 3D-vector using the quaternion transform function.
 		CHECK(sf::Quaternion(1, 2, 3, 4).normalize().transform(sf::Vector3D(1, 2, 3)) == sf::Vector3D(1.8, 2, 2.6));

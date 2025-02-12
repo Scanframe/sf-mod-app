@@ -35,14 +35,12 @@ class QtThreadClosure
 inline QtThreadClosure::QtThreadClosure(QObject* parent)
 	: QThread(parent)
 	, TClosure<void, QThread&, QObject*>()
-{
-}
+{}
 
 inline QtThreadClosure::QtThreadClosure(const func_type& f, QObject* parent)
 	: QThread(parent)
 	, TClosure<void, QThread&, QObject*>(f)
-{
-}
+{}
 
 inline QtThreadClosure::~QtThreadClosure()
 {

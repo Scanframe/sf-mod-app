@@ -5,6 +5,9 @@ template<typename T>
 TVector3D<T>::TVector3D(const TVector3D<T>& v)
 	: _data(v._data)
 {}
+template<typename T>
+TVector3D<T>::TVector3D(TVector3D<T>&&) noexcept
+{}
 
 template<typename T>
 TVector3D<T>::TVector3D(T xp, T yp, T zp)
@@ -116,8 +119,7 @@ TVector3D<T> TVector3D<T>::operator/(T c) const
 template<typename T>
 bool TVector3D<T>::isEqual(const TVector3D<T>& v, T tol) const
 {
-	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) &&
-		sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol) &&
+	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) && sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol) &&
 		sf::isEqual<T>(_data.coord.z, v._data.coord.z, tol);
 }
 
@@ -262,8 +264,7 @@ template<typename T>
 TVector3D<T> TVector3D<T>::crossProduct(const TVector3D<T>& v) const
 {
 	return {
-		_data.coord.y * v._data.coord.z - _data.coord.z * v._data.coord.y,
-		_data.coord.x * v._data.coord.z - _data.coord.z * v._data.coord.x,
+		_data.coord.y * v._data.coord.z - _data.coord.z * v._data.coord.y, _data.coord.x * v._data.coord.z - _data.coord.z * v._data.coord.x,
 		_data.coord.x * v._data.coord.y - _data.coord.y * v._data.coord.x
 	};
 }
@@ -349,16 +350,14 @@ T TVector3D<T>::distance2D(const TVector3D<T>& v2) const
 template<typename T>
 T TVector3D<T>::distanceSqr(const TVector3D<T>& v2) const
 {
-	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) +
-		(_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y) +
+	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) + (_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y) +
 		(_data.coord.z - v2._data.coord.z) * (_data.coord.z - v2._data.coord.z);
 }
 
 template<typename T>
 T TVector3D<T>::distanceSqr2D(const TVector3D<T>& v2) const
 {
-	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) +
-		(_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y);
+	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) + (_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y);
 }
 
 template<typename T>
@@ -398,10 +397,9 @@ void TVector3D<T>::updateMax(const TVector3D<T>& vertex)
 template<typename T>
 std::string TVector3D<T>::toString() const
 {
-	return '(' +
-		sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
-		sf::toString<T>(isZero(_data.coord.y, tolerance) ? T(0) : _data.coord.y) + ',' +
-		sf::toString<T>(isZero(_data.coord.z, tolerance) ? T(0) : _data.coord.z) + ')';
+	return '(' + sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
+		sf::toString<T>(isZero(_data.coord.y, tolerance) ? T(0) : _data.coord.y) + ',' + sf::toString<T>(isZero(_data.coord.z, tolerance) ? T(0) : _data.coord.z) +
+		')';
 }
 
 template<typename T>

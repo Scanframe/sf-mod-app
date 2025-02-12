@@ -274,8 +274,7 @@ IniProfile::size_type IniProfile::findEntry(const std::string& key)
 	{
 		if (_sections.count() && !key.empty())
 		{
-			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '"
-								<< _sections[_sectionIndex]->_name << "' In File '" << _path << std::endl;
+			std::clog << "IniProfile: Key '" << key << "' Not Found In Section '" << _sections[_sectionIndex]->_name << "' In File '" << _path << std::endl;
 		}
 	}
 	return rv;

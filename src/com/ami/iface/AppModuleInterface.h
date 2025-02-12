@@ -22,8 +22,7 @@ namespace sf
  *
  * This class should provide functionality for loading libraries dynamically and creating implementations
  */
-class _AMI_CLASS AppModuleInterface
-	: public QObject
+class _AMI_CLASS AppModuleInterface : public QObject
 {
 	public:
 		/**

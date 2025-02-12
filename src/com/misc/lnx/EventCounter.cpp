@@ -7,8 +7,7 @@ namespace sf
 
 EventCounter::EventCounter()
 	: _descriptor(-1)
-{
-}
+{}
 
 EventCounter::~EventCounter()
 {

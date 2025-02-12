@@ -8,8 +8,7 @@ namespace sf
 /**
  * @brief Provides a model list for instructions and variables of a script.
  */
-class _MISC_CLASS ScriptListModel
-	: public QAbstractListModel
+class _MISC_CLASS ScriptListModel : public QAbstractListModel
 {
 	public:
 		/**

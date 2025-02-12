@@ -20,29 +20,29 @@ class QDESIGNER_WIDGET_EXPORT VariableCheckBox : public VariableWidgetBase
 		explicit VariableCheckBox(QWidget* parent = nullptr);
 
 		/**
-		 * Gets the name level shown.
+		 * @brief Gets the name level shown.
 		 */
 		[[nodiscard]] int nameLevel() const;
 		/**
-		 * Sets the name level shown.
+		 * @brief Sets the name level shown.
 		 */
 		void setNameLevel(int level = -1);
 
 	protected:
 		/**
-		 * @brief Overridden from base class '#ObjectExtension'.
+		 * @brief Overridden from base class '#sf::ObjectExtension'.
 		 */
 		bool isRequiredProperty(const QString& name) override;
 
 		/**
-		 * @brief Overridden from base class '#VariableWidgetBase'.
+		 * @brief Overridden from base class '#sf::VariableWidgetBase'.
 		 */
 		void applyReadOnly(bool yn) override;
 
 	private:
 		/**
-	 * @brief Forward definition of private implemented class to prevent interfaces exposure.
-	 */
+	  * @brief Forward definition of private implemented class to prevent interfaces exposure.
+	  */
 		struct Private;
 
 		Q_DISABLE_COPY(VariableCheckBox)

@@ -321,15 +321,13 @@ inline const T* TFifoClass<T>::getBuffer(TFifoClass<T>::size_type pos) const
 }
 
 template<typename T>
-inline typename TFifoClass<T>::size_type
-TFifoClass<T>::getTail() const
+inline typename TFifoClass<T>::size_type TFifoClass<T>::getTail() const
 {
 	return _tail;
 }
 
 template<typename T>
-inline typename TFifoClass<T>::size_type
-TFifoClass<T>::getHead() const
+inline typename TFifoClass<T>::size_type TFifoClass<T>::getHead() const
 {
 	return _head;
 }

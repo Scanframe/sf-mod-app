@@ -204,9 +204,15 @@ struct _GMI_CLASS ResultInfo
 {
 		ResultInfo() = default;
 
-		ResultInfo(const ResultInfo& pi) { Copy(pi); }
+		ResultInfo(const ResultInfo& pi)
+		{
+			Copy(pi);
+		}
 
-		ResultInfo& operator=(const ResultInfo& pi) { return Copy(pi); }
+		ResultInfo& operator=(const ResultInfo& pi)
+		{
+			return Copy(pi);
+		}
 
 		void Init()
 		{

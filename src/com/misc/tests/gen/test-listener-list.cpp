@@ -29,9 +29,7 @@ struct MyListener : sf::ListenerList
 
 		void linkIt(MyEmitter* emitter)
 		{
-			MyEmitter::listener_type::func_type lambda = [&](std::string& s) {
-				s += offset;
-			};
+			MyEmitter::listener_type::func_type lambda = [&](std::string& s) { s += offset; };
 			// Hookup a lambda function.
 			link_ptr = emitter->emitter.linkListener(this, lambda);
 		}

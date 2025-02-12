@@ -7,8 +7,7 @@
 namespace sf
 {
 
-class _AMI_CLASS AppModuleActions
-	: public QObject
+class _AMI_CLASS AppModuleActions : public QObject
 {
 		Q_OBJECT
 

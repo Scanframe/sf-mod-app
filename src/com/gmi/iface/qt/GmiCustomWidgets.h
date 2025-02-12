@@ -8,7 +8,8 @@ namespace sf
 /**
  * @brief Implementation of interface class for the creation of GII custom widgets.
  */
-class GmiCustomWidgets : public QObject
+class GmiCustomWidgets
+	: public QObject
 	, public QDesignerCustomWidgetCollectionInterface
 {
 		Q_OBJECT

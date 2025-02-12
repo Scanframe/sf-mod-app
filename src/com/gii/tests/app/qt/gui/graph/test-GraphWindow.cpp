@@ -16,17 +16,11 @@ GraphWindow::GraphWindow(QWidget* parent)
 	setWindowIcon(QIcon(":logo/ico/scanframe"));
 	connect(ui->drawWidget, &sf::DrawWidget::paint, this, &GraphWindow::onPaint);
 	connect(ui->slider, &QSlider::valueChanged, this, &GraphWindow::onSlider);
-	connect(ui->leValueStart, &QLineEdit::textChanged, [&]() {
-		ui->drawWidget->update();
-	});
-	connect(ui->leValueStop, &QLineEdit::textChanged, [&]() {
-		ui->drawWidget->update();
-	});
+	connect(ui->leValueStart, &QLineEdit::textChanged, [&]() { ui->drawWidget->update(); });
+	connect(ui->leValueStop, &QLineEdit::textChanged, [&]() { ui->drawWidget->update(); });
 	for (auto i: {ui->cbDebug, ui->cbLeft, ui->cbRight, ui->cbTop, ui->cbBottom})
 	{
-		connect(i, &QCheckBox::clicked, [&]() {
-			ui->drawWidget->update();
-		});
+		connect(i, &QCheckBox::clicked, [&]() { ui->drawWidget->update(); });
 	}
 }
 

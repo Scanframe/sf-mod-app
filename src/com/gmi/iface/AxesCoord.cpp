@@ -262,8 +262,7 @@ AxesCoord::ECompare AxesCoord::compare(const AxesCoord& ac, const AxesCoord& tol
 	return compare(ac, tolerance, AxisLocations() << alC << alD);
 }
 
-AxesCoord::ECompare
-AxesCoord::compare(const AxesCoord& ac, const AxesCoord& tolerances, const AxisLocations rad_unlimited) const
+AxesCoord::ECompare AxesCoord::compare(const AxesCoord& ac, const AxesCoord& tolerances, const AxisLocations rad_unlimited) const
 {
 	TSet<int> cmp;
 	// Get the mapped values which can be compared.

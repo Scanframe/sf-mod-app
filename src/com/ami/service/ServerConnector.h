@@ -6,8 +6,7 @@
 namespace sf
 {
 
-class ServerConnector
-	: public QObject
+class ServerConnector : public QObject
 {
 	public:
 		explicit ServerConnector(QObject* parent);

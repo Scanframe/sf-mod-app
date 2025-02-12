@@ -26,8 +26,7 @@ struct LayoutEditor::Data : LayoutData
 		explicit Data(LayoutEditor* parent)
 			: LayoutData(parent)
 			, _layoutEditor(parent)
-		{
-		}
+		{}
 
 		void popupContextMenu(QObject* target, const QPoint& pos) override
 		{
@@ -307,25 +306,15 @@ bool LayoutEditor::isModified() const
 	return _modified;
 }
 
-void LayoutEditor::cut()
-{
-}
+void LayoutEditor::cut() {}
 
-void LayoutEditor::copy()
-{
-}
+void LayoutEditor::copy() {}
 
-void LayoutEditor::paste()
-{
-}
+void LayoutEditor::paste() {}
 
-void LayoutEditor::undo()
-{
-}
+void LayoutEditor::undo() {}
 
-void LayoutEditor::redo()
-{
-}
+void LayoutEditor::redo() {}
 
 void LayoutEditor::develop()
 {

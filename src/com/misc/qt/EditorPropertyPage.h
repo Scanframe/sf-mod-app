@@ -11,8 +11,7 @@ class EditorPropertyPage;
 namespace sf
 {
 
-class _MISC_CLASS EditorPropertyPage
-	: public PropertyPage
+class _MISC_CLASS EditorPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

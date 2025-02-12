@@ -1,7 +1,6 @@
 #include "AxesCoordEdit.h"
 #include <QHBoxLayout>
 #include <QLabel>
-#include <misc/gen/ScriptEngine.h>
 
 namespace sf
 {

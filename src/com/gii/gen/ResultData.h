@@ -36,7 +36,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Copy constructor.
-		 *
 		 * Sets the reference as the passed instance.
 		 * @param rd Instance to having the reference to assign.
 		 */
@@ -44,7 +43,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Constructor for creating an instance that attaches to an existing reference by id.
-		 *
 		 * @param id Identifying number.
 		 * @param set_desired When true the desired id is set as the passed id.
 		 */
@@ -52,19 +50,17 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Constructor for creating a completely new reference.
-		 *
 		 * @param definition Comma separated string with fields according the #EField enumerate.
 		 * @param id_ofs offset added to the id passed in the string.
 		 */
-		explicit inline ResultData(const std::string& definition, ResultData::id_type id_ofs = 0);
+		explicit inline ResultData(const std::string& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Creates a new result using the passed definition structure.
-		 *
 		 * @param definition Definition structure.
 		 * @param id_ofs offset given to the id.
 		 */
-		explicit inline ResultData(const Definition& definition, ResultData::id_type id_ofs = 0);
+		explicit inline ResultData(const Definition& definition, id_type id_ofs = 0);
 
 		/**
 		 * @brief Overridden destructor.
@@ -73,7 +69,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Creates a new reference from a setup string for this instance.
-		 *
 		 * @param definition Comma separated string with fields according the #EField enumerate.
 		 * @param id_ofs offset for the id in the definition string.
 		 * @return True when successful.
@@ -82,7 +77,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Creates a new TResultDataReference from a structure for this instance.
-		 *
 		 * @param definition Definition structure.
 		 * @param id_ofs offset given to the definition id.
 		 * @return True when successful.
@@ -91,7 +85,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Sets reference as the reference in the past instance.
-		 *
 		 * @param rd Instance to get the source reference from.
 		 * @return True when successful.
 		 */
@@ -99,7 +92,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Sets reference to other by id.
-		 *
 		 * The global list of references is searched for the passed id and referenced when found.
 		 * When found event #reIdChanged is emitted.
 		 * When the desired id was set and changed the #reDesiredId event is emitted.
@@ -108,18 +100,16 @@ class _GII_CLASS ResultData
 		 * @param set_did When true the desired id is set to the passed 'id'.
 		 * @return True when found and referenced.
 		 */
-		inline bool setup(ResultData::id_type id, bool set_did = false);
+		inline bool setup(id_type id, bool set_did = false);
 
 		/**
 		 * @brief Gets the setup string for this instance.
-		 *
 		 * @return Setup string as initially created.
 		 */
 		[[nodiscard]] std::string getSetupString() const;
 
 		/**
 		 * @brief Sets the accessible range.
-		 *
 		 * When needed the method calls #setReservedBlockCount() to match the given range emitting the #reReserve event.
 		 * When the range is increased an #reAccessChange event is emitted.
 		 * @param rng Accessible range in blocks.
@@ -130,7 +120,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Same as #setAccessRange where the start value is default 0.
-		 *
 		 * @param stop End of range in blocks.
 		 * @param skip_self True when skipping this instance's handler.
 		 * @return True when a change was made to the range and false if not.
@@ -140,15 +129,13 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Sets an event handler for this instance.
-		 *
-		 * @param handler Passing NULL will disable the link.
+		 * @param handler Passing a 'nullptr' will disable the link.
 		 */
 		void setHandler(ResultDataHandler* handler);
 
 		/**
 		 * @brief Gets the handler pointer of this instance set with #setHandler().
-		 *
-		 * @return Handler object or NULL when not assigned.
+		 * @return Handler object or 'nullptr' when is not assigned.
 		 * @see #setHandler()
 		 */
 		[[nodiscard]] const ResultDataHandler* getHandler() const
@@ -164,46 +151,40 @@ class _GII_CLASS ResultData
 		/**
 		 * @brief Gets reference of the owning instance.
 		 */
-		ResultData& getOwner();
+		ResultData& getOwner() const;
 
 		/**
 		 * @brief Checks if this is the owner of this result.
-		 *
 		 * @return True when this instance is the owning instance.
 		 */
 		[[nodiscard]] bool isOwner() const;
 
 		/**
 		 * @brief Sets the void pointer data member for general purposes to cast in a handler.
-		 *
 		 * @param data Pointer
 		 */
 		inline void setUserData(void* data);
 
 		/**
 		 * @brief Gets the UserData void pointer data member.
-		 *
 		 * @return Pointer to cast.
 		 */
 		[[nodiscard]] inline void* getUserData() const;
 
 		/**
 		 * @brief Gets the instance validity.
-		 *
 		 * @return True when valid.
 		 */
 		[[nodiscard]] bool isValid() const;
 
 		/**
 		 * @brief Returns the correction offset for each value to get the real value.
-		 *
 		 * @return offset of the value.
 		 */
 		[[nodiscard]] data_type getValueOffset() const;
 
 		/**
 		 * @brief Gets the value range (max) taking the significant bits into account.
-		 *
 		 * @return Max value.
 		 */
 		[[nodiscard]] data_type getValueRange() const;
@@ -211,7 +192,6 @@ class _GII_CLASS ResultData
 		/**
 		 * @brief Returns the value derived from a buffer data pointer mapped to the
 		 * appropriate type and corrected with the results offset.
-		 *
 		 * @param data Pointer to element.
 		 * @return Signed integer data value.
 		 */
@@ -219,7 +199,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Same as getValue but no offset is added.
-		 *
 		 * @param data Pointer to element.
 		 * @return Unsigned integer data value.
 		 */
@@ -227,7 +206,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Same as #getValue() but now from the instance at the passed index from the array of the results type.
-		 *
 		 * @param idx Index offset into the data.
 		 * @param data Pointer to element.
 		 * @return Signed integer data value.
@@ -236,7 +214,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Same as getValue but no offset is added.
-		 *
 		 * @param idx
 		 * @param data
 		 * @return
@@ -263,7 +240,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the result data name which is default the full result data path name.
-		 *
 		 * When levels is 'n' and larger than zero the last 'n' levels are returned.
 		 * When levels is 'n' and smaller than zero the first 'n' levels are omitted.
 		 * @param levels
@@ -273,14 +249,12 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the amount of levels of the fullname path.
-		 *
 		 * @return Name string
 		 */
 		[[nodiscard]] int getNameLevelCount() const;
 
 		/**
 		 * @brief Gets the instance description.
-		 *
 		 * @return Name string
 		 */
 		[[nodiscard]] std::string getDescription() const;
@@ -292,7 +266,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Sets the desired id member variable to the passed id.
-		 *
 		 * If the passed 'id' is zero the automatic attachment mechanism is disabled.
 		 * @param id DesiredId
 		 */
@@ -303,14 +276,14 @@ class _GII_CLASS ResultData
 		 * @param data Could be a pointer cast value.
 		 */
 		template<typename T>
-		inline void setData(T data);
+		void setData(T data);
 
 		/**
 		 * @brief Gets the data for this instance for user purposes Set with setData().
 		 * @return Could be a pointer cast value.
 		 */
 		template<typename T = uint64_t>
-		[[nodiscard]] inline T getData() const;
+		[[nodiscard]] T getData() const;
 
 		/**
 		 * @brief Gets the usage count of this result reference.
@@ -320,7 +293,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Returns reference to underlying multithreaded safe storage class.
-		 *
 		 * To access the data a local data store class must be wrapped around it.
 		 * @return Reference to the file map storage class.
 		 */
@@ -342,42 +314,36 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the block size in bytes.
-		 *
 		 * @return Size of block in bytes.
 		 */
 		[[nodiscard]] size_type getBlockSize() const;
 
 		/**
 		 * @brief Gets the accessible block count which does not mean it is valid.
-		 *
 		 * @return Amount of blocks.
 		 */
 		[[nodiscard]] Range::size_type getBlockCount() const;
 
 		/**
 		 * @brief Gets the segment size in blocks.
-		 *
 		 * @return Blocks in a single segment.
 		 */
 		[[nodiscard]] FileMappedStorage::size_type getSegmentSize() const;
 
 		/**
 		 * @brief Gets the accessible segment count.
-		 *
 		 * @return Amount of segments.
 		 */
 		[[nodiscard]] FileMappedStorage::size_type getSegmentCount() const;
 
 		/**
 		 * @brief Get the amount of reserved blocks.
-		 *
 		 * @return Amount of blocks
 		 */
 		[[nodiscard]] FileMappedStorage::size_type getReservedBlockCount() const;
 
 		/**
 		 * @brief Returns the total reserved size in bytes for this instance.
-		 *
 		 * Taking recycling into account. Don't use this to see if enough data is reserved or so.
 		 * @return Amount of blocks.
 		 */
@@ -385,7 +351,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Reads blocks from the storage using an offset.
-		 *
 		 * This function also calls #isRangeValid() to check the validity of the data.
 		 * @param ofs offset in blocks as start to read.
 		 * @param sz Size in blocks to read.
@@ -397,7 +362,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Reads a range of blocks from storage.
-		 *
 		 * This function also calls #isRangeValid() to check the validity of the data.
 		 * @param rng Range of blocks to read.
 		 * @param dest Destination to write the data to.
@@ -409,26 +373,23 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Reads a range when this instance holds indices.
-		 *
 		 * An index instance groups blocks together for processing/imaging purposes.
 		 * @param ofs offset in the storage container to read the index range.
 		 * @param range Resulting range that was read.
 		 * @return True on success false on failure and not valid.
 		 */
-		bool readIndexRange(Range::size_type ofs, Range& range);
+		bool readIndexRange(Range::size_type ofs, Range& range) const;
 
 		/**
 		 * @brief Reads a range when this instance holds indices.
-		 *
 		 * @param index Range pointing to the first index and the last index value to read.
 		 * @param range Resulting range that was read.
 		 * @return True on success false on failure and not valid.
 		 */
-		bool readIndexRange(const Range& index, Range& range);
+		bool readIndexRange(const Range& index, Range& range) const;
 
 		/**
 		 * @brief Checks if the passed block range depicted by offset and size is valid to access/read.
-		 *
 		 * @param ofs offset in blocks.
 		 * @param sz Size in blocks.
 		 * @return True when the passed range is valid to read.
@@ -437,7 +398,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Checks if the passed block range is valid to access/read.
-		 *
 		 * @param rng Range in blocks.
 		 * @return True when the passed range is valid to read.
 		 * @see #isRangeValid()
@@ -446,7 +406,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets if the specified index range is valid.
-		 *
 		 * @param rng Index range being validated.
 		 * @return True when valid.
 		 */
@@ -454,15 +413,13 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the accessible block range where the stop value.
-		 * is the same as the result of calling 'getBlockCount'.
-		 *
+		 * Is the same as the result of calling 'getBlockCount'.
 		 * @return Accessible range.
 		 */
 		[[nodiscard]] const Range& getAccessRange() const;
 
 		/**
 		 * @brief Returns a copy of the client requests that are out for data for only the owner.
-		 *
 		 * This list is already narrowed down to essential ranges.
 		 * @param requests Returned ranges of outstanding current requests.
 		 * @return True on success.
@@ -471,7 +428,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Returns the ranges which are bound by the segment bounds.
-		 *
 		 * @param req_list
 		 * @return True when successful.
 		 */
@@ -484,14 +440,12 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the transaction id used in requests of data.
-		 *
 		 * @return The transaction id.
 		 */
 		[[nodiscard]] inline Range::id_type getTransId() const;
 
 		/**
 		 * @brief For owners to writes data to storage in using an offset and size in blocks.
-		 *
 		 * Written data needs to be committed using #commitValidations() which emits the events to all event handlers.
 		 * Passing #npos as offset means that the data is appended and getBlockCount is called internally to get the offset.
 		 * @param ofs When the value is #npos the data is appended.
@@ -515,7 +469,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Commits all validated ranges and to notifies assigned handlers.
-		 *
 		 * Emits the #reCommitted event to all handlers of this instance.
 		 * @param skip_self True when skipping this instance's handler.
 		 * @see #blockWrite()
@@ -524,7 +477,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Sets the amount of blocks to reserve only for owners.
-		 *
 		 * This method is called underwater when 'auto_reserve' is true in a call to #blockWrite().
 		 * Emits event #reReserve to all instance handlers.
 		 * @param sz Blocks to reserve.
@@ -535,46 +487,40 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Clears all the valid ranges of this instance.
-		 *
 		 * It generates an event #reClear before it is actually cleared.
 		 * @param skip_self True when skipping this instance's handler.
 		 * @return True when clear had any effect if not no event was generated.
 		 */
-		bool clearValidations(bool skip_self = false);
+		bool clearValidations(bool skip_self = false) const;
 
 		/**
 		 * @brief Adds a validated range of blocks for committing later. Only available for owners.
-		 *
 		 * This method is useful when file mapped storage is written when locking it in memory
 		 * when not using method #blockWrite() which implies this.
 		 * @param ofs offset in blocks.
 		 * @param sz Size in blocks.
 		 * @see #commitValidations()
 		 */
-		inline void validateRange(Range::size_type ofs, Range::size_type sz);
+		inline void validateRange(Range::size_type ofs, Range::size_type sz) const;
 
 		/**
 		 * @brief Adds a validated range of blocks for committing later. Only available for owners.
-		 *
 		 * This method is useful when file mapped storage is written when locking it in memory
 		 * when not using method #blockWrite() which implies this.
 		 * @param rng Range blocks.
 		 * @see #commitValidations()
 		 */
-		void validateRange(Range rng);
+		void validateRange(Range rng) const;
 
 		/**
 		 * @brief Like #validateRange() but for a vector/list of ranges.
-		 *
 		 * @param rl List of ranges.
-		 *
 		 * @see #validateRange()
 		 */
-		void validateRange(const Range::Vector& rl);
+		void validateRange(const Range::Vector& rl) const;
 
 		/**
 		 * @brief Requests a range using offset and size in blocks to validate.
-		 *
 		 * Emits event #reGetRange to the owner when a handler is assigned to it.
 		 * Returns false when the request was rejected by the range manager due to being already valid or
 		 * when the range is not within the current accessible range.
@@ -586,7 +532,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Requests a range in blocks to validate.
-		 *
 		 * @param rng Range in blocks.
 		 * @return True when the request was excepted.
 		 * @see #requestRange()
@@ -595,7 +540,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Same as #requestRange() but for when this instance is an index.
-		 *
 		 * @param rng Requested index range.
 		 * @return True when the request was excepted.
 		 * @see #requestRange()
@@ -604,14 +548,12 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Clears the outstanding requests for only this instance.
-		 *
 		 * Enables making fresh start in events.
 		 */
-		void clearRequests();
+		void clearRequests() const;
 
 		/**
 		 * @brief Check if a certain flag or flags (mask) are set.
-		 *
 		 * @param flag One or a combination of flags.
 		 * @return True when the flag is or are set.
 		 */
@@ -635,26 +577,23 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the current flags as a string.
-		 *
 		 * @return Flags string.
 		 */
 		[[nodiscard]] std::string getCurFlagsString() const;
 
 		/**
 		 * @brief Gets the original setup flags as a string.
-		 *
 		 * @return Flags string.
 		 */
 		[[nodiscard]] std::string getFlagsString() const;
 
 		/**
 		 * @brief Sets a new set flags for this instance allowed by owners only.
-		 *
-		 * @param flag One or a combination of flags.
+		 * @param flags One or a combination of flags.
 		 * @param skip_self True when skipping this instance's handler.
 		 * @return True when successful.
 		 */
-		bool updateFlags(int flag, bool skip_self);
+		bool updateFlags(int flags, bool skip_self);
 
 		/**
 		 * @brief Gets the set of flags at setup time.
@@ -664,26 +603,23 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the current flags of this instance.
-		 *
 		 * @return One or a combination of flags.
 		 */
 		[[nodiscard]] flags_type getCurFlags() const;
 
 		/**
 		 * @brief Gets the type from the passed string name.
-		 *
 		 * @param type String depicting a data type like 'INT32'.
 		 * @return #rtInvalid when not existing and the correct type otherwise.
 		 */
-		static EType getType(const char* type);
+		static EType getType(std::string_view type);
 
 		/**
 		 * @brief Gets the string typename of the passed enumerate value.
-		 *
 		 * @param type Enumerate value.
 		 * @return Typename string.
 		 */
-		static const char* getType(EType type);
+		static std::string getType(EType type);
 
 		/**
 		 * @brief Gets current type of the instance.
@@ -693,17 +629,16 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the size of the passed enumerate type value.
-		 *
 		 * @param type Enumerate type value.
 		 * @return Size in bytes.
 		 */
-		static ResultData::size_type getTypeSize(EType type);
+		static size_type getTypeSize(EType type);
 
 		/**
 		 * @brief Gets the byte size of this instance's type.
 		 * @return Size in bytes.
 		 */
-		[[nodiscard]] inline ResultData::size_type getTypeSize() const;
+		[[nodiscard]] inline size_type getTypeSize() const;
 
 		/**
 		 * @brief Gets the significant bits of the type used for this result
@@ -713,7 +648,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets the amount of references in the system.
-		 *
 		 * In fact the amount references in the system excluding the zero one.
 		 * @return Amount of references.
 		 */
@@ -728,7 +662,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets a list of owner instances available.
-		 *
 		 * Useful in populating a selection dialog.
 		 * @return Vector of instance pointers.
 		 */
@@ -741,15 +674,13 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets instance with the given id otherwise the zero instance.
-		 *
 		 * @param id Identifier integer.
 		 * @return Reference to instance.
 		 */
-		static const ResultData& getInstanceById(ResultData::id_type id);
+		static const ResultData& getInstanceById(id_type id);
 
 		/**
 		 * @brief Finds instance in the past vector having the passed id.
-		 *
 		 * When not found it te returns a reference to the zero instance.
 		 * @param id Identifier.
 		 * @param list
@@ -765,17 +696,16 @@ class _GII_CLASS ResultData
 		 * @param list
 		 * @return
 		 */
-		static const ResultData& getInstanceBySequenceId(ResultData::id_type seq_id, const PtrVector& list);
+		static const ResultData& getInstanceBySequenceId(id_type seq_id, const PtrVector& list);
 
 		/**
 		 * @brief Gets the total amount of bytes reserved by all instances.
 		 * @return Amount in bytes.1
 		 */
-		static ResultData::size_type getTotalReservedSize();
+		static size_type getTotalReservedSize();
 
 		/**
 		 * @brief Setup multiple instances from an input stream.
-		 *
 		 * Useful when reading a data file.
 		 * @param is Input stream definition strings.
 		 * @param list Returns vector of created instances.
@@ -795,7 +725,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Read new multiple current access range and current flags are read from stream.
-		 *
 		 * Used in communication between applications.
 		 * @param is Input stream.
 		 * @param skip_self When true no events are send to this instance itself.
@@ -805,7 +734,7 @@ class _GII_CLASS ResultData
 		static bool readUpdate(std::istream& is, bool skip_self, PtrVector& list = null_ref<PtrVector>());
 
 		/**
-		 * Fills a definition structure from a string.
+		 * @brief Fills a definition structure from a string.
 		 * On failure the _valid field is set to false.
 		 * @param str Definition string
 		 * @return Definition structure
@@ -814,7 +743,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Gets flags enumerate combination of the passed flags string.
-		 *
 		 * @param flags Flags string.
 		 * @return Combination of enumerate #EFlag.
 		 */
@@ -829,7 +757,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Assigns the reference of the passed instance.
-		 *
 		 * Calls actually #setup(const ResultData& rd).
 		 * @param rd Source instance
 		 * @return Lvalue
@@ -838,7 +765,6 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Comparison operator.
-		 *
 		 * @param rd Result data to compare.
 		 * @return True when the same.
 		 */
@@ -852,12 +778,12 @@ class _GII_CLASS ResultData
 
 	private:
 		/**
-		 * Zero variable constructor.
+		 * @brief Zero variable constructor.
 		 */
 		explicit ResultData(void*, void*);
 
 		/**
-		 * Function called by the setup function.
+		 * @brief Called by the setup function.
 		 * @param ref
 		 * @param segment_size
 		 * @param block_size
@@ -867,26 +793,24 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Initiate event for all instances of this result if params was set by  this param is ignored.
-		 *
+		 * @param event Event to be handled.
 		 * @param rng Range passed to handler.
 		 * @param skip_self When true no events are send to this instance itself.
 		 * @return Amount of events sent.
 		 */
-		size_type emitLocalEvent(EEvent event, const Range& rng, bool skip_self = true);
+		[[maybe_unused]] size_type emitLocalEvent(EEvent event, const Range& rng, bool skip_self = true) const;
 
 		/**
-		 * @brief Initiate event for all result instances if param was set by setHandler this past param is used.
-		 *
+		 * @brief Initiate event for all result instances if param was set by #setHandler this past param is used.
 		 * @param event event passed to handler.
 		 * @param rng Range passed to handler.
 		 * @param skip_self When true no events are send to this instance itself.
 		 * @return Amount of events sent.
 		 */
-		size_type emitGlobalEvent(EEvent event, const Range& rng, bool skip_self = true);
+		[[maybe_unused]] size_type emitGlobalEvent(EEvent event, const Range& rng, bool skip_self = true) const;
 
 		/**
 		 * @brief Emits an event to a handler when one is assigned.
-		 *
 		 * This is the only function which calls this assigned instance handler directly.
 		 * @param event Event passed to handler.
 		 * @param caller Instance passed as caller to handler.
@@ -897,22 +821,19 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Get a reference by ID if not exist.
-		 *
 		 * @param id Identifier.
 		 * @return Reference.
 		 */
-		static ResultDataReference* getReferenceById(ResultData::id_type id);
+		static ResultDataReference* getReferenceById(id_type id);
 
 		/**
 		 * @brief Iterates all instances for the passed handler and removes it.
-		 *
 		 * @param handler Handler to remove.
 		 */
-		static void removeHandler(ResultDataHandler* handler);
+		static void removeHandler(const ResultDataHandler* handler);
 
 		/**
 		 * @brief Private function to attach the result to this reference replacing the existing one.
-		 *
 		 * @param ref Variable reference to attach to.
 		 * @return True on success.
 		 */
@@ -920,14 +841,12 @@ class _GII_CLASS ResultData
 
 		/**
 		 * @brief Attaches all instances that have the desired id set as this one.
-		 *
 		 * @return Amount of attached instances.
 		 */
-		ResultData::size_type attachDesired();
+		size_type attachDesired() const;
 
 		/**
 		 * @brief Enables or disables recycling mode and flag. Does not generate an event.
-		 *
 		 * @param recycle
 		 * @return True on success.
 		 */
@@ -944,7 +863,7 @@ class _GII_CLASS ResultData
 		/**
 		 * @brief This transfer ID member identifies this instance when an
 		 * event is generated for a specific result as a result of a request made by this specific result.
-		 * This value is set and reset  by the 'setHandler' member function.
+		 * This value is set and reset  by the #setHandler member function.
 		 */
 		Range::id_type _transactionId{0};
 		/**
@@ -963,31 +882,26 @@ class _GII_CLASS ResultData
 	public:
 		/**
 		 * @brief Sets the debug flag for this instance reference.
-		 *
 		 * @param debug True to enable.
 		 */
-		void setDebug(bool debug);
+		void setDebug(bool debug) const;
 		/**
 		 * @brief Gets the debug flag of the instance reference.
-		 *
 		 * @return True when enabled.
 		 */
 		[[nodiscard]] inline bool isDebug() const;
 		/**
 		 * @brief Gets the name of the passed #EEvent number.
-		 * @param event The event number.
-		 * @return String with name.
+		 * @param event The event enumerate/number.
+		 * @return The event name.
 		 */
-		static const char* getEventName(EEvent event);
+		static std::string_view getEventName(EEvent event);
 
 		/**
 		 * @brief Gets the underlying reference class of this instance.
 		 * @return Reference class.
 		 */
-		const ResultDataReference& getReference()
-		{
-			return *_reference;
-		}
+		inline const ResultDataReference& getReference() const;
 
 		/**
 		 * @brief Gets a vector of ranges still to be committed.
@@ -1002,7 +916,8 @@ class _GII_CLASS ResultData
 		[[nodiscard]] const Range::Vector& getValidatedList() const;
 
 		/**
-		 * @brief Returns the accumulation of locks on segments.
+		 * @brief Gets the accumulation of locks on segments.
+		 * @return The amount of locked segments.
 		 */
 		[[nodiscard]] size_type getSegmentLocks() const;
 
@@ -1028,17 +943,17 @@ inline ResultData::ResultData(const ResultData& rd)
 	setup(rd);
 }
 
-inline ResultData::ResultData(ResultData::id_type id, bool set_desired)
+inline ResultData::ResultData(id_type id, bool set_desired)
 {
 	setup(id, set_desired);
 }
 
-inline ResultData::ResultData(const std::string& definition, ResultData::id_type id_ofs)
+inline ResultData::ResultData(const std::string& definition, id_type id_ofs)
 {
 	setup(definition, id_ofs);
 }
 
-inline ResultData::ResultData(const Definition& definition, ResultData::id_type id_ofs)
+inline ResultData::ResultData(const Definition& definition, id_type id_ofs)
 {
 	setup(definition, id_ofs);
 }
@@ -1054,7 +969,7 @@ inline bool ResultData::setup(const ResultData& rd)
 	return attachRef(rd._reference);
 }
 
-inline bool ResultData::setup(ResultData::id_type id, bool set_did)
+inline bool ResultData::setup(id_type id, bool set_did)
 {
 	if (set_did)
 	{
@@ -1087,6 +1002,11 @@ inline ResultData::id_type ResultData::getDesiredId() const
 	return _desiredId;
 }
 
+inline const ResultDataReference& ResultData::getReference() const
+{
+	return *_reference;
+}
+
 inline ResultData::size_type ResultData::getBufferSize(const Range& rng) const
 {
 	return getBufferSize(rng.getSize());
@@ -1107,7 +1027,7 @@ inline Range::id_type ResultData::getTransId() const
 	return _transactionId;
 }
 
-inline void ResultData::validateRange(Range::size_type ofs, Range::size_type sz)
+inline void ResultData::validateRange(Range::size_type ofs, Range::size_type sz) const
 {
 	validateRange(Range(ofs, ofs + sz));
 }
@@ -1119,7 +1039,7 @@ inline bool ResultData::requestRange(Range::size_type ofs, Range::size_type sz)
 
 inline bool ResultData::setAccessRange(Range::size_type stop, bool skip_self)
 {
-	return ResultData::setAccessRange(Range(0, stop), skip_self);
+	return setAccessRange(Range(0, stop), skip_self);
 }
 
 inline ResultData::size_type ResultData::getTypeSize() const
@@ -1128,15 +1048,15 @@ inline ResultData::size_type ResultData::getTypeSize() const
 }
 
 template<typename T>
-inline void ResultData::setData(T data)
+void ResultData::setData(T data)
 {
-	_data = (uint64_t) data;
+	_data = toDataType(data);
 }
 
 template<typename T>
-[[nodiscard]] inline T ResultData::getData() const
+[[nodiscard]] T ResultData::getData() const
 {
-	return (T) _data;
+	return fromDataType<T>(_data);
 }
 
 inline bool ResultData::isDebug() const

@@ -55,6 +55,44 @@ class _GII_CLASS InformationTypes
 		 * @brief Unsigned size value indicating not found or no index.
 		 */
 		static constexpr size_t npos = std::numeric_limits<size_type>::max();
+
+		/**
+		 * @brief Casts any type to a #data_type value.
+		 * @tparam T Type to be converted but equal or less than the size of #data_type.
+		 * @param value Data type value.
+		 * @return Cast value.
+		 */
+		template<typename T>
+		constexpr std::enable_if_t<(sizeof(T) <= sizeof(data_type)), data_type> toDataType(T value) const
+		{
+			if constexpr (std::is_pointer_v<T>)
+			{
+				return reinterpret_cast<data_type>(value);// Safe for pointers
+			}
+			else
+			{
+				return static_cast<data_type>(value);// Safe for integral and smaller types
+			}
+		}
+
+		/**
+		 * @brief Casts a #data_type value to a given type.
+		 * @tparam T Type to be converted but equal or less than the size of #data_type.
+		 * @param value
+		 * @return Cast value.
+		 */
+		template<typename T>
+		constexpr std::enable_if_t<(sizeof(T) <= sizeof(data_type)), T> fromDataType(data_type value) const
+		{
+			if constexpr (std::is_pointer_v<T>)
+			{
+				return reinterpret_cast<T>(value);
+			}
+			else
+			{
+				return static_cast<T>(value);
+			}
+		}
 };
 
 }// namespace sf

@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief Base class for a script to implementing
  */
-class _MISC_CLASS ScriptGlobalObject
-	: public ScriptObject
+class _MISC_CLASS ScriptGlobalObject : public ScriptObject
 {
 	public:
 		explicit ScriptGlobalObject(const Parameters&);

@@ -12,8 +12,7 @@ class PropertySheetDialog;
 /**
  * @brief Widget to create a page in a PropertySheet dialog.
  */
-class _MISC_CLASS PropertyPage
-	: public QWidget
+class _MISC_CLASS PropertyPage : public QWidget
 {
 		Q_OBJECT
 

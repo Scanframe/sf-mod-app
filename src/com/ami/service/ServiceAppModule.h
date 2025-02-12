@@ -5,8 +5,7 @@
 namespace sf
 {
 
-class ServiceAppModule
-	: public AppModuleInterface
+class ServiceAppModule : public AppModuleInterface
 {
 		Q_OBJECT
 

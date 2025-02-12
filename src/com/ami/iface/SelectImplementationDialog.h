@@ -13,8 +13,7 @@ namespace Ui
 class SelectImplementationDialog;
 }
 
-class _AMI_CLASS SelectImplementationDialog
-	: public QDialog
+class _AMI_CLASS SelectImplementationDialog : public QDialog
 {
 		Q_OBJECT
 

@@ -60,6 +60,7 @@ set(SOURCES
 	gen/Condition.cpp gen/Condition.h
 	gen/Thread.cpp gen/Thread.h
 	gen/ThreadClosure.h
+	gen/TClosure.h
 	gen/ThreadRelay.cpp gen/ThreadRelay.h
 	gen/IFileMapper.cpp gen/IFileMapper.h
 	gen/TClassRegistration.hpp gen/TClassRegistration.h
@@ -74,6 +75,7 @@ set(SOURCES
 	gen/TEnvelope.h
 	gen/TPointer.h
 	gen/TBitSet.h
+	gen/PropertySheetDialog.h
 )
 
 if (NOT WIN32)

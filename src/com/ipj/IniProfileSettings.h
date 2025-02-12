@@ -4,8 +4,7 @@
 namespace sf
 {
 
-class IniProfileSettings
-	: public ProjectConfig::Settings
+class IniProfileSettings : public ProjectConfig::Settings
 {
 	public:
 		bool load(const std::string& filepath) override;

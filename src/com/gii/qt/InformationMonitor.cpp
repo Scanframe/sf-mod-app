@@ -18,28 +18,32 @@ ScriptGlobalStaticEntry* gseMonitorResultData{nullptr};
 
 __attribute__((constructor)) void Initialize()
 {
-	gseMonitorVariable = new ScriptGlobalStaticEntry([](const Value::vector_type& arguments) -> Value {
-		if (auto parent = getGlobalParent())
-		{
-			auto im = new InformationMonitor(parent);
-			im->setId(Gii::Variable, arguments[0].getInteger());
-			im->show();
-			return Value(true);
-		}
-		return Value(false);
-	},
-																									 "MonitorVariable", "Opens monitor on a variable of the passed id.", 1);
-	gseMonitorResultData = new ScriptGlobalStaticEntry([](const Value::vector_type& arguments) -> Value {
-		if (auto parent = getGlobalParent())
-		{
-			auto im = new InformationMonitor(parent);
-			im->setId(Gii::ResultData, arguments[0].getInteger());
-			im->show();
-			return Value(true);
-		}
-		return Value(false);
-	},
-																										 "MonitorResultData", "Opens monitor on a result-data of the passed id.", 1);
+	gseMonitorVariable = new ScriptGlobalStaticEntry(
+		[](const Value::vector_type& arguments) -> Value {
+			if (auto parent = getGlobalParent())
+			{
+				auto im = new InformationMonitor(parent);
+				im->setId(Gii::Variable, arguments[0].getInteger());
+				im->show();
+				return Value(true);
+			}
+			return Value(false);
+		},
+		"MonitorVariable", "Opens monitor on a variable of the passed id.", 1
+	);
+	gseMonitorResultData = new ScriptGlobalStaticEntry(
+		[](const Value::vector_type& arguments) -> Value {
+			if (auto parent = getGlobalParent())
+			{
+				auto im = new InformationMonitor(parent);
+				im->setId(Gii::ResultData, arguments[0].getInteger());
+				im->show();
+				return Value(true);
+			}
+			return Value(false);
+		},
+		"MonitorResultData", "Opens monitor on a result-data of the passed id.", 1
+	);
 }
 
 __attribute__((destructor)) void Deinitialize()
@@ -50,7 +54,8 @@ __attribute__((destructor)) void Deinitialize()
 
 }// namespace
 
-struct InformationMonitor::Private : VariableHandler
+struct InformationMonitor::Private
+	: VariableHandler
 	, ResultDataHandler
 {
 		Ui::InformationMonitor* ui;
@@ -71,8 +76,7 @@ struct InformationMonitor::Private : VariableHandler
 		explicit Private(InformationMonitor* widget)
 			: _w(widget)
 			, ui(new Ui::InformationMonitor)
-		{
-		}
+		{}
 
 		~Private() override
 		{
@@ -195,7 +199,7 @@ struct InformationMonitor::Private : VariableHandler
 								break;
 
 							case vfType:
-								val = QString::fromStdString(_variable.getType(_variable.getType()));
+								val = QString::fromStdString(_variable.getType(_variable.getType()).data());
 								break;
 
 							case vfFlags:
@@ -357,9 +361,7 @@ InformationMonitor::InformationMonitor(QWidget* parent)
 	setAttribute(Qt::WA_DeleteOnClose);
 	//
 	connect(_p->ui->buttonBox, &QDialogButtonBox::clicked, this, &QDialog::close);
-	connect(_p->ui->iieId, &QLineEdit::textChanged, [&](const QString&) {
-		_p->setup(_p->ui->iieId->getId());
-	});
+	connect(_p->ui->iieId, &QLineEdit::textChanged, [&](const QString&) { _p->setup(_p->ui->iieId->getId()); });
 }
 
 InformationMonitor::~InformationMonitor()

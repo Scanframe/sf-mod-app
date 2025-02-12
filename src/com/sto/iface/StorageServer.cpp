@@ -8,8 +8,7 @@ namespace sf
 StorageServer::StorageServer(id_type deviceNumber, const std::string& serverName)
 	: _deviceNumber(deviceNumber)
 	, _serverName(serverName.empty() ? "Storage" : serverName)
-{
-}
+{}
 
 StorageServer::~StorageServer()
 {
@@ -95,12 +94,8 @@ bool StorageServer::createImplementation(int index)
 	return false;
 }
 
-void StorageServer::createInterface()
-{
-}
+void StorageServer::createInterface() {}
 
-void StorageServer::destroyInterface()
-{
-}
+void StorageServer::destroyInterface() {}
 
 }// namespace sf

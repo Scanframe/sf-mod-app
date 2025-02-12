@@ -10,8 +10,7 @@ namespace sf
 /**
  * @brief Creates a dialog from ui-type file.
  */
-class _MISC_CLASS FormDialog
-	: public QDialog
+class _MISC_CLASS FormDialog : public QDialog
 {
 		Q_OBJECT
 

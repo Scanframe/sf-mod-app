@@ -34,12 +34,12 @@ class TVector2D
 		/**
 		 * @brief Copy constructor.
 		 */
-		TVector2D(const TVector2D<T>& v);
+		TVector2D(const TVector2D& v);
 
 		/**
 		 * @brief Move constructor.
 		 */
-		TVector2D(TVector2D<T>&&) noexcept = default;
+		TVector2D(TVector2D&&) noexcept;
 
 		/**
 		 * @brief Initializing constructor.
@@ -50,74 +50,73 @@ class TVector2D
 
 		/**
 		 * @brief Assignment of new coordinate values.
-		 * @param x X-axis value.
-		 * @param y Y-axis value.
+		 * @param xp X-axis value.
+		 * @param yp Y-axis value.
 		 * @return Itself.
 		 */
-		TVector2D<T>& assign(T xp, T yp);
+		TVector2D& assign(T xp, T yp);
 
 		/**
 		 * @brief Assignment of vector instance.
-		 * @param x X-axis value.
-		 * @param y Y-axis value.
+		 * @param v Vector value.
 		 * @return Itself.
 		 */
-		TVector2D<T>& assign(const TVector2D<T>& v);
+		TVector2D& assign(const TVector2D& v);
 
 		/**
 		 * @brief Assignment operator.
 		 */
-		TVector2D<T>& operator=(TVector2D<T>& v) noexcept;
+		TVector2D& operator=(TVector2D& v) noexcept;
 
 		/**
 		 * @brief Assignment move operator.
 		 */
-		TVector2D<T>& operator=(TVector2D<T>&& v) noexcept;
+		TVector2D& operator=(TVector2D&& v) noexcept;
 
 		/**
 		 * @brief Matrix transform operator.
 		 */
-		TVector2D<T>& operator*=(const TMatrix22<T>& mtx);
+		TVector2D& operator*=(const TMatrix22<T>& mtx);
 
 		/**
 		 * @brief Inversion math operator inverting the vector.
 		 */
-		TVector2D<T> operator-() const;
+		TVector2D operator-() const;
 
 		/**
 		 * @brief Compound addition operator.
 		 */
-		TVector2D<T>& operator+=(const TVector2D<T>&);
+		TVector2D& operator+=(const TVector2D&);
 
 		/**
 		 * @brief Compound subtraction operator.
 		 */
-		TVector2D<T>& operator-=(const TVector2D<T>&);
+		TVector2D& operator-=(const TVector2D&);
 
 		/**
 		 * @brief Compound multiplier operator.
 		 */
-		TVector2D<T>& operator*=(T c);
+		TVector2D& operator*=(T c);
 
 		/**
 		 * @brief Compound division operator.
 		 */
-		TVector2D<T>& operator/=(T);
+		TVector2D& operator/=(T);
 
 		/**
 		 * @brief Addition operator.
 		 */
-		TVector2D<T> operator+(const TVector2D<T>&) const;
+		TVector2D operator+(const TVector2D&) const;
 
 		/**
 		 * @brief Subtraction operator.
 		 */
-		TVector2D<T> operator-(const TVector2D<T>&) const;
+		TVector2D operator-(const TVector2D&) const;
 
 		/**
 		 * @brief Division operator.
 		 */
-		TVector2D<T> operator/(T) const;
+		TVector2D operator/(T) const;
 
 		/**
 		 * @brief Compares the passed vector within the set tolerance.
@@ -130,12 +129,12 @@ class TVector2D
 		/**
 		 * @brief Equality operator.
 		 */
-		bool operator==(const TVector2D<T>&) const;
+		bool operator==(const TVector2D&) const;
 
 		/**
 		 * @brief Inequality operator.
 		 */
-		bool operator!=(const TVector2D<T>&) const;
+		bool operator!=(const TVector2D&) const;
 
 		/**
 		 * @brief Access like an array.
@@ -197,49 +196,49 @@ class TVector2D
 		 * @brief Normalizes the vector also called a unit-vector, set to length 1.
 		 * @return This normalized vector.
 		 */
-		TVector2D<T>& normalize();
+		TVector2D& normalize();
 
 		/**
 		 * @brief Gets a normalized vector also called a unit-vector, made of length 1.
 		 * @return A normalized vector.
 		 */
-		TVector2D<T> normalized() const;
+		TVector2D normalized() const;
 
 		/**
 		 * @brief Scales the vector by multiplying all axis with the passed factor.
 		 * @return This scaled vector.
 		 */
-		TVector2D<T>& scale(T factor);
+		TVector2D& scale(T factor);
 
 		/**
 		 * @brief Scales the vector by multiplying all axis with the passed factor.
 		 * @return A scaled vector.
 		 */
-		TVector2D<T> scaled(T factor) const;
+		TVector2D scaled(T factor) const;
 
 		/**
 		 * @brief Gets the cross (out) product of 2 vectors.
 		 * @return Cross product of 2 vectors.
 		 */
-		T crossProduct(const TVector2D<T>&) const;
+		T crossProduct(const TVector2D&) const;
 
 		/**
 		 * @brief Gets the dot (in) product of 2 vectors.
 		 * @return Dot (in) product of 2 vectors.
 		 */
-		T dotProduct(const TVector2D<T>&) const;
+		T dotProduct(const TVector2D&) const;
 
 		/**
 		 * @brief Gets the cross (out) product of 2 vectors.
 		 * @return Cross product of 2 vectors.
 		 */
-		T operator*(const TVector2D<T>& v) const;
+		T operator*(const TVector2D& v) const;
 
 		/**
 		 * @brief Gets the angle between the two vectors.
 		 * @return angle between the two vectors.
 		 */
-		T angle(const TVector2D<T>&) const;
+		T angle(const TVector2D&) const;
 
 		/**
 		 * @brief Gets the angle of vector in xy-plane.
@@ -248,7 +247,7 @@ class TVector2D
 		T angle() const;
 
 		/**
-		 * @brief Returns a normalized positive angle of function @Angle().
+		 * @brief Returns a normalized positive angle of function #angle().
 		 * @return normalized positive angle.
 		 */
 		T angleNormalized() const;
@@ -265,7 +264,7 @@ class TVector2D
 		 * Note that this has to return a double because it uses the sqrt() function.
 		 * @return distance to another vector.
 		 */
-		T distance(const TVector2D<T>&) const;
+		T distance(const TVector2D&) const;
 
 		/**
 		 * @brief Gets the squared distance between 2 given points.
@@ -273,19 +272,19 @@ class TVector2D
 		 * Useful when comparing different distances.
 		 * @return squared distance between 2 given points
 		 */
-		T distanceSqr(const TVector2D<T>&) const;
+		T distanceSqr(const TVector2D&) const;
 
 		/**
 		 * @brief Copy only those values of x or y which are smaller.
 		 * @param vertex
 		 */
-		void updateMin(const TVector2D<T>& vertex);
+		void updateMin(const TVector2D& vertex);
 
 		/**
 		 * @brief Copy only those values of x or y which are larger.
 		 * @param vertex
 		 */
-		void updateMax(const TVector2D<T>& vertex);
+		void updateMax(const TVector2D& vertex);
 
 		/**
 		 * @brief Gets the string representation of the 2D vector formed like '(1.23,4.56)'.
@@ -297,12 +296,12 @@ class TVector2D
 		 * Throws an exception when the string is not in the correct format.
 		 * @throw std::invalid_argument
 		 */
-		TVector2D<T>& fromString(const std::string& s) noexcept(false);
+		TVector2D& fromString(const std::string& s) noexcept(false);
 
 		/**
 		 * @brief Tolerance for when comparing in the equal operator.
 		 * Empirical chosen epsilon multiplier to make it work.
-		 * Used in: #sf::isEqual(f1, f2, tolerance)
+		 * Used in: #sf::isEqual()
 		 */
 		static constexpr auto tolerance = std::numeric_limits<T>::epsilon() * 10.0;
 
@@ -314,12 +313,7 @@ class TVector2D
 		 * @param p2 Free point 2.
 		 * @return >0: Same side, <0: Opposite sides, 0 : A point on the line
 		 */
-		static int areOnSameSide(
-			const TVector2D<T>& lp1,
-			const TVector2D<T>& lp2,
-			const TVector2D<T>& p1,
-			const TVector2D<T>& p2
-		);
+		static int areOnSameSide(const TVector2D& lp1, const TVector2D& lp2, const TVector2D& p1, const TVector2D& p2);
 
 	protected:
 		/**
@@ -357,7 +351,7 @@ template<typename T>
 std::istream& operator>>(std::istream& is, TVector2D<T>& v) noexcept(false)
 {
 	std::string s;
-	auto delimiter = ')';
+	constexpr auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	v.fromString(s.append(1, delimiter));
 	return is;

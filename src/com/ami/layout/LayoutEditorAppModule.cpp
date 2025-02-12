@@ -1,7 +1,6 @@
 #include "LayoutEditorAppModule.h"
 #include "LayoutEditor.h"
 #include "LayoutEditorPropertyPage.h"
-#include <QCoreApplication>
 #include <QFocusEvent>
 #include <QLineEdit>
 #include <QTreeView>
@@ -17,7 +16,7 @@
 namespace sf
 {
 
-LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameters& params)
+LayoutEditorAppModule::LayoutEditorAppModule(const Parameters& params)
 	: AppModuleInterface(params)
 	, _settings(params._settings)
 {
@@ -25,7 +24,7 @@ LayoutEditorAppModule::LayoutEditorAppModule(const AppModuleInterface::Parameter
 	//
 	settingsReadWrite(false);
 	// Create pre configured global UI loader instance.
-	auto uiLoader = new QUiLoader(this);
+	const auto uiLoader = new QUiLoader(this);
 	// Set the uiLoader plugin directory.
 	uiLoader->addPluginPath(getPluginDir());
 	// Not sure if this is needed at any time.
@@ -56,7 +55,7 @@ void LayoutEditorAppModule::addPropertyPages(PropertySheetDialog* sheet)
 
 MultiDocInterface* LayoutEditorAppModule::createWidget(QWidget* parent) const
 {
-	auto le = new LayoutEditor(getSettings(), parent);
+	const auto le = new LayoutEditor(getSettings(), parent);
 	le->setReadOnly(_readOnly);
 	connect(le, &LayoutEditor::objectSelected, [&](QObject* obj) {
 		if (_hierarchyViewer)
@@ -84,7 +83,7 @@ void LayoutEditorAppModule::settingsReadWrite(bool save)
 		return;
 	}
 	_settings->beginGroup("AppModule.Layout");
-	QString keyReadOnly("ReadOnly");
+	const QString keyReadOnly("ReadOnly");
 	if (!save)
 	{
 		_readOnly = _settings->value(keyReadOnly, _readOnly).toBool();
@@ -96,13 +95,11 @@ void LayoutEditorAppModule::settingsReadWrite(bool save)
 	_settings->endGroup();
 }
 
-void LayoutEditorAppModule::initialize(InitializeStage stage)
-{
-}
+void LayoutEditorAppModule::initialize(InitializeStage stage) {}
 
 AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(QWidget* parent)
 {
-	AppModuleInterface::DockWidgetList rv;
+	DockWidgetList rv;
 	// Use tree view pointer as a sentry just in case this function is called twice.
 	if (!_hierarchyViewer)
 	{
@@ -113,7 +110,7 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		connect(_hierarchyViewer, &HierarchyViewer::objectSelectChange, [&](QObject* obj) {
 			if (_tvProperties)
 			{
-				if (auto m = dynamic_cast<ObjectPropertyModel*>(_tvProperties->model()))
+				if (const auto m = dynamic_cast<ObjectPropertyModel*>(_tvProperties->model()))
 				{
 					m->setTarget(obj);
 					resizeColumnsToContents(_tvProperties);
@@ -129,19 +126,19 @@ AppModuleInterface::DockWidgetList LayoutEditorAppModule::createDockingWidgets(Q
 		_tvProperties = new QTreeView(dock);
 		// Remove the indentation
 		_tvProperties->setIndentation(0);
-		auto model = new ObjectPropertyModel();
+		const auto model = new ObjectPropertyModel();
 		model->setDelegates(_tvProperties);
 		connect(model, &ObjectPropertyModel::changed, _hierarchyViewer, &HierarchyViewer::documentModified);
 		// Make the qulonglong type QProperties have actions.
-		connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) {
+		connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* /*obj*/, int /*propertyIndex*/, bool /*dynamic*/) {
 			for (auto isType: {Gii::ResultData, Gii::Variable})
 			{
 				auto action = lineEdit->addAction(
 					Resource::getSvgIcon(isType == Gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
 					QLineEdit::TrailingPosition
 				);
-				connect(action, &QAction::triggered, [action, isType]() {
-					if (auto le = qobject_cast<QLineEdit*>(action->parent()))
+				connect(action, &QAction::triggered, [action, isType] {
+					if (const auto le = qobject_cast<QLineEdit*>(action->parent()))
 					{
 						InformationSelectDialog dlg(le);
 						auto ids = dlg.execute(Gii::Single, isType);
@@ -165,7 +162,7 @@ void LayoutEditorAppModule::documentActivated(MultiDocInterface* interface, bool
 {
 	if (_hierarchyViewer)
 	{
-		if (auto le = dynamic_cast<LayoutEditor*>(interface))
+		if (const auto le = dynamic_cast<LayoutEditor*>(interface))
 		{
 			_hierarchyViewer->setEditor(le);
 		}

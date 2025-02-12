@@ -33,9 +33,7 @@ TEST_CASE("sf::lnx::FileMapper", "[con][linux][file]")
 		// Get the readonly pointer.
 		auto ptr = fm->lock<char>(true);
 		// Segment Fault must occur in this function.
-		auto f1 = [ptr]() -> void {
-			ptr[0] = 'A';
-		};
+		auto f1 = [ptr]() -> void { ptr[0] = 'A'; };
 		// Call the lambda function wrapped in a SegmentFaultHandler class.
 		REQUIRE(!sf::SegmentFaultHandler(f1));
 

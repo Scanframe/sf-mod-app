@@ -9,6 +9,9 @@ template<typename T>
 TVector2D<T>::TVector2D(const TVector2D& v)
 	: _data(v._data)
 {}
+template<typename T>
+TVector2D<T>::TVector2D(TVector2D<T>&&) noexcept
+{}
 
 template<typename T>
 TVector2D<T>::TVector2D(T xp, T yp)
@@ -42,8 +45,7 @@ T TVector2D<T>::lengthSqr() const
 template<typename T>
 T TVector2D<T>::distanceSqr(const TVector2D& v) const
 {
-	return (_data.coord.x - v._data.coord.x) * (_data.coord.x - v._data.coord.x) +
-		(_data.coord.y - v._data.coord.y) * (_data.coord.y - v._data.coord.y);
+	return (_data.coord.x - v._data.coord.x) * (_data.coord.x - v._data.coord.x) + (_data.coord.y - v._data.coord.y) * (_data.coord.y - v._data.coord.y);
 }
 
 template<typename T>
@@ -347,8 +349,7 @@ TVector2D<T> TVector2D<T>::operator/(T c) const
 template<typename T>
 bool TVector2D<T>::isEqual(const TVector2D<T>& v, T tol) const
 {
-	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) &&
-		sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol);
+	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) && sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol);
 }
 
 template<typename T>
@@ -392,8 +393,7 @@ void TVector2D<T>::updateMax(const TVector2D& vertex)
 template<typename T>
 std::string TVector2D<T>::toString() const
 {
-	return '(' +
-		sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
+	return '(' + sf::toString<T>(isZero(_data.coord.x, tolerance) ? T(0) : _data.coord.x) + ',' +
 		sf::toString<T>(isZero(_data.coord.y, tolerance) ? T(0) : _data.coord.y) + ')';
 }
 
@@ -420,12 +420,7 @@ TVector2D<T>& TVector2D<T>::fromString(const std::string& s)
 }
 
 template<typename T>
-int TVector2D<T>::areOnSameSide(
-	const TVector2D<T>& lp1,
-	const TVector2D<T>& lp2,
-	const TVector2D<T>& p1,
-	const TVector2D<T>& p2
-)
+int TVector2D<T>::areOnSameSide(const TVector2D<T>& lp1, const TVector2D<T>& lp2, const TVector2D<T>& p1, const TVector2D<T>& p2)
 {
 	T dx = lp2._data.coord.x - lp1._data.coord.x;
 	T dy = lp2._data.coord.y - lp1._data.coord.y;

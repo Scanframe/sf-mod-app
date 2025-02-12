@@ -100,7 +100,8 @@ _GMI_FUNC bool calcLinearValues(const AxesCoord& dist, double trg_time, double a
  * @param trg_time Time needed to reach target.
  * @return True when the function was able to make the calculation.
  */
-_GMI_FUNC bool getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_vel, AxesCoord& trg_acc, double& trg_time);
+_GMI_FUNC bool
+getLinearValues(const AxesCoord& dist, const AxesCoord& max_vel, const AxesCoord& max_acc, AxesCoord& trg_vel, AxesCoord& trg_acc, double& trg_time);
 
 /**
  * @brief Compares the passed values v1 and v2.

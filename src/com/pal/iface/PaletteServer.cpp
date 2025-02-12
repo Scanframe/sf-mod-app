@@ -12,8 +12,7 @@ PaletteServer::PaletteServer(QObject* parent)
 	, _colorsUsed(256)
 	, _colorsSize(256)
 	, _flagGenerate(true)
-{
-}
+{}
 
 PaletteServer::~PaletteServer()
 {
@@ -76,7 +75,9 @@ void PaletteServer::paint(QPainter& painter, const QRect& bounds) const
 		for (int i = 0; i <= count; i++)
 		{
 			auto x = (1.0 * i) / count;
-			polygon.append(bounds.bottomLeft() + QPoint(static_cast<int>(bounds.width() * x), static_cast<int>((1 - bounds.height()) * _implementation->getCurveLevel(x))));
+			polygon.append(
+				bounds.bottomLeft() + QPoint(static_cast<int>(bounds.width() * x), static_cast<int>((1 - bounds.height()) * _implementation->getCurveLevel(x)))
+			);
 		}
 		// Select black for the curve.
 		painter.setPen(Qt::white);

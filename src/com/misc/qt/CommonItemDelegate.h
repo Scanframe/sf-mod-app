@@ -9,8 +9,7 @@ namespace sf
 /**
  * @brief Allows a list model to determine the editor for a field.
  */
-class _MISC_CLASS CommonItemDelegate
-	: public QStyledItemDelegate
+class _MISC_CLASS CommonItemDelegate : public QStyledItemDelegate
 {
 		Q_OBJECT
 
@@ -43,7 +42,6 @@ class _MISC_CLASS CommonItemDelegate
 		enum EEditorType
 		{
 			etDefault,
-			etEdit,
 			etTextEdit,
 			etDropDown,
 			etDropDownIndex,
@@ -54,7 +52,8 @@ class _MISC_CLASS CommonItemDelegate
 			etDoubleSpinBox,
 			etULongLong,
 			etColorEdit,
-			etStringList
+			etStringList,
+			etString
 		};
 
 		/**
@@ -75,7 +74,7 @@ class _MISC_CLASS CommonItemDelegate
 		 * @param index Model-index of the field to get the editor type for.
 		 * @return Type of the editor.
 		 */
-		[[nodiscard]] EEditorType getEditorType(const QModelIndex& index) const;
+		[[nodiscard]] static EEditorType getEditorType(const QModelIndex& index);
 
 		/**
 		 * @brief Overridden from base class.

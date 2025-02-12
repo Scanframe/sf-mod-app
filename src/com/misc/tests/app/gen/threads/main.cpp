@@ -17,9 +17,7 @@ void TestStdSignal()
 	sf::siginterrupt(quit_signal, true);
 #endif
 	// register signal handler
-	(void) std::signal(quit_signal, [](int) {
-		quit = true;
-	});
+	(void) std::signal(quit_signal, [](int) { quit = true; });
 
 	auto t = std::thread([]() {
 		char buf[10];
@@ -85,12 +83,17 @@ void TestThreads(int how = 0)
 		Scope scope;
 		switch (how)
 		{
-			case 1: {
+			case 1:
+			{
 				auto ch = std::cin.get();
-				SF_NORM_NOTIFY(DO_DEFAULT, "Test: Woken up cin.get() > '" << std::hex << ch << "' Fail(" << std::boolalpha << std::cin.fail() << ") " << std::dec << sf::Thread::getCurrentId())
+				SF_NORM_NOTIFY(
+					DO_DEFAULT,
+					"Test: Woken up cin.get() > '" << std::hex << ch << "' Fail(" << std::boolalpha << std::cin.fail() << ") " << std::dec << sf::Thread::getCurrentId()
+				)
 				break;
 			}
-			default: {
+			default:
+			{
 				do
 				{
 					// Sleep for some time to get interrupted by a call to terminateAndWait().

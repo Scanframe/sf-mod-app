@@ -7,7 +7,8 @@ namespace sf
 /**
  * @brief Interface class to create a #sf::VariableComboBox custom widget.
  */
-class VariableComboBoxPlugin : public QObject
+class VariableComboBoxPlugin
+	: public QObject
 	, public QDesignerCustomWidgetInterface
 {
 		Q_OBJECT

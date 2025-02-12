@@ -11,8 +11,7 @@ namespace sf::win
  * memory allocation using the page file for controlled swapping. This is
  * especially useful for managing huge memory blocks.
  */
-class _MISC_CLASS FileMapper
-	: public IFileMapper
+class _MISC_CLASS FileMapper : public IFileMapper
 {
 	public:
 		/**
@@ -34,7 +33,6 @@ class _MISC_CLASS FileMapper
 
 		/**
 		 * @brief Makes this instance create a map that is backed by the systems page file.
-		 * @return
 		 */
 		void initialize() override;
 

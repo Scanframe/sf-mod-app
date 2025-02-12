@@ -79,7 +79,7 @@ bool Variable::setExport(bool global)
 	if (global)
 	{
 		// Check if a global ID already exist, getReferenceById returns Zero if not found.
-		VariableReference* ref = getReferenceById(_reference->_id);
+		const VariableReference* ref = getReferenceById(_reference->_id);
 		// Check if the current reference is already global.
 		if (ref == _reference)
 		{
@@ -89,9 +89,7 @@ bool Variable::setExport(bool global)
 		// When the id was found.
 		if (ref != VariableStatic::zero()._reference)
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n"
-											 << stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n"
-											 << ref->_name << '!')
+			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to export ID:\n" << stringf("0x%llX,", _reference->_id) << _reference->_name << "\nover!\n" << ref->_name << '!')
 			// If the ID already exist return false.
 			return false;
 		}
@@ -104,7 +102,7 @@ bool Variable::setExport(bool global)
 	else
 	{
 		// Create a temporary vector pointers to variables that must be attached because attachRef() modifies '_list'.
-		Variable::PtrVector list;
+		PtrVector list;
 		// Set the vector to reserve the maximum expected size.
 		list.reserve(_reference->_list.size());
 		// Iterate through all variables having the global flag Set.
@@ -116,7 +114,7 @@ bool Variable::setExport(bool global)
 			}
 		}
 		// Now iterated through the new list.
-		for (auto j: list)
+		for (const auto j: list)
 		{
 			j->attachRef(VariableStatic::zero()._reference);
 		}
@@ -149,12 +147,11 @@ void Variable::operator delete(void* p)// NOLINT(misc-new-delete-overloads)
 		// Call real destructor.
 		::operator delete(p);
 		// If deletion is allowed again delete the wait cache too.
-		TVector<void*>::size_type count = VariableStatic::_deleteWaitCache->size();
-		if (count)
+		if (TVector<void*>::size_type count = VariableStatic::_deleteWaitCache->size())
 		{
 			while (count--)
 			{
-				delete (char*) VariableStatic::_deleteWaitCache->at(count);
+				delete static_cast<char*>(VariableStatic::_deleteWaitCache->at(count));
 			}
 			// Flush the entries from the list.
 			VariableStatic::_deleteWaitCache->flush();
@@ -186,9 +183,9 @@ Variable::~Variable()
 Variable::size_type Variable::getCount()
 {
 	ReferenceVector::size_type rv = 0;
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
-		rv += (ref->_global || ref->_exported) ? 1 : 0;
+		rv += ref->_global || ref->_exported ? 1 : 0;
 	}
 	// Subtract 1 for zero variable before returning.
 	return --rv;
@@ -198,7 +195,7 @@ Variable::size_type Variable::getInstanceCount(bool global_only)
 {
 	ReferenceVector::size_type rv = 0;
 	// Iterate through all variable references and count the usage count.
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
 		if (!global_only || ref->_global)
 		{
@@ -216,7 +213,7 @@ Variable::PtrVector Variable::getList()
 	// Set the vector to reserve the maximum expected size.
 	rv.reserve(VariableStatic::_references->size());
 	// Iterate through the references.
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
 		// Only globals and exclude zero variable which has id of zero.
 		if ((ref->_global || ref->_exported) && ref->_id)
@@ -227,11 +224,11 @@ Variable::PtrVector Variable::getList()
 	return rv;
 }
 
-VariableReference* Variable::getReferenceById(Variable::id_type id)
+VariableReference* Variable::getReferenceById(id_type id)
 {
 	if (id)
 	{
-		for (auto ref: *VariableStatic::_references)
+		for (const auto ref: *VariableStatic::_references)
 		{
 			if (ref->_id == id && ref->_global && ref != VariableStatic::zero()._reference)
 			{
@@ -242,9 +239,9 @@ VariableReference* Variable::getReferenceById(Variable::id_type id)
 	return VariableStatic::zero()._reference;
 }
 
-Variable& Variable::getInstanceById(Variable::id_type id, Variable::PtrVector& list)
+Variable& Variable::getInstanceById(id_type id, PtrVector& list)
 {
-	for (auto i: list)
+	for (const auto i: list)
 	{
 		if (i->getId() == id)
 		{
@@ -256,7 +253,7 @@ Variable& Variable::getInstanceById(Variable::id_type id, Variable::PtrVector& l
 
 void Variable::makeOwner()
 {
-	// Do not change ownership if it is ZeroRef
+	// Do not change ownership if it is ZeroRef.
 	if (_reference == VariableStatic::zero()._reference)
 	{
 		return;
@@ -291,7 +288,7 @@ bool Variable::attachRef(VariableReference* ref)
 	}
 	// If the current instance is not global and the ref is global
 	// do not attach the reference but copy the reference members.
-	if ((ref != VariableStatic::zero()._reference) && ref && !_global && ref->_global)
+	if (ref != VariableStatic::zero()._reference && ref && !_global && ref->_global)
 	{
 		// When the reference pointer valid continue.
 		if (_reference)
@@ -356,7 +353,7 @@ bool Variable::attachRef(VariableReference* ref)
 	return rv;
 }
 
-bool Variable::setId(Variable::id_type id, bool skip_self)
+bool Variable::setId(id_type id, bool skip_self) const
 {
 	// Only owner of local variable is allowed to do this.
 	if (isOwner() && !_global)
@@ -378,14 +375,14 @@ bool Variable::setId(Variable::id_type id, bool skip_self)
 	return false;
 }
 
-bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
+bool Variable::setup(const Definition& definition, const id_type id_ofs)
 {
 	if (!definition._valid)
 	{
 		return false;
 	}
 	// Check for not owning and global variable.
-	bool local_owner = !_global && isOwner() && getUsageCount() > 1;
+	const bool local_owner = !_global && isOwner() && getUsageCount() > 1;
 	// If this is a not local owner attach it to the zero instance.
 	if (!local_owner)
 	{
@@ -408,23 +405,24 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		VariableReference* ref = _global ? getReferenceById(definition._id + id_ofs) : VariableStatic::zero()._reference;
 		if (ref && ref != VariableStatic::zero()._reference)
 		{
-			SF_RTTI_NOTIFY(DO_DEFAULT, "Tried to create duplicate ID: !\n"
-											 << "(0x" << std::hex << (definition._id + id_ofs) << ") " << definition._name << "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!')
+			SF_RTTI_NOTIFY(
+				DO_DEFAULT,
+				"Tried to create duplicate ID: !\n"
+					<< "(0x" << std::hex << definition._id + id_ofs << ") " << definition._name << "\nover!\n(0x" << ref->_id << ") " << ref->_name << '!'
+			)
 			// If ref already exist return false.
 			return false;
 		}
+		// Create new or use old one.
+		if (local_owner)
+		{
+			// Reuse the current reference
+			ref = _reference;
+		}
 		else
-		{// Create new or use old one.
-			if (local_owner)
-			{
-				// Reuse the current reference
-				ref = _reference;
-			}
-			else
-			{
-				// Create new global or non-global reference for this variable instance.
-				ref = new VariableReference(_global);
-			}
+		{
+			// Create new global or non-global reference for this variable instance.
+			ref = new VariableReference(_global);
 		}
 		// InitializeBase reference members from here.
 		ref->_valid = true;
@@ -532,12 +530,14 @@ bool Variable::setup(const Definition& definition, Variable::id_type id_ofs)
 		emitEvent(veSetup, *this);
 	}
 	// In case of an error report to standard out.
-	SF_COND_RTTI_NOTIFY(!ret_val, DO_DEFAULT, "Error in setup definition: " << definition._name << " (0x" << std::hex << (definition._id) << ") offset (0x" << id_ofs << ")!")
+	SF_COND_RTTI_NOTIFY(
+		!ret_val, DO_DEFAULT, "Error in setup definition: " << definition._name << " (0x" << std::hex << definition._id << ") offset (0x" << id_ofs << ")!"
+	)
 	//
 	return ret_val;
 }
 
-void Variable::setDesiredId(Variable::id_type id)
+void Variable::setDesiredId(id_type id)
 {
 	if (_desiredId != id)
 	{
@@ -552,7 +552,7 @@ std::string Variable::getName(int levels) const
 {
 	// Return full name path at levels equals zero.
 	std::string ret_val = _reference->_name;
-	auto len = ret_val.length();
+	const auto len = ret_val.length();
 	// Check if levels is non-zero.
 	if (levels)
 	{
@@ -560,7 +560,8 @@ std::string Variable::getName(int levels) const
 		{
 			std::string::size_type i = len;
 			while (i--)
-			{// Is the character a separator character.
+			{
+				// Is the character a separator character.
 				if (ret_val[i] == '|')
 				{
 					ret_val[i] = ' ';
@@ -617,7 +618,7 @@ Variable::size_type Variable::getState(const Value& v) const
 	return npos;
 }
 
-const Value& Variable::getStateValue(Variable::size_type state) const
+const Value& Variable::getStateValue(size_type state) const
 {
 	// Check index versus range
 	if (state < _reference->_states.size())
@@ -628,7 +629,7 @@ const Value& Variable::getStateValue(Variable::size_type state) const
 	return VariableStatic::zero()._reference->_states[0]._value;
 }
 
-std::string Variable::getStateName(Variable::size_type state) const
+std::string Variable::getStateName(size_type state) const
 {// check index versus range
 	if (state < _reference->_states.size())
 	{
@@ -648,22 +649,19 @@ bool Variable::increase(int steps, bool skip_self)
 	//
 	if (_temporary)
 	{
-		Value& value(isConverted() ? _reference->_convertRndValue : _reference->_rndValue);
-		return updateTempValue(*_temporary + (value * Value(steps)), skip_self);
+		const Value& value(isConverted() ? _reference->_convertRndValue : _reference->_rndValue);
+		return updateTempValue(*_temporary + value * Value(steps), skip_self);
 	}
-	else
-	{
-		return updateValue(_reference->_curValue + (_reference->_rndValue * Value(steps)), skip_self);
-	}
+	return updateValue(_reference->_curValue + _reference->_rndValue * Value(steps), skip_self);
 }
 
-void Variable::emitEvent(EEvent event, const Variable& caller)// NOLINT(misc-no-recursion)
+void Variable::emitEvent(EEvent ev, const Variable& caller)
 {
 	// If the caller is another instance then this one when the value changes.
 	// When one these events passes, Update the temporary value.
 	if (_temporary)
 	{
-		if ((&caller != this && event == veValueChange) || event == veIdChanged || event == veConverted)
+		if ((&caller != this && ev == veValueChange) || ev == veIdChanged || ev == veConverted)
 		{
 			// Skip self here because we're already handling an event.
 			updateTemporary(true);
@@ -672,7 +670,7 @@ void Variable::emitEvent(EEvent event, const Variable& caller)// NOLINT(misc-no-
 	// Check if a handler was linked and if so call it.
 	if (_handler)
 	{
-		_handler->variableEventHandler(event, caller, *this, &caller == this);
+		_handler->variableEventHandler(ev, caller, *this, &caller == this);
 	}
 }
 
@@ -682,21 +680,15 @@ Variable::size_type Variable::emitEvent(EEvent event, bool skip_self)
 	{
 		return emitGlobalEvent(event, skip_self);
 	}
-	else
+	if (event > veFirstPrivate)
 	{
-		if (event > veFirstPrivate)
-		{
-			emitEvent(event, *this);
-			return 1;
-		}
-		else
-		{
-			return emitLocalEvent(event, skip_self);
-		}
+		emitEvent(event, *this);
+		return 1;
 	}
+	return emitLocalEvent(event, skip_self);
 }
 
-Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
+Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self) const
 {
 	// Disable deletion of local instances.
 	VariableStatic::_globalActive++;
@@ -715,7 +707,7 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 	}
 	// Iterate through the generated list and call the event handler.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto j: ev_list)
+	for (const auto j: ev_list)
 	{
 		// Call the event handler.
 		j->emitEvent(event, *this);
@@ -726,19 +718,19 @@ Variable::size_type Variable::emitLocalEvent(EEvent event, bool skip_self)
 	return ev_list.size();
 }
 
-Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
+Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self) const
 {
 	// When the variable is not global send the event locally.
 	if (!_global && !_reference->_exported)
 	{
 		return emitLocalEvent(event, skip_self);
 	}
-	// Disable deletion of instances.
+	// Disable deletion of instances bgy increasing the global activity flag/counter.
 	VariableStatic::_globalActive++;
 	// Declare event list for instance pointers.
 	PtrVector ev_list;
 	// Iterate through all references.
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
 		// Only global references are considered.
 		if (ref->_global)
@@ -758,7 +750,7 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 	}
 	// Iterate through the generated variable list and call the handler of them.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto var: ev_list)
+	for (const auto var: ev_list)
 	{
 		var->emitEvent(event, *this);
 	}
@@ -768,14 +760,14 @@ Variable::size_type Variable::emitGlobalEvent(EEvent event, bool skip_self)
 	return ev_list.size();
 }
 
-Variable::size_type Variable::attachDesired()
+Variable::size_type Variable::attachDesired() const
 {
 	// Disable deletion of instances.
 	VariableStatic::_globalActive++;
 	// Signal other event handler functions are called using a global predefined list.
 	PtrVector ev_list;
 	// Iterate through all references generating pointers to instances having a desired ID that must be attached.
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
 		// Only applies for globals.
 		if (ref->_global)
@@ -796,7 +788,7 @@ Variable::size_type Variable::attachDesired()
 	}
 	// Iterate through the generated variable list and attach them.
 	// Any changes made by event handlers that could affect the list is avoided.
-	for (auto var: ev_list)
+	for (const auto var: ev_list)
 	{
 		// Compare them again to be sure after Attaching the others.
 		if (var->_desiredId && var->_desiredId == _reference->_id)
@@ -832,12 +824,12 @@ void Variable::setHandler(VariableHandler* handler)
 	}
 }
 
-void Variable::removeHandler(VariableHandler* handler)
+void Variable::removeHandler(const VariableHandler* handler)
 {
-	for (auto ref: *VariableStatic::_references)
+	for (const auto ref: *VariableStatic::_references)
 	{
 		// Iterate through the variables.
-		for (auto v: ref->_list)
+		for (const auto v: ref->_list)
 		{
 			// Check if the 2 links are the same.
 			if (v->_handler == handler)
@@ -854,7 +846,7 @@ Variable::flags_type Variable::toFlags(const std::string& flags)
 	flags_type rv{0};
 	for (auto f: flags)
 	{
-		for (auto fl: VariableStatic::_flagLetters)
+		for (const auto& fl: VariableStatic::_flagLetters)
 		{
 			if (f == fl._letter)
 			{
@@ -865,12 +857,12 @@ Variable::flags_type Variable::toFlags(const std::string& flags)
 	return rv;
 }
 
-std::string Variable::getFlagsString(Variable::flags_type flag)
+std::string Variable::getFlagsString(flags_type flags)
 {
 	std::string rv;
-	for (auto fl: VariableStatic::_flagLetters)
+	for (const auto& fl: VariableStatic::_flagLetters)
 	{
-		if (flag & fl._flag)
+		if (flags & fl._flag)
 		{
 			rv.append(1, fl._letter);
 		}
@@ -881,14 +873,15 @@ std::string Variable::getFlagsString(Variable::flags_type flag)
 /**
  * Unsets a flag or multiple flags of the attached VariableReference.
  */
-bool Variable::updateFlags(int flags, bool skip_self)
+bool Variable::updateFlags(int flags, bool skip_self) const
 {
 	if (isOwner())
 	{
-		auto cur_flags = _reference->_curFlags;
+		const auto cur_flags = _reference->_curFlags;
 		_reference->_curFlags = flags;
 		if (_reference->_curFlags != cur_flags)
-		{// skip self
+		{
+			// skip self
 			emitLocalEvent(veFlagsChange, skip_self);
 			// Changes were made.
 			return true;
@@ -901,7 +894,7 @@ bool Variable::updateFlags(int flags, bool skip_self)
 /**
  * Sets a flag or multiple flags on the reference
  */
-bool Variable::setFlag(flags_type flag, bool skip_self)
+bool Variable::setFlag(flags_type flag, bool skip_self) const
 {
 	return updateFlags(_reference->_curFlags | flag, skip_self);
 }
@@ -909,7 +902,7 @@ bool Variable::setFlag(flags_type flag, bool skip_self)
 /**
  * Unsets a flag or multiple flags of the attached VariableReference.
  */
-bool Variable::unsetFlag(flags_type flag, bool skip_self)
+bool Variable::unsetFlag(flags_type flag, bool skip_self) const
 {
 	return updateFlags(_reference->_curFlags & ~flag, skip_self);
 }
@@ -917,12 +910,12 @@ bool Variable::unsetFlag(flags_type flag, bool skip_self)
 const Value& Variable::getCur() const
 {
 	// When temporary is used return the temporary value.
-	return _temporary ? (*_temporary) : (isConverted() ? _reference->_convertCurValue : _reference->_curValue);
+	return _temporary ? *_temporary : isConverted() ? _reference->_convertCurValue : _reference->_curValue;
 }
 
 const Value& Variable::getCur(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertCurValue : _reference->_curValue;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertCurValue : _reference->_curValue;
 }
 
 bool Variable::setCur(const Value& value, bool skip_self)
@@ -950,7 +943,7 @@ bool Variable::isReadOnly() const
 		// When the variable is a local exported one and this instance is
 		// globally referencing it is also read-only because only
 		// local referencing variables may change the current value or flags.
-		if (!const_cast<Variable*>(this)->getOwner()._global && _global)
+		if (!getOwner()._global && _global)
 		{
 			if (isFlag(flgWriteable))
 			{
@@ -968,8 +961,9 @@ bool Variable::loadCur(const Value& value) const
 	if (isOwner())
 	{
 		// Check if this instance is not read-only and global because only globals are loadable.
-		if (!isFlag(flgReadonly) && const_cast<Variable*>(this)->getOwner()._global)
-		{// Make a writable copy of the passed value.
+		if (!isFlag(flgReadonly) && getOwner()._global)
+		{
+			// Make a writable copy of the passed value.
 			Value new_val(value);
 			// Adjust the new_val type
 			if (!new_val.setType(getType()))
@@ -978,12 +972,13 @@ bool Variable::loadCur(const Value& value) const
 			}
 			// Clip when clipping is needed.
 			if (isNumber() && _reference->_maxValue != _reference->_minValue)
-			{// Adjust new value to the allowed range.
-				new_val = (new_val > _reference->_maxValue) ? _reference->_maxValue : new_val;
-				new_val = (new_val < _reference->_minValue) ? _reference->_minValue : new_val;
+			{
+				// Adjust new value to the allowed range.
+				new_val = new_val > _reference->_maxValue ? _reference->_maxValue : new_val;
+				new_val = new_val < _reference->_minValue ? _reference->_minValue : new_val;
 			}
 			// Signal when changed and do not skip the event for this instance.
-			return const_cast<Variable*>(this)->updateValue(new_val, false);
+			return updateValue(new_val, false);
 		}
 	}
 	else
@@ -994,7 +989,76 @@ bool Variable::loadCur(const Value& value) const
 	return false;
 }
 
-bool Variable::updateValue(const Value& value, bool skip_self)
+std::string Variable::filterString(const std::string& str, EStringType type, size_t max_len)
+{
+	std::string rv = str;
+	// Trim spaces when not a normal string.
+	if (type != stNormal && type != stMulti)
+	{
+		// Define invalid characters for both Windows and Linux in file paths.
+		std::string invalid_chars("<>\"|?*");
+		// Convert Windows backslashes to forward slashes.
+		std::replace(rv.begin(), rv.end(), '\\', '/');
+		// In file names only replace the '/' for an underscore.
+		if (type == stFilename)
+		{
+			std::replace(rv.begin(), rv.end(), '/', '_');
+			// Remove the  forward slash in filenames.
+			invalid_chars.append("/:");
+		}
+		// Remove the colon in subdirectories.
+		else if (type == stSubdirectory)
+		{
+			// Do not allow drive in a subdirectory.
+			invalid_chars.append(":");
+		}
+		// Lambda function to filter invalid characters and control characters.
+		auto pred = [&](unsigned char c) {
+			// Check for Windows invalid characters
+			if (invalid_chars.find(c) != std::string::npos) return true;
+			// Check for control characters (ASCII 0-31) - problematic in both Windows and Linux.
+			if (c < 32)
+			{
+				return true;
+			}
+			// Other characters do not change.
+			return false;
+		};
+		rv.erase(std::remove_if(rv.begin(), rv.end(), pred), rv.end());
+		// Trim any spaces from both sides.
+		rv = trim(rv, " ");
+		// Some adjustments.
+		if (type == stPath || type == stDirectory)
+		{
+			const auto pos = rv.find_first_of(':');
+			if (pos != std::string::npos)
+			{
+				auto it = rv.begin();
+				// The only allowed position for the drive letter separator is 1.
+				if (pos == 1)
+				{
+					// Replace all others.
+					it += pos + 1;
+				}
+				std::replace(it, rv.end(), ':', '_');
+			}
+		}
+	}
+	else if (type == stNormal)
+	{
+		// Check for control characters (ASCII 0-31).
+		auto pred = [&](unsigned char c) { return c < 32; };
+		rv.erase(std::remove_if(rv.begin(), rv.end(), pred), rv.end());
+	}
+	// Adjust the length if max_len is non-zero and length > std::string length
+	if (max_len > 0 && rv.length() > max_len)
+	{
+		rv = rv.substr(0, max_len);
+	}
+	return rv;
+}
+
+bool Variable::updateValue(const Value& value, bool skip_self) const
 {
 	// Check if this instance can change its value.
 	if (isReadOnly())
@@ -1007,7 +1071,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 	switch (getType())
 	{
 		case Value::vitInteger:
-		case Value::vitFloat: {
+		case Value::vitFloat:
+		{
 			// If the new value is numerical adjust type to _curValue type
 			// create non const Value type
 			Value new_val = value;
@@ -1022,8 +1087,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 			if (!isOwner() && _reference->_maxValue != _reference->_minValue)
 			{
 				// Adjust new value to the allowed range.
-				new_val = (new_val > _reference->_maxValue) ? _reference->_maxValue : new_val;
-				new_val = (new_val < _reference->_minValue) ? _reference->_minValue : new_val;
+				new_val = new_val > _reference->_maxValue ? _reference->_maxValue : new_val;
+				new_val = new_val < _reference->_minValue ? _reference->_minValue : new_val;
 			}
 			// Check if new value must be rounded
 			if (!_reference->_rndValue.isZero())
@@ -1036,60 +1101,10 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 			break;
 		}
 
-		case Value::vitString: {
-			// Create non const std::string that can be modified.
-			std::string s;
-			// Get the filter string from the type.
-			switch (getStringType())
-			{
-				case stPath:
-					s = filter(value.getString(), "/*?\"<>|,");
-					// Strip also space from both ends.
-					s = trim(s, " ");
-					break;
-
-				case stDirectory:
-					s = filter(value.getString(), "/*?\"<>|,");
-					// Strip also space from both ends.
-					s = trim(s, " ");
-					if (s.length() && s.back() != '\\')
-					{
-						s.append(1, '\\');
-					}
-					break;
-
-				case stFilename:
-					s = filter(value.getString(), "/\\:*?\"<>|,");
-					// Strip also space from both ends.
-					s = trim(s, " ");
-					break;
-
-				case stSubdirectory:
-					s = filter(value.getString(), "/:*?\"<>|,");
-					// Strip also space from both ends.
-					s = trim(s, "\\");
-					s = trim(s, " ");
-					s = trim(s, "\\");
-					s = trim(s, " ");
-					// When not empty append the backslash.
-					if (s.length())
-					{
-						s.append(1, '\\');
-					}
-					break;
-
-				default:
-					s = value.getString();
-			}
-			// Get the maximum allowed length of the round field.
-			auto max_len = (size_t) _reference->_rndValue.getInteger();
-			// adjust length if max_len is non-zero and length > std::string length
-			if (max_len && (s.length() > max_len))
-			{
-				s = s.substr(0, max_len);
-			}
+		case Value::vitString:
+		{
 			// create Value instance to compare and assign
-			Value v(s);
+			const Value v(filterString(value.getString(), getStringType(), _reference->_rndValue.getInteger()));
 			// Set local 'changed ' to trigger event
 			changed = _reference->_curValue != v;
 			// assign the value
@@ -1098,7 +1113,8 @@ bool Variable::updateValue(const Value& value, bool skip_self)
 		}
 
 		case Value::vitBinary:
-		case Value::vitCustom: {
+		case Value::vitCustom:
+		{
 			// create non const Value type
 			Value new_val = value;
 			// adjust the new_val type
@@ -1144,7 +1160,8 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 	switch (getType())
 	{
 		case Value::vitInteger:
-		case Value::vitFloat: {
+		case Value::vitFloat:
+		{
 			// If the new value is numerical adjust type to _curValue type
 			// create non const Value type
 			Value new_val = value;
@@ -1162,17 +1179,18 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 			break;
 		}
 
-		case Value::vitString: {
+		case Value::vitString:
+		{
 			// create non const std::string to modify
 			std::string s = value.getString();
-			auto max_len = (size_t) _reference->_rndValue.getInteger();
+			const auto max_len = static_cast<size_t>(_reference->_rndValue.getInteger());
 			// adjust length if max_len is non-zero and length > std::string length
-			if (max_len && (s.length() > max_len))
+			if (max_len && s.length() > max_len)
 			{
 				s = s.substr(0, max_len);
 			}
 			// Create Value instance to compare and assign.
-			Value v(s);
+			const Value v(s);
 			// Set local 'changed ' to trigger an event
 			changed = *_temporary != v;
 			// Assign the new value.
@@ -1181,7 +1199,8 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 		}
 
 		case Value::vitBinary:
-		case Value::vitCustom: {// Create non const Value type.
+		case Value::vitCustom:
+		{// Create non const Value type.
 			Value new_val = value;
 			// adjust the new_val type
 			if (!new_val.setType(getType()))
@@ -1216,8 +1235,7 @@ bool Variable::updateTempValue(const Value& value, bool skip_self)
 
 bool Variable::writeUpdate(std::ostream& os) const
 {
-	os << '(' << _reference->_id << ',' << _reference->_curValue << ',' << getFlagsString(_reference->_curFlags) << ')'
-		 << '\n';
+	os << '(' << _reference->_id << ',' << _reference->_curValue << ',' << getFlagsString(_reference->_curFlags) << ')' << '\n';
 	// check if out stream is valid
 	return !os.fail() && !os.bad();
 }
@@ -1235,7 +1253,7 @@ bool Variable::readUpdate(std::istream& is, bool skip_self, PtrVector& list)
 
 	if (!is.fail() && !is.bad() && value.isValid())
 	{// GetReferenceById get reference to owner to be able to update readonly vars
-		auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
+		const auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
 		var.updateValue(value, skip_self);
 		var.updateFlags(toFlags(flags), skip_self);
 		return true;
@@ -1260,14 +1278,14 @@ bool Variable::read(std::istream& is, bool skip_self, PtrVector& list)
 	if (!is.fail() && !is.bad() && value.isValid())
 	{
 		// Check list for a NULL_REF and use
-		auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
+		const auto& var(not_ref_null(list) ? getInstanceById(id, list) : const_cast<Variable&>(getInstanceById(id)));
 		var.updateValue(value, skip_self);
 		return true;
 	}
 	return false;
 }
 
-bool Variable::create(std::istream& is, Variable::PtrVector& list, bool global, int& err_line)
+bool Variable::create(std::istream& is, PtrVector& list, bool global, int& err_line)
 {
 	bool ret_val = true;
 	// Variable keeps track of the lines read.
@@ -1326,7 +1344,7 @@ std::string Variable::getSetupString() const
 	//  vfDescription,
 	rv += escape(getDescription()) + sep;
 	//  vfType,
-	const char* tmp = getType(getType());
+	const char* tmp = getType(getType()).data();
 	rv += tmp;
 	rv += sep;
 	//  vfConversionType,
@@ -1359,8 +1377,8 @@ void Variable::clipRound(Value& value) const
 			if (_reference->_convertMaxValue != _reference->_convertMinValue)
 			{
 				// Adjust new value to the allowed range.
-				value = (value > _reference->_convertMaxValue) ? _reference->_convertMaxValue : value;
-				value = (value < _reference->_convertMinValue) ? _reference->_convertMinValue : value;
+				value = value > _reference->_convertMaxValue ? _reference->_convertMaxValue : value;
+				value = value < _reference->_convertMinValue ? _reference->_convertMinValue : value;
 			}
 			// Check if new value must be rounded
 			if (!_reference->_rndValue.isZero())
@@ -1374,8 +1392,8 @@ void Variable::clipRound(Value& value) const
 			if (_reference->_maxValue != _reference->_minValue)
 			{
 				// Adjust new value to the allowed range.
-				value = (value > _reference->_maxValue) ? _reference->_maxValue : value;
-				value = (value < _reference->_minValue) ? _reference->_minValue : value;
+				value = value > _reference->_maxValue ? _reference->_maxValue : value;
+				value = value < _reference->_minValue ? _reference->_minValue : value;
 			}
 			// Check if new value must be rounded
 			if (!_reference->_rndValue.isZero())
@@ -1393,24 +1411,23 @@ std::string Variable::getCurString(bool use_states) const
 		default:
 		case Value::vitBinary:
 		case Value::vitCustom:
-		case Value::vitString: {
+		case Value::vitString:
+		{
 			if (_temporary)
 			{
 				return _temporary->getString();
 			}
-			else
-			{
-				return _reference->_curValue.getString();
-			}
+			return _reference->_curValue.getString();
 		}
 
-		case Value::vitInteger: {
+		case Value::vitInteger:
+		{
 			// there are states return the state name if 'states' is true if not run in to default switch
 			if (use_states && !_reference->_states.empty())
 			{
 				for (auto& state: _reference->_states)
 				{
-					if (state._value == (_temporary ? (*_temporary) : _reference->_curValue))
+					if (state._value == (_temporary ? *_temporary : _reference->_curValue))
 					{
 						return state._name;
 					}
@@ -1419,16 +1436,14 @@ std::string Variable::getCurString(bool use_states) const
 			// run into next switch is state was not found
 		}
 
-		case Value::vitFloat: {
+		case Value::vitFloat:
+		{
 			// When a temporary is used then it is already converted or not.
 			if (isConverted())
 			{
-				return (_temporary ? (*_temporary) : _reference->_convertCurValue).getString(_reference->_convertSigDigits);
+				return (_temporary ? *_temporary : _reference->_convertCurValue).getString(_reference->_convertSigDigits);
 			}
-			else
-			{
-				return (_temporary ? (*_temporary) : _reference->_curValue).getString(_reference->_sigDigits);
-			}
+			return (_temporary ? *_temporary : _reference->_curValue).getString(_reference->_sigDigits);
 		}
 	}// switch
 }
@@ -1441,19 +1456,13 @@ void Variable::setConvertHandler(VariableHandler* handler)
 	}
 }
 
-bool Variable::setConvertValues(
-	const std::string& unit,
-	const Value& multiplier,
-	const Value& offset,
-	int digits
-)
+bool Variable::setConvertValues(const std::string& unit, const Value& multiplier, const Value& offset, int digits) const
 {
 	// Only owners are allowed to Set the conversion values.
 	if (isOwner() && _reference->_type == Value::vitFloat)
 	{
 		// Check if something has changed.
-		if (_reference->_convertMultiplier == multiplier && _reference->_convertOffset == offset &&
-				_reference->_convertUnit == unit)
+		if (_reference->_convertMultiplier == multiplier && _reference->_convertOffset == offset && _reference->_convertUnit == unit)
 		{
 			// Check if the significant digits are to be calculated here or passed here.
 			if (!(digits != std::numeric_limits<int>::max() && _reference->_convertSigDigits != digits))
@@ -1507,7 +1516,7 @@ bool Variable::setConvertValues(
 	return false;
 }
 
-bool Variable::setConvertValues(bool convert)
+bool Variable::setConvertValues(bool convert) const
 {
 	// Only owners are allowed to set the conversion values.
 	// Check if the type is a floating point value that can be converted.
@@ -1626,7 +1635,7 @@ void Variable::setTemporary(bool on_off)
 	}
 }
 
-bool Variable::applyTemporary(bool skip_self)
+bool Variable::applyTemporary(bool skip_self) const
 {
 	// Check if the temporary value is used.
 	if (_temporary)
@@ -1644,7 +1653,7 @@ bool Variable::isTemporaryDifferent() const
 	{
 		// Only when there is a change.
 		Value* cur_val = isConverted() ? &_reference->_convertCurValue : &_reference->_curValue;
-		bool rv = *_temporary != *cur_val;
+		const bool rv = *_temporary != *cur_val;
 		return rv;
 	}
 	return false;
@@ -1659,7 +1668,7 @@ bool Variable::updateTemporary(bool skip_self)// NOLINT(misc-no-recursion)
 		if (*_temporary != (isConverted() ? _reference->_convertCurValue : _reference->_curValue))
 		{
 			// Update the temporary value.
-			*_temporary = (isConverted() ? _reference->_convertCurValue : _reference->_curValue);
+			*_temporary = isConverted() ? _reference->_convertCurValue : _reference->_curValue;
 			// Notify the variable when skip_self is false.
 			if (!skip_self)
 			{
@@ -1702,126 +1711,106 @@ std::ostream& operator<<(std::ostream& os, const Variable::State::Vector& v)
 	return os;
 }
 
-/**
- * Implementation of undocumented debugging functions
- */
-const char* Variable::getEventName(EEvent event)
+std::string_view Variable::getEventName(EEvent event)
 {
-	const char* rv = nullptr;
 	switch (event)
 	{
 		case veNewId:
-			rv = "NewId";
-			break;
+			return "NewId";
 
 		case veConverted:
-			rv = "Converted";
-			break;
+			return "Converted";
 
 		case veFlagsChange:
-			rv = "FlagsChange";
-			break;
+			return "FlagsChange";
 
 		case veIdChanged:
-			rv = "IdChanged";
-			break;
+			return "IdChanged";
 
 		case veDesiredId:
-			rv = "DesiredId";
-			break;
+			return "DesiredId";
 
 		case veRemove:
-			rv = "Remove";
-			break;
+			return "Remove";
 
 		case veGetOwner:
-			rv = "getOwner";
-			break;
+			return "getOwner";
 
 		case veLostOwner:
-			rv = "LostOwner";
-			break;
+			return "LostOwner";
 
 		case veLinked:
-			rv = "Linked";
-			break;
+			return "Linked";
 
 		case veUnlinked:
-			rv = "Unlinked";
-			break;
+			return "Unlinked";
 
 		case veSetup:
-			rv = "Setup";
-			break;
+			return "Setup";
 
 		case veValueChange:
-			rv = "ValueChange";
-			break;
+			return "ValueChange";
 
 		case veInvalid:
-			rv = "Invalid";
-			break;
+			return "Invalid";
 
 		default:
 			// Check for global event.
 			if (event < veFirstLocal)
 			{
-				rv = "UserGlobal";
+				return "UserGlobal";
 				break;
 			}
-			else
+			if (event >= veFirstLocal && event < veFirstPrivate)
 			{
-				if (event >= veFirstLocal && event < veFirstPrivate)
-				{
-					rv = "UserLocal";
-				}
-				else
-				{
-					if (event >= veUserPrivate)
-					{
-						rv = "UserPrivate";
-					}
-				}
+				return "UserLocal";
+			}
+			if (event >= veUserPrivate)
+			{
+				return "UserPrivate";
 			}
 	}
-	// When not Set the unknown value.
-	if (!rv)
-	{
-		rv = "?Unknown";
-	}
-	return rv;
+	return "?Unknown";
 }
 
-Variable::EStringType Variable::getStringType() const
+Variable::EStringType Variable::getStringType(const std::string& flags)
 {
-	// Check for string type kind of variable
-	if (_reference->_type == Value::vitString)
+	const size_t pos = flags.find_first_of("SNMPDF");
+	if (pos != std::string::npos)
 	{
-		size_t pos = _reference->_unit.find_first_of("SNMPDF");
-		if (pos != std::string::npos)
+		switch (flags[pos])
 		{
-			switch (_reference->_unit[pos])
-			{
-				case 'N':
-					return stNormal;
-				case 'M':
-					return stMulti;
-				case 'P':
-					return stPath;
-				case 'D':
-					return stDirectory;
-				case 'S':
-					return stSubdirectory;
-				case 'F':
-					return stFilename;
-			}
+			default:
+			case 'N':
+				return stNormal;
+			case 'M':
+				return stMulti;
+			case 'P':
+				return stPath;
+			case 'D':
+				return stDirectory;
+			case 'S':
+				return stSubdirectory;
+			case 'F':
+				return stFilename;
 		}
 	}
 	// By default, return the normal string type.
 	return stNormal;
 }
 
-const char* Variable::getStringType(Variable::EStringType type)
+Variable::EStringType Variable::getStringType() const
+{
+	// Check for string type kind of variable.
+	if (_reference->_type == Value::vitString)
+	{
+		return getStringType(_reference->_unit);
+	}
+	// By default, return the normal string type.
+	return stNormal;
+}
+
+std::string_view Variable::getStringType(EStringType type)
 {
 	switch (type)
 	{
@@ -1858,12 +1847,9 @@ std::string Variable::getUnit() const
 	// Check for string type kind of variable
 	if (_reference->_type == Value::vitString)
 	{
-		return getStringType(getStringType());
+		return std::string(getStringType(getStringType()));
 	}
-	else
-	{
-		return isConverted() ? _reference->_convertUnit : _reference->_unit;
-	}
+	return isConverted() ? _reference->_convertUnit : _reference->_unit;
 }
 
 std::string Variable::getUnit(bool converted) const
@@ -1871,15 +1857,12 @@ std::string Variable::getUnit(bool converted) const
 	// Check for string type kind of variable
 	if (_reference->_type == Value::vitString)
 	{
-		return getStringType(getStringType());
+		return std::string(getStringType(getStringType()));
 	}
-	else
-	{
-		return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertUnit : _reference->_unit;
-	}
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertUnit : _reference->_unit;
 }
 
-VariableHandler* Variable::getConvertHandler() const
+VariableHandler* Variable::getConvertHandler()
 {
 	return VariableStatic::_convertHandler;
 }
@@ -1899,7 +1882,7 @@ void Variable::setDesiredId()
 	setDesiredId(_reference->_id);
 }
 
-Variable& Variable::getOwner()
+Variable& Variable::getOwner() const
 {
 	return *_reference->_list[0];
 }
@@ -1924,7 +1907,7 @@ bool Variable::isConverted() const
 	return _converted && _reference->_type == Value::vitFloat && !_reference->_convertUnit.empty();
 }
 
-bool Variable::isTemporary()
+bool Variable::isTemporary() const
 {
 	return _temporary != nullptr;
 }
@@ -1951,7 +1934,7 @@ std::string Variable::getCurFlagsString() const
 
 std::string Variable::getFlagsString() const
 {
-	return Variable::getFlagsString(_reference->_flags);
+	return getFlagsString(_reference->_flags);
 }
 
 Variable::flags_type Variable::getFlags() const
@@ -1986,7 +1969,7 @@ const Value& Variable::getRnd() const
 
 const Value& Variable::getDef(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertDefValue : _reference->_defValue;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertDefValue : _reference->_defValue;
 }
 
 int Variable::getSigDigits() const
@@ -2001,22 +1984,22 @@ int Variable::getRequiredDigits() const
 
 const Value& Variable::getMin(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertMinValue : _reference->_minValue;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertMinValue : _reference->_minValue;
 }
 
 const Value& Variable::getMax(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertMaxValue : _reference->_maxValue;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertMaxValue : _reference->_maxValue;
 }
 
 const Value& Variable::getRnd(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertRndValue : _reference->_rndValue;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertRndValue : _reference->_rndValue;
 }
 
 int Variable::getSigDigits(bool converted) const
 {
-	return (converted && !_reference->_convertUnit.empty()) ? _reference->_convertSigDigits : _reference->_sigDigits;
+	return converted && !_reference->_convertUnit.empty() ? _reference->_convertSigDigits : _reference->_sigDigits;
 }
 
 Value::EType Variable::getType() const
@@ -2024,9 +2007,9 @@ Value::EType Variable::getType() const
 	return _reference->_type;
 }
 
-const Variable& Variable::getInstanceById(Variable::id_type id)
+const Variable& Variable::getInstanceById(id_type id)
 {
-	return *(getReferenceById(id)->_list[0]);
+	return *getReferenceById(id)->_list[0];
 }
 
 Variable::size_type Variable::getUsageCount() const
@@ -2046,7 +2029,7 @@ const Variable::State::Vector& Variable::getStates() const
 
 Variable::Definition Variable::getDefinition(const std::string& str)
 {
-	Definition def;
+	Definition def{};
 	try
 	{
 		// Set the reference valid flag default to true.
@@ -2064,8 +2047,8 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 		// Pointer that points to the place where the conversion of the ID went wrong.
 		size_t end_pos = 0;
 		// Get the result ID from the setup string.
-		std::string tmp = getField(vfId);
-		id_type id = std::stoull(tmp, &end_pos, 0);
+		const std::string tmp = getField(vfId);
+		const id_type id = std::stoull(tmp, &end_pos, 0);
 		// Return zero if an error occurred during conversion of the ID.
 		if (tmp[end_pos] != '\0')
 		{
@@ -2079,19 +2062,27 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 		def._description = unescape(getField(vfDescription));
 		def._flags = toFlags(getField(vfFlags));
 		// Check for multi line string so the default value
-		Value::EType type = (Value::EType) Value::getType(getField(vfType).c_str());
-		//
-		if (type == Value::vitString && def._unit.find('M') != std::string::npos)
+		const Value::EType type = Value::getType(getField(vfType));
+		def._minValue.set(getField(vfMinimum));
+		def._maxValue.set(getField(vfMaximum));
+		def._roundValue.set(getField(vfRound));
+
+		auto def_value = getField(vfDefault);
+		// When the variable is a string.
+		if (type == Value::vitString)
 		{
-			def._defaultValue.set(unescape(getField(vfDefault)));
+			// Determine the string type.
+			const auto string_type = getStringType(def._unit);
+			// Unescape the string when not a multi line variable.
+			if (string_type == stMulti)
+			{
+				def_value = unescape(def_value);
+			}
+			// Filter the default string according the string type and the round value which is the maximum length.
+			def_value = filterString(def_value, string_type, def._roundValue.getInteger());
 		}
-		else
-		{
-			def._defaultValue.set(getField(vfDefault));
-		}
-		def._minValue.set(getField(vfMinimum).c_str());
-		def._maxValue.set(getField(vfMaximum).c_str());
-		def._roundValue.set(getField(vfRound).c_str());
+		// Set the default value.
+		def._defaultValue.set(def_value);
 		// Get max state field count
 		int state_count = 0;
 		while (getField(vfFirstState + state_count).length())
@@ -2104,11 +2095,11 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 			def._states[i]._name = getField(vfFirstState + i);
 			if (def._states[i]._name.length())
 			{
-				size_t pos = def._states[i]._name.find_first_of('=');
+				const size_t pos = def._states[i]._name.find_first_of('=');
 				// If equal sign has been found add state value
 				if (pos != std::string::npos)
 				{
-					def._states[i]._value.set(def._states[i]._name.substr(pos + 1).c_str());
+					def._states[i]._value.set(def._states[i]._name.substr(pos + 1));
 					// Truncate name to position of the equal sign
 					def._states[i]._name.resize(pos);
 				}
@@ -2130,16 +2121,15 @@ Variable::Definition Variable::getDefinition(const std::string& str)
 			{
 				def._valid &= s._value.setType(type);
 			}
-			def._type = (Value::EType) type;
+			def._type = type;
 		}
 	}
-	catch (std::exception& ex)
+	catch ([[maybe_unused]] std::exception& ex)
 	{
 		def._valid = false;
 	}
 	// Notify when not valid notify.
-	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n"
-												<< str);
+	SF_COND_NORM_NOTIFY(!def._valid, DO_DEFAULT, "Variable definition not valid!\n" << str);
 	//
 	return def;
 }
@@ -2171,14 +2161,13 @@ std::string Variable::getFieldName(int field)
 		case vfDescription:
 			return "Description";
 		default:
+		{
 			if (field >= vfFirstState)
 			{
 				return "State-" + itostr(field - vfFirstState + 1);
 			}
-			else
-			{
-				return "?Field" + itostr(field) + "?";
-			}
+			return "?Field" + itostr(field) + "?";
+		}
 	}
 }
 

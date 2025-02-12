@@ -52,7 +52,6 @@ inline bool file_write(const std::string& path, const void* buf, size_t sz, bool
  * @brief Writes a std::string to file.
  * @param path File path.
  * @param s String to be written to the file.
- * @param sz Size of the buffer.
  * @param append When true it appends the buffer to the file.
  * @return True on success.
  */
@@ -89,12 +88,15 @@ _MISC_FUNC std::string time_format(const struct tm* time_info, const char* forma
 /**
  * @brief Formats the time to the given format.
  * @param time When -1 the current time is used.
+ * @param format When NULL the XML format is used.
+ * @param gm_time When true GMT is the result value not the localtime.
  * @return Formatted time string.
  */
 _MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullptr, bool gm_time = false);
 
 /**
  * @brief Gets the unix time from the passed string in the format that was passed.
+ * @param str
  * @param format When NULL the XML format is used.
  * @param gm_time When is true GMT is used otherwise the local time.
  * @return Time structure.
@@ -102,7 +104,7 @@ _MISC_FUNC std::string time_format(time_t time = -1, const char* format = nullpt
 _MISC_FUNC time_t time_str2time(const std::string& str, const char* format = nullptr, bool gm_time = false);
 
 /**
- * @brief Same as ::mktime().
+ * @brief Same as mktime().
  * @param tm Time
  * @param gm_time When true GMT is the result value not the localtime.
  * @return Time as time_t.
@@ -151,7 +153,10 @@ struct passwd_t : public passwd_type
 		~passwd_t();
 
 		//
-		explicit inline operator bool() const { return valid; }
+		explicit inline operator bool() const
+		{
+			return valid;
+		}
 
 	private:
 		/**

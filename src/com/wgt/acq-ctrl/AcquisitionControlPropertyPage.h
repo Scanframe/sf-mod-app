@@ -11,8 +11,7 @@ namespace Ui
 class AcquisitionControlPropertyPage;
 }
 
-class AcquisitionControlPropertyPage
-	: public PropertyPage
+class AcquisitionControlPropertyPage : public PropertyPage
 {
 		Q_OBJECT
 

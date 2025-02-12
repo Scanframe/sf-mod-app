@@ -131,8 +131,7 @@ class ListenerList
  * @tparam Args
  */
 template<typename... Args>
-class TListener
-	: private ListenerList::base_type
+class TListener : private ListenerList::base_type
 {
 	public:
 		/**

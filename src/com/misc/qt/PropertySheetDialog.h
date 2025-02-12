@@ -1,9 +1,6 @@
 #pragma once
 #include <QDialog>
-#include <QListView>
 #include <QListWidgetItem>
-#include <QMenu>
-#include <QSettings>
 #include <misc/global.h>
 #include <misc/qt/PropertyPage.h>
 
@@ -11,13 +8,12 @@ namespace sf
 {
 
 // Forward definition
-class PropertyPage;
+class _MISC_CLASS PropertyPage;
 
 /**
  * @brief Dialog containing multiple property pages.
  */
-class _MISC_CLASS PropertySheetDialog
-	: public QDialog
+class _MISC_CLASS PropertySheetDialog : public QDialog
 {
 		Q_OBJECT
 

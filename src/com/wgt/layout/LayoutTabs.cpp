@@ -72,9 +72,7 @@ struct LayoutTabs::Private
 			{
 				_variable.setHandler(this);
 			}
-			connect(_tabWidget, &QTabWidget::currentChanged, [&](int index) {
-				_variable.setCur(Value(index), true);
-			});
+			connect(_tabWidget, &QTabWidget::currentChanged, [&](int index) { _variable.setCur(Value(index), true); });
 		}
 
 		~Private() override
@@ -85,12 +83,7 @@ struct LayoutTabs::Private
 
 		void recreateTabs();
 
-		void variableEventHandler(
-			EEvent event,
-			const Variable& call_var,
-			Variable& link_var,
-			bool same_inst
-		) override
+		void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override
 		{
 			SF_COND_RTTI_NOTIFY(isDebug(), DO_DEFAULT, Variable::getEventName(event));
 			switch (event)

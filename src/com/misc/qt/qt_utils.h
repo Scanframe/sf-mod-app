@@ -272,11 +272,7 @@ class _MISC_CLASS ApplicationSettings : public QObject
  * @return Connection object.
  */
 _MISC_FUNC QMetaObject::Connection connectByName(
-	const QWidget* widget,
-	const QString& sender_name,
-	const char* signal_name,
-	const QObject* receiver,
-	const char* method_name,
+	const QWidget* widget, const QString& sender_name, const char* signal_name, const QObject* receiver, const char* method_name,
 	Qt::ConnectionType ct = Qt::AutoConnection
 );
 

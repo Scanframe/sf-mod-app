@@ -13,53 +13,15 @@ namespace sf
 
 const char* Resource::_warningLocation = ":icon/png/warning";
 
-const char* Resource::_iconResources[] =
-	{
-		":icon/svg/clear",
-		":icon/svg/reload",
-		":icon/svg/submit",
-		":icon/svg/new",
-		":icon/svg/open",
-		":icon/svg/cut",
-		":icon/svg/copy",
-		":icon/svg/paste",
-		":icon/svg/undo",
-		":icon/svg/redo",
-		":icon/svg/save",
-		":icon/svg/cancel",
-		":icon/svg/close",
-		":icon/svg/check",
-		":icon/svg/okay",
-		":icon/svg/exit",
-		":icon/svg/close-window",
-		":icon/svg/close-windows",
-		":icon/svg/configuration",
-		":icon/svg/settings",
-		":icon/svg/application",
-		":icon/svg/development",
-		":icon/svg/compile",
-		":icon/svg/initialize",
-		":icon/svg/step",
-		":icon/svg/run",
-		":icon/svg/start",
-		":icon/svg/stop",
-		":icon/svg/edit",
-		":icon/svg/add",
-		":icon/svg/remove",
-		":icon/svg/folder",
-		":icon/svg/collapse",
-		":icon/svg/expand",
-		":icon/svg/open-folder",
-		":icon/svg/hand",
-		":icon/svg/search",
-		":icon/svg/form",
-		":icon/svg/container",
-		":icon/svg/widget",
-		":icon/svg/palette",
-		":icon/svg/position",
-		":icon/svg/location",
-		":icon/svg/tools",
-		":icon/svg/graph",
+const char* Resource::_iconResources[] = {
+	":icon/svg/clear",         ":icon/svg/reload",   ":icon/svg/submit",      ":icon/svg/new",         ":icon/svg/open",         ":icon/svg/cut",
+	":icon/svg/copy",          ":icon/svg/paste",    ":icon/svg/undo",        ":icon/svg/redo",        ":icon/svg/save",         ":icon/svg/cancel",
+	":icon/svg/close",         ":icon/svg/check",    ":icon/svg/okay",        ":icon/svg/exit",        ":icon/svg/close-window", ":icon/svg/close-windows",
+	":icon/svg/configuration", ":icon/svg/settings", ":icon/svg/application", ":icon/svg/development", ":icon/svg/compile",      ":icon/svg/initialize",
+	":icon/svg/step",          ":icon/svg/run",      ":icon/svg/start",       ":icon/svg/stop",        ":icon/svg/edit",         ":icon/svg/add",
+	":icon/svg/remove",        ":icon/svg/folder",   ":icon/svg/collapse",    ":icon/svg/expand",      ":icon/svg/open-folder",  ":icon/svg/hand",
+	":icon/svg/search",        ":icon/svg/form",     ":icon/svg/container",   ":icon/svg/widget",      ":icon/svg/palette",      ":icon/svg/position",
+	":icon/svg/location",      ":icon/svg/tools",    ":icon/svg/graph",
 };
 
 int Resource::_defaultIconSize = 128;
@@ -109,9 +71,10 @@ QByteArray Resource::getSvg(QFile& file, const QColor& color, const QSize& size)
 	QString err_msg;
 	int line;
 	// Read the content from the file.
-	if (!doc.setContent(&file, &err_msg, &line))
+	const auto result = doc.setContent(&file);
+	if (!result)
 	{
-		qWarning() << QString("DomDoc reading failed on '%1:%2' with '%3'").arg(file.fileName()).arg(line).arg(err_msg);
+		qWarning() << QString("DomDoc reading failed on '%1:%2:%3' with '%4'").arg(file.fileName()).arg(result.errorLine).arg(result.errorColumn).arg(err_msg);
 		return nullptr;
 	}
 	auto elem = doc.firstChildElement("svg");

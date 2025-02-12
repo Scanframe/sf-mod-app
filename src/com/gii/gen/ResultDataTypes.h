@@ -21,8 +21,7 @@ class ResultData;
  * Multiple inheritance makes these types local for other classes as well.<br>
  * Making code more readable and also prevents name space problems.<br>
  */
-class _GII_CLASS ResultDataTypes
-	: public InformationTypes
+class _GII_CLASS ResultDataTypes : public InformationTypes
 {
 	public:
 		/**

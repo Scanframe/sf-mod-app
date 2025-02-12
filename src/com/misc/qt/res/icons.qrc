@@ -1,5 +1,5 @@
 <!DOCTYPE RCC>
-<!-- Generated at: 2021-11-17T14:29:53CET:::z -->
+<!-- Generated at: 2025-02-10T19:27:31CET:::z -->
 <RCC version="1.0">
 	<qresource prefix="icon/png/">
 		<file alias="warning">icon/warning.png</file>
@@ -28,6 +28,7 @@
 		<file alias="edit">icon/edit.svg</file>
 		<file alias="exit">icon/exit.svg</file>
 		<file alias="expand">icon/expand.svg</file>
+		<file alias="file">icon/file.svg</file>
 		<file alias="folder">icon/folder.svg</file>
 		<file alias="form">icon/form.svg</file>
 		<file alias="graph">icon/graph.svg</file>

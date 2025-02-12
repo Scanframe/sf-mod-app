@@ -23,15 +23,21 @@ class GmiEmulator : public Controller
 	public:
 		typedef Controller TInherited;
 		/**
-		 * @brief  Axis type of this implementation.
+		 * @brief Axis type of this implementation.
 		 */
-		class TAxis : public Controller::Axis
+		class TAxis final : public Axis
 		{
 			public:
-				typedef Controller::Axis TInherited;
-				// Constructor.
+				typedef Axis TInherited;
+				/**
+				 * @brief Constructor.
+				 * @param me
+				 * @param al
+				 */
 				TAxis(GmiEmulator* me, EAxisLocation al);
-				// Destructor.
+				/**
+				 * @brief Destructor.
+				 */
 				~TAxis();
 				//
 				void DoMovePos(EMovePosCmd mpc);
@@ -157,7 +163,7 @@ class GmiEmulator : public Controller
 		//
 		int _debug;
 
-		friend GmiEmulator::TAxis;
+		friend TAxis;
 };
 
 }// namespace sf

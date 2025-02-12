@@ -39,19 +39,22 @@ void VariableCollector::variableEventHandler(VariableTypes::EEvent event, const 
 			break;
 
 		// Global event for a new ID.
-		case veNewId: {
+		case veNewId:
+		{
 			addVariable(caller);
 			break;
 		}
 
 		case veIdChanged:
-		case veRemove: {
+		case veRemove:
+		{
 			// Remove the variable using the id in the data member with which it was created.
 			_map.erase(link.getData<id_type>());
 			break;
 		}
 
-		case veLinked: {
+		case veLinked:
+		{
 			// When linking iterate through the list of global variables.
 			if (&link == &_variable)
 			{
@@ -76,7 +79,8 @@ void VariableCollector::variableEventHandler(VariableTypes::EEvent event, const 
 			break;
 		}
 
-		case veValueChange: {
+		case veValueChange:
+		{
 			// Lock for member.
 			Lock lock(this);
 			Data d;
@@ -87,7 +91,8 @@ void VariableCollector::variableEventHandler(VariableTypes::EEvent event, const 
 			break;
 		}
 
-		case veFlagsChange: {
+		case veFlagsChange:
+		{
 			// Lock for member.
 			Lock lock(this);
 			Data d;

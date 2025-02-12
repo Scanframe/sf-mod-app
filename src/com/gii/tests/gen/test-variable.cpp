@@ -1,3 +1,5 @@
+#include "gii/qt/Namespace.h"
+
 #include <test/catch.h>
 
 #include <gii/gen/UnitConversionServer.h>
@@ -68,22 +70,16 @@ struct VarEvent : sf::VariableTypes
 
 bool VarEvent::operator==(const VarEvent& ev) const
 {
-	return _event == ev._event &&
-		_call_var == ev._call_var &&
-		_link_var == ev._link_var &&
-		_same_inst == ev._same_inst &&
-		_id == ev._id &&
-		_any == ev._any;
+	return _event == ev._event && _call_var == ev._call_var && _link_var == ev._link_var && _same_inst == ev._same_inst && _id == ev._id && _any == ev._any;
 }
 
 std::ostream& operator<<(std::ostream& os, const VarEvent& ev)
 {
-	return os
-		<< std::endl
-		<< "(E:ve" << sf::Variable::getEventName(ev._event) << ", "
-		<< "C:" << ev._call_var << ", "
-		<< "L:" << ev._link_var << ") "
-		<< "S:" << std::boolalpha << ev._same_inst << ", I:0x" << std::hex << ev._id << ", \"" << ev._any << "\")";
+	return os << std::endl
+						<< "(E:ve" << sf::Variable::getEventName(ev._event) << ", "
+						<< "C:" << ev._call_var << ", "
+						<< "L:" << ev._link_var << ") "
+						<< "S:" << std::boolalpha << ev._same_inst << ", I:0x" << std::hex << ev._id << ", \"" << ev._any << "\")";
 }
 
 struct VarHandler : sf::VariableHandler
@@ -96,7 +92,8 @@ struct VarHandler : sf::VariableHandler
 			VarEvent ve{event, &call_var, &link_var, same_inst, call_var.getId()};
 			switch (event)
 			{
-				case veValueChange: {
+				case veValueChange:
+				{
 					bool owned = link_var.isOwner();
 					// Server report non-converted value.
 					ve._any = link_var.getCur(!owned).getString(link_var.getSigDigits(!owned));
@@ -112,7 +109,8 @@ struct VarHandler : sf::VariableHandler
 					break;
 
 				case veConverted:
-					ve._any = link_var.getUnit(false) + '|' + sf::itostr(link_var.getSigDigits(false), 10) + ' ' + link_var.getUnit(true) + '|' + sf::itostr(link_var.getSigDigits(true), 10);
+					ve._any = link_var.getUnit(false) + '|' + sf::itostr(link_var.getSigDigits(false), 10) + ' ' + link_var.getUnit(true) + '|' +
+						sf::itostr(link_var.getSigDigits(true), 10);
 					break;
 
 				default:
@@ -149,28 +147,31 @@ TEST_CASE("sf::Variable", "[variable]")
 		sf::Variable v_owner1(std::string("0x2016,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,1,10,0,20"));
 		v_owner1.setHandler(&handler_owner1);
 		// Create other owner instance.
-		sf::Variable v_owner2(std::string("0x3005,Low Pass Filter,,Low pass filters OFF; 2.5 MHz; 5.0 MHz; 10.0 MHz,A,INTEGER,LONG,1,0,0,3,OFF=0,2.5 MHz=1,5.0 MHz=2,10.0 MHz=3"));
+		sf::Variable v_owner2(
+			std::string(
+				"0x3005,Low Pass Filter,,Low pass filters OFF; 2.5 MHz; 5.0 MHz; 10.0 "
+				"MHz,A,INTEGER,LONG,1,0,0,3,OFF=0,2.5 MHz=1,5.0 MHz=2,10.0 MHz=3"
+			)
+		);
 		//v_owner2.setHandler(&handler_owner2);
 		// Expected event flow.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x2016"},
-																				{sf::Variable::veNewId, &v_owner1, &v_client, false, 0x2016},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x2016},
-																				{sf::Variable::veNewId, &v_owner2, &v_client, false, 0x3005},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x2016"},
+				{sf::Variable::veNewId, &v_owner1, &v_client, false, 0x2016},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x2016},
+				{sf::Variable::veNewId, &v_owner2, &v_client, false, 0x3005},
+			}}
+		);
 		// Clear the events
 		handler_client._events.clear();
 		handler_owner1._events.clear();
 		// Instance count so far.
 		REQUIRE(sf::Variable::getInstanceCount() == 3);
 		// Checking the created states.
-		sf::Variable::State::Vector states{
-			{{"OFF", sf::Value(0)},
-			 {"2.5 MHz", sf::Value(1)},
-			 {"5.0 MHz", sf::Value(2)},
-			 {"10.0 MHz", sf::Value(3)}}
-		};
+		sf::Variable::State::Vector states{{{"OFF", sf::Value(0)}, {"2.5 MHz", sf::Value(1)}, {"5.0 MHz", sf::Value(2)}, {"10.0 MHz", sf::Value(3)}}};
 		REQUIRE(v_owner2.getStates() == states);
 		// Check individual state function.
 		REQUIRE(v_owner2.getStateName(2) == "5.0 MHz");
@@ -189,10 +190,13 @@ TEST_CASE("sf::Variable", "[variable]")
 			v_hijack.setHandler(&handler_hijack);
 			v_hijack.setup(v_owner1);
 			// Event flow.
-			REQUIRE(handler_hijack._events == VarEvent::Vector{{
-																					{sf::Variable::veLinked, &v_hijack, &v_hijack, true, 0x0},
-																					{sf::Variable::veIdChanged, &v_hijack, &v_hijack, true, 0x2016},
-																				}});
+			REQUIRE(
+				handler_hijack._events ==
+				VarEvent::Vector{{
+					{sf::Variable::veLinked, &v_hijack, &v_hijack, true, 0x0},
+					{sf::Variable::veIdChanged, &v_hijack, &v_hijack, true, 0x2016},
+				}}
+			);
 			handler_hijack._events.clear();
 			// Check if owner.
 			REQUIRE(v_owner1.isOwner());
@@ -205,21 +209,30 @@ TEST_CASE("sf::Variable", "[variable]")
 			// Check if owner.
 			REQUIRE(v_hijack.isOwner());
 			// Event flow owner 1.
-			REQUIRE(handler_owner1._events == VarEvent::Vector{{
-																					{sf::Variable::veLostOwner, &v_hijack, &v_owner1, false, 0x2016},
-																				}});
+			REQUIRE(
+				handler_owner1._events ==
+				VarEvent::Vector{{
+					{sf::Variable::veLostOwner, &v_hijack, &v_owner1, false, 0x2016},
+				}}
+			);
 			// Event flow hijack.
-			REQUIRE(handler_hijack._events == VarEvent::Vector{{
-																					{sf::Variable::veGetOwner, &v_hijack, &v_hijack, true, 0x2016},
-																				}});
+			REQUIRE(
+				handler_hijack._events ==
+				VarEvent::Vector{{
+					{sf::Variable::veGetOwner, &v_hijack, &v_hijack, true, 0x2016},
+				}}
+			);
 			// Clear events before going out of scope.
 			handler_owner1._events.clear();
 		}
 		// Check events of hijack owner getting out of scope.
-		REQUIRE(handler_owner1._events == VarEvent::Vector{{
-																				{sf::Variable::veInvalid, pv_hijack, &v_owner1, false, 0x2016},
-																				{sf::Variable::veIdChanged, &v_owner1, &v_owner1, true, 0x0},
-																			}});
+		REQUIRE(
+			handler_owner1._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veInvalid, pv_hijack, &v_owner1, false, 0x2016},
+				{sf::Variable::veIdChanged, &v_owner1, &v_owner1, true, 0x0},
+			}}
+		);
 	}
 
 	SECTION("Events:Value/Flags")
@@ -238,15 +251,21 @@ TEST_CASE("sf::Variable", "[variable]")
 		v_client.setHandler(&handler_client);
 		v_client.setup(0x201000, true);
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_server, &v_server, true, 0x201000},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_server, &v_server, true, 0x201000},
+			}}
+		);
 		// Check server instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x201000"},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x201000},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x201000"},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x201000},
+			}}
+		);
 		// Clear the events for the next checks.
 		handler_client._events.clear();
 		handler_server._events.clear();
@@ -265,22 +284,28 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Server unsets the flags.
 		REQUIRE(v_server.unsetFlag(sf::Variable::flgParameter | sf::Variable::flgReadonly));
 		// Check client instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veValueChange, &v_server, &v_client, false, 0x201000, "1.0"},
-																				//{sf::Variable::veValueChange, &v_client, &v_client, true, 0x201000, "2.0"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "RA"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "RAP"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "A"},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veValueChange, &v_server, &v_client, false, 0x201000, "1.0"},
+				//{sf::Variable::veValueChange, &v_client, &v_client, true, 0x201000, "2.0"},
+				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "RA"},
+				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "RAP"},
+				{sf::Variable::veFlagsChange, &v_server, &v_client, false, 0x201000, "A"},
+			}}
+		);
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veValueChange, &v_server, &v_server, true, 0x201000, "1.0"},
-																				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x201000, "2.0"},
-																				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x201000, "3.4"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "RA"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "RAP"},
-																				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "A"},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veValueChange, &v_server, &v_server, true, 0x201000, "1.0"},
+				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x201000, "2.0"},
+				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x201000, "3.4"},
+				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "RA"},
+				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "RAP"},
+				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201000, "A"},
+			}}
+		);
 		/*
 		// Clear the events for the next checks.
 		handler_client._events.clear();
@@ -332,20 +357,26 @@ TEST_CASE("sf::Variable", "[variable]")
 		REQUIRE(v_client.setFlag(sf::Variable::flgHidden));
 
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x301000},
-																				{sf::Variable::veNewId, &v_server, &v_server, true, 0x301000},
-																				{sf::Variable::veSetup, &v_server, &v_server, true, 0x301000},
-																				{sf::Variable::veValueChange, &v_server, &v_server, true, 0x301000, "2.2"},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
+				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x301000},
+				{sf::Variable::veNewId, &v_server, &v_server, true, 0x301000},
+				{sf::Variable::veSetup, &v_server, &v_server, true, 0x301000},
+				{sf::Variable::veValueChange, &v_server, &v_server, true, 0x301000, "2.2"},
+			}}
+		);
 		// Check client instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x301000},
-																				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x301000, "3.3"},
-																				{sf::Variable::veFlagsChange, &v_client, &v_client, true, 0x301000, "AH"},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x301000},
+				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x301000, "3.3"},
+				{sf::Variable::veFlagsChange, &v_client, &v_client, true, 0x301000, "AH"},
+			}}
+		);
 	}
 
 	SECTION("Temporary")
@@ -356,9 +387,7 @@ TEST_CASE("sf::Variable", "[variable]")
 		// Create server instance.
 		sf::Variable v_server;
 		v_server.setHandler(&handler_server);
-		v_server.setup(
-			sf::Variable::getDefinition("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"), 0x100
-		);
+		v_server.setup(sf::Variable::getDefinition("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20"), 0x100);
 
 		// Create local variable.
 		sf::Variable v_client;
@@ -370,21 +399,27 @@ TEST_CASE("sf::Variable", "[variable]")
 		REQUIRE(v_client.isTemporaryDifferent());
 		REQUIRE(v_client.applyTemporary());
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veNewId, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veSetup, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x101, "5.5"},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
+				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veNewId, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veSetup, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x101, "5.5"},
+			}}
+		);
 
 		// Check client instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x101},
-																				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "10.0"},
-																				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "10.0"},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x101},
+				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "10.0"},
+				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "10.0"},
+			}}
+		);
 	}
 
 	SECTION("Export")
@@ -426,21 +461,27 @@ TEST_CASE("sf::Variable", "[variable]")
 		REQUIRE_FALSE(v_server.isExported());
 
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x201},
-																				{sf::Variable::veSetup, &v_server, &v_server, true, 0x201},
-																				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201, "AE"},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
+				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x201},
+				{sf::Variable::veSetup, &v_server, &v_server, true, 0x201},
+				{sf::Variable::veFlagsChange, &v_server, &v_server, true, 0x201, "AE"},
+			}}
+		);
 		// Check client instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x201"},
-																				{sf::Variable::veNewId, &v_server, &v_client, false, 0x201},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x201},
-																				{sf::Variable::veValueChange, &v_server, &v_client, false, 0x201, "1.1"},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x0},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veDesiredId, &v_client, &v_client, true, 0x0, "0x201"},
+				{sf::Variable::veNewId, &v_server, &v_client, false, 0x201},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x201},
+				{sf::Variable::veValueChange, &v_server, &v_client, false, 0x201, "1.1"},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x0},
+			}}
+		);
 	}
 
 	SECTION("Unit Conversion")
@@ -475,21 +516,27 @@ TEST_CASE("sf::Variable", "[variable]")
 		REQUIRE(v_client.setCur(sf::Value(90)));
 
 		// Check server instance events.
-		REQUIRE(handler_server._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veNewId, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veSetup, &v_server, &v_server, true, 0x101},
-																				{sf::Variable::veConverted, &v_server, &v_server, true, 0x101, "°C|1 °F|1"},
-																				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x101, "32.2"},
-																			}});
+		REQUIRE(
+			handler_server._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_server, &v_server, true, 0x0},
+				{sf::Variable::veIdChanged, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veNewId, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veSetup, &v_server, &v_server, true, 0x101},
+				{sf::Variable::veConverted, &v_server, &v_server, true, 0x101, "°C|1 °F|1"},
+				{sf::Variable::veValueChange, &v_client, &v_server, false, 0x101, "32.2"},
+			}}
+		);
 		// Check client instance events.
-		REQUIRE(handler_client._events == VarEvent::Vector{{
-																				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
-																				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x101},
-																				{sf::Variable::veConverted, &v_client, &v_client, true, 0x101, "°C|1 °F|1"},
-																				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "90.0"},
-																			}});
+		REQUIRE(
+			handler_client._events ==
+			VarEvent::Vector{{
+				{sf::Variable::veLinked, &v_client, &v_client, true, 0x0},
+				{sf::Variable::veIdChanged, &v_client, &v_client, true, 0x101},
+				{sf::Variable::veConverted, &v_client, &v_client, true, 0x101, "°C|1 °F|1"},
+				{sf::Variable::veValueChange, &v_client, &v_client, true, 0x101, "90.0"},
+			}}
+		);
 
 		/*
 		std::clog << v_server.getName() << ' ' << v_server.getCurString() << ' ' << v_server.getUnit() << std::endl;
@@ -502,12 +549,21 @@ TEST_CASE("sf::Variable", "[variable]")
 */
 	}
 
-	SECTION("SetCur Bug")
+	SECTION("Filter Strings")
 	{
+
+		CHECK(sf::Variable::filterString(R"(D:\Data\files\logging\my_logs)", sf::Variable::stDirectory, 0) == "D:/Data/files/logging/my_logs");
+		CHECK(sf::Variable::filterString("D:\\Data\\fil\te:s\\logg:ing\\my\v.log", sf::Variable::stPath, 0) == "D:/Data/file_s/logg_ing/my.log");
+
 		sf::Variable var;
-		var.setup(R"(0xE0008,Storage|Logfile Path,,ASPE,File path to the log file which determines the next file number.,STRING,,256,C:\DOCUME~1\bcbdebug\LOCALS~1\Temp\stogii32,,)");
-		var.setCur(sf::Value(sf::unescape(R"(D:\\Data\\files)")));
+		//var.setup(R"(0xE0008,Storage|Logfile Path,P,ASPE,Log file path.,STRING,,256,C:\User\user\test.log,,)");
+		var.setup(R"(0x99010,Project|Amplitude Palette|Threshold,%,SAP,Test variable for amplitude palette.,FLOAT,,1.0,80.0,0.0,100.0)");
+		std::cout << var.getCur() << std::endl;
+		/*
+		var.setCur(sf::Value(R"(D:\Data\files\logging\my_logs)"));
+		std::cout << var.getCur() << std::endl;
+	*/
 	}
 
-	sf::Variable::uninitialize();
+	//sf::Variable::uninitialize();
 }

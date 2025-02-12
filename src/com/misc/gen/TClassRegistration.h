@@ -22,23 +22,17 @@
 /**
  * Declaration of dynamically loadable library information and function for set/get the library filename.
  */
-#define SF_DL_INFORMATION(name, description)                           \
-	namespace                                                            \
-	{                                                                    \
-	const char* _dl_ =                                                   \
-		SF_DL_MARKER_BEGIN                                                 \
-			name                                                             \
-				SF_DL_NAME_SEPARATOR                                           \
-					description                                                  \
-						SF_DL_MARKER_END;                                          \
-                                                                       \
-	extern "C" TARGET_EXPORT const char* SF_DL_NAME_FUNC(const char* nm) \
-	{                                                                    \
-		static char storage[256];                                          \
-		if (nm)                                                            \
-			SF_DL_STRNCPY(storage, nm, sizeof(storage));                     \
-		return storage;                                                    \
-	}                                                                    \
+#define SF_DL_INFORMATION(name, description)                                                                                                                   \
+	namespace                                                                                                                                                    \
+	{                                                                                                                                                            \
+	const char* _dl_ = SF_DL_MARKER_BEGIN name SF_DL_NAME_SEPARATOR description SF_DL_MARKER_END;                                                                \
+                                                                                                                                                               \
+	extern "C" TARGET_EXPORT const char* SF_DL_NAME_FUNC(const char* nm)                                                                                         \
+	{                                                                                                                                                            \
+		static char storage[256];                                                                                                                                  \
+		if (nm) SF_DL_STRNCPY(storage, nm, sizeof(storage));                                                                                                       \
+		return storage;                                                                                                                                            \
+	}                                                                                                                                                            \
 	}
 
 /**
@@ -49,8 +43,7 @@ extern "C" const char* SF_DL_NAME_FUNC(const char* name);
 /**
  * @brief Type for casting a resolved function pointer to.
  */
-#define SF_DL_NAME_FUNC_TYPE \
-	const char* (*) (const char*)
+#define SF_DL_NAME_FUNC_TYPE const char* (*) (const char*)
 
 namespace sf
 {
@@ -74,22 +67,22 @@ inline std::string getLibraryName()
  * 	FuncName: Name of the public function in the interface class for
  * 		registering derived classes or to create them.
  */
-#define SF_DECL_IFACE(InterfaceType, ParamType, FuncName)             \
-private:                                                              \
-	std::string _Register_Name_;                                        \
-                                                                      \
-public:                                                               \
-	static sf::TClassRegistration<InterfaceType, ParamType> FuncName(); \
+#define SF_DECL_IFACE(InterfaceType, ParamType, FuncName)                                                                                                      \
+private:                                                                                                                                                       \
+	std::string _Register_Name_;                                                                                                                                 \
+                                                                                                                                                               \
+public:                                                                                                                                                        \
+	static sf::TClassRegistration<InterfaceType, ParamType> FuncName();                                                                                          \
 	friend class sf::TClassRegistration<InterfaceType, ParamType>;
 
 /**
  * @brief Implements the public static function in the class where it is used.
  */
-#define SF_IMPL_IFACE(InterfaceType, ParamType, FuncName)                       \
-	sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName()    \
-	{                                                                             \
-		static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries; \
-		return sf::TClassRegistration<InterfaceType, ParamType>(entries);           \
+#define SF_IMPL_IFACE(InterfaceType, ParamType, FuncName)                                                                                                      \
+	sf::TClassRegistration<InterfaceType, ParamType> InterfaceType::FuncName()                                                                                   \
+	{                                                                                                                                                            \
+		static sf::TClassRegistration<InterfaceType, ParamType>::entries_t entries;                                                                                \
+		return sf::TClassRegistration<InterfaceType, ParamType>(entries);                                                                                          \
 	}
 
 /**
@@ -100,21 +93,19 @@ public:                                                               \
  * 	RegName: Quoted character string containing the  name.
  * 	Description: Quoted character string holding the name.
  */
-#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Description)                        \
-	namespace                                                                                                        \
-	{                                                                                                                \
-	__attribute__((constructor)) void _##DerivedType##_()                                                            \
-	{                                                                                                                \
-		size_t dist = InterfaceType::FuncName().registerClass(                                                         \
-			RegName,                                                                                                     \
-			Description,                                                                                                 \
-			sf::TClassRegistration<InterfaceType, ParamType>::callback_t([](const ParamType& params) -> InterfaceType* { \
-				auto inst = new DerivedType(params);                                                                       \
-				sf::TClassRegistration<InterfaceType, ParamType>::setRegisterName(inst, RegName);                          \
-				return inst;                                                                                               \
-			})                                                                                                           \
-		);                                                                                                             \
-	}                                                                                                                \
+#define SF_REG_CLASS(InterfaceType, ParamType, FuncName, DerivedType, RegName, Description)                                                                    \
+	namespace                                                                                                                                                    \
+	{                                                                                                                                                            \
+	__attribute__((constructor)) void _##DerivedType##_()                                                                                                        \
+	{                                                                                                                                                            \
+		size_t dist = InterfaceType::FuncName().registerClass(                                                                                                     \
+			RegName, Description, sf::TClassRegistration<InterfaceType, ParamType>::callback_t([](const ParamType& params) -> InterfaceType* {                       \
+				auto inst = new DerivedType(params);                                                                                                                   \
+				sf::TClassRegistration<InterfaceType, ParamType>::setRegisterName(inst, RegName);                                                                      \
+				return inst;                                                                                                                                           \
+			})                                                                                                                                                       \
+		);                                                                                                                                                         \
+	}                                                                                                                                                            \
 	}
 
 namespace sf

@@ -55,9 +55,7 @@ SCENARIO("sf::gmi::Controller", "[controller]")
 				// Need at least one controller implementation.
 				controller.reset(sf::gmi::Controller::Interface().create("emulator"));
 				REQUIRE(controller);
-				WHEN("")
-				{
-				}
+				WHEN("") {}
 			}
 		}
 

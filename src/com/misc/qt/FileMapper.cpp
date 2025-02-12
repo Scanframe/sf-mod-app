@@ -12,8 +12,7 @@ namespace sf::qt
 
 FileMapper::FileMapper()
 	: _file(nullptr)
-{
-}
+{}
 
 FileMapper::FileMapper(const QString& filepath, qint64 ofs, qint64 sz)
 {
@@ -75,12 +74,16 @@ void FileMapper::createView(size_t sz)
 	// Open then file.
 	if (!_file.open())
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "open '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
+		throw Exception().Function(
+			typeid(*this).name(), __FUNCTION__, "open '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data()
+		);
 	}
 	// Resize the file.
 	if (!_file.resize(_size))
 	{
-		throw Exception().Function(typeid(*this).name(), __FUNCTION__, "resize '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data());
+		throw Exception().Function(
+			typeid(*this).name(), __FUNCTION__, "resize '%s': (%i) %s", _file.fileName().toUtf8().data(), _file.error(), _file.errorString().toUtf8().data()
+		);
 	}
 }
 

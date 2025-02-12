@@ -17,15 +17,16 @@ Sf_SetOutputDirs("bin")
 find_package(SfMisc REQUIRED)
 find_package(SfGii REQUIRED)
 
-#[[
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-]]
-
-# Find the needed packages.
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+if (SF_BUILD_QT)
+	#[[
+	set(CMAKE_AUTOUIC ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
+	]]
+	# Find the needed packages.
+	find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+	find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+endif ()
 
 # Add shared library and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
@@ -37,13 +38,17 @@ target_sources("${PROJECT_NAME}" PRIVATE
 	global.h
 	StorageInterface.cpp StorageInterface.h
 	StorageServer.cpp StorageServer.h
-	)
+)
 
 # Link the Qt widgets library.
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-gii)
+target_link_libraries(${PROJECT_NAME} PRIVATE sf-misc sf-gii)
 
-# Explicitly tell the compiled code the QT libraries are included.
-target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
+if (SF_BUILD_QT)
+	# Explicitly tell the compiled code the QT libraries are included.
+	target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)
+	# Add Qt libraries.
+	target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets)
+endif ()
 
 # Tell the compiled code a dynamic library (DL) is being build.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_DYNAMIC_LIB)

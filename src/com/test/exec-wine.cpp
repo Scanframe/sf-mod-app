@@ -32,8 +32,7 @@ std::string escapeShellArg(std::string str)
 std::string dirnameOf(const std::string& filepath)
 {
 	size_t pos = filepath.find_last_of("\\/");
-	if (std::string::npos == pos)
-		return {};
+	if (std::string::npos == pos) return {};
 	return filepath.substr(0, pos);
 }
 

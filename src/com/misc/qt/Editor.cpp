@@ -27,9 +27,7 @@ struct Editor::Private
 				{
 					_dlgFindReplace = new FindReplaceDialog(_editor);
 					_dlgFindReplace->setEditor(_editor);
-					connect(_dlgFindReplace, &QDialog::finished, [&]() {
-						stateSaveRestore(true);
-					});
+					connect(_dlgFindReplace, &QDialog::finished, [&]() { stateSaveRestore(true); });
 				}
 				if (_dlgFindReplace->isVisible())
 				{
@@ -76,8 +74,7 @@ struct Editor::Private
 
 Editor::Configuration::Configuration(QSettings* settings)
 	: _settings(settings)
-{
-}
+{}
 
 void Editor::Configuration::settingsReadWrite(bool save)
 {

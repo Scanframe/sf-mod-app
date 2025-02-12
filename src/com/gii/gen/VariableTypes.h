@@ -22,8 +22,7 @@ class Variable;
  * Multiple inheritance makes these types local for other classes as well.
  * Making code more readable and also prevents name space problems.
  */
-class VariableTypes
-	: public InformationTypes
+class VariableTypes : public InformationTypes
 {
 	public:
 		/**
@@ -44,7 +43,7 @@ class VariableTypes
 		/**
 		 * @brief Type containing a name referencing a value and is called a state.
 		 */
-		struct State
+		class State
 		{
 			public:
 				/**
@@ -101,17 +100,17 @@ class VariableTypes
 				/**
 				 * @brief Compare equal operator.
 				 */
-				bool operator==(const State& s) const
+				bool operator==(const State& state) const
 				{
-					return (_name == s._name) && (_value == s._value);
+					return (_name == state._name) && (_value == state._value);
 				}
 
 				/**
 				 * @brief Compare unequal operator.
 				 */
-				bool operator!=(const State& s) const
+				bool operator!=(const State& state) const
 				{
-					return (_name != s._name) || (_value != s._value);
+					return (_name != state._name) || (_value != state._value);
 				}
 
 				/**
@@ -170,7 +169,7 @@ class VariableTypes
 		};
 
 		/**
-		 * Enumeration of the order of fields in the setup string.
+		 * @brief Enumeration of the order of fields in the setup string.
 		 */
 		enum EField : int
 		{
@@ -200,16 +199,16 @@ class VariableTypes
 			vfFirstState
 		};
 		/**
-		 * Enumeration type for specifying flags.
+		 * @brief Enumeration type for specifying flags.
 		 */
 		enum EFlag : flags_type
 		{
 			/**
-			 * Represented by character <b>'R'</b>.<br>Only the owner can change Set it.
+			 * Represented by character <b>'R'</b>.<br>Only the owner can change it.
 			 */
 			flgReadonly = 1 << 0,
 			/**
-			 * Represented by character <b>'A'</b>.<br> Variable is needs saving when storing results.
+			 * Represented by character <b>'A'</b>.<br> Variable needs saving when storing results.
 			 */
 			flgArchive = 1 << 1,
 			/**
@@ -229,7 +228,7 @@ class VariableTypes
 			/**
 			 * Represented by character <b>'P'</b>.<br>Variable is a parameter and indicates that it is
 			 * needed for configuration of an application.<br>
-			 * This makes it possible to distinguishes between settings and parameters.
+			 * This makes it possible to distinguishes between operational settings and device configuration parameters.
 			 */
 			flgParameter = 1 << 5,
 			/**
@@ -247,28 +246,29 @@ class VariableTypes
 			 */
 			flgWriteable = 1 << 8
 		};
+
 		/**
-		 * Enumeration of string types used for filtering.
+		 * @brief Enumeration of string types used for filtering.
 		 */
 		enum EStringType : int
 		{
-			/** When the instance is not of type string.*/
-			stNoString = -1,
 			/** This is a straight normal string where control characters are not converted to any multibyte translation.*/
 			stNormal = 0,
-			/** This is a multi line string with new line control characters.*/
+			/** This is a multi line string with new-line control characters.*/
 			stMulti,
-			/** The string contains a complete file path.*/
+			/** The string contains a complete filepath.*/
 			stPath,
 			/** The string contains a complete directory a drive letter.*/
 			stDirectory,
-			/** The string contains a file name.*/
+			/** The string contains a filename.*/
 			stFilename,
 			/** The string contains a subdirectory having an ending backslash and no drive letter or starting backslash.*/
 			stSubdirectory
 		};
+
 		/**
-		 * Structure used to set up a variable.
+		 * @brief Structure used to set up a variable
+		 * The method #Variable::getDefinition() transforms the definition string into this structure.
 		 */
 		struct Definition
 		{

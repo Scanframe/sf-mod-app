@@ -19,13 +19,12 @@ enum EColumn
 	cMaxColumns
 };
 
-}
+}// namespace
 
 ScriptManagerListModel::ScriptManagerListModel(ScriptManager* manager, QObject* parent)
 	: QAbstractListModel(parent)
 	, _manager(manager)
-{
-}
+{}
 
 void ScriptManagerListModel::setDelegates(QAbstractItemView* view)
 {
@@ -75,8 +74,7 @@ Qt::ItemFlags ScriptManagerListModel::flags(const QModelIndex& index) const
 		return Qt::ItemFlag::NoItemFlags;
 	}
 	//
-	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsSelectable |
-		Qt::ItemFlag::ItemNeverHasChildren;
+	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemNeverHasChildren;
 	//
 	if (index.column() != EColumn::cScriptState)
 	{
@@ -118,6 +116,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->isGlobal() ? tr("Yes") : tr("No");
 			case cFilename:
 				return entry->getFilename();
+			default:
+				return QString("?%1?").arg(index.column());
 		}
 	}
 	// Used to initialize the delegate editor.
@@ -137,6 +137,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->isGlobal();
 			case cFilename:
 				return entry->getFilename();
+			default:
+				return QString("?%1?").arg(index.column());
 		}
 	}
 	// Used for selection of editor type.
@@ -145,7 +147,7 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 		switch (index.column())
 		{
 			case vcName:
-				return CommonItemDelegate::etEdit;
+				return CommonItemDelegate::etString;
 			case cBackground:
 				return CommonItemDelegate::etDropDownIndex;
 			case cShortcut:
@@ -167,7 +169,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				return entry->getDisplayName();
 			case cScriptState:
 				return entry->getStateName();
-			case cBackground: {
+			case cBackground:
+			{
 				QStringList sl;
 				auto meta = QMetaEnum::fromType<ScriptEntry::EBackgroundMode>();
 				for (auto bm: {ScriptEntry::bmNo, ScriptEntry::bmOnce, ScriptEntry::bmContinuous})
@@ -179,8 +182,9 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 			case cShortcut:
 				return entry->getKeySequence();
 			case cGlobal:
-				return QStringList({"No", "Yes"});
-			case cFilename: {
+				return QStringList({tr("No"), tr("Yes")});
+			case cFilename:
+			{
 				QStringList files = _manager->getFilenames();
 				// Add the current file name when not in the list.
 				if (!files.contains(entry->getFilename()))
@@ -189,6 +193,8 @@ QVariant ScriptManagerListModel::data(const QModelIndex& index, int role) const
 				}
 				return files;
 			}
+			default:
+				return QString("?%1?").arg(index.column());
 		}
 	}
 	return {};
@@ -198,9 +204,10 @@ bool ScriptManagerListModel::setData(const QModelIndex& index, const QVariant& v
 {
 	if (role == Qt::EditRole)
 	{
-		auto& entry = _manager->_list[index.row()];
+		const auto& entry = _manager->_list[index.row()];
 		switch (index.column())
 		{
+			default:
 			case vcName:
 				entry->setDisplayName(value.toString());
 				break;
@@ -224,15 +231,15 @@ bool ScriptManagerListModel::setData(const QModelIndex& index, const QVariant& v
 
 int ScriptManagerListModel::columnCount(const QModelIndex& parent) const
 {
-	return static_cast<int>(cMaxColumns);
+	return cMaxColumns;
 }
 
-void ScriptManagerListModel::startAll()
+void ScriptManagerListModel::startAll() const
 {
 	_manager->start(-1);
 }
 
-void ScriptManagerListModel::start(QModelIndex index)
+void ScriptManagerListModel::start(const QModelIndex& index) const
 {
 	if (index.isValid())
 	{
@@ -240,7 +247,7 @@ void ScriptManagerListModel::start(QModelIndex index)
 	}
 }
 
-void ScriptManagerListModel::stop(QModelIndex index)
+void ScriptManagerListModel::stop(const QModelIndex& index) const
 {
 	if (index.isValid())
 	{
@@ -248,10 +255,10 @@ void ScriptManagerListModel::stop(QModelIndex index)
 	}
 }
 
-void ScriptManagerListModel::add(QModelIndex index)
+auto ScriptManagerListModel::add(const QModelIndex& index) -> void
 {
 	// When in valid prepend the new entry.
-	auto pos = index.isValid() ? index.row() + 1 : 0;
+	const auto pos = index.isValid() ? index.row() + 1 : 0;
 	beginInsertRows(QModelIndex(), pos, pos);
 	_manager->addAt(pos);
 	insertRow(pos);

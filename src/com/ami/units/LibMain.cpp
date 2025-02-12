@@ -8,10 +8,6 @@ namespace sf
 SF_DL_INFORMATION("Unit Conversion", R"(unit conversion server implementation.)")
 
 // Register this derived class.
-SF_REG_CLASS(
-	AppModuleInterface, AppModuleInterface::Parameters, Interface,
-	UnitConversionAppModule,
-	"UnitConverter", "Units conversion server."
-)
+SF_REG_CLASS(AppModuleInterface, AppModuleInterface::Parameters, Interface, UnitConversionAppModule, "UnitConverter", "Units conversion server.")
 
 }// namespace sf

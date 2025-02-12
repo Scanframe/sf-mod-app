@@ -12,8 +12,7 @@ namespace sf
 template<typename T>
 TMatrix22<T>::TMatrix22(std::initializer_list<T> list)
 {
-	if (list.size() != 4)
-		throw std::invalid_argument("");
+	if (list.size() != 4) throw std::invalid_argument("");
 	size_t i = 0;
 	for (auto el: list)
 	{
@@ -34,7 +33,7 @@ TMatrix22<T>::TMatrix22(const TMatrix22& m)
 }
 
 template<typename T>
-TMatrix22<T>::TMatrix22(TMatrix22<T>&& m)
+TMatrix22<T>::TMatrix22(TMatrix22<T>&& m) noexcept
 {
 	_data = m._data;
 }
@@ -124,8 +123,7 @@ TMatrix22<T>& TMatrix22<T>::operator*=(const TMatrix22<T>& rhs)
 	*this = {
 		rhs._data.mtx[0][0] * _data.mtx[0][0] + rhs._data.mtx[0][1] * _data.mtx[1][0],
 		rhs._data.mtx[0][0] * _data.mtx[0][1] + rhs._data.mtx[0][1] * _data.mtx[1][1],
-		rhs._data.mtx[1][0] * _data.mtx[0][0] + rhs._data.mtx[1][1] * _data.mtx[1][0],
-		rhs._data.mtx[1][0] * _data.mtx[0][1] + rhs._data.mtx[1][1] * _data.mtx[1][1]
+		rhs._data.mtx[1][0] * _data.mtx[0][0] + rhs._data.mtx[1][1] * _data.mtx[1][0], rhs._data.mtx[1][0] * _data.mtx[0][1] + rhs._data.mtx[1][1] * _data.mtx[1][1]
 	};
 	return *this;
 }
@@ -139,10 +137,7 @@ inline TVector2D<T> TMatrix22<T>::operator*(const TVector2D<T>& v) const
 template<typename T>
 TVector2D<T> TMatrix22<T>::transformed(const TVector2D<T>& v) const
 {
-	return {
-		_data.mtx[0][0] * v.x() + _data.mtx[0][1] * v.y(),
-		_data.mtx[1][0] * v.x() + _data.mtx[1][1] * v.y()
-	};
+	return {_data.mtx[0][0] * v.x() + _data.mtx[0][1] * v.y(), _data.mtx[1][0] * v.x() + _data.mtx[1][1] * v.y()};
 }
 
 template<typename T>
@@ -214,8 +209,7 @@ TMatrix22<T>& TMatrix22<T>::resetOrientation(void)
 template<typename T>
 std::string TMatrix22<T>::toString() const
 {
-	return std::string() + "({" +
-		sf::toString<T>(isZero(_data.mtx[0][0], tolerance) ? T(0) : _data.mtx[0][0]) + ',' +
+	return std::string() + "({" + sf::toString<T>(isZero(_data.mtx[0][0], tolerance) ? T(0) : _data.mtx[0][0]) + ',' +
 		sf::toString<T>(isZero(_data.mtx[0][1], tolerance) ? T(0) : _data.mtx[0][1]) + "},{" +
 		sf::toString<T>(isZero(_data.mtx[1][0], tolerance) ? T(0) : _data.mtx[1][0]) + ',' +
 		sf::toString<T>(isZero(_data.mtx[1][1], tolerance) ? T(0) : _data.mtx[1][1]) + "})";
@@ -224,7 +218,10 @@ std::string TMatrix22<T>::toString() const
 template<typename T>
 TMatrix22<T>& TMatrix22<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(R"(^\(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\},\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\}\)$)", std::regex::icase);
+	std::regex re(
+		R"(^\(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\},\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\}\)$)",
+		std::regex::icase
+	);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != 5)

@@ -20,9 +20,7 @@ CaptureListModel::CaptureListModel(QObject* parent)
 	, _contextMenu(nullptr)
 {
 	// Assign the new line event handler.
-	_streamBuf->setNewLineHandler(LineBuffer::event_t([this](LineBuffer* sender, const std::string& line) -> void {
-		append(line.c_str());
-	}));
+	_streamBuf->setNewLineHandler(LineBuffer::event_t([this](LineBuffer* sender, const std::string& line) -> void { append(line.c_str()); }));
 	// When the parent is a widget.
 	if (auto avi = qobject_cast<QAbstractItemView*>(parent))
 	{

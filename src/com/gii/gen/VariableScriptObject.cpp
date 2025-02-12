@@ -4,10 +4,7 @@
 namespace sf
 {
 
-SF_REG_CLASS(
-	ScriptObject, ScriptObject::Parameters, Interface,
-	VariableScriptObject, "Variable", "Generic information interface variable."
-)
+SF_REG_CLASS(ScriptObject, ScriptObject::Parameters, Interface, VariableScriptObject, "Variable", "Generic information interface variable.")
 
 // Variable script object members.
 #define SID_SETUP 1
@@ -29,27 +26,26 @@ SF_REG_CLASS(
 #define SID_ON_ID 52
 #define SID_SKIPEVENT 53
 
-ScriptObject::IdInfo VariableScriptObject::_info[] =
-	{
-		{SID_SETUP, ScriptObject::idFunction, "Setup", 1, nullptr},
-		{SID_ID, ScriptObject::idConstant, "Id", 0, nullptr},
-		{SID_NAME, ScriptObject::idFunction, "Name", 1, nullptr},
-		{SID_UNIT, ScriptObject::idConstant, "Unit", 0, nullptr},
-		{SID_CUR, ScriptObject::idVariable, "Cur", 0, nullptr},
-		{SID_CURSTR, ScriptObject::idConstant, "CurStr", 0, nullptr},
-		{SID_RND, ScriptObject::idConstant, "Rnd", 0, nullptr},
-		{SID_DEF, ScriptObject::idConstant, "Def", 0, nullptr},
-		{SID_MIN, ScriptObject::idConstant, "Min", 0, nullptr},
-		{SID_MAX, ScriptObject::idConstant, "Max", 0, nullptr},
-		{SID_FLAGS, ScriptObject::idVariable, "Flags", 0, nullptr},
-		{SID_ISFLAGS, ScriptObject::idFunction, "IsFlags", 1, nullptr},
-		{SID_SETFLAGS, ScriptObject::idFunction, "SetFlags", 1, nullptr},
-		{SID_UNSETFLAGS, ScriptObject::idFunction, "UnsetFlags", 1, nullptr},
-		// Variable script object event related.
-		{SID_ON_VALUE, ScriptObject::idVariable, "OnValue", 0, nullptr},
-		{SID_ON_FLAGS, ScriptObject::idVariable, "OnFlags", 0, nullptr},
-		{SID_ON_ID, ScriptObject::idVariable, "OnId", 0, nullptr},
-		{SID_SKIPEVENT, ScriptObject::idVariable, "SkipEvent", 0, nullptr}
+ScriptObject::IdInfo VariableScriptObject::_info[] = {
+	{SID_SETUP, ScriptObject::idFunction, "Setup", 1, nullptr},
+	{SID_ID, ScriptObject::idConstant, "Id", 0, nullptr},
+	{SID_NAME, ScriptObject::idFunction, "Name", 1, nullptr},
+	{SID_UNIT, ScriptObject::idConstant, "Unit", 0, nullptr},
+	{SID_CUR, ScriptObject::idVariable, "Cur", 0, nullptr},
+	{SID_CURSTR, ScriptObject::idConstant, "CurStr", 0, nullptr},
+	{SID_RND, ScriptObject::idConstant, "Rnd", 0, nullptr},
+	{SID_DEF, ScriptObject::idConstant, "Def", 0, nullptr},
+	{SID_MIN, ScriptObject::idConstant, "Min", 0, nullptr},
+	{SID_MAX, ScriptObject::idConstant, "Max", 0, nullptr},
+	{SID_FLAGS, ScriptObject::idVariable, "Flags", 0, nullptr},
+	{SID_ISFLAGS, ScriptObject::idFunction, "IsFlags", 1, nullptr},
+	{SID_SETFLAGS, ScriptObject::idFunction, "SetFlags", 1, nullptr},
+	{SID_UNSETFLAGS, ScriptObject::idFunction, "UnsetFlags", 1, nullptr},
+	// Variable script object event related.
+	{SID_ON_VALUE, ScriptObject::idVariable, "OnValue", 0, nullptr},
+	{SID_ON_FLAGS, ScriptObject::idVariable, "OnFlags", 0, nullptr},
+	{SID_ON_ID, ScriptObject::idVariable, "OnId", 0, nullptr},
+	{SID_SKIPEVENT, ScriptObject::idVariable, "SkipEvent", 0, nullptr}
 };
 
 VariableScriptObject::VariableScriptObject(const ScriptObject::Parameters& params)
@@ -102,7 +98,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			// Signal that the request was not handled.
 			return false;
 
-		case SID_SETUP: {
+		case SID_SETUP:
+		{
 			if ((*params)[0].isNumber())
 			{
 				value->set(setup((*params)[0].getInteger()));
@@ -114,7 +111,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_ID: {
+		case SID_ID:
+		{
 			if (flag_set)
 			{
 				// Only allow setting the ID if the variable is owned.
@@ -130,7 +128,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_NAME: {
+		case SID_NAME:
+		{
 			if (!flag_set)
 			{
 				value->set(getName((int) (*params)[0].getInteger()));
@@ -138,7 +137,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_UNIT: {
+		case SID_UNIT:
+		{
 			if (!flag_set)
 			{
 				value->set(getUnit());
@@ -146,7 +146,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_CUR: {
+		case SID_CUR:
+		{
 			if (flag_set)
 			{
 				setCur(*value, _skipEvent);
@@ -158,12 +159,14 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_CURSTR: {
+		case SID_CURSTR:
+		{
 			*value = getCurString();
 			break;
 		}
 
-		case SID_DEF: {
+		case SID_DEF:
+		{
 			if (!flag_set)
 			{
 				*value = getDef();
@@ -171,7 +174,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_RND: {
+		case SID_RND:
+		{
 			if (!flag_set)
 			{
 				*value = getRnd();
@@ -179,7 +183,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_MIN: {
+		case SID_MIN:
+		{
 			if (!flag_set)
 			{
 				*value = getMin();
@@ -187,7 +192,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_MAX: {
+		case SID_MAX:
+		{
 			if (!flag_set)
 			{
 				*value = getMax();
@@ -195,7 +201,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_FLAGS: {
+		case SID_FLAGS:
+		{
 			if (flag_set)
 			{
 				// Only allow setting the ID if the variable is owned.
@@ -211,27 +218,31 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_ISFLAGS: {
+		case SID_ISFLAGS:
+		{
 			auto flags = Variable::toFlags((*params)[0].getString());
 			// Check if all passed flags are set.
 			value->set((getCurFlags() & flags) == flags);
 			break;
 		}
 
-		case SID_SETFLAGS: {
+		case SID_SETFLAGS:
+		{
 			auto flags = Variable::toFlags((*params)[0].getString());
 			flags |= getCurFlags();
 			updateFlags(flags, _skipEvent);
 			break;
 		}
 
-		case SID_UNSETFLAGS: {
+		case SID_UNSETFLAGS:
+		{
 			auto flags = Variable::toFlags((*params)[0].getString());
 			flags = getCurFlags() & ~flags;
 			updateFlags(flags, _skipEvent);
 			break;
 		}
-		case SID_ON_VALUE: {
+		case SID_ON_VALUE:
+		{
 			if (flag_set)
 			{
 				_onValue = (ip_type) value->getInteger();
@@ -243,7 +254,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_ON_FLAGS: {
+		case SID_ON_FLAGS:
+		{
 			if (flag_set)
 			{
 				_onFlags = (ip_type) value->getInteger();
@@ -255,7 +267,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_ON_ID: {
+		case SID_ON_ID:
+		{
 			if (flag_set)
 			{
 				_onId = (ip_type) value->getInteger();
@@ -267,7 +280,8 @@ bool VariableScriptObject::getSetValue(const IdInfo* info, Value* value, Value::
 			break;
 		}
 
-		case SID_SKIPEVENT: {
+		case SID_SKIPEVENT:
+		{
 			if (flag_set)
 			{
 				_skipEvent = value->getInteger() > 0;
@@ -294,8 +308,7 @@ void VariableScriptObject::variableEventHandler(VariableTypes::EEvent event, con
 	// Do not allow events when not compiled.
 	if (si->getState() == ScriptInterpreter::esError || si->getState() == ScriptInterpreter::esCompiled)
 	{
-		SF_RTTI_NOTIFY(DO_DEFAULT, "Event avoided because script was in Error or not Initialized!\n"
-										 << si->getDebugText());
+		SF_RTTI_NOTIFY(DO_DEFAULT, "Event avoided because script was in Error or not Initialized!\n" << si->getDebugText());
 		return;
 	}
 	switch (event)

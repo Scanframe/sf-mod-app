@@ -1,11 +1,13 @@
 #include "VariableListModel.h"
 #include "misc/gen/dbgutils.h"
 #include "misc/gen/string.h"
+#include "misc/qt/Resource.h"
+
 #include <QAbstractItemView>
+#include <QFileDialog>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QMetaEnum>
-#include <bitset>
 #include <misc/qt/CommonItemDelegate.h>
 #include <misc/qt/ObjectExtension.h>
 
@@ -42,6 +44,7 @@ QVariant toQVariant(const Value& v)
 	}
 }
 
+/*
 Value fromQVariant(const QVariant& v, Value::EType type)
 {
 	switch (type)
@@ -57,6 +60,7 @@ Value fromQVariant(const QVariant& v, Value::EType type)
 			return Value(v.value<std::string>());
 	}
 }
+*/
 
 CommonItemDelegate::OptionsType getStateOptions(const Variable& var)
 {
@@ -72,21 +76,66 @@ CommonItemDelegate::OptionsType getStateOptions(const Variable& var)
 
 VariableListModel::VariableListModel(QObject* parent)
 	: QAbstractListModel(parent)
-{
-}
+{}
 
 int VariableListModel::columnCount(const QModelIndex& parent) const
 {
-	return static_cast<int>(cMaxColumns);
+	return cMaxColumns;
 }
 
 void VariableListModel::setDelegates(QAbstractItemView* view)
 {
-	auto cid = new CommonItemDelegate(view);
-	// Propagate the signal.
-	QObject::connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* lineEdit, const QModelIndex& index) {
-		Q_EMIT addLineEditActions(lineEdit, _vars.at(index.row()).get());
+	const auto cid = new CommonItemDelegate(view);
+	// Add actions to the few.
+	connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* line_edit, const QModelIndex& index) {
+		const auto var = _vars.at(index.row()).get();
+		auto type = var->getStringType();
+		QAction* action{nullptr};
+		if (type == sf::Variable::EStringType::stPath)
+		{
+			action = line_edit->addAction(sf::Resource::getSvgIcon(":icon/svg/file", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
+		}
+		else if (type == sf::Variable::EStringType::stDirectory)
+		{
+			action = line_edit->addAction(sf::Resource::getSvgIcon(":icon/svg/folder", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
+		}
+		if (action != nullptr)
+		{
+			connect(action, &QAction::triggered, [action, type] {
+				if (const auto le = qobject_cast<QLineEdit*>(action->parent()))
+				{
+					// Open a directory selection dialog.
+					if (type == sf::VariableTypes::stDirectory)
+					{
+						QFileDialog dialog(le, "Select Directory");
+						dialog.setDirectory(QDir::current());
+						dialog.setFileMode(QFileDialog::Directory);
+						dialog.setOption(QFileDialog::ShowDirsOnly, true);
+						// The non-native dialog causes a segmentation fault.
+						dialog.setOption(QFileDialog::DontUseNativeDialog, true);
+						if (dialog.exec() == QDialog::Accepted)
+						{
+							le->setText(dialog.selectedFiles().first());
+						}
+					}
+					else if (type == sf::VariableTypes::stPath)
+					{
+						QFileDialog dialog(le, "Select Filepath");
+						dialog.setDirectory(QDir::current());
+						dialog.setFileMode(QFileDialog::AnyFile);
+						dialog.setOption(QFileDialog::HideNameFilterDetails, true);
+						// The non-native dialog causes a segmentation fault.
+						dialog.setOption(QFileDialog::DontUseNativeDialog, true);
+						if (dialog.exec() == QDialog::Accepted)
+						{
+							le->setText(dialog.selectedFiles().first());
+						}
+					}
+				}
+			});
+		}
 	});
+
 	view->setItemDelegate(cid);
 }
 
@@ -139,7 +188,7 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 	//
 	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemNeverHasChildren;
 	//
-	if (index.column() == EColumn::cValue)
+	if (index.column() == cValue)
 	{
 		flags |= Qt::ItemFlag::ItemIsSelectable;
 		// Only editable when not read-only.
@@ -148,7 +197,7 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 			flags |= Qt::ItemFlag::ItemIsEditable;
 		}
 	}
-	else if (index.column() == EColumn::cName)
+	else if (index.column() == cName)
 	{
 		flags |= Qt::ItemFlag::ItemIsUserCheckable;
 	}
@@ -166,7 +215,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	{
 		return {};
 	}
-	auto var = _vars.at(index.row()).get();
+	const auto var = _vars.at(index.row()).get();
 	//
 	if (role == Qt::CheckStateRole && index.column() == cName)
 	{
@@ -191,10 +240,13 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 
 			case cFlags:
 				return QString::fromStdString(var->getFlagsString());
+
+			default:
+				return QString("?%1?").arg(index.column());
 		}
 	}
 	// Used to initialize the delegate editor.
-	else if (role == Qt::ItemDataRole::EditRole)
+	if (role == Qt::ItemDataRole::EditRole)
 	{
 		if (index.column() == cValue)
 		{
@@ -212,19 +264,29 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 		{
 			if (!var->isReadOnly())
 			{
+				// When states are available create a dropdown edit.
 				if (var->getStateCount())
 				{
 					return CommonItemDelegate::etDropDownIndex;
 				}
-				else if (var->getType() == Value::vitInteger)
+				if (var->getType() == Value::vitInteger)
 				{
 					return CommonItemDelegate::etSpinBox;
 				}
-				else if (var->getType() == Value::vitFloat)
+				if (var->getType() == Value::vitFloat)
 				{
 					return CommonItemDelegate::etDoubleSpinBox;
 				}
-				return CommonItemDelegate::etEdit;
+				if (var->getType() == Value::vitString)
+				{
+					// Multi line string with new-line control characters.
+					if (var->getStringType() == Variable::stMulti)
+					{
+						return CommonItemDelegate::etStringList;
+					}
+					return CommonItemDelegate::etString;
+				}
+				return CommonItemDelegate::etDefault;
 			}
 		}
 	}
@@ -267,7 +329,7 @@ bool VariableListModel::setData(const QModelIndex& index, const QVariant& value,
 {
 	if (role == Qt::EditRole)
 	{
-		auto var = _vars.at(index.row()).get();
+		const auto var = _vars.at(index.row()).get();
 		if (index.column() == cValue)
 		{
 			if (var->getStateCount())
@@ -298,10 +360,9 @@ void VariableListModel::addVariable(const Variable* var)
 
 void VariableListModel::addVariables(const InformationTypes::Vector& list)
 {
-	for (auto ib: list)
+	for (const auto ib: list)
 	{
-		auto var = dynamic_cast<const sf::Variable*>(ib);
-		if (var)
+		if (const auto var = dynamic_cast<const Variable*>(ib))
 		{
 			addVariable(var);
 		}
