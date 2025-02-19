@@ -36,7 +36,7 @@ TQuaternion<T>::TQuaternion(const TVector3D<T>& axis, T angle)
 	if (!isZero(angle))
 	{
 		_data.q.w = std::cos(angle * T(0.5));
-		((std::sin(angle * T(0.5))) * axis.normalized()).copyTo(&_data.array[imagX]);
+		(std::sin(angle * T(0.5)) * axis.normalized()).copyTo(&_data.array[imagX]);
 	}
 	else
 	{
@@ -48,6 +48,7 @@ template<typename T>
 TQuaternion<T>& TQuaternion<T>::assign(T real_w, T imag_x, T imag_y, T imag_z)
 {
 	_data = {real_w, imag_x, imag_y, imag_z};
+	return *this;
 }
 
 template<typename T>
@@ -59,7 +60,7 @@ TQuaternion<T>& TQuaternion<T>::assign(const TQuaternion& quat)
 }
 
 template<typename T>
-inline TQuaternion<T>& TQuaternion<T>::operator=(const TQuaternion& quat)
+TQuaternion<T>& TQuaternion<T>::operator=(const TQuaternion& quat)
 {
 	return assign(quat);
 }
@@ -97,55 +98,55 @@ T& TQuaternion<T>::real()
 }
 
 template<typename T>
-inline TVector3D<T> TQuaternion<T>::imaginary() const
+TVector3D<T> TQuaternion<T>::imaginary() const
 {
 	return _data.ir.imag;
 }
 
 template<typename T>
-inline T TQuaternion<T>::w() const
+T TQuaternion<T>::w() const
 {
 	return _data.q.w;
 }
 
 template<typename T>
-inline T& TQuaternion<T>::w()
+T& TQuaternion<T>::w()
 {
 	return _data.q.w;
 }
 
 template<typename T>
-inline T TQuaternion<T>::x() const
+T TQuaternion<T>::x() const
 {
 	return _data.q.x;
 }
 
 template<typename T>
-inline T& TQuaternion<T>::x()
+T& TQuaternion<T>::x()
 {
 	return _data.q.x;
 }
 
 template<typename T>
-inline T TQuaternion<T>::y() const
+T TQuaternion<T>::y() const
 {
 	return _data.q.y;
 }
 
 template<typename T>
-inline T& TQuaternion<T>::y()
+T& TQuaternion<T>::y()
 {
 	return _data.q.y;
 }
 
 template<typename T>
-inline T TQuaternion<T>::z() const
+T TQuaternion<T>::z() const
 {
 	return _data.q.z;
 }
 
 template<typename T>
-inline T& TQuaternion<T>::z()
+T& TQuaternion<T>::z()
 {
 	return _data.q.z;
 }
@@ -200,7 +201,7 @@ T TQuaternion<T>::magnitudeSqr() const
 }
 
 template<typename T>
-inline T TQuaternion<T>::magnitude() const
+T TQuaternion<T>::magnitude() const
 {
 	return std::sqrt(magnitudeSqr());
 }
@@ -212,7 +213,7 @@ TQuaternion<T> TQuaternion<T>::operator-() const
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::operator+=(const TQuaternion<T>& quat)
+TQuaternion<T>& TQuaternion<T>::operator+=(const TQuaternion& quat)
 {
 	_data.q.w += quat._data.q.w;
 	_data.q.x += quat._data.q.x;
@@ -222,7 +223,7 @@ TQuaternion<T>& TQuaternion<T>::operator+=(const TQuaternion<T>& quat)
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::operator-=(const TQuaternion<T>& quat)
+TQuaternion<T>& TQuaternion<T>::operator-=(const TQuaternion& quat)
 {
 	_data.q.w -= quat._data.q.w;
 	_data.q.x -= quat._data.q.x;
@@ -232,7 +233,7 @@ TQuaternion<T>& TQuaternion<T>::operator-=(const TQuaternion<T>& quat)
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::operator*=(const TQuaternion<T>& q)
+TQuaternion<T>& TQuaternion<T>::operator*=(const TQuaternion& q)
 {
 	auto x = _data.q.w * q._data.q.x + q._data.q.w * _data.q.x + _data.q.y * q._data.q.z - _data.q.z * q._data.q.y;
 	auto y = _data.q.w * q._data.q.y + q._data.q.w * _data.q.y + _data.q.z * q._data.q.x - _data.q.x * q._data.q.z;
@@ -246,14 +247,14 @@ TQuaternion<T>& TQuaternion<T>::operator*=(const TQuaternion<T>& q)
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::operator/=(const TQuaternion<T>& quat)
+TQuaternion<T>& TQuaternion<T>::operator/=(const TQuaternion& quat)
 {
 	operator*=(quat.inverse());
 	return *this;
 }
 
 template<typename T>
-TQuaternion<T>& TQuaternion<T>::operator^=(const TQuaternion<T>& quat)
+TQuaternion<T>& TQuaternion<T>::operator^=(const TQuaternion& quat)
 {
 	return assign((quat * log()).exp());
 }
@@ -306,13 +307,13 @@ bool TQuaternion<T>::isEqual(const TQuaternion& quat, T tol) const
 }
 
 template<typename T>
-inline bool TQuaternion<T>::operator==(const TQuaternion<T>& quat) const
+bool TQuaternion<T>::operator==(const TQuaternion& quat) const
 {
 	return isEqual(quat);
 }
 
 template<typename T>
-inline bool TQuaternion<T>::operator!=(const TQuaternion<T>& quat) const
+bool TQuaternion<T>::operator!=(const TQuaternion& quat) const
 {
 	return !isEqual(quat);
 }
@@ -321,7 +322,7 @@ template<typename T>
 TQuaternion<T> TQuaternion<T>::squared() const
 {
 	TVector3D<T> imag{_data.q.x, _data.q.y, _data.q.z};
-	return TQuaternion<T>(_data.q.w * _data.q.w - imag.lengthSqr(), T(2.0) * _data.q.w * imag);
+	return TQuaternion(_data.q.w * _data.q.w - imag.lengthSqr(), T(2.0) * _data.q.w * imag);
 }
 
 template<typename T>
@@ -368,16 +369,16 @@ TQuaternion<T> TQuaternion<T>::log() const
 }
 
 template<typename T>
-TQuaternion<T> TQuaternion<T>::interpolateLogarithmic(const TQuaternion<T>& q2, T t) const
+TQuaternion<T> TQuaternion<T>::interpolateLogarithmic(const TQuaternion& q, T t) const
 {
-	return (t * (q2 * conjugate()).log()).exp() * (*this);
+	return (t * (q * conjugate()).log()).exp() * *this;
 }
 
 template<typename T>
-TQuaternion<T> TQuaternion<T>::interpolate(const TQuaternion<T>& q, T t) const
+TQuaternion<T> TQuaternion<T>::interpolate(const TQuaternion& q, T t) const
 {
 	const TQuaternion& p(*this);
-	TQuaternion<T> qt(q), q1;
+	TQuaternion qt(q), q1;
 	T sp, sq;
 	if ((p - q).magnitude() > (p + q).magnitude())
 	{
@@ -450,7 +451,7 @@ TMatrix44<T> TQuaternion<T>::toMatrix(TMatrix44<T>& mtx) const
 }
 
 template<typename T>
-inline TMatrix44<T> TQuaternion<T>::toMatrix() const
+TMatrix44<T> TQuaternion<T>::toMatrix() const
 {
 	TMatrix44<T> mtx;
 	return normalized().toMatrix(mtx);
@@ -524,9 +525,9 @@ TVector3D<T> TQuaternion<T>::transform(TVector3D<T> v) const
 	auto yy2 = _data.q.y * y2;
 	auto yz2 = _data.q.y * z2;
 	auto zz2 = _data.q.z * z2;
-	auto xp = ((v.x() * ((T(1) - yy2) - zz2)) + (v.y() * (xy2 - wz2))) + (v.z() * (xz2 + wy2));
-	auto yp = ((v.x() * (xy2 + wz2)) + (v.y() * ((T(1) - xx2) - zz2))) + (v.z() * (yz2 - wx2));
-	auto zp = ((v.x() * (xz2 - wy2)) + (v.y() * (yz2 + wx2))) + (v.z() * ((T(1) - xx2) - yy2));
+	auto xp = v.x() * (T(1) - yy2 - zz2) + v.y() * (xy2 - wz2) + v.z() * (xz2 + wy2);
+	auto yp = v.x() * (xy2 + wz2) + v.y() * (T(1) - xx2 - zz2) + v.z() * (yz2 - wx2);
+	auto zp = v.x() * (xz2 - wy2) + v.y() * (yz2 + wx2) + v.z() * (T(1) - xx2 - yy2);
 	return {xp, yp, zp};
 }
 

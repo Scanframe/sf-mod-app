@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-#include <limits>
 #include <math/TVector2D.h>
 
 namespace sf
@@ -24,7 +22,7 @@ class TRectangle2D
 {
 	public:
 		// Prevent non-integer and non-float types from implementing this template.
-		static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+		static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 		/**
 		 * @brief Type accessible when implemented.
 		 */
@@ -43,7 +41,7 @@ class TRectangle2D
 		/**
 		 * @brief Move constructor.
 		 */
-		TRectangle2D(const TRectangle2D&& rect);
+		TRectangle2D(const TRectangle2D&& rect) noexcept;
 
 		/**
 		 * @brief Initializing constructor.
@@ -102,21 +100,21 @@ class TRectangle2D
 		 * @see tolerance
 		 * @return True when equal.
 		 */
-		bool isEqual(const TRectangle2D<T>& other, T tol = tolerance) const;
+		bool isEqual(const TRectangle2D& other, T tol = tolerance) const;
 
 		/**
 		 * @brief Call the isEqual() function to compare.
 		 * @see isEqual()
 		 * @return True when equal.
 		 */
-		bool operator==(const TRectangle2D<T>&) const;
+		bool operator==(const TRectangle2D&) const;
 
 		/**
 		 * @brief Call the isEqual() function to compare.
 		 * @see isEqual()
 		 * @return True when unequal.
 		 */
-		bool operator!=(const TRectangle2D<T>&) const;
+		bool operator!=(const TRectangle2D&) const;
 
 		/**
 		 * @brief Returns true when the passed point represented by a vector resides within this rectangle.
@@ -126,12 +124,12 @@ class TRectangle2D
 		/**
 		 * @brief Returns true when the passed rectangle resides within this rectangle.
 		 */
-		bool contains(const TRectangle2D<T>& other) const;
+		bool contains(const TRectangle2D& other) const;
 
 		/**
 		 * @brief Returns true when the passed rectangle overlaps with this rectangle.
 		 */
-		bool touches(const TRectangle2D<T>& other) const;
+		bool touches(const TRectangle2D& other) const;
 
 		/**
 		 * @brief Gets the bottom-left corner of the rectangle as a vector.
@@ -183,52 +181,52 @@ class TRectangle2D
 		/**
 		 * @brief Normalizes this instance so that top-right and bottom-left are correct.
 		 */
-		TRectangle2D<T>& normalize();
+		TRectangle2D& normalize();
 
 		/**
 		 * @brief Gets a normalized instance of this instance so that top-right and bottom-left are correct.
 		 */
-		TRectangle2D<T> normalized() const;
+		TRectangle2D normalized() const;
 
 		/**
 		 * @brief Offsets this instance by the passed values x and y keeping the same size.
 		 */
-		TRectangle2D<T>& offset(T dx, T dy);
+		TRectangle2D& offset(T dx, T dy);
 
 		/**
 		 * @brief Gets an instance offset by the passed values x and y keeping the same size.
 		 */
-		TRectangle2D<T> offsetBy(T dx, T dy) const;
+		TRectangle2D offsetBy(T dx, T dy) const;
 
 		/**
 		 * @brief Gets a moved instance from this instance where left-bottom represented by the passed values x and y having the same size.
 		 */
-		TRectangle2D<T> movedTo(T x, T y);
+		TRectangle2D movedTo(T x, T y);
 
 		/**
 		 * @brief Moves this instance to a different left-bottom represented by the passed values x and y having the same size.
 		 */
-		TRectangle2D<T>& moveTo(T x, T y);
+		TRectangle2D& moveTo(T x, T y);
 
 		/**
 		 * @brief Offsets this instance using the passed delta vector as a positive.
 		 */
-		TRectangle2D<T>& operator+=(const TVector2D<T>& delta);
+		TRectangle2D& operator+=(const TVector2D<T>& delta);
 
 		/**
 		 * @brief Offsets this instance using the passed delta vector as a negative.
 		 */
-		TRectangle2D<T>& operator-=(const TVector2D<T>& delta);
+		TRectangle2D& operator-=(const TVector2D<T>& delta);
 
 		/**
 		 * @brief Inflates this instance using the passed delta values for x and y.
 		 */
-		TRectangle2D<T>& inflate(T dx, T dy);
+		TRectangle2D& inflate(T dx, T dy);
 
 		/**
 		 * @brief Inflates this instance using the passed delta vector (x, y).
 		 */
-		TRectangle2D<T>& inflate(const TVector2D<T>& delta);
+		TRectangle2D& inflate(const TVector2D<T>& delta);
 
 		/**
 		 * @brief Gets an inflated rectangle using the passed delta values for x and y.
@@ -270,7 +268,7 @@ class TRectangle2D
 		 * Throws an exception when the string is not in the correct format.
 		 * @throw std::invalid_argument
 		 */
-		TRectangle2D<T>& fromString(const std::string& s) noexcept(false);
+		TRectangle2D& fromString(const std::string& s) noexcept(false);
 
 		/**
 		 * @brief Tolerance for when comparing in the equal operator.
@@ -307,7 +305,7 @@ template<typename T>
 std::istream& operator>>(std::istream& is, TRectangle2D<T>&);
 
 /**
- * @brief Writes the rectangle into a output stream.
+ * @brief Writes the rectangle into an output stream.
  */
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const TRectangle2D<T>&);

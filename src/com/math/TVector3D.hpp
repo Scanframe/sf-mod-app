@@ -1,12 +1,19 @@
+#pragma once
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/math.h>
+#include <misc/gen/string.h>
+#include <regex>
+#include <stdexcept>
+
 namespace sf
 {
 
 template<typename T>
-TVector3D<T>::TVector3D(const TVector3D<T>& v)
+TVector3D<T>::TVector3D(const TVector3D& v)
 	: _data(v._data)
 {}
 template<typename T>
-TVector3D<T>::TVector3D(TVector3D<T>&&) noexcept
+TVector3D<T>::TVector3D(TVector3D&&) noexcept
 {}
 
 template<typename T>
@@ -22,7 +29,7 @@ TVector3D<T>& TVector3D<T>::assign(T xp, T yp, T zp)
 }
 
 template<typename T>
-TVector3D<T>& TVector3D<T>::assign(const TVector3D<T>& v)
+TVector3D<T>& TVector3D<T>::assign(const TVector3D& v)
 {
 	_data = v._data;
 	return *this;
@@ -61,7 +68,7 @@ TVector3D<T> TVector3D<T>::operator-() const
 }
 
 template<typename T>
-TVector3D<T>& TVector3D<T>::operator+=(const TVector3D<T>& v)
+TVector3D<T>& TVector3D<T>::operator+=(const TVector3D& v)
 {
 	_data.coord.x += v._data.coord.x;
 	_data.coord.y += v._data.coord.y;
@@ -70,7 +77,7 @@ TVector3D<T>& TVector3D<T>::operator+=(const TVector3D<T>& v)
 }
 
 template<typename T>
-TVector3D<T>& TVector3D<T>::operator-=(const TVector3D<T>& v)
+TVector3D<T>& TVector3D<T>::operator-=(const TVector3D& v)
 {
 	_data.coord.x -= v._data.coord.x;
 	_data.coord.y -= v._data.coord.y;
@@ -99,13 +106,13 @@ TVector3D<T>& TVector3D<T>::operator/=(T c)
 }
 
 template<typename T>
-TVector3D<T> TVector3D<T>::operator+(const TVector3D<T>& v) const
+TVector3D<T> TVector3D<T>::operator+(const TVector3D& v) const
 {
 	return {_data.coord.x + v._data.coord.x, _data.coord.y + v._data.coord.y, _data.coord.z + v._data.coord.z};
 }
 
 template<typename T>
-TVector3D<T> TVector3D<T>::operator-(const TVector3D<T>& v) const
+TVector3D<T> TVector3D<T>::operator-(const TVector3D& v) const
 {
 	return {_data.coord.x - v._data.coord.x, _data.coord.y - v._data.coord.y, _data.coord.z - v._data.coord.z};
 }
@@ -117,20 +124,20 @@ TVector3D<T> TVector3D<T>::operator/(T c) const
 }
 
 template<typename T>
-bool TVector3D<T>::isEqual(const TVector3D<T>& v, T tol) const
+bool TVector3D<T>::isEqual(const TVector3D& v, T tol) const
 {
 	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) && sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol) &&
 		sf::isEqual<T>(_data.coord.z, v._data.coord.z, tol);
 }
 
 template<typename T>
-inline bool TVector3D<T>::operator==(const TVector3D<T>& v) const
+bool TVector3D<T>::operator==(const TVector3D& v) const
 {
 	return isEqual(v, tolerance);
 }
 
 template<typename T>
-inline bool TVector3D<T>::operator!=(const TVector3D<T>& v) const
+bool TVector3D<T>::operator!=(const TVector3D& v) const
 {
 	return !isEqual(v, tolerance);
 }
@@ -156,49 +163,49 @@ const T& TVector3D<T>::operator[](size_t i) const
 }
 
 template<typename T>
-inline constexpr TVector3D<T>::operator T*()
+constexpr TVector3D<T>::operator T*()
 {
 	return _data.array;
 }
 
 template<typename T>
-inline TVector3D<T>::operator const T*() const
+TVector3D<T>::operator const T*() const
 {
 	return _data.array;
 }
 
 template<typename T>
-inline constexpr T TVector3D<T>::x() const
+constexpr T TVector3D<T>::x() const
 {
 	return _data.coord.x;
 }
 
 template<typename T>
-inline constexpr T& TVector3D<T>::x()
+constexpr T& TVector3D<T>::x()
 {
 	return _data.coord.x;
 }
 
 template<typename T>
-inline constexpr T TVector3D<T>::y() const
+constexpr T TVector3D<T>::y() const
 {
 	return _data.coord.y;
 }
 
 template<typename T>
-inline constexpr T& TVector3D<T>::y()
+constexpr T& TVector3D<T>::y()
 {
 	return _data.coord.y;
 }
 
 template<typename T>
-inline constexpr T TVector3D<T>::z() const
+constexpr T TVector3D<T>::z() const
 {
 	return _data.coord.z;
 }
 
 template<typename T>
-inline constexpr T& TVector3D<T>::z()
+constexpr T& TVector3D<T>::z()
 {
 	return _data.coord.z;
 }
@@ -228,13 +235,13 @@ T TVector3D<T>::lengthSqr2D() const
 }
 
 template<typename T>
-TVector3D<T>& TVector3D<T>::normalize(void)
+TVector3D<T>& TVector3D<T>::normalize()
 {
 	T len = length();
 	if (len != 0.0)
 	{
 		// avoid SIGFPE
-		*this /= (T) len;
+		*this /= static_cast<T>(len);
 	}
 	return *this;
 }
@@ -261,7 +268,7 @@ TVector3D<T> TVector3D<T>::scaled(T factor) const
 }
 
 template<typename T>
-TVector3D<T> TVector3D<T>::crossProduct(const TVector3D<T>& v) const
+TVector3D<T> TVector3D<T>::crossProduct(const TVector3D& v) const
 {
 	return {
 		_data.coord.y * v._data.coord.z - _data.coord.z * v._data.coord.y, _data.coord.x * v._data.coord.z - _data.coord.z * v._data.coord.x,
@@ -276,7 +283,7 @@ T TVector3D<T>::dotProduct(const TVector3D& v) const
 }
 
 template<typename T>
-T TVector3D<T>::dotProduct2D(const TVector3D<T>& v) const
+T TVector3D<T>::dotProduct2D(const TVector3D& v) const
 {
 	return _data.coord.x * v._data.coord.x + _data.coord.y * v._data.coord.y;
 }
@@ -342,26 +349,26 @@ T TVector3D<T>::distance(const TVector3D& v) const
 }
 
 template<typename T>
-T TVector3D<T>::distance2D(const TVector3D<T>& v2) const
+T TVector3D<T>::distance2D(const TVector3D& v2) const
 {
 	return std::sqrt(DistanceSqr2d(v2));
 }
 
 template<typename T>
-T TVector3D<T>::distanceSqr(const TVector3D<T>& v2) const
+T TVector3D<T>::distanceSqr(const TVector3D& v2) const
 {
 	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) + (_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y) +
 		(_data.coord.z - v2._data.coord.z) * (_data.coord.z - v2._data.coord.z);
 }
 
 template<typename T>
-T TVector3D<T>::distanceSqr2D(const TVector3D<T>& v2) const
+T TVector3D<T>::distanceSqr2D(const TVector3D& v2) const
 {
 	return (_data.coord.x - v2._data.coord.x) * (_data.coord.x - v2._data.coord.x) + (_data.coord.y - v2._data.coord.y) * (_data.coord.y - v2._data.coord.y);
 }
 
 template<typename T>
-void TVector3D<T>::updateMin(const TVector3D<T>& vertex)
+void TVector3D<T>::updateMin(const TVector3D& vertex)
 {
 	if (vertex._data.coord.x < _data.coord.x)
 	{
@@ -378,7 +385,7 @@ void TVector3D<T>::updateMin(const TVector3D<T>& vertex)
 }
 
 template<typename T>
-void TVector3D<T>::updateMax(const TVector3D<T>& vertex)
+void TVector3D<T>::updateMax(const TVector3D& vertex)
 {
 	if (vertex._data.coord.x > _data.coord.x)
 	{
@@ -406,26 +413,23 @@ template<typename T>
 TVector3D<T>& TVector3D<T>::fromString(const std::string& s)
 {
 	constexpr auto sz = sizeof(data_type::array) / sizeof(T);
-	std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
+	const std::regex re(R"(^\(([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\)$)", std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != sz + 1)
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid string '" + s + "' conversion!");
 	}
-	else
+	for (size_t i = 0; i < sz; i++)
 	{
-		for (size_t i = 0; i < sz; i++)
-		{
-			// First match is the group so skip it (+1).
-			_data.array[i] = toNumber<T>(match[i + 1].str());
-		}
+		// First match is the group so skip it (+1).
+		_data.array[i] = toNumber<T>(match[i + 1].str());
 	}
 	return *this;
 }
 
 template<typename T>
-int TVector3D<T>::dominantAxis(void)
+int TVector3D<T>::dominantAxis()
 {
 	if (std::fabs(_data.coord.x) > std::fabs(_data.coord.y))
 	{
@@ -433,22 +437,13 @@ int TVector3D<T>::dominantAxis(void)
 		{
 			return 0;
 		}
-		else
-		{
-			return 2;
-		}
+		return 2;
 	}
-	else
+	if (std::fabs(_data.coord.y) > std::fabs(_data.coord.z))
 	{
-		if (std::fabs(_data.coord.y) > std::fabs(_data.coord.z))
-		{
-			return 1;
-		}
-		else
-		{
-			return 2;
-		}
+		return 1;
 	}
+	return 2;
 }
 
 template<typename T>
@@ -463,7 +458,7 @@ const F* TVector3D<T>::floatPtr() const
 {
 	constexpr size_t sz = sizeof(data_type::array) / sizeof(T);
 	// Make the value returned thread safe.
-	static thread_local F fa[sz];
+	thread_local F fa[sz];
 	for (size_t i = 0; i < sz; i++)
 	{
 		fa[i] = static_cast<F>(_data.array[i]);

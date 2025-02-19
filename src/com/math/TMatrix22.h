@@ -54,7 +54,7 @@ class TMatrix22
 		 * @brief Constructs a rotation matrix passing a single angle.
 		 * @param angle angle of rotation.
 		 */
-		TMatrix22(T angle);
+		explicit TMatrix22(T angle);
 
 		/**
 		 * @brief Gets the transposed version of the matrix.
@@ -116,11 +116,11 @@ class TMatrix22
 
 		/**
 		 * @brief Compares the passed matrix within the set tolerance.
-		 * @param v Vector to compare with.
+		 * @param m Matrix to compare with.
 		 * @param tol The tolerance when comparing which has a default.
 		 * @return True when equal.
 		 */
-		bool isEqual(const TMatrix22& v, T tol = tolerance) const;
+		bool isEqual(const TMatrix22& m, T tol = tolerance) const;
 
 		/**
 		 * @brief Compare equal operator using the #tolerance for comparing.
@@ -195,7 +195,7 @@ class TMatrix22
  * @return The passed output stream.
  */
 template<typename T>
-inline std::ostream& operator<<(std::ostream& os, const TMatrix22<T>& mtx)
+std::ostream& operator<<(std::ostream& os, const TMatrix22<T>& mtx)
 {
 	return os << mtx.toString();
 }
@@ -208,10 +208,10 @@ inline std::ostream& operator<<(std::ostream& os, const TMatrix22<T>& mtx)
  * @return The passed input stream.
  */
 template<typename T>
-inline std::istream& operator>>(std::istream& is, TMatrix22<T>& mtx) noexcept(false)
+std::istream& operator>>(std::istream& is, TMatrix22<T>& mtx) noexcept(false)
 {
 	std::string s;
-	auto delimiter = ')';
+	constexpr auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	mtx.fromString(s.append(1, delimiter));
 	return is;

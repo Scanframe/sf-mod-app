@@ -153,12 +153,12 @@ class TVector3D
 		/**
 		 * @brief Cast operator for pointer.
 		 */
-		constexpr operator T*();
+		explicit constexpr operator T*();
 
 		/**
 		 * @brief Cast operator for const pointer.
 		 */
-		operator const T*() const;
+		explicit operator const T*() const;
 
 		/**
 		 * @brief Gets the x-coordinate value.
@@ -394,7 +394,7 @@ template<typename T>
 std::istream& operator>>(std::istream& is, TVector3D<T>& v) noexcept(false)
 {
 	std::string s;
-	const auto delimiter = ')';
+	constexpr auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	v.fromString(s.append(1, delimiter));
 	return is;

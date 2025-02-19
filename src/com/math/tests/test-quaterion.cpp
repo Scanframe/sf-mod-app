@@ -1,4 +1,5 @@
 #include <cstring>
+#include <math/TQuaternion.h>
 #include <math/Types.h>
 #include <sstream>
 #include <test/catch.h>
@@ -10,7 +11,7 @@ namespace
  */
 struct
 {
-		std::string operator()(const sf::Quaternion& quat)
+		std::string operator()(const sf::Quaternion& quat) const
 		{
 			std::ostringstream os;
 			return dynamic_cast<std::ostringstream&>(os << quat).str();

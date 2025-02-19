@@ -1,10 +1,8 @@
 #pragma once
-
 #include <cmath>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/string.h>
 #include <regex>
-#include <sstream>
 
 namespace sf
 {
@@ -33,22 +31,22 @@ TMatrix22<T>::TMatrix22(const TMatrix22& m)
 }
 
 template<typename T>
-TMatrix22<T>::TMatrix22(TMatrix22<T>&& m) noexcept
+TMatrix22<T>::TMatrix22(TMatrix22&& m) noexcept
 {
 	_data = m._data;
 }
 
 template<typename T>
-inline TMatrix22<T>::TMatrix22(T factor_x, T factor_y)
+TMatrix22<T>::TMatrix22(T scale_x, T scale_y)
 {
-	_data.mtx[0][0] = factor_x;
+	_data.mtx[0][0] = scale_x;
 	_data.mtx[0][1] = 0.0;
 	_data.mtx[1][0] = 0.0;
-	_data.mtx[1][1] = factor_y;
+	_data.mtx[1][1] = scale_y;
 }
 
 template<typename T>
-inline TMatrix22<T>::TMatrix22(T angle)
+TMatrix22<T>::TMatrix22(T angle)
 {
 	setRotation(angle);
 }
@@ -77,14 +75,14 @@ TMatrix22<T>& TMatrix22<T>::operator=(const TMatrix22& m)
 }
 
 template<typename T>
-TMatrix22<T>& TMatrix22<T>::operator=(TMatrix22<T>&& m) noexcept
+TMatrix22<T>& TMatrix22<T>::operator=(TMatrix22&& m) noexcept
 {
 	_data = m._data;
 	return *this;
 }
 
 template<typename T>
-inline const TMatrix22<T> operator*(const TMatrix22<T>& lhs, const TMatrix22<T>& rhs)
+TMatrix22<T> operator*(const TMatrix22<T>& lhs, const TMatrix22<T>& rhs)
 {
 	return TMatrix22(lhs) *= rhs;
 }
@@ -118,18 +116,17 @@ TMatrix22<T> TMatrix22<T>::transposed() const
 }
 
 template<typename T>
-TMatrix22<T>& TMatrix22<T>::operator*=(const TMatrix22<T>& rhs)
+TMatrix22<T>& TMatrix22<T>::operator*=(const TMatrix22& m)
 {
 	*this = {
-		rhs._data.mtx[0][0] * _data.mtx[0][0] + rhs._data.mtx[0][1] * _data.mtx[1][0],
-		rhs._data.mtx[0][0] * _data.mtx[0][1] + rhs._data.mtx[0][1] * _data.mtx[1][1],
-		rhs._data.mtx[1][0] * _data.mtx[0][0] + rhs._data.mtx[1][1] * _data.mtx[1][0], rhs._data.mtx[1][0] * _data.mtx[0][1] + rhs._data.mtx[1][1] * _data.mtx[1][1]
+		m._data.mtx[0][0] * _data.mtx[0][0] + m._data.mtx[0][1] * _data.mtx[1][0], m._data.mtx[0][0] * _data.mtx[0][1] + m._data.mtx[0][1] * _data.mtx[1][1],
+		m._data.mtx[1][0] * _data.mtx[0][0] + m._data.mtx[1][1] * _data.mtx[1][0], m._data.mtx[1][0] * _data.mtx[0][1] + m._data.mtx[1][1] * _data.mtx[1][1]
 	};
 	return *this;
 }
 
 template<typename T>
-inline TVector2D<T> TMatrix22<T>::operator*(const TVector2D<T>& v) const
+TVector2D<T> TMatrix22<T>::operator*(const TVector2D<T>& v) const
 {
 	return transformed(v);
 }
@@ -157,13 +154,13 @@ bool TMatrix22<T>::isEqual(const TMatrix22& m, T tol) const
 }
 
 template<typename T>
-inline bool TMatrix22<T>::operator==(const TMatrix22<T>& m) const
+bool TMatrix22<T>::operator==(const TMatrix22& m) const
 {
 	return isEqual(m, tolerance);
 }
 
 template<typename T>
-inline bool TMatrix22<T>::operator!=(const TMatrix22<T>& m) const
+bool TMatrix22<T>::operator!=(const TMatrix22& m) const
 {
 	return !isEqual(m, tolerance);
 }
@@ -189,7 +186,7 @@ template<typename T>
 T TMatrix22<T>::getRotation() const
 {
 	// Check if the matrix is orthogonal
-	double det = _data.mtx[0][0] * _data.mtx[1][1] - _data.mtx[0][1] * _data.mtx[1][0];
+	const double det = _data.mtx[0][0] * _data.mtx[1][1] - _data.mtx[0][1] * _data.mtx[1][0];
 	if (std::fabs(det - 1.0) > tolerance)
 	{
 		throw std::domain_error(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() not a square matrix!");
@@ -199,7 +196,7 @@ T TMatrix22<T>::getRotation() const
 }
 
 template<typename T>
-TMatrix22<T>& TMatrix22<T>::resetOrientation(void)
+TMatrix22<T>& TMatrix22<T>::resetOrientation()
 {
 	_data.mtx[1][0] = _data.mtx[0][1] = 0.0;
 	_data.mtx[0][0] = _data.mtx[1][1] = 1.0;
@@ -218,7 +215,7 @@ std::string TMatrix22<T>::toString() const
 template<typename T>
 TMatrix22<T>& TMatrix22<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::regex re(
+	const std::regex re(
 		R"(^\(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\},\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\}\)$)",
 		std::regex::icase
 	);
@@ -228,13 +225,10 @@ TMatrix22<T>& TMatrix22<T>::fromString(const std::string& s) noexcept(false)
 	{
 		throw std::invalid_argument(SF_RTTI_TYPENAME + "::" + __FUNCTION__ + "() invalid string '" + s + "' conversion!");
 	}
-	else
+	for (size_t i = 0; i <= 4; i++)
 	{
-		for (size_t i = 0; i <= 4; i++)
-		{
-			// First match is the group so skip it (+1).
-			_data.array[i] = toNumber<T>(match[i + 1].str());
-		}
+		// First match is the group so skip it (+1).
+		_data.array[i] = toNumber<T>(match[i + 1].str());
 	}
 	return *this;
 }

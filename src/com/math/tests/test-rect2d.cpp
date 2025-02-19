@@ -1,4 +1,5 @@
 #include <cstring>
+#include <math/TRectangle2D.h>
 #include <math/Types.h>
 #include <sstream>
 #include <test/catch.h>
@@ -10,10 +11,11 @@ namespace
  */
 struct
 {
-		std::string operator()(const sf::Rectangle2D& r)
+		std::string operator()(const sf::Rectangle2D& r) const
 		{
 			std::ostringstream os;
-			return dynamic_cast<std::ostringstream&>(os << r).str();
+			os << r;
+			return os.str();
 		}
 } Helper;
 

@@ -8,7 +8,7 @@ namespace sf
 {
 
 template<typename T>
-inline TMatrix44<T>::TMatrix44(T tilt, T pan, T roll)
+TMatrix44<T>::TMatrix44(T tilt, T pan, T roll)
 {
 	setTiltPanRoll(tilt, pan, roll);
 }
@@ -572,7 +572,7 @@ TMatrix44<T>& TMatrix44<T>::setOrientationZY(const TVector3D<T>& z_axis, const T
 }
 
 template<typename T>
-TMatrix44<T>& TMatrix44<T>::resetOrientation(void)
+TMatrix44<T>& TMatrix44<T>::resetOrientation()
 {
 	_data.mtx[1][0] = _data.mtx[2][0] = _data.mtx[0][3] = _data.mtx[0][1] = _data.mtx[2][1] = _data.mtx[1][3] = _data.mtx[0][2] = _data.mtx[1][2] =
 		_data.mtx[2][3] = 0;
@@ -605,11 +605,11 @@ template<typename T>
 std::string TMatrix44<T>::toString() const
 {
 	// Lambda function to get the string of each row.
-	auto row = [this](int row) -> std::string {
-		return std::string() + "{" + sf::toString<T>(isZero(_data.mtx[row][0], tolerance) ? T(0) : _data.mtx[row][0]) + ',' +
-			sf::toString<T>(isZero(_data.mtx[row][1], tolerance) ? T(0) : _data.mtx[row][1]) + ',' +
-			sf::toString<T>(isZero(_data.mtx[row][2], tolerance) ? T(0) : _data.mtx[row][2]) + ',' +
-			sf::toString<T>(isZero(_data.mtx[row][3], tolerance) ? T(0) : _data.mtx[row][3]) + '}';
+	auto row = [this](int r) -> std::string {
+		return std::string() + "{" + sf::toString<T>(isZero(_data.mtx[r][0], tolerance) ? T(0) : _data.mtx[r][0]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[r][1], tolerance) ? T(0) : _data.mtx[r][1]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[r][2], tolerance) ? T(0) : _data.mtx[r][2]) + ',' +
+			sf::toString<T>(isZero(_data.mtx[r][3], tolerance) ? T(0) : _data.mtx[r][3]) + '}';
 	};
 	return '(' + row(0) + ',' + row(1) + ',' + row(2) + ',' + row(3) + ')';
 }
@@ -617,8 +617,8 @@ std::string TMatrix44<T>::toString() const
 template<typename T>
 TMatrix44<T>& TMatrix44<T>::fromString(const std::string& s) noexcept(false)
 {
-	std::string row(R"(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\})");
-	std::regex re("^\\(" + row + ',' + row + ',' + row + ',' + row + "\\)$", std::regex::icase);
+	const std::string row(R"(\{([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?),([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\})");
+	const std::regex re("^\\(" + row + ',' + row + ',' + row + ',' + row + "\\)$", std::regex::icase);
 	std::smatch match;
 	// Sanity check on the amount of matches.
 	if (!std::regex_match(s, match, re) || match.size() != 17)

@@ -34,13 +34,13 @@ TEST_CASE("sf::Matrix22", "[con][generic][vector]")
 		CHECK(mtx[1][0] == 3.0);
 		CHECK(mtx[1][1] == 4.0);
 		// Check the pointer operator.
-		const sf::Matrix44::value_type* ptr = m0;
+		const sf::Matrix22::value_type* ptr = m0;
 		CHECK(ptr[0] == 1.0);
 		CHECK(ptr[1] == 2.0);
 		CHECK(ptr[2] == 3.0);
 		CHECK(ptr[3] == 4.0);
 		// Check the const pointer operator.
-		const sf::Matrix44::value_type* cptr = m0;
+		const sf::Matrix22::value_type* cptr = m0;
 		CHECK(cptr[0] == 1.0);
 		CHECK(cptr[1] == 2.0);
 		CHECK(cptr[2] == 3.0);

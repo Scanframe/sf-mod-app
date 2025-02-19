@@ -1,4 +1,4 @@
-#include <complex>
+#pragma once
 
 namespace sf
 {
@@ -28,7 +28,7 @@ TRectangle2D<T>::TRectangle2D(const TRectangle2D& rect)
 }
 
 template<typename T>
-TRectangle2D<T>::TRectangle2D(const TRectangle2D&& rect)
+TRectangle2D<T>::TRectangle2D(const TRectangle2D&& rect) noexcept
 {
 	_data = rect._data;
 }
@@ -96,23 +96,23 @@ TRectangle2D<T>& TRectangle2D<T>::assignWidthHeight(T left, T bottom, T w, T h)
 }
 
 template<typename T>
-TRectangle2D<T>& TRectangle2D<T>::assignWidthHeight(const TVector2D<T>& bottom_left, const TVector2D<T>& wh)
+TRectangle2D<T>& TRectangle2D<T>::assignWidthHeight(const TVector2D<T>& bottom_left, const TVector2D<T>& size)
 {
 	_data.rect.left = bottom_left.x();
 	_data.rect.bottom = bottom_left.y();
-	_data.rect.right = bottom_left.x() + wh.x();
-	_data.rect.top = bottom_left.y() + wh.y();
+	_data.rect.right = bottom_left.x() + size.x();
+	_data.rect.top = bottom_left.y() + size.y();
 	return *this;
 }
 
 template<typename T>
-inline bool TRectangle2D<T>::operator==(const TRectangle2D<T>& rect) const
+bool TRectangle2D<T>::operator==(const TRectangle2D& rect) const
 {
 	return isEqual(rect);
 }
 
 template<typename T>
-inline bool TRectangle2D<T>::operator!=(const TRectangle2D<T>& rect) const
+bool TRectangle2D<T>::operator!=(const TRectangle2D& rect) const
 {
 	return !isEqual(rect);
 }
@@ -124,10 +124,10 @@ bool TRectangle2D<T>::isEmpty() const
 }
 
 template<typename T>
-bool TRectangle2D<T>::isEqual(const TRectangle2D<T>& rect, T tol) const
+bool TRectangle2D<T>::isEqual(const TRectangle2D& other, T tol) const
 {
-	return sf::isEqual(_data.rect.left, rect._data.rect.left, tol) && sf::isEqual(_data.rect.bottom, rect._data.rect.bottom, tol) &&
-		sf::isEqual(_data.rect.right, rect._data.rect.right, tol) && sf::isEqual(_data.rect.top, rect._data.rect.top, tol);
+	return sf::isEqual(_data.rect.left, other._data.rect.left, tol) && sf::isEqual(_data.rect.bottom, other._data.rect.bottom, tol) &&
+		sf::isEqual(_data.rect.right, other._data.rect.right, tol) && sf::isEqual(_data.rect.top, other._data.rect.top, tol);
 }
 
 template<typename T>
@@ -137,14 +137,14 @@ bool TRectangle2D<T>::contains(const TVector2D<T>& point) const
 }
 
 template<typename T>
-bool TRectangle2D<T>::contains(const TRectangle2D<T>& other) const
+bool TRectangle2D<T>::contains(const TRectangle2D& other) const
 {
 	return other._data.rect.left >= _data.rect.left && other._data.rect.right <= _data.rect.right && other._data.rect.bottom >= _data.rect.bottom &&
 		other._data.rect.top <= _data.rect.top;
 }
 
 template<typename T>
-bool TRectangle2D<T>::touches(const TRectangle2D<T>& other) const
+bool TRectangle2D<T>::touches(const TRectangle2D& other) const
 {
 	return other._data.rect.right >= _data.rect.left && other._data.rect.left <= _data.rect.right && other._data.rect.top >= _data.rect.bottom &&
 		other._data.rect.bottom <= _data.rect.top;
@@ -238,7 +238,7 @@ TRectangle2D<T>& TRectangle2D<T>::offset(T dx, T dy)
 }
 
 template<typename T>
-inline TRectangle2D<T> TRectangle2D<T>::offsetBy(T dx, T dy) const
+TRectangle2D<T> TRectangle2D<T>::offsetBy(T dx, T dy) const
 {
 	return TRectangle2D(*this).offset(dx, dy);
 }
@@ -260,13 +260,13 @@ TRectangle2D<T> TRectangle2D<T>::movedTo(T x, T y)
 }
 
 template<typename T>
-inline TRectangle2D<T>& TRectangle2D<T>::operator+=(const TVector2D<T>& delta)
+TRectangle2D<T>& TRectangle2D<T>::operator+=(const TVector2D<T>& delta)
 {
 	return offset(delta.x(), delta.y());
 }
 
 template<typename T>
-inline TRectangle2D<T>& TRectangle2D<T>::operator-=(const TVector2D<T>& delta)
+TRectangle2D<T>& TRectangle2D<T>::operator-=(const TVector2D<T>& delta)
 {
 	return offset(-delta.x(), -delta.y());
 }
@@ -283,7 +283,7 @@ TRectangle2D<T>& TRectangle2D<T>::inflate(T dx, T dy)
 }
 
 template<typename T>
-inline TRectangle2D<T>& TRectangle2D<T>::inflate(const TVector2D<T>& delta)
+TRectangle2D<T>& TRectangle2D<T>::inflate(const TVector2D<T>& delta)
 {
 	return inflate(delta.x(), delta.y());
 }
@@ -295,7 +295,7 @@ TRectangle2D<T> TRectangle2D<T>::inflatedBy(T dx, T dy) const
 }
 
 template<typename T>
-inline TRectangle2D<T> TRectangle2D<T>::inflatedBy(const TVector2D<T>& delta) const
+TRectangle2D<T> TRectangle2D<T>::inflatedBy(const TVector2D<T>& delta) const
 {
 	return inflatedBy(delta.x(), delta.y());
 }
@@ -321,7 +321,7 @@ TRectangle2D<T>& TRectangle2D<T>::operator&=(const TRectangle2D& other)
 }
 
 template<typename T>
-TRectangle2D<T>& TRectangle2D<T>::operator|=(const TRectangle2D<T>& other)
+TRectangle2D<T>& TRectangle2D<T>::operator|=(const TRectangle2D& other)
 {
 	// When the passed rectangle is empty ignore it.
 	if (!other.isEmpty())
@@ -350,7 +350,7 @@ TRectangle2D<T> TRectangle2D<T>::operator&(const TRectangle2D& other) const
 }
 
 template<typename T>
-TRectangle2D<T> TRectangle2D<T>::operator|(const TRectangle2D<T>& other) const
+TRectangle2D<T> TRectangle2D<T>::operator|(const TRectangle2D& other) const
 {
 	return (TRectangle2D(*this) |= other).normalize();
 }

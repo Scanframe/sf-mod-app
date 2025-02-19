@@ -1,8 +1,5 @@
 #pragma once
-#include <complex>
-#include <istream>
 #include <math/TVector3D.h>
-#include <misc/gen/dbgutils.h>
 
 namespace sf
 {
@@ -34,7 +31,7 @@ class TQuaternion
 		/**
 		 * @brief Initializing constructor is used in operators and sets the member variables directly.
 		 */
-		TQuaternion(T qw, const TVector3D<T>& qv);
+		TQuaternion(T real, const TVector3D<T>& imag);
 
 		/**
 		 * @brief Constructor for creating rotations by specifying the angle of rotation and the axis
@@ -208,7 +205,7 @@ class TQuaternion
 		 * Throws an exception when the passed matrix is not a rotation matrix.
 		 * @throw std::invalid_argument
 		 */
-		TQuaternion<T>& fromMatrix(const T[4][4]);
+		TQuaternion& fromMatrix(const T[4][4]);
 		/**
 		 * @brief Transforms a 3D-vector not using the quaternion directly instead of a matrix.
 		 */
@@ -266,11 +263,11 @@ class TQuaternion
 
 		/**
 		 * @brief Compares the passed quaternion within the set tolerance.
-		 * @param v Vector to compare with.
+		 * @param quat Vector to compare with.
 		 * @param tol The tolerance when comparing which has a default.
 		 * @return True when equal.
 		 */
-		bool isEqual(const TQuaternion& v, T tol = tolerance) const;
+		bool isEqual(const TQuaternion& quat, T tol = tolerance) const;
 
 		/**
 		 * @brief operator.
@@ -323,7 +320,7 @@ class TQuaternion
 		 * @param t Transition ranges from 0 to 1.
 		 * @return Intermediate quaternion.
 		 */
-		TQuaternion interpolate(const TQuaternion<T>& q, T t) const;
+		TQuaternion interpolate(const TQuaternion& q, T t) const;
 
 		/**
 		 * @brief Implements a logarithmic interpolation function.
@@ -331,7 +328,7 @@ class TQuaternion
 		 * @param t Value from 0.0 to 1.0
 		 * @return
 		 */
-		TQuaternion interpolateLogarithmic(const TQuaternion<T>& q, T t) const;
+		TQuaternion interpolateLogarithmic(const TQuaternion& q, T t) const;
 
 		/**
 		 * @brief Gets the string representation of the quaternion formed like '(x,y,z,r)'.
@@ -377,7 +374,7 @@ class TQuaternion
  * @return New matrix.
  */
 template<typename T>
-inline const TQuaternion<T> operator+(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
+TQuaternion<T> operator+(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) += rhs;
 }
@@ -390,7 +387,7 @@ inline const TQuaternion<T> operator+(const TQuaternion<T>& lhs, const TQuaterni
  * @return New matrix.
  */
 template<typename T>
-inline const TQuaternion<T> operator-(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
+TQuaternion<T> operator-(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) -= rhs;
 }
@@ -403,7 +400,7 @@ inline const TQuaternion<T> operator-(const TQuaternion<T>& lhs, const TQuaterni
  * @return New quaternion instance.
  */
 template<typename T>
-inline const TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
+TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) *= rhs;
 }
@@ -416,7 +413,7 @@ inline const TQuaternion<T> operator*(const TQuaternion<T>& lhs, const TQuaterni
  * @return New quaternion instance.
  */
 template<typename T>
-inline const TQuaternion<T> operator/(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
+TQuaternion<T> operator/(const TQuaternion<T>& lhs, const TQuaternion<T>& rhs)
 {
 	return TQuaternion<T>(lhs) /= rhs;
 }
@@ -443,7 +440,7 @@ TQuaternion<T> operator*(T c, const TQuaternion<T>& quat)
  * @return The passed output stream.
  */
 template<typename T>
-inline std::ostream& operator<<(std::ostream& os, const TQuaternion<T>& quat)
+std::ostream& operator<<(std::ostream& os, const TQuaternion<T>& quat)
 {
 	return os << quat.toString();
 }
@@ -457,7 +454,7 @@ inline std::ostream& operator<<(std::ostream& os, const TQuaternion<T>& quat)
  * @return The passed input stream.
  */
 template<typename T>
-inline std::istream& operator>>(std::istream& is, TQuaternion<T>& quat) noexcept(false)
+std::istream& operator>>(std::istream& is, TQuaternion<T>& quat) noexcept(false)
 {
 	std::string s;
 	auto delimiter = ')';

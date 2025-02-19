@@ -298,7 +298,7 @@ class TMatrix44
 		 * @brief Gets transformation of rotation around local x- and y-axis of current matrix.
 		 * @param horizontal
 		 * @param vertical
-		 * @return
+		 * @return The matrix.
 		 */
 		TMatrix44 orbit(T horizontal, T vertical) const;
 
@@ -319,6 +319,7 @@ class TMatrix44
 		 * @brief Gets the element specified by the row and column.
 		 * @param row Row number between 0 and 3.
 		 * @param column Column number between 0 and 3.
+		 * @return Matrix element value.
 		 */
 		T element(unsigned int row, unsigned int column) const;
 
@@ -326,6 +327,7 @@ class TMatrix44
 		 * @brief Gets the element reference specified by the row and column.
 		 * @param row Row number between 0 and 3.
 		 * @param column Column number between 0 and 3.
+		 * @return Matrix element value.
 		 */
 		T& element(unsigned int row, unsigned int column);
 
@@ -333,7 +335,6 @@ class TMatrix44
 		 * @brief Convert rotation matrix part to identity or unit quaternion.
 		 * Calls #sf::TQuaternion::fromMatrix()
 		 * @return A Quaternion instance.
-		 * @see sf::TQuaternion::fromMatrix()
 		 */
 		TQuaternion<T> quaternion() const;
 
@@ -439,7 +440,7 @@ template<typename T>
 std::istream& operator>>(std::istream& is, TMatrix44<T>& mtx) noexcept(false)
 {
 	std::string s;
-	const auto delimiter = ')';
+	constexpr auto delimiter = ')';
 	std::getline(is, s, delimiter);
 	mtx.fromString(s.append(1, delimiter));
 	return is;

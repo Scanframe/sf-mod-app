@@ -1,3 +1,4 @@
+#pragma once
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/string.h>
 #include <regex>
@@ -10,7 +11,7 @@ TVector2D<T>::TVector2D(const TVector2D& v)
 	: _data(v._data)
 {}
 template<typename T>
-TVector2D<T>::TVector2D(TVector2D<T>&&) noexcept
+TVector2D<T>::TVector2D(TVector2D&&) noexcept
 {}
 
 template<typename T>
@@ -263,7 +264,7 @@ TVector2D<T>& TVector2D<T>::assign(T xp, T yp)
 }
 
 template<typename T>
-TVector2D<T>& TVector2D<T>::assign(const TVector2D<T>& v)
+TVector2D<T>& TVector2D<T>::assign(const TVector2D& v)
 {
 	_data = v._data;
 	return *this;
@@ -296,7 +297,7 @@ TVector2D<T> TVector2D<T>::operator-() const
 }
 
 template<typename T>
-TVector2D<T>& TVector2D<T>::operator+=(const TVector2D<T>& v)
+TVector2D<T>& TVector2D<T>::operator+=(const TVector2D& v)
 {
 	_data.coord.x += v._data.coord.x;
 	_data.coord.y += v._data.coord.y;
@@ -347,19 +348,19 @@ TVector2D<T> TVector2D<T>::operator/(T c) const
 }
 
 template<typename T>
-bool TVector2D<T>::isEqual(const TVector2D<T>& v, T tol) const
+bool TVector2D<T>::isEqual(const TVector2D& v, T tol) const
 {
 	return sf::isEqual<T>(_data.coord.x, v._data.coord.x, tol) && sf::isEqual<T>(_data.coord.y, v._data.coord.y, tol);
 }
 
 template<typename T>
-inline bool TVector2D<T>::operator==(const TVector2D<T>& v) const
+bool TVector2D<T>::operator==(const TVector2D& v) const
 {
 	return isEqual(v, tolerance);
 }
 
 template<typename T>
-inline bool TVector2D<T>::operator!=(const TVector2D<T>& v) const
+bool TVector2D<T>::operator!=(const TVector2D& v) const
 {
 	return !isEqual(v, tolerance);
 }
@@ -420,7 +421,7 @@ TVector2D<T>& TVector2D<T>::fromString(const std::string& s)
 }
 
 template<typename T>
-int TVector2D<T>::areOnSameSide(const TVector2D<T>& lp1, const TVector2D<T>& lp2, const TVector2D<T>& p1, const TVector2D<T>& p2)
+int TVector2D<T>::areOnSameSide(const TVector2D& lp1, const TVector2D& lp2, const TVector2D& p1, const TVector2D& p2)
 {
 	T dx = lp2._data.coord.x - lp1._data.coord.x;
 	T dy = lp2._data.coord.y - lp1._data.coord.y;

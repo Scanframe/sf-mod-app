@@ -10,10 +10,11 @@ namespace
  */
 struct
 {
-		std::string operator()(const sf::Vector2D& v)
+		std::string operator()(const sf::Vector2D& v) const
 		{
 			std::ostringstream os;
-			return dynamic_cast<std::ostringstream&>(os << v).str();
+			os << v;
+			return os.str();
 		}
 } Helper;
 

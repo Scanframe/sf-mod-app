@@ -1,8 +1,6 @@
 #pragma once
 #include <math/TMatrix22.h>
 #include <math/TMatrix44.h>
-#include <math/TQuaternion.h>
-#include <math/TRectangle2D.h>
 #include <math/TVector2D.h>
 #include <math/TVector3D.h>
 
