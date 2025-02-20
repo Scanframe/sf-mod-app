@@ -65,7 +65,7 @@ enum
 
 }// namespace
 
-InformationItemModel::InformationItemModel(Gii::SelectionMode mode, Gii::TypeId idType, QObject* parent)
+InformationItemModel::InformationItemModel(gii::SelectionMode mode, gii::TypeId idType, QObject* parent)
 	: QAbstractItemModel(parent)
 	, _rootItem(new TreeItem(nullptr, "Root"))
 	, _mode(mode)
@@ -115,7 +115,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 {
 	if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
 	{
-		if (_idType == Gii::Variable)
+		if (_idType == gii::Variable)
 		{
 			switch (section)
 			{
@@ -137,7 +137,7 @@ QVariant InformationItemModel::headerData(int section, Qt::Orientation orientati
 					return QString(tr("Flags"));
 			}
 		}
-		else if (_idType == Gii::ResultData)
+		else if (_idType == gii::ResultData)
 		{
 			switch (section)
 			{
@@ -180,7 +180,7 @@ int InformationItemModel::columnCount(const QModelIndex& parent) const
 		}
 	}
 */
-	return (_idType == Gii::Variable) ? static_cast<int>(vcColumnCount) : static_cast<int>(rcColumnCount);
+	return (_idType == gii::Variable) ? static_cast<int>(vcColumnCount) : static_cast<int>(rcColumnCount);
 }
 
 int InformationItemModel::rowCount(const QModelIndex& parent) const
@@ -211,7 +211,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 	{
 		if (role == Qt::CheckStateRole)
 		{
-			if (_mode == Gii::Multiple && index.column() == vcName && item->_type != TreeItem::dtFolder)
+			if (_mode == gii::Multiple && index.column() == vcName && item->_type != TreeItem::dtFolder)
 			{
 				return item->_selected ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
 			}
@@ -219,7 +219,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 		}
 		else if (role == Qt::DisplayRole)
 		{
-			if (_idType == Gii::Variable)
+			if (_idType == gii::Variable)
 			{
 				switch (index.column())
 				{
@@ -270,7 +270,7 @@ QVariant InformationItemModel::data(const QModelIndex& index, int role) const
 						return QString::fromStdString(Variable::getInstanceById(item->_id).getFlagsString());
 				}
 			}
-			else if (_idType == Gii::ResultData)
+			else if (_idType == gii::ResultData)
 			{
 				switch (index.column())
 				{
@@ -348,7 +348,7 @@ Qt::ItemFlags InformationItemModel::flags(const QModelIndex& index) const
 	else
 	{
 		flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
-		if (_mode == Gii::Multiple)
+		if (_mode == gii::Multiple)
 		{
 			flags |= Qt::ItemIsUserCheckable;
 		}
@@ -418,7 +418,7 @@ InformationItemModel::TreeItem* InformationItemModel::createPath(const QStringLi
 
 void InformationItemModel::updateList()
 {
-	if (_idType == Gii::Variable)
+	if (_idType == gii::Variable)
 	{
 		auto vl = Variable::getList();
 		std::sort(vl.begin(), vl.end(), [](const Variable* v1, const Variable* v2) -> bool { return v1->getName() < v2->getName(); });
@@ -437,7 +437,7 @@ void InformationItemModel::updateList()
 			}
 		}
 	}
-	else if (_idType == Gii::ResultData)
+	else if (_idType == gii::ResultData)
 	{
 		auto rl = ResultData::getList();
 		std::sort(rl.begin(), rl.end(), [](const ResultData* r1, const ResultData* r2) -> bool { return r1->getName() < r2->getName(); });
@@ -480,7 +480,7 @@ void InformationItemModel::toggleSelection(const QModelIndex& index)
 
 InformationTypes::IdVector InformationItemModel::getSelectedIds() const
 {
-	if (_mode == Gii::Multiple)
+	if (_mode == gii::Multiple)
 	{
 		sf::InformationTypes::IdVector list;
 		for (auto i: _selected)
@@ -497,7 +497,7 @@ bool InformationItemModel::isFolder(const QModelIndex& index)
 	return static_cast<TreeItem*>(index.internalPointer())->_type == TreeItem::dtFolder;
 }
 
-Gii::IdType InformationItemModel::getId(const QModelIndex& index)
+gii::IdType InformationItemModel::getId(const QModelIndex& index)
 {
 	return static_cast<TreeItem*>(index.internalPointer())->_id;
 }

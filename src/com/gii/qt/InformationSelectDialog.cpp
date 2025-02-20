@@ -42,11 +42,11 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 		std::get<0>(t)->setDefaultAction(std::get<1>(t));
 		ui->treeView->addAction(std::get<1>(t));
 	}
-	connect(ui->treeView, &QTreeView::expanded, [&]() { resizeColumnsToContents(ui->treeView); });
+	connect(ui->treeView, &QTreeView::expanded, [&] { resizeColumnsToContents(ui->treeView); });
 	connect(ui->treeView, &QTreeView::clicked, [&](const QModelIndex& index) {
 		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
-			if (_mode == Gii::Multiple)
+			if (_mode == gii::Multiple)
 			{
 				m->toggleSelection(getSourceModelIndex(index));
 			}
@@ -55,7 +55,7 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 	connect(ui->treeView, &QTreeView::doubleClicked, [&](const QModelIndex& index) {
 		if (auto m = getSourceModel<InformationItemModel>(ui->treeView->model()))
 		{
-			if (_mode != Gii::Multiple)
+			if (_mode != gii::Multiple)
 			{
 				auto idx = getSourceModelIndex(index);
 				if (!m->isFolder(idx))
@@ -65,11 +65,11 @@ InformationSelectDialog::InformationSelectDialog(QWidget* parent)
 			}
 		}
 	});
-	connect(_actionCollapseAll, &QAction::triggered, [&]() { childrenExpandCollapse(false); });
-	connect(_actionExpandAll, &QAction::triggered, [&]() { childrenExpandCollapse(true); });
+	connect(_actionCollapseAll, &QAction::triggered, [&] { childrenExpandCollapse(false); });
+	connect(_actionExpandAll, &QAction::triggered, [&] { childrenExpandCollapse(true); });
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-	connect(this, &QDialog::accepted, [&]() {
+	connect(this, &QDialog::accepted, [&] {
 		if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 		{
 			auto index = getSourceModelIndex(ui->treeView->selectionModel()->selectedIndexes().first());
@@ -132,7 +132,7 @@ void InformationSelectDialog::stateSaveRestore(bool save)
 
 InformationTypes::IdVector InformationSelectDialog::getSelectedIds() const
 {
-	if (_mode == Gii::Multiple)
+	if (_mode == gii::Multiple)
 	{
 		return _itemModel->getSelectedIds();
 	}
@@ -143,7 +143,7 @@ InformationTypes::IdVector InformationSelectDialog::getSelectedIds() const
 	return {};
 }
 
-InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode mode, Gii::TypeId idType, QSettings* settings)
+InformationTypes::IdVector InformationSelectDialog::execute(gii::SelectionMode mode, gii::TypeId idType, QSettings* settings)
 {
 	_settings = settings ? settings : getGlobalSettings();
 	_mode = mode;
@@ -175,7 +175,7 @@ InformationTypes::IdVector InformationSelectDialog::execute(Gii::SelectionMode m
 
 bool InformationSelectDialog::eventFilter(QObject* watched, QEvent* event)
 {
-	if (_mode == Gii::Multiple && watched == ui->treeView && event->type() == QEvent::KeyPress)
+	if (_mode == gii::Multiple && watched == ui->treeView && event->type() == QEvent::KeyPress)
 	{
 		auto keyEvent = static_cast<QKeyEvent*>(event);
 		if (keyEvent->key() == Qt::Key_Space)

@@ -20,7 +20,7 @@ class _GII_CLASS InformationSelectDialog : public QDialog
 	public:
 		explicit InformationSelectDialog(QWidget* parent = nullptr);
 
-		InformationTypes::IdVector execute(Gii::SelectionMode mode = Gii::Single, Gii::TypeId idType = Gii::Variable, QSettings* settings = nullptr);
+		InformationTypes::IdVector execute(gii::SelectionMode mode = gii::Single, gii::TypeId idType = gii::Variable, QSettings* settings = nullptr);
 
 		[[nodiscard]] InformationTypes::IdVector getSelectedIds() const;
 
@@ -46,9 +46,9 @@ class _GII_CLASS InformationSelectDialog : public QDialog
 
 		QAction* _actionExpandAll{nullptr};
 
-		Gii::SelectionMode _mode{Gii::Single};
+		gii::SelectionMode _mode{gii::Single};
 
-		Gii::IdType _selectedId{0};
+		gii::IdType _selectedId{0};
 };
 
 }// namespace sf

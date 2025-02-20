@@ -30,9 +30,8 @@ class ScriptManagerPropertyPage : public PropertyPage
 
 		void applyPage() override;
 
-	Q_SIGNALS:
-
-		void openEditor(int index);
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void openEditor(int index);
 
 	private:
 		ScriptManagerListModel* _listModel;

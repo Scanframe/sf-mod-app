@@ -21,17 +21,17 @@ class _AMI_CLASS MultiDocInterfaceSignals : public QObject
 {
 		Q_OBJECT
 
-	Q_SIGNALS:
+	public:
 		/*
 		 * Most signals from class QPlainTextEdit are implemented.
 		 */
-		void textChanged();
-		void undoAvailable(bool b);
-		void redoAvailable(bool b);
-		void copyAvailable(bool b);
-		void selectionChanged();
-		void cursorPositionChanged();
-		void modificationChanged(bool);
+		Q_SIGNAL void textChanged();
+		Q_SIGNAL void undoAvailable(bool b);
+		Q_SIGNAL void redoAvailable(bool b);
+		Q_SIGNAL void copyAvailable(bool b);
+		Q_SIGNAL void selectionChanged();
+		Q_SIGNAL void cursorPositionChanged();
+		Q_SIGNAL void modificationChanged(bool);
 };
 
 /**

@@ -1,25 +1,14 @@
+#include "misc/qt/ApplicationSettings.h"
+
 #include <QApplication>
 #include <QDir>
-#include <QTimer>
 #include <gmi/iface/qt/AxesCoordEdit.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/qt/FormDialog.h>
 #include <misc/qt/Globals.h>
-#include <misc/qt/qt_utils.h>
-#if IS_WIN
-	#include <windows.h>
-#endif
 
 int main(int argc, char* argv[])
 {
-#if IS_WIN
-	if (!sf::isDebug())
-	{
-		// Removes the console in windows application.
-		FreeConsole();
-	}
-#endif
-
 	QApplication app(argc, argv);
 	// Ignore desktop settings because it gives the wrong icon colors.
 	QApplication::setDesktopSettingsAware(false);

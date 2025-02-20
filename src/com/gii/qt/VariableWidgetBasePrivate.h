@@ -14,7 +14,7 @@ struct VariableWidgetBase::PrivateBase : VariableHandler
 		bool _converted{false};
 		bool _readOnly{false};
 
-		void keyPressEvent(QKeyEvent* event);
+		void keyPressEvent(const QKeyEvent* event);
 
 		/**
 	 * @brief Gets the label which the passed widget has as buddy.
@@ -24,7 +24,7 @@ struct VariableWidgetBase::PrivateBase : VariableHandler
 	 * @param widget Widget which the has set as buddy.
 	 * @return When not found nullptr.
 	 */
-		QLabel* findLabelByBuddy(QWidget* widget);
+		static QLabel* findLabelByBuddy(const QWidget* widget);
 };
 
 }// namespace sf

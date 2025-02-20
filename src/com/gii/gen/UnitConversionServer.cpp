@@ -1,6 +1,5 @@
 #include "UnitConversionServer.h"
 #include <algorithm>
-#include <iostream>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/string.h>
 
@@ -8,16 +7,15 @@ namespace sf
 {
 
 UnitConversionServer::UnitConversionServer()
-	: _profile()
 {
 	// Install handler.
-	setUnitConversionHandler(UnitConversionServerClosure().assign(this, &UnitConversionServer::Handler, std::placeholders::_1));
+	setUnitConversionHandler(UnitConversionServerClosure().assign(this, &UnitConversionServer::handler, std::placeholders::_1));
 }
 
 UnitConversionServer::~UnitConversionServer()
 {
 	// Uninstall a possible previous set handler.
-	sf::setUnitConversionHandler();
+	setUnitConversionHandler();
 	// Clear the profile.
 	_profile.flush();
 }
@@ -40,12 +38,12 @@ void UnitConversionServer::setConversion(UnitConversionEvent& ev)
 		// Select the section.
 		if (_profile.setSection(getUnitSystemName(_unitSystem)))
 		{
-			auto key = std::string(ev._from_unit).append(",").append(itostr(ev._from_precision));
-			auto value = std::string(ev._to_unit)
-										 .append(",")
-										 .append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), "."))
-										 .append(",")
-										 .append(trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
+			const auto key = std::string(ev._from_unit).append(",").append(itostr(ev._from_precision));
+			const auto value = std::string(ev._to_unit)
+													 .append(",")
+													 .append(trimRight(trimRight(std::to_string(ev._multiplier), "0"), "."))
+													 .append(",")
+													 .append(trimRight(trimRight(std::to_string(ev._offset), "0"), ".").append(",").append(std::to_string(ev._to_precision)));
 			_profile.setString(key, value);
 		}
 	}
@@ -56,14 +54,14 @@ void UnitConversionServer::removeConversion(const std::string& key)
 	_profile.removeEntry(key);
 }
 
-bool UnitConversionServer::Handler(UnitConversionEvent& ev)
+bool UnitConversionServer::handler(UnitConversionEvent& ev)
 {
 	// When pass though is selected.
 	if (_unitSystem == usPassThrough)
 	{
 		return false;
 	}
-	auto section = getUnitSystemName(_unitSystem);
+	const auto section = getUnitSystemName(_unitSystem);
 	if (_profile.getSection() != section)
 	{
 		if (!_profile.setSection(section))
@@ -72,7 +70,7 @@ bool UnitConversionServer::Handler(UnitConversionEvent& ev)
 		}
 	}
 	std::string value;
-	auto key = std::string(ev._from_unit).append(1, ',').append(itostr(ev._from_precision, 10));
+	const auto key = std::string(ev._from_unit).append(1, ',').append(itostr(ev._from_precision, 10));
 	if (_profile.getString(key, value))
 	{
 		//std::clog << key << "=" << value << std::endl;
@@ -105,7 +103,7 @@ bool UnitConversionServer::Handler(UnitConversionEvent& ev)
 
 void UnitConversionServer::setUnitSystem(int us)
 {
-	_unitSystem = (UnitConversionServer::EUnitSystem) us;
+	_unitSystem = static_cast<EUnitSystem>(us);
 	if (_unitSystem != usPassThrough)
 	{
 		_profile.setSection(getUnitSystemName(_unitSystem));
@@ -120,9 +118,9 @@ UnitConversionServer::EUnitSystem UnitConversionServer::getUnitSystem() const
 const std::vector<std::pair<UnitConversionServer::EUnitSystem, const char*>>& UnitConversionServer::getUnitSystemNames()
 {
 	static auto unitSystemNames = std::vector<UnitSystemPair>{
-		{UnitConversionServer::usPassThrough, "PassThrough"},
-		{UnitConversionServer::usMetric, "Metric"},
-		{UnitConversionServer::usImperial, "Imperial"},
+		{usPassThrough, "PassThrough"},
+		{usMetric, "Metric"},
+		{usImperial, "Imperial"},
 	};
 	return unitSystemNames;
 }
@@ -130,7 +128,7 @@ const std::vector<std::pair<UnitConversionServer::EUnitSystem, const char*>>& Un
 const char* UnitConversionServer::getUnitSystemName(int us)
 {
 	auto& names = getUnitSystemNames();
-	auto it = std::find_if(names.begin(), names.end(), [us](UnitSystemPair usp) -> bool { return usp.first == us; });
+	auto it = std::find_if(names.begin(), names.end(), [us](const UnitSystemPair& usp) -> bool { return usp.first == us; });
 	if (it == names.end())
 	{
 		it = names.begin();

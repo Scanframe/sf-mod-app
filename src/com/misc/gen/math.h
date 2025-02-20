@@ -30,50 +30,53 @@ template<typename T>
 T round(T value, T rnd)
 {
 	// Prevent non-integer and non-float types from implementing this template.
-	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
-	if constexpr (std::is_integral<T>::value)
+	static_assert(std::is_arithmetic_v<T>, "Type T must be an arithmetic type.");
+	if constexpr (std::is_integral_v<T>)
 	{
-		return ((value + (rnd / T(2))) / rnd) * rnd;
+		return (value + rnd / T(2)) / rnd * rnd;
 	}
-	if constexpr (std::is_floating_point<T>::value)
+	if constexpr (std::is_floating_point_v<T>)
 	{
 		// Function 'std::floor' has al float types implemented.
 		return std::floor(value / rnd + T(0.5)) * rnd;
 	}
+	return value;
 }
 
 /**
  * @brief Calculates the offset for a given range and set point.
  */
 template<typename T, typename S>
-inline S calculateOffset(T value, T min, T max, S len, bool clip)
+S calculateOffset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;
-	S temp = (max && value) ? (std::is_floating_point<T>::value ? len * (value / max) : (len * value) / max) : 0;
+	S temp = max && value ? (std::is_floating_point_v<T> ? len * (value / max) : len * value / max) : 0;
 	// Clip when required.
 	if (clip)
 	{
 		// When the len is a negative value.
 		if (len < 0)
 		{
-			return ((temp < len) ? len : (temp > S(0)) ? S(0) : temp);
+			return temp < len ? len : temp > S(0) ? S(0) : temp;
 		}
-		else
-		{
-			return ((temp > len) ? len : (temp < S(0)) ? S(0) : temp);
-		}
+		return temp > len ? len : temp < S(0) ? S(0) : temp;
 	}
 	return temp;
 }
 
 /**
- * @brief Clips the given value of v between a and b where a < b.
+* @brief Template function clipping the given value between an upper and lower limit.
+ * @tparam T Type of the value clipped.
+ * @param value The value for being clipped.
+ * @param lower_lim Lower limit value.
+ * @param upper_lim Upper limit value.
+ * @return The clipped value.
  */
 template<typename T>
-T clip(const T v, const T a, const T b)
+T clip(const T value, const T lower_lim, const T upper_lim)
 {
-	return (v < a) ? a : ((v > b) ? b : v);
+	return value < lower_lim ? lower_lim : value > upper_lim ? upper_lim : value;
 }
 
 /**
@@ -98,22 +101,22 @@ template<typename T>
 T modulo(T k, T n)
 {
 	// Only implementations of arithmetic values are allowed.
-	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
+	static_assert(std::is_arithmetic_v<T>, "Type T must be an arithmetic type.");
 	// Distinguish between floats and integers.
-	if constexpr (std::is_floating_point<T>::value)
+	if constexpr (std::is_floating_point_v<T>)
 	{
 		// Function fmod has implementations for any floating point.
 		T r = std::fmod(k, n);
 		//if the r is less than zero, add n to put it in the [0, n-1] range if n is positive
 		//if the r is greater than zero, add n to put it in the [n-1, 0] range if n is negative
-		return ((n > 0 && r < 0) || (n < 0 && r > 0)) ? r + n : r;
+		return (n > 0 && r < 0) || (n < 0 && r > 0) ? r + n : r;
 	}
 	else
 	{
 		T r = k % n;
 		//if the r is less than zero, add n to put it in the [0, n-1] range if n is positive
 		//if the r is greater than zero, add n to put it in the [n-1, 0] range if n is negative
-		return ((n > 0 && r < 0) || (n < 0 && r > 0)) ? r + n : r;
+		return (n > 0 && r < 0) || (n < 0 && r > 0) ? r + n : r;
 	}
 }
 
@@ -126,7 +129,7 @@ T modulo(T k, T n)
 template<typename T>
 T toAbs(T v)
 {
-	static_assert(std::is_arithmetic<T>::value, "Type T must be an arithmetic type.");
+	static_assert(std::is_arithmetic_v<T>, "Type T must be an arithmetic type.");
 	if constexpr (std::is_same<T, long double>())
 	{
 		return fabsl(v);
@@ -139,7 +142,7 @@ T toAbs(T v)
 	{
 		return fabsf(v);
 	}
-	if constexpr (std::is_integral<T>::value)
+	if constexpr (std::is_integral_v<T>)
 	{
 		if constexpr (std::numeric_limits<T>::is_signed)
 		{
@@ -158,12 +161,9 @@ T toAbs(T v)
 			// Smaller integers are handled here.
 			return static_cast<T>(std::abs(v));
 		}
-		else
-		{
-			// Not a signed value return it as is.
-			return v;
-		}
 	}
+	// Not a signed value return it as is.
+	return v;
 }
 
 /**
@@ -177,7 +177,7 @@ template<typename T>
 T ipow(T base, int exponent)
 {
 	// Prevent non-integer types from implementing this template.
-	static_assert(std::is_integral<T>::value, "Type T must be an integer type.");
+	static_assert(std::is_integral_v<T>, "Type T must be an integer type.");
 	// Initialize the integer.
 	T rv{1};
 	for (;;)
@@ -204,10 +204,10 @@ T ipow(T base, int exponent)
  * @brief Converts degrees to radians.
  */
 template<typename T>
-inline constexpr T toRadians(T degrees)
+constexpr T toRadians(T degrees)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	return degrees * (numbers::pi_v<T> / 180);
 }
 
@@ -215,10 +215,10 @@ inline constexpr T toRadians(T degrees)
  * @brief Converts radians to degrees.
  */
 template<typename T>
-inline constexpr T toDegrees(T radians)
+constexpr T toDegrees(T radians)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	return radians / numbers::pi_v<T> * 180;
 }
 
@@ -231,10 +231,10 @@ inline constexpr T toDegrees(T radians)
  * @return True when near equal.
  */
 template<typename T>
-inline bool isEqual(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+bool isEqual(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	return std::abs(a - b) <= epsilon;
 }
 
@@ -242,11 +242,18 @@ inline bool isEqual(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
  * @brief Check if the passed value is zero or near zero according the given epsilon.
  */
 template<typename T>
-inline bool isZero(T value, T epsilon = std::numeric_limits<T>::epsilon())
+bool isZero(T value, T epsilon = std::numeric_limits<T>::epsilon())
 {
-	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
-	return std::fabs(value) < epsilon;
+	static_assert(std::is_arithmetic_v<T>, "Type T must be an arithmetic type.");
+	if constexpr (std::is_integral_v<T>)
+	{
+		return value == std::numeric_limits<T>::denorm_min();
+	}
+	if constexpr (std::is_floating_point_v<T>)
+	{
+		return std::fabs(value) < epsilon;
+	}
+	return false;
 }
 
 /**
@@ -359,13 +366,55 @@ _MISC_FUNC int precision(double value);
 _MISC_FUNC int digits(double value);
 
 /**
- * @brief Returns the order of magnitude of the passed value.
+ * @brief Gets the mantissa and exponent part of a floating point value.
+ * @tparam T
+ * @param value
+ * @return
+ */
+template<typename T>
+std::pair<T, int> getMantissaExponent(T value)
+{
+	// Allow only floating point values.
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
+	// Return zero for value zero.
+	if (isZero(value)) return {0, 0};
+	auto exponent = std::floor(std::log10(std::abs(value)));
+	auto mantissa = value / std::pow(10, exponent);
+	// Adjust mantissa and exponent to ensure |mantissa| is between 0.1 and 1.0
+	if (std::abs(mantissa) < 0.1)
+	{
+		mantissa *= 10;
+		exponent -= 1;
+	}
+	else if (abs(mantissa) >= 1.0)
+	{
+		mantissa /= 10;
+		exponent += 1;
+	}
+	return {mantissa, exponent};
+}
+
+/**
+ * @brief Gets the order of magnitude of the passed floating point value.
  * Examples:
  *  magnitude(0.001234) => -2
  *  magnitude(0.123400) =>  0
- *  magnitude(12340.00) =>  6
+ *  magnitude(12340.00) =>  5
  */
-_MISC_FUNC int magnitude(double value);
+template<typename T>
+int magnitude(T value)
+{
+	return getMantissaExponent(value).second;
+}
+
+/**
+ * @brief Gets the order of magnitude of the passed double value.
+ * Examples:
+ *  magnitude(0.001234) => -2
+ *  magnitude(0.123400) =>  0
+ *  magnitude(12340.00) =>  5
+ */
+_MISC_FUNC int magnitudeObsolete(double value);
 
 /**
  * @brief Gets the amount of required digits needed when drawing a scale.

@@ -1,13 +1,8 @@
 #pragma once
 #include <QAbstractProxyModel>
 #include <QComboBox>
-#include <QDataStream>
 #include <QFileDialog>
-#include <QFileInfo>
-#include <QFileSystemWatcher>
 #include <QFormLayout>
-#include <QLayout>
-#include <QMessageBox>
 #include <QMetaEnum>
 #include <QPalette>
 #include <QPoint>
@@ -103,7 +98,7 @@ inline QRect& inflate(QRect& r, int sz)
 /**
  * @brief Inflates a copy the rectangle an integer and returns it.
  */
-inline constexpr QRect inflated(const QRect& r, int sz)
+constexpr QRect inflated(const QRect& r, int sz)
 {
 	return r.adjusted(-sz, -sz, sz, sz);
 }
@@ -160,109 +155,7 @@ class _MISC_CLASS PaletteColors
 };
 
 /**
- * @brief Keeps the application up-to-date with changes in the settings file.
- *
- * Sets the styling and the color from an ini file.
- * Used to quickly create test applications.
- */
-class _MISC_CLASS ApplicationSettings : public QObject
-{
-		Q_OBJECT
-
-	public:
-		/**
-		 * @brief Constructor.
-		 */
-		explicit ApplicationSettings(QObject* parent = nullptr);
-
-		/**
-		 * @brief Destructor.
-		 */
-		~ApplicationSettings() override;
-
-		/**
-		 * @brief Sets the fileInfo
-		 */
-		void setFilepath(const QString& filepath, bool watch = false);
-
-		/**
-		 * @brief Gets the fileInfo.
-		 */
-		[[nodiscard]] const QFileInfo& fileInfo() const;
-
-		/**
-		 * @brief Sets the window position and size from the settings file onto the passed widget.
-		 * @param win_name Name of the window.
-		 * @param window Window widget.
-		 */
-		void restoreWindowRect(const QString& win_name, QWidget* window);
-
-		/**
-		 * @brief Sets the window position and size from the settings file onto the passed widget.
-		 * @param win_name Name of the window.
-		 * @param window Window widget.
-		 */
-		void saveWindowRect(const QString& win_name, QWidget* window);
-
-		void restoreTreeViewColumns(const QString& name, QTreeView* tv);
-
-		void saveTreeViewColumns(const QString& name, QTreeView* tv);
-
-	private Q_SLOTS:
-
-		/**
-		 * @brief Triggered when a watched files changes.
-		 */
-		void onFileChance(const QString& file);
-
-	private:
-		/**
-		 * @brief Called from setFilepath and the event handler.
-		 * @param watch
-		 */
-		void doStyleApplication(bool readOnly, bool watch);
-
-		/**
-		 * Save and restores the window state of the passed widget.
-		 * @param name Name of the window widget.
-		 * @param widget The window widget.
-		 * @param save True for saving and false for restoring.
-		 */
-		void windowState(const QString& name, QWidget* widget, bool save);
-
-		/**
-		 * Save and restores the columns width of the passed treeview.
-		 * @param name Name of the tree view.
-		 * @param tv The tree view.
-		 * @param save True for saving and false for restoring.
-		 */
-		void treeViewColumns(const QString& name, QTreeView* tv, bool save);
-
-		/**
-		 * @brief File watcher instance.
-		 */
-		QFileSystemWatcher* _watcher;
-		/**
-		 * @brief Holds the timestamp of the last processed and watched file.
-		 */
-		QDateTime _lastModified;
-		/**
-		 * @brief File info structure of the ini-file.
-		 */
-		QFileInfo _fileInfo;
-		/**
-		 * @brief Holds system colors from startup.
-		 *
-		 * When having a different palette then the default one the icons in the file open dialog
-		 * do not have the right color.
-		 * This class provides a solution to store the initial palette for example.
-		 */
-		PaletteColors _systemColors;
-};
-
-/**
  * @brief Connects signals by name of sender and name of signal.
- *
  * @param widget Widget having the child with the passed sender_name
  * @param sender_name Name of sender widget.
  * @param signal_name Name of signal.
@@ -278,7 +171,6 @@ _MISC_FUNC QMetaObject::Connection connectByName(
 
 /**
  * @brief Gets all the parent names from the object's parent in a string list.
- *
  * @param object Top object.
  * @return List of object names.
  */
@@ -286,11 +178,10 @@ _MISC_FUNC QStringList getObjectNamePath(const QObject* object);
 
 /**
  * @brief Gets the layout containing the passed widget.
- *
  * @param widget .
  * @return On not found nullptr.
  */
-_MISC_FUNC QLayout* getWidgetLayout(QWidget* widget);
+_MISC_FUNC QLayout* getWidgetLayout(const QWidget* widget);
 
 /**
  * @brief Turns a QT enumerate type into a named key.
@@ -307,7 +198,6 @@ static const char* enumToKey(const T value)
 
 /**
  * @brief Turns a QT enumerate typed key name into an enumerate value.
- *
  * @tparam T Enumerate type.
  * @param key Key name
  * @return Enumerate value.
@@ -320,7 +210,6 @@ static T keyToEnum(const char* key)
 
 /**
  * @brief Turns a QT enumerate typed key name into an enumerate value.
- *
  * @tparam T Enumerate type.
  * @param key Key name
  * @return Enumerate value.
@@ -333,31 +222,28 @@ static T keyToEnum(QString key)
 
 /**
  * @brief Gets the index from the passed data value of the passed combo box widget.
- *
  * @param comboBox Combo box to query on for the given value..
  * @param value Value to look the index up from.
  * @param default_index DEfault index when the value was not found.
  * @return The found index or default given one.
  */
-_MISC_FUNC int indexFromComboBox(QComboBox* comboBox, const QVariant& value, int default_index = -1);
+_MISC_FUNC int indexFromComboBox(const QComboBox* comboBox, const QVariant& value, int default_index = -1);
 
 /**
  * @brief Gets the position (row, role) from the passed target object in te form-layout.
- *
  * @param layout Form layout.
  * @param target QLayout or QWidget type of object.
  * @return Pair of values (row, role),. On failure row = -1.
  */
-_MISC_FUNC QPair<int, QFormLayout::ItemRole> getLayoutPosition(QFormLayout* layout, QObject* target);
+_MISC_FUNC QPair<int, QFormLayout::ItemRole> getLayoutPosition(const QFormLayout* layout, QObject* target);
 
 /**
  * @brief Gets the index from the passed target object in te box-layout.
- *
  * @param layout Box-layout.
  * @param target QLayout(Item or QWidget type of object.
  * @return Index position.
  */
-_MISC_FUNC int getLayoutIndex(QBoxLayout* layout, QObject* target);
+_MISC_FUNC int getLayoutIndex(const QBoxLayout* layout, QObject* target);
 
 /**
  * @brief Resizes all columns to content of a tree view except the last column.
@@ -365,7 +251,7 @@ _MISC_FUNC int getLayoutIndex(QBoxLayout* layout, QObject* target);
  */
 inline void resizeColumnsToContents(QTreeView* treeView)
 {
-	auto count = treeView->model()->columnCount({}) - 1;
+	const auto count = treeView->model()->columnCount({}) - 1;
 	for (int i = 0; i < count; i++)
 	{
 		treeView->resizeColumnToContents(i);
@@ -373,13 +259,12 @@ inline void resizeColumnsToContents(QTreeView* treeView)
 }
 
 /**
- * @brief Dumps the object properties in qDebug().
+ * @brief Dumps all the object properties in qDebug().
  */
-_MISC_FUNC void dumpObjectProperties(QObject* obj);
+_MISC_FUNC void dumpObjectProperties(const QObject* obj);
 
 /**
  * @brief Gets the model type pointer from the passed abstract model pointer.
- *
  * @tparam T Model type derived from QAbstractItemModel
  * @param am Pointer to model.
  * @return Non-null when found.
@@ -393,7 +278,7 @@ T* getSourceModel(const QAbstractItemModel* am)
 		return const_cast<T*>(m);
 	}
 	// Secondly, when a proxy is used.
-	if (auto apm = dynamic_cast<const QAbstractProxyModel*>(am))
+	if (const auto apm = dynamic_cast<const QAbstractProxyModel*>(am))
 	{
 		if (auto m = dynamic_cast<T*>(apm->sourceModel()))
 		{

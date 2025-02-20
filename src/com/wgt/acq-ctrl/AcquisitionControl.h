@@ -1,11 +1,10 @@
 #pragma once
 
-#include <bitset>
-#include <QtUiPlugin/QDesignerExportWidget>
 #include <QWidget>
-#include <misc/qt/ObjectExtension.h>
-#include <misc/qt/Macros.h>
+#include <QtUiPlugin/QDesignerExportWidget>
 #include <gii/qt/Macros.h>
+#include <misc/qt/Macros.h>
+#include <misc/qt/ObjectExtension.h>
 
 class QStyleOptionFrame;
 
@@ -14,9 +13,11 @@ class QPaintEvent;
 namespace sf
 {
 
-class AcquisitionControl :public QWidget, public ObjectExtension
+class AcquisitionControl
+	: public QWidget
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		explicit AcquisitionControl(QWidget* parent = nullptr);
@@ -47,7 +48,6 @@ class AcquisitionControl :public QWidget, public ObjectExtension
 		void mouseMoveEvent(QMouseEvent* event) override;
 
 	public:
-
 		Q_PROPERTY(int gripHeight READ getGripHeight WRITE setGripHeight)
 
 		SF_DECL_PROP_GS(int, GripHeight)
@@ -99,167 +99,167 @@ class AcquisitionControl :public QWidget, public ObjectExtension
 		SF_DECL_PROP_GS(QColor, ColorGridLines)
 
 		// Period time of the sample frequency of the results.
-		Q_PROPERTY(sf::Gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
+		Q_PROPERTY(sf::gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
 
 		SF_DECL_INFO_ID(IdTimeUnit)
 
-		Q_PROPERTY(sf::Gii::IdType idGateCount READ getIdGateCount WRITE setIdGateCount)
+		Q_PROPERTY(sf::gii::IdType idGateCount READ getIdGateCount WRITE setIdGateCount)
 
 		SF_DECL_INFO_ID(IdGateCount)
 
-		Q_PROPERTY(sf::Gii::IdType idIfShift READ getIdIfShift WRITE setIdIfShift)
+		Q_PROPERTY(sf::gii::IdType idIfShift READ getIdIfShift WRITE setIdIfShift)
 
 		SF_DECL_INFO_ID(IdIfShift)
 
 		// A-scan data source
-		Q_PROPERTY(sf::Gii::IdType idCopyData READ getIdCopyData WRITE setIdCopyData)
+		Q_PROPERTY(sf::gii::IdType idCopyData READ getIdCopyData WRITE setIdCopyData)
 
 		SF_DECL_INFO_ID(IdCopyData)
 
 		// A-scan data and redirection index.
-		Q_PROPERTY(sf::Gii::IdType idCopyIndex READ getIdCopyIndex WRITE setIdCopyIndex)
+		Q_PROPERTY(sf::gii::IdType idCopyIndex READ getIdCopyIndex WRITE setIdCopyIndex)
 
 		SF_DECL_INFO_ID(IdCopyIndex)
 
 		// A-scan delay and range.
-		Q_PROPERTY(sf::Gii::IdType idCopyDelay READ getIdCopyDelay WRITE setIdCopyDelay)
+		Q_PROPERTY(sf::gii::IdType idCopyDelay READ getIdCopyDelay WRITE setIdCopyDelay)
 
 		SF_DECL_INFO_ID(IdCopyDelay)
 
-		Q_PROPERTY(sf::Gii::IdType idCopyRange READ getIdCopyRange WRITE setIdCopyRange)
+		Q_PROPERTY(sf::gii::IdType idCopyRange READ getIdCopyRange WRITE setIdCopyRange)
 
 		SF_DECL_INFO_ID(IdCopyRange)
 
 		// TCG parameters
-		Q_PROPERTY(sf::Gii::IdType idTcgEnable READ getIdTcgEnable WRITE setIdTcgEnable)
+		Q_PROPERTY(sf::gii::IdType idTcgEnable READ getIdTcgEnable WRITE setIdTcgEnable)
 
 		SF_DECL_INFO_ID(IdTcgEnable)
 
-		Q_PROPERTY(sf::Gii::IdType idTcgDelay READ getIdTcgDelay WRITE setIdTcgDelay)
+		Q_PROPERTY(sf::gii::IdType idTcgDelay READ getIdTcgDelay WRITE setIdTcgDelay)
 
 		SF_DECL_INFO_ID(IdTcgDelay)
 
-		Q_PROPERTY(sf::Gii::IdType idTcgRange READ getIdTcgRange WRITE setIdTcgRange)
+		Q_PROPERTY(sf::gii::IdType idTcgRange READ getIdTcgRange WRITE setIdTcgRange)
 
 		SF_DECL_INFO_ID(IdTcgRange)
 
-		Q_PROPERTY(sf::Gii::IdType idTcgSlavedTo READ getIdTcgSlavedTo WRITE setIdTcgSlavedTo)
+		Q_PROPERTY(sf::gii::IdType idTcgSlavedTo READ getIdTcgSlavedTo WRITE setIdTcgSlavedTo)
 
 		SF_DECL_INFO_ID(IdTcgSlavedTo)
 
 		// Gate 0 (If??)
-		Q_PROPERTY(sf::Gii::IdType idGate0Delay READ getIdGate0Delay WRITE setIdGate0Delay)
+		Q_PROPERTY(sf::gii::IdType idGate0Delay READ getIdGate0Delay WRITE setIdGate0Delay)
 
 		SF_DECL_INFO_ID(IdGate0Delay)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0Range READ getIdGate0Range WRITE setIdGate0Range)
+		Q_PROPERTY(sf::gii::IdType idGate0Range READ getIdGate0Range WRITE setIdGate0Range)
 
 		SF_DECL_INFO_ID(IdGate0Range)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0Threshold READ getIdGate0Threshold WRITE setIdGate0Threshold)
+		Q_PROPERTY(sf::gii::IdType idGate0Threshold READ getIdGate0Threshold WRITE setIdGate0Threshold)
 
 		SF_DECL_INFO_ID(IdGate0Threshold)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0SlavedTo READ getIdGate0SlavedTo WRITE setIdGate0SlavedTo)
+		Q_PROPERTY(sf::gii::IdType idGate0SlavedTo READ getIdGate0SlavedTo WRITE setIdGate0SlavedTo)
 
 		SF_DECL_INFO_ID(IdGate0SlavedTo)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0TrackRange READ getIdGate0TrackRange WRITE setIdGate0TrackRange)
+		Q_PROPERTY(sf::gii::IdType idGate0TrackRange READ getIdGate0TrackRange WRITE setIdGate0TrackRange)
 
 		SF_DECL_INFO_ID(IdGate0TrackRange)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0Tof READ getIdGate0Tof WRITE setIdGate0Tof)
+		Q_PROPERTY(sf::gii::IdType idGate0Tof READ getIdGate0Tof WRITE setIdGate0Tof)
 
 		SF_DECL_INFO_ID(IdGate0Tof)
 
-		Q_PROPERTY(sf::Gii::IdType idGate0Amp READ getIdGate0Amp WRITE setIdGate0Amp)
+		Q_PROPERTY(sf::gii::IdType idGate0Amp READ getIdGate0Amp WRITE setIdGate0Amp)
 
 		SF_DECL_INFO_ID(IdGate0Amp)
 
 		// Gate 1 (If??)
-		Q_PROPERTY(sf::Gii::IdType idGate1Delay READ getIdGate1Delay WRITE setIdGate1Delay)
+		Q_PROPERTY(sf::gii::IdType idGate1Delay READ getIdGate1Delay WRITE setIdGate1Delay)
 
 		SF_DECL_INFO_ID(IdGate1Delay)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1Range READ getIdGate1Range WRITE setIdGate1Range)
+		Q_PROPERTY(sf::gii::IdType idGate1Range READ getIdGate1Range WRITE setIdGate1Range)
 
 		SF_DECL_INFO_ID(IdGate1Range)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1Threshold READ getIdGate1Threshold WRITE setIdGate1Threshold)
+		Q_PROPERTY(sf::gii::IdType idGate1Threshold READ getIdGate1Threshold WRITE setIdGate1Threshold)
 
 		SF_DECL_INFO_ID(IdGate1Threshold)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1SlavedTo READ getIdGate1SlavedTo WRITE setIdGate1SlavedTo)
+		Q_PROPERTY(sf::gii::IdType idGate1SlavedTo READ getIdGate1SlavedTo WRITE setIdGate1SlavedTo)
 
 		SF_DECL_INFO_ID(IdGate1SlavedTo)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1TrackRange READ getIdGate1TrackRange WRITE setIdGate1TrackRange)
+		Q_PROPERTY(sf::gii::IdType idGate1TrackRange READ getIdGate1TrackRange WRITE setIdGate1TrackRange)
 
 		SF_DECL_INFO_ID(IdGate1TrackRange)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1Tof READ getIdGate1Tof WRITE setIdGate1Tof)
+		Q_PROPERTY(sf::gii::IdType idGate1Tof READ getIdGate1Tof WRITE setIdGate1Tof)
 
 		SF_DECL_INFO_ID(IdGate1Tof)
 
-		Q_PROPERTY(sf::Gii::IdType idGate1Amp READ getIdGate1Amp WRITE setIdGate1Amp)
+		Q_PROPERTY(sf::gii::IdType idGate1Amp READ getIdGate1Amp WRITE setIdGate1Amp)
 
 		SF_DECL_INFO_ID(IdGate1Amp)
 
 		// Gate 2 (If??)
-		Q_PROPERTY(sf::Gii::IdType idGate2Delay READ getIdGate2Delay WRITE setIdGate2Delay)
+		Q_PROPERTY(sf::gii::IdType idGate2Delay READ getIdGate2Delay WRITE setIdGate2Delay)
 
 		SF_DECL_INFO_ID(IdGate2Delay)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2Range READ getIdGate2Range WRITE setIdGate2Range)
+		Q_PROPERTY(sf::gii::IdType idGate2Range READ getIdGate2Range WRITE setIdGate2Range)
 
 		SF_DECL_INFO_ID(IdGate2Range)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2Threshold READ getIdGate2Threshold WRITE setIdGate2Threshold)
+		Q_PROPERTY(sf::gii::IdType idGate2Threshold READ getIdGate2Threshold WRITE setIdGate2Threshold)
 
 		SF_DECL_INFO_ID(IdGate2Threshold)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2SlavedTo READ getIdGate2SlavedTo WRITE setIdGate2SlavedTo)
+		Q_PROPERTY(sf::gii::IdType idGate2SlavedTo READ getIdGate2SlavedTo WRITE setIdGate2SlavedTo)
 
 		SF_DECL_INFO_ID(IdGate2SlavedTo)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2TrackRange READ getIdGate2TrackRange WRITE setIdGate2TrackRange)
+		Q_PROPERTY(sf::gii::IdType idGate2TrackRange READ getIdGate2TrackRange WRITE setIdGate2TrackRange)
 
 		SF_DECL_INFO_ID(IdGate2TrackRange)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2Tof READ getIdGate2Tof WRITE setIdGate2Tof)
+		Q_PROPERTY(sf::gii::IdType idGate2Tof READ getIdGate2Tof WRITE setIdGate2Tof)
 
 		SF_DECL_INFO_ID(IdGate2Tof)
 
-		Q_PROPERTY(sf::Gii::IdType idGate2Amp READ getIdGate2Amp WRITE setIdGate2Amp)
+		Q_PROPERTY(sf::gii::IdType idGate2Amp READ getIdGate2Amp WRITE setIdGate2Amp)
 
 		SF_DECL_INFO_ID(IdGate2Amp)
 
 		// Gate 3 (If??)
-		Q_PROPERTY(sf::Gii::IdType idGate3Delay READ getIdGate3Delay WRITE setIdGate3Delay)
+		Q_PROPERTY(sf::gii::IdType idGate3Delay READ getIdGate3Delay WRITE setIdGate3Delay)
 
 		SF_DECL_INFO_ID(IdGate3Delay)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3Range READ getIdGate3Range WRITE setIdGate3Range)
+		Q_PROPERTY(sf::gii::IdType idGate3Range READ getIdGate3Range WRITE setIdGate3Range)
 
 		SF_DECL_INFO_ID(IdGate3Range)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3Threshold READ getIdGate3Threshold WRITE setIdGate3Threshold)
+		Q_PROPERTY(sf::gii::IdType idGate3Threshold READ getIdGate3Threshold WRITE setIdGate3Threshold)
 
 		SF_DECL_INFO_ID(IdGate3Threshold)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3SlavedTo READ getIdGate3SlavedTo WRITE setIdGate3SlavedTo)
+		Q_PROPERTY(sf::gii::IdType idGate3SlavedTo READ getIdGate3SlavedTo WRITE setIdGate3SlavedTo)
 
 		SF_DECL_INFO_ID(IdGate3SlavedTo)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3TrackRange READ getIdGate3TrackRange WRITE setIdGate3TrackRange)
+		Q_PROPERTY(sf::gii::IdType idGate3TrackRange READ getIdGate3TrackRange WRITE setIdGate3TrackRange)
 
 		SF_DECL_INFO_ID(IdGate3TrackRange)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3Tof READ getIdGate3Tof WRITE setIdGate3Tof)
+		Q_PROPERTY(sf::gii::IdType idGate3Tof READ getIdGate3Tof WRITE setIdGate3Tof)
 
 		SF_DECL_INFO_ID(IdGate3Tof)
 
-		Q_PROPERTY(sf::Gii::IdType idGate3Amp READ getIdGate3Amp WRITE setIdGate3Amp)
+		Q_PROPERTY(sf::gii::IdType idGate3Amp READ getIdGate3Amp WRITE setIdGate3Amp)
 
 		SF_DECL_INFO_ID(IdGate3Amp)
 
@@ -279,4 +279,4 @@ class AcquisitionControl :public QWidget, public ObjectExtension
 		void initStyleOption(QStyleOptionFrame* option) const;
 };
 
-}
+}// namespace sf

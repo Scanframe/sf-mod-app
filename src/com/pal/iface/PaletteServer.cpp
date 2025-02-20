@@ -52,7 +52,7 @@ void PaletteServer::paint(QPainter& painter, const QRect& bounds) const
 	// Fill the data list with incremental values from 0 to colors used.
 	std::iota(std::begin(data), std::end(data), 0);
 	// Create grayscale image from the data.
-	QImage image((const uchar*) data.data(), _colorsUsed, 1, _colorsUsed, QImage::Format_Grayscale8);
+	const QImage image(static_cast<const uchar*>(data.data()), _colorsUsed, 1, _colorsUsed, QImage::Format_Grayscale8);
 	if (_implementation)
 	{
 		// Convert the image to an 8-bit indexed format and set the color table for each index.
@@ -94,6 +94,8 @@ void PaletteServer::setColorCount(int colorsUsed, int colorsSize)
 	{
 		colorsSize = 256;
 	}
+	// Colors used can exceed the color size.
+	colorsUsed = clip(colorsUsed, 0, colorsSize);
 	// Compare the values if a change happened.
 	if (_colorsUsed != colorsUsed || _colorsSize != colorsSize)
 	{
@@ -128,15 +130,19 @@ bool PaletteServer::createImplementation(const std::string& name)
 	}
 	if (!name.empty())
 	{
+		// Callback function from the implementation.
+		const auto cb = PaletteInterface::Parameters::Callback([&] {
+			// Make a call to getColorTable() generate a new local copy.
+			_flagGenerate = true;
+			// Signal a change.
+			Q_EMIT changed(this);
+		});
 		// Create a new implementation of a registered class.
-		_implementation = PaletteInterface::Interface().create(name, PaletteInterface::Parameters(PaletteInterface::Parameters::Callback([&]() {
-																														 // Make a call to getColorTable() generate a new local copy.
-																														 _flagGenerate = true;
-																														 // Signal a change.
-																														 Q_EMIT changed(this);
-																													 })));
+		_implementation = PaletteInterface::Interface().create(name, PaletteInterface::Parameters(cb));
 		if (_implementation)
 		{
+			// Update the implementation sizes.
+			_implementation->setSizes(_colorsUsed, _colorsSize);
 			// Make a call to getColorTable() generate a new local copy.
 			_flagGenerate = true;
 			// Signal a change.

@@ -79,8 +79,9 @@ class LayoutEditor
 		 */
 		void documentModified();
 
-	Q_SIGNALS:
-		void objectSelected(QObject* obj);
+	public:
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void objectSelected(QObject* obj);
 
 	protected:
 		void closeEvent(QCloseEvent* event) override;

@@ -708,10 +708,10 @@ class _GII_CLASS Variable
 		/**
 		 * @brief Gets current converted value in default formatted string or state.
 		 * When a temporary value is used that value is returned.
-		 * @param states Determines if a state string name is to be used.
+		 * @param use_states Determines if a state string name is to be used.
 		 * @return String of the value.
 		 */
-		[[nodiscard]] std::string getCurString(bool states = true) const;
+		[[nodiscard]] std::string getCurString(bool use_states = true) const;
 
 		/**
 		 * @brief Gets the setup std::string for this variable.

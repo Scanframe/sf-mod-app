@@ -1,8 +1,9 @@
 int counter = 0;
 // Create variable object.
 object vFollowersEnabled = Variable("0x5,Unit Conversion|Followers Enabled,,ASP,,INTEGER,,1,1,0,1,Off=0,On=1");
-object vSoundVelocity = Variable("0x10,Unit Conversion|Sound Velocity,m/s,ASP,Sound velocity setting,FLOAT,,1,3123,0,10000");
-object vTimeOfFlight = Variable("0x100,Unit Conversion|Time of Flight,s,ASP,High speed velocity setting,FLOAT,,1e-6,12e-6,0,100e-6");
+object vSoundVelocity = Variable("0x10,Unit Conversion|Sound Velocity Water,m/s,ASP,Sound velocity of water.,FLOAT,,1,1481,0,10000");
+object vSoundVelocityMedium = Variable("0x11,Unit Conversion|Sound Velocity Medium,m/s,ASP,Sound velocity of the medium.,FLOAT,,1,3125,0,10000");
+object vTimeOfFlight = Variable("0x100,Unit Conversion|Time of Flight,s,ASP,High speed velocity setting.,FLOAT,,1e-6,12e-6,0,100e-6");
 
 object vIfGateDelay = Variable(0x20442);
 

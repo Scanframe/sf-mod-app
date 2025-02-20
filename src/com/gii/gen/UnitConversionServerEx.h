@@ -10,9 +10,9 @@ namespace sf
 /**
  * @brief Extended #UnitConversionServer with master and slaved variables.
  */
-class _GII_CLASS UnitConversionServerEx
+class _GII_CLASS UnitConversionServerEx final
 	: public UnitConversionServer
-	, private VariableHandler
+	, VariableHandler
 {
 	public:
 		/**
@@ -76,7 +76,7 @@ class _GII_CLASS UnitConversionServerEx
 		 * @param var Variable ofg which the owner is taken.
 		 * @param regular When True the variable is not checked against the mapped entries.
 		 */
-		void convertVariable(Variable& var, bool regular = false);
+		void convertVariable(const Variable& var, bool regular = false);
 
 		/**
 		 * @brief Generates a lookup table and resets the existing conversion values.
@@ -92,13 +92,13 @@ class _GII_CLASS UnitConversionServerEx
 		/**
 		 * @brief Gets the name of the followers section.
 		 */
-		[[nodiscard]] const char* getFollowersSectionName() const;
+		[[nodiscard]] static const char* getFollowersSectionName();
 
 	protected:
 		/**
 		 * @brief Overridden from base class to intercept conversion failure.
 		 */
-		bool Handler(UnitConversionEvent& ev) override;
+		bool handler(UnitConversionEvent& ev) override;
 
 	private:
 		/**
@@ -118,31 +118,52 @@ class _GII_CLASS UnitConversionServerEx
 		/**
 		 * @brief Entry binding a slave variables to master variable.
 		 */
-		class Entry : private VariableHandler
+		class Entry final : VariableHandler
 		{
 			public:
-				// Constructor.
+				/**
+				 * @brief  Constructor.
+				 * @param owner
+				 */
 				explicit Entry(UnitConversionServerEx* owner);
 
-				// Holds the owner of this instance.
+				/**
+				 * @brief Holds the owner of this instance.
+				 */
 				UnitConversionServerEx* _owner;
-				// Holds dependable variable for this list.
+				/**
+				 * @brief Holds dependable variable for this list.
+				 */
 				Variable _vMaster;
-				// Integer lists for holding the ID's needed for conversion.
+				/**
+				 * @brief Integer lists for holding the ID's needed for conversion.
+				 */
 				std::vector<Variable::id_type> _ids;
-				// Unit after conversion.
+				/**
+				 * @brief Unit after conversion.
+				 */
 				std::string _unit;
-				// Script used to in the calculation.
+				/**
+				 * @brief Script used to in the calculation.
+				 */
 				std::string _script;
 
-				// Sets the conversion values on all existing ID's.
+				/**
+				 * @brief Sets the conversion values on all existing ID's.
+				 */
 				void updateConversion();
 
-				// Converts a variable dependency information and returns false when unable to do so.
-				bool convertVariable(Variable& var) const;
+				/**
+				 * @brief Converts a variable dependency information
+				 * @param var The variable instance.
+				 * @return False when unable to do so.
+				 */
+				bool convertVariable(const Variable& var) const;
 
 			private:
-				// Implement abstract method from base class.
+				/**
+				 * @brief Implement abstract method from base class.
+				 */
 				void variableEventHandler(EEvent event, const Variable& call_var, Variable& link_var, bool same_inst) override;
 		};
 

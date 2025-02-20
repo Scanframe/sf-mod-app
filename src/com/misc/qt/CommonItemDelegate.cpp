@@ -1,17 +1,16 @@
 #include "CommonItemDelegate.h"
 #include "Editor.h"
 #include "Resource.h"
-#include "gen/Locale.h"
 #include "gen/dbgutils.h"
 #include "gen/math.h"
 #include "qt_utils.h"
-
 #include <QAction>
 #include <QColorDialog>
 #include <QComboBox>
 #include <QKeySequenceEdit>
 #include <QLineEdit>
 #include <QListView>
+#include <QPainter>
 #include <QPlainTextEdit>
 #include <QSpinBox>
 #include <QStandardItemModel>
@@ -347,6 +346,43 @@ void CommonItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 void CommonItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	editor->setGeometry(option.rect);
+}
+
+void CommonItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+	// Set the desired readonly color when enabled.
+	if (!(option.state & QStyle::State_Enabled))
+	{
+		QStyledItemDelegate::paint(painter, option, index);
+		return;
+	}
+	// Create a copy of the passed option to modify.
+	auto opt = option;
+	// Check the text color for this.
+	const auto color = index.model()->data(index, TextColorRole);
+	if (color.isValid())
+	{
+		if (color.typeId() == QMetaType::Type::Int)
+		{
+			opt.palette.setColor(QPalette::Text, option.palette.color(color.value<QPalette::ColorRole>()));
+		}
+		if (color.typeId() == QMetaType::Type::QColor)
+		{
+			opt.palette.setColor(QPalette::Text, color.value<QColor>());
+		}
+	}
+	//
+	const auto align = index.model()->data(index, AlignmentRole);
+	if (align.isValid())
+	{
+		if (align.typeId() == QMetaType::Type::Int)
+		{
+			// Remove all horizontal alignment flags.
+			opt.displayAlignment &= ~Qt::AlignmentFlag::AlignHorizontal_Mask;
+			opt.displayAlignment |= align.value<Qt::AlignmentFlag>();
+		}
+	}
+	QStyledItemDelegate::paint(painter, opt, index);
 }
 
 }// namespace sf

@@ -1,6 +1,5 @@
 #include "AcquisitionControlPrivate.h"
 #include "AcquisitionControl.h"
-#include <QLabel>
 #include <QToolTip>
 #include <misc/gen/TDynamicBuffer.h>
 #include <misc/gen/dbgutils.h>
@@ -13,11 +12,11 @@ namespace sf
 
 AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	: _w(widget)
-	, _sustainEntry(this, &AcquisitionControl::Private::sustain)
+	, _sustainEntry(this, &Private::sustain)
+	, _timeoutTimer{TimeSpec(1.0)}
 	, _infoWindow(new HintWindow(_w))
 	, _idsTcgTime(_tcg.TimeVars)
 	, _idsTcgGain(_tcg.GainVars)
-	, _timeoutTimer{TimeSpec(1.0)}
 	, _debug(false)
 {
 	// Make the widget get focus when clicked in.
@@ -33,7 +32,7 @@ AcquisitionControl::Private::Private(AcquisitionControl* widget)
 	//
 	for (int i = 0; i < MaxGates; i++)
 	{
-		Gate& gt(_gates[i]);
+		GateData& gt(_gates[i]);
 		// Set the structures gate number for reference.
 		gt.Gate = i;
 		// Set handlers and set the data pointer for gate variables.
@@ -103,7 +102,7 @@ void AcquisitionControl::Private::invalidate(const QRect& rect) const
 	}
 }
 
-void AcquisitionControl::Private::propertyChange(void* field)
+void AcquisitionControl::Private::propertyChange(const void* field)
 {
 	if (field == &_gripHeight)
 	{
@@ -199,7 +198,7 @@ bool AcquisitionControl::Private::getDisplayRangeVert(sdata_type& minVal, sdata_
 		// When the maximum allowed value is zero it means it is not an active property.
 		if (!_valueMax)
 		{
-			minVal = -(sdata_type) _rCopyData.getValueOffset();
+			minVal = -static_cast<sdata_type>(_rCopyData.getValueOffset());
 			maxVal = static_cast<sdata_type>(_rCopyData.getValueRange() - _rCopyData.getValueOffset());
 		}
 		else
@@ -224,15 +223,15 @@ void AcquisitionControl::Private::setLeftRuler()
 {
 	// When the copy data result is available.
 	Value::flt_type minVal, maxVal;
-	Value::flt_type step = 1.0;
 	if (getDisplayRangeVert(minVal, maxVal))
 	{
+		constexpr Value::flt_type step = 1.0;
 		// Set the left ruler according the maximum value.
-		_graph.setRuler(sf::Draw::roLeft, minVal, maxVal, requiredDigits(step, minVal, maxVal), "Amp");
+		_graph.setRuler(Draw::roLeft, minVal, maxVal, requiredDigits(step, minVal, maxVal), "Amp");
 	}
 	else
 	{
-		_graph.setRuler(sf::Draw::roLeft, 0, 100, 1, "n/a");
+		_graph.setRuler(Draw::roLeft, 0, 100, 1, "n/a");
 	}
 	_w->update();
 }
@@ -256,7 +255,8 @@ void AcquisitionControl::Private::setBottomRuler()
 {
 	// Get the unit of the ascan.
 	std::string unit = "x";
-	Value::flt_type start{0.0}, range{100.0}, step{1.0};
+	Value::flt_type start{0.0}, range{100.0};
+	constexpr Value::flt_type step{1.0};
 	// When the range of the copy result id is specified the that value is used to calculate the range of plot.
 	if (_vCopyRange.getId())
 	{
@@ -301,7 +301,7 @@ void AcquisitionControl::Private::setBottomRuler()
 		unit = "x";
 	}
 	// Set bottom ruler.
-	_graph.setRuler(sf::Draw::roBottom, start, start + range, requiredDigits(step, start, range), QString::fromStdString(unit));
+	_graph.setRuler(Draw::roBottom, start, start + range, requiredDigits(step, start, range), QString::fromStdString(unit));
 	// Refresh the whole graph.
 	_w->update();
 }
@@ -314,14 +314,14 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 		return true;
 	}
 	// Get fast local copy of data properties.
-	size_type blockSize = _rCopyData.getBlockSize();
-	size_type typeSize = _rCopyData.getTypeSize();
+	const size_type blockSize = _rCopyData.getBlockSize();
+	const size_type typeSize = _rCopyData.getTypeSize();
 	// Get the start for reading.
-	size_type ofs = range.getStop() - 1;
+	const size_type ofs = range.getStop() - 1;
 	// Create a temporary buffer for reading.
 	DynamicBuffer buffer(_rCopyData.getBufferSize(1));
 	// Size the polygon to the required size.
-	_polygon.resize(static_cast<qsizetype>(blockSize));
+	_polygon.resize(blockSize);
 	// On read success.
 	if (!_rCopyData.blockRead(ofs, 1, buffer.data()))
 	{
@@ -331,24 +331,22 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 	{
 		if (!_valueMax)
 		{
-			auto maxValue = _rCopyData.getValueRange();
+			const auto maxValue = _rCopyData.getValueRange();
 			// Update the last range.
 			_lastRange = range;
 			// Get temporary values for the width and height.
-			QRect bounds = _graph.getPlotArea();
+			const QRect bounds = _graph.getPlotArea();
 			// Get fast temporary values for width and height of the plot bounds.
-			int width = bounds.width();
-			int height = bounds.height() - 1;
+			const int width = bounds.width();
+			const int height = bounds.height() - 1;
 			//
-			data_type y;
-			int px, py;
 			for (int x = 0; x < blockSize; x++)
 			{
 				// Get a value from the buffer.
-				y = _rCopyData.getValueU(buffer.data(typeSize * x));
+				data_type y = _rCopyData.getValueU(buffer.data(typeSize * x));
 				// Scale into the bounds of the plot.
-				px = calculateOffset<size_type, int>(x, 0, blockSize - 1, width, true);
-				py = calculateOffset<size_type, int>(y, 0, maxValue - 1, height, true);
+				int px = calculateOffset<size_type, int>(x, 0, blockSize - 1, width, true);
+				int py = calculateOffset<size_type, int>(y, 0, maxValue - 1, height, true);
 				//
 				// Invert the value.
 				py = height - py;
@@ -383,25 +381,23 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 		else
 		{
 			// Determine the maximum value to use.
-			int maxVal = _valueMax;
-			int minVal = (_rCopyData.getValueOffset()) ? -_valueMax : 0;
+			const int maxVal = _valueMax;
+			const int minVal = _rCopyData.getValueOffset() ? -_valueMax : 0;
 			// Update the last range.
 			_lastRange = range;
 			// Get temporary values for the width and height.
-			QRect bounds = _graph.getPlotArea();
+			const QRect bounds = _graph.getPlotArea();
 			// Get fast temporary values for width and height of the plot bounds.
-			int width = bounds.width() - 1;
-			int height = bounds.height() - 1;
+			const int width = bounds.width() - 1;
+			const int height = bounds.height() - 1;
 			//
-			ResultData::sdata_type y;
-			int px, py;
-			for (ResultData::size_type x = 0; x < blockSize; x++)
+			for (size_type x = 0; x < blockSize; x++)
 			{
 				// Get a value from the buffer.
-				y = _rCopyData.getValue(buffer.data(typeSize * x));
+				sdata_type y = _rCopyData.getValue(buffer.data(typeSize * x));
 				// Scale into the bounds of the plot.
-				px = calculateOffset<size_type, int>(x, 0L, blockSize, width, true);
-				py = height - calculateOffset<size_type, int>(y, minVal, maxVal, height, true);
+				int px = calculateOffset<size_type, int>(x, 0L, blockSize, width, true);
+				int py = height - calculateOffset<size_type, int>(y, minVal, maxVal, height, true);
 				//
 				_polygon.append(QPoint(px, py));
 			}
@@ -414,19 +410,19 @@ bool AcquisitionControl::Private::generateCopyData(const Range& range)
 void AcquisitionControl::Private::generatePeakData()
 {
 	// Get temporary values for the width and height.
-	QRect bounds = _graph.getPlotArea();
+	const QRect bounds = _graph.getPlotArea();
 	// Get fast temporary values for width and height of the plot bounds.
-	int width = bounds.width() - 1;
-	int height = bounds.height() - 1;
+	const int width = bounds.width() - 1;
+	const int height = bounds.height() - 1;
 	// Get fast local copies.
-	double delay = _vCopyDelay.getCur().getFloat();
-	double range = _vCopyRange.getCur().getFloat();
-	double sampleTime = _vTimeUnit.getId() ? _vTimeUnit.getCur().getFloat() : 1.0;
+	const double delay = _vCopyDelay.getCur().getFloat();
+	const double range = _vCopyRange.getCur().getFloat();
+	const double sampleTime = _vTimeUnit.getId() ? _vTimeUnit.getCur().getFloat() : 1.0;
 	// Scale peak values in the plot area.
 	for (unsigned i = 0; i < _gateCount; i++)
 	{
 		// Local reference.
-		Gate& gi(_gates[i]);
+		GateData& gi(_gates[i]);
 		// Clear the screen position.
 		gi.PeakPos = {0, 0};
 		// Check if TOF value was present and read.
@@ -462,7 +458,7 @@ void AcquisitionControl::Private::generatePeakData()
 		// Check if AMP value was present.
 		if (gi.FlagAmp)
 		{
-			ResultData::sdata_type minVal{0}, maxVal{0};
+			sdata_type minVal{0}, maxVal{0};
 			// Check if the display range could be established.
 			if (getDisplayRangeVert(minVal, maxVal))
 			{
@@ -480,7 +476,7 @@ void AcquisitionControl::Private::generatePeakData()
 			else
 			{
 				// Get the current gate amplitude result value range to scale the peak on the screen to.
-				auto maxValRng = gi.RAmp.getValueRange();
+				const auto maxValRng = gi.RAmp.getValueRange();
 				gi.PeakPos.setY(height - calculateOffset<data_type, int>(gi.PeakAmp, 0, maxValRng, height, true));
 			}
 		}
@@ -493,7 +489,7 @@ void AcquisitionControl::Private::generateTcgData(int point)
 	if (point < 0)
 	{
 		// When the TCG enable variable is not enabled bail here.
-		bool disabled = _vTcgEnable.getId() && _vTcgEnable.getCur().isZero();
+		const bool disabled = _vTcgEnable.getId() && _vTcgEnable.getCur().isZero();
 		// Adjust the point list to the maximum ID's in the list.
 		// Because both ID's must be available.
 		Variable::PtrVector::size_type count = 0;
@@ -536,27 +532,24 @@ void AcquisitionControl::Private::generateTcgData(int point)
 			// bail out here.
 			return;
 		}
-		else
-		{
-			// Resize the points vector for drawing and add one extra for the starting point of a poly line.
-			_tcg.Points.resize((qsizetype) count + 1);
-			// Need only exact size for grips.
-			_tcg.Grips.resize((qsizetype) count);
-		}
+		// Resize the points vector for drawing and add one extra for the starting point of a poly line.
+		_tcg.Points.resize(count + 1);
+		// Need only exact size for grips.
+		_tcg.Grips.resize(count);
 	}
 	// When the point is in range of the points list continue.
-	if (point >= (int) _tcg.Points.size())
+	if (point >= _tcg.Points.size())
 	{
 		return;
 	}
 	// Get fast temporary plot range and delay.
-	auto plotDelay = _vCopyDelay.getCur().getFloat();
-	auto plotRange = _vCopyRange.getCur().getFloat();
+	const auto plotDelay = _vCopyDelay.getCur().getFloat();
+	const auto plotRange = _vCopyRange.getCur().getFloat();
 	// Get temporary values for the width and height.
-	QRect bounds = _graph.getPlotArea();
+	const QRect bounds = _graph.getPlotArea();
 	// Get fast temporary values for width and height of the plot bounds.
-	auto width = bounds.width() - 1;
-	auto height = bounds.height() - 1;
+	const auto width = bounds.width() - 1;
+	const auto height = bounds.height() - 1;
 	// Get the delay to work with.
 	auto tcgDelay = _vTcgDelay.getCur().getFloat();
 	// Determine to what the TCG gate is artificial.
@@ -588,26 +581,25 @@ void AcquisitionControl::Private::generateTcgData(int point)
 	}
 	//
 	//bool do_clip = !!VTcgRange.getId();
-	auto tcgRange = _vTcgRange.getCur().getFloat();//do_clip ? VTcgRange.Cur->Float : 0.0;
+	const auto tcgRange = _vTcgRange.getCur().getFloat();//do_clip ? VTcgRange.Cur->Float : 0.0;
 	// Get the values for scaling the gain vertical from the first gain parameter.
-	auto gainMin = _tcg.GainVars[0].getMin().getFloat();
-	auto gainMax = _tcg.GainVars[0].getMax().getFloat();
-	Value::flt_type tm;
+	const auto gainMin = _tcg.GainVars[0].getMin().getFloat();
+	const auto gainMax = _tcg.GainVars[0].getMax().getFloat();
 	// Rectangle to invalidate.
 	QRect irc;
 	// Create grip rectangle just for the moving.
-	QRect grc(-_tcg.GripSize, -_tcg.GripSize, _tcg.GripSize + 1, _tcg.GripSize + 1);
+	const QRect grc(-_tcg.GripSize, -_tcg.GripSize, _tcg.GripSize + 1, _tcg.GripSize + 1);
 	// Calculate each TCG point on the plot.
 	// There is always a starting point.
 	for (qsizetype i = 0; i < _tcg.Points.size() - 1; i++)
 	{
 		// The time is absolute.
 		// The TCG gate delay is start of the TCG so this is the starting point.
-		tm = tcgDelay + _tcg.TimeVars[i].getCur().getFloat();
+		Value::flt_type tm = tcgDelay + _tcg.TimeVars[i].getCur().getFloat();
 		// Clip it if a TCG range exists.
-		auto t = /*do_clip ? clip(tm, tcgDelay, tcgDelay + tcgRange) : */ tm;
+		const auto t = /*do_clip ? clip(tm, tcgDelay, tcgDelay + tcgRange) : */ tm;
 		// Retrieve the gain of the variable.
-		auto gain = _tcg.GainVars[i].getCur().getFloat();
+		const auto gain = _tcg.GainVars[i].getCur().getFloat();
 		// Scale the values within the windows boundaries.
 		_tcg.Points[i + 1].setX(calculateOffset(t, 0.0, plotRange, width, true));
 		_tcg.Points[i + 1].setY(height - calculateOffset(gain, gainMin, gainMax, height, true));
@@ -654,14 +646,14 @@ void AcquisitionControl::Private::generateTcgData(int point)
 void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
 {
 	// Get temporary values for the width and height.
-	int height = _graph.getPlotArea().height() - 1;
+	const int height = _graph.getPlotArea().height() - 1;
 	// Generate the gate draw points.
 	for (int i = 0; i < _gateCount; i++)
 	{
 		// Set the default position.
 		int yPos;
 		// Create easy access reference.
-		Gate& gt(_gates[i]);
+		GateData& gt(_gates[i]);
 		// Make a copy for comparison.
 		auto prev_rc = gt.Rect;
 		// Check if the variable is present and if it is enabled.
@@ -680,8 +672,8 @@ void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
 			if (fromRect)
 			{
 				// Get the y position of the center of the rectangle on the plot.
-				int yp = gt.Rect.center().y();
-				Value::flt_type threshold = ((maxVal - minVal) / height) * (height - yp);
+				const int yp = gt.Rect.center().y();
+				Value::flt_type threshold = (maxVal - minVal) / height * (height - yp);
 				threshold += minVal;
 				// Update the threshold variable.
 				gt.VThreshold.setCur(Value(threshold), true);
@@ -711,11 +703,11 @@ void AcquisitionControl::Private::setGateVerticalPos(bool fromRect)
 void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 {
 	// Get temporary values for the width and height.
-	auto bounds = _graph.getPlotArea();
+	const auto bounds = _graph.getPlotArea();
 	// Get fast temporary values for width and height of the plot bounds.
-	auto width = bounds.width() - 1;
+	const auto width = bounds.width() - 1;
 	// Get temporary range and delay.
-	Value::flt_type plotDelay = _vCopyDelay.getCur().getFloat();
+	const Value::flt_type plotDelay = _vCopyDelay.getCur().getFloat();
 	Value::flt_type plotRange = _vCopyRange.getCur().getFloat();
 	// When the range ID is not valid use time unit and block size to calculate the range.
 	if (!_vCopyRange.getId())
@@ -725,15 +717,15 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 	//
 	Value::flt_type pixelRatio = 0.0;
 	// Check for a division by zero.
-	if (std::abs(plotRange) > std::numeric_limits<Value::flt_type>::denorm_min())
+	if (!isZero(plotRange))
 	{
-		pixelRatio = double(width) / plotRange;
+		pixelRatio = static_cast<double>(width) / plotRange;
 	}
 	// Generate the gate draw points.
 	for (int i = 0; i < _gateCount; i++)
 	{
 		// Create easy access reference.
-		Gate& gt(_gates[i]);
+		GateData& gt(_gates[i]);
 		// Make a copy for comparison after the change.
 		auto prevRect = gt.Rect;
 		//
@@ -742,7 +734,7 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		if (gt.SlavedTo >= 0)
 		{
 			// Get a fast reference to the slaved to gate.
-			Gate& sgt(_gates[gt.SlavedTo]);
+			GateData& sgt(_gates[gt.SlavedTo]);
 			// Add the delay of the slaved gate.
 			gateDelayOfs += sgt.VDelay.getCur().getFloat();
 		}
@@ -757,11 +749,11 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 		if (fromRect && i == _gripGate)
 		{
 			// Prevent division by zero.
-			if (std::abs(pixelRatio) > std::numeric_limits<Value::flt_type>::denorm_min())
+			if (!isZero(pixelRatio))
 			{
 				// Calculate variable values from plot rect coordinates.
 				auto delay = static_cast<Value::flt_type>(gt.Rect.left()) / pixelRatio;
-				Value::flt_type range = gt.Rect.width() / pixelRatio;
+				const Value::flt_type range = gt.Rect.width() / pixelRatio;
 				// Slaved gates are relative to a found peak position.
 				// So offsets are applied in the draw function.
 				if (gt.SlavedTo < 0)
@@ -785,10 +777,10 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 			}
 		}
 		// Create temporary delay and range values.
-		Value::flt_type gateDelay = gt.VDelay.getCur().getFloat();
-		Value::flt_type gateRange = gt.VRange.getCur().getFloat();
+		const Value::flt_type gateDelay = gt.VDelay.getCur().getFloat();
+		const Value::flt_type gateRange = gt.VRange.getCur().getFloat();
 		// Calculate the offset of the gate in pixels
-		int gateWidth = static_cast<int>(gateRange * pixelRatio);
+		const int gateWidth = static_cast<int>(gateRange * pixelRatio);
 		int gateOffset;
 		//
 		if (gt.SlavedTo < 0)
@@ -826,6 +818,8 @@ void AcquisitionControl::Private::setGateHorizontalPos(bool fromRect)
 	}
 }
 
+// ReSharper disable once CppDFAConstantFunctionResult
+// ReSharper disable once CppParameterNeverUsed
 bool AcquisitionControl::Private::sustain(const timespec& t)
 {
 	if (_flagFrozen)
@@ -905,7 +899,7 @@ bool AcquisitionControl::Private::setState(EState state)// NOLINT(misc-no-recurs
 
 bool AcquisitionControl::Private::setError(const QString& txt)// NOLINT(misc-no-recursion)
 {
-	int oldPrevious = _statePrevious;
+	const int oldPrevious = _statePrevious;
 	// Update the previous state.
 	if (_stateCurrent != psWait)
 	{
@@ -1051,7 +1045,7 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 			for (int i = 0; i < _gateCount; i++)
 			{
 				// Fast local references.
-				Gate& gi(_gates[i]);
+				GateData& gi(_gates[i]);
 				// Only check on those who are available.
 				if (gi.RAmp.getId())
 				{// And the accessible range to create a gate common accessible range.
@@ -1083,20 +1077,17 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 				// Try this stage again until a timout error is generated.
 				return waitForState(psTryGate);
 			}
-			else
+			// Check if the range read from the copy index result is contained by common gate range.
+			if (!rng.isInRange(_work.GateRange.getStart()))
 			{
-				// Check if the range read from the copy index result is contained by common gate range.
-				if (!rng.isInRange(_work.GateRange.getStart()))
-				{
-					// Try this stage again until a timout error is generated.
-					return waitForState(psTryGate);
-				}
+				// Try this stage again until a timout error is generated.
+				return waitForState(psTryGate);
 			}
 			// When needed request gate results.
 			for (int i = 0; i < _gateCount; i++)
 			{
 				// Fast local references.
-				Gate& gi(_gates[i]);
+				GateData& gi(_gates[i]);
 				// Only check on those AMP's which are available.
 				if (gi.RAmp.getId())
 				{
@@ -1109,11 +1100,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 							// Set the error.
 							return setError(QString("Request of gate %1 amplitude result failed").arg(i));
 						}
-						else
-						{
-							// Set the bit in the mask for this gate number.
-							_work.GateAmpReq.set(i);
-						}
+						// Set the bit in the mask for this gate number.
+						_work.GateAmpReq.set(i);
 					}
 				}
 				// Only check on those TOFs which are available.
@@ -1128,11 +1116,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 							// Set the error.
 							return setError(QString("Request of gate %1 time-of-flight result failed").arg(i));
 						}
-						else
-						{
-							// Set the bit in the mask for this gate number.
-							_work.GateTofReq.set(i);
-						}
+						// Set the bit in the mask for this gate number.
+						_work.GateTofReq.set(i);
 					}
 				}
 			}
@@ -1153,7 +1138,7 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 				for (unsigned i = 0; i < _gateCount; i++)
 				{
 					// Fast local references.
-					Gate& gi(_gates[i]);
+					GateData& gi(_gates[i]);
 					// Only check if the amplitude result is available.
 					if (gi.RAmp.getId())
 					{
@@ -1251,6 +1236,8 @@ bool AcquisitionControl::Private::processState()// NOLINT(misc-no-recursion)
 	return true;
 }
 
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
 void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
 {
 	Q_UNUSED(sameInst)
@@ -1372,11 +1359,13 @@ void AcquisitionControl::Private::handlerCopyResult(ResultData::EEvent event, co
 	}
 }
 
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
 void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, const ResultData& caller, ResultData& link, const Range& rng, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	// Get info pointer from assigned data set in the constructor.
-	Gate& gi(*link.getData<Gate*>());
+	const auto& gi(*link.getData<GateData*>());
 	//
 	switch (event)
 	{
@@ -1448,7 +1437,9 @@ void AcquisitionControl::Private::handlerGateResult(ResultData::EEvent event, co
 	}
 }
 
-void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, const Variable& callVar, Variable& linkVar, bool sameInst)
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
+void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, const Variable& callVar, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst);
 	switch (event)
@@ -1479,6 +1470,8 @@ void AcquisitionControl::Private::handlerRulerVariable(Variable::EEvent event, c
 	}
 }
 
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
 void AcquisitionControl::Private::handlerDefaultVariable(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
@@ -1502,6 +1495,8 @@ void AcquisitionControl::Private::handlerDefaultVariable(Variable::EEvent event,
 	}
 }
 
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
 void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, const Variable&, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
@@ -1537,11 +1532,13 @@ void AcquisitionControl::Private::handlerTcgVariable(Variable::EEvent event, con
 	}
 }
 
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppParameterNeverUsed
 void AcquisitionControl::Private::handlerGateVariable(Variable::EEvent event, const Variable& caller, Variable& link, bool sameInst)
 {
 	Q_UNUSED(sameInst)
 	// Cast the Data property of the variable to the local gate entry.
-	auto gt = link.getData<Gate*>();
+	const auto gt = link.getData<GateData*>();
 	switch (event)
 	{
 		default:
@@ -1604,7 +1601,7 @@ AcquisitionControl::Private::EGrip AcquisitionControl::Private::getGateGrip(cons
 		{
 			gt = i;
 			// Divide in three section. Left middle and right.
-			int w = rc.width() / 3;
+			const int w = rc.width() / 3;
 			// When zero default to the middle grip.
 			if (!w)
 			{
@@ -1673,7 +1670,7 @@ void AcquisitionControl::Private::setCursorShape(Qt::CursorShape shape) const
 	}
 }
 
-void AcquisitionControl::Private::geoResize(const QSize& size, const QSize& previousSize)
+void AcquisitionControl::Private::geoResize(const QSize& size, const QSize& /*previousSize*/)
 {
 	if (_flagCanDraw)
 	{
@@ -1694,12 +1691,12 @@ void AcquisitionControl::Private::mouseMove(Qt::MouseButton button, Qt::Keyboard
 	Q_UNUSED(button);
 	Q_UNUSED(modifiers);
 	// Correct for the possible rulers offset.
-	auto pt = point - _graph.getPlotArea().topLeft();
+	const auto pt = point - _graph.getPlotArea().topLeft();
 	// Check if sizing.
 	if (!_flagSizing)
 	{
 		// Set the current grip.
-		EGrip grip = getGateGrip(pt);
+		const EGrip grip = getGateGrip(pt);
 		// Set the cursor according to the grip.
 		setCursorShape(getCursorShape(grip));
 		// TODO: Should be done in separate function.
@@ -1727,7 +1724,7 @@ void AcquisitionControl::Private::mouseMove(Qt::MouseButton button, Qt::Keyboard
 			// Calculate the movement offset.
 			_gripOffset = asQSize(pt - _grabPoint);
 			QRect updateRect = _gripRectNext;
-			Gate& gt(_gates[_gripGate]);
+			GateData& gt(_gates[_gripGate]);
 			gt.GripRect.moveTo(gt.GripOffset + _gripOffset);
 			_gripRectNext = gt.GripRect;
 			updateRect |= _gripRectNext;
@@ -1745,7 +1742,7 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		return;
 	}
 	// Correct for the possible rulers offset.
-	auto pt = point - _graph.getPlotArea().topLeft();
+	const auto pt = point - _graph.getPlotArea().topLeft();
 	// Check for the correct button to be pressed.
 	if (button == Qt::MouseButton::LeftButton)
 	{
@@ -1774,7 +1771,7 @@ void AcquisitionControl::Private::mouseDown(Qt::MouseButton button, Qt::Keyboard
 		// Set the position and offset of the hint window.
 		_infoWindow->setPosition(_w->mapToGlobal(pt));
 		// Get the name of the gate number which was gripped.
-		QString gateName = _gripGate ? QString("Gate %1").arg(_gripGate) : QString("IF Gate");
+		const QString gateName = _gripGate ? QString("Gate %1").arg(_gripGate) : QString("IF Gate");
 		// Show the hint window which gate is grabbed.
 		switch (_gripGrabbed)
 		{
@@ -1809,7 +1806,7 @@ void AcquisitionControl::Private::mouseUp(Qt::MouseButton button, Qt::KeyboardMo
 		return;
 	}
 	// Correct for the possible rulers offset.
-	auto pt = point - _graph.getPlotArea().topLeft();
+	const auto pt = point - _graph.getPlotArea().topLeft();
 	// Check for the left mouse button getting up.
 	if (button == Qt::MouseButton::LeftButton)
 	{
@@ -1892,13 +1889,14 @@ void AcquisitionControl::Private::keyDown(int key, Qt::KeyboardModifiers modifie
 	}
 }
 
-bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, const QRegion& region)// NOLINT(readability-make-member-function-const)
+// ReSharper disable once CppParameterNeverUsed
+bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, const QRegion& region)
 {
 	// Check if there is anything to be painted.
 	if (_flagCanDraw)
 	{
 		// Offset for drawing the TCG part.
-		QPoint tcg_ofs(0, 0);
+		const QPoint tcg_ofs(0, 0);
 		/*
 		//
 		if (FTcg.SlavedTo == 0 && FGateCount)
@@ -1978,7 +1976,7 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			for (int i = 0; i < _gateCount; i++)
 			{
 				// Fast local reference.
-				Gate& gi(_gates[i]);
+				GateData& gi(_gates[i]);
 				// Check if TOF value was present.
 				if (gi.FlagTof)
 				{
@@ -1996,10 +1994,10 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 		//
 		// Draw the gate indicators.
 		//
-		for (int i = 0; i < (int) _gateCount; i++)
+		for (int i = 0; i < _gateCount; i++)
 		{
 			// Fast local reference.
-			Gate& gt(_gates[i]);
+			GateData& gt(_gates[i]);
 			// When sizing the plot is frozen, so we need to use the previous information and the changed info from the dragged gate.
 			if (!_flagSizing)
 			{
@@ -2008,9 +2006,9 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 				// Put rectangle on dynamic or static location when slaved.
 				if (gt.SlavedTo >= 0)
 				{
-					Gate& gts(_gates[gt.SlavedTo]);
+					GateData& gts(_gates[gt.SlavedTo]);
 					// Calculation to get the current slaved gate position using the static positions to start with.
-					int xOfs = gts.PeakPos.x();
+					const int xOfs = gts.PeakPos.x();
 					// Position the gate rectangle exactly where it should be located.
 					gt.GripRect += QPoint(xOfs, 0);
 				}
@@ -2032,13 +2030,13 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			// Only for gate 0 which is the interface gate.
 			if (gt.TrackWidth >= 0)
 			{
-				int width = gt.Rect.width();
+				const int width = gt.Rect.width();
 				int x1 = -gt.TrackWidth / 2;
 				x1 += gt.PeakPos.x() - gt.Rect.left();
 				// Clip the position.
 				x1 = clip(x1, 0, width - gt.TrackWidth);
 				// Decrease by 1 so the line is not drawn outside the rectangle.
-				int x2 = x1 + gt.TrackWidth - 1;
+				const int x2 = x1 + gt.TrackWidth - 1;
 				painter.drawLine(grc.topLeft() + QPoint(x1, 0), grc.bottomLeft() + QPoint(x1, 0));
 				painter.drawLine(grc.topLeft() + QPoint(x2, 0), grc.bottomLeft() + QPoint(x2, 0));
 			}
@@ -2052,7 +2050,7 @@ bool AcquisitionControl::Private::draw(QPainter& painter, const QRect& bounds, c
 			pen.setStyle(Qt::DashDotLine);
 			painter.setPen(pen);
 			// Calculate an offset position on fixed 10% of the width.
-			QPoint ofs(bounds.width() / 10, 0);
+			const QPoint ofs(bounds.width() / 10, 0);
 			painter.drawLine(bounds.topLeft() + ofs, bounds.bottomLeft() + ofs);
 		}
 		// Draw some debugging stuff.

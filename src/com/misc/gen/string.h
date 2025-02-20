@@ -175,7 +175,7 @@ template<typename T>
 char* gcvt(T value, int ndigits, char* buf, size_t len)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	if constexpr (std::is_same<T, long double>())
 	{
 		std::snprintf(buf, len, "%.*Lg", std::min(ndigits, std::numeric_limits<T>::max_digits10), value);
@@ -203,7 +203,7 @@ template<typename T>
 std::string gcvtString(T value, int ndigits = 0)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	// Buffer large enough to hold the string.
 	char buf[std::numeric_limits<T>::max_digits10 + std::numeric_limits<decltype(value)>::max_exponent10 + 5];
 	// When zero digits is given use the maximum.
@@ -300,7 +300,7 @@ template<typename T>
 T toFloat(const char* ptr, char** end_ptr = nullptr)
 {
 	// Prevent non-integer and non-float types from implementing this template.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	{
 		// Set locale to 'C' to get the required decimal point for this function.
 		Locale locale;
@@ -521,9 +521,9 @@ template<typename T>
 int fcvt_r(T value, int ndigit, int* decpt, int* sign, char* buf, size_t len)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
-	ssize_t n, i;
-	int left;
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
+	ssize_t n{}, i{};
+	int left{};
 	if (buf == nullptr)
 	{
 		errno = (EINVAL);
@@ -648,7 +648,7 @@ template<typename T>
 int ecvt_r(T value, int ndigit, int* decpt, int* sign, char* buf, size_t len)
 {
 	// Only implemented for floating point values.
-	static_assert(std::is_floating_point<T>::value, "Type T must be a floating point type.");
+	static_assert(std::is_floating_point_v<T>, "Type T must be a floating point type.");
 	// Type constexpr is not possible since std::pow so a static is used.
 	static const T min_10_norm = std::pow(static_cast<T>(10), std::numeric_limits<T>::min_exponent10);
 	int exponent = 0;

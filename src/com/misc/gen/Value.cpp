@@ -287,7 +287,7 @@ bool Value::isZero() const
 			return _data._int == std::numeric_limits<int_type>::denorm_min();
 
 		case vitFloat:
-			return std::fabs(_data._flt) <= std::numeric_limits<flt_type>::denorm_min();
+			return sf::isZero(_data._flt);
 
 		case vitReference:
 			return _data._ref->isZero();

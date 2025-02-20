@@ -1,25 +1,27 @@
+#include "gii/gen/UnitConversionServerEx.h"
+#include "gii/qt/VariableEdit.h"
 #include "misc/gen/IniProfile.h"
 #include "misc/gen/string.h"
+#include "misc/qt/ApplicationSettings.h"
 #include "test-ini-content.h"
 #include <QApplication>
-#include <QLineEdit>
+#include <QKeyEvent>
+#include <QMessageBox>
 #include <QTimer>
 #include <gii/qt/InformationSelectDialog.h>
 #include <gii/qt/VariableListModel.h>
+#include <gii/qt/VariableTreeView.h>
 #include <misc/gen/dbgutils.h>
 #include <misc/qt/Globals.h>
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
-#if IS_WIN
-	#include <windows.h>
-#endif
 
 namespace sf
 {
 
 void loadFromIni(InformationTypes::Vector& rv)
 {
-	std::istringstream is(IniContent);
+	std::istringstream is(VariableIniContent);
 	IniProfile ini(is);
 	TVector<Variable*> variables;
 	if (ini.selectSection("GenericParamInfo"))
@@ -64,21 +66,15 @@ struct VarHandler final : VariableHandler
 		{
 			switch (event)
 			{
+
 				case veValueChange:
 					SF_RTTI_NOTIFY(DO_DEFAULT, "Change of '" << sf::stringf("0x%llX", link_var.getId()) << "' to: " << link_var.getCurString());
 					break;
-					/*
 
-				case veFlagsChange:
+				case veUserPrivate:
+					SF_RTTI_NOTIFY(DO_DEFAULT, "Toggle of '" << sf::stringf("0x%llX", link_var.getId()));
 					break;
 
-				case veDesiredId:
-					break;
-
-				case veConverted:
-					break;
-
-*/
 				default:
 					break;
 			}
@@ -86,16 +82,17 @@ struct VarHandler final : VariableHandler
 };
 
 }// namespace sf
-
 int main(int argc, char* argv[])
 {
-#if IS_WIN
-	if (!sf::isDebug())
-	{
-		// Removes the console in windows application.
-		FreeConsole();
-	}
-#endif
+	std::istringstream is(sf::UnitConversionIniContent);
+	const auto ucs = std::make_unique<sf::UnitConversionServerEx>();
+	ucs->load(is);
+	// Set the unit system to use.
+	ucs->setUnitSystem(sf::UnitConversionServer::usMetric);
+	// Enable unit conversion.
+	ucs->setEnableId(0x5);
+	// Removes the console in Windows application.
+	sf::freeConsole();
 	// Ignore desktop settings because it gives the wrong icon colors.
 	QApplication::setDesktopSettingsAware(false);
 	QApplication app(argc, argv);
@@ -127,24 +124,23 @@ int main(int argc, char* argv[])
 	dlg.setWindowIcon(QIcon(":logo/ico/scanframe"));
 	settings.restoreWindowRect("Dialog", &dlg);
 	dlg.setLayout(new QVBoxLayout(&dlg));
-	const auto tv = new QTreeView(&dlg);
-	//tv->setSelectionBehavior(QAbstractItemView::SelectRows);
-	tv->setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
-	tv->setIndentation(0);
-	//tv->header()->hide();
-	const auto vlm = new sf::VariableListModel(&dlg);
-	vlm->addVariables(list);
-	tv->setModel(vlm);
+	for (const auto id: {0x5, 0x99003, 0x99004, 0xb0030, 0xb0038})
+	{
+		const auto ve = new sf::VariableEdit(&dlg);
+		ve->setId(id);
+		ve->setNameLevel(2);
+		ve->setConverted(true);
+		dlg.layout()->addWidget(ve);
+	}
+	const auto tv = new sf::VariableTreeView(&dlg);
+	tv->variableListModel()->addVariables(list);
+	dlg.layout()->addWidget(tv);
 	// Only can set the column width after the model has been set to the tree view.
 	settings.restoreTreeViewColumns("VarList", tv);
-	// Set the delegates of the model onto the view for editing.
-	vlm->setDelegates(tv);
-	tv->setAlternatingRowColors(true);
-	dlg.layout()->addWidget(tv);
 	dlg.exec();
 	//
-	settings.saveWindowRect("Dialog", &dlg);
 	settings.saveTreeViewColumns("VarList", tv);
+	settings.saveWindowRect("Dialog", &dlg);
 	// Remove all entries before un-initializing.
 	qDeleteAll(list);
 	// Clear the list.

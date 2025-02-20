@@ -7,14 +7,17 @@
 namespace sf
 {
 
-class _MISC_CLASS ModuleConfiguration : public QObject
+class _MISC_CLASS ModuleConfiguration final : public QObject
 {
 		Q_OBJECT
 
-	Q_SIGNALS:
-		void libraryLoaded(bool startup);
-
 	public:
+		/**
+		 * @brief Signal emitted when library is loaded.
+		 */
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void libraryLoaded(bool startup);
+
 		/**
 		 * @brief Constructor.
 		 * @param settings Settings for loading and storing the module configuration.

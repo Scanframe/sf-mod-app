@@ -159,14 +159,20 @@ _MISC_FUNC bool isDebug();
  * @return True if a debugger is attached at startup.
  */
 _MISC_FUNC bool isDebuggerActive();
+
 /**
  * @brief Causes a break when debugging.
  */
 _MISC_FUNC void debugBreak();
 
 /**
+ * @brief Closes the console window
+ * @param always When true the console is closed even when debugging argument '--debug' on command line.
+ */
+_MISC_FUNC void freeConsole(bool always = false);
+
+/**
  * @brief Demangles the passed rtti mangled type name.
- *
  * @param name Mangled name
  * @return Demangled name.
  */

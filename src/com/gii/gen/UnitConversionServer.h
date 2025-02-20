@@ -1,7 +1,6 @@
 #pragma once
 #include <gii/gen/UnitConversion.h>
 #include <gii/global.h>
-#include <iostream>
 #include <misc/gen/IniProfile.h>
 #include <string>
 
@@ -10,7 +9,8 @@ namespace sf
 
 /**
  * @brief Implementation of a unit conversion server using an ini-file.
- * This conversion class installs a handler using #setUnitConversionHandler() using a #UnitConversionServerClosure type of function.
+ * This conversion class installs a handler using #setUnitConversionHandler()
+ * using a #UnitConversionServerClosure type of function.
  */
 class _GII_CLASS UnitConversionServer
 {
@@ -25,6 +25,10 @@ class _GII_CLASS UnitConversionServer
 		 */
 		UnitConversionServer(const UnitConversionServer&) = delete;
 
+		/**
+		 * @brief Virtual destructor.
+		 */
+		virtual ~UnitConversionServer();
 		/**
 		 * @brief Loads the conversion settings.
 		 * @param is Input stream.
@@ -45,7 +49,7 @@ class _GII_CLASS UnitConversionServer
 		[[nodiscard]] bool isDirty() const;
 
 		/**
-		 * @brief Writes or over writes a conversion entry in the profile.
+		 * @brief Writes or overwrites a conversion entry in the profile.
 		 */
 		void setConversion(UnitConversionEvent& ev);
 
@@ -53,11 +57,6 @@ class _GII_CLASS UnitConversionServer
 		 * @brief Removes a conversion entry in the profile.
 		 */
 		void removeConversion(const std::string& key);
-
-		/**
-		 * @brief Destructor.
-		 */
-		~UnitConversionServer();
 
 		/**
 		 * @brief Different unit conversion systems.
@@ -107,7 +106,7 @@ class _GII_CLASS UnitConversionServer
 		/**
 		 * @brief Type to combine a system enumerate and name.
 		 */
-		typedef std::pair<UnitConversionServer::EUnitSystem, const char*> UnitSystemPair;
+		typedef std::pair<EUnitSystem, const char*> UnitSystemPair;
 
 		/**
 		 * Gets all the system unit entries as a pair in a vector.
@@ -119,7 +118,7 @@ class _GII_CLASS UnitConversionServer
 		/**
 		 * @brief Handler according the unit conversion function type.
 		 */
-		virtual bool Handler(UnitConversionEvent& ev);
+		virtual bool handler(UnitConversionEvent& ev);
 
 		/**
 		 * Ini profile keeping all conversion information.

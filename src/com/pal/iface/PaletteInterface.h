@@ -77,8 +77,8 @@ class _PAL_CLASS PaletteInterface
 
 	protected:
 		Parameters::Callback _callback;
-		qsizetype _colorsUsed{256};
 		qsizetype _colorsSize{256};
+		qsizetype _colorsUsed{_colorsSize};
 
 		// Declarations of static functions and data members to be able to create registered implementations.
 		SF_DECL_IFACE(PaletteInterface, PaletteInterface::Parameters, Interface)

@@ -64,14 +64,14 @@ class _MISC_CLASS ObjectPropertyModel : public QAbstractListModel
 		 */
 		bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
-	Q_SIGNALS:
 		/**
 		 * @brief Signals a change of the object's property.
 		 * @param obj Object concerned.
 		 * @param propertyIndex Index of the property
 		 * @param dynamic Property is a dynamic one.
 		 */
-		void changed(QObject* obj, int propertyIndex, bool dynamic);
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void changed(QObject* obj, int propertyIndex, bool dynamic);
 		/**
 		 *
 		 * @param lineEdit Line edit created for this property.
@@ -79,7 +79,8 @@ class _MISC_CLASS ObjectPropertyModel : public QAbstractListModel
 		 * @param propertyIndex Index of the property
 		 * @param dynamic Property is a dynamic one.
 		 */
-		void addLineEditActions(QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) const;
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void addLineEditActions(QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) const;
 
 	private:
 		/**

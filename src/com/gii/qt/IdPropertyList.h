@@ -1,6 +1,4 @@
 #pragma once
-#include <QList>
-#include <QObject>
 #include <gii/global.h>
 #include <gii/qt/InformationIdEdit.h>
 

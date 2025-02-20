@@ -33,7 +33,7 @@ class _GII_CLASS InformationMonitor : public QDialog
 		 * @param typeId Type of the id Variable or Result-data type.
 		 * @param id Information id.
 		 */
-		void setId(Gii::TypeId typeId, Gii::IdType id);
+		void setId(gii::TypeId typeId, gii::IdType id);
 
 		/**
 		 * @brief Opens a dialog to select the id to monitor.
@@ -42,7 +42,7 @@ class _GII_CLASS InformationMonitor : public QDialog
 		 * @param parent Optional parent which defaults to #sf::getGlobalParent().
 		 * @return True when the dialog was accepted.
 		 */
-		bool selectId(Gii::TypeId typeId, QWidget* parent = nullptr);
+		bool selectId(gii::TypeId typeId, QWidget* parent = nullptr);
 
 	private:
 		struct Private;

@@ -130,13 +130,13 @@ class _GSC_CLASS GlobalShortcut : public QObject
 			 */
 		void setDisabled(bool disabled = true);
 
-	Q_SIGNALS:
-
+	public:
 		/**
 		 * @brief This signal is emitted when the user types the shortcut's key sequence.
 		 * @see sequence
 		 */
-		void activated(GlobalShortcut* self);
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void activated(GlobalShortcut* self);
 
 	private:
 		/**

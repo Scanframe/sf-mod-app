@@ -16,11 +16,11 @@ class AxesCoordDialog : public QDialog
 		 */
 		explicit AxesCoordDialog(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
-	Q_SIGNALS:
 		/**
 		 * @brief Signal to resize content.
 		 */
-		void resizing(QResizeEvent* event);
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void resizing(QResizeEvent* event);
 
 	protected:
 		/**

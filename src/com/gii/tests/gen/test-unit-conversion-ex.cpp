@@ -5,7 +5,7 @@
 namespace
 {
 
-const char* IniContent = R"(
+auto IniContent = R"(
 
 [Followers]
 
@@ -24,7 +24,9 @@ m/s,5=mm/s,1000,0,2
 
 m,-3=m,1,0,-3
 m,-2=m,1,0,-2
-m,1=mm,1,0,-1
+m,-1=m,1,0,-1
+m,0=m,1,0,0
+m,1=mm,1000,0,-2
 m,2=mm,1000,0,-1
 m,3=mm,1000,0,0
 m,4=mm,1000,0,1
@@ -127,7 +129,7 @@ TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 		// Set the unit system to use.
 		ucs.setUnitSystem(sf::UnitConversionServer::usMetric);
 		// Create master instance.
-		sf::Variable v_master("0x10,Sound Velocity,m/s,A,Sound velocity setting,FLOAT,,10,3000,100,10000", 0);
+		sf::Variable v_master("0x10,Sound Velocity,m/s,A,Sound velocity setting,FLOAT,,1,3000,100,10000", 0);
 		// Create server instance.
 		sf::Variable v_server("0x100,Time of Flight,s,A,High speed velocity setting,FLOAT,,10e-7,33e-06,0,100e-6", 0);
 		// Makes the server instance retrieve new conversion values.
@@ -140,19 +142,18 @@ TEST_CASE("sf::UnitConversionEx", "[unit][conversion][variable]")
 		CHECK(v_client.getUnit() == "mm");
 		// Value should be a multiplication with 2 decimals.
 		CHECK(v_client.getCurString() == "99");
-
-		CHECK(v_master.getSigDigits() == -1);
+		CHECK(v_master.getSigDigits() == 0);
 		CHECK(v_client.getSigDigits(false) == 6);
 		auto val = v_master.getCur().getFloat();
 		CHECK(sf::magnitude(val) == 4);
-
 		v_server.setCur(sf::Value(100e-6));
 		// Unit should still be a distance.
 		CHECK(v_client.getUnit() == "mm");
 		// Value should be a multiplication with 3 decimals.
 		CHECK(v_client.getCurString() == "300");
-		//std::clog << "Client value: " << v_client.getCurString() << " " << v_client.getUnit() << std::endl;
+		//std::clog << "Client value:" << v_client.getCurString() << " " << v_client.getUnit() << std::endl;
 	}
+
 	// Delete the conversion server first before deinitializing the variable static stuff.
 	delete &ucs;
 	sf::Variable::uninitialize();

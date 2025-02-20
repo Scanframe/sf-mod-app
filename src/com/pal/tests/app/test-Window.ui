@@ -14,7 +14,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,2">
      <item>
-      <widget class="sf::DrawWidget" name="drawWidget">
+      <widget class="sf::DrawWidget" name="drawWidget" native="true">
        <property name="toolTip">
         <string>Widget for drawing</string>
        </property>
@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="sf::VariableBar" name="variableBar">
+      <widget class="sf::VariableBar" name="variableBar" native="true">
        <property name="toolTip">
         <string>Progress bar</string>
        </property>
@@ -34,16 +34,16 @@
        <property name="idVariable" stdset="0">
         <uLongLong>16</uLongLong>
        </property>
-       <property name="converted">
+       <property name="converted" stdset="0">
         <bool>true</bool>
        </property>
-       <property name="nameLevel">
+       <property name="nameLevel" stdset="0">
         <number>1</number>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="sf::VariableEdit" name="variableEdit">
+      <widget class="sf::VariableEdit" name="variableEdit" native="true">
        <property name="toolTip">
         <string>A frame containing an edit.</string>
        </property>
@@ -53,13 +53,13 @@
        <property name="idVariable" stdset="0">
         <uLongLong>16</uLongLong>
        </property>
-       <property name="converted">
+       <property name="converted" stdset="0">
         <bool>true</bool>
        </property>
-       <property name="readOnly">
+       <property name="readOnly" stdset="0">
         <bool>false</bool>
        </property>
-       <property name="nameLevel">
+       <property name="nameLevel" stdset="0">
         <number>1</number>
        </property>
       </widget>
@@ -81,7 +81,7 @@
      <item>
       <widget class="QSpinBox" name="sbUsedColors">
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
        <property name="maximum">
         <number>1000</number>
@@ -94,7 +94,7 @@
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>

@@ -161,7 +161,7 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 			}
 			return {};
 		}
-		else if (role == Qt::DisplayRole)
+		if (role == Qt::DisplayRole)
 		{
 			switch (index.column())
 			{
@@ -198,9 +198,12 @@ QVariant ObjectHierarchyModel::data(const QModelIndex& index, int role) const
 						}
 					}
 					return {};
+
+				default:
+					return {};
 			}
 		}
-		else if (role == Qt::DecorationRole && !index.column())
+		if (role == Qt::DecorationRole && !index.column())
 		{
 			if (item->_parentItem == _rootItem)
 			{

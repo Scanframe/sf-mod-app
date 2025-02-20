@@ -38,6 +38,8 @@ if (SfDoxygen_FOUND)
 	list(FILTER _Sources INCLUDE REGEX ".*\\.h$")
 	# Remove unwanted header file(s) ending on 'Private.h'.
 	list(FILTER _Sources EXCLUDE REGEX ".*Private\\.h$")
+	# Remove unwanted header file(s) ending on '_p.h'.
+	list(FILTER _Sources EXCLUDE REGEX ".*_p\\.h$")
 	# Add the target found sources to the list.
 	list(APPEND _SourceList ${_Sources})
 #[[

@@ -15,9 +15,6 @@ namespace sf
 {
 
 // Forward definition
-class _MISC_CLASS PropertyPage;
-
-// Forward definition
 class _MISC_CLASS PropertySheetDialog;
 
 }// namespace sf

@@ -9,8 +9,7 @@ LineBuffer::LineBuffer(unsigned max_lines)
 	, _totalLineCount(0)
 	, _lineFifo(int(max_lines))
 	, _onOnNewLine(nullptr)
-{
-}
+{}
 
 LineBuffer::~LineBuffer()
 {
@@ -60,10 +59,7 @@ int LineBuffer::overflow(int c)
 		clear();
 		return 1;
 	}
-	char ch[] =
-		{
-			(char) c, 0
-		};
+	char ch[] = {(char) c, 0};
 	if (c != EOF)
 	{
 		xsputn(ch, 1);
@@ -103,8 +99,8 @@ std::streamsize LineBuffer::xsputn(const char* s, std::streamsize count)
 					latest = new std::string();
 					_lineFifo.push(latest);
 				}
-				// Call handler on new line
-				if (_onOnNewLine.isAssigned())
+				// Call handler on new line when valid.
+				if (_onOnNewLine)
 				{
 					_onOnNewLine(this, *cur);
 				}

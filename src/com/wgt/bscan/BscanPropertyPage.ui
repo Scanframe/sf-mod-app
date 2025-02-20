@@ -42,7 +42,7 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="typeId">
-      <enum>sf::Gii::ResultData</enum>
+      <enum>sf::gii::ResultData</enum>
      </property>
     </widget>
    </item>
@@ -71,7 +71,7 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="typeId">
-      <enum>sf::Gii::Variable</enum>
+      <enum>sf::gii::Variable</enum>
      </property>
     </widget>
    </item>

@@ -34,7 +34,7 @@ Sf_AddTargetForCoverage("${PROJECT_NAME}")
 target_sources("${PROJECT_NAME}" PRIVATE
 	LibMain.cpp
 	SimplePalette.cpp SimplePalette.h
-	)
+)
 
 # Link the Qt widgets library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Widgets sf-misc sf-pal)

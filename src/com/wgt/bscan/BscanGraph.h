@@ -1,34 +1,36 @@
 #pragma once
 
-#include <gii/qt/Macros.h>
-#include <misc/qt/ObjectExtension.h>
-#include <misc/qt/Macros.h>
-#include <QtUiPlugin/QDesignerExportWidget>
 #include <QPaintEvent>
 #include <QWidget>
+#include <QtUiPlugin/QDesignerExportWidget>
+#include <gii/qt/Macros.h>
+#include <misc/qt/Macros.h>
+#include <misc/qt/ObjectExtension.h>
 
 class QStyleOptionFrame;
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT BscanGraph
+	: public QWidget
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 		// Need full namespace for this property macro.
-		Q_PROPERTY(sf::Gii::IdType idData READ getIdData WRITE setIdData)
-		Q_PROPERTY(sf::Gii::IdType idIndex READ getIdIndex WRITE setIdIndex)
-		Q_PROPERTY(sf::Gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
-		Q_PROPERTY(sf::Gii::IdType idTimeDelay READ getIdTimeDelay WRITE setIdTimeDelay)
-		Q_PROPERTY(sf::Gii::IdType idTimeRange READ getIdTimeRange WRITE setIdTimeRange)
-		Q_PROPERTY(sf::Gii::IdType IdCursorEvent READ getIdCursorEvent WRITE setIdCursorEvent)
-		Q_PROPERTY(sf::Gii::IdType idCursorFraction READ getIdCursorFraction WRITE setIdCursorFraction)
-		Q_PROPERTY(sf::Gii::IdType idCursorIndex READ getIdCursorIndex WRITE setIdCursorIndex)
-		Q_PROPERTY(sf::Gii::IdType IdCursorPopIndex READ getIdCursorPopIndex WRITE setIdCursorPopIndex)
-		Q_PROPERTY(sf::Gii::IdType idScanDelay READ getIdScanDelay WRITE setIdScanDelay)
-		Q_PROPERTY(sf::Gii::IdType idScanRange READ getIdScanRange WRITE setIdScanRange)
-		Q_PROPERTY(sf::Gii::IdType idScanLeft READ getIdScanLeft WRITE setIdScanLeft)
-		Q_PROPERTY(sf::Gii::IdType idScanRight READ getIdScanRight WRITE setIdScanRight)
+		Q_PROPERTY(sf::gii::IdType idData READ getIdData WRITE setIdData)
+		Q_PROPERTY(sf::gii::IdType idIndex READ getIdIndex WRITE setIdIndex)
+		Q_PROPERTY(sf::gii::IdType idTimeUnit READ getIdTimeUnit WRITE setIdTimeUnit)
+		Q_PROPERTY(sf::gii::IdType idTimeDelay READ getIdTimeDelay WRITE setIdTimeDelay)
+		Q_PROPERTY(sf::gii::IdType idTimeRange READ getIdTimeRange WRITE setIdTimeRange)
+		Q_PROPERTY(sf::gii::IdType IdCursorEvent READ getIdCursorEvent WRITE setIdCursorEvent)
+		Q_PROPERTY(sf::gii::IdType idCursorFraction READ getIdCursorFraction WRITE setIdCursorFraction)
+		Q_PROPERTY(sf::gii::IdType idCursorIndex READ getIdCursorIndex WRITE setIdCursorIndex)
+		Q_PROPERTY(sf::gii::IdType IdCursorPopIndex READ getIdCursorPopIndex WRITE setIdCursorPopIndex)
+		Q_PROPERTY(sf::gii::IdType idScanDelay READ getIdScanDelay WRITE setIdScanDelay)
+		Q_PROPERTY(sf::gii::IdType idScanRange READ getIdScanRange WRITE setIdScanRange)
+		Q_PROPERTY(sf::gii::IdType idScanLeft READ getIdScanLeft WRITE setIdScanLeft)
+		Q_PROPERTY(sf::gii::IdType idScanRight READ getIdScanRight WRITE setIdScanRight)
 		Q_PROPERTY(QStringList paletteServer READ getPaletteServer WRITE setPaletteServer)
 
 	public:
@@ -71,7 +73,6 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 		SF_DECL_PROP_RGRS(QStringList, PaletteServer)
 
 	protected:
-
 		void paintEvent(QPaintEvent* event) override;
 
 		void resizeEvent(QResizeEvent* event) override;
@@ -86,7 +87,7 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 
 		void keyReleaseEvent(QKeyEvent* event) override;
 
-/*
+		/*
 		void focusInEvent(QFocusEvent* event) override;
 
 		void focusOutEvent(QFocusEvent* event) override;
@@ -98,4 +99,4 @@ class QDESIGNER_WIDGET_EXPORT BscanGraph :public QWidget, public ObjectExtension
 		Private* _p;
 };
 
-}
+}// namespace sf

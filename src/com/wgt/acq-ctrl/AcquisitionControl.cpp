@@ -1,20 +1,19 @@
-#include <QPaintEvent>
 #include "AcquisitionControl.h"
 #include "AcquisitionControlPrivate.h"
 #include "AcquisitionControlPropertyPage.h"
-#include <misc/qt/PropertySheetDialog.h>
+#include <QPaintEvent>
 #include <QStylePainter>
+#include <misc/qt/PropertySheetDialog.h>
 #include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
 AcquisitionControl::AcquisitionControl(QWidget* parent)
-	:QWidget(parent)
-	 , ObjectExtension(this)
-	 , _p(new Private(this))
-{
-}
+	: QWidget(parent)
+	, ObjectExtension(this)
+	, _p(new Private(this))
+{}
 
 AcquisitionControl::~AcquisitionControl()
 {
@@ -112,7 +111,6 @@ bool AcquisitionControl::isRequiredProperty(const QString& name)
 {
 	return true;
 }
-
 
 void AcquisitionControl::focusInEvent(QFocusEvent* event)
 {
@@ -236,4 +234,4 @@ SF_IMPL_PROP_GRSN(QByteArray, AcquisitionControl, IdsTcgGain, _p->_idsTcgGain, _
 
 SF_IMPL_PROP_GRSN(QByteArray, AcquisitionControl, IdsTcgTime, _p->_idsTcgTime, _p->propertyChange)
 
-}
+}// namespace sf

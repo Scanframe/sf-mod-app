@@ -28,22 +28,22 @@ class HierarchyViewer : public QWidget
 		/**
 		 * @brief When a layout editor is present it will call its documentModified().
 		 */
-		void documentModified();
+		void documentModified() const;
 
-	Q_SIGNALS:
 		/**
 		 * @brief Signal emitted when the selected object has changed.
 		 */
-		void objectSelectChange(QObject* obj);
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void objectSelectChange(QObject* obj);
 
 	private:
-		void editObject();
+		void editObject() const;
 
 		void addObject();
 
 		void removeObject();
 
-		void editorDisconnect(QObject* obj);
+		void editorDisconnect(const QObject* obj);
 
 		/**
 		 * @brief Gets the object selected.

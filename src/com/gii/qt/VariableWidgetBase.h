@@ -37,29 +37,29 @@ class QDESIGNER_WIDGET_EXPORT VariableWidgetBase
 		~VariableWidgetBase() override;
 
 		/**
-		 * @brief Overriden from base class #sf::ObjectExtension::addPropertyPages().
+		 * @brief Overridden from base class #sf::ObjectExtension::addPropertyPages().
 		 */
 		void addPropertyPages(sf::PropertySheetDialog* sheet) override;
 
 		/**
 		 * @brief Property 'variableId' set method.
 		 */
-		void setId(Gii::IdType id);
+		void setId(gii::IdType id);
 
 		/**
 		 * @brief Property 'variableId' get method.
 		 */
-		[[nodiscard]] Gii::IdType getId() const;
+		[[nodiscard]] gii::IdType getId() const;
 
 		/**
 		 * @brief Gets the reference to the underlying Variable instance.
 		 */
-		[[nodiscard]] Variable& getVariable();
+		[[nodiscard]] Variable& getVariable() const;
 
 		/**
 		 * @brief Property 'converted' set method.
 		 */
-		void setConverted(bool);
+		void setConverted(bool) const;
 
 		/**
 		 * @brief Property 'converted' get method.

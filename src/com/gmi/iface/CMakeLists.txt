@@ -80,7 +80,6 @@ if (SF_BUILD_QT)
 		TARGET_QT
 		# Tell the compiled code a dynamic library (DL) is being build.
 		QDESIGNER_EXPORT_WIDGETS
-		REPORT_TARGET
 	)
 endif (SF_BUILD_QT)
 

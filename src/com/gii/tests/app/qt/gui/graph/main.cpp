@@ -1,23 +1,16 @@
+#include "misc/qt/ApplicationSettings.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QTimer>
 #include <gii/gen/Variable.h>
 #include <misc/gen/dbgutils.h>
-#include <misc/qt/qt_utils.h>
 #include <test-GraphWindow.h>
-#if IS_WIN
-	#include <windows.h>
-#endif
 
 int main(int argc, char* argv[])
 {
-#if IS_WIN
-	if (!sf::isDebug())
-	{
-		// Removes the console in windows application.
-		FreeConsole();
-	}
-#endif
+	// Removes the console in Windows application.
+	sf::freeConsole();
 	QApplication app(argc, argv);
 	// Initialize base using the application file path.
 	QFileInfo fi(QCoreApplication::applicationFilePath());

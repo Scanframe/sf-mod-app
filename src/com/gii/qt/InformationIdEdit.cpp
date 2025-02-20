@@ -1,18 +1,18 @@
-#include <QToolButton>
-#include <QStyle>
-#include <QGuiApplication>
-#include <misc/qt/Resource.h>
-#include "InformationSelectDialog.h"
 #include "InformationIdEdit.h"
+#include "InformationSelectDialog.h"
 #include "LayoutData.h"
+#include <QGuiApplication>
+#include <QStyle>
+#include <QToolButton>
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
 
 InformationIdEdit::InformationIdEdit(QWidget* parent)
-	:QLineEdit(parent)
-	 , ObjectExtension(this)
-	 , _typeId(Gii::Variable)
+	: QLineEdit(parent)
+	, ObjectExtension(this)
+	, _typeId(gii::Variable)
 {
 	// Create a clear button with icon
 	btnOpenDialog = new QToolButton(this);
@@ -26,7 +26,7 @@ InformationIdEdit::InformationIdEdit(QWidget* parent)
 	setContentsMargins(margin);
 	setId(0);
 	// signals, clear lineEdit if btn pressed; change btn visibility on input
-	connect(btnOpenDialog, &QToolButton::clicked, [&](){selectDialog();});
+	connect(btnOpenDialog, &QToolButton::clicked, [&]() { selectDialog(); });
 	// Limit the amount of characters by default. (enough for 64 bit hex value)
 	setMaxLength(24);
 }
@@ -40,7 +40,7 @@ void InformationIdEdit::resizeEvent(QResizeEvent*)
 
 bool InformationIdEdit::selectDialog(QWidget* parent)
 {
-	auto ids = InformationSelectDialog(parent ? parent : btnOpenDialog).execute(Gii::Single, _typeId);
+	auto ids = InformationSelectDialog(parent ? parent : btnOpenDialog).execute(gii::Single, _typeId);
 	// Only when not empty set the ID.
 	if (!ids.empty())
 	{
@@ -50,12 +50,12 @@ bool InformationIdEdit::selectDialog(QWidget* parent)
 	return false;
 }
 
-void InformationIdEdit::setId(Gii::IdType id)
+void InformationIdEdit::setId(gii::IdType id)
 {
 	setText(QString("0x%1").arg(id, 0, 16));
 }
 
-Gii::IdType InformationIdEdit::getId()
+gii::IdType InformationIdEdit::getId()
 {
 	return text().toULongLong(nullptr, 0);
 }
@@ -67,11 +67,12 @@ void InformationIdEdit::focusOutEvent(QFocusEvent* event)
 	setId(getId());
 }
 
-Gii::TypeId InformationIdEdit::getTypeId() const
+gii::TypeId InformationIdEdit::getTypeId() const
 {
-	return _typeId;}
+	return _typeId;
+}
 
-void InformationIdEdit::setTypeId(Gii::TypeId typeId)
+void InformationIdEdit::setTypeId(gii::TypeId typeId)
 {
 	if (_typeId != typeId)
 	{
@@ -79,4 +80,4 @@ void InformationIdEdit::setTypeId(Gii::TypeId typeId)
 	}
 }
 
-}
+}// namespace sf

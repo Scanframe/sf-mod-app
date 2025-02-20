@@ -5,7 +5,6 @@
 #include <misc/gen/ElapseTimer.h>
 #include <misc/gen/Sustain.h>
 #include <misc/gen/TBitSet.h>
-#include <misc/gen/TClosure.h>
 #include <misc/qt/Graph.h>
 #include <wgt/acq-ctrl/AcquisitionControl.h>
 
@@ -65,7 +64,7 @@ struct AcquisitionControl::Private
 		bool setCanDraw();
 
 		// Hook for the sustain interface.
-		TSustain<AcquisitionControl::Private> _sustainEntry;
+		TSustain<Private> _sustainEntry;
 		// Reference to the timer of the sustain entry.
 		ElapseTimer _timeoutTimer;
 
@@ -97,7 +96,7 @@ struct AcquisitionControl::Private
 		void setGateVerticalPos(bool fromRect = false);
 
 		// Signal handler for when properties change and passes the field pointer.
-		void propertyChange(void* field);
+		void propertyChange(const void* field);
 
 		// Holds the current array of polyline points.
 		QPolygon _polygon;
@@ -108,32 +107,32 @@ struct AcquisitionControl::Private
 		// Handles the variable which the rulers depend on.
 		void handlerRulerVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-		TVariableHandler<AcquisitionControl::Private> _rulerHandler{this, &AcquisitionControl::Private::handlerRulerVariable};
+		TVariableHandler<Private> _rulerHandler{this, &Private::handlerRulerVariable};
 
 		// Handles the variable which the TCG drawing depends on.
 		void handlerTcgVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-		TVariableHandler<AcquisitionControl::Private> _tcgVarHandler{this, &AcquisitionControl::Private::handlerTcgVariable};
+		TVariableHandler<Private> _tcgVarHandler{this, &Private::handlerTcgVariable};
 
 		// Handles the variable which others depend on.
 		void handlerDefaultVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-		TVariableHandler<AcquisitionControl::Private> _defaultVarHandler{this, &AcquisitionControl::Private::handlerDefaultVariable};
+		TVariableHandler<Private> _defaultVarHandler{this, &Private::handlerDefaultVariable};
 
 		// Handle gate variable changes.
 		void handlerGateVariable(Variable::EEvent, const Variable&, Variable&, bool);
 
-		TVariableHandler<AcquisitionControl::Private> _gateVarHandler{this, &AcquisitionControl::Private::handlerGateVariable};
+		TVariableHandler<Private> _gateVarHandler{this, &Private::handlerGateVariable};
 
 		// Handles copy and copy index data result events.
 		void handlerCopyResult(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
 
-		TResultDataHandler<AcquisitionControl::Private> _copyResHandler{this, &AcquisitionControl::Private::handlerCopyResult};
+		TResultDataHandler<Private> _copyResHandler{this, &Private::handlerCopyResult};
 
 		// Handles synchronous data events.
 		void handlerGateResult(ResultData::EEvent, const ResultData&, ResultData&, const Range&, bool);
 
-		TResultDataHandler<AcquisitionControl::Private> _gateResHandler{this, &AcquisitionControl::Private::handlerGateResult};
+		TResultDataHandler<Private> _gateResHandler{this, &Private::handlerGateResult};
 
 		// Data result.
 		ResultData _rCopyData;
@@ -163,7 +162,7 @@ struct AcquisitionControl::Private
 		};
 
 		// Grouped members dealing with TCG painting.
-		struct Tcg
+		struct TcgData
 		{
 				// Holds the points calculated for drawing the TCG in the plot.
 				QList<QPoint> Points;
@@ -192,7 +191,7 @@ struct AcquisitionControl::Private
 		void generateTcgData(int point = -1);
 
 		// Structure to bind gate info and other data members.
-		struct Gate
+		struct GateData
 		{
 				// Related variables.
 				Variable VDelay;
@@ -227,7 +226,7 @@ struct AcquisitionControl::Private
 				QColor _color{QColorConstants::Yellow};
 		};
 		// Create vector which checks memory overrun.
-		TVector<Gate> _gates{MaxGates};
+		TVector<GateData> _gates{MaxGates};
 
 		// Triggers calling setHorizontalGatePos() in sustain.
 		bool _flagGateHorizontalPos{false};
@@ -281,7 +280,7 @@ struct AcquisitionControl::Private
 		};
 
 		// Returns the name of the state.
-		const char* getStateName(int state);
+		static const char* getStateName(int state);
 
 		// Holds the current state.
 		EState _stateCurrent{psIdle};

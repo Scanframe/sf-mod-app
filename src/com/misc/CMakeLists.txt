@@ -60,7 +60,7 @@ set(SOURCES
 	gen/Condition.cpp gen/Condition.h
 	gen/Thread.cpp gen/Thread.h
 	gen/ThreadClosure.h
-	gen/TClosure.h
+	gen/TClosure.h gen/TClosure.hpp
 	gen/ThreadRelay.cpp gen/ThreadRelay.h
 	gen/IFileMapper.cpp gen/IFileMapper.h
 	gen/TClassRegistration.hpp gen/TClassRegistration.h
@@ -122,6 +122,7 @@ if (SF_BUILD_QT)
 		qt/qt_utils.cpp qt/qt_utils.h
 		qt/CaptureListModel.cpp qt/CaptureListModel.h
 		qt/Resource.h qt/Resource.cpp
+		qt/ApplicationSettings.cpp qt/ApplicationSettings.h
 		qt/FormBuilder.cpp qt/FormBuilder.h
 		qt/ObjectExtension.cpp qt/ObjectExtension.h
 		qt/FileMapper.cpp qt/FileMapper.h

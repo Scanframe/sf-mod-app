@@ -2,6 +2,9 @@
 #include "GmiUtils.h"
 #include "misc/gen/ConfigLocation.h"
 #include "misc/gen/IniProfile.h"
+#if IS_QT
+	#include <misc/qt/PropertySheetDialog.h>
+#endif
 
 namespace sf::gmi
 {

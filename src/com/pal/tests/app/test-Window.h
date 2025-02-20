@@ -1,14 +1,17 @@
 #pragma once
 
-#include <QWidget>
 #include <QSettings>
+#include <QWidget>
 #include <pal/iface/PaletteServer.h>
 
-namespace Ui {class Window;}
-
-class Window :public QWidget
+namespace Ui
 {
-	Q_OBJECT
+class Window;
+}
+
+class Window : public QWidget
+{
+		Q_OBJECT
 
 	public:
 		explicit Window(QSettings* settings, QWidget* parent = nullptr);
@@ -18,7 +21,7 @@ class Window :public QWidget
 		void stateSaveRestore(bool save);
 
 	protected:
-		void onPaint(QPaintEvent* event);
+		void onPaint(QPaintEvent* event) const;
 
 		void openPropertySheet();
 

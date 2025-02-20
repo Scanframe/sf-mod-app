@@ -1,13 +1,100 @@
 namespace sf
 {
 
-const char* IniContent = R"(
+auto UnitConversionIniContent = R"(
+
+[Followers]
+0x99003='1e-6 * x',m,0xb0030,0xb0031,
+0x99004='1e-6 * x',m,0xb0038,0xb0039,0xb003e,0xb003f
+
+; <from-unit>,<from-precision>=<to-unit>,<multiplier>,<offset>,<to-precision>
+
+[Disabled]
+
+
+[Metric]
+m,-3=m,1,0,-3
+m,-2=m,1,0,-2
+m,-1=m,1,0,-1
+m,0=mm,1000,0,-3
+m,1=mm,1000,0,-2
+m,2=mm,1000,0,-1
+m,3=mm,1000,0,0
+m,4=mm,1000,0,1
+m,5=mm,1000,0,2
+m,6=mm,1000,0,3
+m,7=mm,1000,0,4
+m,8=mm,1000,0,5
+
+m/s,-1=m/s,1,0,0
+m/s,0=m/s,1,0,0
+m/s,1=mm/s,1000,0,-2
+m/s,2=mm/s,1000,0,-1
+m/s,3=mm/s,1000,0,0
+m/s,4=mm/s,1000,0,1
+m/s,5=mm/s,1000,0,2
+m/s,6=mm/s,1000,0,3
+
+us,1=µs,1,0,1
+us,2=µs,1,0,2
+
+s,0=s,1,0,0
+s,1=s,1,0,1
+s,2=s,1,0,2
+s,3=ms,1e3,0,0
+s,4=ms,1e3,0,1
+s,5=ms,1e3,0,2
+s,6=µs,1e6,0,0
+s,7=µs,1e6,0,1
+s,8=µs,1e6,0,2
+s,9=µs,1e6,0,3
+
+rad,0=deg,57.2958,0,0
+rad,1=deg,57.2958,0,0
+rad,2=deg,57.2958,0,1
+rad,3=deg,57.2958,0,2
+rad,4=deg,57.2958,0,3
+rad,5=deg,57.2958,0,4
+rad,6=deg,57.2958,0,5
+
+rad/s,0=deg/s,57.2958,0,0
+rad/s,1=deg/s,57.2958,0,0
+rad/s,2=deg/s,57.2958,0,1
+rad/s,3=deg/s,57.2958,0,2
+rad/s,4=deg/s,57.2958,0,3
+rad/s,5=deg/s,57.2958,0,4
+rad/s,6=deg/s,57.2958,0,5
+
+°C,1=°C,1
+V,2=mV,1000,0,-1
+
+[Imperial]
+m/s,0="/s,39.3700787401,0,0
+m/s,1="/s,39.3700787401,0,1
+m/s,2="/s,39.3700787401,0,2
+m/s,3="/s,39.3700787401,0,3
+m/s,4="/s,39.3700787401,0,4
+m/s,5="/s,39.3700787401,0,5
+
+rad,0=deg,57.2958,0,0
+rad,1=deg,57.2958,0,0
+rad,2=deg,57.2958,0,1
+rad,3=deg,57.2958,0,2
+rad,4=deg,57.2958,0,3
+rad,5=deg,57.2958,0,4
+rad,6=deg,57.2958,0,5
+
+°C,1=°F,1.8,32,1
+
+)";
+
+const char* VariableIniContent = R"(
 
 [GenericParamInfo]
 Entries=258
-0=0x43C01,Motion|Galil 21x2 - NIP|Version,,RAS,Version of hardware and driver,STRING,,60,,,
-1=0x43C11,Motion|Galil 21x2 - NIP|Trigger|Time Unit,s,AS,Time in seconds that is used for the time dependant results.,FLOAT,,1e-06,1e-06,1e-06,100000000
-2=0x43E02,Motion|Galil 21x2 - NIP|System|Firmware Revision,,RAS,Identification of revision of embedded application,STRING,,60,R1.2 2005/01/04 18:45:51,,
+0=0x5,Unit Conversion|Followers Enabled,,ASP,,INTEGER,,1,1,0,1,Off=0,On=1
+;1=0x10,Unit Conversion|Sound Velocity Water,m/s,ASP,Sound velocity of water.,FLOAT,,1,1481,0,10000
+;2=0x11,Unit Conversion|Sound Velocity Medium,m/s,ASP,Sound velocity of the medium.,FLOAT,,1,3125,0,10000
 3=0xE0001,Storage|Filename,F,ASP,Name for the file to be stored. This is without extension.,STRING,,256,Unknown,,
 4=0xE0009,Storage|Sub Directory,S,ASP,Sub directory name for the file to be stored.,STRING,,256,,,
 5=0xE0007,Storage|Directory,D,ASPE,Directory to store the data in.,STRING,,256,C:\DOCUME~1\bcbdebug\LOCALS~1\Temp\,,
@@ -84,39 +171,6 @@ Entries=258
 108=0xB0045,Uspc2100|Gate 2|Accumulate Reset,,ASEW,Gate 2 Accumulate reset,INTEGER,,1,0,0,1,Off=0,Reset=1
 109=0xB0047,Uspc2100|Gate 2|Rectify,,ASEW,Gate 2 rectify mode,INTEGER,,1,1,0,3,RF=0,Full=1,Pos=2,Neg=3
 110=0xB0049,Uspc2100|Gate 2|Accumulate Mode,,ASEW,Gate 2 Accumulate mode,INTEGER,,1,2,0,2,External=0,Sample=1,Instantaneous=2
-111=0x30002,Eddy Current|Channels,!,ASP,Eddy Current Number of available channels.,INTEGER,,1,1,1,8
-112=0x30005,Eddy Current|Amplitude|Unit,V,RAS,Eddy Current Translates one unit of amplitude to a value.,FLOAT,,1e-99,1,1e-99,1000000000000
-113=0x30401,Eddy Current|Channel|Trigger|Rep.Rate,Hz,ASP,Eddy Current Repetition rate for the internal trigger.,INTEGER,,1,1000,1,20000
-114=0x30402,Eddy Current|Channel|Trigger|Sync Mode,!,ASP,Eddy Current Sync signal internal/external selection.,INTEGER,,1,1,0,1,Internal=0,External=1
-115=0x30405,Eddy Current|Channel|Trigger|Time Unit,s,RAS,Eddy Current Time in seconds that is used for the time dependant results.,FLOAT,,1e-06,0.01,1e-06,100000000
-116=0x30403,Eddy Current|Channel|Gates,!,RAS,Eddy Current Number of available gates.,INTEGER,,1,4,4,4
-117=0x30522,Eddy Current|Channel|X|Attenuator,,AS,Eddy Current X Input sensitivity ±,INTEGER,,1,1,0,4,±10.0V=0,±5.0V=1,±2.5mV=2,±1.25V=3
-118=0x30526,Eddy Current|Channel|X|Rectifier,!,AS,Eddy Current X Rectifier,INTEGER,,1,0,0,3,RF=0,FULL=1,1/2 POS=2,1/2 NEG=3
-119=0x30520,Eddy Current|Channel|X|Calibration|Invert,!,AS,Eddy Current X Calibration inverter,INTEGER,,1,0,0,1,Non invert=0,Invert=1
-120=0x30524,Eddy Current|Channel|X|Calibration|Offset,,AS,Eddy Current X Calibration offset.,FLOAT,,1,0,-2.5,2.5
-121=0x30525,Eddy Current|Channel|X|Calibration|Scale,,AS,Eddy Current X Calibration scale or digital input zoom.,FLOAT,,0.001,1,1,100
-122=0x3052C,Eddy Current|Channel|X|Amplitude|Unit,,RAS,Eddy Current X Translates one unit of amplitude to a value.,FLOAT,,1e-99,0.00122100122100122,1e-99,1000000000000
-123=0x3052D,Eddy Current|Channel|X|Amplitude|Unit Select,,ASP,Eddy Current X Selectes Amplitude Unit.,INTEGER,,1,0,0,3,Default=0,Percentage=1,Volts=2,Meter=3
-124=0x30505,Eddy Current|Channel|X|Enable,!,ASP,Eddy Current X Result Enabler.,INTEGER,,1,1,0,1,Off=0,On=1
-125=0x30622,Eddy Current|Channel|Y|Attenuator,,AS,Eddy Current Y Input sensitivity ±,INTEGER,,1,1,0,4,±10.0V=0,±5.0V=1,±2.5mV=2,±1.25V=3
-126=0x30626,Eddy Current|Channel|Y|Rectifier,!,AS,Eddy Current Y Rectifier,INTEGER,,1,0,0,3,RF=0,FULL=1,1/2 POS=2,1/2 NEG=3
-127=0x30620,Eddy Current|Channel|Y|Calibration|Invert,!,AS,Eddy Current Y Calibration inverter,INTEGER,,1,0,0,1,Non invert=0,Invert=1
-128=0x30624,Eddy Current|Channel|Y|Calibration|Offset,,AS,Eddy Current Y Calibration offset.,FLOAT,,1,0,-2.5,2.5
-129=0x30625,Eddy Current|Channel|Y|Calibration|Scale,,AS,Eddy Current Y Calibration scale or digital input zoom.,FLOAT,,0.001,1,1,100
-130=0x3062C,Eddy Current|Channel|Y|Amplitude|Unit,,RAS,Eddy Current Y Translates one unit of amplitude to a value.,FLOAT,,1e-99,0.00122100122100122,1e-99,1000000000000
-131=0x3062D,Eddy Current|Channel|Y|Amplitude|Unit Select,,ASP,Eddy Current Y Selectes Amplitude Unit.,INTEGER,,1,0,0,3,Default=0,Percentage=1,Volts=2,Meter=3
-132=0x30605,Eddy Current|Channel|Y|Enable,!,ASP,Eddy Current Y Result Enabler.,INTEGER,,1,1,0,1,Off=0,On=1
-133=0x30210,Eddy Current|Instrument|Identification,,RAS,Eddy Current Name parameter. [SV ,STRING,,80,,,
-134=0x30212,Eddy Current|Instrument|Frequency,Hz,ASP,Eddy Current Driver frequency. [B] ,FLOAT,,1,2000000,10,10000000
-135=0x30213,Eddy Current|Instrument|Pre-Gain,,ASP,Eddy Current Preamplifier gain. [B] ,INTEGER,,1,2,0,6,-20 dB=0,-10 dB=1,0 dB=2,10 dB=3,20 dB=4,30 dB=5,40 dB=6
-136=0x30214,Eddy Current|Instrument|Gain,dB,ASP,Eddy Current Main Amplifier gain. [B] ,INTEGER,,1,20,0,60
-137=0x30215,Eddy Current|Instrument|Vertical Spread,dB,ASP,Eddy Current Vertical spread. [B] ,INTEGER,,1,0,0,20
-138=0x30216,Eddy Current|Instrument|Horizontal Spread,dB,ASP,Eddy Current Horizontal spread. [B] ,INTEGER,,1,0,0,20
-139=0x30217,Eddy Current|Instrument|Phase,Deg,ASP,Eddy Current Phase. [B] ,INTEGER,,1,0,0,359
-140=0x30218,Eddy Current|Instrument|Bandwidth Limit,,ASP,Eddy Current Bandwidth Limit. [B] ,INTEGER,,1,0,0,2,On=0,Off=1
-141=0x30219,Eddy Current|Instrument|HP Filter,,ASP,Eddy Current High pass filter. [B] ,INTEGER,,1,0,0,40,0.5 Hz=0,1.5 Hz=1,2.1 Hz=2,2.8 Hz=3,3.5 Hz=4,4 Hz=5,5 Hz=6,6.5 Hz=7,8 Hz=8,10 Hz=9,12.5 Hz=10,16 Hz=11,20 Hz=12,25 Hz=13,32 Hz=14,40 Hz=15,50 Hz=16,65 Hz=17,80 Hz=18,100 Hz=19,125 Hz=20,160 Hz=21,200 Hz=22,250 Hz=23,300 Hz=24,400 Hz=25,500 Hz=26,650 Hz=27,800 Hz=28,1 kHz=29,1.25 kHz=30,1.6 kHz=31,2 kHz=32,2.5 kHz=33,3.2 kHz=34
-142=0x3021A,Eddy Current|Instrument|LP Filter,,ASP,Eddy Current Low pass filter. [B] ,INTEGER,,1,0,0,39,0.5 Hz=0,1.5 Hz=1,2.1 Hz=2,2.8 Hz=3,3.5 Hz=4,4 Hz=5,5 Hz=6,6.5 Hz=7,8 Hz=8,10 Hz=9,12.5 Hz=10,16 Hz=11,20 Hz=12,25 Hz=13,32 Hz=14,40 Hz=15,50 Hz=16,65 Hz=17,80 Hz=18,100 Hz=19,125 Hz=20,160 Hz=21,200 Hz=22,250 Hz=23,300 Hz=24,400 Hz=25,500 Hz=26,650 Hz=27,800 Hz=28,1 kHz=29,1.25 kHz=30,1.6 kHz=31,2 kHz=32,2.5 kHz=33,3.2 kHz=34
-143=0x3021C,Eddy Current|Instrument|?,units,RAS,Eddy Current ? [?] ,UNDEF,,,,,
 144=0x99003,Project|Sound Velocity|Medium,m/s,AS,Sound velocity of the medium,FLOAT,,1,1480,100,10000
 145=0x99004,Project|Sound Velocity|Material,m/s,AS,Sound velocity of the inspected material,FLOAT,,1,5820,100,10000
 146=0x99005,Project|System|Time,s,AS,Current time,STRING,,100,0,0,0
@@ -132,38 +186,6 @@ Entries=258
 186=0x50005,Project|Project,N,RAE,Reference name of the loaded project.,STRING,,256,,,
 187=0x50006,Project|Inspection,N,RAE,Reference name of the current inspection.,STRING,,256,,,
 188=0x50007,Project|Medium,F,APE,Name of the medium used for the part.,STRING,,40,,,
-189=0x53100,Project|Calibration|PreCal|Eddy Current|Instrument|Pre-Gain,,RAE,PreCal copy of; Eddy Current Preamplifier gain. [B] ,INTEGER,,1,2,0,0
-190=0x53101,Project|Calibration|PreCal|Eddy Current|Instrument|Gain,dB,RAE,PreCal copy of; Eddy Current Main Amplifier gain. [B] ,INTEGER,,1,20,0,0
-191=0x53102,Project|Calibration|PreCal|Eddy Current|Instrument|Phase,Deg,RAE,PreCal copy of; Eddy Current Phase. [B] ,INTEGER,,1,0,0,0
-192=0x53103,Project|Calibration|PreCal|Eddy Current|Instrument|Frequency,Hz,RAE,PreCal copy of; Eddy Current Driver frequency. [B] ,FLOAT,,1,2000000,10,10
-193=0x53104,Project|Calibration|PreCal|Eddy Current|Instrument|HP Filter,,RAE,PreCal copy of; Eddy Current High pass filter. [B] ,INTEGER,,1,0,0,0
-194=0x53105,Project|Calibration|PreCal|Eddy Current|Instrument|LP Filter,,RAE,PreCal copy of; Eddy Current Low pass filter. [B] ,INTEGER,,1,0,0,0
-195=0x53200,Project|Calibration|PostCal|Eddy Current|Instrument|Pre-Gain,,RAE,PostCal copy of; Eddy Current Preamplifier gain. [B] ,INTEGER,,1,2,0,0
-196=0x53201,Project|Calibration|PostCal|Eddy Current|Instrument|Gain,dB,RAE,PostCal copy of; Eddy Current Main Amplifier gain. [B] ,INTEGER,,1,20,0,0
-197=0x53202,Project|Calibration|PostCal|Eddy Current|Instrument|Phase,Deg,RAE,PostCal copy of; Eddy Current Phase. [B] ,INTEGER,,1,0,0,0
-198=0x53203,Project|Calibration|PostCal|Eddy Current|Instrument|Frequency,Hz,RAE,PostCal copy of; Eddy Current Driver frequency. [B] ,FLOAT,,1,2000000,10,10
-199=0x53204,Project|Calibration|PostCal|Eddy Current|Instrument|HP Filter,,RAE,PostCal copy of; Eddy Current High pass filter. [B] ,INTEGER,,1,0,0,0
-200=0x53205,Project|Calibration|PostCal|Eddy Current|Instrument|LP Filter,,RAE,PostCal copy of; Eddy Current Low pass filter. [B] ,INTEGER,,1,0,0,0
-201=0x52000,Project|Report|Custom|UT|Standard|P/N,F,ASEW,Calibration part number.,STRING,,40,?,,
-202=0x52001,Project|Report|Custom|UT|Standard|S/N,F,ASEW,Calibration serial number.,STRING,,40,?,,
-203=0x52002,Project|Report|Custom|UT|Probe|P/N,F,ASEW,Probe part number.,STRING,,40,?,,
-204=0x52003,Project|Report|Custom|UT|Probe|S/N,F,ASEW,Probe serial number.,STRING,,40,?,,
-205=0x52004,Project|Report|Custom|UT|Instrument|P/N,F,ASEW,Instrument part number.,STRING,,40,?,,
-206=0x52005,Project|Report|Custom|UT|Instrument|S/N,F,ASEW,Instrument serial number.,STRING,,40,?,,
-207=0x52006,Project|Report|Custom|UT|Recorder|P/N,F,ASEW,Recorder part number.,STRING,,40,?,,
-208=0x52007,Project|Report|Custom|UT|Recorder|S/N,F,ASEW,Recorder serial number.,STRING,,40,?,,
-209=0x52008,Project|Report|Custom|ET|Standard|P/N,F,ASEW,Calibration part number.,STRING,,40,?,,
-210=0x52009,Project|Report|Custom|ET|Standard|S/N,F,ASEW,Calibration serial number.,STRING,,40,?,,
-211=0x5200A,Project|Report|Custom|ET|Probe|P/N,F,ASEW,Probe part number.,STRING,,40,?,,
-212=0x5200B,Project|Report|Custom|ET|Probe|S/N,F,ASEW,Probe serial number.,STRING,,40,?,,
-213=0x5200C,Project|Report|Custom|ET|Instrument|P/N,F,ASEW,Instrument part number.,STRING,,40,?,,
-214=0x5200D,Project|Report|Custom|ET|Instrument|S/N,F,ASEW,Instrument serial number.,STRING,,40,?,,
-215=0x5200E,Project|Report|Custom|ET|Recorder|P/N,F,ASEW,Recorder part number.,STRING,,40,?,,
-216=0x5200F,Project|Report|Custom|ET|Recorder|S/N,F,ASEW,Recorder serial number.,STRING,,40,?,,
-217=0x52010,Project|Report|Custom|ESN,F,ASEW,ESN number.,STRING,,40,?,,
-218=0x52011,Project|Report|Custom|SAP-AUN,F,ASEW,SAP-AUN number.,STRING,,40,?,,
-219=0x52012,Project|Report|Custom|ARF,F,ASEW,ARF number.,STRING,,40,?,,
-220=0x52013,Project|Report|Custom|Comment,F,ASEW,Project comment.,STRING,,256,?,,
 221=0x5F001,Project|Method|Circle|Part,F,RAPE,Part Name.,STRING,,40,,,
 222=0x5F002,Project|Method|Circle|Tool,F,APE,Name of the used tool.,STRING,,40,,,
 223=0x5F014,Project|Method|Circle|Tool|Serial,N,RAE,Tool Serial number of the used tool.,STRING,,40,,,
@@ -361,72 +383,6 @@ Entries=258
 0xB0047=1
 ; 'Uspc2100|Gate 2|Accumulate Mode' in ''
 0xB0049=2
-; 'Eddy Current|Channels' in '!'
-0x30002=1
-; 'Eddy Current|Amplitude|Unit' in 'V'
-0x30005=0.00122100122100122
-; 'Eddy Current|Channel|Trigger|Rep.Rate' in 'Hz'
-0x30401=5000
-; 'Eddy Current|Channel|Trigger|Sync Mode' in '!'
-0x30402=0
-; 'Eddy Current|Channel|Trigger|Time Unit' in 's'
-0x30405=0.0002
-; 'Eddy Current|Channel|Gates' in '!'
-0x30403=4
-; 'Eddy Current|Channel|X|Attenuator' in ''
-0x30522=2
-; 'Eddy Current|Channel|X|Rectifier' in '!'
-0x30526=0
-; 'Eddy Current|Channel|X|Calibration|Invert' in '!'
-0x30520=0
-; 'Eddy Current|Channel|X|Calibration|Offset' in ''
-0x30524=0
-; 'Eddy Current|Channel|X|Calibration|Scale' in ''
-0x30525=1
-; 'Eddy Current|Channel|X|Amplitude|Unit' in ''
-0x3052C=0.00122100122100122
-; 'Eddy Current|Channel|X|Amplitude|Unit Select' in ''
-0x3052D=0
-; 'Eddy Current|Channel|X|Enable' in '!'
-0x30505=1
-; 'Eddy Current|Channel|Y|Attenuator' in ''
-0x30622=2
-; 'Eddy Current|Channel|Y|Rectifier' in '!'
-0x30626=0
-; 'Eddy Current|Channel|Y|Calibration|Invert' in '!'
-0x30620=0
-; 'Eddy Current|Channel|Y|Calibration|Offset' in ''
-0x30624=0
-; 'Eddy Current|Channel|Y|Calibration|Scale' in ''
-0x30625=1
-; 'Eddy Current|Channel|Y|Amplitude|Unit' in ''
-0x3062C=0.00122100122100122
-; 'Eddy Current|Channel|Y|Amplitude|Unit Select' in ''
-0x3062D=0
-; 'Eddy Current|Channel|Y|Enable' in '!'
-0x30605=1
-; 'Eddy Current|Instrument|Identification' in 'Normal'
-0x30210=ELOTEST B1 V4 UM  Version: 6.04  SN: 02513
-; 'Eddy Current|Instrument|Frequency' in 'Hz'
-0x30212=2000000
-; 'Eddy Current|Instrument|Pre-Gain' in ''
-0x30213=3
-; 'Eddy Current|Instrument|Gain' in 'dB'
-0x30214=28
-; 'Eddy Current|Instrument|Vertical Spread' in 'dB'
-0x30215=0
-; 'Eddy Current|Instrument|Horizontal Spread' in 'dB'
-0x30216=0
-; 'Eddy Current|Instrument|Phase' in 'Deg'
-0x30217=146
-; 'Eddy Current|Instrument|Bandwidth Limit' in ''
-0x30218=1
-; 'Eddy Current|Instrument|HP Filter' in ''
-0x30219=15
-; 'Eddy Current|Instrument|LP Filter' in ''
-0x3021A=26
-; 'Eddy Current|Instrument|?' in 'units'
-0x3021C=
 ; 'Project|Sound Velocity|Medium' in 'm/s'
 0x99003=1491
 ; 'Project|Sound Velocity|Material' in 'm/s'
@@ -456,70 +412,6 @@ Entries=258
 0x50006=CF6-50 9253M66>MPOV8496A<20050113_095530
 ; 'Project|Medium' in 'File'
 0x50007=Water
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|Pre-Gain' in ''
-0x53100=3
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|Gain' in 'dB'
-0x53101=23
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|Phase' in 'Deg'
-0x53102=146
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|Frequency' in 'Hz'
-0x53103=2000000
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|HP Filter' in ''
-0x53104=15
-; 'Project|Calibration|PreCal|Eddy Current|Instrument|LP Filter' in ''
-0x53105=26
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|Pre-Gain' in ''
-0x53200=2
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|Gain' in 'dB'
-0x53201=20
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|Phase' in 'Deg'
-0x53202=0
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|Frequency' in 'Hz'
-0x53203=2000000
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|HP Filter' in ''
-0x53204=0
-; 'Project|Calibration|PostCal|Eddy Current|Instrument|LP Filter' in ''
-0x53205=0
-; 'Project|Report|Custom|UT|Standard|P/N' in 'File'
-0x52000=
-; 'Project|Report|Custom|UT|Standard|S/N' in 'File'
-0x52001=
-; 'Project|Report|Custom|UT|Probe|P/N' in 'File'
-0x52002=
-; 'Project|Report|Custom|UT|Probe|S/N' in 'File'
-0x52003=
-; 'Project|Report|Custom|UT|Instrument|P/N' in 'File'
-0x52004=
-; 'Project|Report|Custom|UT|Instrument|S/N' in 'File'
-0x52005=
-; 'Project|Report|Custom|UT|Recorder|P/N' in 'File'
-0x52006=
-; 'Project|Report|Custom|UT|Recorder|S/N' in 'File'
-0x52007=
-; 'Project|Report|Custom|ET|Standard|P/N' in 'File'
-0x52008=ET Std PN
-; 'Project|Report|Custom|ET|Standard|S/N' in 'File'
-0x52009=ET Std SN
-; 'Project|Report|Custom|ET|Probe|P/N' in 'File'
-0x5200A=MDK1
-; 'Project|Report|Custom|ET|Probe|S/N' in 'File'
-0x5200B=1234
-; 'Project|Report|Custom|ET|Instrument|P/N' in 'File'
-0x5200C=ELOTEST B1 V4 UM  Version 6.04
-; 'Project|Report|Custom|ET|Instrument|S/N' in 'File'
-0x5200D=02513
-; 'Project|Report|Custom|ET|Recorder|P/N' in 'File'
-0x5200E=KPCI3100
-; 'Project|Report|Custom|ET|Recorder|S/N' in 'File'
-0x5200F=unknown
-; 'Project|Report|Custom|ESN' in 'File'
-0x52010=
-; 'Project|Report|Custom|SAP-AUN' in 'File'
-0x52011=
-; 'Project|Report|Custom|ARF' in 'File'
-0x52012=
-; 'Project|Report|Custom|Comment' in 'File'
-0x52013=
 ; 'Project|Method|Circle|Part' in 'File'
 0x5F001=CF6-50 9253M66
 ; 'Project|Method|Circle|Tool' in 'File'
@@ -597,4 +489,4 @@ Entries=258
 
 )";
 
-}
+}// namespace sf

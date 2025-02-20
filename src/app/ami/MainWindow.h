@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QMainWindow>
-#include <ami/iface/MultiDocInterface.h>
 #include <ami/iface/AppModuleInterface.h>
+#include <ami/iface/MultiDocInterface.h>
 
 class QShortcut;
 
@@ -21,9 +21,9 @@ namespace sf
 
 class Application;
 
-class MainWindow :public QMainWindow
+class MainWindow : public QMainWindow
 {
-	Q_OBJECT
+		Q_OBJECT
 
 	public:
 		explicit MainWindow(QSettings* settings, Application* application);
@@ -32,10 +32,7 @@ class MainWindow :public QMainWindow
 
 		MultiDocInterface* openFile(const QString& filename);
 
-		QMdiArea* getMdiArea()
-		{
-			return _mdiArea;
-		}
+		inline QMdiArea* getMdiArea() const;
 
 		void settingsReadWrite(bool save);
 
@@ -87,7 +84,10 @@ class MainWindow :public QMainWindow
 		void mdiSubActivated(QMdiSubWindow*);
 
 	private:
-		enum {MaxRecentFiles = 10};
+		enum
+		{
+			MaxRecentFiles = 10
+		};
 
 		void createActions();
 
@@ -151,4 +151,9 @@ class MainWindow :public QMainWindow
 		void createAppModuleToolBars();
 };
 
+inline QMdiArea* MainWindow::getMdiArea() const
+{
+	return _mdiArea;
 }
+
+}// namespace sf

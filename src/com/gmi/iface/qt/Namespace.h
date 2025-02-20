@@ -4,7 +4,7 @@
 #include <QtCore/qtmetamacros.h>
 #include <gmi/iface/global.h>
 
-namespace sf::Gii
+namespace sf::gii
 {
 
 Q_NAMESPACE_EXPORT(_GMI_DATA)

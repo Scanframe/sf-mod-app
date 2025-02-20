@@ -7,13 +7,10 @@
 namespace sf
 {
 
-// Forward definition
-class _MISC_CLASS PropertyPage;
-
 /**
  * @brief Dialog containing multiple property pages.
  */
-class _MISC_CLASS PropertySheetDialog : public QDialog
+class _MISC_CLASS PropertySheetDialog final : public QDialog
 {
 		Q_OBJECT
 
@@ -54,17 +51,17 @@ class _MISC_CLASS PropertySheetDialog : public QDialog
 	protected:
 		void showEvent(QShowEvent* event) override;
 
-	Q_SIGNALS:
+	public:
 		/**
 		 * @brief Emitted when a modification was applied.
 		 */
-		void modified();
+		// ReSharper disable once CppFunctionIsNotImplemented
+		Q_SIGNAL void modified();
 
-	public Q_SLOTS:
 		/**
 		 * @brief Slot called from page when a control widget has been changed.
 		 */
-		void checkModified(QWidget* origin);
+		Q_SLOT void checkModified(QWidget* origin);
 
 	private:
 		/**

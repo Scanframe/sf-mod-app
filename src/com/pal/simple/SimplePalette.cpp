@@ -5,9 +5,8 @@ namespace sf
 {
 
 SimplePalette::SimplePalette(const PaletteInterface::Parameters& params)
-	:PaletteInterface(params)
-{
-}
+	: PaletteInterface(params)
+{}
 
 SF_IMPL_PROP_GSN(QColor, SimplePalette, ColorFrom, _colorFrom, notify)
 
@@ -94,4 +93,4 @@ ColorTable SimplePalette::getColorTable() const
 	return rv;
 }
 
-}
+}// namespace sf

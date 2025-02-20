@@ -1,16 +1,15 @@
 #pragma once
-
+#include "MainWindow.h"
+#include "misc/qt/ApplicationSettings.h"
 #include <QApplication>
 #include <QCommandLineParser>
-#include <SingleInstance>
-#include <misc/qt/qt_utils.h>
+#include <SingleInstance.h>
 #include <misc/qt/ModuleConfiguration.h>
-#include "MainWindow.h"
 
 namespace sf
 {
 
-class Application :public QApplication
+class Application : public QApplication
 {
 	public:
 		Application(int& argc, char** argv, int flags = ApplicationFlags);
@@ -28,7 +27,6 @@ class Application :public QApplication
 		void processCommandLine();
 
 	private:
-
 		std::string ConfigLocationHandler(const std::string& option);
 
 		void handleInstanceMessage(quint32 instanceId, const QByteArray& message);
@@ -59,4 +57,4 @@ class Application :public QApplication
 		bool _allowSecondary{false};
 };
 
-}
+}// namespace sf

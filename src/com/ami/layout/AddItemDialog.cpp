@@ -1,19 +1,21 @@
-#include <QUiLoader>
-#include <QFormLayout>
+#include "AddItemDialog.h"
+#include "ui_AddItemDialog.h"
 #include <QBoxLayout>
+#include <QFormLayout>
+#include <QUiLoader>
 #include <misc/gen/ConfigLocation.h>
 #include <misc/qt/ActionButton.h>
 #include <misc/qt/Globals.h>
 #include <misc/qt/qt_utils.h>
-#include "AddItemDialog.h"
-#include "ui_AddItemDialog.h"
+
+#include <QMessageBox>
 
 namespace sf
 {
 
 AddItemDialog::AddItemDialog(QWidget* parent)
-	:QDialog(parent)
-	 , ui(new Ui::AddItemDialog)
+	: QDialog(parent)
+	, ui(new Ui::AddItemDialog)
 {
 	ui->setupUi(this);
 	// Fill the combo box with types.
@@ -26,8 +28,7 @@ AddItemDialog::AddItemDialog(QWidget* parent)
 		ui->cbFormRole->addItem(enumToKey(role), role);
 	}
 	//
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [&]()
-	{
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [&]() {
 		if (validated())
 		{
 			accept();
@@ -157,7 +158,7 @@ QObjectList AddItemDialog::execute(QLayout* layout)
 					_boxLayout->insertWidget(index, child);
 				}
 			}
-				// When it concerns a form-layout.
+			// When it concerns a form-layout.
 			else if (_formLayout)
 			{
 				// Get the position of before object.
@@ -201,7 +202,7 @@ QObjectList AddItemDialog::execute(QLayout* layout)
 								_formLayout->addRow(child, (QWidget*) nullptr);
 								break;
 						}
-//						_formLayout->setWidget(pos.first, role, child);
+						//						_formLayout->setWidget(pos.first, role, child);
 					}
 				}
 				else
@@ -240,4 +241,4 @@ QObjectList AddItemDialog::execute(QLayout* layout)
 	return rv;
 }
 
-}
+}// namespace sf

@@ -376,7 +376,7 @@ QVariant ObjectPropertyModel::data(const QModelIndex& index, int role) const
 		}
 	}
 	// Used to initialize the delegate editor.
-	else if (role == Qt::ItemDataRole::EditRole)
+	if (role == Qt::ItemDataRole::EditRole)
 	{
 		if (index.column() == cValue)
 		{

@@ -1,3 +1,5 @@
+#include "misc/qt/ApplicationSettings.h"
+#include "test-ini-content.h"
 #include <QApplication>
 #include <QDir>
 #include <QSettings>
@@ -10,10 +12,6 @@
 #include <misc/gen/dbgutils.h>
 #include <misc/qt/Globals.h>
 #include <misc/qt/qt_utils.h>
-#if IS_WIN
-	#include <windows.h>
-#endif
-#include "test-ini-content.h"
 
 namespace sf
 {
@@ -83,13 +81,8 @@ void loadFromIni(InformationTypes::Vector& rv)
 
 int main(int argc, char* argv[])
 {
-#if IS_WIN
-	if (!sf::isDebug())
-	{
-		// Removes the console in windows application.
-		FreeConsole();
-	}
-#endif
+	// Removes the console in Windows application.
+	sf::freeConsole();
 	// Ignore desktop settings because it gives the wrong icon colors.
 	QApplication::setDesktopSettingsAware(false);
 	//
@@ -120,7 +113,7 @@ int main(int argc, char* argv[])
 		appSettings.restoreWindowRect("Dialog", &dlg);
 		dlg.setLayout(new QVBoxLayout(&dlg));
 		auto edit = new sf::InformationIdEdit(&dlg);
-		edit->setTypeId(sf::Gii::ResultData);
+		edit->setTypeId(sf::gii::ResultData);
 		dlg.layout()->addWidget(edit);
 		dlg.exec();
 		appSettings.saveWindowRect("Dialog", &dlg);
@@ -128,7 +121,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		sf::InformationSelectDialog isd;
-		auto ids = isd.execute(sf::Gii::Multiple);
+		auto ids = isd.execute(sf::gii::Multiple);
 		qDebug() << ids;
 	}
 	// Remove all entries before uninitializing.

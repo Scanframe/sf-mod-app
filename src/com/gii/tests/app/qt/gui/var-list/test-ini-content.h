@@ -3,6 +3,7 @@
 namespace sf
 {
 
-extern const char* IniContent;
+extern const char* VariableIniContent;
+extern const char* UnitConversionIniContent;
 
-}
+}// namespace sf

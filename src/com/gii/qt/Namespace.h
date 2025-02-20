@@ -5,7 +5,7 @@
 #include <gii/gen/InformationBase.h>
 #include <gii/global.h>
 
-namespace sf::Gii
+namespace sf::gii
 {
 
 Q_NAMESPACE_EXPORT(_GII_DATA)
@@ -39,4 +39,4 @@ enum SelectionMode
 };
 Q_ENUM_NS(SelectionMode)
 
-}// namespace sf::Gii
+}// namespace sf::gii

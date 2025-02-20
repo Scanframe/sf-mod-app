@@ -1,6 +1,6 @@
-#include <misc/gen/dbgutils.h>
 #include "VariableReference.h"
 #include "VariableStatic.h"
+#include <misc/gen/dbgutils.h>
 
 namespace sf
 {
@@ -76,8 +76,10 @@ VariableReference::~VariableReference()
 						if (ref->_list[idx])
 						{
 							// Notification of warning
-							SF_RTTI_NOTIFY(DO_CLOG, "Dangling instance [" << idx << "/" << count << "] with desired ID 0x"
-								<< std::hex << ref->_list[idx]->_desiredId << " in this process!")
+							SF_RTTI_NOTIFY(
+								DO_CLOG,
+								"Dangling instance [" << idx << "/" << count << "] with desired ID 0x" << std::hex << ref->_list[idx]->_desiredId << " in this process!"
+							)
 						}
 						// Limit the amount shown to a maximum of 3.
 						if (idx >= 3)
@@ -89,8 +91,7 @@ VariableReference::~VariableReference()
 				}
 				else
 				{
-					SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT,
-						": Dangling reference owning instance with ID 0x" << std::hex << ref->_id << " in this process!")
+					SF_RTTI_NOTIFY(DO_MSGBOX | DO_DEFAULT, ": Dangling reference owning instance with ID 0x" << std::hex << ref->_id << " in this process!")
 				}
 			}
 			// Subtract 1 for zero instance itself. There should only be one left in the list.
@@ -115,4 +116,4 @@ VariableReference::~VariableReference()
 	VariableStatic::_references->detach(this);
 }
 
-}
+}// namespace sf

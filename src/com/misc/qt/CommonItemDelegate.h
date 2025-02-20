@@ -34,6 +34,13 @@ class _MISC_CLASS CommonItemDelegate : public QStyledItemDelegate
 			MaximumRole,
 			/** Increment for scalar value e.g. a spin box. */
 			IncrementRole,
+			/**
+			 * Determines the text color of the text.
+			 * Can be a QColor or QPalette::ColorRole (integer) type.
+			 */
+			TextColorRole,
+			/** Determines how the item should be aligned. using */
+			AlignmentRole,
 		};
 
 		/**
@@ -61,6 +68,7 @@ class _MISC_CLASS CommonItemDelegate : public QStyledItemDelegate
 		 * @param lineEdit Line edit in question.
 		 * @param index Index of the edited item.
 		 */
+		// ReSharper disable once CppFunctionIsNotImplemented
 		Q_SIGNAL void addLineEditActions(QLineEdit* lineEdit, const QModelIndex& index) const;
 
 		/**
@@ -95,6 +103,11 @@ class _MISC_CLASS CommonItemDelegate : public QStyledItemDelegate
 		 * @brief Overridden from base class.
 		 */
 		void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+		/**
+		 * @brief Overridden from base class.
+		 */
+		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
 
 }// namespace sf

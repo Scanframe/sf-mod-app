@@ -17,7 +17,7 @@ class _GII_CLASS InformationItemModel : public QAbstractItemModel
 		/**
 		 * @brief Constructor.
 		 */
-		explicit InformationItemModel(Gii::SelectionMode mode, Gii::TypeId idType, QObject* parent);
+		explicit InformationItemModel(gii::SelectionMode mode, gii::TypeId idType, QObject* parent);
 
 		/**
 		 * @brief Overridden destructor.
@@ -71,7 +71,7 @@ class _GII_CLASS InformationItemModel : public QAbstractItemModel
 		/**
 		 * @brief Gets the information ID from the passed index.
 		 */
-		Gii::IdType getId(const QModelIndex& index);
+		gii::IdType getId(const QModelIndex& index);
 
 		/**
 		 * @brief Toggle the selection of the item at the passed index.
@@ -111,7 +111,7 @@ class _GII_CLASS InformationItemModel : public QAbstractItemModel
 				/**
 			 * @brief Hold the ID of the variable or result when the type is not dtFolder.
 			 */
-				Gii::IdType _id{0};
+				gii::IdType _id{0};
 				/**
 			 * @brief Holds the display name of the item.
 			 */
@@ -137,11 +137,11 @@ class _GII_CLASS InformationItemModel : public QAbstractItemModel
 		/**
 		 * @brief Determines the multiple or single selection mode.
 		 */
-		Gii::SelectionMode _mode;
+		gii::SelectionMode _mode;
 		/**
 		 * @brief Determines the type of id's to be selected.
 		 */
-		Gii::TypeId _idType;
+		gii::TypeId _idType;
 		/**
 		 * @brief Holds the root item
 		 */

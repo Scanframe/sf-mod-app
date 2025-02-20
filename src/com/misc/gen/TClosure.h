@@ -1,6 +1,4 @@
 #pragma once
-
-#include <cassert>
 #include <functional>
 
 namespace sf
@@ -8,7 +6,6 @@ namespace sf
 
 /**
  * @brief Encapsulates the std::function() template
- *
  * @tparam Result Return type of the function.
  * @tparam Args Variable amount of function arguments.
  */
@@ -22,33 +19,24 @@ class TClosure
 		typedef std::function<Result(Args...)> func_type;
 
 		/**
-		 * @brief Default constructor
+		 * @brief Default constructor.
 		 */
 		TClosure() = default;
 
 		/**
-		 * @brief Copy constructor
+		 * @brief Copy constructor.
 		 */
-		TClosure(const TClosure& c)
-		{
-			_func = c ? c._func : nullptr;
-		}
+		TClosure(const TClosure& c);
 
 		/**
 		 * @brief Function assignment constructor.
 		 */
-		explicit TClosure(const func_type& fn)
-			: _func(fn)
-		{}
+		explicit TClosure(const func_type& fn);
 
 		/**
 		 * @brief Function assignment method for static function.
 		 */
-		TClosure& assign(const func_type& fn)
-		{
-			_func = fn;
-			return *this;
-		}
+		TClosure& assign(const func_type& fn);
 
 		/**
 		 * @brief Binds a non-static class member function to this instance.
@@ -73,70 +61,43 @@ class TClosure
 		 * @return Itself.
 		 */
 		template<typename ClassType, typename MethodType, typename... BoundArgs>
-		TClosure& assign(ClassType* cls, MethodType mtd, BoundArgs... args)
-		{
-			TClosure<Result, Args...>::assign(std::bind(mtd, cls, args...));// NOLINT(modernize-avoid-bind)
-			return *this;
-		}
+		TClosure& assign(ClassType* cls, MethodType mtd, BoundArgs... args);
 
 		/**
-		 * @brief Function assignment member.
+		 * @brief Releases the bind function.
 		 */
-		TClosure& unassign()
-		{
-			_func = nullptr;
-			return *this;
-		}
+		TClosure& unassign();
 
 		/**
 		 * @brief Closure assignment operator.
 		 */
-		TClosure& operator=(const TClosure& c)
-		{
-			_func = c._func;
-			return *this;
-		}
+		TClosure& operator=(const TClosure& c);
 
 		/**
 		 * @brief Closure assignment operator.
 		 */
-		TClosure& operator=(const func_type& f)
-		{
-			_func = f;
-			return *this;
-		}
+		TClosure& operator=(const func_type& f);
 
 		/**
 		 * @brief Make the call to the member function.
-		 *
 		 * @param args List of arguments specified by the template.
 		 * @return Result type
 		 */
-		Result operator()(Args... args) const
-		{
-			return call(args...);
-		}
+		Result operator()(Args... args) const;
 
 		/**
 		 * @brief Checks if the closure is valid for calling.
 		 */
-		[[nodiscard]] inline bool isAssigned() const
-		{
-			return _func != nullptr;
-		}
+		[[nodiscard]] bool isAssigned() const;
 
 		/**
 		 * @brief Checks if the closure is valid for calling.
 		 */
-		explicit operator bool() const
-		{
-			return isAssigned();
-		}
+		explicit operator bool() const;
 
 	protected:
 		/**
 		 * @brief Makes the call to the member function.
-		 *
 		 * @param args List of arguments specified by the template.
 		 * @return Result type
 		 */
@@ -149,16 +110,6 @@ class TClosure
 		func_type _func{nullptr};
 };
 
-template<typename Result, typename... Args>
-Result TClosure<Result, Args...>::call(Args... args) const
-{
-	// Bail out when called and not assigned.
-	if (!isAssigned())
-	{
-		throw std::bad_function_call();
-	}
-	// Call the assigned function.
-	return _func(args...);
-}
-
 }// namespace sf
+
+#include <misc/gen/TClosure.hpp>

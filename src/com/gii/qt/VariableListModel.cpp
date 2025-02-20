@@ -1,30 +1,33 @@
 #include "VariableListModel.h"
-#include "misc/gen/dbgutils.h"
-#include "misc/gen/string.h"
-#include "misc/qt/Resource.h"
-
 #include <QAbstractItemView>
 #include <QFileDialog>
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QMetaEnum>
+#include <misc/gen/dbgutils.h>
+#include <misc/gen/string.h>
 #include <misc/qt/CommonItemDelegate.h>
 #include <misc/qt/ObjectExtension.h>
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
-
 namespace
 {
 
 enum EColumn
 {
-	cId = 0,
+	cId,
 	cName,
 	cValue,
 	cUnit,
-	cFlags,
 	cMaxColumns
+};
+
+// Columns not being shown.
+enum EColumnDisabled
+{
+	//cId = -1000,
+	cFlags = -1001
 };
 
 QVariant toQVariant(const Value& v)
@@ -88,16 +91,16 @@ void VariableListModel::setDelegates(QAbstractItemView* view)
 	const auto cid = new CommonItemDelegate(view);
 	// Add actions to the few.
 	connect(cid, &CommonItemDelegate::addLineEditActions, [&](QLineEdit* line_edit, const QModelIndex& index) {
-		const auto var = _vars.at(index.row()).get();
+		const auto var = _varList.at(index.row()).get();
 		auto type = var->getStringType();
 		QAction* action{nullptr};
-		if (type == sf::Variable::EStringType::stPath)
+		if (type == stPath)
 		{
-			action = line_edit->addAction(sf::Resource::getSvgIcon(":icon/svg/file", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
+			action = line_edit->addAction(Resource::getSvgIcon(":icon/svg/file", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
 		}
-		else if (type == sf::Variable::EStringType::stDirectory)
+		else if (type == stDirectory)
 		{
-			action = line_edit->addAction(sf::Resource::getSvgIcon(":icon/svg/folder", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
+			action = line_edit->addAction(Resource::getSvgIcon(":icon/svg/folder", line_edit->palette(), QPalette::Text), QLineEdit::TrailingPosition);
 		}
 		if (action != nullptr)
 		{
@@ -105,7 +108,7 @@ void VariableListModel::setDelegates(QAbstractItemView* view)
 				if (const auto le = qobject_cast<QLineEdit*>(action->parent()))
 				{
 					// Open a directory selection dialog.
-					if (type == sf::VariableTypes::stDirectory)
+					if (type == stDirectory)
 					{
 						QFileDialog dialog(le, "Select Directory");
 						dialog.setDirectory(QDir::current());
@@ -118,7 +121,7 @@ void VariableListModel::setDelegates(QAbstractItemView* view)
 							le->setText(dialog.selectedFiles().first());
 						}
 					}
-					else if (type == sf::VariableTypes::stPath)
+					else if (type == stPath)
 					{
 						QFileDialog dialog(le, "Select Filepath");
 						dialog.setDirectory(QDir::current());
@@ -149,7 +152,7 @@ void VariableListModel::refresh()
 	endResetModel();
 
 	beginInsertRows(QModelIndex(), 0, -1);
-	insertRows(0, static_cast<int>(_vars.size()));
+	insertRows(0, static_cast<int>(_varList.size()));
 	endInsertRows();
 }
 
@@ -186,18 +189,17 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 		return Qt::ItemFlag::NoItemFlags;
 	}
 	//
-	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemNeverHasChildren;
+	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemNeverHasChildren | Qt::ItemFlag::ItemIsSelectable;
 	//
 	if (index.column() == cValue)
 	{
-		flags |= Qt::ItemFlag::ItemIsSelectable;
 		// Only editable when not read-only.
-		if (!_vars.at(index.row()).get()->isReadOnly())
+		if (!_varList.at(index.row()).get()->isReadOnly())
 		{
 			flags |= Qt::ItemFlag::ItemIsEditable;
 		}
 	}
-	else if (index.column() == cName)
+	else if (index.column() == 0)
 	{
 		flags |= Qt::ItemFlag::ItemIsUserCheckable;
 	}
@@ -206,18 +208,18 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 
 int VariableListModel::rowCount(const QModelIndex& parent) const
 {
-	return static_cast<int>(_vars.size());
+	return static_cast<int>(_varList.size());
 }
 
 QVariant VariableListModel::data(const QModelIndex& index, int role) const
 {
-	if (!index.isValid() || index.row() >= _vars.size())
+	if (!index.isValid() || index.row() >= _varList.size())
 	{
 		return {};
 	}
-	const auto var = _vars.at(index.row()).get();
-	//
-	if (role == Qt::CheckStateRole && index.column() == cName)
+	const auto var = _varList.at(index.row()).get();
+	// First row always get the selection check box.
+	if (role == Qt::CheckStateRole && index.column() == 0)
 	{
 		return var->getData<bool>() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
 	}
@@ -280,7 +282,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 				if (var->getType() == Value::vitString)
 				{
 					// Multi line string with new-line control characters.
-					if (var->getStringType() == Variable::stMulti)
+					if (var->getStringType() == stMulti)
 					{
 						return CommonItemDelegate::etStringList;
 					}
@@ -291,7 +293,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 		}
 	}
 	// Used for editor's selectable options.
-	if (role == CommonItemDelegate::OptionsRole)
+	else if (role == CommonItemDelegate::OptionsRole)
 	{
 		if (index.column() == cValue)
 		{
@@ -301,26 +303,43 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 			}
 		}
 	}
-	if (role == CommonItemDelegate::MinimumRole)
+	else if (role == CommonItemDelegate::MinimumRole)
 	{
 		if (index.column() == cValue)
 		{
 			return toQVariant(var->getMin());
 		}
 	}
-	if (role == CommonItemDelegate::MaximumRole)
+	else if (role == CommonItemDelegate::MaximumRole)
 	{
 		if (index.column() == cValue)
 		{
 			return toQVariant(var->getMax());
 		}
 	}
-	if (role == CommonItemDelegate::IncrementRole)
+	else if (role == CommonItemDelegate::IncrementRole)
 	{
 		if (index.column() == cValue)
 		{
 			return toQVariant(var->getRnd());
 		}
+	}
+	else if (role == CommonItemDelegate::IncrementRole)
+	{
+		if (index.column() == cValue)
+		{
+			return toQVariant(var->getRnd());
+		}
+	}
+	else if (role == CommonItemDelegate::TextColorRole && index.column() == cValue)
+	{
+		// For all columns the same text color.
+		return var->isReadOnly() ? QPalette::ColorRole::Mid : QPalette::ColorRole::Text;
+	}
+	else if (role == CommonItemDelegate::AlignmentRole && index.column() == cValue)
+	{
+		// For all columns the same text color.
+		return var->isNumber() && var->getStateCount() == 0 ? Qt::AlignmentFlag::AlignRight : Qt::AlignmentFlag::AlignLeft;
 	}
 	return {};
 }
@@ -329,33 +348,96 @@ bool VariableListModel::setData(const QModelIndex& index, const QVariant& value,
 {
 	if (role == Qt::EditRole)
 	{
-		const auto var = _vars.at(index.row()).get();
+		const auto var = _varList.at(index.row()).get();
 		if (index.column() == cValue)
 		{
 			if (var->getStateCount())
 			{
-				if (var->setCur(Value(value.toInt())))
+				// Do not trigger the event for itself sinds dataChanged() is called.
+				if (var->setCur(Value(value.toInt()), true))
 				{
 					Q_EMIT changed(var);
 				}
 			}
 			else
 			{
-				if (var->setCur(Value(value.toString())))
+				// Do not trigger the event for itself sinds dataChanged() is called.
+				if (var->setCur(Value(value.toString()), true))
 				{
 					Q_EMIT changed(var);
 				}
 			}
 		}
-		dataChanged(index, index);
+		// Notify the
+		dataChanged(index, index, {Qt::DisplayRole});
 		return true;
 	}
 	return false;
 }
 
+int VariableListModel::getRow(Variable& link) const
+{
+	// Partial match (case-insensitive name comparison):
+	auto pred = [&link](const std::shared_ptr<Variable>& p) {
+		// Compare the shared pointer content with the linked variable.
+		return p.get() == &link;
+	};
+	const auto it = std::find_if(_varList.begin(), _varList.end(), pred);
+	if (it != this->_varList.end())
+	{
+		return std::distance(_varList.begin(), it);
+	}
+	return -1;
+}
+
+void VariableListModel::variableEventHandler(EEvent event, const Variable& caller, Variable& link, bool same_inst)
+{
+	switch (event)
+	{
+		// Value changed on linked variable.
+		case veValueChange:
+		{
+			const auto row = getRow(link);
+			if (row >= 0)
+			{
+				const auto idx = index(row, cValue);
+				dataChanged(idx, idx, {Qt::ItemDataRole::DisplayRole});
+			}
+			break;
+		}
+
+		case veConverted:
+		{
+			const auto row = getRow(link);
+			if (row >= 0)
+			{
+				for (const auto column: {cValue, cUnit})
+				{
+					const auto idx = index(row, column);
+					dataChanged(idx, idx, {Qt::ItemDataRole::DisplayRole});
+				}
+			}
+			break;
+		}
+
+		case veUserPrivate:
+			break;
+
+		default:
+			break;
+	}
+}
+
 void VariableListModel::addVariable(const Variable* var)
 {
-	_vars.append(std::make_unique<Variable>(*var));
+	// Create owning pointer instance.
+	const auto v = std::make_shared<Variable>(*var);
+	// Attach the handler to the new variable instance.
+	v->setHandler(this);
+	// Make the variable convert units if possible.
+	v->setConvert(true);
+	// Move the owning pointer instance to the list.
+	_varList.append(std::move(v));
 }
 
 void VariableListModel::addVariables(const InformationTypes::Vector& list)
@@ -365,8 +447,14 @@ void VariableListModel::addVariables(const InformationTypes::Vector& list)
 		if (const auto var = dynamic_cast<const Variable*>(ib))
 		{
 			addVariable(var);
+			//#error Needs a handler.
 		}
 	}
+}
+
+Variable* VariableListModel::getByIndex(const QModelIndex& index) const
+{
+	return index.isValid() ? _varList.at(index.row()).get() : nullptr;
 }
 
 }// namespace sf

@@ -1,6 +1,5 @@
 #pragma once
 #include <QDir>
-#include <QWidget>
 #include <gii/global.h>
 #include <gii/qt/Namespace.h>
 #include <misc/qt/PropertySheetDialog.h>
@@ -77,13 +76,13 @@ class _GII_CLASS LayoutData : public QObject
 		 * @brief Gets the id offset for all Gii widgets.
 		 * Only applied when a layout is loaded.
 		 */
-		[[nodiscard]] Gii::IdType getIdOffset() const;
+		[[nodiscard]] gii::IdType getIdOffset() const;
 
 		/**
 		 * @brief Sets id offset for all Gii widgets.
 		 * Only applied when a layout is loaded.
 		 */
-		void setIdOffset(Gii::IdType idOffset) const;
+		void setIdOffset(gii::IdType idOffset) const;
 
 	private:
 		struct Private;

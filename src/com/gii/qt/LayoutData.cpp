@@ -1,40 +1,40 @@
-#include <QGuiApplication>
 #include "LayoutData.h"
+#include <QGuiApplication>
 
 namespace sf
 {
 
 struct LayoutData::Private
 {
-	static QString getDataObjectName()
-	{
-		return {"__sf_layout_data__"};
-	}
+		static QString getDataObjectName()
+		{
+			return {"__sf_layout_data__"};
+		}
 
-	LayoutData*_ld;
-	QDir _directory{};
-	Gii::IdType _idOffset{};
-	bool _readOnly{true};
+		LayoutData* _ld;
+		QDir _directory{};
+		gii::IdType _idOffset{};
+		bool _readOnly{true};
 
-	explicit Private(LayoutData* layoutData)
-	:_ld(layoutData)
-	{
-		_ld->_p = this;
-	}
+		explicit Private(LayoutData* layoutData)
+			: _ld(layoutData)
+		{
+			_ld->_p = this;
+		}
 };
 
 LayoutData::LayoutData(QObject* parent)
-:QObject(parent)
+	: QObject(parent)
 {
 	setObjectName(Private::getDataObjectName());
 	new Private(this);
 }
 
-LayoutData* LayoutData::from(QObject* obj)
+LayoutData* LayoutData::from(QObject* target)
 {
-	QObject* o = obj;
+	QObject* o = target;
 	// Iterate down to the root of the passed object.
-	while(o)
+	while (o)
 	{
 		// Check if the instance has a LayoutData direct child.
 		if (auto ld = o->findChild<LayoutData*>(Private::getDataObjectName(), Qt::FindDirectChildrenOnly))
@@ -81,12 +81,12 @@ void LayoutData::setDirectory(const QDir& directory)
 	_p->_directory = directory;
 }
 
-Gii::IdType LayoutData::getIdOffset() const
+gii::IdType LayoutData::getIdOffset() const
 {
 	return _p->_idOffset;
 }
 
-void LayoutData::setIdOffset(Gii::IdType idOffset) const
+void LayoutData::setIdOffset(gii::IdType idOffset) const
 {
 	_p->_idOffset = idOffset;
 }
@@ -96,4 +96,4 @@ bool LayoutData::hasMenuModifiers()
 	return QGuiApplication::keyboardModifiers() == (Qt::ControlModifier | Qt::ShiftModifier);
 }
 
-}
+}// namespace sf

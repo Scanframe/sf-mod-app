@@ -52,7 +52,7 @@ FollowersDialog::FollowersDialog(QWidget* parent)
 		}
 	});
 	connect(_actionAdd, &QAction::triggered, [&]() {
-		for (auto id: InformationSelectDialog(this).execute(Gii::Multiple))
+		for (auto id: InformationSelectDialog(this).execute(gii::Multiple))
 		{
 			ui->lwFollowers->addItem(QString("0x%1").arg(id, 0, 16));
 		}

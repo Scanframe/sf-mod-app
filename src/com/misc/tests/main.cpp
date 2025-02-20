@@ -1,6 +1,7 @@
 #include <iostream>
 #include <misc/gen/dbgutils.h>
 #include <misc/gen/target.h>
+#include <misc/qt/ApplicationSettings.h>
 #include <test/catch.h>
 
 // Some user variable you want to be able to set

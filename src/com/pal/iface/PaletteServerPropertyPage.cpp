@@ -24,17 +24,17 @@ PaletteServerPropertyPage::PaletteServerPropertyPage(PaletteServer* server, Prop
 	connect(model, &ObjectPropertyModel::changed, [&]() { _propChange |= true; });
 	// Make the qulonglong type QProperties have actions.
 	connect(model, &ObjectPropertyModel::addLineEditActions, [](QLineEdit* lineEdit, QObject* obj, int propertyIndex, bool dynamic) {
-		for (auto isType: {Gii::ResultData, Gii::Variable})
+		for (auto isType: {gii::ResultData, gii::Variable})
 		{
 			auto action = lineEdit->addAction(
-				Resource::getSvgIcon(isType == Gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
+				Resource::getSvgIcon(isType == gii::Variable ? ":icon/svg/variable" : ":icon/svg/resultdata", lineEdit->palette(), QPalette::Text),
 				QLineEdit::TrailingPosition
 			);
 			connect(action, &QAction::triggered, [action, isType]() {
 				if (auto le = qobject_cast<QLineEdit*>(action->parent()))
 				{
 					InformationSelectDialog dlg(le);
-					auto ids = dlg.execute(Gii::Single, isType);
+					auto ids = dlg.execute(gii::Single, isType);
 					if (!ids.isEmpty())
 					{
 						le->setText(QString("0x%1").arg(ids.first(), 0, 16));

@@ -1,7 +1,4 @@
 #include "Application.h"
-#if IS_WIN
-	#include <windows.h>
-#endif
 
 using namespace sf;
 
@@ -14,13 +11,8 @@ int main(int argc, char* argv[])
 	Application::setApplicationDisplayName("Modular Base Application");
 	Application::setApplicationVersion(QT_VERSION_STR);
 	Application app(argc, argv);
-#if IS_WIN
-	if (!isDebug())
-	{
-		// Removes the console in windows application.
-		FreeConsole();
-	}
-#endif
+	// Removes the console in Windows application.
+	sf::freeConsole();
 	// This call exists the application when
 	app.parseCommandline();
 	app.initialize(AppModuleInterface::Initialize);

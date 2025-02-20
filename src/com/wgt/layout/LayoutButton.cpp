@@ -22,7 +22,7 @@ struct LayoutButton::Private
 		/**
 	 * @brief Holds the relative file to the layout ui-file.
 	 */
-		Gii::IdType _idOffset{0};
+		gii::IdType _idOffset{0};
 		/**
 	 * @brief Holds the widget containing layout.
 	 */
@@ -154,6 +154,6 @@ void LayoutButton::openLayout()
 
 SF_IMPL_PROP_GRS(QString, LayoutButton, LayoutFile, _p->_layoutFile)
 
-SF_IMPL_PROP_GS(Gii::IdType, LayoutButton, IdOffset, _p->_idOffset)
+SF_IMPL_PROP_GS(gii::IdType, LayoutButton, IdOffset, _p->_idOffset)
 
 }// namespace sf

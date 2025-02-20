@@ -1,29 +1,28 @@
+#include "HierarchyViewer.h"
+#include "AddItemDialog.h"
+#include "LayoutEditor.h"
+#include "ui_HierarchyViewer.h"
 #include <QAction>
 #include <misc/qt/Resource.h>
 #include <misc/qt/qt_utils.h>
-#include "HierarchyViewer.h"
-#include "LayoutEditor.h"
-#include "AddItemDialog.h"
-#include "ui_HierarchyViewer.h"
 
 namespace sf
 {
 
 HierarchyViewer::HierarchyViewer(QWidget* parent)
-	:QWidget(parent)
-	 , ui(new Ui::HierarchyViewer)
-	 , _proxyModel(new QSortFilterProxyModel(this))
+	: QWidget(parent)
+	, ui(new Ui::HierarchyViewer)
+	, _proxyModel(new QSortFilterProxyModel(this))
 {
 	ui->setupUi(this);
 	// Create the actions for the buttons.
-	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>
-		{
-			{ui->tbCollapseAll, _actionCollapseAll, Resource::Collapse, tr("Collapse"), tr("Collapse all rows.")},
-			{ui->tbExpandAll, _actionExpandAll, Resource::Expand, tr("Expand"), tr("Expand all rows.")},
-			{ui->tbEdit, _actionEdit, Resource::Edit, tr("Edit"), tr("Edit the selected item.")},
-			{ui->tbAdd, _actionAdd, Resource::Add, tr("Add"), tr("Add a new item.")},
-			{ui->tbRemove, _actionRemove, Resource::Remove, tr("Remove"), tr("Remove an item.")},
-		})
+	for (auto& t: std::vector<std::tuple<QToolButton*, QAction*&, Resource::Icon, QString, QString>>{
+				 {ui->tbCollapseAll, _actionCollapseAll, Resource::Collapse, tr("Collapse"), tr("Collapse all rows.")},
+				 {ui->tbExpandAll, _actionExpandAll, Resource::Expand, tr("Expand"), tr("Expand all rows.")},
+				 {ui->tbEdit, _actionEdit, Resource::Edit, tr("Edit"), tr("Edit the selected item.")},
+				 {ui->tbAdd, _actionAdd, Resource::Add, tr("Add"), tr("Add a new item.")},
+				 {ui->tbRemove, _actionRemove, Resource::Remove, tr("Remove"), tr("Remove an item.")},
+			 })
 	{
 		std::get<1>(t) = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(std::get<2>(t)), QPalette::ButtonText), std::get<3>(t), this);
 		std::get<1>(t)->setToolTip(std::get<3>(t));
@@ -41,21 +40,14 @@ HierarchyViewer::HierarchyViewer(QWidget* parent)
 		ui->treeView->addAction(a);
 	}
 	//
-	connect(_actionCollapseAll, &QAction::triggered, [&]()
-	{
-		expandTreeView(ui->treeView, false);
-	});
-	connect(_actionExpandAll, &QAction::triggered, [&]()
-	{
-		expandTreeView(ui->treeView, true);
-	});
+	connect(_actionCollapseAll, &QAction::triggered, [&]() { expandTreeView(ui->treeView, false); });
+	connect(_actionExpandAll, &QAction::triggered, [&]() { expandTreeView(ui->treeView, true); });
 	connect(ui->treeView, &QTreeView::doubleClicked, this, &HierarchyViewer::editObject);
 	connect(_actionEdit, &QAction::triggered, this, &HierarchyViewer::editObject);
 	connect(_actionAdd, &QAction::triggered, this, &HierarchyViewer::addObject);
 	connect(_actionRemove, &QAction::triggered, this, &HierarchyViewer::removeObject);
 	connect(ui->treeView, &QTreeView::clicked, this, &HierarchyViewer::objectSelected);
-	connect(ui->leSearch, &QLineEdit::textChanged, [&](const QString& text)
-	{
+	connect(ui->leSearch, &QLineEdit::textChanged, [&](const QString& text) {
 		_proxyModel->setFilterFixedString(text);
 		expandTreeView(ui->treeView);
 	});
@@ -66,7 +58,7 @@ HierarchyViewer::~HierarchyViewer()
 	delete ui;
 }
 
-void HierarchyViewer::documentModified()
+void HierarchyViewer::documentModified() const
 {
 	if (_layoutEditor)
 	{
@@ -74,7 +66,7 @@ void HierarchyViewer::documentModified()
 	}
 }
 
-QObject* HierarchyViewer::objectSelected(const QModelIndex &index)
+QObject* HierarchyViewer::objectSelected(const QModelIndex& index)
 {
 	auto idx = index;
 	QObject* rv{nullptr};
@@ -96,7 +88,7 @@ QObject* HierarchyViewer::objectSelected(const QModelIndex &index)
 	return rv;
 }
 
-void HierarchyViewer::editObject()
+void HierarchyViewer::editObject() const
 {
 	if (!ui->treeView->selectionModel()->selectedIndexes().empty())
 	{
@@ -191,11 +183,15 @@ void HierarchyViewer::removeObject()
 
 void HierarchyViewer::setEditor(sf::LayoutEditor* editor)
 {
+	// Check if the passed editor is the not current one.
 	if (_layoutEditor != editor)
 	{
+		// Assign the new editor to the data member.
 		_layoutEditor = editor;
-		if (_layoutEditor)
+		// When the editor is disconnected (nullptr).
+		if (_layoutEditor != nullptr)
 		{
+			// ReSharper disable once CppDFANullDereference
 			_proxyModel->setSourceModel(_layoutEditor->getHierarchyModel());
 			expandTreeView(ui->treeView, true);
 			resizeColumnsToContents(ui->treeView);
@@ -214,7 +210,7 @@ void HierarchyViewer::setEditor(sf::LayoutEditor* editor)
 	}
 }
 
-void HierarchyViewer::editorDisconnect(QObject* obj)
+void HierarchyViewer::editorDisconnect(const QObject* obj)
 {
 	// Check if the current layout editor is destroyed.
 	if (_layoutEditor == obj)
@@ -227,11 +223,11 @@ void HierarchyViewer::selectObject(QObject* obj)
 {
 	if (_layoutEditor)
 	{
-		auto index = _proxyModel->mapFromSource(_layoutEditor->getHierarchyModel()->getObjectIndex(obj));
+		const auto index = _proxyModel->mapFromSource(_layoutEditor->getHierarchyModel()->getObjectIndex(obj));
 		ui->treeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
 		Q_EMIT objectSelected(index);
 		resizeColumnsToContents(ui->treeView);
 	}
 }
 
-}
+}// namespace sf

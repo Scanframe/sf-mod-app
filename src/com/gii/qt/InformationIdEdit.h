@@ -21,7 +21,7 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit
 		// Declarations in these macros are made private.
 		Q_OBJECT
 		// Need full namespace for this property macro.
-		Q_PROPERTY(sf::Gii::TypeId typeId READ getTypeId WRITE setTypeId)
+		Q_PROPERTY(sf::gii::TypeId typeId READ getTypeId WRITE setTypeId)
 
 	public:
 		/**
@@ -30,14 +30,14 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit
 		explicit InformationIdEdit(QWidget* parent = nullptr);
 
 		/**
-		 * @brief Sets the Id in the line edit.
+		 * @brief Sets the id in the line edit.
 		 */
-		void setId(Gii::IdType id);
+		void setId(gii::IdType id);
 
 		/**
 		 * @brief Gets the Id from the text in the line edit.
 		 */
-		Gii::IdType getId();
+		gii::IdType getId();
 
 		/**
 		 * @brief Opens the Id selection dialog.
@@ -58,12 +58,12 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit
 		/**
 		 * @brief Set the type of id set with #setId().
 		 */
-		void setTypeId(Gii::TypeId typeId);
+		void setTypeId(gii::TypeId typeId);
 
 		/**
 		 * @brief Gets the type of id set with #setId().
 		 */
-		[[nodiscard]] Gii::TypeId getTypeId() const;
+		[[nodiscard]] gii::TypeId getTypeId() const;
 
 	protected:
 		/**
@@ -85,7 +85,7 @@ class QDESIGNER_WIDGET_EXPORT InformationIdEdit
 		/**
 		 * @brief Holds the type of the Id.
 		 */
-		Gii::TypeId _typeId;
+		gii::TypeId _typeId;
 };
 
 }// namespace sf

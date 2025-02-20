@@ -1,3 +1,5 @@
+#include "misc/qt/ApplicationSettings.h"
+
 #include <misc/gen/target.h>
 #include <test/catch.h>
 

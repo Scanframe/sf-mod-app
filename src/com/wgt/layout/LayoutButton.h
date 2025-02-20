@@ -1,20 +1,22 @@
 #pragma once
 
-#include <QtUiPlugin/QDesignerExportWidget>
-#include <QToolButton>
 #include <QAction>
-#include <misc/qt/ObjectExtension.h>
-#include <misc/qt/Macros.h>
+#include <QToolButton>
+#include <QtUiPlugin/QDesignerExportWidget>
 #include <gii/qt/Namespace.h>
+#include <misc/qt/Macros.h>
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
 
-class QDESIGNER_WIDGET_EXPORT LayoutButton :public QToolButton, public ObjectExtension
+class QDESIGNER_WIDGET_EXPORT LayoutButton
+	: public QToolButton
+	, public ObjectExtension
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_PROPERTY(QString layoutFile READ getLayoutFile WRITE setLayoutFile)
-		Q_PROPERTY(Gii::IdType idOffset READ getIdOffset WRITE setIdOffset)
+		Q_PROPERTY(gii::IdType idOffset READ getIdOffset WRITE setIdOffset)
 
 	public:
 		/**
@@ -39,18 +41,16 @@ class QDESIGNER_WIDGET_EXPORT LayoutButton :public QToolButton, public ObjectExt
 		 */
 		void openLayout();
 
-		SF_DECL_PROP_GS(Gii::IdType, IdOffset)
+		SF_DECL_PROP_GS(gii::IdType, IdOffset)
 
 		SF_DECL_PROP_GRS(QString, LayoutFile)
 
 	private:
-
 		/**
 		 * @brief Holds the shielded private data.
 		 */
 		struct Private;
 		Private* _p{nullptr};
-
 };
 
-}
+}// namespace sf

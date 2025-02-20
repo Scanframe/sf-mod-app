@@ -1,25 +1,26 @@
-#include <QMainWindow>
-#include <QToolBar>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDirIterator>
-#include <misc/gen/ConfigLocation.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include <misc/qt/Resource.h>
-#include <misc/qt/Globals.h>
-#include <gii/qt/InformationMonitor.h>
 #include "ProjectAppModule.h"
 #include "ProjectPropertyPage.h"
+#include <QDirIterator>
+#include <QFileDialog>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMessageBox>
+#include <QToolBar>
+#include <gii/qt/InformationMonitor.h>
+#include <misc/gen/ConfigLocation.h>
+#include <misc/qt/Globals.h>
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/Resource.h>
 
 namespace sf
 {
 
 ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
-	:AppModuleInterface(params)
-	 , _settings(params._settings)
-	 , _projectConfig(new ProjectConfig)
+	: AppModuleInterface(params)
+	, _settings(params._settings)
+	, _projectConfig(new ProjectConfig)
 	// TODO: Must be read from QSettings and option for auto read at start up.
-	 , _currentSettingsFile("default")
+	, _currentSettingsFile("default")
 {
 	settingsReadWrite(false);
 	// TODO: Needs AMI interface change to make settings files open.
@@ -30,11 +31,10 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 	_actionSaveSettings = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::Save), QPalette::ButtonText), "&Save");
 	_actionLoadSettings = new QAction(Resource::getSvgIcon(Resource::getSvgIconResource(Resource::OpenFolder), QPalette::ButtonText), "&Load");
 	//
-	connect(_actionMonitorVariable, &QAction::triggered, [&]()
-	{
+	connect(_actionMonitorVariable, &QAction::triggered, [&]() {
 		Q_ASSERT(getGlobalParent());
 		auto im = new InformationMonitor(getGlobalParent());
-		if (im->selectId(Gii::Variable))
+		if (im->selectId(gii::Variable))
 		{
 			im->show();
 		}
@@ -44,11 +44,10 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 		}
 	});
 	//
-	connect(_actionMonitorResultData, &QAction::triggered, [&]()
-	{
+	connect(_actionMonitorResultData, &QAction::triggered, [&]() {
 		Q_ASSERT(getGlobalParent());
 		auto im = new InformationMonitor(getGlobalParent());
-		if (im->selectId(Gii::ResultData))
+		if (im->selectId(gii::ResultData))
 		{
 			im->show();
 		}
@@ -58,12 +57,13 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 		}
 	});
 	//
-	connect(_actionSaveSettings, &QAction::triggered, [&]()
-	{
+	connect(_actionSaveSettings, &QAction::triggered, [&]() {
 		Q_ASSERT(getGlobalParent());
 		auto location = getConfigLocation("settings");
-		QFileDialog dlg(getGlobalParent(), tr("Save Setting"), QString::fromStdString(location),
-			tr("Settings Files (*.%1)").arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix())));
+		QFileDialog dlg(
+			getGlobalParent(), tr("Save Setting"), QString::fromStdString(location),
+			tr("Settings Files (*.%1)").arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix()))
+		);
 		dlg.setDefaultSuffix(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix()));
 		dlg.setAcceptMode(QFileDialog::AcceptSave);
 		dlg.selectFile(_currentSettingsFile);
@@ -85,12 +85,13 @@ ProjectAppModule::ProjectAppModule(const AppModuleInterface::Parameters& params)
 		}
 	});
 	//
-	connect(_actionLoadSettings, &QAction::triggered, [&]()
-	{
+	connect(_actionLoadSettings, &QAction::triggered, [&]() {
 		Q_ASSERT(getGlobalParent());
 		auto location = getConfigLocation("settings");
-		QFileDialog dlg(getGlobalParent(), tr("Save Setting"), QString::fromStdString(location),
-			tr("Settings Files (*.%1)").arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix())));
+		QFileDialog dlg(
+			getGlobalParent(), tr("Save Setting"), QString::fromStdString(location),
+			tr("Settings Files (*.%1)").arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix()))
+		);
 		dlg.setDefaultSuffix(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix()));
 		dlg.setAcceptMode(QFileDialog::AcceptOpen);
 		dlg.selectFile(_currentSettingsFile);
@@ -130,8 +131,8 @@ void ProjectAppModule::initialize(InitializeStage stage)
 			// When a file is configured.
 			if (_settingsFilename.length())
 			{
-				auto fp = QDir(QString::fromStdString(getConfigLocation("settings"))).filePath(QString("%1.%2")
-					.arg(_settingsFilename).arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix())));
+				auto fp = QDir(QString::fromStdString(getConfigLocation("settings")))
+										.filePath(QString("%1.%2").arg(_settingsFilename).arg(QString::fromStdString(_projectConfig->settings().getSettingsFileSuffix())));
 				// Load the file.
 				if (!_projectConfig->settings().load(fp.toStdString()))
 				{
@@ -203,11 +204,10 @@ void ProjectAppModule::settingsReadWrite(bool save)
 
 void ProjectAppModule::createDevices()
 {
-	for (auto& e: std::vector<std::pair<const QString&, RsaServer*>>
-		{
-			{_serverUtName, _projectConfig->getServerAcquisitionUt()},
-			{_serverEtName, _projectConfig->getServerAcquisitionEt()}
-		})
+	for (auto& e: std::vector<std::pair<const QString&, RsaServer*>>{
+				 {_serverUtName, _projectConfig->getServerAcquisitionUt()},
+				 {_serverEtName, _projectConfig->getServerAcquisitionEt()}
+			 })
 	{
 		if (e.first.isEmpty())
 		{
@@ -232,10 +232,10 @@ void ProjectAppModule::createDevices()
 		}
 	}
 	// TODO: Creation of motion controller needs implementation.
-//	// Delete previous implementation.
-//	_projectConfig->getServerMotion()->destroyImplementation();
-//	// Create implementation using the given name.
-//	_projectConfig->getServerMotion()->createImplementation(_serverMotionName.toStdString());
+	//	// Delete previous implementation.
+	//	_projectConfig->getServerMotion()->destroyImplementation();
+	//	// Create implementation using the given name.
+	//	_projectConfig->getServerMotion()->createImplementation(_serverMotionName.toStdString());
 
 	// Delete previous implementation.
 	_projectConfig->getServerStorage()->destroyImplementation();
@@ -248,7 +248,7 @@ void ProjectAppModule::addMenuItems(AppModuleInterface::MenuType menuType, QMenu
 	if (menuType == Tools)
 	{
 		auto subMenu = menu;
-/*
+		/*
 		auto subMenu = menu->addMenu(Resource::getSvgIcon(getSvgIconResource(), QPalette::ButtonText), getName());
 		subMenu->setToolTip(getDescription());
 */
@@ -291,4 +291,4 @@ QStringList ProjectAppModule::getSettingsFilenames() const
 	return rv;
 }
 
-}
+}// namespace sf

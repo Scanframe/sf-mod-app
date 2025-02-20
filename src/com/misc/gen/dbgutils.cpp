@@ -19,6 +19,7 @@
 #if IS_WIN
 	#include <debugapi.h>
 	#include <processenv.h>
+	#include <windows.h>
 #else
 	#include <execinfo.h>
 #endif
@@ -26,6 +27,8 @@
 #include "TimeSpec.h"
 #include "dbgutils.h"
 #include "system.h"
+
+#include <QMessageBox>
 
 namespace sf
 {
@@ -167,7 +170,7 @@ void UserOutputDebugString(unsigned int type, const char* s) noexcept
 void SetDefaultDebugOutput(unsigned int type)
 {
 	// Prevent throw from being Set.
-	DefaultDebugOutputType = type & unsigned(~dotThrow);
+	DefaultDebugOutputType = type & static_cast<unsigned>(~dotThrow);
 }
 
 unsigned int GetDefaultDebugOutput()
@@ -246,6 +249,17 @@ bool isDebug()
 #endif
 	}
 	return flag > 0;
+}
+
+void freeConsole(bool always)
+{
+	if (!sf::isDebug() || always)
+	{
+#if IS_WIN
+		// Removes the console in windows application.
+		::FreeConsole();
+#endif
+	}
 }
 
 std::string Demangle(const char* name)

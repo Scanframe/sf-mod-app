@@ -87,8 +87,7 @@ size_t ModuleConfiguration::load(bool startup)
 				qWarning() << it.key() << lib.errorString();
 			}
 			// Cast the function to the correct type.
-			auto func = (SF_DL_NAME_FUNC_TYPE) lib.resolve(SF_DL_NAME_FUNC_NAME);
-			if (func)
+			if (const auto func = (SF_DL_NAME_FUNC_TYPE) lib.resolve(SF_DL_NAME_FUNC_NAME))
 			{
 				func(it.key().toLocal8Bit());
 			}

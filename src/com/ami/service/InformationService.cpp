@@ -1,43 +1,42 @@
 #include "InformationService.h"
-#include "SocketServer.h"
 #include "SocketClient.h"
-#include <misc/gen/Sustain.h>
+#include "SocketServer.h"
 #include <misc/gen/ElapseTimer.h>
+#include <misc/gen/Sustain.h>
 
 namespace sf
 {
 
-struct InformationService::Private :QObject
+struct InformationService::Private : QObject
 {
-	InformationService& _s;
-	// Holds the type of the service connection.
-	EServiceType _type{None};
-	// Holds the id-offset for the information instances imported by the connected client.
-	Gii::IdType _idOffset{0};
-	// Set to true when service properties change and reinitialization is needed.
-	bool _reinitialize{false};
-	//
-	SocketServer* _server{nullptr};
-	//
-	SocketClient* _client{nullptr};
-	// Hook for the sustain interface.
-	TSustain<InformationService::Private> _sustain;
-	//
-	ElapseTimer _timer{};
+		InformationService& _s;
+		// Holds the type of the service connection.
+		EServiceType _type{None};
+		// Holds the id-offset for the information instances imported by the connected client.
+		gii::IdType _idOffset{0};
+		// Set to true when service properties change and reinitialization is needed.
+		bool _reinitialize{false};
+		//
+		SocketServer* _server{nullptr};
+		//
+		SocketClient* _client{nullptr};
+		// Hook for the sustain interface.
+		TSustain<InformationService::Private> _sustain;
+		//
+		ElapseTimer _timer{};
 
-	// Constructor.
-	explicit Private(InformationService* service);
+		// Constructor.
+		explicit Private(InformationService* service);
 
-	// Sustain function for handling property changes.
-	bool sustain(const timespec& t);
+		// Sustain function for handling property changes.
+		bool sustain(const timespec& t);
 };
 
 InformationService::Private::Private(InformationService* service)
-	:QObject(service)
-	 , _s(*service)
-	 , _sustain(this, &InformationService::Private::sustain)
-{
-}
+	: QObject(service)
+	, _s(*service)
+	, _sustain(this, &InformationService::Private::sustain)
+{}
 
 bool InformationService::Private::sustain(const timespec& t)
 {
@@ -79,10 +78,9 @@ bool InformationService::Private::sustain(const timespec& t)
 }
 
 InformationService::InformationService(QObject* parent)
-	:QObject(parent)
-	 , _p(new Private(this))
-{
-}
+	: QObject(parent)
+	, _p(new Private(this))
+{}
 
 void InformationService::setType(InformationService::EServiceType type)
 {
@@ -98,7 +96,7 @@ InformationService::EServiceType InformationService::getType() const
 	return _p->_type;
 }
 
-void InformationService::setIdOffset(Gii::IdType idOffset)
+void InformationService::setIdOffset(gii::IdType idOffset) const
 {
 	if (_p->_idOffset != idOffset)
 	{
@@ -107,10 +105,9 @@ void InformationService::setIdOffset(Gii::IdType idOffset)
 	}
 }
 
-Gii::IdType InformationService::getIdOffset() const
+gii::IdType InformationService::getIdOffset() const
 {
 	return _p->_idOffset;
 }
 
-}
-
+}// namespace sf

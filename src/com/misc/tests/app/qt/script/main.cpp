@@ -1,3 +1,5 @@
+#include "misc/qt/ApplicationSettings.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QTimer>

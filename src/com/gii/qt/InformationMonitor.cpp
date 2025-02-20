@@ -23,7 +23,7 @@ __attribute__((constructor)) void Initialize()
 			if (auto parent = getGlobalParent())
 			{
 				auto im = new InformationMonitor(parent);
-				im->setId(Gii::Variable, arguments[0].getInteger());
+				im->setId(gii::Variable, arguments[0].getInteger());
 				im->show();
 				return Value(true);
 			}
@@ -36,7 +36,7 @@ __attribute__((constructor)) void Initialize()
 			if (auto parent = getGlobalParent())
 			{
 				auto im = new InformationMonitor(parent);
-				im->setId(Gii::ResultData, arguments[0].getInteger());
+				im->setId(gii::ResultData, arguments[0].getInteger());
 				im->show();
 				return Value(true);
 			}
@@ -68,7 +68,7 @@ struct InformationMonitor::Private
 		// ID that was used to fill static data.
 		id_type _currentId{std::numeric_limits<id_type>::max()};
 
-		Gii::IdType _id{0};
+		gii::IdType _id{0};
 
 		QTreeWidgetItem* _itemCurrent{nullptr};
 		QTreeWidgetItem* _itemFlags{nullptr};
@@ -97,15 +97,15 @@ struct InformationMonitor::Private
 			ui->twProperties->setAlternatingRowColors(true);
 		}
 
-		void setup(Gii::IdType id)
+		void setup(gii::IdType id)
 		{
-			_variable.setup(ui->iieId->getTypeId() == Gii::Variable ? id : 0, true);
-			_resultData.setup(ui->iieId->getTypeId() == Gii::ResultData ? id : 0, true);
+			_variable.setup(ui->iieId->getTypeId() == gii::Variable ? id : 0, true);
+			_resultData.setup(ui->iieId->getTypeId() == gii::ResultData ? id : 0, true);
 		}
 
 		void update() const
 		{
-			if (ui->iieId->getTypeId() == Gii::Variable)
+			if (ui->iieId->getTypeId() == gii::Variable)
 			{
 				if (_itemCurrent)
 				{
@@ -132,7 +132,7 @@ struct InformationMonitor::Private
 					_itemFlags->setText(1, QString::fromStdString(_variable.getCurFlagsString() + " (" + _variable.getFlagsString() + ")"));
 				}
 			}
-			else if (ui->iieId->getTypeId() == Gii::ResultData)
+			else if (ui->iieId->getTypeId() == gii::ResultData)
 			{
 				if (_itemFlags)
 				{
@@ -166,10 +166,11 @@ struct InformationMonitor::Private
 			}
 			_currentId = id;
 			ui->twProperties->clear();
-			if (ui->iieId->getTypeId() == Gii::Variable)
+			if (ui->iieId->getTypeId() == gii::Variable)
 			{
 				ui->gbData->setVisible(false);
-				for (auto field: {vfId, vfName, VariableTypes::EField(-1), vfUnit, vfFlags, vfDescription, vfType, vfRound, vfDefault, vfMinimum, vfMaximum})
+				for (auto field:
+						 {vfId, vfName, static_cast<VariableTypes::EField>(-1), vfUnit, vfFlags, vfDescription, vfType, vfRound, vfDefault, vfMinimum, vfMaximum})
 				{
 					auto twi = new QTreeWidgetItem();
 					if (field == -1)
@@ -243,10 +244,11 @@ struct InformationMonitor::Private
 					}
 				}
 			}
-			else if (ui->iieId->getTypeId() == Gii::ResultData)
+			else if (ui->iieId->getTypeId() == gii::ResultData)
 			{
 				ui->gbData->setVisible(true);
-				for (auto field: {rfId, rfName, rfType, rfFlags, rfDescription, rfSigBits, rfOffset, rfBlockSize, rfSegmentSize, ResultDataTypes::EField(-1)})
+				for (auto field:
+						 {rfId, rfName, rfType, rfFlags, rfDescription, rfSigBits, rfOffset, rfBlockSize, rfSegmentSize, static_cast<ResultDataTypes::EField>(-1)})
 				{
 					auto twi = new QTreeWidgetItem();
 					if (field == -1)
@@ -369,7 +371,7 @@ InformationMonitor::~InformationMonitor()
 	delete _p;
 }
 
-void InformationMonitor::setId(Gii::TypeId typeId, Gii::IdType id)
+void InformationMonitor::setId(gii::TypeId typeId, gii::IdType id)
 {
 	// Set the correct type of id for the edit box to select.
 	_p->ui->iieId->setTypeId(typeId);
@@ -377,7 +379,7 @@ void InformationMonitor::setId(Gii::TypeId typeId, Gii::IdType id)
 	_p->ui->iieId->setText(QString("0x%1").arg(id, 0, 16));
 }
 
-bool InformationMonitor::selectId(Gii::TypeId typeId, QWidget* parent)
+bool InformationMonitor::selectId(gii::TypeId typeId, QWidget* parent)
 {
 	_p->ui->iieId->setTypeId(typeId);
 	return _p->ui->iieId->selectDialog(parent ? parent : getGlobalParent());

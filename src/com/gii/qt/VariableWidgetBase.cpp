@@ -1,16 +1,16 @@
-#include <QKeyEvent>
-#include <misc/qt/qt_utils.h>
-#include <misc/qt/PropertySheetDialog.h>
-#include "../gen/Variable.h"
 #include "VariableWidgetBase.h"
-#include "VariableWidgetBasePrivate.h"
-#include "VariableIdPropertyPage.h"
+#include "../gen/Variable.h"
 #include "LayoutData.h"
+#include "VariableIdPropertyPage.h"
+#include "VariableWidgetBasePrivate.h"
+#include <QKeyEvent>
+#include <misc/qt/PropertySheetDialog.h>
+#include <misc/qt/qt_utils.h>
 
 namespace sf
 {
 
-QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(QWidget* widget)
+QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(const QWidget* widget)
 {
 	if (auto layout = getWidgetLayout(widget))
 	{
@@ -29,7 +29,7 @@ QLabel* VariableWidgetBase::PrivateBase::findLabelByBuddy(QWidget* widget)
 	return nullptr;
 }
 
-void VariableWidgetBase::PrivateBase::keyPressEvent(QKeyEvent* event)
+void VariableWidgetBase::PrivateBase::keyPressEvent(const QKeyEvent* event)
 {
 	if (!_readOnly)
 	{
@@ -51,14 +51,17 @@ void VariableWidgetBase::PrivateBase::keyPressEvent(QKeyEvent* event)
 			case Qt::Key_Down:
 				_variable.increase(-steps);
 				break;
+
+			default:
+				break;
 		}
 	}
 }
 
 VariableWidgetBase::VariableWidgetBase(QWidget* parent, QObject* self)
-	:base_type(parent), ObjectExtension(self)
-{
-}
+	: base_type(parent)
+	, ObjectExtension(self)
+{}
 
 VariableWidgetBase::~VariableWidgetBase()
 {
@@ -85,7 +88,7 @@ qulonglong VariableWidgetBase::getId() const
 	return _p->_id;
 }
 
-void VariableWidgetBase::setConverted(bool yn)
+void VariableWidgetBase::setConverted(bool yn) const
 {
 	_p->_converted = yn;
 	if (!inDesigner())
@@ -112,7 +115,7 @@ bool VariableWidgetBase::getReadOnly() const
 
 bool VariableWidgetBase::isRequiredProperty(const QString& name)
 {
-/*
+	/*
 	static const char* keys[] =
 		{
 			"converted",
@@ -128,7 +131,7 @@ bool VariableWidgetBase::isRequiredProperty(const QString& name)
 	return true;
 }
 
-Variable& VariableWidgetBase::getVariable()
+Variable& VariableWidgetBase::getVariable() const
 {
 	return _p->_variable;
 }
@@ -145,4 +148,4 @@ void VariableWidgetBase::addPropertyPages(sf::PropertySheetDialog* sheet)
 	sheet->addPage(new VariableIdPropertyPage(this, sheet));
 }
 
-}
+}// namespace sf

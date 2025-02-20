@@ -1,17 +1,17 @@
-#include <QToolBar>
-#include <QDirIterator>
-#include <QLibrary>
-#include "Resource.h"
+#include "ModuleConfigurationDialog.h"
 #include "../gen/DynamicLibraryInfo.h"
 #include "ModuleConfiguration.h"
-#include "ModuleConfigurationDialog.h"
-#include "ui_ModuleConfigurationDialog.h"
+#include "Resource.h"
 #include "qt_utils.h"
+#include "ui_ModuleConfigurationDialog.h"
+#include <QDirIterator>
+#include <QLibrary>
+#include <QToolBar>
 
 namespace sf
 {
 
-class AppModuleList :public QAbstractListModel
+class AppModuleList : public QAbstractListModel
 {
 	public:
 		explicit AppModuleList(ModuleConfiguration* config, QObject* parent = nullptr);
@@ -47,9 +47,9 @@ class AppModuleList :public QAbstractListModel
 
 		void toggleSelection(const QModelIndex& index);
 
-		struct ListItem :public DynamicLibraryInfo
+		struct ListItem : public DynamicLibraryInfo
 		{
-			Qt::CheckState state{Qt::CheckState::Unchecked};
+				Qt::CheckState state{Qt::CheckState::Unchecked};
 		};
 
 		// Holds the configuration structure.
@@ -61,10 +61,9 @@ class AppModuleList :public QAbstractListModel
 };
 
 AppModuleList::AppModuleList(ModuleConfiguration* config, QObject* parent)
-	:QAbstractListModel(parent)
-	,_config(config)
-{
-}
+	: QAbstractListModel(parent)
+	, _config(config)
+{}
 
 AppModuleList::~AppModuleList()
 {
@@ -115,11 +114,10 @@ void AppModuleList::refresh()
 		dld.filename = i.key().toStdString();
 		// Indicates the module should have been loaded but is not available at this moment.
 		dld.state = Qt::CheckState::PartiallyChecked;
-			_libraryInfoList.append(dld);
+		_libraryInfoList.append(dld);
 	}
 	// Sort the list of libraries by name.
-	std::sort(_libraryInfoList.begin(), _libraryInfoList.end(),
-		[](const DynamicLibraryInfo& a, const DynamicLibraryInfo& b) {return a.name < b.name;});
+	std::sort(_libraryInfoList.begin(), _libraryInfoList.end(), [](const DynamicLibraryInfo& a, const DynamicLibraryInfo& b) { return a.name < b.name; });
 	//
 	beginInsertRows(QModelIndex(), 0, (int) _libraryInfoList.length() - 1);
 	insertRows(0, (int) _libraryInfoList.length());
@@ -161,8 +159,7 @@ Qt::ItemFlags AppModuleList::flags(const QModelIndex& index) const
 		return Qt::ItemFlag::NoItemFlags;
 	}
 	//
-	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsSelectable |
-		Qt::ItemFlag::ItemNeverHasChildren;
+	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemNeverHasChildren;
 	//
 	if (index.column() == cName)
 	{
@@ -175,7 +172,7 @@ Qt::ItemFlags AppModuleList::flags(const QModelIndex& index) const
 
 int AppModuleList::rowCount(const QModelIndex& parent) const
 {
-	return (int) _libraryInfoList.count();
+	return _libraryInfoList.count();
 }
 
 QVariant AppModuleList::data(const QModelIndex& index, int role) const
@@ -274,10 +271,10 @@ bool AppModuleList::submit()
 }
 
 ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config, QWidget* parent)
-	:QDialog(parent)
-	 , _config(config)
-	 , ui(new Ui::ModuleConfigurationDialog)
-	 , _moduleList(new AppModuleList(config, this))
+	: QDialog(parent)
+	, _config(config)
+	, ui(new Ui::ModuleConfigurationDialog)
+	, _moduleList(new AppModuleList(config, this))
 {
 	ui->setupUi(this);
 	// Hook the needed signals.
@@ -289,7 +286,7 @@ ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config
 	connect(ui->listAvailable, &QAbstractItemView::doubleClicked, _moduleList, &AppModuleList::doubleClicked);
 	// Assign the model to the view.
 	ui->listAvailable->setModel(_moduleList);
-/*
+	/*
 	//ui->listAvailable->setColumnHidden(0, true);
 	auto toolBar = new QToolBar("Mine", this);
 	// Add a toolbar for some buttons when a box layout is present.
@@ -315,11 +312,11 @@ ModuleConfigurationDialog::ModuleConfigurationDialog(ModuleConfiguration* config
 	}
 	// Assign svg icons to the buttons.
 	for (auto& i: QList<QPair<QAbstractButton*, Resource::Icon>>{
-		{ui->btnOkay, Resource::Icon::Okay},
-		{ui->btnClose, Resource::Icon::Close},
-		{ui->btnApply, Resource::Icon::Check},
-		{ui->btnRefresh, Resource::Icon::Reload}
-	})
+				 {ui->btnOkay, Resource::Icon::Okay},
+				 {ui->btnClose, Resource::Icon::Close},
+				 {ui->btnApply, Resource::Icon::Check},
+				 {ui->btnRefresh, Resource::Icon::Reload}
+			 })
 	{
 		i.first->setIcon(Resource::getSvgIcon(Resource::getSvgIconResource(i.second), QPalette::ColorRole::ButtonText));
 	}
@@ -354,4 +351,4 @@ void ModuleConfigurationDialog::applyClose()
 	close();
 }
 
-}
+}// namespace sf

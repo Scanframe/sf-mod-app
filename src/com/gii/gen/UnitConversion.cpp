@@ -9,7 +9,7 @@ static UnitConversionServerClosure UnitConversionClosure;
 
 void setUnitConversionHandler(const UnitConversionServerClosure& closure)
 {
-	UnitConversionClosure.assign(closure);
+	UnitConversionClosure = closure;
 }
 
 bool getUnitConversion(
@@ -20,7 +20,10 @@ bool getUnitConversion(
 	if (UnitConversionClosure)
 	{
 		UnitConversionEvent ev(option, from_unit, from_precision, multiplier, offset, to_unit, to_precision);
-		if (UnitConversionClosure(ev)) return true;
+		if (UnitConversionClosure(ev))
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -56,12 +59,9 @@ std::string UnitConverter::getString(double value) const
 		precision = clip(precision, 0, std::numeric_limits<double>::max_digits10 - 1);
 		return stringf("%.*lf", precision, value);
 	}
-	else
-	{
-		std::string s = gcvtString(value);
-		// Only needed for Windows since it adds a trailing '.' even when not required.
-		return s.erase(s.find_last_not_of('.') + 1);
-	}
+	std::string s = gcvtString(value);
+	// Only needed for Windows since it adds a trailing '.' even when not required.
+	return s.erase(s.find_last_not_of('.') + 1);
 }
 
 double UnitConverter::getOrgValue(double value) const

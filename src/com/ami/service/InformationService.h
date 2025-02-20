@@ -41,12 +41,12 @@ class InformationService : public QObject
 		/**
 		 * @brief Sets the client idOffset for the information instances.
 		 */
-		void setIdOffset(Gii::IdType idOffset);
+		void setIdOffset(gii::IdType idOffset) const;
 
 		/**
 		 * @brief Gets the client idOffset of the information instances.
 		 */
-		[[nodiscard]] Gii::IdType getIdOffset() const;
+		[[nodiscard]] gii::IdType getIdOffset() const;
 
 	private:
 		struct Private;

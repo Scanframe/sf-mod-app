@@ -1,18 +1,20 @@
 #pragma once
 
-#include <pal/iface/PaletteInterface.h>
-#include <gii/gen/VariableHandler.h>
+#include <QColor>
 #include <gii/gen/Variable.h>
+#include <gii/gen/VariableHandler.h>
 #include <gii/qt/Macros.h>
 #include <misc/qt/Macros.h>
-#include <QColor>
+#include <pal/iface/PaletteInterface.h>
 
 namespace sf
 {
 
-class AmplitudePalette :public PaletteInterface, private VariableHandler
+class AmplitudePalette final
+	: public PaletteInterface
+	, VariableHandler
 {
-	Q_OBJECT
+		Q_OBJECT
 		/**
 		 * Color properties
 		 */
@@ -30,9 +32,9 @@ class AmplitudePalette :public PaletteInterface, private VariableHandler
 		/**
 		 * Calibration id properties.
 		 */
-		Q_PROPERTY(sf::Gii::IdType idCalibMin READ getIdCalibMin WRITE setIdCalibMin)
-		Q_PROPERTY(sf::Gii::IdType idCalibMax READ getIdCalibMax WRITE setIdCalibMax)
-		Q_PROPERTY(sf::Gii::IdType idCalibPos READ getIdCalibPos WRITE setIdCalibPos)
+		Q_PROPERTY(sf::gii::IdType idCalibMin READ getIdCalibMin WRITE setIdCalibMin)
+		Q_PROPERTY(sf::gii::IdType idCalibMax READ getIdCalibMax WRITE setIdCalibMax)
+		Q_PROPERTY(sf::gii::IdType idCalibPos READ getIdCalibPos WRITE setIdCalibPos)
 
 	public:
 		/**
@@ -82,7 +84,6 @@ class AmplitudePalette :public PaletteInterface, private VariableHandler
 		SF_DECL_INFO_ID(IdCalibPos)
 
 	private:
-
 		/**
 		 * @brief Variable event handler from base class.
 		 */
@@ -91,7 +92,7 @@ class AmplitudePalette :public PaletteInterface, private VariableHandler
 		/**
 		 * @brief Property change notification method.
 		 */
-		void notify(void*);
+		void notify(void*) const;
 		/**
 		 * @brief Optional calibration position variables.
 		 */
@@ -99,7 +100,7 @@ class AmplitudePalette :public PaletteInterface, private VariableHandler
 		/**
 		 * @brief Holds the callback function/closure for notifying changes of the palette.
 		 */
-		PaletteInterface::Parameters::Callback _callback;
+		Parameters::Callback _callback;
 		/**
 		 * @brief Holds Color to start at for the region bellow the threshold.
 		 */
@@ -126,4 +127,4 @@ class AmplitudePalette :public PaletteInterface, private VariableHandler
 		double _calibLevel{0.7};
 };
 
-}
+}// namespace sf
