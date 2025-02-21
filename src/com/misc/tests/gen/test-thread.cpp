@@ -27,7 +27,7 @@ int Worker::method1(int v1)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay1<Worker, decltype(&Worker::method1), int, int>(*threadRelay, this, &Worker::method1, rv, v1))
+	if (ThreadRelay::Relay1(*threadRelay, this, &Worker::method1, rv, v1))
 	{
 		return Thread::getCurrentId() + v1;
 	}
@@ -38,7 +38,7 @@ int Worker::method2(int v1, int v2)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay2<Worker, decltype(&Worker::method2), int, int, int>(*threadRelay, this, &Worker::method2, rv, v1, v2))
+	if (ThreadRelay::Relay2(*threadRelay, this, &Worker::method2, rv, v1, v2))
 	{
 		return Thread::getCurrentId() + v1 + v2;
 	}
@@ -49,7 +49,7 @@ int Worker::method3(int v1, int v2, int v3)
 {
 	int rv;
 	// Create the relay instance and use the bool operator to check if the code needs execution.
-	if (ThreadRelay::Relay3<Worker, decltype(&Worker::method3), int, int, int, int>(*threadRelay, this, &Worker::method3, rv, v1, v2, v3))
+	if (ThreadRelay::Relay3(*threadRelay, this, &Worker::method3, rv, v1, v2, v3))
 	{
 		return Thread::getCurrentId() + v1 + v2 + v3;
 	}

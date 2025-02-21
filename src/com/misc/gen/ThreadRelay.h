@@ -1,7 +1,5 @@
 #pragma once
 #include <atomic>
-#include <functional>
-#include <misc/gen/Condition.h>
 #include <misc/gen/Semaphore.h>
 #include <misc/gen/Sync.h>
 #include <misc/gen/Thread.h>
@@ -102,7 +100,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 		 * @brief Template for a method having 0 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret>
-		class Relay0 : public RelayBase
+		class Relay0 final : public RelayBase
 		{
 			public:
 				Relay0(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret)
@@ -115,7 +113,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret (ClassType::*)()) _mtd)();
+					_ret = ((*_cls).*static_cast<Ret (ClassType::*)()>(_mtd))();
 				}
 
 				ClassType* _cls;
@@ -124,7 +122,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 		};
 
 		/**
-		 * @brief Template for a method having 1 arguments.
+		 * @brief Template for a method having 1 argument.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1>
 		class Relay1 : public RelayBase
@@ -141,7 +139,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1)) _mtd)(_arg1);
+					_ret = ((*_cls).*static_cast<Ret (ClassType::*)(Arg1)>(_mtd))(_arg1);
 				}
 
 				ClassType* _cls;
@@ -169,7 +167,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2)) _mtd)(_arg1, _arg2);
+					_ret = ((*_cls).*static_cast<Ret (ClassType::*)(Arg1, Arg2)>(_mtd))(_arg1, _arg2);
 				}
 
 				ClassType* _cls;
@@ -199,7 +197,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2, Arg3)) _mtd)(_arg1, _arg2, _arg3);
+					_ret = ((*_cls).*static_cast<Ret (ClassType::*)(Arg1, Arg2, Arg3)>(_mtd))(_arg1, _arg2, _arg3);
 				}
 
 				ClassType* _cls;
@@ -214,7 +212,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 		 * @brief Template for a method having 4 arguments.
 		 */
 		template<typename ClassType, typename MethodType, typename Ret, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-		class Relay4 : public RelayBase
+		class Relay4 final : public RelayBase
 		{
 			public:
 				Relay4(ThreadRelay& tr, ClassType* cls, MethodType mtd, Ret& ret, Arg1& arg1, Arg2& arg2, Arg3& arg3, Arg4& arg4)
@@ -231,7 +229,7 @@ class _MISC_CLASS ThreadRelay : public Sync
 			private:
 				void call() override
 				{
-					_ret = ((*_cls).*(Ret (ClassType::*)(Arg1, Arg2, Arg3, Arg4)) _mtd)(_arg1, _arg2, _arg3, _arg4);
+					_ret = ((*_cls).*static_cast<Ret (ClassType::*)(Arg1, Arg2, Arg3, Arg4)>(_mtd))(_arg1, _arg2, _arg3, _arg4);
 				}
 
 				ClassType* _cls;
