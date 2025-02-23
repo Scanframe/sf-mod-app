@@ -6,11 +6,13 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::LayoutButton custom widget.
+ * @brief Interface class to create the custom widget.
  */
-class LayoutButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
+class LayoutButtonPlugin
+	: public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +80,4 @@ class LayoutButtonPlugin :public QObject, public QDesignerCustomWidgetInterface
 		bool initialized = false;
 };
 
-}
+}// namespace sf

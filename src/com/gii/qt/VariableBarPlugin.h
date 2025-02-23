@@ -5,7 +5,7 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::VariableEdit custom widget.
+ * @brief Interface class to create the custom widget.
  */
 class VariableBarPlugin
 	: public QObject

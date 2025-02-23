@@ -26,7 +26,7 @@ TEST_CASE("sf::ActionButton", "[gui][qt]")
 		REQUIRE(fi.exists());
 		//
 		sf::FormDialog dlg;
-		dlg.Load(QFile(fi.absoluteFilePath()));
+		dlg.load(QFile(fi.absoluteFilePath()));
 		//
 		QTimer::singleShot(2000, [&] {
 			QString fp = QDir::temp().filePath(QFileInfo(__FILE__).baseName() + ".png");

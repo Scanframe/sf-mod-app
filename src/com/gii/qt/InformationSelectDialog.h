@@ -1,9 +1,7 @@
 #pragma once
-#include <QAbstractButton>
 #include <QDialog>
 #include <QSettings>
 #include <QSortFilterProxyModel>
-#include <QTreeView>
 #include <gii/qt/InformationItemModel.h>
 #include <gii/qt/Namespace.h>
 

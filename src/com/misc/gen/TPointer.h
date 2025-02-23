@@ -1,5 +1,4 @@
 #pragma once
-#include <stddef.h>
 
 namespace sf
 {
@@ -19,14 +18,15 @@ class TPointerBase
 			return *P;
 		}
 
-		explicit operator T*()
+		// ReSharper disable once CppNonExplicitConversionOperator
+		operator T*()
 		{
 			return P;
 		}
 
 		int operator!() const
 		{
-			return P == 0;
+			return P == nullptr;
 		}
 
 		T* Relinquish()
@@ -42,7 +42,7 @@ class TPointerBase
 		{}
 
 		TPointerBase()
-			: P(0)
+			: P(nullptr)
 		{}
 
 		T* P;

@@ -49,7 +49,7 @@ TEST_CASE("sf::FormDialog", "[debug]")
 		//ucs.setUnitSystem(sf::UnitConversionServer::usImperial);
 		ucs.setUnitSystem(sf::UnitConversionServer::usMetric);
 		// Create a server instance.
-//#error "Variable definition fails in setup function probably by locale value not equal 'C' !"
+		//#error "Variable definition fails in setup function probably by locale value not equal 'C' !"
 		sf::Variable v_server("0x1,High Speed,m/s,A,High speed velocity setting,FLOAT,FLOAT,0.1,10,0,20", 0);
 		// Makes the server instance retrieve new conversion values.
 		CHECK(v_server.setConvertValues(true));
@@ -58,9 +58,8 @@ TEST_CASE("sf::FormDialog", "[debug]")
 		REQUIRE(fi.exists());
 		//
 		sf::FormDialog dlg;
-		dlg.Load(QFile(fi.absoluteFilePath()));
-		QTimer::singleShot(2000, [&]
-		{
+		dlg.load(QFile(fi.absoluteFilePath()));
+		QTimer::singleShot(2000, [&] {
 			QString fp = QDir::temp().filePath(QFileInfo(__FILE__).baseName() + ".png");
 			if (debug_level)
 			{
@@ -77,5 +76,4 @@ TEST_CASE("sf::FormDialog", "[debug]")
 
 	// Checks for dangling variables.
 	sf::Variable::uninitialize();
-
 }

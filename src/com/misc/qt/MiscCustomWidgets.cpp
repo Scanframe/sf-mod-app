@@ -1,16 +1,16 @@
 #include "MiscCustomWidgets.h"
-#include <QDebug>
+#include "ActionButtonPlugin.h"
+#include "DrawWidgetPlugin.h"
 #include "EditorPlugin.h"
 #include "ObjectExtension.h"
-#include "DrawWidgetPlugin.h"
 #include "PropertyPagePlugin.h"
-#include "ActionButtonPlugin.h"
+#include <QDebug>
 
 namespace sf
 {
 
 MiscCustomWidgets::MiscCustomWidgets(QObject* parent)
-	:QObject(parent)
+	: QObject(parent)
 {
 	if (ObjectExtension::inDesigner())
 	{
@@ -34,4 +34,4 @@ QList<QDesignerCustomWidgetInterface*> MiscCustomWidgets::customWidgets() const
 	return widgets;
 }
 
-}
+}// namespace sf

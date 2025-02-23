@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TestWidget</class>
+ <widget class="QWidget" name="TestWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>507</width>
+    <height>354</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:logo/ico/scanframe</normaloff>:logo/ico/scanframe</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <item row="2" column="0" colspan="2">
+    <widget class="sf::VariableEdit" name="VariableEdit_1">
+     <property name="toolTip">
+      <string>Tool tip info?</string>
+     </property>
+     <property name="whatsThis">
+      <string>Special edit having name and unit label.</string>
+     </property>
+     <property name="idVariable" stdset="0">
+      <uLongLong>1</uLongLong>
+     </property>
+     <property name="converted">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QFrame" name="frameVacant">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Plain</enum>
+     </property>
+     <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="sf::VariableTreeView" name="vtvTable">
+        <property name="toolTip">
+         <string>Variable table</string>
+        </property>
+        <property name="whatsThis">
+         <string>Variable tree view for viewing and editing variables in a table.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="btnClose">
+     <property name="text">
+      <string>&amp;Close</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="btnTest">
+     <property name="text">
+      <string>&amp;Test</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>sf::VariableEdit</class>
+   <extends>QWidget</extends>
+   <header>gii/qt/VariableEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>sf::VariableTreeView</class>
+   <extends>QTreeView</extends>
+   <header>gii/qt/VariableTree.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>VariableEdit_1</tabstop>
+  <tabstop>btnTest</tabstop>
+  <tabstop>btnClose</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../../../../../misc/qt/res/icons.qrc"/>
+  <include location="../../../../../qt/res/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

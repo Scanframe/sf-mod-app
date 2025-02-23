@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 namespace sf
@@ -8,7 +7,7 @@ namespace sf
 /**
  * @brief Interface class to create the custom widget.
  */
-class VariableCheckBoxPlugin
+class VariableTreeViewPlugin
 	: public QObject
 	, public QDesignerCustomWidgetInterface
 {
@@ -19,7 +18,7 @@ class VariableCheckBoxPlugin
 		/**
 		 * @brief Constructor.
 		 */
-		explicit VariableCheckBoxPlugin(QObject* parent = nullptr);
+		explicit VariableTreeViewPlugin(QObject* parent = nullptr);
 
 		/**
 		 * @brief Overridden from base class.

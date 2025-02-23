@@ -873,7 +873,6 @@ class _GII_CLASS Variable
 
 		/**
 		 * @brief Removes the passed link from any variables.
-		 *
 		 * @param handler
 		 */
 		static void removeHandler(const VariableHandler* handler);

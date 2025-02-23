@@ -334,13 +334,13 @@ std::string trimLeft(std::string s, const std::string& t)
 
 int wildcmp(const char* wild, const char* str, bool case_s)
 {
-	if (!wild || !str)
+	if (wild == nullptr || str == nullptr)
 	{
 		return 0;
 	}
 	//
-	const char* cp;
-	const char* mp;
+	const char* cp = nullptr;
+	const char* mp = nullptr;
 	//
 	while ((*str) && (*wild != '*'))
 	{
@@ -525,18 +525,12 @@ std::string numberString(double value, int digits, bool sign_on)
 	{
 		digits = std::numeric_limits<decltype(value)>::digits10;
 	}
-#if IS_WIN
-	rv.resize(_CVTBUFSIZE + 1);
-	::_ecvt_s(rv.data(), rv.size(), value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign);
-	rv.resize(strlen(rv.c_str()));
-#else
 	// Create buffer large enough to hold all digits and signs including exponent 'e' and decimal dot '.'.
 	rv.resize(std::numeric_limits<decltype(value)>::max_digits10 + 1);
-	::ecvt_r(value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign, rv.data(), rv.size());
+	ecvt_r(value, std::numeric_limits<decltype(value)>::digits10, &dec, &sign, rv.data(), rv.size());
 	rv.resize(std::numeric_limits<decltype(value)>::digits10);
-#endif
 	// Round the integer value up to its required digits.
-	auto rnd = ipow(10ull, (int) ((int) rv.length() - digits));
+	const auto rnd = ipow(10ull, (int) ((int) rv.length() - digits));
 	rv = itostr(round(std::stoull(rv), rnd) / rnd);
 	// Check if rounding added a decimal.
 	if (rv.length() != digits)
@@ -566,7 +560,7 @@ std::string numberString(double value, int digits, bool sign_on)
 		if (exp != 0)
 		{
 			// Increment of decimal point placement.
-			auto inc = (dec / 3) * -3;
+			const auto inc = (dec / 3) * -3;
 			dec += inc;
 			exp -= inc;
 		}

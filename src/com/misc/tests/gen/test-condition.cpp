@@ -1,6 +1,5 @@
 #include <iostream>
 #include <memory>
-#include <misc/gen/PerformanceTimer.h>
 #include <misc/gen/ThreadClosure.h>
 #include <misc/gen/ThreadRelay.h>
 #include <misc/gen/dbgutils.h>

@@ -54,7 +54,7 @@ QSize FormDialog::sizeHint() const
 	return sz;
 }
 
-void FormDialog::Load(QFile file)
+void FormDialog::load(QFile file)
 {
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
@@ -90,7 +90,7 @@ void FormDialog::Load(QFile file)
 	}
 }
 
-void FormDialog::Load2(QFile file)
+void FormDialog::loadAlt(QFile file)
 {
 	// Open the file readonly.
 	if (file.open(QFile::ReadOnly))
@@ -108,10 +108,8 @@ void FormDialog::Load2(QFile file)
 			_widget->setMinimumSize(_widget->size());
 			// Copy the title from the widget.
 			setWindowTitle(_widget->windowTitle());
-			/*
 			// Set the widget onto the layout.
-			_scrollArea->setWidget(_widget);
-*/
+			//_scrollArea->setWidget(_widget);
 			//
 			connectChildren();
 		}
@@ -122,8 +120,7 @@ void FormDialog::Load2(QFile file)
 void FormDialog::connectChildren()
 {
 	//connectByName(_widget, "btnClose", "released", this, "close");
-	auto child = findChild<QPushButton*>("btnClose");
-	if (child)
+	if (const auto child = findChild<QPushButton*>("btnClose"))
 	{
 		connect(child, &QPushButton::released, this, &FormDialog::close);
 	}

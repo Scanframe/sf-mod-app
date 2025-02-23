@@ -7,24 +7,67 @@
 namespace sf
 {
 
+struct VariableTreeView::Private final : QObject
+{
+		explicit Private(VariableTreeView* widget)
+			: QObject(widget)
+			, _widget(widget)
+			, _listModel(new VariableListModel(this))
+		{
+			// Set the delegates of the model onto the view for editing.
+			_listModel->setDelegates(_widget);
+		}
+
+		VariableTreeView* _widget;
+		VariableListModel* _listModel;
+};
+
 VariableTreeView::VariableTreeView(QWidget* parent)
-	: ::QTreeView(parent)
+	: QTreeView(parent)
+	, ObjectExtension(this)
+	, _p(new Private(this))
 {
 	setSelectionMode(SingleSelection);
 	setSelectionBehavior(SelectRows);
 	setEditTriggers(EditKeyPressed | DoubleClicked | SelectedClicked);
 	setIndentation(0);
 	setAlternatingRowColors(true);
-	// Create a variable list model.
-	const auto lm = new sf::VariableListModel(this);
-	base_type::setModel(lm);
-	// Set the delegates of the model onto the view for editing.
-	lm->setDelegates(this);
+	QTreeView::setModel(_p->_listModel);
+}
+
+VariableTreeView::~VariableTreeView()
+{
+	delete _p;
+}
+
+bool VariableTreeView::isRequiredProperty(const QString& name)
+{
+	return true;
 }
 
 VariableListModel* VariableTreeView::variableListModel() const
 {
-	return static_cast<VariableListModel*>(model());
+	return _p->_listModel;
+}
+
+int VariableTreeView::nameLevel() const
+{
+	return _p->_listModel->nameLevel();
+}
+
+void VariableTreeView::setNameLevel(int level) const
+{
+	_p->_listModel->setNameLevel(level);
+}
+
+void VariableTreeView::setRowCheckBox(bool enabled) const
+{
+	_p->_listModel->setRowCheckBox(enabled);
+}
+
+bool VariableTreeView::rowCheckBox() const
+{
+	return _p->_listModel->rowCheckBox();
 }
 
 int VariableTreeView::editableColumn() const
@@ -72,7 +115,7 @@ bool VariableTreeView::toggleRow()
 	auto rows = selectionModel()->selectedRows();
 	if (!rows.empty())
 	{
-		if (const auto var = variableListModel()->getByIndex(rows.first()))
+		if (const auto var = variableListModel()->getVariable(rows.first()))
 		{
 			// Toggle the data field.
 			var->setData<bool>(!var->getData<bool>());
@@ -103,7 +146,7 @@ void VariableTreeView::keyPressEvent(QKeyEvent* event)
 		return;
 	}
 	// When the space bar is pressed toggle the checkbox.
-	if (event->key() == Qt::Key_Space && toggleRow())
+	if (event->key() == Qt::Key_Space && _p->_listModel->rowCheckBox() && toggleRow())
 	{
 		// Skip default handling of the event.
 		return;

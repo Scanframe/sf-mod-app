@@ -46,6 +46,7 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		{
 			const auto sb = new QSpinBox(parent);
 			sb->setLocale(QLocale::c());
+			sb->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 			return sb;
 		}
 
@@ -53,6 +54,7 @@ QWidget* CommonItemDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		{
 			const auto sb = new QDoubleSpinBox(parent);
 			sb->setLocale(QLocale::c());
+			sb->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 			return sb;
 		}
 

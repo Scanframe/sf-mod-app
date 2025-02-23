@@ -9,41 +9,42 @@
 namespace sf
 {
 
-struct VariableBar::Private
+struct VariableBar::Private final
 	: QObject
 	, PrivateBase
 {
 		int margin{1};
-
 		VariableBar* _widget{nullptr};
 		QLabel* _labelNameAlt{nullptr};
 		int _nameLevel{-1};
 
 		static Private* cast(PrivateBase* data)
 		{
-			return static_cast<Private*>(data);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+			return static_cast<Private*>(data);
 		}
 
 		explicit Private(VariableBar* widget)
-			: _widget(widget)
+			: QObject(widget)
+			, PrivateBase()
+			, _widget(widget)
 		{
 			// Make the widget get focus when clicked in.
 			_widget->setFocusPolicy(Qt::StrongFocus);
 			// Also, when using the keyboard.
 			_widget->setAttribute(Qt::WA_KeyboardFocusChange);
 			// Only link when not in design mode.
-			if (!ObjectExtension::inDesigner())
+			if (!inDesigner())
 			{
 				_variable.setHandler(this);
 			}
-			QTimer::singleShot(0, this, &VariableBar::Private::connectLabelNameAlt);
+			QTimer::singleShot(0, this, &Private::connectLabelNameAlt);
 		}
 
-		void onDestroyed(const QObject* obj = nullptr)// NOLINT(readability-make-member-function-const)
+		void onDestroyed(const QObject* obj = nullptr)
 		{
 			if (_labelNameAlt && _labelNameAlt == obj)
 			{
-				disconnect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+				disconnect(_labelNameAlt, &QLabel::destroyed, this, &Private::onDestroyed);
 				_labelNameAlt = nullptr;
 			}
 		}
@@ -56,9 +57,9 @@ struct VariableBar::Private
 				// Assign the pointer to alternate name label.
 				_labelNameAlt = label;
 				// Connect handler for when the label is destroyed to null the alternate label.
-				connect(_labelNameAlt, &QLabel::destroyed, this, &VariableBar::Private::onDestroyed);
+				connect(_labelNameAlt, &QLabel::destroyed, this, &Private::onDestroyed);
 				// Trigger event to fill in the label text and tool tip.
-				_variable.emitEvent(Variable::veUserPrivate);
+				_variable.emitEvent(veUserPrivate);
 			}
 		}
 
@@ -193,7 +194,7 @@ void VariableBar::paintEvent(QPaintEvent* event)
 	if (!inDesigner())
 	{
 		// Get variable as a reference.
-		auto& v(p->_variable);
+		const auto& v(p->_variable);
 		text = QString::fromStdString(v.getCurString() + ' ' + v.getUnit());
 		pos = static_cast<int>(Value::calculateOffset(v.getCur(), v.getMin(), v.getMax(), Value(rc.width()), true).getInteger());
 	}
@@ -222,7 +223,7 @@ int VariableBar::nameLevel() const
 
 void VariableBar::setNameLevel(int level) const
 {
-	auto p = VariableBar::Private::cast(_p);
+	auto p = Private::cast(_p);
 	if (p->_nameLevel != level)
 	{
 		p->_nameLevel = level;

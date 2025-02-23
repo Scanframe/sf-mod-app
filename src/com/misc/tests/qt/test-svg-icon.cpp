@@ -28,13 +28,11 @@ TEST_CASE("sf::SvgIcon", "[gui][qt]")
 		REQUIRE(fi.exists());
 		//
 		sf::FormDialog dlg;
-		dlg.Load(QFile(fi.absoluteFilePath()));
+		dlg.load(QFile(fi.absoluteFilePath()));
 		// Find the draw widgets.
 		auto widgets = dlg.findChildren<sf::DrawWidget*>();
 		// Sort them using their object names.
-		std::sort(widgets.begin(), widgets.end(), [](const sf::DrawWidget* a, const sf::DrawWidget* b) -> bool {
-			return a->objectName() < b->objectName();
-		});
+		std::sort(widgets.begin(), widgets.end(), [](const sf::DrawWidget* a, const sf::DrawWidget* b) -> bool { return a->objectName() < b->objectName(); });
 		//
 		QIcon::Mode modes[] = {QIcon::Mode::Normal, QIcon::Mode::Active, QIcon::Mode::Disabled, QIcon::Mode::Selected};
 		// <rect width="512" height="512" fill="red" />

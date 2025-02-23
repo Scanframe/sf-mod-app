@@ -1,17 +1,17 @@
-#include <QDebug>
-#include <misc/qt/ObjectExtension.h>
 #include "GiiCustomWidgets.h"
+#include "InformationIdEditPlugin.h"
 #include "VariableBarPlugin.h"
-#include "VariableEditPlugin.h"
 #include "VariableCheckBoxPlugin.h"
 #include "VariableComboBoxPlugin.h"
-#include "InformationIdEditPlugin.h"
+#include "VariableEditPlugin.h"
+#include "VariableTreeViewPlugin.h"
+#include <misc/qt/ObjectExtension.h>
 
 namespace sf
 {
 
 GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
-	:QObject(parent)
+	: QObject(parent)
 {
 	if (ObjectExtension::inDesigner())
 	{
@@ -22,6 +22,7 @@ GiiCustomWidgets::GiiCustomWidgets(QObject* parent)
 	widgets.append(new VariableEditPlugin(this));
 	widgets.append(new VariableCheckBoxPlugin(this));
 	widgets.append(new VariableComboBoxPlugin(this));
+	widgets.append(new VariableTreeViewPlugin(this));
 	widgets.append(new InformationIdEditPlugin(this));
 }
 
@@ -39,4 +40,4 @@ QList<QDesignerCustomWidgetInterface*> GiiCustomWidgets::customWidgets() const
 	return widgets;
 }
 
-}
+}// namespace sf

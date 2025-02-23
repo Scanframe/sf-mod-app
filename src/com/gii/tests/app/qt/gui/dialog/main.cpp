@@ -56,7 +56,7 @@ m/s,2="/s,39.37007874015748031496062992126,0,2
 		v_server.setConvertValues(true);
 		// Set the file location to the resource.
 		sf::FormDialog dlg;
-		dlg.Load(QFile(":/ui/dialog"));
+		dlg.load(QFile(":/ui/dialog"));
 		dlg.exec();
 	}
 	//

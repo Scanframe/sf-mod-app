@@ -68,6 +68,13 @@ rad/s,6=deg/s,57.2958,0,5
 °C,1=°C,1
 V,2=mV,1000,0,-1
 
+kB,0=
+%,0=
+dB,1=
+%,0=
+
+
+
 [Imperial]
 m/s,0="/s,39.3700787401,0,0
 m/s,1="/s,39.3700787401,0,1
@@ -112,35 +119,13 @@ Entries=258
 49=0xB0004,Uspc2100|A-scan|Reject,%,ASEW,Ascan Reject,FLOAT,FLOAT,1,0,0,100
 50=0xB0005,Uspc2100|A-scan|Stream,,ASEW,Ascan Streaming Modes,INTEGER,,1,0,0,2,Disabled=0,Enabled=1,Gates=2
 51=0xB0006,Uspc2100|A-scan|Step Gate Display,,ASEW,Ascan Step gate display mode,INTEGER,,1,1,0,1,Off=0,On=1
-52=0xB0212,Uspc2100|System|One SHot,,ASEW,Generates one shot of data,INTEGER,,1,1,0,1,Off=0,On=1
 53=0xB0030,Uspc2100|IF Gate|Delay,us,ASEW,Interface Gate Delay,FLOAT,,0.02,212.12,0,320
 54=0xB0031,Uspc2100|IF Gate|Range,us,ASEW,Interface Gate Range,FLOAT,,0.02,8.35,0,320
 55=0xB0032,Uspc2100|IF Gate|Threshold,%,ASEW,Interface Gate Flank Threshold,INTEGER,,1,80,0,100
 56=0xB004A,Uspc2100|IF Gate|Trigger Mode,,ASEW,Source of trigger for Interface Gate,INTEGER,,1,0,0,1,Peak=0,Flank=1
 57=0xB004C,Uspc2100|IF Gate|Rectify,,ASEW,Interface Gate rectify mode,INTEGER,,1,1,0,3,RF=0,Full=1,Pos=2,Neg=3
-58=0xB0033,Uspc2100|WallThickness|Average Window,?,ASEW,WallThickness|Average Window,INTEGER,,1,0,0,100
-59=0xB0035,Uspc2100|WallThickness|Start,,ASEW,Source of Wallthickness measurement START position,INTEGER,,1,0,0,3,IF=0,G1=1,G2(not used)=2,IP=3
-60=0xB0036,Uspc2100|WallThickness|Stop,,ASEW,Source of Wallthickness measurement STOP position,INTEGER,,1,0,0,3,IF(not used)=0,G1=1,G2=2,IP=3
-61=0xB004B,Uspc2100|WallThickness|Accumulate Mode,,ASEW,WallThickness Accumulate mode,INTEGER,,1,0,0,2,External=0,Sample=1,Instantaneous=2
-62=0xB004D,Uspc2100|WallThickness|Noise Immun Count,,ASEW,WallThickness Noise Immun count,INTEGER,,1,0,0,15
-63=0xB004E,Uspc2100|WallThickness|Min Limit,S,ASEW,WallThickness Min Limit,FLOAT,,0.2,0.2,0,5000
-64=0xB004F,Uspc2100|WallThickness|Max Limit,S,ASEW,WallThickness Max Limit,FLOAT,,0.2,0.2,0,5000
-65=0xB0050,Uspc2100|WallThickness|Num Echos,,ASEW,WallThickness Number of echos used,INTEGER,,1,2,1,4
-66=0xB0051,Uspc2100|WallThickness|Zero Offset,S,ASEW,WallThickness Zero Offset,FLOAT,,0.2,0.2,0,5000
 67=0xB0037,Uspc2100|Gates|Mode,,ASEW,Type of measurement for Gate(s),INTEGER,,1,1,1,2,Flaw=1,Thick=2
 68=0xB0034,Uspc2100|Gates|Start Mode,,ASEW,Source of start trigger for Gate(s),INTEGER,,1,2,0,2,Initial Pulse=0,Artificial=1,Interface=2
-69=0xB0060,Uspc2100|System|TDR,,ASEW,Function of external pin for measurement control,INTEGER,,1,0,0,3,Ignore_Enabled_output=0,Ignore_Disabled_output=1,Enable_High_Active=2,Enable_Low_Active=3
-70=0xB0063,Uspc2100|Analog Out 1|Source out,,ASEW,Analog Output 1 signal source,INTEGER,,1,0,0,1,AMP_G1=0,AMP_G2=1
-71=0xB0064,Uspc2100|Analog Out 1|Offset,%,ASEW,Analog Output 1 signal offset ,FLOAT,,0.1,0,0,127
-72=0xB0065,Uspc2100|Analog Out 1|Range,%,ASEW,Analog Output 1 signal range,FLOAT,,0.1,5,0,127
-73=0xB0067,Uspc2100|Analog Out 1|Timing,,ASEW,Analog Output 1 signal Timing,INTEGER,,1,1,0,2,Instant=0,Timed Max=1,Timed Min=2
-74=0xB0066,Uspc2100|Analog Out 1|Muting,%,ASEW,Analog Output 1 muting,FLOAT,FLOAT,0.1,0,0,127
-75=0xB0068,Uspc2100|Analog Out 2|Source out,,ASEW,Analog Output 2 signal source,INTEGER,,1,0,0,1,AMP_G1=0,AMP_G2=1
-76=0xB0069,Uspc2100|Analog Out 2|Offset,%,ASEW,Analog Output 2 signal offset ,FLOAT,,0.1,0,0,127
-77=0xB006A,Uspc2100|Analog Out 2|Range,%,ASEW,Analog Output 2 signal range,FLOAT,,0.1,5,0,127
-78=0xB006C,Uspc2100|Analog Out 2|Timing,,ASEW,Analog Output 2 signal Timing,INTEGER,,1,1,0,2,Instant=0,Timed Max=1,Timed Min=2
-79=0xB006B,Uspc2100|Analog Out 2|Muting,%,ASEW,Analog Output 2 muting,FLOAT,,0.1,0,0,127
-80=0xB0222,Uspc2100|System|Version,Normal,RASE,All combined versions.,STRING,,256,<n/a>,<n/a>,
 81=0xB0097,Uspc2100|Pulser|Sync Mode,,ASEW,Pulser sync mode,INTEGER,,1,1,0,1,Internal=0,External=1
 82=0xB009C,Uspc2100|Pulser|Test Mode,,ASEW,Pulser probe test mode,INTEGER,,1,0,0,1,Single=0,Dual=1
 83=0xB009E,Uspc2100|Pulser|Energy,,ASEW,Pulser Energy Level,INTEGER,,1,1,0,1,Low=0,High=1
@@ -182,47 +167,7 @@ Entries=258
 152=0x9E707,Ultrasonic|Receiver|Gain|TCG Corr|Active,,AS,Ultrasonic receiver TCG Receiver TCG Gain Correction Scanning gain active.,INTEGER,,1,0,0,1,Off=0,On=1
 153=0x9E708,Ultrasonic|Receiver|Gain|Main,dB,ASP,Ultrasonic receiver TCG Receiver Gain value before correction with scanning gain.,FLOAT,,0.1,70,0,110
 154=0x9E701,Ultrasonic|Receiver|Gain|Target Amplitude,%,ASP,Ultrasonic receiver TCG target amplitude.,INTEGER,,1,80,0,128
-185=0x57001,Project|Binder|Medium Velocity,m/s,ASE,Sound velocity of the medium.,FLOAT,,1,3020,100,10000
-186=0x50005,Project|Project,N,RAE,Reference name of the loaded project.,STRING,,256,,,
-187=0x50006,Project|Inspection,N,RAE,Reference name of the current inspection.,STRING,,256,,,
-188=0x50007,Project|Medium,F,APE,Name of the medium used for the part.,STRING,,40,,,
-221=0x5F001,Project|Method|Circle|Part,F,RAPE,Part Name.,STRING,,40,,,
-222=0x5F002,Project|Method|Circle|Tool,F,APE,Name of the used tool.,STRING,,40,,,
-223=0x5F014,Project|Method|Circle|Tool|Serial,N,RAE,Tool Serial number of the used tool.,STRING,,40,,,
-224=0x5F003,Project|Method|Circle|Element,F,APE,Name of the used element.,STRING,,40,,,
-225=0x5F015,Project|Method|Circle|Element|Serial,N,RAE,Serial number of the used element.,STRING,,40,,,
-226=0x5F016,Project|Method|Circle|Material,F,APE,Name of the inspected material.,STRING,,40,,,
-227=0x5F017,Project|Method|Circle|Material|Velocity,m/s,RAE,Sound velocity of the material.,FLOAT,,1,3020,100,10000
-228=0x5F018,Project|Method|Circle|Velocity Mode,,APE,Determines material sound velocity mode in shear or longitudinal.,INTEGER,,1,0,0,1,Longitudinal=0,Shear=1
-229=0x5F004,Project|Method|Circle|Settings,F,APE,Settings name.,STRING,,40,,,
-230=0x5F005,Project|Method|Circle|Area,F,RAPE,Scan area name.,STRING,,40,,,
-231=0x5F006,Project|Method|Circle|Method,F,RAPE,Scan method name.,STRING,,40,,,
-232=0x5F007,Project|Method|Circle|State,,RAPE,Scan method state.,INTEGER,,1,0,-2,5,CFGERR=-2,ERROR=-1,NOINIT=0,READY=1,ACTIVE=2,CHECKING=3,SCANNING=4,EVALUATING=5
-233=0x5F008,Project|Method|Circle|Calibration Type,y/n,APE,Determines the type of calibration and the behaviour in the project.,INTEGER,,1,0,0,2,None=0,PreCal=1,PostCal=2
-234=0x5F009,Project|Method|Circle|Calibration Set,F,APE,Calibration parameter set name.,STRING,,40,,,
-235=0x5F011,Project|Method|Circle|Index Count,x,RAE,Amount indices in the scan.,INTEGER,,1,0,0,0
-236=0x5F012,Project|Method|Circle|Analysis|Start,x,APE,Restricted analysis range start fraction of the scan area.,FLOAT,,0.001,0,0,1
-237=0x5F013,Project|Method|Circle|Analysis|Stop,x,APE,Restricted analysis range start fraction of the scan area.,FLOAT,,0.001,1,0,1
-238=0x5F010,Project|Method|Circle|Entry,x,RAE,Entry in the project scan list.,INTEGER,,1,0,0,0
-239=0x5F10A,Project|Method|Circle|Inspection|Gate Mode,,APE,Determines the way gates are positioned automatically.,INTEGER,,1,0,0,3,Manual=0,Surface=1,Material=2,Backwall=3
-240=0x5F1FF,Project|Method|Circle|Angle Calculation,,APE,The way the angles are used in calculations.,INTEGER,,1,0,0,2,None=0,Material=1,Surface=2
-241=0x5F107,Project|Method|Circle|Surface|Angle B,rad,APE,Surface angle of inspection as a rotation around the surface local Y-axis.,FLOAT,,0.001,0,-1.570796,1.570796
-242=0x5F108,Project|Method|Circle|Surface|Angle A,rad,APE,Surface angle of inspection as a rotation around the surface local X-axis.,FLOAT,,0.001,0,-1.570796,1.570796
-243=0x5F105,Project|Method|Circle|Material|Angle B,rad,APE,Angle of inspection as a rotation around the surface local Y-axis.,FLOAT,,0.001,0,-1.570796,1.570796
-244=0x5F106,Project|Method|Circle|Material|Angle A,rad,APE,Angle of inspection as a rotation around the surface local X-axis.,FLOAT,,0.001,0,-1.570796,1.570796
-245=0x5F118,Project|Method|Circle|Depth|Factor,,RAE,A ratio factor between depth from the surface and depth in the material.,FLOAT,,1e-06,1,0,1
-246=0x5F1FE,Project|Method|Circle|Depth|Max,m,RAPE,Maximum allowed depth for any depth mode.,FLOAT,,1e-05,1,1e-05,1
-247=0x5F1FD,Project|Method|Circle|Depth|Offset,m,RAPE,Offset to take in account from the scan specified depth.,FLOAT,,1e-05,0,0,1
-248=0x5F117,Project|Method|Circle|Depth,m,APE,Uncorrected calculated depth value.,FLOAT,,1e-05,0,0,1
-249=0x5F104,Project|Method|Circle|Density|Mode,!,APE,Switches between radial density mode in static or dynamic angles.,INTEGER,,1,0,0,1,Static=0,Dynamic=1
-250=0x5F202,Project|Method|Circle|Scan|Velocity,rad/s,APE,Velocity during the scan of the line pattern.,FLOAT,,0.0001,0,0,7
-251=0x5F102,Project|Method|Circle|Scan|Density,m,APE,Distance between measurements on the line.,FLOAT,,1e-06,1e-06,1e-06,1
-252=0x5F103,Project|Method|Circle|Scan|Length,rad,RAE,Width of a scan line.,FLOAT,,0.01,6.283185,6.283185,0,6.283185=0
-253=0x5F101,Project|Method|Circle|Index|Density,m,APE,Distance between measurements.,FLOAT,,1e-05,0.001,1e-05,1
-254=0x5F100,Project|Method|Circle|Index|Steps,x,RAE,Steps to reach end of the contour.,INTEGER,,1,0,0,0
-255=0x5F201,Project|Method|Circle|Surface|Speed,m/s,APE,Speed at the surface for calculating the velocity of an axis.,FLOAT,,1e-06,0.3,0,1
-256=0x5F20A,Project|Method|Circle|Surface|Back Side,,APE,Use backside of the defined surface area.,INTEGER,,1,0,0,1,Top Side=0,Back Side=1
-257=0x5F20B,Project|Method|Circle|Surface|Rotate,,APE,Rotate the defined surface around the surface Z-axis.,INTEGER,,1,0,0,3,0 Deg=0,90 Deg=1,180 Deg=2,270 Deg=3
+
 
 [GenericParamValue]
 ; 'Motion|Galil 21x2 - NIP|Version' in 'Normal'
@@ -265,8 +210,6 @@ Entries=258
 0xB0005=0
 ; 'Uspc2100|A-scan|Step Gate Display' in ''
 0xB0006=1
-; 'Uspc2100|System|One SHot' in ''
-0xB0212=1
 ; 'Uspc2100|IF Gate|Delay' in 'us'
 0xB0030=196.72
 ; 'Uspc2100|IF Gate|Range' in 'us'
@@ -277,52 +220,11 @@ Entries=258
 0xB004A=0
 ; 'Uspc2100|IF Gate|Rectify' in ''
 0xB004C=1
-; 'Uspc2100|WallThickness|Average Window' in '?'
-0xB0033=0
-; 'Uspc2100|WallThickness|Start' in ''
-0xB0035=0
-; 'Uspc2100|WallThickness|Stop' in ''
-0xB0036=0
-; 'Uspc2100|WallThickness|Accumulate Mode' in ''
-0xB004B=0
-; 'Uspc2100|WallThickness|Noise Immun Count' in ''
-0xB004D=0
-; 'Uspc2100|WallThickness|Min Limit' in 'S'
-0xB004E=0.2
-; 'Uspc2100|WallThickness|Max Limit' in 'S'
-0xB004F=0.2
-; 'Uspc2100|WallThickness|Num Echos' in ''
-0xB0050=2
-; 'Uspc2100|WallThickness|Zero Offset' in 'S'
 0xB0051=0.2
 ; 'Uspc2100|Gates|Mode' in ''
 0xB0037=1
 ; 'Uspc2100|Gates|Start Mode' in ''
 0xB0034=2
-; 'Uspc2100|System|TDR' in ''
-0xB0060=0
-; 'Uspc2100|Analog Out 1|Source out' in ''
-0xB0063=0
-; 'Uspc2100|Analog Out 1|Offset' in '%'
-0xB0064=0
-; 'Uspc2100|Analog Out 1|Range' in '%'
-0xB0065=5
-; 'Uspc2100|Analog Out 1|Timing' in ''
-0xB0067=1
-; 'Uspc2100|Analog Out 1|Muting' in '%'
-0xB0066=0
-; 'Uspc2100|Analog Out 2|Source out' in ''
-0xB0068=0
-; 'Uspc2100|Analog Out 2|Offset' in '%'
-0xB0069=0
-; 'Uspc2100|Analog Out 2|Range' in '%'
-0xB006A=5
-; 'Uspc2100|Analog Out 2|Timing' in ''
-0xB006C=1
-; 'Uspc2100|Analog Out 2|Muting' in '%'
-0xB006B=0
-; 'Uspc2100|System|Version' in 'Normal'
-0xB0222=<n/a>
 ; 'Uspc2100|Pulser|Sync Mode' in ''
 0xB0097=1
 ; 'Uspc2100|Pulser|Test Mode' in ''
@@ -406,86 +308,6 @@ Entries=258
 ; 'Ultrasonic|Receiver|Gain|Target Amplitude' in '%'
 ; 'Project|Binder|Medium Velocity' in 'm/s'
 0x57001=1491
-; 'Project|Project' in 'Normal'
-0x50005=ET Aft Side@CF6-50 9253M66
-; 'Project|Inspection' in 'Normal'
-0x50006=CF6-50 9253M66>MPOV8496A<20050113_095530
-; 'Project|Medium' in 'File'
-0x50007=Water
-; 'Project|Method|Circle|Part' in 'File'
-0x5F001=CF6-50 9253M66
-; 'Project|Method|Circle|Tool' in 'File'
-0x5F002=EddyLoth
-; 'Project|Method|Circle|Tool|Serial' in 'Normal'
-0x5F014=001
-; 'Project|Method|Circle|Element' in 'File'
-0x5F003=MDK1
-; 'Project|Method|Circle|Element|Serial' in 'Normal'
-0x5F015=1234
-; 'Project|Method|Circle|Material' in 'File'
-0x5F016=Titanium
-; 'Project|Method|Circle|Material|Velocity' in 'm/s'
-0x5F017=5820
-; 'Project|Method|Circle|Velocity Mode' in ''
-0x5F018=0
-; 'Project|Method|Circle|Settings' in 'File'
-0x5F004=ET
-; 'Project|Method|Circle|Area' in 'File'
-0x5F005=ET Cal Pre
-; 'Project|Method|Circle|Method' in 'File'
-0x5F006=Circle
-; 'Project|Method|Circle|State' in ''
-0x5F007=4
-; 'Project|Method|Circle|Calibration Type' in 'y/n'
-0x5F008=1
-; 'Project|Method|Circle|Calibration Set' in 'File'
-0x5F009=ET
-; 'Project|Method|Circle|Index Count' in 'x'
-0x5F011=25
-; 'Project|Method|Circle|Analysis|Start' in 'x'
-0x5F012=0
-; 'Project|Method|Circle|Analysis|Stop' in 'x'
-0x5F013=1
-; 'Project|Method|Circle|Entry' in 'x'
-0x5F010=0
-; 'Project|Method|Circle|Inspection|Gate Mode' in ''
-0x5F10A=0
-; 'Project|Method|Circle|Angle Calculation' in ''
-0x5F1FF=0
-; 'Project|Method|Circle|Surface|Angle B' in 'rad'
-0x5F107=0
-; 'Project|Method|Circle|Surface|Angle A' in 'rad'
-0x5F108=0
-; 'Project|Method|Circle|Material|Angle B' in 'rad'
-0x5F105=0
-; 'Project|Method|Circle|Material|Angle A' in 'rad'
-0x5F106=0
-; 'Project|Method|Circle|Depth|Factor' in ''
-0x5F118=1
-; 'Project|Method|Circle|Depth|Max' in 'm'
-0x5F1FE=1
-; 'Project|Method|Circle|Depth|Offset' in 'm'
-0x5F1FD=0
-; 'Project|Method|Circle|Depth' in 'm'
-0x5F117=0
-; 'Project|Method|Circle|Density|Mode' in '!'
-0x5F104=1
-; 'Project|Method|Circle|Scan|Velocity' in 'rad/s'
-0x5F202=3.1416
-; 'Project|Method|Circle|Scan|Density' in 'm'
-0x5F102=0.000127
-; 'Project|Method|Circle|Scan|Length' in 'rad'
-0x5F103=6.283185
-; 'Project|Method|Circle|Index|Density' in 'm'
-0x5F101=0.00013
-; 'Project|Method|Circle|Index|Steps' in 'x'
-0x5F100=25
-; 'Project|Method|Circle|Surface|Speed' in 'm/s'
-0x5F201=0.3048
-; 'Project|Method|Circle|Surface|Back Side' in ''
-0x5F20A=0
-; 'Project|Method|Circle|Surface|Rotate' in ''
-0x5F20B=2
 
 )";
 

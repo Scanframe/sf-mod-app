@@ -10,7 +10,7 @@ namespace sf
 /**
  * @brief Creates a dialog from ui-type file.
  */
-class _MISC_CLASS FormDialog : public QDialog
+class _MISC_CLASS FormDialog final : public QDialog
 {
 		Q_OBJECT
 
@@ -26,10 +26,14 @@ class _MISC_CLASS FormDialog : public QDialog
 		[[nodiscard]] QSize sizeHint() const override;
 
 		/**
-		 * @brief Loads UI file in the form.
+		 * @brief Loads a UI-file into the dialog.
 		 */
-		void Load(QFile file);
-		void Load2(QFile file);
+		void load(QFile file);
+
+		/**
+		 * @brief Alternative for loading UI-file in the dialog.
+		 */
+		void loadAlt(QFile file);
 
 		/**
 		 * @brief Signal to resize content.

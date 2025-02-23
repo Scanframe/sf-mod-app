@@ -11,24 +11,9 @@
 
 namespace sf
 {
+
 namespace
 {
-
-enum EColumn
-{
-	cId,
-	cName,
-	cValue,
-	cUnit,
-	cMaxColumns
-};
-
-// Columns not being shown.
-enum EColumnDisabled
-{
-	//cId = -1000,
-	cFlags = -1001
-};
 
 QVariant toQVariant(const Value& v)
 {
@@ -47,24 +32,6 @@ QVariant toQVariant(const Value& v)
 	}
 }
 
-/*
-Value fromQVariant(const QVariant& v, Value::EType type)
-{
-	switch (type)
-	{
-		case Value::vitInteger:
-			return Value(v.value<Value::int_type>());
-
-		case Value::vitFloat:
-			return Value(v.value<Value::flt_type>());
-
-		case Value::vitString:
-		default:
-			return Value(v.value<std::string>());
-	}
-}
-*/
-
 CommonItemDelegate::OptionsType getStateOptions(const Variable& var)
 {
 	CommonItemDelegate::OptionsType rv;
@@ -79,11 +46,55 @@ CommonItemDelegate::OptionsType getStateOptions(const Variable& var)
 
 VariableListModel::VariableListModel(QObject* parent)
 	: QAbstractListModel(parent)
+	, _nameLevel(0)
+	, _rowCheckBox{true}
+	, _columns({cName, cValue, cUnit})
 {}
 
-int VariableListModel::columnCount(const QModelIndex& parent) const
+VariableListModel::EField VariableListModel::getField(int column) const
 {
-	return cMaxColumns;
+	if (column >= 0 && column < _columns.size())
+	{
+		return _columns.at(column);
+	}
+	return cId;
+}
+
+int VariableListModel::getColumn(EField field) const
+{
+	return _columns.indexOf(field);
+}
+
+int VariableListModel::nameLevel() const
+{
+	return _nameLevel;
+}
+
+void VariableListModel::setNameLevel(int level)
+{
+	_nameLevel = level;
+	// Update column showing the name.
+	updateField(cName);
+}
+
+bool VariableListModel::rowCheckBox() const
+{
+	return _rowCheckBox;
+}
+
+void VariableListModel::setRowCheckBox(bool enabled)
+{
+	if (_rowCheckBox != enabled)
+	{
+		_rowCheckBox = enabled;
+		// Firat column has the checkbox so update that column.
+		updateColumn(0);
+	}
+}
+
+int VariableListModel::columnCount(const QModelIndex& parent = QModelIndex()) const
+{
+	return _columns.count();
 }
 
 void VariableListModel::setDelegates(QAbstractItemView* view)
@@ -151,9 +162,34 @@ void VariableListModel::refresh()
 	beginResetModel();
 	endResetModel();
 
-	beginInsertRows(QModelIndex(), 0, -1);
+	this->beginInsertRows(QModelIndex(), 0, -1);
 	insertRows(0, static_cast<int>(_varList.size()));
 	endInsertRows();
+}
+
+void VariableListModel::updateField(EField field)
+{
+	updateColumn(getColumn(field));
+}
+
+void VariableListModel::updateColumn(int column)
+{
+	if (column >= 0 || column >= columnCount())
+	{
+		// Get the range of visible items (assuming all rows are visible)
+		const QModelIndex topLeft = index(0, column);
+		const QModelIndex bottomRight = index(rowCount() - 1, column);
+		emit dataChanged(topLeft, bottomRight);
+	}
+}
+
+void VariableListModel::updateAll()
+{
+	// First row, first column.
+	QModelIndex topLeft = index(0, 0);
+	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1);
+	// Last row, last column
+	emit dataChanged(topLeft, bottomRight);
 }
 
 QVariant VariableListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -162,7 +198,7 @@ QVariant VariableListModel::headerData(int section, Qt::Orientation orientation,
 	{
 		if (role == Qt::DisplayRole)
 		{
-			switch (section)
+			switch (getField(section))
 			{
 				case cId:
 					return QString(tr("Id"));
@@ -191,7 +227,7 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 	//
 	Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemNeverHasChildren | Qt::ItemFlag::ItemIsSelectable;
 	//
-	if (index.column() == cValue)
+	if (getField(index.column()) == cValue)
 	{
 		// Only editable when not read-only.
 		if (!_varList.at(index.row()).get()->isReadOnly())
@@ -199,7 +235,8 @@ Qt::ItemFlags VariableListModel::flags(const QModelIndex& index) const
 			flags |= Qt::ItemFlag::ItemIsEditable;
 		}
 	}
-	else if (index.column() == 0)
+	// First column has a checkbox.
+	else if (_rowCheckBox && index.column() == 0)
 	{
 		flags |= Qt::ItemFlag::ItemIsUserCheckable;
 	}
@@ -217,22 +254,23 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	{
 		return {};
 	}
+	const auto field = getField(index.column());
 	const auto var = _varList.at(index.row()).get();
 	// First row always get the selection check box.
-	if (role == Qt::CheckStateRole && index.column() == 0)
+	if (_rowCheckBox && role == Qt::CheckStateRole && index.column() == 0)
 	{
 		return var->getData<bool>() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
 	}
 	// Display the value.
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
-		switch (index.column())
+		switch (field)
 		{
 			case cId:
 				return QString("0x%1").arg(var->getId(), 0, 16);
 
 			case cName:
-				return QString::fromStdString(var->getName(_nameLevels));
+				return QString::fromStdString(var->getName(_nameLevel));
 
 			case cValue:
 				return QString::fromStdString(var->getCurString());
@@ -250,7 +288,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	// Used to initialize the delegate editor.
 	if (role == Qt::ItemDataRole::EditRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			return toQVariant(var->getCur());
 		}
@@ -262,7 +300,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	// Used for selection of editor type.
 	else if (role == CommonItemDelegate::TypeRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			if (!var->isReadOnly())
 			{
@@ -295,7 +333,7 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	// Used for editor's selectable options.
 	else if (role == CommonItemDelegate::OptionsRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			if (var->getStateCount())
 			{
@@ -305,38 +343,38 @@ QVariant VariableListModel::data(const QModelIndex& index, int role) const
 	}
 	else if (role == CommonItemDelegate::MinimumRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			return toQVariant(var->getMin());
 		}
 	}
 	else if (role == CommonItemDelegate::MaximumRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			return toQVariant(var->getMax());
 		}
 	}
 	else if (role == CommonItemDelegate::IncrementRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			return toQVariant(var->getRnd());
 		}
 	}
 	else if (role == CommonItemDelegate::IncrementRole)
 	{
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			return toQVariant(var->getRnd());
 		}
 	}
-	else if (role == CommonItemDelegate::TextColorRole && index.column() == cValue)
+	else if (role == CommonItemDelegate::TextColorRole && field == cValue)
 	{
 		// For all columns the same text color.
 		return var->isReadOnly() ? QPalette::ColorRole::Mid : QPalette::ColorRole::Text;
 	}
-	else if (role == CommonItemDelegate::AlignmentRole && index.column() == cValue)
+	else if (role == CommonItemDelegate::AlignmentRole && field == cValue)
 	{
 		// For all columns the same text color.
 		return var->isNumber() && var->getStateCount() == 0 ? Qt::AlignmentFlag::AlignRight : Qt::AlignmentFlag::AlignLeft;
@@ -348,8 +386,9 @@ bool VariableListModel::setData(const QModelIndex& index, const QVariant& value,
 {
 	if (role == Qt::EditRole)
 	{
+		const auto field = getField(index.column());
 		const auto var = _varList.at(index.row()).get();
-		if (index.column() == cValue)
+		if (field == cValue)
 		{
 			if (var->getStateCount())
 			{
@@ -452,7 +491,27 @@ void VariableListModel::addVariables(const InformationTypes::Vector& list)
 	}
 }
 
-Variable* VariableListModel::getByIndex(const QModelIndex& index) const
+void VariableListModel::addVariable(id_type id, bool desired)
+{
+	// Create owning pointer instance.
+	const auto v = std::make_shared<Variable>(id, desired);
+	// Attach the handler to the new variable instance.
+	v->setHandler(this);
+	// Make the variable convert units if possible.
+	v->setConvert(true);
+	// Move the owning pointer instance to the list.
+	_varList.append(std::move(v));
+}
+
+void VariableListModel::addVariables(const IdVector& ids, bool desired)
+{
+	for (const auto id: ids)
+	{
+		addVariable(id, desired);
+	}
+}
+
+Variable* VariableListModel::getVariable(const QModelIndex& index) const
 {
 	return index.isValid() ? _varList.at(index.row()).get() : nullptr;
 }

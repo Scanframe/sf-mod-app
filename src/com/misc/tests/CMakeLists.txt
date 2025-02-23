@@ -16,10 +16,10 @@ file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gen/test-*")
 if (WIN32)
 	file(GLOB TEST_SOURCES_WIN "${CMAKE_CURRENT_SOURCE_DIR}/win/test-*")
 	list(APPEND TEST_SOURCES ${TEST_SOURCES_WIN})
-else (WIN32)
+else ()
 	file(GLOB TEST_SOURCES_LNX "${CMAKE_CURRENT_SOURCE_DIR}/lnx/test-*")
 	list(APPEND TEST_SOURCES ${TEST_SOURCES_LNX})
-endif (WIN32)
+endif ()
 
 # When Qt libraries are linked.
 if (SF_BUILD_QT)
@@ -43,7 +43,7 @@ Sf_SetTargetSuffix("${TEST_TARGET}")
 if (SF_BUILD_QT)
 	# Explicitly tell the compiled code the QT libraries are included.
 	target_compile_definitions("${TEST_TARGET}" PRIVATE TARGET_QT)
-endif (SF_BUILD_QT)
+endif ()
 
 # Should be linked to the main library, as well as the Catch2 testing library
 target_link_libraries("${TEST_TARGET}" PRIVATE "${TEST_LIBRARIES}")

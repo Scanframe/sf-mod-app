@@ -1,9 +1,6 @@
-#include "misc/qt/ApplicationSettings.h"
-
 #include <QApplication>
-#include <QDir>
 #include <gmi/iface/qt/AxesCoordEdit.h>
-#include <misc/gen/dbgutils.h>
+#include <misc/qt/ApplicationSettings.h>
 #include <misc/qt/FormDialog.h>
 #include <misc/qt/Globals.h>
 
@@ -34,8 +31,8 @@ int main(int argc, char* argv[])
 	{
 		// Set the file location to the resource.
 		sf::FormDialog dlg;
-		dlg.Load(QFile(":/ui/dialog"));
+		dlg.load(QFile(":/ui/dialog"));
 		dlg.exec();
-	}//
+	}
 	return 0;
 }

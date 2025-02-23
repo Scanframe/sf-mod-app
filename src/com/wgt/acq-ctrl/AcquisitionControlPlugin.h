@@ -6,11 +6,13 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::VariableEdit custom widget.
+ * @brief Interface class to create the custom widget.
  */
-class AcquisitionControlPlugin :public QObject, public QDesignerCustomWidgetInterface
+class AcquisitionControlPlugin
+	: public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +80,4 @@ class AcquisitionControlPlugin :public QObject, public QDesignerCustomWidgetInte
 		bool initialized = false;
 };
 
-}
+}// namespace sf

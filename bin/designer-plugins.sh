@@ -1,11 +1,11 @@
 #!/bin/bash
 #set -x
 
+# Bailout on first error.
+set -e
+
 # Get the script directory.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-
-# Location of the users Qt installed files
-local_qt_root="${HOME}/lib/Qt"
 
 # Writes to stderr.
 #
@@ -13,20 +13,8 @@ function WriteLog() {
 	echo "$@" 1>&2
 }
 
-# Find newest local Qt version directory.
-#
-function GetLocalQtDir() {
-	local local_qt_dir
-	local_qt_dir="$(find -L "${local_qt_root}" -type d -regex ".*\/Qt\/[56]\\.[0-9]+\\.[0-9]+$" | sort --reverse --version-sort | head -n 1)"
-	if [[ -z "${local_qt_dir}" ]]; then
-		WriteLog "Could not find local installed Qt directory."
-		exit 1
-	fi
-	echo "${local_qt_dir}"
-}
-
 # Form the actual plugin target directory
-target="$(GetLocalQtDir)/gcc_64/plugins/designer"
+target="$("${script_dir}/../cmake/lib/bin/QtLibDir.sh")/gcc_64/plugins/designer"
 
 if [[ ! -d "${target}" ]]; then
 	WriteLog "Qt Designer plugin directory not found!"
@@ -57,5 +45,4 @@ for fn in "${dynlibs[@]}"; do
 	else
 		ln --symbolic --force "${script_dir}/lnx64/lib/${fn}" "${target}/${fn}"
 	fi
-
 done

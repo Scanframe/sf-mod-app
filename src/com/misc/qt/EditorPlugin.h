@@ -6,11 +6,13 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::DrawWidget custom widget.
+ * @brief Interface class to create the custom widget.
  */
-class EditorPlugin :public QObject, public QDesignerCustomWidgetInterface
+class EditorPlugin
+	: public QObject
+	, public QDesignerCustomWidgetInterface
 {
-	Q_OBJECT
+		Q_OBJECT
 		Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 	public:
@@ -78,4 +80,4 @@ class EditorPlugin :public QObject, public QDesignerCustomWidgetInterface
 		bool initialized = false;
 };
 
-} // namespace
+}// namespace sf

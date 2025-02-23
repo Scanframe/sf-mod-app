@@ -6,7 +6,7 @@ namespace sf
 {
 
 /**
- * @brief Interface class to create a #sf::AxesCoordEdit custom widget.
+ * @brief Interface class to create the custom widget.
  */
 class AxesCoordEditPlugin
 	: public QObject
